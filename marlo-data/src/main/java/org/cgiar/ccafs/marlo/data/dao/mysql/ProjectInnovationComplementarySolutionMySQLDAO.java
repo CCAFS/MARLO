@@ -90,10 +90,7 @@ public class ProjectInnovationComplementarySolutionMySQLDAO extends
     String query = "from " + ProjectInnovationComplementarySolution.class.getName()
       + " where is_active=1 and project_innovation_id = " + innovationID + " and id_phase = " + phaseID;
     List<ProjectInnovationComplementarySolution> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+    return list;
   }
 
   @Override

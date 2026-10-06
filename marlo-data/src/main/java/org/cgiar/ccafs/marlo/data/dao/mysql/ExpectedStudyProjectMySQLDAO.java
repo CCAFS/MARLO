@@ -80,11 +80,7 @@ public class ExpectedStudyProjectMySQLDAO extends AbstractMarloDAO<ExpectedStudy
     createQuery.setParameter("phaseId", phaseId);
     List<ExpectedStudyProject> result = super.findAll(createQuery);
 
-    if (result != null && !result.isEmpty()) {
-      return result;
-    }
-
-    return null;
+    return result;
   }
 
   @Override

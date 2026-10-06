@@ -266,7 +266,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     masterReport.getParameterValues().put("i8nStudiesMainTitle", this.getText("summaries.study.mainTitle"));
     masterReport.getParameterValues().put("i8nStudiesTagAs", this.getText("study.general.tag"));
     masterReport.getParameterValues().put("i8nStudiesAllianceID", this.getText("study.general.allianceID"));
-    masterReport.getParameterValues().put("i8nStudiesCovidAnalysis", this.getText("summaries.study.hasCovidAnalysis"));
     masterReport.getParameterValues().put("i8nStudiesLinkPerformance",
       this.getText("summaries.study.linkPerformanceIndicator"));
     masterReport.getParameterValues().put("i8nStudiesRCaseStudy", this.getText("summaries.study"));
@@ -420,7 +419,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           communicationsMaterial = null, contacts = null, studyProjects = null, tagged = null, cgiarInnovation = null,
           cgiarInnovations = null, climateRelevance = null, link = null, links = null, centers = null;
         final String studyPolicies = null, url = null;
-        String studiesReference = null, meliaPublications = null, performanceIndicator = null, covidAnalysis = null,
+        String studiesReference = null, meliaPublications = null, performanceIndicator = null,
           studyCenters = null, clusterAcronym = null, clusterName = null, leadPerson = null,
           isAllianceContribution = null, allianceOICRID = null, primaryAllianceLever = null, strategicOutcome = null,
           primarySDGcontribution = null, relatedLever = "", relatedSDGContribution = null, hasCGIARContribution = null,
@@ -1037,16 +1036,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getOtherCrossCuttingDimensions());
         }
 
-        // Covid Analysis
-        if (projectExpectedStudyInfo.getHasCovidAnalysis() != null) {
-          if (Boolean.TRUE.equals(projectExpectedStudyInfo.getHasCovidAnalysis())) {
-            covidAnalysis = "Yes";
-          } else {
-            covidAnalysis = "No";
-
-          }
-        }
-
         // Performance indicator
         // Expected Study Project Outcome list
         if ((projectExpectedStudyInfo.getProjectExpectedStudy() != null)
@@ -1473,7 +1462,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("studiesReference", studiesReference);
           jsonData.put("meliaPublications", meliaPublications);
           jsonData.put("performanceIndicator", performanceIndicator);
-          jsonData.put("covidAnalysis", covidAnalysis);
           jsonData.put("centers", removeLeadingSemicolon(centers));
           jsonData.put("clusterAcronym", clusterAcronym);
           jsonData.put("allianceOICRID", allianceOICRID);
@@ -1586,7 +1574,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         "tagged", "cgiarInnovation", "cgiarInnovations", "climateRelevance", "link", "links", "studyPolicies",
         "isSrfTargetText", "otherCrossCuttingDimensionsSelection", "isContribution", "isRegional", "isNational",
         "isOutcomeCaseStudy", "isSrfTarget", "url", "studiesReference", "meliaPublications", "performanceIndicator",
-        "covidAnalysis", "centers", "clusterAcronym", "allianceOICRID", "primaryAllianceLever", "strategicOutcome",
+        "centers", "clusterAcronym", "allianceOICRID", "primaryAllianceLever", "strategicOutcome",
         "primarySDGcontribution", "relatedLever", "relatedSDGContribution", "hasCgiarContribution", "impactArea",
         "publications", "tagAs"},
       new Class[] {Long.class, Integer.class, String.class, String.class, String.class, String.class, String.class,
@@ -1596,7 +1584,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
         Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class, String.class, String.class,
         String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class,
-        String.class, String.class, String.class, String.class, String.class, String.class, String.class},
+        String.class, String.class, String.class, String.class, String.class, String.class},
       0);
 
     final URLShortener urlShortener = new URLShortener();
@@ -1620,7 +1608,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         final String studyPolicies = null;
         String isSrfTargetText = null, otherCrossCuttingDimensionsSelection = null;
         final String url = null;
-        String studiesReference = null, meliaPublications = null, performanceIndicator = null, covidAnalysis = null,
+        String studiesReference = null, meliaPublications = null, performanceIndicator = null,
           centers = null, clusterAcronym = null, allianceOICRID = null, primaryAllianceLever = null,
           strategicOutcome = null, primarySDGcontribution = null, relatedLever = "", relatedSDGContribution = null,
           hasCGIARContribution = null, impactArea = null, tagAs = null;
@@ -2077,16 +2065,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             this.htmlParser.plainTextToHtml(projectExpectedStudyInfo.getOtherCrossCuttingDimensions());
         }
 
-        // Covid Analysis
-        if (projectExpectedStudyInfo.getHasCovidAnalysis() != null) {
-          if (projectExpectedStudyInfo.getHasCovidAnalysis()) {
-            covidAnalysis = "Yes";
-          } else {
-            covidAnalysis = "No";
-
-          }
-        }
-
         // Performance indicator
         // Expected Study Project Outcome list
         if ((projectExpectedStudyInfo.getProjectExpectedStudy() != null)
@@ -2449,7 +2427,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           otherCrossCuttingDimensions, comunicationsMaterial, contacts, studyProjects, tagged, cgiarInnovation,
           cgiarInnovations, climateRelevance, link, links, studyPolicies, isSrfTargetText,
           otherCrossCuttingDimensionsSelection, isContribution, isRegional, isNational, isOutcomeCaseStudy, isSrfTarget,
-          url, studiesReference, meliaPublications, performanceIndicator, covidAnalysis, centers, clusterAcronym,
+          url, studiesReference, meliaPublications, performanceIndicator, centers, clusterAcronym,
           allianceOICRID, primaryAllianceLever, strategicOutcome, primarySDGcontribution, relatedLever,
           relatedSDGContribution, hasCGIARContribution, impactArea, publications, tagAs});
 

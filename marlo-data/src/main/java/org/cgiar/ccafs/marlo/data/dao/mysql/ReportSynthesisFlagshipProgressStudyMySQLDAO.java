@@ -62,11 +62,7 @@ public class ReportSynthesisFlagshipProgressStudyMySQLDAO extends AbstractMarloD
   public List<ReportSynthesisFlagshipProgressStudy> findAll() {
     String query = "from " + ReportSynthesisFlagshipProgressStudy.class.getName() + " where is_active=1";
     List<ReportSynthesisFlagshipProgressStudy> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

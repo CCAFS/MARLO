@@ -759,19 +759,6 @@
               <p><a style="cursor: pointer;" data-toggle="modal" data-target="#evidenceModal" > <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="study.general.help.studyType" /]</a></p>
             </div>
           </div>
-      [#if (reportingActive)!false]
-      <div class="form-group analysisGroup">
-        <label for="">[@s.text name="study.general.covidAnalysis" /]:[@customForm.req required=false /]
-        </label>        
-        <div class="form-group">
-          [#assign covidAnalisis = "covidAnalisis"]
-          [#assign showAnalysis = (expectedStudy.projectExpectedStudyInfo.hasCovidAnalysis?string)!"" /]
-          [@customForm.radioFlat id="${covidAnalisis}-yes" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="Yes" value="true" checked=(showAnalysis == "true") cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${covidAnalisis}-no" name="${customName}.projectExpectedStudyInfo.hasCovidAnalysis" label="No" value="false" checked=(showAnalysis == "false") cssClassLabel="radio-label-no" editable=editable /]
-        </div>  
-      </div>
-      [/#if]
-
 
         <div class="form-group evidenceTypeMessage">
           <div class="modal fade" id="evidenceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

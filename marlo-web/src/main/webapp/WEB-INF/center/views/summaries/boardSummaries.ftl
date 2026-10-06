@@ -5,7 +5,7 @@
 
 
 [#assign customJS = ["${baseUrlCdn}/global/js/utils.js", 
-                    "${baseUrlMedia}/js/summaries/boardSummaries.js", 
+                    "${baseUrlMedia}/js/summaries/boardSummaries.js?20260930", 
                     "${baseUrlMedia}/js/capDev/capdevSummaries.js", 
                     "${baseUrlMedia}/js/capDev/year-select.js"] /]
 

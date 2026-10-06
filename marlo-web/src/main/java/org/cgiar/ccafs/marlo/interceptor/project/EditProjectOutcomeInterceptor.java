@@ -213,7 +213,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
     Project theProject = projectManager.getProjectById(project.getProject().getId());
 
     BaseAction action = (BaseAction) invocation.getAction();
-    if (action.isAiccra() && outcome != null) {
+    if (outcome != null) {
       this.addAllCrpMilestones(outcome);
     }
 

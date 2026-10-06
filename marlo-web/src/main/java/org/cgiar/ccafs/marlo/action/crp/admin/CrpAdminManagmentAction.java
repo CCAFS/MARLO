@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -244,7 +245,7 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       // Building the Email message:
       StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
 
       // get CRPAdmin contacts
       String crpAdmins = "";
@@ -261,8 +262,8 @@ public class CrpAdminManagmentAction extends BaseAction {
       }
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support.noCrpAdmins")}));
-      message.append(this.getText("email.bye"));
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support.noCrpAdmins")}));
+      message.append(this.getText("email.role.bye"));
 
       // Saving the new user configuration.
       /** Leaving this for now as there is some strangeness in regards to the active/inactive flag for users. **/
@@ -306,9 +307,11 @@ public class CrpAdminManagmentAction extends BaseAction {
 
       if (this.validateEmailNotification()) {
         if (buffer != null && fileName != null && contentType != null) {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            buffer, contentType, fileName, true);
         } else {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            null, null, null, true);
         }
       }
     }
@@ -380,19 +383,21 @@ public class CrpAdminManagmentAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.flagship.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(),
       crp, this.getText("email.flagship.responsabilities")}));
 
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
 
     if (this.validateEmailNotification()) {
       if (role.equals(fplRole)) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       }
     }
   }
@@ -480,19 +485,21 @@ public class CrpAdminManagmentAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(
       this.getText("email.flagshipmanager.assigned", new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp,
         this.getText("email.flagshipmanager.responsabilities"), this.getText("email.flagshipmanager.note")}));
 
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification()) {
       if (role.equals(fplRole)) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       }
     }
   }
@@ -567,18 +574,20 @@ public class CrpAdminManagmentAction extends BaseAction {
     userRemoved = userManager.getUser(userRemoved.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userRemoved.getFirstName()}));
     message.append(this.getText("email.flagshipmanager.unassigned",
       new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
 
 
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification()) {
       if (role.equals(fplRole)) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       }
     }
   }
@@ -639,16 +648,18 @@ public class CrpAdminManagmentAction extends BaseAction {
     userRemoved = userManager.getUser(userRemoved.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userRemoved.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userRemoved.getFirstName()}));
     message.append(this.getText("email.flagship.unassigned", new String[] {
       this.getText("programManagement.flagship.role"), crpProgram.getAcronym(), crpProgram.getName(), crp}));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification()) {
       if (role.equals(fplRole)) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       }
     }
   }
@@ -695,15 +706,16 @@ public class CrpAdminManagmentAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.programManagement.assigned",
       new String[] {crp, this.getText("email.programManagement.responsibilities")}));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
 
     if (this.validateEmailNotification()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
   }
 
@@ -748,13 +760,14 @@ public class CrpAdminManagmentAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(
       this.getText("email.programManagement.unassigned", new String[] {this.getText("programManagement.role"), crp}));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
   }
 

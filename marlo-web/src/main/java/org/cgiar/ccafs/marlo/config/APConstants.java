@@ -48,7 +48,6 @@ public final class APConstants {
   public static final String CRP_CLOSED = "crp_closed";
   public static final String CRP_CLUSTER_ACTIVITY_ID = "clusterActivityID";
   public static final String CRP_CU = "crp_cu";
-  public static final String CRP_COVID_REQUIRED = "crp_covid_required";
 
   public static final String CRP_CUSTOM_FILE = "crp_custom_file";
   public static final String CRP_CUSTOM_GENDER = "crp_custom_gender";
@@ -84,14 +83,10 @@ public final class APConstants {
   public static final String HANDLE = "handle";
   public static final String DOI = "doi";
   public static final String CRP_PL_ROLE = "crp_pl_rol";
-  public static final String CRP_PLANNING_ACTIVE = "crp_planning_active";
-  public static final String CRP_PLANNING_YEAR = "crp_planning_year";
   public static final String CRP_PMU = "crp_pmu_closed";
   public static final String CRP_PMU_ROLE = "crp_pmu_rol";
   public static final String CRP_PROGRAM_ID = "crpProgramID";
   public static final String CRP_REFRESH = "crp_refresh";
-  public static final String CRP_REPORTING_ACTIVE = "crp_reporting_active";
-  public static final String CRP_REPORTING_YEAR = "crp_reporting_year";
   public static final String CURRENT_PHASE = "crp_current_phase";
   public static final String PHASES = "crp_phases";
   public static final String ALL_PHASES = "crp_all_phases";
@@ -125,9 +120,6 @@ public final class APConstants {
   public static final String CRP_PPA_ENABLE_PROJECT_DESCRIPTION = "crp_ppa_enable_project_description";
   public static final String CRP_PROJECT_PAGE = "crp_project_page";
   public static final String CRP_PROJECT_PAGE_YEAR = "project_website_year_value";
-  public static final String CRP_SHOW_SECTION_IMPACT_COVID19 = "crp_show_section_impact_covid19";
-  public static final String CRP_SHOW_SECTION_IMPACT_COVID19_RANGES_YEARS =
-    "crp_show_section_impact_covid19_ranges_years";
   public static final String PREVIOUS_PROJECT_ID_ACTIVE = "previous_project_id_field_active";
   public static final String OICR_TAG_FIELD_MANUAL_MANAGE_ACTIVE = "oicr_tag_field_manual_manage_active";
   public static final String PORTFOLIO_FEATURE_ACTIVE = "portfolio_feature_active";
@@ -182,8 +174,6 @@ public final class APConstants {
   public static final String SHOW_CONTRIBUTION_PERFORMANCE_INDICATOR_DEPRECATED_TAB_ACTIVE =
     "show_contribution_performance_indicator_deprecated_tab_active";
 
-  public static final String IS_EXPECTED_DELIVERABLE_REPORT_All_YEARS_VISIBLE =
-    "is_expected_deliverable_report_all_years_visible";
   public static final String CRP_EMAIL_SUPPORT_TEAM = "crp_email_support_team";
 
   public static final String GENDER_KEYWORDS = "show_gender_keywords_summaries";
@@ -237,7 +227,6 @@ public final class APConstants {
   public static final String AGREEMENT_STATUS = "agreementStatus";
   public static final String PARTNERS_ID = "partnerIDs";
 
-  public static final String TEMP_CYCLE = "temp_cycle";
   public static final String TEMP_YEAR = "temp_year";
 
   public static final String FUNDING_SOURCES_INSTITUTIONS_RELATION =

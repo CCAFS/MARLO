@@ -48,6 +48,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -351,7 +352,7 @@ public class CrpProgamRegionsAction extends BaseAction {
 
       // Building the Email message:
       StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+      message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
 
       // get CRPAdmin contacts
       String crpAdmins = "";
@@ -368,8 +369,8 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
 
       message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.support.noCrpAdmins")}));
-      message.append(this.getText("email.bye"));
+        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support.noCrpAdmins")}));
+      message.append(this.getText("email.role.bye"));
 
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
@@ -405,9 +406,11 @@ public class CrpProgamRegionsAction extends BaseAction {
       }
       if (this.validateEmailNotification()) {
         if (buffer != null && fileName != null && contentType != null) {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            buffer, contentType, fileName, true);
         } else {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+            null, null, null, true);
         }
       }
     }
@@ -504,7 +507,7 @@ public class CrpProgamRegionsAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
 
     // Regional program leader assignation
     if (role.equals(rplRole)) {
@@ -518,11 +521,12 @@ public class CrpProgamRegionsAction extends BaseAction {
         new String[] {crpProgram.getAcronym(), crpProgram.getName(), crp}));
     }
 
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+      null, null, null, true);
 
   }
 
@@ -595,11 +599,11 @@ public class CrpProgamRegionsAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.region.unassigned",
       new String[] {regionRole, crpProgram.getName(), crpProgram.getAcronym()}));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.bye"));
 
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
@@ -608,11 +612,11 @@ public class CrpProgamRegionsAction extends BaseAction {
     if (role.equals(rplRole)) {
       sendMail.send(toEmail, ccEmail, bbcEmails,
         this.getText("email.region.unassigned.subject", new String[] {crp, crpProgram.getAcronym()}),
-        message.toString(), null, null, null, true);
+        EmailLayout.wrap(this, message.toString()), null, null, null, true);
     } else {
       sendMail.send(toEmail, ccEmail, bbcEmails,
         this.getText("email.regionmanager.unassigned.subject", new String[] {crp, crpProgram.getAcronym()}),
-        message.toString(), null, null, null, true);
+        EmailLayout.wrap(this, message.toString()), null, null, null, true);
     }
   }
 

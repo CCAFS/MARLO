@@ -275,9 +275,10 @@ Record these in their failure-only form. A green run should cost one summary lin
 
 | Gate | Command | Status |
 |---|---|---|
-| Compile | `mvn -q install -DskipTests -pl marlo-web -am` | **Required.** The authoritative gate — MARLO is a compiled monolith and a broken build is the failure that matters |
-| Checkstyle | `mvn -q checkstyle:check` | **Required.** Config `configuration/marlo-checkstyle.xml`. A hard gate, not advisory |
-| Unit tests | `mvn -q -pl marlo-web test` | Run and claim **only** when the task actually authored tests |
+| Compile | `rm -rf marlo-web/target/classes marlo-web/target/test-classes marlo-data/target/classes && mvn -q -o -pl marlo-data,marlo-web -am test-compile -DskipTests` | **Required.** The authoritative gate — MARLO is a compiled monolith and a broken build is the failure that matters. **Wipe the classes first:** an incremental compile skips files whose `.class` looks current and has reported BUILD SUCCESS on code that did not compile (a broken commit reached `origin` that way). A healthy run compiles ~2400 files in marlo-data and ~1040 in marlo-web; far fewer means stale classes were reused |
+| Checkstyle | checkstyle 8.18 run directly with `-c configuration/marlo-checkstyle.xml` on the changed files, compared against the same files at HEAD | **Required.** A hard gate, not advisory. `mvn checkstyle:check` **cannot run in this checkout**: maven-checkstyle-plugin 2.9.1 against checkstyle 8.18 throws `NoSuchMethodError: Checker.setClassloader`, which says nothing about the code. Only the delta against HEAD is the change's: `BaseAction.java` alone carries 9 violations at HEAD |
+| Unit tests | `mvn -q -o -pl marlo-web -am test` | Run and claim **only** when the task actually authored tests. **Keep `-am`:** without it Maven takes marlo-data from `~/.m2`, and the tests run against whatever the last `install` left there (three wrong readings on 2026-09-28) |
+| i18n | Review every added or changed `.properties` line | **Required** when `.properties` change. `getText` passes every value through `MessageFormat`, even without arguments, so a single `'` is dropped (`can't` renders as `cant`): write `''`. A `{` that is not a `{0}` argument is parsed as a format element |
 
 **The asymmetry rule travels with the commands:** `-q` suppresses *passing* noise only. **Failures always print complete and verbatim** — they are evidence. Never truncate, summarize, or paraphrase a compile error, a Checkstyle violation, or a test failure.
 
@@ -454,10 +455,11 @@ MARLO's stack is Java 17 / Struts 2 / Hibernate-JPA / FreeMarker / jQuery / Mave
 
 | Skill | Applies To | When to load |
 |---|---|---|
-| `marlo-verify` | Any Java, CSS, or JS change in `marlo-web` / `marlo-data` | **Load before claiming a change compiles, is Checkstyle-clean, or is done.** Plain `mvn compile` returns BUILD SUCCESS on code that does not compile, and `mvn checkstyle:check` cannot run in this checkout at all — this skill carries the invocations that work |
-| `marlo-migration` | Every schema or seed-data change under `marlo-web/src/main/resources/database/migrations/` | Load for a new table, column, index, `parameters` / `custom_parameters` seed, backfill, or specificity flag. It builds the filename from the real clock and runs the hardcoded-`global_unit_id` risk review |
+| `marlo-verify` | Any Java, CSS, JS or `.properties` change in `marlo-web` / `marlo-data` | **Load before claiming a change compiles, is Checkstyle-clean, or is done.** Plain `mvn compile` returns BUILD SUCCESS on code that does not compile, and `mvn checkstyle:check` cannot run in this checkout at all — this skill carries the invocations that work, plus the test run with `-am`, the i18n apostrophe check and the null / return-value pass |
+| `marlo-migration` | Every schema or seed-data change under `marlo-web/src/main/resources/database/migrations/` | Load for a new table, column, index, `parameters` / `custom_parameters` seed, backfill, or specificity flag. It builds the filename from the real clock, runs the hardcoded-`global_unit_id` risk review, and applies the safe-by-default checklist: the same migration also runs on other branches, repositories and clean databases where the assumed rows may not exist |
 | `marlo-commit` | Any commit, amend, or PR body in this repository | Load at the commit step of `/akili-execute`, and whenever a change is finished. It builds the semantic subject, adds the `[SPEC:<path>]` prefix, checks the target branch, and omits AI attribution |
 | `marlo-jira` | Jira issues for MARLO / AICCRA on `cgiarmel.atlassian.net` | Load whenever an issue, ticket, or key like `A2-2452` comes up — including in Spanish, and including when no project is named, since `A2` is the default |
+| `marlo-release-notes` | Artifacts that report delivered MARLO work, above all the monthly release-notes pages | Load whenever release notes, a changelog, a monthly summary or a showcase of fixes is written, extended or reformatted. It carries the English-only rule, the page shape (status chip, tally, "Not in this release"), the monthly page structure and the three role artifacts that must not be reformatted |
 
 **During `/akili-specify`, derive each task's required skills from this map. During `/akili-execute` and `/akili-test`, the Leader assigns these skills and the Implementer / Tester MUST load them before writing code or tests.**
 

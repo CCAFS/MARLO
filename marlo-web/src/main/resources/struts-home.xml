@@ -40,6 +40,7 @@
 		-->
 		<interceptors>
 			<interceptor-stack name="cognitoUnloggedStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>

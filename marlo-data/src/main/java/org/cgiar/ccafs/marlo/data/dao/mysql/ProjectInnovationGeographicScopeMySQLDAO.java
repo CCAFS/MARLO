@@ -62,11 +62,7 @@ public class ProjectInnovationGeographicScopeMySQLDAO extends AbstractMarloDAO<P
   public List<ProjectInnovationGeographicScope> findAll() {
     String query = "from " + ProjectInnovationGeographicScope.class.getName();
     List<ProjectInnovationGeographicScope> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

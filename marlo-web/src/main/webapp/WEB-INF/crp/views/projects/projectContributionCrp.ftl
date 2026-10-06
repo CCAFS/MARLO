@@ -315,7 +315,7 @@
                                     <div class="tab-content ">          
                                       [#-- Progress tab --]  
                                         <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
-                                          [#if action.isAiccra()  && projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
+                                          [#if projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
                                           <h4 class="headTitle" style="font-size: 15px;"> <i>This information is only for reference and is not editable</i></h4>
                                             [#-- 
                                             && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
@@ -346,7 +346,7 @@
                                         [#-- Reporting tab --]
                                         
                                           <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
-                                            [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                            [#if projectOutcome.crpProgramOutcome.indicators?size != 0]
                                               [#--  <h4 class="headTitle">Progress to Targets</h4> --]
                                                 <div class="nextUsersList">
                                                   [#-- Baseline Indicators --]
@@ -370,7 +370,7 @@
                                     </div>   
                                   </div>
                                 [#else]     
-                                  [#if action.isAiccra() && projectOutcome.crpProgramOutcome.indicators?size != 0]
+                                  [#if projectOutcome.crpProgramOutcome.indicators?size != 0]
                                             <div class="nextUsersList">
                                               [#-- Baseline Indicators --]
                                               [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
@@ -483,14 +483,14 @@
             [#-- Lessons learnt from last planning/reporting cycle --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
-              <label>[@customForm.text name="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?string(reportingYear,planningYear-1)}" /]:</label>
+              <label>[@customForm.text name="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]:</label>
               <div class="textArea"><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
             </div>
             [/#if]
             [#-- Planning/Reporting lessons --]
             <div class="fullBlock ">
               <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
-              <input type="hidden" name="projectOutcome.projectComponentLesson.year" value=${reportingActive?string(reportingYear,planningYear)} />
+              <input type="hidden" name="projectOutcome.projectComponentLesson.year" value="${(actualPhase.year)!0}" />
               <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
               [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" help="projectOutcome.lessons.help" helpIcon=false className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
             </div>

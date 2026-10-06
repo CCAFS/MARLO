@@ -88,7 +88,6 @@ import org.cgiar.ccafs.marlo.data.manager.RepIndRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndStageInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.SdgManager;
-import org.cgiar.ccafs.marlo.data.manager.SrfIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ToolFunctionCategoryManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
@@ -167,7 +166,6 @@ import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
-import org.cgiar.ccafs.marlo.data.model.SrfIdo;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ToolFunctionCategory;
 import org.cgiar.ccafs.marlo.data.model.User;
@@ -257,7 +255,6 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationMilestoneManager projectInnovationMilestoneManager;
   private SrfSubIdoManager srfSubIdoManager;
   private ProjectInnovationSubIdoManager projectInnovationSubIdoManager;
-  private SrfIdoManager srfIdoManager;
   private ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager;
   private ProjectExpectedStudyManager projectExpectedStudyManager;
   private ProjectDeliverableSharedManager projectDeliverableSharedManager;
@@ -344,8 +341,6 @@ public class ProjectInnovationAction extends BaseAction {
   private List<CrpMilestone> milestones;
   private List<SrfSubIdo> subIdos;
   private List<SrfSubIdo> principalSubIdo;
-  private List<SrfIdo> srfIdos;
-  private HashMap<Long, String> idoList;
   private List<ProjectOutcome> projectOutcomes;
   private List<FeedbackQACommentableFields> feedbackComments;
   private List<CrpProgramOutcome> crpOutcomes;
@@ -398,7 +393,7 @@ public class ProjectInnovationAction extends BaseAction {
       ProjectInnovationSharedManager projectInnovationSharedManager,
       ProjectInnovationCenterManager projectInnovationCenterManager,
       ProjectInnovationMilestoneManager projectInnovationMilestoneManager, SrfSubIdoManager srfSubIdoManager,
-      ProjectInnovationSubIdoManager projectInnovationSubIdoManager, SrfIdoManager srfIdoManager,
+      ProjectInnovationSubIdoManager projectInnovationSubIdoManager,
       ProjectExpectedStudyInnovationManager projectExpectedStudyInnovationManager,
       ProjectDeliverableSharedManager projectDeliverableSharedManager, ProjectOutcomeManager projectOutcomeManager,
       ProjectInnovationProjectOutcomeManager projectInnovationProjectOutcomeManager,
@@ -466,7 +461,6 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectExpectedStudyInnovationManager = projectExpectedStudyInnovationManager;
     this.srfSubIdoManager = srfSubIdoManager;
     this.projectInnovationSubIdoManager = projectInnovationSubIdoManager;
-    this.srfIdoManager = srfIdoManager;
     this.projectExpectedStudyManager = projectExpectedStudyManager;
     this.projectDeliverableSharedManager = projectDeliverableSharedManager;
     this.projectOutcomeManager = projectOutcomeManager;
@@ -758,10 +752,6 @@ public class ProjectInnovationAction extends BaseAction {
     return geographicScopeList;
   }
 
-  public HashMap<Long, String> getIdoList() {
-    return idoList;
-  }
-
   public List<ImpactArea> getImpactAreaList() {
     return impactAreaList;
   }
@@ -902,10 +892,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<Sdg> getSdgList() {
     return sdgList;
-  }
-
-  public List<SrfIdo> getSrfIdos() {
-    return srfIdos;
   }
 
   public long getSrfSubIdoPrimary() {
@@ -1563,9 +1549,10 @@ public class ProjectInnovationAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
         try {
-          if (innovation.getToolCategories() == null || innovation.getToolCategories().isEmpty()) {
+          if ((innovation.getToolCategories() == null || innovation.getToolCategories().isEmpty()) && phase != null
+              && phase.getId() != null) {
             List<ProjectInnovationToolCategory> innovationToolCategoryList = projectInnovationToolCategoryManager
-                .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), this.getPhaseID());
+                .getProjectInnovationToolCategoryByInnovationAndPhase(innovation.getId(), phase.getId());
             if (innovationToolCategoryList != null && !innovationToolCategoryList.isEmpty()) {
               innovation.setToolCategories(innovationToolCategoryList);
             }
@@ -2399,16 +2386,6 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
 
-    // SrfIDO
-    idoList = new HashMap<>();
-    srfIdos = new ArrayList<>();
-    for (SrfIdo srfIdo : srfIdoManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList())) {
-      idoList.put(srfIdo.getId(), srfIdo.getDescription());
-
-      srfIdo.setSubIdos(srfIdo.getSrfSubIdos().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-      srfIdos.add(srfIdo);
-    }
-
     if (innovation.getProjectInnovationInfo() != null) {
       this.validateTabs();
     }
@@ -2766,15 +2743,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveActors(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveActors called - innovation.getActors(): " + (innovation.getActors() != null ? innovation.getActors().size() : "null"));
-    if (innovation.getActors() != null) {
-      for (ProjectInnovationActor a : innovation.getActors()) {
-        logger.info("Actor - id: " + a.getId() + ", actor: " + (a.getActor() != null ? a.getActor().getId() : "null") + ", total: " + a.getTotal());
-      }
-    }
-    
-    // Leer actor.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read actor.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> actorTypeIds = new HashMap<>();
     
@@ -2826,22 +2795,20 @@ public class ProjectInnovationAction extends BaseAction {
       // Save form Information
       if (innovation.getActors() != null && !innovation.getActors().isEmpty()) {
         for (ProjectInnovationActor innovationActor : innovation.getActors()) {
+          if (innovationActor == null) {
+            continue;
+          }
           if (innovationActor.getId() != null && innovationActor.getId() == -1) {
             innovationActor.setId(null);
           }
           boolean saveActorProcess = true;
-          System.out.println("IMPR innovationActor: " + innovationActor.getActor().getId());
-          if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null
-              && innovationActor.getActor().getId() == -1) {
+          // An empty row (no actor, or the "-1" placeholder) is skipped instead of saved without an actor
+          if (innovationActor.getActor() == null || innovationActor.getActor().getId() == null
+              || innovationActor.getActor().getId() == -1) {
             innovationActor.setActor(null);
             saveActorProcess = false;
-            System.out.println("IMPR innovationActor: " + innovationActor.getActor().getId());
           }
 
-          System.out.println("IMPR saveActorProcess: " + saveActorProcess);
-          System.out.println("IMPR innovationActor ID: " + innovationActor.getId());
-          System.out.println("IMPR innovationActor Actor ID: " + innovationActor.getActor().getId());
-          System.out.println("IMPR innovationActor Actor Description: " + innovationActor.getActor().getDescription());
           ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
           if (saveActorProcess) {
             /*
@@ -2939,12 +2906,6 @@ public class ProjectInnovationAction extends BaseAction {
           } catch (Exception e) {
             logger.error("unable to get old actors", e);
           }
-          boolean isSelectedId3 = false;
-          if (innovationAllianceLever.getAllianceLever() != null
-              && innovationAllianceLever.getAllianceLever().getId() != null
-              && innovationAllianceLever.getAllianceLever().getId() == 3) {
-            isSelectedId3 = true;
-          }
           innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
           innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
           innovationAllianceLeverSave.setPhase(phase);
@@ -2952,20 +2913,6 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
           // This is to add innovationAllianceLeverSave to generate correct auditlog.
           innovation.getProjectInnovationAllianceLevers().add(innovationAllianceLeverSave);
-
-          // Additional save
-          try {
-            if (isSelectedId3) {
-              innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
-              AllianceLever allianceLeverTemp = allianceLeverManager.getAllianceLeverById(3);
-              innovationAllianceLeverSave.setAllianceLever(allianceLeverTemp);
-              innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
-              innovationAllianceLeverSave.setPhase(phase);
-              projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
-            }
-          } catch (Exception e) {
-            logger.error("error saving other alliance lever", e);
-          }
 
         }
       }
@@ -3093,7 +3040,7 @@ public class ProjectInnovationAction extends BaseAction {
    */
   public void saveBundles(ProjectInnovation projectInnovation, Phase phase) {
     try {
-      // Leer selectedInnovation.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+      // Read selectedInnovation.id from the request parameters (Struts 6 does not instantiate nested objects)
       HttpServletRequest request = this.getRequest();
       Map<Integer, Long> selectedInnovationIds = new HashMap<>();
       
@@ -3143,7 +3090,7 @@ public class ProjectInnovationAction extends BaseAction {
             bundle.setId(null);
           }
 
-          // Rehidratar selectedInnovation desde BD usando ID del request (patrón Struts 6)
+          // Rehydrate selectedInnovation from the database using the request ID (Struts 6 pattern)
           ProjectInnovation selectedInnovationManaged = null;
           Long selectedId = selectedInnovationIds.get(index);
           
@@ -3498,10 +3445,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveCrpOutcomes(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveCrpOutcomes called - innovation.getCrpOutcomes(): " + (innovation.getCrpOutcomes() != null ? innovation.getCrpOutcomes().size() : "null"));
-    
-    // Leer crpOutcome.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read crpOutcome.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> crpOutcomeIds = new HashMap<>();
     
@@ -3535,7 +3479,7 @@ public class ProjectInnovationAction extends BaseAction {
           new ArrayList<>(projectInnovation.getProjectInnovationCrpOutcomes().stream()
             .filter(nu -> nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        // Crear set de IDs que se mantienen (desde request)
+        // Build the set of IDs that are kept (from the request)
         Set<Long> keepIds = new HashSet<>(crpOutcomeIds.values());
         
         for (ProjectInnovationCrpOutcome innovationOutcome : outcomePrev) {
@@ -3550,12 +3494,12 @@ public class ProjectInnovationAction extends BaseAction {
       logger.error("unable to delete crp outcome", e);
     }
 
-    // Save form Information - usar IDs del request
+    // Save form Information - use the request IDs
     if (!crpOutcomeIds.isEmpty()) {
       for (Map.Entry<Integer, Long> entry : crpOutcomeIds.entrySet()) {
         Long crpOutcomeId = entry.getValue();
         
-        // Verificar si ya existe este outcome para esta innovación y fase
+        // Check whether this outcome already exists for this innovation and phase
         boolean exists = false;
         if (projectInnovation.getProjectInnovationCrpOutcomes() != null) {
           exists = projectInnovation.getProjectInnovationCrpOutcomes().stream()
@@ -3673,11 +3617,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveGeographicScope(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveGeographicScope called - innovation.getGeographicScopes(): " + 
-      (innovation.getGeographicScopes() != null ? innovation.getGeographicScopes().size() : "null"));
-    
-    // Leer repIndGeographicScope.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read repIndGeographicScope.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> geographicScopeIds = new HashMap<>();
     
@@ -3718,7 +3658,7 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
 
-    // Save form Information - usar IDs del request
+    // Save form Information - use the request IDs
     if (!geographicScopeIds.isEmpty()) {
       for (Map.Entry<Integer, Long> entry : geographicScopeIds.entrySet()) {
         Long scopeId = entry.getValue();
@@ -4034,8 +3974,8 @@ public class ProjectInnovationAction extends BaseAction {
           }
         }
       } catch (final Exception e) {
-        this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function  ",
-            e.getMessage());
+        this.logger.error("unable to delete deliverable user partnership in saveProjectExpectedPartnership function",
+            e);
       }
     }
 
@@ -4233,7 +4173,7 @@ public class ProjectInnovationAction extends BaseAction {
       for (ProjectInnovationShared innovationProject : this.innovation.getSharedInnovations()) {
         if (innovationProject.getId() == null) {
           
-          // Validar que el proyecto no sea nulo antes de intentar guardar
+          // Make sure the project is not null before trying to save
           if (innovationProject.getProject() == null || innovationProject.getProject().getId() == null) {
             logger.warn("Skipping ProjectInnovationShared with null project for innovation: {}", 
                         projectInnovation.getId());
@@ -4246,7 +4186,7 @@ public class ProjectInnovationAction extends BaseAction {
 
           Project project = this.projectManager.getProjectById(innovationProject.getProject().getId());
           
-          // Validar que el proyecto exista en la base de datos
+          // Make sure the project exists in the database
           if (project == null) {
             logger.warn("Project with ID {} not found for innovation: {}", 
                         innovationProject.getProject().getId(), projectInnovation.getId());
@@ -4546,11 +4486,7 @@ public class ProjectInnovationAction extends BaseAction {
    * @param phase
    */
   public void saveRegions(ProjectInnovation projectInnovation, Phase phase) {
-    // Debug logging para Struts 6
-    logger.info("saveRegions called - innovation.getRegions(): " + 
-      (innovation.getRegions() != null ? innovation.getRegions().size() : "null"));
-    
-    // Leer locElement.id desde parámetros del request (Struts 6 no instancia objetos anidados)
+    // Read locElement.id from the request parameters (Struts 6 does not instantiate nested objects)
     HttpServletRequest request = this.getRequest();
     Map<Integer, Long> regionIds = new HashMap<>();
     
@@ -4584,7 +4520,7 @@ public class ProjectInnovationAction extends BaseAction {
             .stream()
             .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
 
-        // Crear set de IDs que se mantienen (desde request)
+        // Build the set of IDs that are kept (from the request)
         Set<Long> keepIds = new HashSet<>(regionIds.values());
         
         for (ProjectInnovationRegion innovationRegion : regionPrev) {
@@ -4598,12 +4534,12 @@ public class ProjectInnovationAction extends BaseAction {
       logger.error("error in regions delete process " + e);
     }
 
-    // Save form Information - usar IDs del request
+    // Save form Information - use the request IDs
     if (!regionIds.isEmpty()) {
       for (Map.Entry<Integer, Long> entry : regionIds.entrySet()) {
         Long regionId = entry.getValue();
         
-        // Verificar si ya existe esta región para esta innovación y fase
+        // Check whether this region already exists for this innovation and phase
         boolean exists = false;
         if (projectInnovation.getProjectInnovationRegions() != null) {
           exists = projectInnovation.getProjectInnovationRegions().stream()
@@ -4913,10 +4849,6 @@ public class ProjectInnovationAction extends BaseAction {
     this.geographicScopeList = geographicScopeList;
   }
 
-  public void setIdoList(HashMap<Long, String> idoList) {
-    this.idoList = idoList;
-  }
-
   public void setImpactAreaList(List<ImpactArea> impactAreaList) {
     this.impactAreaList = impactAreaList;
   }
@@ -5036,10 +4968,6 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setSdgList(List<Sdg> sdgList) {
     this.sdgList = sdgList;
-  }
-
-  public void setSrfIdos(List<SrfIdo> srfIdos) {
-    this.srfIdos = srfIdos;
   }
 
   public void setSrfSubIdoPrimary(long srfSubIdoPrimary) {

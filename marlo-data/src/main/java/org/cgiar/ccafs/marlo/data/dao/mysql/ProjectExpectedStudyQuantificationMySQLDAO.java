@@ -66,11 +66,7 @@ public class ProjectExpectedStudyQuantificationMySQLDAO
   public List<ProjectExpectedStudyQuantification> findAll() {
     String query = "from " + ProjectExpectedStudyQuantification.class.getName();
     List<ProjectExpectedStudyQuantification> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

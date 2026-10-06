@@ -110,8 +110,8 @@
                     </div>
                     <div class="indicators col-md-5">
                       <div class="indicator"><strong>5</strong> projects working on this key output </div>
-                      <div class="indicator"><strong>${deliverablesCompleted?size}</strong> deliverables completed in ${reportingYear}</div>
-                      <div class="indicator"><strong>${activities?size}</strong> envolved activities ${reportingYear}</div>
+                      <div class="indicator"><strong>${deliverablesCompleted?size}</strong> deliverables completed in ${(actualPhase.year)!0}</div>
+                      <div class="indicator"><strong>${activities?size}</strong> envolved activities ${(actualPhase.year)!0}</div>
                     </div>
                   </div>
                 </div>
@@ -138,8 +138,8 @@
                   [@customForm.textArea name="synthesis[${index}].synthesisAnual" i18nkey="synthesis.synthesisByCoAs.progressIndicator" className="progressIndicator limitWords-250" required=canEdit editable=editable /]
                 </div>
                 
-                [#-- Deliverables completed in reportingYear --]
-                <label>Deliverables completed in ${reportingYear}:</label> 
+                [#-- Deliverables completed in the year of the actual phase --]
+                <label>Deliverables completed in ${(actualPhase.year)!0}:</label> 
                 [#if (deliverablesCompleted)?has_content]
                 <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
                   <table class="projectContributions greenTableHead">
@@ -177,7 +177,7 @@
                 <br />
                 
                 [#-- Envolved activities --]
-                <label> Envolved activities in ${reportingYear}:</label> 
+                <label> Envolved activities in ${(actualPhase.year)!0}:</label> 
                 [#if (activities)?has_content]
                 <div class="fullPartBlock synthesisContributions-block viewMoreSyntesis-block">
                   <table class="projectContributions">
@@ -216,7 +216,7 @@
       <div id="lessons" class="borderBox">
         <div class="fullBlock">
           <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
-          <input type="hidden" name="projectLessons.year" value=${reportingYear} />
+          <input type="hidden" name="projectLessons.year" value="${(actualPhase.year)!0}" />
           <input type="hidden" name="projectLessons.componentName" value="${actionName}">
           [@customForm.textArea name="projectLessons.lessons" i18nkey="synthesis.synthesisByCoAs.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesis.synthesisByCoAs.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
         </div>

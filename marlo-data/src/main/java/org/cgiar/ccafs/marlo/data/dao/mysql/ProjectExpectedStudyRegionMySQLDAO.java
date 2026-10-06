@@ -64,11 +64,7 @@ public class ProjectExpectedStudyRegionMySQLDAO extends AbstractMarloDAO<Project
   public List<ProjectExpectedStudyRegion> findAll() {
     String query = "from " + ProjectExpectedStudyRegion.class.getName();
     List<ProjectExpectedStudyRegion> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

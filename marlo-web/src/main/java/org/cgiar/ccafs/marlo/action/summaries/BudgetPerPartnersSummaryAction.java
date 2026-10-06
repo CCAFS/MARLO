@@ -435,9 +435,11 @@ public class BudgetPerPartnersSummaryAction extends BaseSummariesAction implemen
       // Get PPA institutions with budgets
       List<Institution> institutionsList = new ArrayList<>();
 
+      // A budget is reported whether or not its institution is still active: Institution.isActive() used to be a
+      // constant true, and budgets already assigned to a deactivated institution must keep appearing (A2-2535).
       for (ProjectBudget projectBudget : project.getProjectBudgets().stream()
         .filter(pb -> pb.isActive() && pb.getYear() == this.getSelectedYear() && pb.getInstitution() != null
-          && pb.getInstitution().isActive() && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
+          && pb.getPhase() != null && pb.getPhase().equals(this.getSelectedPhase()))
         .collect(Collectors.toList())) {
         if (this.isPPA(projectBudget.getInstitution())) {
           institutionsList.add(projectBudget.getInstitution());

@@ -30,7 +30,7 @@
 
 ## 3. Task List
 
-### CHG-RETIRE-COVID19-T01 — Remove the screen, the report and their routes
+### [x] CHG-RETIRE-COVID19-T01 — Remove the screen, the report and their routes
 
 - **Size:** S · **Depends on:** none · **Module:** marlo-web
 - **Requirements:** FN-002, FN-003 (scenario *Summaries board*; scenario *Retired routes* — route removal only, the
@@ -46,9 +46,13 @@
 - **Constitutional checks:** keep each file's line endings — `menu-projects.ftl` and `boardSummaries.ftl` are LF
   (`grep -c $'\r'` → 0 for both at `12e063e323`); `struts-projects.xml` is checked the same way before editing.
 - **Tests:** none exist; see Verification.
-- **Done when:** clean recompile succeeds, and the sweep below returns 0.
+- **Done when:** clean recompile succeeds, and the sweep below returns no hit outside the i18n keys owned by T05.
 - **Verification:**
-  - `grep -rnI -E "ProjectImpactsAction|ImpactCovid19SummaryAction|projectImpacts\.(ftl|js)|ImpactCovid19\.prpt|impactCovid19Summary|'covid19'|\{crp\}/impacts\b" marlo-web/src/main` → 0 hits.
+  - `grep -rnI -E "ProjectImpactsAction|ImpactCovid19SummaryAction|projectImpacts\.(ftl|js)|ImpactCovid19\.prpt|impactCovid19Summary|'covid19'|\{crp\}/impacts\b" marlo-web/src/main` → only the
+    i18n keys `summaries.board.report.impactCovid19Summary[.description]` in `global.properties` and the
+    `custom/*.properties` files (owned by T05, DD-4); quote the unfiltered result, then the same command piped through
+    `grep -v '\.properties:'` → 0 hits. *(Amended 2026-10-01 at execute time; was "→ 0 hits", which DD-4 and the
+    T01 → T05 order made unreachable — see `execution.md` T01.)*
   - Clean recompile of marlo-data + marlo-web: BUILD SUCCESS.
 - **Falsifier:** restoring only the `covid19` line in `menu-projects.ftl` makes the sweep return 1 hit while the build
   stays green — the grep, not the compiler, is the gate for FTL and XML.
@@ -60,7 +64,7 @@
 - **Review:** `checklist` — whole-file deletions plus three small edits; the grep and the compile carry the evidence.
 - **Skills:** `marlo-verify`.
 
-### CHG-RETIRE-COVID19-T02 — Remove the section from web validation and completeness
+### [x] CHG-RETIRE-COVID19-T02 — Remove the section from web validation and completeness
 
 - **Size:** M · **Depends on:** T01 · **Module:** marlo-web
 - **Requirements:** FN-001 (scenarios *Project menu of an active unit* and *A stale section name reaches the
@@ -100,7 +104,7 @@
   shares.
 - **Skills:** `marlo-verify`, `error-handling-patterns`.
 
-### CHG-RETIRE-COVID19-T03 — Remove the persistence layer in marlo-data
+### [x] CHG-RETIRE-COVID19-T03 — Remove the persistence layer in marlo-data
 
 - **Size:** M · **Depends on:** T02 · **Module:** marlo-data
 - **Requirements:** FN-001, NF-002, DA-004 (tables kept, only unmapped)
@@ -140,7 +144,7 @@
   evidence.
 - **Skills:** `marlo-verify`.
 
-### CHG-RETIRE-COVID19-T04 — Migration that removes the configuration rows
+### [x] CHG-RETIRE-COVID19-T04 — Migration that removes the configuration rows
 
 - **Size:** S · **Depends on:** none (applies with the same deploy) · **Module:** marlo-web (migrations)
 - **Requirements:** DA-001, DA-002, DA-003, DA-004, MIG-001 (scenarios *First run of the migration* — including
@@ -162,9 +166,35 @@
   Expected: run 1 removes 3 keys × 3 types, their `custom_parameters`, 2 permissions, 276 grants (in `aiccradb2`),
   and the synthetic `impacts` status; decoys and both data tables unchanged; run 2 changes 0 rows.
 - **Falsifier:** replacing one `=` with `LIKE '<key>%'` deletes a decoy — the decoy count drops from 1 to 0 and the
-  task fails; swapping the `role_permissions` and `permissions` deletes makes run 1 fail on the FK.
+  task fails; swapping the `custom_parameters` and `parameters` deletes makes run 1 fail on the FK
+  (`custom_parameters_ibfk_1` is `ON DELETE RESTRICT`). *(Amended 2026-10-01 at execute time; was "swapping the
+  `role_permissions` and `permissions` deletes makes run 1 fail on the FK" — false on the real schema, whose two grant
+  FKs are `ON DELETE CASCADE`; see `execution.md` T04. The explicit child-first order stays, since an unseen
+  environment may lack the cascade.)*
 - **Red run:** execute the falsifier above once on the throwaway schema and record the red result before
   reverting it.
+- **Independent re-run (2026-10-01, review pass):** the migration was executed again from scratch, because the
+  earlier `[x]` was taken on trust rather than reproduced. Throwaway schema `marlo_mig_test`, built from `aiccradb2`
+  with the eight tables involved and the **five** foreign keys that bear on this migration recreated with their real
+  `DELETE_RULE` (`custom_parameters_ibfk_1` NO ACTION, the two grant FKs CASCADE, `section_statuses_impacts` and
+  `project_impact_categories` NO ACTION). Those five are the complete set: an `information_schema` sweep confirms
+  nothing else in the schema references `section_statuses`, `custom_parameters`, `role_permissions` or
+  `center_role_permissions`, so no incoming FK can break a delete unseen. Dropped afterwards; the five real
+  databases were only ever read.
+  - *Seeded decoys:* `crp_covid_required_other` and `crp_show_section_impact_covid19_extra` in `parameters`, the
+    permission `crp:{0}:project:{1}:impactsOther` with 5 `role_permissions` grants, and one synthetic
+    `section_name='impacts'` row pointing at a real `project_impacts` id (none occurs naturally).
+  - *Run 1:* 276 / 0 / 2 / 53 / 9 / 1 rows — role_permissions, center_role_permissions, permissions,
+    custom_parameters, parameters, section_statuses. No error.
+  - *After run 1:* all five targets at 0; **all 8 decoys intact**; `project_impacts` still 9 and
+    `project_impacts_categories` still 5; `section_statuses` 28487 → 28486, i.e. only the synthetic row; 0 orphaned
+    `custom_parameters` and 0 orphaned `role_permissions`.
+  - *Run 2:* **0 rows on all six statements** — idempotent.
+  - *Red run A (delete order):* running the `parameters` delete before `custom_parameters` fails with
+    `ERROR 1451 ... CONSTRAINT custom_parameters_ibfk_1`. The child-first order is load-bearing, not stylistic.
+  - *Red run B (exact match):* swapping `IN` for `LIKE 'crp_show_section_impact_covid19%' OR LIKE
+    'crp_covid_required%'` drops both parameter decoys (2 → 0), and `LIKE 'crp:{0}:project:{1}:impacts%'` drops the
+    permission decoy (1 → 0). Under the shipped `IN`, all three survive — so the decoys genuinely discriminate.
 - **Disqualifier:** a run on copies without the FKs does not test the delete order; a run where the "before" count
   of a target is 0 proves nothing about that target; a run against `aiccradb1`–`4` themselves is forbidden.
 - **Consumers:** `GlobalUnitCreationManagerImpl.createGlobalUnit()` → `cloneRolePermissionsByAcronym` reads the
@@ -172,7 +202,7 @@
 - **Review:** `full` — data deletion on every environment, including one no one here can see.
 - **Skills:** `marlo-migration`, `marlo-verify`.
 
-### CHG-RETIRE-COVID19-T05 — i18n, documentation and closing sweep
+### [~] CHG-RETIRE-COVID19-T05 — i18n, documentation and closing sweep
 
 - **Size:** S · **Depends on:** T01, T02, T03, T04 · **Module:** marlo-web, docs
 - **Requirements:** NF-001 (scenario *Closing sweep*, including `AND IT MUST be run and quoted`), FN-003 (the 404
@@ -199,6 +229,50 @@
      completeness marks equal the Pre-flight baseline (FN-004).
 - **Falsifier:** leaving one retired key in `aicrra.properties` makes the closing sweep return that file — the sweep
   is red on it; a 500 on either retired path fails step 4.
+- **Result (2026-10-01):** steps 1–3 done; step 4 **half done** — P-10 (the retired routes) verified on the local
+  stack, FN-004 (the menu and completeness marks) still needs a human at a logged-in session, so the task stays
+  `[~]` at the HITL pause.
+  - *Step 1:* 17 keys resolved, each with `grep -rnIF "<key>" marlo-web/src/main marlo-data/src/main | grep -v
+    "\.properties:"` → **0 hits for all 17**, so all 17 were deleted from `global.properties` and the five
+    `custom/*.properties` that held them (`aiccra3`, `aicrra`, `alliance`, `pabra`, `test`) — 20 lines per file
+    (17 keys, the orphaned `#Impacts projects` / `#Impacts clusters` section comment, and the two blank lines its
+    removal doubled up), **120 deletions and 0 insertions**, LF preserved (`grep -c $'\r'` → 0 for all six).
+    Two checks the key grep cannot make were run as well: no code concatenates these prefixes
+    (`grep -rnI -E '"(summaries\.impacts|projects\.impacts|breadCrumb\.menu|summaries\.board\.report)\.?"'` → 0),
+    and the 39 Pentaho `.prpt` files, which `grep -I` skips as binary, were unzipped and searched → 0 hits.
+    `summaries.impacts.managementLiasionAcronym` traces to the deleted report's column list
+    (`ImpactCovid19SummaryAction:207` at HEAD), not to a surviving view.
+  - *Step 2:* `docs/ux-ui/design.md` line 161 removed (1 deletion). Allowed on a spec branch under the
+    shared-file exemption: T05's approved **Files touched** names the file and the line.
+  - *Step 3:* the closing sweep returns **only this spec folder** (6 files) — cleaner than the anticipated result,
+    since the sweep's pattern never matched the out-of-scope `covidAnalysis` keys. Those were confirmed intact
+    anyway: `study.general.covidAnalysis` (10 occurrences), `annualReport2018.flagshipProgress.covidAnalysis` (5),
+    `has_covid_analysis` and `relevance_covid` in their `.hbm.xml` mappings.
+  - *i18n gate:* `i18n-check.sh` → "no changed i18n lines" (deletions only, no value was authored).
+  - *Step 4a — P-10, retired routes (run 2026-10-01 against the stack the user started, PID 59353, 11:47:52,
+    deployed from this working tree):*
+
+    | URL under `/marlo-web/projects/` | Status |
+    |---|---|
+    | `aiccra/impacts.do` | **404** |
+    | `aiccra/impactCovid19Summary.do` | **404** |
+    | `aiccra/description.do` (live control) | 200 (login page) |
+    | `aiccra/noSuchActionZZZ.do` (unknown control) | 404 |
+
+    The two controls are what make this evidence rather than a coincidence: a route Struts still knows reaches the
+    security interceptor and answers with the login page, while the retired ones are indistinguishable from an action
+    that never existed. Neither returned 500, which is what P-10 asks. The deployment was confirmed to be this tree:
+    no `ProjectImpacts*.class`, `ImpactCovid19SummaryAction.class`, `ProjectImpactsValidator.class`,
+    `projectImpacts.ftl`, `projectImpacts.js` or `ImpactCovid19.prpt` under `marlo-web/target`, and 0 retired keys in
+    the deployed `target/classes/global.properties` — so the step-1 deletions are in the running build.
+  - *Step 4b — FN-004, menu and completeness marks:* **not run.** It needs an authenticated session on an AICCRA
+    project, which no automated check here can stand in for. The menu entry itself cannot come back (the line is gone
+    from `menu-projects.ftl`); what a human is checking for is collateral damage to the *rest* of the menu and to the
+    completeness marks, which `ValidateProjectSectionAction` feeds.
+- **Carried out of T04 (same run):** the migration header claimed "four local copies"; there are **five**
+  (`aiccradb1`–`aiccradb4` plus `aiccradb_actsave`), all re-measured 2026-10-01. The header was corrected, and the
+  measurement that `section_statuses.project_impact_id` is non-null on **0 rows in all five** was added — it is the
+  direct evidence that unmapping the column (T03) loses nothing. Comment-only; no statement changed.
 - **Red run:** n/a — the closing sweep is itself the negative check.
 - **Disqualifier:** if the stack cannot be started, step 4 is reported as **not run**, never as passed; the spec then
   stays open at the HITL pause.
@@ -238,10 +312,13 @@ T04 is independent of T01–T03 and can run in any order before T05.
 
 - **Code:** revert the task commits; every deleted file comes back from git.
 - **Data:** the deleted rows are configuration only — three `parameters` × three types, their `custom_parameters`,
-  two `permissions` and their grants. Restoring them means re-running the 2020 migrations' inserts
+  two `permissions` and their grants. **Primary:** re-insert them from the pre-deploy backup queries listed in the
+  migration's header (exact copies). **Fallback, when no backup was taken:** re-run the 2020 migrations' inserts
   (`V2_6_0_20200504_0849`, `V2_6_0_20200509_1015`, `V2_6_0_20200518_1348`, `V2_6_0_20201009_0800`), with the
-  descriptions later rewritten by `V2_6_0_20260925_1543` in a new migration. `project_impacts` and
-  `project_impacts_categories` are never touched.
+  descriptions later rewritten by `V2_6_0_20260925_1543`, in a new migration — less faithful, since the seeds copy
+  values and grants as they stood in 2020. `project_impacts` and `project_impacts_categories` are never touched.
+  *(Amended 2026-10-01 at execute time; was "Restoring them means re-running the 2020 migrations' inserts (…)" as the
+  only route — both T04 lens Reviewers advised making the backup the primary route; see `execution.md` T04.)*
 - **Specificity:** not applicable after rollback of the data above.
 
 ## 8. Definition of Done

@@ -61,12 +61,7 @@ public class SrfIdoMySQLDAO extends AbstractMarloDAO<SrfIdo, Long> implements Sr
   @Override
   public List<SrfIdo> findAll() {
     String query = "from " + SrfIdo.class.getName() + " where is_active=1";
-    List<SrfIdo> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override

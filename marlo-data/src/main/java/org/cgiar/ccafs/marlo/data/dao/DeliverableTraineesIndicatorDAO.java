@@ -50,7 +50,7 @@ public interface DeliverableTraineesIndicatorDAO {
   /**
    * This method gets a list of deliverableTraineesIndicator that are active
    * 
-   * @return a list from DeliverableTraineesIndicator null if no exist records
+   * @return a list of DeliverableTraineesIndicator, or an empty list if there are no records
    */
   public List<DeliverableTraineesIndicator> findAll();
 
