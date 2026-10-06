@@ -262,9 +262,11 @@ public class SendEmails {
   private static void notifyNewUserCreated(User user) {
 
     if (user != null && user.getId() != null) {
-      user = userDAO.getUser(user.getId());
-
-      if (!user.isActive()) {
+      Long userId = user.getId();
+      user = userDAO.getUser(userId);
+      if (user == null) {
+        LOG.warn("The user {} does not exist, so no account creation email is sent", userId);
+      } else if (!user.isActive()) {
         /**
          * So inactive users are being set to active once they are notified????
          */
@@ -289,10 +291,24 @@ public class SendEmails {
 
         // get CRPAdmin contacts
         String crpAdmins = "";
-        long adminRol = Long.parseLong((String) action.getSession().get(APConstants.CRP_ADMIN_ROLE));
-        Role roleAdmin = roleDAO.find(adminRol);
-        List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
-          .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+        // The CRP admin role is a custom parameter of the Global Unit, so a session without one does not hold it.
+        Object adminRoleParam =
+          action.getSession() == null ? null : action.getSession().get(APConstants.CRP_ADMIN_ROLE);
+        Role roleAdmin = null;
+        if (adminRoleParam != null) {
+          try {
+            roleAdmin = roleDAO.find(Long.parseLong(adminRoleParam.toString()));
+          } catch (NumberFormatException e) {
+            LOG.error("The CRP admin role parameter {} is not a role id", adminRoleParam, e);
+          }
+        }
+        List<UserRole> userRoles = new ArrayList<>();
+        if (roleAdmin == null) {
+          LOG.error("The CRP admin role {} was not found, so the email lists no CRP admins", adminRoleParam);
+        } else {
+          userRoles = roleAdmin.getUserRoles().stream()
+            .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+        }
         for (UserRole userRole : userRoles) {
           if (crpAdmins.isEmpty()) {
             crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
@@ -310,6 +326,9 @@ public class SendEmails {
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
         mapUser.put("password", password);
+        if (action.getUsersToActive() == null) {
+          action.setUsersToActive(new ArrayList<>());
+        }
         action.getUsersToActive().add(mapUser);
         usersEmail.add(user.getEmail());
         users.add(user);
