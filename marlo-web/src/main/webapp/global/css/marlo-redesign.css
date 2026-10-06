@@ -1471,6 +1471,40 @@ header {
   font-weight: 600;
 }
 
+/* Three link columns and two 32px gaps do not fit a phone: the support address
+   cannot wrap, so the Contact column claimed its full width and pushed Others
+   past the viewport. Below the tablet breakpoint everything stacks instead. */
+@media (max-width: 767px) {
+  .footer > .container {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'links'
+      'copy'
+      'blog';
+  }
+
+  .footer .row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .footer .infoLinks a {
+    overflow-wrap: anywhere;
+  }
+
+  /* Stacked, the rule above the copyright already separates the block; the
+     blog button sits right under it rather than behind a second rule. global.css
+     still positions it absolutely, which would lay it over the copyright. */
+  .footer .newsButton {
+    position: static;
+    justify-self: start;
+    text-align: left;
+    margin-top: 12px;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
 /************* 6. FLOATING HELP BUTTON ***************/
 /* The guide trigger becomes the circular action in the bottom-right corner.
    The support chat opposite it is a Tawk.to iframe and is styled by Tawk. */

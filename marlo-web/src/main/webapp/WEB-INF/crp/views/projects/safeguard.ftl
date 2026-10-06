@@ -5,14 +5,14 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/safeguards.js?20230620",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
-  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlCdn}/global/js/impactGraphic.js?20261006",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929"
   ]
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/safeguard.css?20220512a",
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20202209",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20261006",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
 /]

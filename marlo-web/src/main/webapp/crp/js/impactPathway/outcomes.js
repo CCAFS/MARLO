@@ -15,8 +15,10 @@ function init() {
   $('.outcomes-list select').not('.opi-plain, .opi-select').select2();
 
   /* Numeric Inputs */
-  $('input.targetValue , input.targetYear').not('.opi-cell__value').numericInput();
-  opiBindCellNumeric($('input.opi-cell__value'));
+  // Target Value starts empty, not at 0: a 0 nobody typed reads as a real target, keeps the
+  // field off the missing-fields count, and would be stored on the next save.
+  opiBindNumeric($('input.targetValue , input.targetYear').not('.opi-cell__value'));
+  opiBindNumeric($('input.opi-cell__value'));
 
   // Baseline value is optional and nullable, so it stays out of numericInput():
   // that helper rewrites an empty field to 0, which would store a real 0 for an
@@ -53,10 +55,16 @@ function attachEvents() {
   $('select.targetUnit').on('change', function() {
     var valueId = $(this).val();
     var $targetValue = $(this).parents('.target-block').find('.targetValue-block');
+    // Target Value only counts as missing while it is shown, so the card is recounted
+    // once the field has finished sliding in or out, not halfway through.
+    var $card = $(this).closest('.opi-card');
+    var recount = function() {
+      if ($card.exists()) { opiRefreshCardStatus($card); }
+    };
     if(valueId != "-1") {
-      $targetValue.show('slow');
+      $targetValue.show('slow', recount);
     } else {
-      $targetValue.hide('slow');
+      $targetValue.hide('slow', recount);
     }
   });
   //click event expand 
@@ -1424,21 +1432,21 @@ function opiNewCell($card, key, year) {
   $cell.find('.opi-cell__unit').val($dis.find('.opi-dis__unitSelect').val() || '-1');
   $cell.find('.opi-cell__status').val('1'); // New
   if ($.fn.numericInput) {
-    opiBindCellNumeric($cell.find('input.opi-cell__value'));
+    opiBindNumeric($cell.find('input.opi-cell__value'));
   }
   return $cell;
 }
 
 /**
- * Binds MARLO's numeric keydown filter to period-target cells without the side
- * effect that comes with it: numericInput() (global/js/utils.js) rewrites an
- * empty field to 0, exactly like it would for Baseline value above. On the
- * matrix that is not cosmetic -- an unfilled target would read as a real 0, so
- * the amber "Missing value" flag and the "required" hint could never fire, and
- * the next save would store targets nobody set.
- * @param {jQuery} $inputs the .opi-cell__value fields to bind
+ * Binds MARLO's numeric keydown filter without the side effect that comes with
+ * it: numericInput() (global/js/utils.js) rewrites an empty field to 0, exactly
+ * like it would for Baseline value above. On the indicator's Target Value and on
+ * the matrix cells that is not cosmetic -- an unfilled target would read as a
+ * real 0, so the missing-fields count and the amber "Missing value" flag could
+ * never fire, and the next save would store targets nobody set.
+ * @param {jQuery} $inputs the numeric fields to bind
  */
-function opiBindCellNumeric($inputs) {
+function opiBindNumeric($inputs) {
   var $empty = $inputs.filter(function() { return $.trim($(this).val() || '') === ''; });
   $inputs.numericInput();
   $empty.val('');
@@ -2000,9 +2008,7 @@ function opiMissingFields($card) {
   $card.find('.opi-card__body .requiredTag').each(function() {
     var $tag = $(this);
     if (!$tag.is(':visible')) { return; }
-    var $group = $tag.closest('.form-group, .opi-grid5 > div, .opi-fieldRow__acronym, .opi-fieldRow__statement');
-    if (!$group.exists()) { $group = $tag.parent(); }
-    var $field = $group.find('input:not([type="hidden"]), textarea, select').first();
+    var $field = opiRequiredField($tag);
     if (!$field.exists()) { return; }
     var value = $.trim($field.val() || '');
     // -1 means "nothing chosen" for every select here except the target unit. There, -1 is
@@ -2041,6 +2047,37 @@ function opiMissingFields($card) {
     $missing = $missing.add($targets);
   }
   return $missing;
+}
+
+/**
+ * The control a required marker stands for: the first field in the marker's own group.
+ * @param {jQuery} $tag a .requiredTag inside an indicator card
+ * @return {jQuery} the control, empty when the group holds none
+ */
+function opiRequiredField($tag) {
+  var $group = $tag.closest('.form-group, .opi-grid5 > div, .opi-fieldRow__acronym, .opi-fieldRow__statement');
+  if (!$group.exists()) { $group = $tag.parent(); }
+  return $group.find('input:not([type="hidden"]), textarea, select').first();
+}
+
+/**
+ * Clears the asterisk of every required field that is already answered, and brings it back
+ * as soon as the field is emptied again, so a complete indicator stops flagging fields as
+ * pending. The marker is hidden with visibility, not display: :visible still matches it, and
+ * opiMissingFields() keeps counting the field the moment its value goes.
+ *
+ * A marker that is not on screen -- a collapsed card, a Target Value with no unit -- is left as
+ * it is: opiMissingFields() skipped it, so its absence from $missing says nothing about it.
+ * @param {jQuery} $card the .opi-card element
+ * @param {jQuery} $missing the controls opiMissingFields() returned for the card
+ */
+function opiRefreshRequiredMarkers($card, $missing) {
+  $card.find('.opi-card__body .requiredTag').each(function() {
+    var $tag = $(this);
+    if (!$tag.is(':visible')) { return; }
+    var $field = opiRequiredField($tag);
+    $tag.toggleClass('is-met', $field.exists() && $missing.index($field) === -1);
+  });
 }
 
 /**
@@ -2083,7 +2120,9 @@ function opiRefreshCardStatus($card) {
   if (!$card || !$card.exists() || $card.attr('id') === 'outcome-template') { return; }
   var $pill = $card.find('[data-opi-status]').first();
   if (!$pill.exists()) { return; }
-  var missing = opiCountMissing($card);
+  var $missing = opiMissingFields($card);
+  opiRefreshRequiredMarkers($card, $missing);
+  var missing = $missing.length;
   if (missing === 0) {
     $pill.removeClass('is-missing').text(opiLabel('statusComplete'));
   } else {
