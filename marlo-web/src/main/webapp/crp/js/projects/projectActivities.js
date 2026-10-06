@@ -120,10 +120,12 @@ function getAndSaveLocallyTitle() {
 // change title
 function changeTitle() {
   var $blockTitle = $(this).parents(".projectActivity").find(".blockTitle");
-  $blockTitle.html($(this).val());
-  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
-    $blockTitle.html("New Activity");
+  // The catalog select holds the entry id as its value, so show the text of the chosen option instead
+  var title = $(this).is("select") ? ($(this).val() == "-1" ? "" : $(this).find("option:selected").text()) : $(this).val();
+  if($.trim(title || "") == "") {
+    title = "New Activity";
   }
+  $blockTitle.text(title);
 }
 
 // Add a new activity element
