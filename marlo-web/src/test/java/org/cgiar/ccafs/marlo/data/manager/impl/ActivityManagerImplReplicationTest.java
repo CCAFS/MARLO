@@ -56,6 +56,7 @@ public class ActivityManagerImplReplicationTest {
 
   private final List<Object> savedActivities = new ArrayList<>();
   private final List<Long> deletedLinks = new ArrayList<>();
+  private final List<Long> daoDeletedLinks = new ArrayList<>();
   private final List<Long> savedLinkDeliverables = new ArrayList<>();
   private List<Activity> copiesInNextPhase = new ArrayList<>();
 
@@ -156,7 +157,12 @@ public class ActivityManagerImplReplicationTest {
       return null;
     });
     manager = new ActivityManagerImpl(activityDAO, phaseDAO, projectDAO,
-      this.stub(DeliverableActivityDAO.class, (name, args) -> null),
+      this.stub(DeliverableActivityDAO.class, (name, args) -> {
+        if ("deleteDeliverableActivity".equals(name)) {
+          daoDeletedLinks.add((Long) args[0]);
+        }
+        return null;
+      }),
       this.stub(ProjectPartnerPersonDAO.class, (name, args) -> null), linkManager);
   }
 
@@ -215,7 +221,8 @@ public class ActivityManagerImplReplicationTest {
     manager.saveActvityPhase(nextPhase, PROJECT_ID,
       this.sourceActivity(this.requestLink(24406L), this.requestLink(24407L)));
 
-    assertEquals("the newer duplicate of each deliverable", Arrays.asList(5L, 8L), deletedLinks);
+    assertEquals("the newer duplicate of each deliverable", Arrays.asList(5L, 8L), daoDeletedLinks);
+    assertTrue("duplicates skip the phase walk of the manager: " + deletedLinks, deletedLinks.isEmpty());
     assertTrue("no link is created: " + savedLinkDeliverables, savedLinkDeliverables.isEmpty());
   }
 

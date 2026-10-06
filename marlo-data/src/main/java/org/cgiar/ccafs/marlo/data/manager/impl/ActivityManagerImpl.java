@@ -345,7 +345,9 @@ public class ActivityManagerImpl implements ActivityManager {
           && !deliverableIdsInPhase.add(deliverableId)) {
           // A repeated link to the same deliverable in this phase adds nothing and inflated the form past the
           // server's request parameter limit. Links of other phases are left alone: a past phase is never written.
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          // It is deactivated through the DAO: the manager would walk every later phase for each one, and the link
+          // that is kept still carries the deliverable there.
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 
