@@ -65,11 +65,7 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
   public List<ProjectFocus> findAll() {
     String query = "from " + ProjectFocus.class.getName() + " where is_active=1";
     List<ProjectFocus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

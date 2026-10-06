@@ -62,11 +62,7 @@ public class RepIndInnovationTypeMySQLDAO extends AbstractMarloDAO<RepIndInnovat
   public List<RepIndInnovationType> findAll() {
     String query = "from " + RepIndInnovationType.class.getName();
     List<RepIndInnovationType> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

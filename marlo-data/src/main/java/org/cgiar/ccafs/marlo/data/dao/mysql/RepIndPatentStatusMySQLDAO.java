@@ -62,11 +62,7 @@ public class RepIndPatentStatusMySQLDAO extends AbstractMarloDAO<RepIndPatentSta
   public List<RepIndPatentStatus> findAll() {
     String query = "from " + RepIndPatentStatus.class.getName();
     List<RepIndPatentStatus> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

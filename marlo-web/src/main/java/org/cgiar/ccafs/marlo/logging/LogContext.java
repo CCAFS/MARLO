@@ -294,6 +294,19 @@ public final class LogContext implements ServletContextListener, ServletRequestL
   }
 
   /**
+   * Removes the HTTP status from the log context, and with it the user name it published, for a request whose status
+   * is no longer known: one that set a status for the page it was about to render and then failed while rendering it.
+   */
+  public static void removeStatusCode() {
+    try {
+      MDC.remove(STATUS_CODE);
+      MDC.remove(USER_NAME);
+    } catch (RuntimeException e) {
+      LOG.debug("Could not remove the status code from the log context", e);
+    }
+  }
+
+  /**
    * Instantiated only by the servlet container, as the request listener. Every other member is static.
    */
   public LogContext() {

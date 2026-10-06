@@ -60,21 +60,14 @@ public class DeliverableTypeMySQLDAO extends AbstractMarloDAO<DeliverableType, L
   public List<DeliverableType> findAll() {
     String query = "from " + DeliverableType.class.getName();
     List<DeliverableType> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override
   public List<DeliverableType> getSubDeliverableType(Long deliverableId) {
     String query = "from " + DeliverableType.class.getName() + " where parent_id= " + deliverableId;
     List<DeliverableType> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+    return list;
   }
 
   @Override
