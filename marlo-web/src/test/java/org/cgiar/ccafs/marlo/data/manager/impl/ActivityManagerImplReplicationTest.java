@@ -43,7 +43,8 @@ import static org.junit.Assert.assertTrue;
 /**
  * Forward replication of a cluster activity into a later phase (A2-2614). The deliverable links were matched by
  * entity although the ones bound from the request carry no id, so every save deactivated every link and created it
- * again. These tests pin the reconciliation by deliverable: only the links that really changed are touched. The
+ * again. These tests pin the reconciliation by deliverable: only the links that really changed are touched, repeated
+ * links to one deliverable in the saved phase are reduced to the oldest, and links of other phases are left alone. The
  * lookup is stubbed here; the composed-id lookup that never matches in the DAO is tracked in
  * docs/specs/bugfix/activities-save-performance, because fixing it changes what a Planning save writes into an
  * open Reporting phase.
@@ -61,12 +62,24 @@ public class ActivityManagerImplReplicationTest {
   private ActivityManagerImpl manager;
   private Phase nextPhase;
 
+  /** A stored link in the phase being saved. */
   private DeliverableActivity link(long id, long deliverableId, boolean active) {
+    return this.link(id, deliverableId, active, nextPhase);
+  }
+
+  private DeliverableActivity link(long id, long deliverableId, boolean active, Phase phase) {
     DeliverableActivity link = new DeliverableActivity();
     link.setId(id);
     link.setDeliverable(this.deliverable(deliverableId));
     link.setActive(active);
+    link.setPhase(phase);
     return link;
+  }
+
+  private Phase phase(long id) {
+    Phase phase = new Phase();
+    phase.setId(id);
+    return phase;
   }
 
   private Deliverable deliverable(long id) {
@@ -191,6 +204,40 @@ public class ActivityManagerImplReplicationTest {
     manager.saveActvityPhase(nextPhase, PROJECT_ID,
       this.sourceActivity(this.requestLink(24406L), this.requestLink(24406L)));
 
+    assertEquals(Collections.singletonList(24406L), savedLinkDeliverables);
+  }
+
+  @Test
+  public void repeatedLinksInThisPhaseKeepOnlyTheOldest() {
+    copiesInNextPhase = new ArrayList<>(Collections.singletonList(this.existingCopy(this.link(5L, 24406L, true),
+      this.link(3L, 24406L, true), this.link(8L, 24407L, true), this.link(7L, 24407L, true))));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID,
+      this.sourceActivity(this.requestLink(24406L), this.requestLink(24407L)));
+
+    assertEquals("the newer duplicate of each deliverable", Arrays.asList(5L, 8L), deletedLinks);
+    assertTrue("no link is created: " + savedLinkDeliverables, savedLinkDeliverables.isEmpty());
+  }
+
+  @Test
+  public void aListedLinkOfAnotherPhaseIsNotTreatedAsADuplicate() {
+    copiesInNextPhase = new ArrayList<>(Collections.singletonList(
+      this.existingCopy(this.link(1L, 24406L, true, this.phase(431L)), this.link(2L, 24406L, true))));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceActivity(this.requestLink(24406L)));
+
+    assertTrue("a past phase is never written: " + deletedLinks, deletedLinks.isEmpty());
+    assertTrue(savedLinkDeliverables.isEmpty());
+  }
+
+  @Test
+  public void aLinkOnlyInAnotherPhaseStillGetsOneInThisPhase() {
+    copiesInNextPhase = new ArrayList<>(
+      Collections.singletonList(this.existingCopy(this.link(1L, 24406L, true, this.phase(431L)))));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceActivity(this.requestLink(24406L)));
+
+    assertTrue("the other phase's link is kept: " + deletedLinks, deletedLinks.isEmpty());
     assertEquals(Collections.singletonList(24406L), savedLinkDeliverables);
   }
 

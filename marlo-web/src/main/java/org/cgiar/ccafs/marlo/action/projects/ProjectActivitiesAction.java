@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -400,7 +401,7 @@ public class ProjectActivitiesAction extends BaseAction {
                 deliverableActivities.add(deliverableActivity);
               }
             }
-            activity.setDeliverables(deliverableActivities);
+            activity.setDeliverables(this.oneLinkPerDeliverable(deliverableActivities));
           }
         }
 
@@ -419,13 +420,13 @@ public class ProjectActivitiesAction extends BaseAction {
         
         if (project.getProjectActivities() != null && !project.getProjectActivities().isEmpty()) {
           for (Activity openActivity : project.getProjectActivities()) {
-            openActivity
-              .setDeliverables(new ArrayList<DeliverableActivity>(openActivity.getDeliverableActivities().stream()
-                .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
-                  && da.getDeliverable().isActive()
-                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
-                  && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
-                .collect(Collectors.toList())));
+            openActivity.setDeliverables(this.oneLinkPerDeliverable(openActivity.getDeliverableActivities().stream()
+              .filter(da -> da.isActive() && da.getPhase() != null && da.getPhase().equals(this.getActualPhase())
+                && da.getDeliverable().isActive()
+                && da.getDeliverable().getDeliverableInfo(this.getActualPhase()) != null
+                && da.getDeliverable().getDeliverableInfo(this.getActualPhase()).isActive())
+              .sorted(Comparator.comparing(DeliverableActivity::getId, Comparator.nullsLast(Comparator.naturalOrder())))
+              .collect(Collectors.toList())));
           }
         }
       }
@@ -915,6 +916,25 @@ public class ProjectActivitiesAction extends BaseAction {
       activityEntity.setActivityTitle(null);
       activityEntity.setTitle("New Activity");
     }
+  }
+
+  /**
+   * Keeps the first link of each deliverable. Repeated active links to the same deliverable add three form fields
+   * each and nothing else; on a cluster that had hundreds of them the form passed the server's request parameter
+   * limit, so projectID, phaseID and every later field were dropped and the save did nothing. The save then
+   * deactivates the repeated links (ActivityManagerImpl.saveCurrentPhaseDeliverables).
+   *
+   * @param links the links of one activity, oldest first
+   * @return one link per deliverable, in the same order
+   */
+  private List<DeliverableActivity> oneLinkPerDeliverable(List<DeliverableActivity> links) {
+    Map<Long, DeliverableActivity> byDeliverable = new LinkedHashMap<>();
+    for (DeliverableActivity link : links) {
+      if (link != null && link.getDeliverable() != null && link.getDeliverable().getId() != null) {
+        byDeliverable.putIfAbsent(link.getDeliverable().getId(), link);
+      }
+    }
+    return new ArrayList<>(byDeliverable.values());
   }
 
   private ProjectPartnerPerson getValidPartnerPerson(Activity activity) {
