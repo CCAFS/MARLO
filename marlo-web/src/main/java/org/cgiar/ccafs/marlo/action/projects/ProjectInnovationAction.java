@@ -2795,22 +2795,20 @@ public class ProjectInnovationAction extends BaseAction {
       // Save form Information
       if (innovation.getActors() != null && !innovation.getActors().isEmpty()) {
         for (ProjectInnovationActor innovationActor : innovation.getActors()) {
+          if (innovationActor == null) {
+            continue;
+          }
           if (innovationActor.getId() != null && innovationActor.getId() == -1) {
             innovationActor.setId(null);
           }
           boolean saveActorProcess = true;
-          System.out.println("IMPR innovationActor: " + innovationActor.getActor().getId());
-          if (innovationActor.getActor() != null && innovationActor.getActor().getId() != null
-              && innovationActor.getActor().getId() == -1) {
+          // An empty row (no actor, or the "-1" placeholder) is skipped instead of saved without an actor
+          if (innovationActor.getActor() == null || innovationActor.getActor().getId() == null
+              || innovationActor.getActor().getId() == -1) {
             innovationActor.setActor(null);
             saveActorProcess = false;
-            System.out.println("IMPR innovationActor: " + innovationActor.getActor().getId());
           }
 
-          System.out.println("IMPR saveActorProcess: " + saveActorProcess);
-          System.out.println("IMPR innovationActor ID: " + innovationActor.getId());
-          System.out.println("IMPR innovationActor Actor ID: " + innovationActor.getActor().getId());
-          System.out.println("IMPR innovationActor Actor Description: " + innovationActor.getActor().getDescription());
           ProjectInnovationActor innovationActorSave = new ProjectInnovationActor();
           if (saveActorProcess) {
             /*
@@ -2908,12 +2906,6 @@ public class ProjectInnovationAction extends BaseAction {
           } catch (Exception e) {
             logger.error("unable to get old actors", e);
           }
-          boolean isSelectedId3 = false;
-          if (innovationAllianceLever.getAllianceLever() != null
-              && innovationAllianceLever.getAllianceLever().getId() != null
-              && innovationAllianceLever.getAllianceLever().getId() == 3) {
-            isSelectedId3 = true;
-          }
           innovationAllianceLeverSave.setAllianceLever(innovationAllianceLever.getAllianceLever());
           innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
           innovationAllianceLeverSave.setPhase(phase);
@@ -2921,20 +2913,6 @@ public class ProjectInnovationAction extends BaseAction {
           projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
           // This is to add innovationAllianceLeverSave to generate correct auditlog.
           innovation.getProjectInnovationAllianceLevers().add(innovationAllianceLeverSave);
-
-          // Additional save
-          try {
-            if (isSelectedId3) {
-              innovationAllianceLeverSave = new ProjectInnovationAllianceLevers();
-              AllianceLever allianceLeverTemp = allianceLeverManager.getAllianceLeverById(3);
-              innovationAllianceLeverSave.setAllianceLever(allianceLeverTemp);
-              innovationAllianceLeverSave.setProjectInnovation(projectInnovation);
-              innovationAllianceLeverSave.setPhase(phase);
-              projectInnovationAllianceLeversManager.saveProjectInnovationAllianceLevers(innovationAllianceLeverSave);
-            }
-          } catch (Exception e) {
-            logger.error("error saving other alliance lever", e);
-          }
 
         }
       }
