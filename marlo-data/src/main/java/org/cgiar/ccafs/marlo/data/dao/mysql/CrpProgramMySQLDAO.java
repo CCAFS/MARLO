@@ -62,11 +62,7 @@ public class CrpProgramMySQLDAO extends AbstractMarloDAO<CrpProgram, Long> imple
 
     String query = "from " + CrpProgram.class.getName() + " where is_active=1";
     List<CrpProgram> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
     /*
      * Gson gson = new
      * GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();

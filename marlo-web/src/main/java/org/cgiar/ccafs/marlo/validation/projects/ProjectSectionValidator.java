@@ -33,7 +33,6 @@ import org.cgiar.ccafs.marlo.data.manager.LocElementTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyRegionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectImpactsManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCountryManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectLocationElementTypeManager;
@@ -93,7 +92,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectFocus;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlightType;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighligthsTypeEnum;
-import org.cgiar.ccafs.marlo.data.model.ProjectImpacts;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCountry;
@@ -225,13 +223,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   private final ProjectInnovationRegionManager projectInnovationRegionManager;
 
-  private final ProjectImpactsManager projectImpactsManager;
-
   private final SafeguardsManager safeguardsManager;
   private final SDGContributionManager sDGContributionManager;
   private final AllianceLeverOutcomeManager allianceLeverOutcomeManager;
 
-  private final ProjectImpactsValidator projectImpactsValidator;
   private final Logger logger = LoggerFactory.getLogger(ProjectSectionValidator.class);
   private ExpectedStudyProjectManager expectedStudyProjectManager;
 
@@ -261,8 +256,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     ProjectPolicyValidator projectPolicyValidator, ProjectPolicyManager projectPolicyManager,
     ProjectPolicyCountryManager projectPolicyCountryManager, ProjectPolicyRegionManager projectPolicyRegionManager,
     ProjectExpectedStudyRegionManager projectExpectedStudyRegionManager,
-    ProjectInnovationRegionManager projectInnovationRegionManager, ProjectImpactsManager projectImpactsManager,
-    ProjectImpactsValidator projectImpactsValidator, SafeguardValidator safeguardValidator,
+    ProjectInnovationRegionManager projectInnovationRegionManager, SafeguardValidator safeguardValidator,
     FeedbackStatusValidator feedbackStatusValidator, ExpectedStudyProjectManager expectedStudyProjectManager,
     SDGContributionManager sDGContributionManager, AllianceLeverOutcomeManager allianceLeverOutcomeManager) {
     this.projectManager = projectManager;
@@ -306,8 +300,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     this.projectPolicyRegionManager = projectPolicyRegionManager;
     this.projectExpectedStudyRegionManager = projectExpectedStudyRegionManager;
     this.projectInnovationRegionManager = projectInnovationRegionManager;
-    this.projectImpactsManager = projectImpactsManager;
-    this.projectImpactsValidator = projectImpactsValidator;
     this.safeguardValidator = safeguardValidator;
     this.safeguardsManager = safeguardsManager;
     this.feedbackStatusValidator = feedbackStatusValidator;
@@ -1828,22 +1820,6 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     }
 
 
-  }
-
-  public void validateProjectImpactCovid(BaseAction action, Long projectID) {
-    // Getting the project information.
-    // Project project = projectManager.getProjectById(projectID);
-
-    List<ProjectImpacts> projectImpacts = projectImpactsManager.getProjectImpactsByProjectId(projectID) != null
-      ? projectImpactsManager.getProjectImpactsByProjectId(projectID).stream()
-        .filter(pl -> pl.isActive() && pl.getYear() == action.getActualPhase().getYear()).collect(Collectors.toList())
-      : Collections.emptyList();
-
-    // project.setLeverages(projectImpacts);
-    for (ProjectImpacts impact : projectImpacts) {
-      // in theory it should be only one
-      projectImpactsValidator.validate(action, impact, false);
-    }
   }
 
   public void validateProjectLocations(BaseAction action, Long projectID) {

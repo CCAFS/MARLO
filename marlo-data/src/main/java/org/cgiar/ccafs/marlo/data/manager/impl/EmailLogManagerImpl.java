@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.data.manager.impl;
 import org.cgiar.ccafs.marlo.data.dao.EmailLogDAO;
 import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
+import org.cgiar.ccafs.marlo.data.model.EmailLogSearch;
 
 import java.util.List;
 
@@ -41,6 +42,31 @@ public class EmailLogManagerImpl implements EmailLogManager {
     this.emailLogDAO = emailLogDAO;
 
 
+  }
+
+  @Override
+  public long count(EmailLogSearch search) {
+    return emailLogDAO.count(search);
+  }
+
+  @Override
+  public List<Long> findGlobalUnitIds() {
+    return emailLogDAO.findGlobalUnitIds();
+  }
+
+  @Override
+  public List<String> findSourceActions() {
+    return emailLogDAO.findSourceActions();
+  }
+
+  @Override
+  public List<EmailLog> findSummaries(EmailLogSearch search, int first, int max) {
+    return emailLogDAO.findSummaries(search, first, max);
+  }
+
+  @Override
+  public List<EmailLog> search(EmailLogSearch search) {
+    return emailLogDAO.search(search);
   }
 
   @Override
@@ -69,7 +95,13 @@ public class EmailLogManagerImpl implements EmailLogManager {
     return emailLogDAO.find(emailLogID);
   }
 
+  /**
+   * Transactional so an update of an existing row is flushed: the failed-email retry marks the rows it resends,
+   * and without a transaction the request session stays in FlushMode.MANUAL, so the row kept succes_email = 0 and
+   * the next retry sent the same email again.
+   */
   @Override
+  @Transactional
   public EmailLog saveEmailLog(EmailLog emailLog) {
 
     return emailLogDAO.save(emailLog);

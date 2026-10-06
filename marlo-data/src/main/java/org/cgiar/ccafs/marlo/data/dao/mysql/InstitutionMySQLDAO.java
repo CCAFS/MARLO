@@ -62,13 +62,24 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   }
 
   @Override
+  public Institution findActive(long id) {
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT i.id AS id FROM institutions i WHERE i.id = ");
+    query.append(id);
+    query.append(" AND i.is_active = 1");
+
+    List<Map<String, Object>> result = super.findCustomQuery(query.toString());
+    if (result == null || result.isEmpty()) {
+      return null;
+    }
+    return this.find(id);
+  }
+
+  @Override
   public List<Institution> findAll() {
     String query = "from " + Institution.class.getName() + " where is_active=1";
     List<Institution> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
+    return list;
   }
 
   @Override
@@ -124,6 +135,7 @@ public class InstitutionMySQLDAO extends AbstractMarloDAO<Institution, Long> imp
   public List<Institution> searchInstitution(String searchValue, int ppaPartner, int onlyPPA, long crpID) {
     StringBuilder query = new StringBuilder();
     query.append("select distinct i from Institution i left join fetch i.institutionType it where ");
+    query.append("i.active = true and ");
     query.append("(i.name like concat('%', :institutionName, '%') ");
     query.append("or i.acronym like concat('%', :institutionName, '%') ");
     query.append("or i.websiteLink like concat('%', :institutionName, '%')) ");

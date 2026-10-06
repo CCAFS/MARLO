@@ -170,6 +170,8 @@ public class CrpParametersAction extends BaseAction {
 
 
       }
+
+      this.addActionMessage("message:" + this.getText("saving.saved"));
       return SUCCESS;
     } else {
       return NOT_AUTHORIZED;

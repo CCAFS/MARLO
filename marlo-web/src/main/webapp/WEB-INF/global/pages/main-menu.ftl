@@ -42,7 +42,7 @@
   { 'slug': 'outcomes',       'name': 'menu.outcomes',      'namespace': '/monitoring',       'action': '${(crpSession)!}/monitoringOutcomesList',                      'visible': logged && centerGlobalUnit, 'active': true },
   [#-- PROJECTS - ALL --]
   { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/projects',       'action': '${(crpSession)!}/projectsList',                      'visible': logged && !aiccra, 'active': true },
-  { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/clusters',       'action': '${(crpSession)!}/projectsList',                      'visible': logged && aiccra, 'active': true },
+  { 'slug': 'projects',       'name': 'menu.projects',      'namespace': '/clusters',       'action': '${(crpSession)!}/projectsList',                      'visible': logged, 'active': true },
   [#-- FUNDING SOURCES - ALL --]
   { 'slug': 'fundingSources', 'name': 'menu.fundingSources',      'namespace': '/fundingSources',       'action': '${(crpSession)!}/fundingSourcesList',    'visible': logged, 'active': true },
   [#-- ADDITIONAL REPORTING - CRP --]
@@ -140,9 +140,9 @@
 [#if logged?? && logged]
   [#--
     The user menu is part of the platform-wide chrome, so it is rendered for
-    every global unit. It used to sit behind the `display_user_menu_new_style`
-    specificity, which only existed for a few units and left the rest without
-    a user menu.
+    every global unit. It used to sit behind a per-unit specificity, which
+    only existed for a few units and left the rest without a user menu; that
+    specificity was removed from the catalog once the menu became chrome.
 
     Initials are built defensively: users without a first or last name would
     otherwise blow up ?substring(0, 1) now that this runs everywhere.

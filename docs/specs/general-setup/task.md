@@ -213,8 +213,9 @@ Cover every layer relevant to the change.
 ## Conventions reminders
 
 - **Branching:** never commit directly to `main`. Feature branches start from `staging` and merge back into it. `dev` is unstable and used only for integration experiments.
-- **Java version:** match the run script to the branch. If the branch contains `java17` / `java_17`, use `scripts/run-marlo-java17.sh`. Otherwise `scripts/run-marlo-java8.sh`.
+- **Java version:** MARLO currently uses Java 17 — use `scripts/run-marlo-java17.sh`. `marlo-parent/pom.xml` is the verification source for the active Java level; `scripts/run-marlo-java8.sh` is only for legacy Java 8 branches/profiles.
 - **Local properties:** `marlo-${profile}.properties` files with credentials are gitignored; bootstrap from `marlo-test.properties`.
 - **Migration naming:** `V<major>_<minor>_<patch>_<YYYYMMDD>_<HHMM>__<Description>.sql`.
 - **Specificity naming:** snake_case key in `parameters`, UPPER_SNAKE_CASE constant in `APConstants`, identical string value.
 - **Hooks / pre-commit:** never bypass (`--no-verify`) without an explicit, documented reason; failing hooks are signal, not noise.
+- **`execution.md` is append-only.** Cite **section headings**, not absolute line numbers, for intra-file references — every append invalidates a line-number self-citation, including ones written in the same pass.

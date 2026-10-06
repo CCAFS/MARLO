@@ -330,6 +330,11 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
     return this.globalUnitType.getId().intValue() == 4;
   }
 
+  public boolean isAiccra() {
+    // Temporary compatibility condition; remove this override when Global Unit-specific behavior is cleaned up.
+    return true;
+  }
+
   public boolean isCrpType() {
     // CRP or Platform
     return this.globalUnitType.getId().intValue() == 1 || this.globalUnitType.getId().intValue() == 3;
@@ -524,10 +529,12 @@ public class GlobalUnit extends MarloAuditableEntity implements java.io.Serializ
 
   @Override
   public String toString() {
-    return "GlobalUnit [id=" + this.getId() + ", globalUnitType=" + globalUnitType + ", name=" + name + ", acronym="
-      + acronym + ", active=" + this.isActive() + ", marlo=" + marlo + ", login=" + login + "]";
+    // Only the type id: globalUnitType is lazy, and its toString() throws a LazyInitializationException outside a
+    // session (the audit listener logs entities after the transaction), while reading the id does not load it
+    Long globalUnitTypeId = globalUnitType == null ? null : globalUnitType.getId();
+    return "GlobalUnit [id=" + this.getId() + ", globalUnitTypeId=" + globalUnitTypeId + ", name=" + name
+      + ", acronym=" + acronym + ", active=" + this.isActive() + ", marlo=" + marlo + ", login=" + login + "]";
   }
 
 
 }
-

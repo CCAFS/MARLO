@@ -201,6 +201,8 @@ public class ProjectInfoManagerImpl implements ProjectInfoManager {
         projectInfoPhaseAdd.setProjectEditLeader(projectInfo.getProjectEditLeader());
 
         projectInfoPhaseAdd.updateProjectInfo(projectInfo);
+        // A new phase record has no stored values to keep, so it inherits the hidden description fields
+        projectInfoPhaseAdd.copyHiddenDescriptionFields(projectInfo);
         projectInfoDAO.save(projectInfoPhaseAdd);
         ProjectPhase projectPhase = new ProjectPhase();
         projectPhase.setPhase(phase);

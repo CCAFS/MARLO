@@ -17,9 +17,12 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.projects.ProjectDescriptionAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.ProgramType;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
@@ -29,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -57,6 +61,22 @@ public class ProjectDescriptionValidator extends BaseValidator {
 
 
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
+  }
+
+  private boolean hasActivePrograms(BaseAction action, int programType) {
+    // The description action already loaded the active programs in prepare(). Reusing them keeps validate() out of
+    // any transaction: committing one would flush the project entities prepare() mutates on POST.
+    if (action instanceof ProjectDescriptionAction) {
+      ProjectDescriptionAction descriptionAction = (ProjectDescriptionAction) action;
+      List<CrpProgram> programs = programType == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
+        ? descriptionAction.getProgramFlagships() : descriptionAction.getRegionFlagships();
+      if (programs != null) {
+        return !programs.isEmpty();
+      }
+    }
+    GlobalUnit crp = crpManager.getGlobalUnitById(action.getCrpID());
+    return crp != null && crp.getCrpPrograms() != null
+      && crp.getCrpPrograms().stream().anyMatch(c -> c.isActive() && c.getProgramType() == programType);
   }
 
   public void validate(BaseAction action, Project project, boolean saving) {
@@ -99,12 +119,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
       && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getChallengesSolutions()) <= 250)) {
       action.addMessage(action.getText("project.challengesAndSolutions"));
       action.getInvalidFields().put("input-project.projectInfo.challengesSolutions", InvalidFieldsMessages.EMPTYFIELD);
-    }
-    if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getLessonsLearned())
-      && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getLessonsLearned()) > 1
-      && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getLessonsLearned()) <= 250)) {
-      action.addMessage(action.getText("project.lessonsLearned"));
-      action.getInvalidFields().put("input-project.projectInfo.lessonsLearned", InvalidFieldsMessages.EMPTYFIELD);
     }
 
     if (project.getProjecInfoPhase(action.getActualPhase()).getLiaisonInstitution() != null) {
@@ -153,9 +167,11 @@ public class ProjectDescriptionValidator extends BaseValidator {
     if (!(project.getProjecInfoPhase(action.getActualPhase()).getAdministrative() != null
       && project.getProjecInfoPhase(action.getActualPhase()).getAdministrative().booleanValue() == true)) {
 
-      if (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0) {
+      // A list is only mandatory when the CRP offers at least one active program to pick from
+      if (this.hasActivePrograms(action, ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
+        && (project.getFlagshipValue() == null || project.getFlagshipValue().length() == 0)) {
         action.addMessage(action.getText("projectDescription.flagships"));
-        action.getInvalidFields().put("input-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
+        action.getInvalidFields().put("list-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
       }
 
 
@@ -174,12 +190,13 @@ public class ProjectDescriptionValidator extends BaseValidator {
       }
 
       if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
-        && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")) {
+        && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")
+        && this.hasActivePrograms(action, ProgramType.REGIONAL_PROGRAM_TYPE.getValue())) {
         if ((project.getRegionsValue() == null || project.getRegionsValue().length() == 0)
           && (project.getProjecInfoPhase(action.getActualPhase()).getNoRegional() == null
             || project.getProjecInfoPhase(action.getActualPhase()).getNoRegional().booleanValue() == false)) {
           action.addMessage(action.getText("projectDescription.regions"));
-          action.getInvalidFields().put("input-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
+          action.getInvalidFields().put("list-project.regionsValue", InvalidFieldsMessages.EMPTYFIELD);
         }
       }
     }
@@ -202,36 +219,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
         action.getInvalidFields().put("list-project.centerOutcomes", InvalidFieldsMessages.EMPTYFIELD);
       }
     }
-
-    if(project.getProjecInfoPhase(action.getActualPhase()) != null && project.getProjecInfoPhase(action.getActualPhase()).getProjectEditLeader() != null && project.getProjecInfoPhase(action.getActualPhase()).getProjectEditLeader().booleanValue() == true) {
-      // Cross cutting dimensions
-
-      // Gender
-      boolean genderValue = false;
-      if (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender() == null
-        || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingGender().booleanValue() == false) {
-        genderValue = false;
-
-
-        if (!(this.isValidString(project.getProjecInfoPhase(action.getActualPhase()).getDimension())
-          && this.wordCount(project.getProjecInfoPhase(action.getActualPhase()).getDimension()) <= 50)) {
-          action.addMessage(action.getText("project.projectInfo.dimension"));
-          action.getInvalidFields().put("input-project.projectInfo.dimension", InvalidFieldsMessages.EMPTYFIELD);
-        }
-      } else {
-        genderValue = true;
-      }
-
-      // Gende, Youth and N/A
-      if ((genderValue == false)
-        && (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth() == null
-          || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingYouth().booleanValue() == false)
-        && (project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa() == null
-          || project.getProjecInfoPhase(action.getActualPhase()).getCrossCuttingNa().booleanValue() == false)) {
-        action.addMessage(action.getText("project.projectInfo.crossCuttingNa"));
-        action.getInvalidFields().put("input-project.projectInfo.crossCuttingNa", InvalidFieldsMessages.EMPTYFIELD);
-      }
-  }
 
   }
 

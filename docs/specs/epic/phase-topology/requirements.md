@@ -186,7 +186,7 @@ order MUST change, and a diff of `phase_replication_edges` MUST be empty.
 
 **AC-006 (FN-010)** — Given a phase with at least one dependent row, when the admin requests deletion, then the
 system MUST refuse and MUST list the blocking tables. Given a phase with none, deletion MUST succeed and MUST
-leave no dangling `custom_parameters` value (`current_phase`, `crp_aiccra_af_start_phase`).
+leave no dangling `custom_parameters` value (`current_phase`).
 
 **AC-007 (FN-011)** — Given an edge change, when the admin saves, then the confirmation MUST list the phases that
 gained and lost targets, MUST state that existing rows are unaffected, and MUST link to the bulk replication
@@ -279,3 +279,6 @@ made explicitly; they are currently decided by accident.
   effort, produce no user-visible change.
 - 2026-08-24 — Exclude the impact pathway family from v1 — Rationale: parts of it do not work today, so modelling
   it as edges would either enshrine broken behaviour or fix it silently. Both need a separate decision.
+- 2026-09-29 — Drop `crp_aiccra_af_start_phase` from the phase-id holders in AC-006 — Rationale: the parameter
+  was removed (`V2_6_0_20260929_0823__RemoveAiccraAfStartPhaseParameter.sql`) together with `isAFPhase()`, its
+  only reader. `current_phase` is the only `custom_parameters` key left that stores a phase id.

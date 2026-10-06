@@ -65,12 +65,7 @@ public class ProjectLocationMySQLDAO extends AbstractMarloDAO<ProjectLocation, L
   @Override
   public List<ProjectLocation> findAll() {
     String query = "from " + ProjectLocation.class.getName() + " where is_active=1";
-    List<ProjectLocation> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return super.findAll(query);
   }
 
   @Override

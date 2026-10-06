@@ -17,7 +17,9 @@ package org.cgiar.ccafs.marlo.interceptor;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.logging.LogContext;
 
 import java.util.Map;
 
@@ -55,6 +57,8 @@ public class RequireUserInterceptor extends AbstractInterceptor {
         AuditLogContextProvider.push(auditContext); 
 
         try {
+            // Inside the try, so that the pop in the finally block can never be skipped
+            this.putLogContext(user, session);
             BaseAction action = (BaseAction) invocation.getAction();
 
             action.setSession(session);
@@ -73,6 +77,24 @@ public class RequireUserInterceptor extends AbstractInterceptor {
       } else {
         return this.sendUserToLoginScreen(session);
       }
+  }
+
+  /**
+   * Puts the user id, the user's name (logged only if the request fails) and the session Global Unit in the log
+   * context. LogContext, as request listener, clears it when the request ends. Any failure is ignored, because the log
+   * context must never stop the request.
+   */
+  private void putLogContext(User user, Map<String, Object> session) {
+    try {
+      LogContext.putUserId(user.getId());
+      LogContext.putUserName(user);
+      Object globalUnit = session.get(APConstants.SESSION_CRP);
+      if (globalUnit instanceof GlobalUnit) {
+        LogContext.putGlobalUnit((GlobalUnit) globalUnit);
+      }
+    } catch (RuntimeException e) {
+      LOG.debug("Could not put the user in the log context", e);
+    }
   }
 
   private String sendUserToLoginScreen(Map<String, Object> session) {

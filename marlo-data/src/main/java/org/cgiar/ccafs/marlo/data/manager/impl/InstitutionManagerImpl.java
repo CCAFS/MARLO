@@ -61,6 +61,11 @@ public class InstitutionManagerImpl implements InstitutionManager {
   }
 
   @Override
+  public Institution getActiveInstitutionById(long institutionId) {
+    return institutionDao.findActive(institutionId);
+  }
+
+  @Override
   public Institution getInstitutionById(long institutionId) {
     return institutionDao.find(institutionId);
   }

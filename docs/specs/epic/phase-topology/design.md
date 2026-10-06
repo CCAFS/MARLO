@@ -272,8 +272,7 @@ crpAdminStack -> CrpPhasesAction.validate() [if (save)] -> CrpPhasesValidator ->
 5. `startDate < endDate`; `year` coherent with the dates.
 6. At least one phase with `visible = 1` and at least one with `editable = 1`, because
    `PhaseMySQLDAO.getActivePhase()` dereferences the first row of a `MAX(id)` result and NPEs on an empty set.
-7. Deletion target has no dependent rows and is not referenced by `custom_parameters` (`current_phase`,
-   `crp_aiccra_af_start_phase`).
+7. Deletion target has no dependent rows and is not referenced by `custom_parameters` (`current_phase`).
 8. `description` is a `PhaseDescription` enum value, never free text.
 
 Also fixed in this action: the `System.out.println` at line 100, and the `String`-vs-`Long` comparison at line 106

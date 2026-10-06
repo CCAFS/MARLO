@@ -51,6 +51,16 @@ public interface InstitutionDAO {
   public Institution find(long id);
 
   /**
+   * This method gets an institution only when it is still active, checking institutions.is_active in SQL before the
+   * entity is loaded. Institution.isActive() reads the same column since A2-2535; the query is kept so callers get
+   * null for an inactive institution without loading it first.
+   * 
+   * @param id is the institution identifier
+   * @return the Institution when it exists and is active, null otherwise
+   */
+  public Institution findActive(long id);
+
+  /**
    * This method gets a list of institution that are active
    * 
    * @return a list from Institution null if no exist records

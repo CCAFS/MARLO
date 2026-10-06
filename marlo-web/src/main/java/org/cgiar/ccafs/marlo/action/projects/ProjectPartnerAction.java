@@ -99,6 +99,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
@@ -776,7 +777,7 @@ public class ProjectPartnerAction extends BaseAction {
 
         // Building the Email message:
         StringBuilder message = new StringBuilder();
-        message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+        message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
 
         // get CRPAdmin contacts
         String crpAdmins = "";
@@ -794,8 +795,9 @@ public class ProjectPartnerAction extends BaseAction {
         }
 
         message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-          config.getBaseUrl(), user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
-        message.append(this.getText("email.bye"));
+          config.getBaseUrl(), user.getEmail(), password,
+          this.getText("email.role.support", new String[] {crpAdmins})}));
+        message.append(this.getText("email.role.bye"));
 
         Map<String, Object> mapUser = new HashMap<>();
         mapUser.put("user", user);
@@ -833,10 +835,11 @@ public class ProjectPartnerAction extends BaseAction {
         if (!this.isCenterGlobalUnit()) {
           if (this.validateEmailNotification()) {
             if (buffer != null && fileName != null && contentType != null) {
-              sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName,
-                true);
+              sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+                buffer, contentType, fileName, true);
             } else {
-              sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+              sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+                null, null, null, true);
             }
           }
         }
@@ -957,7 +960,7 @@ public class ProjectPartnerAction extends BaseAction {
     // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.project.assigned",
       new String[] {projectRole, crp, project.getProjecInfoPhase(this.getActualPhase()).getTitle(),
         project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
@@ -966,13 +969,14 @@ public class ProjectPartnerAction extends BaseAction {
     } else {
       message.append(this.getText("email.project.coordinator.responsabilities"));
     }
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
 
     // TODO Disable temporally CIAT MARLO send email.
     if (!this.isCenterGlobalUnit()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
 
     // TIP notification email
@@ -1081,7 +1085,7 @@ public class ProjectPartnerAction extends BaseAction {
     // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userUnassigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userUnassigned.getFirstName()}));
 
     if (role.getId() == plRole.getId().longValue()) {
       message.append(this.getText("email.project.leader.unAssigned",
@@ -1093,12 +1097,13 @@ public class ProjectPartnerAction extends BaseAction {
           project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
     }
 
-    message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(this.getText("email.role.bye"));
 
     // TODO Disable temporally CIAT MARLO send email.
     if (!this.isCenterGlobalUnit()) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
   }
 
@@ -1721,17 +1726,17 @@ public class ProjectPartnerAction extends BaseAction {
       // Initialise the partner list first, if it is not there yet
       initializePartnersList(params);
       
-      // Luego hacer el binding de cada campo
+      // Then bind each field
       bindPartnersInstitution(params);
       bindPartnersPartnerPersons(params);
       bindPartnersSelectedLocations(params);
       bindPartnersPartnerContributors(params);
       
-      LOG.debug("=== Finalizando manualBinding para ProjectPartner ===");
+      LOG.debug("Finished the manual binding of the project partners");
   }
 
   // =====================================================
-  // INICIALIZAR LISTA DE PARTNERS
+  // INITIALIZE PARTNERS LIST
   // =====================================================
 
   private void initializePartnersList(Map<String, Parameter> params) {
@@ -1762,7 +1767,7 @@ public class ProjectPartnerAction extends BaseAction {
               project.getPartners().add(newPartner);
           }
           
-          // Bindear los IDs de los partners existentes
+          // Bind the IDs of the existing partners
           for (String key : params.keySet()) {
               if (key.matches("project\\.partners\\[\\d+\\]\\.id")) {
                   int index = extractIndex(key);
@@ -1777,7 +1782,7 @@ public class ProjectPartnerAction extends BaseAction {
                   }
               }
               
-              // Bindear phase.id
+              // Bind phase.id
               if (key.matches("project\\.partners\\[\\d+\\]\\.phase\\.id")) {
                   int index = extractIndex(key);
                   String value = params.get(key).getValue();
@@ -1794,7 +1799,7 @@ public class ProjectPartnerAction extends BaseAction {
                   }
               }
               
-              // Bindear responsibilities
+              // Bind responsibilities
               if (key.matches("project\\.partners\\[\\d+\\]\\.responsibilities")) {
                   int index = extractIndex(key);
                   String value = params.get(key).getValue();
@@ -1803,7 +1808,7 @@ public class ProjectPartnerAction extends BaseAction {
                   }
               }
               
-              // Bindear subDepartment
+              // Bind subDepartment
               if (key.matches("project\\.partners\\[\\d+\\]\\.subDepartment")) {
                   int index = extractIndex(key);
                   String value = params.get(key).getValue();
@@ -1857,7 +1862,7 @@ public class ProjectPartnerAction extends BaseAction {
                       partner.setPartnerPersons(new ArrayList<>());
                   }
                   
-                  // Asegurar que la lista tenga suficientes elementos
+                  // Make sure the list has enough elements
                   while (partner.getPartnerPersons().size() <= personIndex) {
                       partner.getPartnerPersons().add(new ProjectPartnerPerson());
                   }
@@ -2026,7 +2031,7 @@ public class ProjectPartnerAction extends BaseAction {
         }
     }
     
-    LOG.debug("=== Finalizando binding de selectedLocations ===");
+    LOG.debug("Finished the binding of the selected locations");
   }
 
   // =====================================================
@@ -2046,7 +2051,7 @@ public class ProjectPartnerAction extends BaseAction {
                       partner.setPartnerContributors(new ArrayList<>());
                   }
                   
-                  // Asegurar que la lista tenga suficientes elementos
+                  // Make sure the list has enough elements
                   while (partner.getPartnerContributors().size() <= contributorIndex) {
                       ProjectPartnerContribution contribution = new ProjectPartnerContribution();
                       contribution.setProjectPartnerContributor(new ProjectPartner());

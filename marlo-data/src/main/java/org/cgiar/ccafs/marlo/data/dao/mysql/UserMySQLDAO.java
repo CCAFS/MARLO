@@ -225,7 +225,7 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
     if (users.size() > 0) {
       return true;
     }
-    LOG.error("verifiyCredentials() > There was an error verifiying the credentials", email);
+    LOG.debug("verifiyCredentials() > The credentials of {} did not match an active user", email);
     return false;
   }
 

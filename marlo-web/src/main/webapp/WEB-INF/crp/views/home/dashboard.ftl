@@ -369,39 +369,37 @@
             src="${baseUrlCdn}/global/images/1309-load-balancer-outline.png">
           <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
             src="${baseUrlCdn}/global/images/1309-load-balancer-outline.gif">
-          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.myProjects.title" /]</span>
+          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.browse.projects" /]</span>
           <span class="dashboardBrowse__catCount">${(myProjects?size)!0}</span>
         </button>
-        [#if action.isAiccra()]
-          <button type="button" class="dashboardBrowse__cat" id="deliverables" aria-pressed="false"
-            data-pane="myDeliverables" data-scope="[@s.text name="dashboard.myDeliverables.title" /]">
+        <button type="button" class="dashboardBrowse__cat" id="deliverables" aria-pressed="false"
+          data-pane="myDeliverables" data-scope="[@s.text name="dashboard.myDeliverables.title" /]">
+          <img class="dashboardBrowse__catIcon" alt="" aria-hidden="true"
+            src="${baseUrlCdn}/global/images/verification.png">
+          <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
+            src="${baseUrlCdn}/global/images/verification.gif">
+          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.myDeliverables.title" /]</span>
+          <span class="dashboardBrowse__catCount">${(myDeliverables?size)!0}</span>
+        </button>
+        <button type="button" class="dashboardBrowse__cat" id="studies" aria-pressed="false"
+          data-pane="myStudies" data-scope="[@s.text name="dashboard.studies.table.title" /]">
+          <img class="dashboardBrowse__catIcon" alt="" aria-hidden="true"
+            src="${baseUrlCdn}/global/images/oicrs_icon.png">
+          <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
+            src="${baseUrlCdn}/global/images/oicrs_icon.gif">
+          <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.studies.table.title" /]</span>
+          <span class="dashboardBrowse__catCount">${(myStudies?size)!0}</span>
+        </button>
+        [#if action.hasSpecificities('innovation_section_active') ]
+          <button type="button" class="dashboardBrowse__cat" id="innovations" aria-pressed="false"
+            data-pane="myInnovations" data-scope="[@s.text name="dashboard.innovations.table.title" /]">
             <img class="dashboardBrowse__catIcon" alt="" aria-hidden="true"
-              src="${baseUrlCdn}/global/images/verification.png">
+              src="${baseUrlCdn}/global/images/innovationDashboard.png">
             <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
-              src="${baseUrlCdn}/global/images/verification.gif">
-            <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.myDeliverables.title" /]</span>
-            <span class="dashboardBrowse__catCount">${(myDeliverables?size)!0}</span>
+              src="${baseUrlCdn}/global/images/innovationDashboard.gif">
+            <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.innovations.table.title" /]</span>
+            <span class="dashboardBrowse__catCount">${(myInnovations?size)!0}</span>
           </button>
-          <button type="button" class="dashboardBrowse__cat" id="studies" aria-pressed="false"
-            data-pane="myStudies" data-scope="[@s.text name="dashboard.studies.table.title" /]">
-            <img class="dashboardBrowse__catIcon" alt="" aria-hidden="true"
-              src="${baseUrlCdn}/global/images/oicrs_icon.png">
-            <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
-              src="${baseUrlCdn}/global/images/oicrs_icon.gif">
-            <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.studies.table.title" /]</span>
-            <span class="dashboardBrowse__catCount">${(myStudies?size)!0}</span>
-          </button>
-          [#if action.hasSpecificities('innovation_section_active') ]
-            <button type="button" class="dashboardBrowse__cat" id="innovations" aria-pressed="false"
-              data-pane="myInnovations" data-scope="[@s.text name="dashboard.innovations.table.title" /]">
-              <img class="dashboardBrowse__catIcon" alt="" aria-hidden="true"
-                src="${baseUrlCdn}/global/images/innovationDashboard.png">
-              <img class="dashboardBrowse__catIcon dashboardBrowse__catIcon--anim" alt="" aria-hidden="true"
-                src="${baseUrlCdn}/global/images/innovationDashboard.gif">
-              <span class="dashboardBrowse__catLabel">[@s.text name="dashboard.innovations.table.title" /]</span>
-              <span class="dashboardBrowse__catCount">${(myInnovations?size)!0}</span>
-            </button>
-          [/#if]
         [/#if]
       </div>
       <p class="dashboardBrowse__note">[@s.text name="dashboard.browse.note" /]</p>

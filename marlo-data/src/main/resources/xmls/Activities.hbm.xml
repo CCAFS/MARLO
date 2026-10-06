@@ -17,9 +17,11 @@
 			class="org.cgiar.ccafs.marlo.data.model.Project" fetch="select">
 			<column name="project_id" not-null="true" />
 		</many-to-one>
+		<!-- title_id is nullable in the database: it is only set when the activity title comes from the
+			Activity management catalog, and stays null when the project writes the title itself. -->
 		<many-to-one name="activityTitle"
 			class="org.cgiar.ccafs.marlo.data.model.ActivityTitle" fetch="select">
-			<column name="title_id" not-null="true" />
+			<column name="title_id" />
 		</many-to-one>
 		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
 			fetch="select">

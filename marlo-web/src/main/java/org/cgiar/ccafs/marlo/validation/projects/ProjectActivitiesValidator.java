@@ -153,7 +153,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
     List<String> params = new ArrayList<>();
     params.add(String.valueOf(activity.getId()));
 
-    if (!action.isAiccra()) {
+    if (action.isProjectActivityCreationActive()) {
       if (!(this.isValidString(activity.getTitle()) && this.wordCount(activity.getTitle()) <= 30)) {
         action.addMessage(action.getText("activity.title", params));
         action.getInvalidFields().put("input-project." + listName + "[" + index + "].title",
@@ -178,25 +178,17 @@ public class ProjectActivitiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (activity.getProjectPartnerPerson() != null) {
-      if (activity.getProjectPartnerPerson().getId().intValue() == -1) {
-        action.addMessage(action.getText("activity.leader", params));
-        action.getInvalidFields().put("input-project." + listName + "[" + index + "].projectPartnerPerson.id",
-          InvalidFieldsMessages.EMPTYFIELD);
-      }
-    } else {
+    if (activity.getProjectPartnerPerson() == null || activity.getProjectPartnerPerson().getId() == null
+      || activity.getProjectPartnerPerson().getId().intValue() == -1) {
       action.addMessage(action.getText("activity.leader", params));
       action.getInvalidFields().put("input-project." + listName + "[" + index + "].projectPartnerPerson.id",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (action.isAiccra()) {
-      if (activity.getActivityTitle() != null) {
-        if (activity.getActivityTitle().getId().intValue() == -1) {
-          action.addMessage(action.getText("activity.title", params));
-          action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
-            InvalidFieldsMessages.EMPTYFIELD);
-        }
-      } else {
+    if (!action.isProjectActivityCreationActive()) {
+      // A null id means the same as a missing catalog entry: no title was chosen. It arrives that way when the
+      // select is rendered read only, because the macro then posts a hidden input holding an empty value.
+      if (activity.getActivityTitle() == null || activity.getActivityTitle().getId() == null
+        || activity.getActivityTitle().getId().intValue() == -1) {
         action.addMessage(action.getText("activity.title", params));
         action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityTitle.id",
           InvalidFieldsMessages.EMPTYFIELD);

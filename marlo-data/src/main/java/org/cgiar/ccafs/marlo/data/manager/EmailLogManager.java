@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.data.manager;
 
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
+import org.cgiar.ccafs.marlo.data.model.EmailLogSearch;
 
 import java.util.List;
 
@@ -24,6 +25,42 @@ import java.util.List;
  */
 
 public interface EmailLogManager {
+
+  /**
+   * Counts the logged emails that match the given filters.
+   *
+   * @param search the filters; a null field does not filter.
+   * @return the number of matching rows.
+   */
+  public long count(EmailLogSearch search);
+
+  /**
+   * @return the distinct global unit ids the logged emails were sent for.
+   */
+  public List<Long> findGlobalUnitIds();
+
+  /**
+   * @return the distinct places the logged emails were sent from, in alphabetical order.
+   */
+  public List<String> findSourceActions();
+
+  /**
+   * Lists one page of the logged emails that match the given filters, without the message or the attachment.
+   *
+   * @param search the filters and the order; a null field does not filter.
+   * @param first the position of the first row, from 0.
+   * @param max the number of rows.
+   * @return detached EmailLog objects holding only the columns of the table.
+   */
+  public List<EmailLog> findSummaries(EmailLogSearch search, int first, int max);
+
+  /**
+   * Lists every logged email that matches the given filters, message and attachment included.
+   *
+   * @param search the filters; a null field does not filter.
+   * @return the matching rows.
+   */
+  public List<EmailLog> search(EmailLogSearch search);
 
 
   /**

@@ -554,7 +554,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
           }
 
           Institution incomingInstitution = (incomingAffiliation.getClarisaId() != null)
-            ? this.institutionManager.getInstitutionById(incomingAffiliation.getClarisaId()) : null;
+            ? this.institutionManager.getActiveInstitutionById(incomingAffiliation.getClarisaId()) : null;
 
           if (incomingInstitution != null) {
             newDeliverableAffiliation.setInstitution(incomingInstitution);
@@ -571,6 +571,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
               this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
                 phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
             }
+          } else {
+            LOG.warn("Affiliation \"{}\" was not mapped: CLARISA code {} is not an active institution in MARLO "
+              + "(deliverable {}, phase {})", incomingAffiliation.getFullName(), incomingAffiliation.getClarisaId(),
+              deliverable.getId(), phase.getId());
           }
         }
       }
@@ -630,7 +634,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
           }
 
           Institution incomingInstitution = (incomingAffiliation.getClarisaId() != null)
-            ? this.institutionManager.getInstitutionById(incomingAffiliation.getClarisaId()) : null;
+            ? this.institutionManager.getActiveInstitutionById(incomingAffiliation.getClarisaId()) : null;
 
           newDeliverableAffiliationNotMapped.setPossibleInstitution(incomingInstitution);
           newDeliverableAffiliationNotMapped
@@ -719,9 +723,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
               newDeliverableAffiliationNotMapped.setCreatedBy(this.getCurrentUser());
             }
 
-            Institution incomingInstitution = (incomingAffiliation.getPrediction().getValue().getCode() != 0)
-              ? this.institutionManager.getInstitutionById(incomingAffiliation.getPrediction().getValue().getCode())
-              : null;
+            int predictionCode = incomingAffiliation.getPrediction().getValue().getCode();
+            Institution incomingInstitution =
+              (predictionCode != 0) ? this.institutionManager.getActiveInstitutionById(predictionCode) : null;
 
             newDeliverableAffiliationNotMapped.setPossibleInstitution(incomingInstitution);
             newDeliverableAffiliationNotMapped
@@ -815,9 +819,9 @@ public class DeliverableMetadataByWOS extends BaseAction {
               newDeliverableAffiliation.setCreateDate(new Date());
               newDeliverableAffiliation.setCreatedBy(this.getCurrentUser());
             }
-            Institution incomingInstitution = (incomingAffiliation.getPrediction().getValue().getCode() != 0)
-              ? this.institutionManager.getInstitutionById(incomingAffiliation.getPrediction().getValue().getCode())
-              : null;
+            int predictionCode = incomingAffiliation.getPrediction().getValue().getCode();
+            Institution incomingInstitution =
+              (predictionCode != 0) ? this.institutionManager.getActiveInstitutionById(predictionCode) : null;
             if (incomingInstitution != null) {
               newDeliverableAffiliation.setInstitution(incomingInstitution);
               newDeliverableAffiliation
@@ -833,6 +837,10 @@ public class DeliverableMetadataByWOS extends BaseAction {
                 this.deliverableAffiliationManager.replicate(newDeliverableAffiliation,
                   phase.getDescription().equals(APConstants.REPORTING) ? phase.getNext().getNext() : phase.getNext());
               }
+            } else {
+              LOG.warn("Affiliation \"{}\" was not mapped: CLARISA code {} is not an active institution in MARLO "
+                + "(deliverable {}, phase {})", incomingAffiliation.getFullName(), predictionCode,
+                deliverable.getId(), phase.getId());
             }
           }
         }

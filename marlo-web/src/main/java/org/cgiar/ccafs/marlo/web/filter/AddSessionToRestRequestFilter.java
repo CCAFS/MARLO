@@ -25,6 +25,7 @@ import org.cgiar.ccafs.marlo.data.model.ClarisaMonitoring;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.logging.LogContext;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.BaseSecurityContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -111,6 +112,15 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
 
 
     }
+    // The Global Unit is logged from addMonitoringInfo, which resolves it from this request's URL
+    try {
+      Object principal = subject.getPrincipal();
+      if (principal instanceof Long) {
+        LogContext.putUserId((Long) principal);
+      }
+    } catch (RuntimeException e) {
+      LOG.debug("Could not read the user for the log context", e);
+    }
   }
 
 
@@ -155,6 +165,10 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     // If arg1 contains Crp Acronym the arg2 is the ServiceName, else the arg1 is the service name (Public
     // Service)
     GlobalUnit globalUnit = globalUnitManager.findGlobalUnitByAcronym(arg1);
+    // The Global Unit this request names, resolved by the lookup just above, so no query is added. The session keeps
+    // the first Global Unit it saw, which would mislabel a session that calls another one. A public service name
+    // resolves to nothing and is therefore not logged.
+    LogContext.putGlobalUnit(globalUnit);
 
     if (globalUnit != null) {
       serviceName = split[1];
@@ -178,6 +192,8 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     Long currentUserId = (Long) subject.getPrincipal();
 
     User user = userManager.getUser(currentUserId);
+    // Logged only if the request fails; reuses the user already loaded here, so no query is added
+    LogContext.putUserName(user);
 
     // Save the information to Clarisa Monitoring Table
     monitoring.setServiceName(serviceName);

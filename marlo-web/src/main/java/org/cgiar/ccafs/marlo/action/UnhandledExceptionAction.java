@@ -15,6 +15,7 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.logging.LogContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
@@ -27,6 +28,7 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
 import org.slf4j.Logger;
@@ -52,7 +54,14 @@ public class UnhandledExceptionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
-    // Print the exception in the log
+    // Print the exception in the log. The page is rendered with HTTP 200, but the request failed as a 500; a client
+    // that closed the connection received nothing, so it gets no status, not even the 401/403/404 of the page that was
+    // being written when the connection closed.
+    if (exception instanceof ClientAbortException) {
+      LogContext.removeStatusCode();
+    } else {
+      LogContext.putStatusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
     LOG.error("There was an unexpected exception", exception);
 
     if (this.isAiccra()) {
@@ -95,32 +104,31 @@ public class UnhandledExceptionAction extends BaseAction {
 
     GlobalUnit crp = this.getCurrentCrp();
 
-    if (this.isAiccra()) {
-      subject = "Exception occurred in AICCRA";
-    } else {
-      subject = "Exception occurred in MARLO";
-    }
+    String globalUnitName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
+      : crp.getName() != null ? crp.getName() : "MARLO";
+    subject = "Exception occurred in " + globalUnitName;
 
     message.append("The user " + this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ("
       + this.getCurrentUser().getEmail() + ") ");
     message.append("has experienced an exception on the platform. </br>");
     message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
-    String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym() : crp.getName();
-    if (crpAcronymName != null) {
-      message.append("<b>CRP: </b>" + crp.getAcronym() + ".</br>");
-    }
+    String crpAcronymName = crp.getAcronym() != null && !crp.getAcronym().isEmpty() ? crp.getAcronym()
+      : crp.getName() != null ? crp.getName() : "MARLO";
+    message.append("<b>Global Unit: </b>" + crpAcronymName + ".</br>");
     if (this.getActualPhase() != null) {
       message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
     }
     String actionNameSubject = "";
     if (this.getActionName() != null) {
       message.append("<b>ActionName: </b>" + this.getActionName() + ".</br>");
-      if (this.getActionName().contains("AICCRA/")) {
-        actionNameSubject = this.getActionName().replace("AICCRA/", " - ");
+      String actionName = this.getActionName();
+      if (this.isAiccra()) {
+        int namespaceSeparator = actionName.indexOf('/');
+        actionNameSubject = " - "
+          + (namespaceSeparator >= 0 ? actionName.substring(namespaceSeparator + 1) : actionName);
       } else {
-        actionNameSubject = " - " + this.getActionName();
+        actionNameSubject = " - " + actionName;
       }
-
     }
 
     if (this.getActualPhase() != null && this.getActualPhase().getComposedName() != null) {
@@ -159,8 +167,7 @@ public class UnhandledExceptionAction extends BaseAction {
 
     sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
       null, null, true);
-    LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.",
-      this.getCurrentUser().getEmail());
+    LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.");
   }
 
   public void setException(Exception exception) {

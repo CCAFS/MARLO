@@ -126,7 +126,7 @@
       <div id="lessons" class="borderBox">
         <div class="fullBlock">
           <input type="hidden" name="projectLessons.id" value=${(projectLessons.id)!"-1"} />
-          <input type="hidden" name="projectLessons.year" value=${reportingYear} />
+          <input type="hidden" name="projectLessons.year" value="${(actualPhase.year)!0}" />
           <input type="hidden" name="projectLessons.componentName" value="${actionName}">
           [@customForm.textArea name="projectLessons.lessons" i18nkey="synthesis.outcomeSynthesis.lessons" paramText="${program.flagshipProgram?string('project/regional', 'project')}" help="synthesis.outcomeSynthesis.lessons.help" className="synthesisLessons limitWords-100" required=true editable=editable /]
         </div>

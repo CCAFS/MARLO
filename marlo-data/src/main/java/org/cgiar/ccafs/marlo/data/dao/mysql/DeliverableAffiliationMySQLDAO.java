@@ -66,11 +66,7 @@ public class DeliverableAffiliationMySQLDAO extends AbstractMarloDAO<Deliverable
   public List<DeliverableAffiliation> findAll() {
     String query = "from " + DeliverableAffiliation.class.getName();
     List<DeliverableAffiliation> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

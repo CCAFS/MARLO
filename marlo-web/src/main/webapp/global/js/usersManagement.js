@@ -198,9 +198,11 @@ $(document)
 
           addUserMessage =
               function(message) {
+                // Only form fields sit in a grid; a floated column inside a users box escapes its border
+                var gridClass = $elementSelected.closest('.userField').length ? "col-md-12" : "";
                 $elementSelected.parent().find('.username-message').remove();
                 $elementSelected.parent().after(
-                    "<div style='margin-top:5px;' class='col-md-12'><p class='username-message note animated flipInX col-md-12'>"
+                    "<div style='margin-top:5px;' class='" + gridClass + "'><p class='username-message note animated flipInX'>"
                         + message + "</p></div>");
               }
 

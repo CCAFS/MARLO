@@ -47,6 +47,7 @@ import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
@@ -581,13 +582,14 @@ public class CrpUsersAction extends BaseAction {
     userAssigned = userManager.getUser(userAssigned.getId());
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(this.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(this.getText("email.guest.assigned", new String[] {globalUnit.getAcronym()}));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    message.append(this.getText("email.role.support.noCrpAdmins"));
+    message.append(this.getText("email.role.getStarted"));
+    message.append(this.getText("email.role.bye"));
     if (this.validateEmailNotification(globalUnit)) {
-      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMailS.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+        null, null, null, true);
     }
 
   }
@@ -1007,7 +1009,7 @@ public class CrpUsersAction extends BaseAction {
 
     // Building the Email message:
     StringBuilder message = new StringBuilder();
-    message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+    message.append(this.getText("email.role.dear", new String[] {user.getFirstName()}));
     String crp = loggedCrp.getAcronym() != null && !loggedCrp.getAcronym().isEmpty() ? loggedCrp.getAcronym()
       : loggedCrp.getName();
     /*
@@ -1016,8 +1018,8 @@ public class CrpUsersAction extends BaseAction {
      * config.getBaseUrl(), crp, user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
      */
     message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-      config.getBaseUrl(), user.getEmail(), password, this.getText("email.support.noCrpAdmins")}));
-    message.append(this.getText("email.bye"));
+      config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support.noCrpAdmins")}));
+    message.append(this.getText("email.role.bye"));
 
     // Send pdf
     String contentType = "application/pdf";
@@ -1050,9 +1052,11 @@ public class CrpUsersAction extends BaseAction {
     if (this.validateEmailNotification(loggedCrp)) {
       if (buffer != null && fileName != null && contentType != null) {
 
-        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          buffer, contentType, fileName, true);
       } else {
-        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMailS.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(this, message.toString()),
+          null, null, null, true);
       }
     }
   }
@@ -1091,7 +1095,7 @@ public class CrpUsersAction extends BaseAction {
       if (userRole.getUser() != null && userRole.getUser().getId() == userID) {
         Role role = userRole.getRole();
         if (role != null && role.getAcronym() != null) {
-          if (this.isAiccra() && role.getAiccraAcronymDimanic() != null) {
+          if (role.getAiccraAcronymDimanic() != null) {
             if (!roleAcronyms.contains(role.getAiccraAcronymDimanic())) {
               roleAcronyms.add(role.getAiccraAcronymDimanic());
             }

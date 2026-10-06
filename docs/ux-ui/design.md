@@ -158,7 +158,6 @@ may add screens, but renaming or removing a screen here is a constitutional even
 - `projects/projectExpectedStudies.ftl`
 - `projects/projectHighlight.ftl`
 - `projects/projectHighlightsList.ftl`
-- `projects/projectImpacts.ftl`
 - `projects/projectInnovation.ftl`
 - `projects/projectInnovationList.ftl`
 - `projects/projectLeverages.ftl`
