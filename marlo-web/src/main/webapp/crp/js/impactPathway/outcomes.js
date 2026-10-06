@@ -15,8 +15,10 @@ function init() {
   $('.outcomes-list select').not('.opi-plain, .opi-select').select2();
 
   /* Numeric Inputs */
-  $('input.targetValue , input.targetYear').not('.opi-cell__value').numericInput();
-  opiBindCellNumeric($('input.opi-cell__value'));
+  // Target Value starts empty, not at 0: a 0 nobody typed reads as a real target, keeps the
+  // field off the missing-fields count, and would be stored on the next save.
+  opiBindNumeric($('input.targetValue , input.targetYear').not('.opi-cell__value'));
+  opiBindNumeric($('input.opi-cell__value'));
 
   // Baseline value is optional and nullable, so it stays out of numericInput():
   // that helper rewrites an empty field to 0, which would store a real 0 for an
@@ -53,10 +55,16 @@ function attachEvents() {
   $('select.targetUnit').on('change', function() {
     var valueId = $(this).val();
     var $targetValue = $(this).parents('.target-block').find('.targetValue-block');
+    // Target Value only counts as missing while it is shown, so the card is recounted
+    // once the field has finished sliding in or out, not halfway through.
+    var $card = $(this).closest('.opi-card');
+    var recount = function() {
+      if ($card.exists()) { opiRefreshCardStatus($card); }
+    };
     if(valueId != "-1") {
-      $targetValue.show('slow');
+      $targetValue.show('slow', recount);
     } else {
-      $targetValue.hide('slow');
+      $targetValue.hide('slow', recount);
     }
   });
   //click event expand 
@@ -1424,21 +1432,21 @@ function opiNewCell($card, key, year) {
   $cell.find('.opi-cell__unit').val($dis.find('.opi-dis__unitSelect').val() || '-1');
   $cell.find('.opi-cell__status').val('1'); // New
   if ($.fn.numericInput) {
-    opiBindCellNumeric($cell.find('input.opi-cell__value'));
+    opiBindNumeric($cell.find('input.opi-cell__value'));
   }
   return $cell;
 }
 
 /**
- * Binds MARLO's numeric keydown filter to period-target cells without the side
- * effect that comes with it: numericInput() (global/js/utils.js) rewrites an
- * empty field to 0, exactly like it would for Baseline value above. On the
- * matrix that is not cosmetic -- an unfilled target would read as a real 0, so
- * the amber "Missing value" flag and the "required" hint could never fire, and
- * the next save would store targets nobody set.
- * @param {jQuery} $inputs the .opi-cell__value fields to bind
+ * Binds MARLO's numeric keydown filter without the side effect that comes with
+ * it: numericInput() (global/js/utils.js) rewrites an empty field to 0, exactly
+ * like it would for Baseline value above. On the indicator's Target Value and on
+ * the matrix cells that is not cosmetic -- an unfilled target would read as a
+ * real 0, so the missing-fields count and the amber "Missing value" flag could
+ * never fire, and the next save would store targets nobody set.
+ * @param {jQuery} $inputs the numeric fields to bind
  */
-function opiBindCellNumeric($inputs) {
+function opiBindNumeric($inputs) {
   var $empty = $inputs.filter(function() { return $.trim($(this).val() || '') === ''; });
   $inputs.numericInput();
   $empty.val('');
