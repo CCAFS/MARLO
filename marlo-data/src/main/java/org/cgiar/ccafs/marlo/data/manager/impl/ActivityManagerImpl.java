@@ -28,8 +28,10 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -317,37 +319,36 @@ public class ActivityManagerImpl implements ActivityManager {
     List<DeliverableActivity> deliverableActivitiesDB =
       activityUI.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList());
     if (deliverableActivitiesUI != null) {
+      // Links are matched by deliverable. The ones bound from the request carry no id, so matching them by entity
+      // deactivated every stored link and created it again on each save, in this phase and every later one.
+      Set<Long> deliverableIdsUI = deliverableActivitiesUI.stream()
+        .filter(da -> da != null && da.getDeliverable() != null && da.getDeliverable().getId() != null)
+        .map(da -> da.getDeliverable().getId()).collect(Collectors.toSet());
+      Set<Long> deliverableIdsDB = new HashSet<>();
 
-      // Delete deliverableActivities distinct from DB
+      // Delete the stored links whose deliverable is no longer listed
       for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
-        if (!deliverableActivitiesUI.contains(deliverableActivity)) {
+        Long deliverableId =
+          deliverableActivity.getDeliverable() != null ? deliverableActivity.getDeliverable().getId() : null;
+        if (deliverableId != null && deliverableIdsUI.contains(deliverableId)) {
+          deliverableIdsDB.add(deliverableId);
+        } else {
           deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 
-      // Add deliverableActivity if not exist
+      // Add a link for each listed deliverable that has none yet
       for (DeliverableActivity deliverableActivity : deliverableActivitiesUI) {
-
-        if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
-          // New DeliverableActivity
-          DeliverableActivity deliverableActivityNew = new DeliverableActivity();
-          this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
-          deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
-          // This is to add DeliverableActivity to generate correct auditlog.
-          activityUI.getDeliverableActivities().add(deliverableActivityNew);
-        } else {
-          // Check if already exists in DB, then save
-          List<DeliverableActivity> deliverableActivities =
-            deliverableActivityManager.getDeliverableActivitiesByDeliverableIDActivityAndPhase(
-              deliverableActivity.getDeliverable().getId(), activityUI.getId(), currentPhase.getId());
-
-          if (deliverableActivities == null || deliverableActivities.isEmpty()) {
-            DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activityUI, currentPhase);
-            deliverableActivityDAO.save(deliverableActivityAdd);
-          }
+        if (deliverableActivity == null || deliverableActivity.getDeliverable() == null
+          || deliverableActivity.getDeliverable().getId() == null
+          || !deliverableIdsDB.add(deliverableActivity.getDeliverable().getId())) {
+          continue;
         }
-
+        DeliverableActivity deliverableActivityNew = new DeliverableActivity();
+        this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
+        deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+        // This is to add DeliverableActivity to generate correct auditlog.
+        activityUI.getDeliverableActivities().add(deliverableActivityNew);
       }
     } else {
       // delete all from db
