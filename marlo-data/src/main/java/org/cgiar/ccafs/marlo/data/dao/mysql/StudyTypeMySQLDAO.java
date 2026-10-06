@@ -61,11 +61,7 @@ public class StudyTypeMySQLDAO extends AbstractMarloDAO<StudyType, Long> impleme
   public List<StudyType> findAll() {
     String query = "from " + StudyType.class.getName() + " ORDER BY order";
     List<StudyType> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

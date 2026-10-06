@@ -60,11 +60,7 @@ public class SrfSubIdoMySQLDAO extends AbstractMarloDAO<SrfSubIdo, Long> impleme
 	public List<SrfSubIdo> findAll() {
 		String query = "from " + SrfSubIdo.class.getName() + " where is_active=1";
 		List<SrfSubIdo> list = super.findAll(query);
-		if (list.size() > 0) {
-			return list;
-		}
-		return null;
-
+		return list;
 	}
 
 	@Override

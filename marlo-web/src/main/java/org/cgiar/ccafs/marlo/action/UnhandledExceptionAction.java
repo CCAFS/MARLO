@@ -55,8 +55,11 @@ public class UnhandledExceptionAction extends BaseAction {
   @Override
   public String execute() throws Exception {
     // Print the exception in the log. The page is rendered with HTTP 200, but the request failed as a 500; a client
-    // that closed the connection received nothing, so it gets no status.
-    if (!(exception instanceof ClientAbortException)) {
+    // that closed the connection received nothing, so it gets no status, not even the 401/403/404 of the page that was
+    // being written when the connection closed.
+    if (exception instanceof ClientAbortException) {
+      LogContext.removeStatusCode();
+    } else {
       LogContext.putStatusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
     LOG.error("There was an unexpected exception", exception);

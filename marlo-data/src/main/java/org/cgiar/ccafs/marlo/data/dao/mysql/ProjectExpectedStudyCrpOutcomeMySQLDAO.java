@@ -68,11 +68,7 @@ public class ProjectExpectedStudyCrpOutcomeMySQLDAO extends AbstractMarloDAO<Pro
   public List<ProjectExpectedStudyCrpOutcome> findAll() {
     String query = "from " + ProjectExpectedStudyCrpOutcome.class.getName();
     List<ProjectExpectedStudyCrpOutcome> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

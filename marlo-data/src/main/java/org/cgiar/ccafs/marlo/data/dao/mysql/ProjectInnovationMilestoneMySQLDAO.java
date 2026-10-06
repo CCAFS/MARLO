@@ -62,11 +62,7 @@ public class ProjectInnovationMilestoneMySQLDAO extends AbstractMarloDAO<Project
   public List<ProjectInnovationMilestone> findAll() {
     String query = "from " + ProjectInnovationMilestone.class.getName();
     List<ProjectInnovationMilestone> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

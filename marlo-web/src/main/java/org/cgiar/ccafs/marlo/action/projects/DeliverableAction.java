@@ -844,19 +844,8 @@ public class DeliverableAction extends BaseAction {
    * @return clusterParticipantID or 0 if the response is empty
    */
   public long getActualClusterParticipantID() {
-    DeliverableClusterParticipant clusterParticipant = null;
-    try {
-      clusterParticipant =
-        deliverableClusterParticipantManager.getDeliverableClusterParticipantByDeliverableProjectPhase(deliverableID,
-          projectID, this.getActualPhase().getId()).get(0);
-    } catch (Exception e) {
-      logger.error("error getting actual cluster participant ID", e);
-    }
-    if (clusterParticipant != null && clusterParticipant.getId() != null) {
-      return clusterParticipant.getId();
-    } else {
-      return 0;
-    }
+    DeliverableClusterParticipant clusterParticipant = this.actualDeliverableClusterParticipant();
+    return clusterParticipant != null ? clusterParticipant.getId() : 0;
   }
 
 

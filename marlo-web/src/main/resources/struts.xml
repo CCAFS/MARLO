@@ -47,6 +47,10 @@
 		</result-types>
 
 		<interceptors>
+			<!-- Logs the 401, 403 and 404 results with their status, since Struts renders them with HTTP 200 -->
+			<interceptor name="logErrorStatus"
+				class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptor" />
+
 			<!-- Interceptor to able the acces in Admin Sections -->
 			<interceptor name="accessibleAdmin"
 				class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
@@ -78,6 +82,10 @@
 			<!-- validating if the url is valid in the open session -->
 			<interceptor name="validSessionCrp"
 				class="org.cgiar.ccafs.marlo.interceptor.ValidSessionCrpInterceptor" />
+
+			<!-- answering 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
+			<interceptor name="validPhase"
+				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
 
 			<!-- Crp Admin interceptors -->
 			<interceptor name="canEditCrpAdmin"
@@ -188,29 +196,36 @@
 
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
 			<interceptor-stack name="unloggedStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			
 			<interceptor-stack name="privateStudyStack">
+        		<interceptor-ref name="logErrorStatus" />
         		<interceptor-ref name="i18nFile" />
         		<interceptor-ref name="validCrp" />
         		<interceptor-ref name="validSessionCrp" />
+        		<interceptor-ref name="validPhase" />
         		<interceptor-ref name="privateStudy" />        
         		<interceptor-ref name="defaultStack" />
             </interceptor-stack>
       
       		<interceptor-stack name="publicStudyStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="privateStudy" />
@@ -218,12 +233,15 @@
 			</interceptor-stack>
 
       <interceptor-stack name="privateSummaryStack">
+        <interceptor-ref name="logErrorStatus" />
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="requireUser" />
+        <interceptor-ref name="validPhase" />
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
 
 			<interceptor-stack name="publicSummaryStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="defaultStack" />
@@ -231,10 +249,12 @@
       
 
 			<interceptor-stack name="crpAdminStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="accessibleAdmin" />
 				<interceptor-ref name="canEditCrpAdmin" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -244,10 +264,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="impactPathwayStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditImpactPathway" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -256,10 +278,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="projectsStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
@@ -267,10 +291,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="projectListStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="SecurityControl" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
@@ -278,10 +304,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editProjectsStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditProject" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -290,10 +318,12 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="editAiStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditAi" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -302,10 +332,12 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="editProjectsBudgetStack">
+        <interceptor-ref name="logErrorStatus" />
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="validPhase" />
         <interceptor-ref name="canEditProject" />        
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
@@ -315,10 +347,12 @@
       </interceptor-stack>
 			
 			<interceptor-stack name="editProjectLp6ContributionStack">
+        <interceptor-ref name="logErrorStatus" />
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validSessionCrp" />
+        <interceptor-ref name="validPhase" />
         <interceptor-ref name="canEditProjectLp6Contribution" />
         <interceptor-ref name="keepRedirectMessages" />
         <interceptor-ref name="accessibleStage" />
@@ -327,10 +361,12 @@
       </interceptor-stack>
 
 			<interceptor-stack name="editFSStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editFunding" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -339,10 +375,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editSynthesisStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditSynthesis" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -351,10 +389,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editCrpIndicatorsStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditCrp" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -362,10 +402,12 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			<interceptor-stack name="editPublicationStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditPublication" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -374,10 +416,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editStudyStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editExpectedStudy" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -386,18 +430,22 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editProjectListStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
 				<interceptor-ref name="trimInputs" />
 			</interceptor-stack>
 
 			<interceptor-stack name="superAdminStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="superAdminValidation" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -406,10 +454,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editPowbStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditPowbSynthesis" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -418,10 +468,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editReportSynthesisStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="canEditReportSynthesis" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="accessibleStage" />
@@ -431,27 +483,33 @@
 
 			<!-- *********************************** CENTER INTERCEPTORS STACKS *********************************** -->
 			<interceptor-stack name="centerHomeStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
 			<interceptor-stack name="centerSectionStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 
 			<interceptor-stack name="centerImpactPathwayStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterImpactPathway" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -459,10 +517,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerProjectStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterProject" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -470,10 +530,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerDeliverableStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterDeliverable" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -481,10 +543,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerOutcomeStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCenterOutcome" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -492,10 +556,12 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerOutputStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validSessionCrp" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="centerAccessibleStage" />
 				<interceptor-ref name="editCenterOutput" />
 				<interceptor-ref name="keepRedirectMessages" />
@@ -503,15 +569,26 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerCapdevStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="requireUser" />
+				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="editCapdev" />
 				<interceptor-ref name="keepRedirectMessages" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			<!-- ******************************************************************************************* -->
 
+			<!-- Default for the actions that declare no interceptors: validPhase answers 404 when the phaseID does not
+				belong to the session Global Unit (A2-2606) -->
+			<interceptor-stack name="marloDefaultStack">
+				<interceptor-ref name="logErrorStatus" />
+				<interceptor-ref name="validPhase" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
 		</interceptors>
+
+		<default-interceptor-ref name="marloDefaultStack" />
 
 		<default-action-ref name="login" />
 

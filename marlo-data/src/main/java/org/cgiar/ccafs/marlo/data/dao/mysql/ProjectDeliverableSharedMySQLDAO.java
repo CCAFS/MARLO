@@ -111,11 +111,7 @@ public class ProjectDeliverableSharedMySQLDAO extends AbstractMarloDAO<ProjectDe
     createQuery.setParameter("phaseId", phaseId);
     List<ProjectDeliverableShared> result = super.findAll(createQuery);
 
-    if (result != null && !result.isEmpty()) {
-      return result;
-    }
-
-    return null;
+    return result;
   }
 
   @Override
