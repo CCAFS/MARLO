@@ -103,7 +103,8 @@
 
 [#-- Impact Pathway mini-graph: not part of the OPI design, but AICCRA already
      hides it and the other global units still rely on it. impactGraphic.js
-     renders into #mini-graphic unconditionally, so the container must exist. --]
+     renders into #mini-graphic whenever the container exists, and skips the
+     graph when it does not. --]
 [#if !centerGlobalUnit && !action.isAiccra()]
   [#-- Mini-graph --]
   <div id="graphicWrapper" class="hidden-print" style="">

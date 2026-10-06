@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/home/dashboard.js?20260828",
   "${baseUrlMedia}/js/home/schedule.js?202608262",
-  "${baseUrlCdn}/global/js/impactGraphic.js"
+  "${baseUrlCdn}/global/js/impactGraphic.js?20261006"
   ]
 /]
 [#assign customCSS = [

@@ -5,7 +5,7 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/safeguards.js?20230620",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
-  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlCdn}/global/js/impactGraphic.js?20261006",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826"
   ]
