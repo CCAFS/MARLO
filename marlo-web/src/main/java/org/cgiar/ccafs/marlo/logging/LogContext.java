@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.logging;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContextEvent;
@@ -32,11 +33,13 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /**
- * Puts the current user id, Global Unit acronym, request route and HTTP status in the SLF4J MDC, so that logback.xml
- * can print them on every log line of the request. The keys are the field names of the logging standard proposed for
- * the CGIAR tools (ENH-LOGGING-STANDARDIZATION-001): tool_name (the Global Unit), user_id, user_name,
- * controller_affected (the route) and status_code. logback.xml prints only the keys that have a value, as key=value
- * pairs (logfmt), so that the text log can be queried by field without a JSON appender.
+ * Puts a request id, the current user id, Global Unit acronym, request route and HTTP status in the SLF4J MDC, so
+ * that logback.xml can print them on every log line of the request. The keys are the field names of the logging
+ * standard proposed for the CGIAR tools (ENH-LOGGING-STANDARDIZATION-001): request_id, tool_name (the Global Unit),
+ * user_id, user_name, controller_affected (the route) and status_code. The request id is random and carries no data:
+ * it only ties together the lines of one request, and the support email of a failed request to those lines.
+ * logback.xml prints only the keys that have a value, as key=value pairs (logfmt), so that the text log can be queried
+ * by field without a JSON appender.
  * <p>
  * The route is the request path only: the query string is never logged because it can carry form values, and a
  * ;jsessionid path parameter is cut off because a session id in a log file can be used to hijack the session. A quote,
@@ -60,13 +63,15 @@ import org.slf4j.MDC;
  * clearing there guarantees that a pooled thread never carries one request's context into the next. Tomcat fails the
  * request when a request listener throws, so neither event may throw.
  * <p>
- * Only the route is written by the listener. The user and the Global Unit need the session, so they are written where
- * it is available: RequireUserInterceptor for Struts and AddSessionToRestRequestFilter for REST.
+ * Only the request id and the route are written by the listener. The user and the Global Unit need the session, so
+ * they are written where it is available: RequireUserInterceptor for Struts and AddSessionToRestRequestFilter for REST.
  */
 @WebListener
 public final class LogContext implements ServletContextListener, ServletRequestListener {
 
   public static final String CONTROLLER_AFFECTED = "controller_affected";
+
+  public static final String REQUEST_ID = "request_id";
 
   public static final String STATUS_CODE = "status_code";
 
@@ -110,6 +115,7 @@ public final class LogContext implements ServletContextListener, ServletRequestL
 
   public static void clear() {
     try {
+      MDC.remove(REQUEST_ID);
       MDC.remove(USER_ID);
       MDC.remove(TOOL_NAME);
       MDC.remove(CONTROLLER_AFFECTED);
@@ -119,6 +125,29 @@ public final class LogContext implements ServletContextListener, ServletRequestL
     } catch (RuntimeException e) {
       LOG.debug("Could not clear the log context", e);
     }
+  }
+
+  /**
+   * Returns a value of the current request's log context, so that a notification can quote the same values as the log
+   * line it reports.
+   *
+   * @param key one of the key constants of this class
+   * @return the value, or null when it is not set or cannot be read; never throws
+   */
+  public static String get(String key) {
+    try {
+      return key != null ? MDC.get(key) : null;
+    } catch (RuntimeException e) {
+      LOG.debug("Could not read the log context", e);
+      return null;
+    }
+  }
+
+  /**
+   * Returns a new request id: 16 random hexadecimal characters, enough to tell apart the requests of years of logs.
+   */
+  static String newRequestId() {
+    return String.format("%016x", ThreadLocalRandom.current().nextLong());
   }
 
   public static void putGlobalUnit(GlobalUnit globalUnit) {
@@ -338,6 +367,11 @@ public final class LogContext implements ServletContextListener, ServletRequestL
   public void requestInitialized(ServletRequestEvent event) {
     // A thread is never expected to arrive with a context, but clearing first costs nothing
     clear();
+    try {
+      MDC.put(REQUEST_ID, newRequestId());
+    } catch (RuntimeException e) {
+      LOG.debug("Could not put the request id in the log context", e);
+    }
     try {
       if (event != null && event.getServletRequest() instanceof HttpServletRequest) {
         putRoute(((HttpServletRequest) event.getServletRequest()).getRequestURI());
