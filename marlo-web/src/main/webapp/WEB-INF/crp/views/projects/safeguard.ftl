@@ -12,7 +12,7 @@
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/safeguard.css?20220512a",
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20202209",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20261006",
   "${baseUrlCdn}/global/css/impactGraphic.css"
   ]
 /]

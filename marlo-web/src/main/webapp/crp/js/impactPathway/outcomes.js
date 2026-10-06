@@ -2008,9 +2008,7 @@ function opiMissingFields($card) {
   $card.find('.opi-card__body .requiredTag').each(function() {
     var $tag = $(this);
     if (!$tag.is(':visible')) { return; }
-    var $group = $tag.closest('.form-group, .opi-grid5 > div, .opi-fieldRow__acronym, .opi-fieldRow__statement');
-    if (!$group.exists()) { $group = $tag.parent(); }
-    var $field = $group.find('input:not([type="hidden"]), textarea, select').first();
+    var $field = opiRequiredField($tag);
     if (!$field.exists()) { return; }
     var value = $.trim($field.val() || '');
     // -1 means "nothing chosen" for every select here except the target unit. There, -1 is
@@ -2049,6 +2047,37 @@ function opiMissingFields($card) {
     $missing = $missing.add($targets);
   }
   return $missing;
+}
+
+/**
+ * The control a required marker stands for: the first field in the marker's own group.
+ * @param {jQuery} $tag a .requiredTag inside an indicator card
+ * @return {jQuery} the control, empty when the group holds none
+ */
+function opiRequiredField($tag) {
+  var $group = $tag.closest('.form-group, .opi-grid5 > div, .opi-fieldRow__acronym, .opi-fieldRow__statement');
+  if (!$group.exists()) { $group = $tag.parent(); }
+  return $group.find('input:not([type="hidden"]), textarea, select').first();
+}
+
+/**
+ * Clears the asterisk of every required field that is already answered, and brings it back
+ * as soon as the field is emptied again, so a complete indicator stops flagging fields as
+ * pending. The marker is hidden with visibility, not display: :visible still matches it, and
+ * opiMissingFields() keeps counting the field the moment its value goes.
+ *
+ * A marker that is not on screen -- a collapsed card, a Target Value with no unit -- is left as
+ * it is: opiMissingFields() skipped it, so its absence from $missing says nothing about it.
+ * @param {jQuery} $card the .opi-card element
+ * @param {jQuery} $missing the controls opiMissingFields() returned for the card
+ */
+function opiRefreshRequiredMarkers($card, $missing) {
+  $card.find('.opi-card__body .requiredTag').each(function() {
+    var $tag = $(this);
+    if (!$tag.is(':visible')) { return; }
+    var $field = opiRequiredField($tag);
+    $tag.toggleClass('is-met', $field.exists() && $missing.index($field) === -1);
+  });
 }
 
 /**
@@ -2091,7 +2120,9 @@ function opiRefreshCardStatus($card) {
   if (!$card || !$card.exists() || $card.attr('id') === 'outcome-template') { return; }
   var $pill = $card.find('[data-opi-status]').first();
   if (!$pill.exists()) { return; }
-  var missing = opiCountMissing($card);
+  var $missing = opiMissingFields($card);
+  opiRefreshRequiredMarkers($card, $missing);
+  var missing = $missing.length;
   if (missing === 0) {
     $pill.removeClass('is-missing').text(opiLabel('statusComplete'));
   } else {
