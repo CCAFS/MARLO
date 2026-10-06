@@ -47,6 +47,10 @@
 		</result-types>
 
 		<interceptors>
+			<!-- Logs the 401, 403 and 404 results with their status, since Struts renders them with HTTP 200 -->
+			<interceptor name="logErrorStatus"
+				class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptor" />
+
 			<!-- Interceptor to able the acces in Admin Sections -->
 			<interceptor name="accessibleAdmin"
 				class="org.cgiar.ccafs.marlo.interceptor.admin.AccessibleAdminInterceptor" />
@@ -192,6 +196,7 @@
 
 			<!-- stack from home packgae -->
 			<interceptor-stack name="homeStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -201,6 +206,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="unloggedStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="validSessionCrp" />
@@ -209,6 +215,7 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="privateStudyStack">
+        		<interceptor-ref name="logErrorStatus" />
         		<interceptor-ref name="i18nFile" />
         		<interceptor-ref name="validCrp" />
         		<interceptor-ref name="validSessionCrp" />
@@ -218,6 +225,7 @@
             </interceptor-stack>
       
       		<interceptor-stack name="publicStudyStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="privateStudy" />
@@ -225,6 +233,7 @@
 			</interceptor-stack>
 
       <interceptor-stack name="privateSummaryStack">
+        <interceptor-ref name="logErrorStatus" />
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="requireUser" />
         <interceptor-ref name="validPhase" />
@@ -232,6 +241,7 @@
       </interceptor-stack>
 
 			<interceptor-stack name="publicSummaryStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="defaultStack" />
@@ -239,6 +249,7 @@
       
 
 			<interceptor-stack name="crpAdminStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -253,6 +264,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="impactPathwayStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -266,6 +278,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="projectsStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -278,6 +291,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="projectListStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="SecurityControl" />
@@ -290,6 +304,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editProjectsStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -303,6 +318,7 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="editAiStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -316,6 +332,7 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="editProjectsBudgetStack">
+        <interceptor-ref name="logErrorStatus" />
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
@@ -330,6 +347,7 @@
       </interceptor-stack>
 			
 			<interceptor-stack name="editProjectLp6ContributionStack">
+        <interceptor-ref name="logErrorStatus" />
         <interceptor-ref name="i18nFile" />
         <interceptor-ref name="validCrp" />
         <interceptor-ref name="requireUser" />
@@ -343,6 +361,7 @@
       </interceptor-stack>
 
 			<interceptor-stack name="editFSStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -356,6 +375,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editSynthesisStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -369,6 +389,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editCrpIndicatorsStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -381,6 +402,7 @@
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
 			<interceptor-stack name="editPublicationStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -394,6 +416,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editStudyStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -407,6 +430,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editProjectListStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -418,6 +442,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="superAdminStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validPhase" />
@@ -429,6 +454,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editPowbStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -442,6 +468,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="editReportSynthesisStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -456,6 +483,7 @@
 
 			<!-- *********************************** CENTER INTERCEPTORS STACKS *********************************** -->
 			<interceptor-stack name="centerHomeStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -465,6 +493,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerSectionStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -475,6 +504,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerImpactPathwayStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -487,6 +517,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerProjectStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -499,6 +530,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerDeliverableStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -511,6 +543,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerOutcomeStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -523,6 +556,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerOutputStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="validCrp" />
 				<interceptor-ref name="requireUser" />
@@ -535,6 +569,7 @@
 			</interceptor-stack>
 
 			<interceptor-stack name="centerCapdevStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="i18nFile" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validPhase" />
@@ -547,6 +582,7 @@
 			<!-- Default for the actions that declare no interceptors: validPhase answers 404 when the phaseID does not
 				belong to the session Global Unit (A2-2606) -->
 			<interceptor-stack name="marloDefaultStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 6.0//EN"
+	"https://struts.apache.org/dtds/struts-6.0.dtd">
+<!-- Minimal configuration for ErrorStatusLogInterceptorStrutsTest: real Struts invocations, no servlet, no Spring -->
+<struts>
+	<package name="errorStatusLogTest" namespace="/" extends="struts-default">
+		<result-types>
+			<result-type name="recording"
+				class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$RecordingResult" />
+		</result-types>
+
+		<interceptors>
+			<interceptor name="logErrorStatus" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptor" />
+			<interceptor name="deny"
+				class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$DenyInterceptor" />
+
+			<interceptor-stack name="testStack">
+				<interceptor-ref name="logErrorStatus" />
+				<interceptor-ref name="exception" />
+				<interceptor-ref name="staticParams" />
+			</interceptor-stack>
+
+			<interceptor-stack name="denyStack">
+				<interceptor-ref name="logErrorStatus" />
+				<interceptor-ref name="exception" />
+				<interceptor-ref name="staticParams" />
+				<interceptor-ref name="deny" />
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="testStack" />
+
+		<global-results>
+			<result name="401" type="recording" />
+			<result name="403" type="recording" />
+			<result name="404" type="recording" />
+			<result name="success" type="recording" />
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping exception="org.apache.shiro.authz.AuthorizationException" result="403" />
+		</global-exception-mappings>
+
+		<action name="notFound" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ResultAction">
+			<param name="resultCode">404</param>
+		</action>
+		<action name="notLogged" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ResultAction">
+			<param name="resultCode">401</param>
+		</action>
+		<action name="ok" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ResultAction">
+			<param name="resultCode">success</param>
+		</action>
+		<action name="denied" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ResultAction">
+			<interceptor-ref name="denyStack" />
+		</action>
+		<action name="shiroDenied"
+			class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ShiroDeniedAction" />
+		<action name="failing" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$FailingAction" />
+		<action name="chained" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ResultAction">
+			<param name="resultCode">chain</param>
+			<result name="chain" type="chain">notFound</result>
+		</action>
+	</package>
+
+	<package name="errorStatusLogTestNoResults" namespace="/noResults" extends="struts-default">
+		<interceptors>
+			<interceptor name="logErrorStatus" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptor" />
+		</interceptors>
+		<action name="unmapped" class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptorStrutsTest$ResultAction">
+			<param name="resultCode">403</param>
+			<interceptor-ref name="logErrorStatus" />
+			<interceptor-ref name="staticParams" />
+		</action>
+	</package>
+</struts>

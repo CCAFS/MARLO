@@ -6,6 +6,10 @@
 	<package name="json" namespace="/" extends="json-default">
 
 		<interceptors>
+			<!-- Logs the 401, 403 and 404 results with their status, since Struts renders them with HTTP 200 -->
+			<interceptor name="logErrorStatus"
+				class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptor" />
+
 			<!-- Json interceptors -->
 			<interceptor name="SecurityControl"
 				class="org.cgiar.ccafs.marlo.interceptor.json.SecurityJsonInterceptor" />
@@ -18,6 +22,7 @@
 				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
 
 			<interceptor-stack name="jsonStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="SecurityControl" />
@@ -25,6 +30,7 @@
 			</interceptor-stack>
 			
 			<interceptor-stack name="jsonStackWithAudit">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="requireUser" />
 				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
@@ -62,6 +68,7 @@
 
 		<action name="uploadFundingSource"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			<result type="json">
@@ -72,6 +79,7 @@
 
 		<action name="uploadFundingSourceResearch"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadFundingSourceFileResearchAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -83,6 +91,7 @@
 
 		<action name="uploadPowbSynthesis"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadPowbSynthesisGeneral">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -94,6 +103,7 @@
 
 		<action name="uploadStudies"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadStudiesFileAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -105,6 +115,7 @@
 
 		<action name="uploadProjectLocationActivitiesCSV"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadProjectLocationActivitiesCSVAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -116,6 +127,7 @@
 
 		<action name="uploadPartnership"
 			class="org.cgiar.ccafs.marlo.action.json.annualReport.y2018.UploadPartnershipFileAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -127,6 +139,7 @@
 
 		<action name="uploadBaseLine"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadBaseLineFileAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -605,6 +618,7 @@
 
 		<action name="uploadDeliverable"
 			class="org.cgiar.ccafs.marlo.action.json.project.UploadDeliverableAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -674,6 +688,7 @@
 
 		<action name="globalUnitLogoUpload"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.UploadGlobalUnitLogoAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			<interceptor-ref name="fileUpload">
@@ -695,6 +710,7 @@
 
 		<action name="unsubmitImpactpathway"
 			class="org.cgiar.ccafs.marlo.action.json.impactpathway.UnSubmitImpactpathwayAction">
+			<interceptor-ref name="logErrorStatus" />
 			<interceptor-ref name="validPhase" />
 			<interceptor-ref name="defaultStack" />
 			
@@ -1349,11 +1365,16 @@
 		extends="json-default">
 
 		<interceptors>
+			<!-- Logs the 401, 403 and 404 results with their status, since Struts renders them with HTTP 200 -->
+			<interceptor name="logErrorStatus"
+				class="org.cgiar.ccafs.marlo.interceptor.ErrorStatusLogInterceptor" />
+
 			<!-- answering 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
 			<interceptor name="validPhase"
 				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
 
 			<interceptor-stack name="jsonPlanningStack">
+				<interceptor-ref name="logErrorStatus" />
 				<interceptor-ref name="validPhase" />
 				<interceptor-ref name="defaultStack" />
 			</interceptor-stack>
