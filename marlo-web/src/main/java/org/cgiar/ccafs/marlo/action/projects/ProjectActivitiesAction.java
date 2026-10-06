@@ -412,7 +412,7 @@ public class ProjectActivitiesAction extends BaseAction {
           .ofNullable(this.activityManager.getActiveActivitiesByProject(projectID, this.getActualPhase().getId()))
           .orElse(Collections.emptyList()));
         
-        // Siempre inicializar projectActivities para que Struts2 pueda poblarla en HTTP POST
+        // Always initialize projectActivities so Struts2 can populate it on an HTTP POST
         project.setProjectActivities(new ArrayList<Activity>(activities));
         logger.info("PREPARE (not draft): Initialized projectActivities with {} existing activities", activities.size());
         project.setProjectInfo(project.getProjecInfoPhase(this.getActualPhase()));
@@ -522,8 +522,8 @@ public class ProjectActivitiesAction extends BaseAction {
     this.setBasePermission(this.getText(Permission.PROJECT_ACTIVITIES_BASE_PERMISSION, params));
 
     if (this.isHttpPost()) {
-      // NO usar clear() - Struts2 necesita una lista nueva para popular correctamente
-      // Si usamos clear(), Struts2 agrega elementos null en lugar de crear objetos Activity
+      // Do NOT use clear() - Struts2 needs a new list to populate it correctly
+      // With clear(), Struts2 adds null elements instead of creating Activity objects
       logger.info("PREPARE (HTTP POST): Replacing projectActivities list for Struts2 population");
       project.setProjectActivities(new ArrayList<Activity>());
 
@@ -533,7 +533,7 @@ public class ProjectActivitiesAction extends BaseAction {
        * }
        */
 
-      // Reemplazar las otras listas también
+      // Replace the other lists too
       partnerPersons = new ArrayList<>();
       activityTitles = new ArrayList<>();
       project.setProjectDeliverables(new ArrayList<>());
@@ -596,7 +596,8 @@ public class ProjectActivitiesAction extends BaseAction {
           if (!hasOtherData) {
             continue;
           }
-          titleParam = "New Activity";
+          // No title arrived: leave it empty so saveActivitiesNewData() keeps the stored one of an existing row
+          titleParam = null;
         }
 
         Activity activity = new Activity();
@@ -614,15 +615,18 @@ public class ProjectActivitiesAction extends BaseAction {
 
         // Activity Title
         if (!this.isProjectActivityCreationActive()) {
-          try {
-            long activityTitleId = Long.parseLong(titleParam);
-            ActivityTitle activityTitle = activityTitleManager.getActivityTitleById(activityTitleId);
-            activity.setActivityTitle(activityTitle);
-            if (activityTitle != null) {
-              activity.setTitle(activityTitle.getTitle());
+          // A read-only select posts an empty id: no catalog entry, so the stored title is kept on save
+          if (titleParam != null) {
+            try {
+              long activityTitleId = Long.parseLong(titleParam);
+              ActivityTitle activityTitle = activityTitleManager.getActivityTitleById(activityTitleId);
+              activity.setActivityTitle(activityTitle);
+              if (activityTitle != null) {
+                activity.setTitle(activityTitle.getTitle());
+              }
+            } catch (NumberFormatException e) {
+              logger.warn("Error parsing activityTitle.id at index {}: {}", index, e.getMessage());
             }
-          } catch (NumberFormatException e) {
-            logger.warn("Error parsing activityTitle.id at index {}: {}", index, e.getMessage());
           }
         } else {
           activity.setTitle(titleParam);
@@ -636,7 +640,7 @@ public class ProjectActivitiesAction extends BaseAction {
         String startDate = this.getRequest().getParameter("project.projectActivities[" + index + "].startDate");
         if (startDate != null && !startDate.trim().isEmpty()) {
           try {
-            // Asumiendo formato yyyy-MM-dd o similar
+            // Assuming the yyyy-MM-dd format or similar
             activity.setStartDate(java.sql.Date.valueOf(startDate));
           } catch (Exception e) {
             logger.warn("Error parsing startDate at index {}: {}", index, e.getMessage());
@@ -716,7 +720,7 @@ public class ProjectActivitiesAction extends BaseAction {
         try {
           DeliverableActivity delActivity = new DeliverableActivity();
           
-          // ID del deliverable
+          // Deliverable id
           long deliverableId = Long.parseLong(deliverableIdParam);
           Deliverable deliverable = deliverableManager.getDeliverableById(deliverableId);
           delActivity.setDeliverable(deliverable);
@@ -746,7 +750,7 @@ public class ProjectActivitiesAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
       
-      // Manual binding de actividades desde request parameters
+      // Manual binding of the activities from the request parameters
       this.bindActivitiesFromRequest();
 
       // 2024/07/03 gamboa projectBD.getActivities() was changed by this.activityManager.getActiveActivitiesByProject to
@@ -837,18 +841,16 @@ public class ProjectActivitiesAction extends BaseAction {
 
       boolean isNew = activityUI.getId() == null || activityUI.getId() == -1;
       Activity activityEntity = isNew ? new Activity() : activityManager.getActivityById(activityUI.getId());
+      if (activityEntity == null) {
+        logger.warn("SAVE: activity {} of project {} was not found, so it is not saved", activityUI.getId(),
+          projectID);
+        continue;
+      }
 
 
       activityEntity.setProject(project);
       activityEntity.setPhase(this.getActualPhase());
-      activityEntity.setActivityTitle(activityUI.getActivityTitle());
-      if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getTitle() != null) {
-        activityEntity.setTitle(activityUI.getActivityTitle().getTitle());
-      } else if (StringUtils.isNotBlank(activityUI.getTitle())) {
-        activityEntity.setTitle(activityUI.getTitle());
-      } else {
-        activityEntity.setTitle("New Activity");
-      }
+      this.applyActivityTitle(activityEntity, activityUI, isNew);
       activityEntity.setDescription(activityUI.getDescription());
       activityEntity.setStartDate(activityUI.getStartDate());
       activityEntity.setEndDate(activityUI.getEndDate());
@@ -864,7 +866,7 @@ public class ProjectActivitiesAction extends BaseAction {
       // Activity title (only when it comes from the catalog)
       handleActivityTitle(activityEntity);
 
-      // Deliverables - guardar tanto para actividades nuevas como existentes
+      // Deliverables - saved for both new and existing activities
       if (activityUI.getDeliverables() != null && !activityUI.getDeliverables().isEmpty()) {
         activityEntity.setDeliverables(activityUI.getDeliverables());
       }
@@ -878,6 +880,41 @@ public class ProjectActivitiesAction extends BaseAction {
     }
 
 
+  }
+
+  /**
+   * Copies the submitted title onto the activity that is saved, without losing the stored one.
+   * - A catalog entry, when one arrived, sets both the catalog link and the title.
+   * - A typed title (free-text mode) replaces the stored one only when it changed. An unchanged title keeps the
+   * catalog link of a row created from the catalog; a changed one drops it, since the catalog entry would
+   * otherwise hide the typed text.
+   * - An existing row that arrives without a usable title (a read-only select posts an empty id, or the user
+   * cleared the text) keeps its stored title and link. The validator still reports the missing title.
+   * - A new row without a title starts as "New Activity".
+   *
+   * @param activityEntity the activity that is saved
+   * @param activityUI the activity bound from the request
+   * @param isNew whether the activity is created by this save
+   */
+  private void applyActivityTitle(Activity activityEntity, Activity activityUI, boolean isNew) {
+    if (activityUI.getActivityTitle() != null && activityUI.getActivityTitle().getTitle() != null) {
+      activityEntity.setActivityTitle(activityUI.getActivityTitle());
+      activityEntity.setTitle(activityUI.getActivityTitle().getTitle());
+      return;
+    }
+
+    if (this.isProjectActivityCreationActive() && StringUtils.isNotBlank(activityUI.getTitle())) {
+      if (isNew || !activityUI.getTitle().equals(activityEntity.getTitle())) {
+        activityEntity.setActivityTitle(null);
+        activityEntity.setTitle(activityUI.getTitle());
+      }
+      return;
+    }
+
+    if (isNew) {
+      activityEntity.setActivityTitle(null);
+      activityEntity.setTitle("New Activity");
+    }
   }
 
   private ProjectPartnerPerson getValidPartnerPerson(Activity activity) {
