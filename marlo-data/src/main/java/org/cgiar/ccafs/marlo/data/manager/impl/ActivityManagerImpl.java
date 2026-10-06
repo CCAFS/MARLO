@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -311,37 +312,48 @@ public class ActivityManagerImpl implements ActivityManager {
 
   }
 
+  private boolean isInPhase(DeliverableActivity deliverableActivity, Phase phase) {
+    return deliverableActivity.getPhase() != null && deliverableActivity.getPhase().getId() != null && phase != null
+      && deliverableActivity.getPhase().getId().equals(phase.getId());
+  }
+
   /**
    * Save/Delete activityDeliverable of the current phase
    */
   private void saveCurrentPhaseDeliverables(Activity activityUI, List<DeliverableActivity> deliverableActivitiesUI,
     Phase currentPhase) {
-    List<DeliverableActivity> deliverableActivitiesDB =
-      activityUI.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList());
+    // Oldest first, so the link kept among duplicates is always the same one
+    List<DeliverableActivity> deliverableActivitiesDB = activityUI.getDeliverableActivities().stream()
+      .filter(da -> da.isActive())
+      .sorted(Comparator.comparing(DeliverableActivity::getId, Comparator.nullsLast(Comparator.naturalOrder())))
+      .collect(Collectors.toList());
     if (deliverableActivitiesUI != null) {
       // Links are matched by deliverable. The ones bound from the request carry no id, so matching them by entity
       // deactivated every stored link and created it again on each save, in this phase and every later one.
       Set<Long> deliverableIdsUI = deliverableActivitiesUI.stream()
         .filter(da -> da != null && da.getDeliverable() != null && da.getDeliverable().getId() != null)
         .map(da -> da.getDeliverable().getId()).collect(Collectors.toSet());
-      Set<Long> deliverableIdsDB = new HashSet<>();
+      Set<Long> deliverableIdsInPhase = new HashSet<>();
 
-      // Delete the stored links whose deliverable is no longer listed
       for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
         Long deliverableId =
           deliverableActivity.getDeliverable() != null ? deliverableActivity.getDeliverable().getId() : null;
-        if (deliverableId != null && deliverableIdsUI.contains(deliverableId)) {
-          deliverableIdsDB.add(deliverableId);
-        } else {
+        if (deliverableId == null || !deliverableIdsUI.contains(deliverableId)) {
+          // The deliverable is no longer listed
+          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+        } else if (this.isInPhase(deliverableActivity, currentPhase)
+          && !deliverableIdsInPhase.add(deliverableId)) {
+          // A repeated link to the same deliverable in this phase adds nothing and inflated the form past the
+          // server's request parameter limit. Links of other phases are left alone: a past phase is never written.
           deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 
-      // Add a link for each listed deliverable that has none yet
+      // Add a link for each listed deliverable that has none in this phase yet
       for (DeliverableActivity deliverableActivity : deliverableActivitiesUI) {
         if (deliverableActivity == null || deliverableActivity.getDeliverable() == null
           || deliverableActivity.getDeliverable().getId() == null
-          || !deliverableIdsDB.add(deliverableActivity.getDeliverable().getId())) {
+          || !deliverableIdsInPhase.add(deliverableActivity.getDeliverable().getId())) {
           continue;
         }
         DeliverableActivity deliverableActivityNew = new DeliverableActivity();
