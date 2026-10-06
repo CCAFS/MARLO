@@ -37,6 +37,12 @@ function attachEvents() {
   // $('[name="cycle"], [name="year"]').on('change', changePhaseParameters);
     $('[name="phaseID"]').on('change', changePhaseParameters);
 
+  // Block reports that need a project or cluster when none is selected
+  $('.summariesFiles.allowProjectID form').on('submit', validateProjectSelection);
+  $('.summariesFiles.allowProjectID select[name="projectID"]').on('change', function() {
+    $(this).next().removeClass('fieldError');
+  });
+
   // Show or hide select a cluster
   $('#AICCRA_progressReportProcessSummary #1-showAllYears-false').on('click', hideShowClusterSelect);
   $('#AICCRA_progressReportProcessSummary #1-showAllYears-true').on('click', hideShowClusterSelect);
@@ -52,6 +58,26 @@ function hideShowClusterSelect() {
   } else {
     $('#AICCRA_progressReportProcessSummary').children().eq(1).show('slow');
   }
+}
+
+/**
+ * Stops the submit while the project list is empty (still loading, or a phase without projects) or the placeholder
+ * is selected, since the report cannot be built without a project. A hidden select is not required.
+ */
+function validateProjectSelection(e) {
+  var $select = $(this).find('select[name="projectID"]');
+  if (!$select.length || !$select.closest('.form-group').is(':visible')) {
+    return;
+  }
+
+  var projectID = $select.val();
+  if (projectID == null || projectID == "" || projectID == "-1") {
+    e.preventDefault();
+    $select.next().addClass('fieldError');
+    return;
+  }
+
+  $select.next().removeClass('fieldError');
 }
 
 function changePhaseParameters(){
@@ -144,6 +170,9 @@ function getProjectsByCycleYear(parent, phaseID) {
         $.each(m.projects, function(i,e) {
           $parent.find(".allProjectsSelect").addOption(e.id, "C" + e.id + " - " + e.description);
         })
+        if (m.projects && m.projects.length) {
+          $parent.find(".allProjectsSelect").next().removeClass('fieldError');
+        }
       },
       complete: function() {
         $parent.find('.loading').fadeOut();

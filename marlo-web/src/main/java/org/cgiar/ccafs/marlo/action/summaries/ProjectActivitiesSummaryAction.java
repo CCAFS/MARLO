@@ -108,7 +108,6 @@ import javax.inject.Named;
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
-import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -452,7 +451,10 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
   @Override
   public String execute() throws Exception {
 
-    if (this.getSelectedPhase() == null) {
+    // A missing or unknown projectID, a project without info in this phase, or one without an active origin global
+    // unit (needed for the file name and the report header) has no report to build
+    if (this.getSelectedPhase() == null || project == null || projectInfo == null
+      || this.getOriginGlobalUnitProject() == null) {
       return NOT_FOUND;
     }
 
@@ -711,7 +713,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
           }
           status = ProjectStatusEnum.getValue(activity.getActivityStatus().intValue()).getStatus();
         } catch (Exception e) {
-          Log.error("error in deliverableActivityList");
+          LOG.error("Error building the deliverables of activity {}", activity.getId(), e);
         }
         model.addRow(new Object[] {activity.getId(), activity.getTitle(), activity.getDescription(), startDate, endDate,
           institution, activityLeader, status, deliverables});
@@ -1113,8 +1115,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
   @Override
   public String getFileName() {
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    GlobalUnitProject globalUnitProject = this.getOriginGlobalUnitProject();
 
     StringBuffer fileName = new StringBuffer();
     fileName.append("ProjectActivitiesSummary-");
@@ -1340,8 +1341,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     // Add center url to LOG
     // LOG.info("Center URL is: " + centerURL);
     // Get The Crp/Center/Platform where the project was created
-    GlobalUnitProject globalUnitProject = project.getGlobalUnitProjects().stream()
-      .filter(gu -> gu.isActive() && gu.isOrigin()).collect(Collectors.toList()).get(0);
+    GlobalUnitProject globalUnitProject = this.getOriginGlobalUnitProject();
     centerURL = globalUnitProject.getGlobalUnit().getAcronym();
     Boolean isAdministrative = false;
     String type = "Research Project";
@@ -1424,6 +1424,19 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       }
     }
     return outputs;
+  }
+
+  /**
+   * Gets the active global unit where the project was created.
+   * 
+   * @return the origin GlobalUnitProject, or null when the project is missing or has no active origin
+   */
+  private GlobalUnitProject getOriginGlobalUnitProject() {
+    if (project == null || project.getGlobalUnitProjects() == null) {
+      return null;
+    }
+    return project.getGlobalUnitProjects().stream().filter(gu -> gu != null && gu.isActive() && gu.isOrigin())
+      .findFirst().orElse(null);
   }
 
   public Project getProject() {
@@ -1715,7 +1728,9 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     } catch (Exception e) {
       LOG.error("Failed to get project. Exception: " + e.getMessage());
     }
-    this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    if (this.getSelectedPhase() != null && project != null) {
+      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    }
   }
 
 
