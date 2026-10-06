@@ -62,11 +62,7 @@ public class CgiarCrossCuttingMarkerMySQLDAO extends AbstractMarloDAO<CgiarCross
   public List<CgiarCrossCuttingMarker> findAll() {
     String query = "from " + CgiarCrossCuttingMarker.class.getName();
     List<CgiarCrossCuttingMarker> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override
