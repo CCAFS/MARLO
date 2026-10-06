@@ -1,7 +1,7 @@
 # Logging Standardization — Agent Context
 
 **Spec:** ENH-LOGGING-STANDARDIZATION-001
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-10-06
 **Read this first.** Open `requirements.md` / `design.md` / `task.md` only for broad, architectural or
 formally tracked work.
 
@@ -26,7 +26,7 @@ One JSON object per line, written by the `FILE-JSON` appender to
 |---|---|---|---|
 | `timestamp` | str | Logback | always, ISO 8601 UTC, ms |
 | `level` | str | call site | always |
-| `request_id` | str | `LoggingContextFilter`, generated | every event inside a request |
+| `request_id` | str | `LogContext` request listener, random; already `request_id=` in the text log | every event inside a request |
 | `environment` | str | `APConfig.getEnvironment()` ← Spring active profile | always |
 | `tool_name` | str | `BaseAction.getCurrentCrp()` / `SESSION_CRP`; REST: `AddSessionToRestRequestFilter.addCrpToSession()` | once the global unit is known |
 | `module_section` | str | logger name (the emitting class) | always |
@@ -136,9 +136,12 @@ a number, must be conditional on another field, or must be omitted when empty, i
 **Adding a REST error handler:** log it in `ExceptionTranslator` with the status its `@ResponseStatus`
 declares — 5xx at ERROR, 4xx at WARN or INFO. Do not change the `ErrorDTO` shape; clients depend on it.
 
-**Changing what alerts:** `UnhandledExceptionAction` + `SendMailS`. Alerts fire from **500**, not 400 — 177 of
-the `HttpStatus` usages in the REST layer are `NOT_FOUND`, overwhelmingly legitimate. Deduplication is keyed
-on `tool_name + module_section + status_code`; adding a channel means changing that key, not adding a notifier.
+**Changing what alerts:** `UnhandledExceptionAction` (Struts) and `ExceptionTranslator.notifySupport` (REST),
+both through `SendMailS`. Alerts fire from **500**, not 400 — 177 of the `HttpStatus` usages in the REST layer
+are `NOT_FOUND`, overwhelmingly legitimate. Whether a mail goes out is decided by
+`logging/ErrorNotificationThrottle`: the key is `tool_name + route + exception class + throwing frame +
+status_code` (REST: the handler's mapping pattern, never the called path), one hour, with the suppressed count
+in the next mail. A new channel goes through the same throttle; never add a second notifier.
 
 **Silencing framework noise:** add a logger-scoped `<logger>` entry in `logback.xml`, as A2-2435 Part 1 did for
 the two `net.sf.ehcache.pool.sizeof.*` classes (31,983 lines, 37% of a dev log). Logger-scoped entries apply to
