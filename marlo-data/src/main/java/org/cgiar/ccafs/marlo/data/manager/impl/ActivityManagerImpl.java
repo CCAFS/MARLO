@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -51,20 +50,17 @@ public class ActivityManagerImpl implements ActivityManager {
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
   private DeliverableActivityDAO deliverableActivityDAO;
-  private DeliverableActivityManager deliverableActivityManager;
   private ProjectPartnerPersonDAO projectPartnerPersonDAO;
 
 
   @Inject
   public ActivityManagerImpl(ActivityDAO activityDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO,
-    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO,
-    DeliverableActivityManager deliverableActivityManager) {
+    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO) {
     this.activityDAO = activityDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
     this.deliverableActivityDAO = deliverableActivityDAO;
     this.projectPartnerPersonDAO = projectPartnerPersonDAO;
-    this.deliverableActivityManager = deliverableActivityManager;
   }
 
   /**
@@ -318,7 +314,10 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   /**
-   * Save/Delete activityDeliverable of the current phase
+   * Save/Delete activityDeliverable of the current phase.
+   * Links are written through the DAO, one row each. saveActivity and saveActvityPhase already visit every later
+   * phase and give each copy its own links; DeliverableActivityManager would replicate every link once more into
+   * those phases, attached to the activity of the phase being saved.
    */
   private void saveCurrentPhaseDeliverables(Activity activityUI, List<DeliverableActivity> deliverableActivitiesUI,
     Phase currentPhase) {
@@ -340,13 +339,11 @@ public class ActivityManagerImpl implements ActivityManager {
           deliverableActivity.getDeliverable() != null ? deliverableActivity.getDeliverable().getId() : null;
         if (deliverableId == null || !deliverableIdsUI.contains(deliverableId)) {
           // The deliverable is no longer listed
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         } else if (this.isInPhase(deliverableActivity, currentPhase)
           && !deliverableIdsInPhase.add(deliverableId)) {
           // A repeated link to the same deliverable in this phase adds nothing and inflated the form past the
           // server's request parameter limit. Links of other phases are left alone: a past phase is never written.
-          // It is deactivated through the DAO: the manager would walk every later phase for each one, and the link
-          // that is kept still carries the deliverable there.
           deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
@@ -360,7 +357,7 @@ public class ActivityManagerImpl implements ActivityManager {
         }
         DeliverableActivity deliverableActivityNew = new DeliverableActivity();
         this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
-        deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+        deliverableActivityDAO.save(deliverableActivityNew);
         // This is to add DeliverableActivity to generate correct auditlog.
         activityUI.getDeliverableActivities().add(deliverableActivityNew);
       }
@@ -368,7 +365,7 @@ public class ActivityManagerImpl implements ActivityManager {
       // delete all from db
       if (deliverableActivitiesDB != null && !deliverableActivitiesDB.isEmpty()) {
         for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 
