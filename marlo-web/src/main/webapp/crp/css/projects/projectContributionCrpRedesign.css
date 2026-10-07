@@ -243,7 +243,11 @@
   gap: 16px;
 }
 .cpi-page .cpi-fields__values > .cpi-field { min-width: 0; margin-bottom: 8px; }
-.cpi-page .cpi-field { margin-bottom: 16px; position: relative; }
+/* flow-root keeps each field's floats inside it. A textarea's word counter (p.charCount,
+   global.css) floats right at nearly full width; uncleared, it ran into the next field,
+   and that field's .feedback-flex-items -- a flex container, so it avoids floats -- shrank
+   to the few pixels left and squeezed its textarea against the left edge. */
+.cpi-page .cpi-field { display: flow-root; margin-bottom: 16px; position: relative; }
 /* With feedback on, addfeedbackFlexItemsClass() (feedbackAutoImplementation.js)
    moves a commentable field and its comment bubble into this wrapper. It must keep
    its content's height: a 0-height wrapper centres the field on a zero line, so
@@ -490,6 +494,32 @@
 .cpi-page .cpi-dt--empty { padding: 9px 12px; background: var(--cpi-soft); }
 .cpi-page .cpi-dt--empty .cpi-dt__note { font-size: 12.5px; color: var(--cpi-muted); }
 .cpi-page .cpi-empty { padding: 14px; text-align: center; color: var(--cpi-muted); }
+
+/* A disaggregated target's own period target, above its fields, and the way back to
+ * where it is configured (A2-2620, A2-2623). */
+.cpi-page .cpi-dt__target {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-bottom: 14px;
+}
+.cpi-page .cpi-dt__resolved { margin-left: 4px; font-size: 12.5px; font-weight: 400; color: var(--cpi-muted); }
+.cpi-page .cpi-opi-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--cpi-brand);
+  white-space: nowrap;
+}
+.cpi-page .cpi-opi-link:hover,
+.cpi-page .cpi-opi-link:focus { color: var(--cpi-brand-dark); text-decoration: underline; }
+.cpi-page .cpi-dt--empty .cpi-opi-link { margin-left: 10px; }
+/* "25% of 100 = 25": the absolute figure a percentage field represents. */
+.cpi-page .cpi-field__resolved { display: block; margin-top: 5px; font-size: 12px; font-weight: 500; color: var(--cpi-ink); }
 
 /* ── Additional questions ─────────────────────────────────────────
  * The statement is the label, so it carries the required marker and the
