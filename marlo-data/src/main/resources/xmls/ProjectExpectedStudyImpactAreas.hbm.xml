@@ -27,6 +27,9 @@
             fetch="select" update="false">
             <column name="created_by" not-null="true" />
         </many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User" fetch="select">
+            <column name="modified_by" />
+		</many-to-one>
 		<many-to-one name="projectExpectedStudy"
             class="org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy" fetch="select">
             <column name="expected_id" />

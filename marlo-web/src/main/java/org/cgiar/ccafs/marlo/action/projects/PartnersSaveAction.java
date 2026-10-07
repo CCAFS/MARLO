@@ -511,7 +511,7 @@ public class PartnersSaveAction extends BaseAction {
         this.getCurrentUser().getEmail(), fundingSourceID);
     }
 
-    if (this.isAiccra() && postFailed) {
+    if (postFailed) {
       return INPUT;
     } else {
       Collection<String> messages = this.getActionMessages();

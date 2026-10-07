@@ -362,9 +362,10 @@ public class User extends MarloAuditableEntity implements java.io.Serializable, 
 
   @Override
   public String toString() {
-    return "User [id=" + this.getId() + ", firstName=" + firstName + ", lastName=" + lastName + ", username=" + username
-      + ", email=" + email + ", password=" + password + ", cgiarUser=" + cgiarUser + ", Active=" + this.isActive()
-      + ", lastLogin=" + lastLogin + "]";
+    // Credentials and personal data are left out on purpose: entities are logged with {} (HibernateAuditLogListener,
+    // and every entity whose own toString embeds its user), so anything printed here ends up in the log files
+    return "User [id=" + this.getId() + ", cgiarUser=" + cgiarUser + ", Active=" + this.isActive() + ", lastLogin="
+      + lastLogin + "]";
   }
 }
 

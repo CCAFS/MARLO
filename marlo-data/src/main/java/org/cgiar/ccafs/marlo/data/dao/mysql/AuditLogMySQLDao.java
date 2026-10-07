@@ -51,6 +51,8 @@ import org.hibernate.type.OneToOneType;
 import org.hibernate.type.OrderedSetType;
 import org.hibernate.type.SetType;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -58,6 +60,8 @@ import org.hibernate.type.Type;
  */
 @Named
 public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implements AuditLogDao {
+
+  private static final Logger LOG = LoggerFactory.getLogger(AuditLogMySQLDao.class);
 
   public String baseModelPakcage = "org.cgiar.ccafs.marlo.data.model";
   public UserDAO userDao;
@@ -135,20 +139,14 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
       Auditlog log = auditLogs.get(0);
       IAuditLog iAuditLog = this.loadFromAuditLog(log);
+      if (iAuditLog == null) {
+        return null;
+      }
       try {
         this.loadRelationsForIAuditLog(iAuditLog, transactionID);
-      } catch (NoSuchFieldException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (SecurityException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IllegalArgumentException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+        LOG.error("Could not load the relations of the history of transaction {}, so they are left out",
+          transactionID, e);
       }
       return iAuditLog;
 
@@ -200,7 +198,8 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
 
       if (!super.doesTableExist("auditlog")) {
-        System.out.println("The table is not  in good condition");
+        LOG.warn("The auditlog table does not exist, so the history of {} {} cannot be listed",
+          classAudit, id);
         return null;
       }
 
@@ -218,7 +217,7 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
       }
       return auditLogs;
     } catch (Exception e) {
-      System.out.println("Error in listLogs function " + e.getMessage());
+      LOG.error("Could not list the history of {} {}", classAudit, id, e);
       return null;
     }
 
@@ -226,6 +225,11 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
 
   public IAuditLog loadFromAuditLog(Auditlog auditlog) {
+    if (auditlog == null || auditlog.getEntityName() == null) {
+      LOG.warn("Could not rebuild an entity from the audit log {}, because it has no entity name",
+        auditlog == null ? null : auditlog.getId());
+      return null;
+    }
     try {
       Gson gson = new GsonBuilder().registerTypeAdapter(Integer.class, new IntegerTypeAdapter())
         .registerTypeAdapter(Long.class, new LongTypeAdapter())
@@ -237,6 +241,11 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
       Class<?> classToCast = Class.forName(auditlog.getEntityName().replace("class ", ""));
       IAuditLog iAuditLog = (IAuditLog) gson.fromJson(auditlog.getEntityJson(), classToCast);
+      if (iAuditLog == null) {
+        LOG.warn("Could not rebuild the entity {} {} from the audit log {}, because it has no entity JSON",
+          auditlog.getEntityName(), auditlog.getEntityId(), auditlog.getId());
+        return null;
+      }
       if (iAuditLog.getModifiedBy() != null && iAuditLog.getModifiedBy().getId() != null) {
         iAuditLog.setModifiedBy(userDao.getUser(iAuditLog.getModifiedBy().getId()));
       } else {
@@ -244,11 +253,9 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
       }
 
       return iAuditLog;
-    } catch (JsonSyntaxException e) {
-      e.printStackTrace();
-    } catch (ClassNotFoundException e) {
-
-      e.printStackTrace();
+    } catch (JsonSyntaxException | ClassNotFoundException | ClassCastException e) {
+      LOG.error("Could not rebuild the entity {} {} from the audit log {}", auditlog.getEntityName(),
+        auditlog.getEntityId(), auditlog.getId(), e);
     }
 
     return null;
@@ -256,10 +263,18 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
 
   public void loadRelationsForIAuditLog(IAuditLog iAuditLog, String transactionID)
     throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    if (iAuditLog == null) {
+      return;
+    }
     try {
 
       Session session = super.getSessionFactory().getCurrentSession();
       ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(iAuditLog.getClass());
+      if (classMetadata == null) {
+        LOG.warn("Could not load the history relations of {}, because it is not a mapped entity",
+          iAuditLog.getClass().getName());
+        return;
+      }
       String[] propertyNames = classMetadata.getPropertyNames();
       for (String name : propertyNames) {
         try {
@@ -283,17 +298,20 @@ public class AuditLogMySQLDao extends AbstractMarloDAO<Auditlog, Long> implement
             Set<IAuditLog> relation = new HashSet<IAuditLog>();
             for (Auditlog auditlog : auditLogsRelations) {
               IAuditLog relationObject = this.loadFromAuditLog(auditlog);
-              this.loadRelationsForIAuditLog(relationObject, transactionID);
-              relation.add(relationObject);
+              if (relationObject != null) {
+                this.loadRelationsForIAuditLog(relationObject, transactionID);
+                relation.add(relationObject);
+              }
             }
             classMetadata.setPropertyValue(iAuditLog, name, relation);
           }
         } catch (Exception e) {
-
+          LOG.debug("Skipped the property {} of {} while loading the history relations", name,
+            iAuditLog.getClass().getName(), e);
         }
       }
     } catch (JsonSyntaxException e) {
-      e.printStackTrace();
+      LOG.error("Could not load the history relations of transaction {}", transactionID, e);
     }
 
   }

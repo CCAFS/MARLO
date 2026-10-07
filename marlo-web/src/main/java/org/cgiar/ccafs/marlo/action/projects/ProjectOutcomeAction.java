@@ -246,54 +246,50 @@ public class ProjectOutcomeAction extends BaseAction {
   public void canBeEditedMilestoneExpectedValue() {
     editMilestoneExpectedValue = false;
     // Modify the editExpectedValue value for AICCRA
-    if (this.isAiccra()) {
-      if (!this.isAdmin()) {
-        if (projectOutcome != null && projectOutcome.getMilestones() != null) {
+    if (!this.isAdmin()) {
+      if (projectOutcome != null && projectOutcome.getMilestones() != null) {
 
-          for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
-            if (milestone.getExpectedValue() == null
-              || (milestone.getExpectedValue() != null && milestone.getExpectedValue() == 0.0)) {
-              // Null expected value
-              editMilestoneExpectedValue = true;
-            } else {
-              // Not null Expected value
-              editMilestoneExpectedValue = false;
-            }
+        for (ProjectMilestone milestone : projectOutcome.getMilestones()) {
+          if (milestone.getExpectedValue() == null
+            || (milestone.getExpectedValue() != null && milestone.getExpectedValue() == 0.0)) {
+            // Null expected value
+            editMilestoneExpectedValue = true;
+          } else {
+            // Not null Expected value
+            editMilestoneExpectedValue = false;
           }
-
-        } else {
-          // Null project outcome
-          editMilestoneExpectedValue = false;
         }
+
       } else {
-        // User is admin
-        editMilestoneExpectedValue = true;
+        // Null project outcome
+        editMilestoneExpectedValue = false;
       }
+    } else {
+      // User is admin
+      editMilestoneExpectedValue = true;
     }
   }
 
   public void canBeEditedOutcomeExpectedValue() {
     editOutcomeExpectedValue = false;
     // Modify the editExpectedValue value for AICCRA
-    if (this.isAiccra()) {
-      if (!this.isAdmin()) {
-        if (projectOutcome != null) {
-          if (projectOutcome.getExpectedValue() == null
-            || (projectOutcome.getExpectedValue() != null && projectOutcome.getExpectedValue() == 0.0)) {
-            // Null expected value
-            editOutcomeExpectedValue = true;
-          } else {
-            // Not null Expected value
-            editOutcomeExpectedValue = false;
-          }
+    if (!this.isAdmin()) {
+      if (projectOutcome != null) {
+        if (projectOutcome.getExpectedValue() == null
+          || (projectOutcome.getExpectedValue() != null && projectOutcome.getExpectedValue() == 0.0)) {
+          // Null expected value
+          editOutcomeExpectedValue = true;
         } else {
-          // Null project outcome
+          // Not null Expected value
           editOutcomeExpectedValue = false;
         }
       } else {
-        // User is admin
-        editOutcomeExpectedValue = true;
+        // Null project outcome
+        editOutcomeExpectedValue = false;
       }
+    } else {
+      // User is admin
+      editOutcomeExpectedValue = true;
     }
   }
 
@@ -1218,26 +1214,24 @@ public class ProjectOutcomeAction extends BaseAction {
     boolean editable = false;
     if (milestoneId != null && milestoneId != 0) {
       // Modify the editExpectedValue value for AICCRA
-      if (this.isAiccra()) {
-        if (!this.isAdmin()) {
-          ProjectMilestone projectMilestone = new ProjectMilestone();
-          if (projectMilestoneManager.getProjectMilestoneById(milestoneId) != null) {
-            projectMilestone = projectMilestoneManager.getProjectMilestoneById(milestoneId);
+      if (!this.isAdmin()) {
+        ProjectMilestone projectMilestone = new ProjectMilestone();
+        if (projectMilestoneManager.getProjectMilestoneById(milestoneId) != null) {
+          projectMilestone = projectMilestoneManager.getProjectMilestoneById(milestoneId);
 
-            if (projectMilestone.getExpectedValue() == null
-              || (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() == 0.0)) {
-              // Null expected value
-              editable = true;
-            } else {
-              // Not null Expected value
-              editable = false;
-            }
+          if (projectMilestone.getExpectedValue() == null
+            || (projectMilestone.getExpectedValue() != null && projectMilestone.getExpectedValue() == 0.0)) {
+            // Null expected value
+            editable = true;
+          } else {
+            // Not null Expected value
+            editable = false;
           }
-
-        } else {
-          // User is admin
-          editable = true;
         }
+
+      } else {
+        // User is admin
+        editable = true;
       }
     } else {
       editable = true;
@@ -1571,10 +1565,6 @@ public class ProjectOutcomeAction extends BaseAction {
       milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
         .collect(Collectors.toList());
       milestones.sort(MilestoneComparators.renderOrder());
-    }
-
-    if (this.isAiccra()) {
-      // this.addAllCrpMilestones();
     }
 
     String traineesIndicatorLabel = this.getTraineesIndicatorDB();

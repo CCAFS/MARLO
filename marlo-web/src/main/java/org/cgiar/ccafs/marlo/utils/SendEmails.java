@@ -286,7 +286,7 @@ public class SendEmails {
 
         // Building the Email message:
         StringBuilder message = new StringBuilder();
-        message.append(action.getText("email.dear", new String[] {user.getFirstName()}));
+        message.append(action.getText("email.role.dear", new String[] {user.getFirstName()}));
 
         // get CRPAdmin contacts
         String crpAdmins = "";
@@ -305,7 +305,7 @@ public class SendEmails {
 
         message.append(action.getText("email.newUser.part1",
           new String[] {action.getText("email.newUser.listRoles"), action.getConfig().getBaseUrl(), user.getEmail(),
-            password, action.getText("email.support", new String[] {crpAdmins})}));
+            password, action.getText("email.role.support", new String[] {crpAdmins})}));
         // message.append(action);
 
         Map<String, Object> mapUser = new HashMap<>();
@@ -343,9 +343,11 @@ public class SendEmails {
         }
 
         if (buffer != null && fileName != null && contentType != null) {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer, contentType, fileName, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(action, message.toString()),
+            buffer, contentType, fileName, true);
         } else {
-          sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+          sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(action, message.toString()),
+            null, null, null, true);
         }
       }
     }
@@ -407,7 +409,7 @@ public class SendEmails {
     // message
     StringBuilder message = new StringBuilder();
     // Building the Email message:
-    message.append(action.getText("email.dear", new String[] {userAssigned.getFirstName()}));
+    message.append(action.getText("email.role.dear", new String[] {userAssigned.getFirstName()}));
     message.append(action.getText("email.project.assigned",
       new String[] {projectRole, crp, project.getProjecInfoPhase(action.getActualPhase()).getTitle(),
         project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER)}));
@@ -416,11 +418,12 @@ public class SendEmails {
     } else {
       message.append(action.getText("email.project.coordinator.responsabilities"));
     }
-    message.append(action.getText("email.support", new String[] {crpAdmins}));
-    message.append(action.getText("email.getStarted"));
-    message.append(action.getText("email.bye"));
+    message.append(action.getText("email.role.support", new String[] {crpAdmins}));
+    message.append(action.getText("email.role.getStarted"));
+    message.append(action.getText("email.role.bye"));
 
-    sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    sendMail.send(toEmail, ccEmail, bbcEmails, subject, EmailLayout.wrap(action, message.toString()),
+      null, null, null, true);
   }
 
   public static byte[] readFully(InputStream stream) throws IOException {

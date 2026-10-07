@@ -547,15 +547,40 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.type = type;
   }
 
+  /**
+   * Copies Lessons Learned and the cross-cutting dimensions with their gender justification, the fields that
+   * {@link #updateProjectInfo(ProjectInfo)} leaves out. Only for a phase record created by the replication, which
+   * has no stored values of its own to keep.
+   *
+   * @param source the project info of the saved phase
+   */
+  public void copyHiddenDescriptionFields(ProjectInfo source) {
+    if (source == null) {
+      return;
+    }
+    this.setLessonsLearned(source.getLessonsLearned());
+    this.setDimension(source.getDimension());
+    this.setCrossCuttingCapacity(source.getCrossCuttingCapacity());
+    this.setCrossCuttingClimate(source.getCrossCuttingClimate());
+    this.setCrossCuttingGender(source.getCrossCuttingGender());
+    this.setCrossCuttingYouth(source.getCrossCuttingYouth());
+    this.setCrossCuttingNa(source.getCrossCuttingNa());
+  }
+
+  /**
+   * Copies the editable project info onto this phase's record. It is what replicates a Planning save to every later
+   * phase, Reporting phases included.
+   * Lessons Learned (A2-2582) and the cross-cutting dimensions with their gender justification (A2-2583) are not
+   * copied: no screen edits them any more, so copying them would only overwrite each later phase's stored values
+   * with the saved phase's ones (an empty Planning Lessons Learned over a filled Reporting one). A new phase record
+   * still inherits them through {@link #copyHiddenDescriptionFields(ProjectInfo)}.
+   */
   public void updateProjectInfo(ProjectInfo update) {
+    if (update == null) {
+      return;
+    }
     this.setAdministrative(update.getAdministrative());
     this.setCofinancing(update.isCofinancing());
-    this.setCrossCuttingCapacity(update.getCrossCuttingCapacity());
-    this.setCrossCuttingClimate(update.getCrossCuttingClimate());
-    this.setCrossCuttingNa(update.getCrossCuttingNa());
-    this.setCrossCuttingGender(update.getCrossCuttingGender());
-    this.setCrossCuttingYouth(update.getCrossCuttingYouth());
-    this.setDimension(update.getDimension());
     this.setEndDate(update.getEndDate());
     this.setLeaderResponsabilities(update.getLeaderResponsabilities());
     this.setLiaisonInstitution(update.getLiaisonInstitution());
@@ -579,7 +604,6 @@ public class ProjectInfo extends MarloAuditableEntity implements java.io.Seriali
     this.setActivitiesCSVFile(update.getActivitiesCSVFile());
     this.setClusterType(update.getClusterType());
     this.setChallengesSolutions(update.getChallengesSolutions());
-    this.setLessonsLearned(update.getLessonsLearned());
     if (update.getAcronym() != null && !update.getAcronym().isEmpty()) {
       this.setAcronym(update.getAcronym());
     }

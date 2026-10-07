@@ -78,11 +78,7 @@ public class ProjectPartnerMySQLDAO extends AbstractMarloDAO<ProjectPartner, Lon
   public List<ProjectPartner> findAll() {
     String query = "from " + ProjectPartner.class.getName() + " where is_active=1";
     List<ProjectPartner> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

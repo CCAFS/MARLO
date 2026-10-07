@@ -25,6 +25,9 @@
 		<property name="websiteLink" type="string">
 			<column name="website_link" />
 		</property>
+		<property name="active" type="java.lang.Boolean" access="field" insert="false" update="false">
+			<column name="is_active" />
+		</property>
 		<property name="programId" type="java.lang.Long">
 			<column name="program_id" />
 		</property>

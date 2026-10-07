@@ -62,11 +62,7 @@ public class ToolFunctionCategoryMySQLDAO extends AbstractMarloDAO<ToolFunctionC
   public List<ToolFunctionCategory> findAll() {
     String query = "from " + ToolFunctionCategory.class.getName() + " where is_active=1";
     List<ToolFunctionCategory> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

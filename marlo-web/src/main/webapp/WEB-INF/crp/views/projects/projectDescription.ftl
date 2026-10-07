@@ -112,11 +112,12 @@
               [#-- Project Program Creator --]
               <div class="col-md-6">
                 [#if editable && action.hasPermission("managementLiaison")]
-                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutions" keyFieldName="id" displayFieldName="composedName" required=true editable=true /]
+                    [@customForm.select name="project.projectInfo.liaisonInstitution.id" className="liaisonInstitutionSelect" i18nkey="project.liaisonInstitution" disabled=!editable listName="liaisonInstitutionLabels" required=true editable=true /]
                 [#else]
                   <label class="col-form-label required">${action.getText("project.liaisonInstitution")}:</label>
                   <p class="form-control-static" style="text-decoration: none !important; cursor: default;">
-                    ${(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
+                    [#assign currentLiaisonId = (project.projectInfo.liaisonInstitution.id?c)!"" /]
+                    ${(liaisonInstitutionLabels[currentLiaisonId])!(project.projectInfo.liaisonInstitution.composedName)!"N/A"} 
                   </p>
                 [/#if]
               </div>
@@ -187,14 +188,9 @@
             
             [#-- Project Challenges, causes and proposed solutions --]
             <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" /]
+              [@customForm.textArea name="project.projectInfo.challengesSolutions"  i18nkey="project.challengesAndSolutions" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.challengesAndSolutions.helpText" paramText="${(project.projectInfo.endDate?date?string('yyyy'))!((actualPhase.year?c)!)}" /]
             </div>
             
-            [#-- Project Lessons Learned --]
-            <div class="form-group">
-              [@customForm.textArea name="project.projectInfo.lessonsLearned"  i18nkey="project.lessonsLearned" required=true className="project-description limitWords-250" editable=editable isNote=true helpIcon=false help="project.lessonsLearned.helpText" /]
-            </div>
-
             [#-- Project status --]
             <div class="form-group ${reportingActive?string('fieldFocus','')}">
               <div class="form-group row">
@@ -244,7 +240,8 @@
 
                     [#-- Contributions allowed to this flagship --]
                     [#list (programFlagships)![] as element]
-                      [#assign flagshipName][#if isCrpProject || isNewCenterTypeProject ]${element.composedName}[#else]${element.centerComposedName}[/#if][/#assign]
+                      [#-- Plain string, not a captured block: checkBoxFlat passes the label to s.text, which escapes it again --]
+                      [#assign flagshipName = (isCrpProject || isNewCenterTypeProject)?then((element.composedName)!'', (element.centerComposedName)!'') /]
 
                       [#assign outcomesContributions = (action.getContributionsOutcome(project.id, element.id))![] /]
                       [#assign clustersContributions = (action.getClusterOutcome(project.id, element.id))![] /]
@@ -282,7 +279,8 @@
                         [@customForm.checkBoxFlat id="projectNoRegional" name="project.projectInfo.noRegional" label="${noRegionalLabel}" disabled=false editable=editable value="true" checked=((project.projectInfo.noRegional)!false) cssClass="checkboxInput" cssClassLabel="font-italic" /]
                       [/#if]
                       [#list (regionFlagships)![] as element]
-                        [#assign regionName][#if isCrpProject]${element.composedName}[#else]${element.name}[/#if][/#assign]
+                        [#-- Plain string, not a captured block: checkBoxFlat passes the label to s.text, which escapes it again --]
+                        [#assign regionName = isCrpProject?then((element.composedName)!'', (element.name)!'') /]
                         [@customForm.checkBoxFlat id="projectRegion-${element.id}" name="project.regionsValue" label="${regionName}" disabled=false editable=editable value="${element.id}" checked=((regionsIds?seq_contains(element.id))!false) cssClass="checkboxInput rpInput"  cssClassLabel="font-normal"/]
                       [/#list]
 
@@ -293,7 +291,7 @@
                       [/#if]
                       <input type="hidden" name="project.regionsValue" value="${(project.regionsValue)!}"/>
                       [#list (project.regions)![] as element]
-                        [#assign regionName][#if isCrpProject]${element.composedName}[#else]${element.name}[/#if][/#assign]
+                        [#assign regionName = isCrpProject?then((element.composedName)!'', (element.name)!'') /]
                         <p class="checked">${regionName}</p>
                       [/#list]
                     [/#if]
@@ -355,57 +353,6 @@
             </div>
             [/#if]
 
-            [#if (project.projectInfo.isProjectEditLeader() && !phaseOne)!false]
-
-              [#-- Select the cross-cutting dimension(s) to this project? --]
-              <div class="form-group">
-                <label for="">[@customForm.text name="project.crossCuttingDimensions"  readText=!editable/] [@customForm.req required=editable/]</label>
-                <div class="row">
-                  <div class="col-md-12">
-                    [#if aiccra]
-                    [#assign crossCuttingMarkers = [
-                        { "id":"gender", "name": "crossCuttingGender" },
-                        { "id":"youth", "name": "crossCuttingYouth" },
-                        { "id":"na", "name": "crossCuttingNa" }
-                      ]
-                    /]
-                    [#else]
-                        [#assign crossCuttingMarkers = [
-                        { "id":"gender", "name": "crossCuttingGender" },
-                        { "id":"youth", "name": "crossCuttingYouth" },
-                        { "id":"capacity", "name": "crossCuttingCapacity" },
-                        { "id":"climate", "name": "crossCuttingClimate" },
-                        { "id":"na", "name": "crossCuttingNa" }
-                      ]
-                    /]
-                    [/#if]
-                    [#if editable]
-                      [#list crossCuttingMarkers as marker]
-                        <label class="checkbox-inline"><input type="checkbox" name="project.projectInfo.${marker.name}" id="${marker.id}" class="[#if marker.id != "na"]ccMarker[/#if]" value="true" [#if (project.projectInfo[marker.name])!false ]checked="checked"[/#if]>[@s.text name="crossCuttingMarker.${marker.id}" /]</label>
-                      [/#list]
-                    [#else]
-                      [#assign checkedItems = false /]
-                      [#list crossCuttingMarkers as marker]
-                        [#if (project.projectInfo[marker.name])!false ]
-                          <div class="${customForm.changedField('project.projectInfo.${marker.name}')}">
-                            <p class="checked"> [@s.text name="crossCuttingMarker.${marker.id}" /]</p> <input type="hidden" name="project.projectInfo.${marker.name}" value="true">
-                          </div>
-                          [#assign checkedItems = true /]
-                        [/#if]
-                      [/#list]
-                      [#-- Message when there's nothing to show -> "Prefilled if avaible" --]
-                      [#if !checkedItems]<div class="input"><p>[@s.text name="form.values.fieldEmpty" /]</p></div>[/#if]
-                    [/#if]
-                  </div>
-                </div>
-                <br />
-              </div>
-
-              [#-- If no gender dimension, then please explain why not --]
-              <div id="gender-question" class="form-group" style="display:${((project.projectInfo.crossCuttingGender)!false)?string('none','block')}">
-                [@customForm.textArea name="project.projectInfo.dimension" i18nkey="project.dimension"  required=true className=" limitWords-50" editable=editable /]
-              </div>
-            [/#if]
           </div>
 
           [#-- Section Buttons & hidden inputs--]

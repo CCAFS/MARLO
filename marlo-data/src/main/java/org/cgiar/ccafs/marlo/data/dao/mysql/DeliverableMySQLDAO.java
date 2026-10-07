@@ -72,11 +72,7 @@ public class DeliverableMySQLDAO extends AbstractMarloDAO<Deliverable, Long> imp
   public List<Deliverable> findAll() {
     String query = "from " + Deliverable.class.getName() + " where is_active=1";
     List<Deliverable> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   /**

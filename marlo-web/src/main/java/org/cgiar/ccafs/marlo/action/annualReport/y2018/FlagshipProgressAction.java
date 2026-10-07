@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.AuditLogManager;
 import org.cgiar.ccafs.marlo.data.manager.CrpProgramManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonInstitutionManager;
-import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
@@ -32,7 +31,6 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesisFlagshipProgress;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
@@ -76,7 +74,6 @@ public class FlagshipProgressAction extends BaseAction {
   private FlagshipProgress2018Validator validator;
   private ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager;
   private SectionStatusManager sectionStatusManager;
-  private ProjectExpectedStudyManager projectExpectedStudyManager;
 
   // variables
   private String transaction;
@@ -89,7 +86,6 @@ public class FlagshipProgressAction extends BaseAction {
   private List<ReportSynthesisFlagshipProgress> flagshipsReportSynthesisFlagshipProgress;
   private boolean hasFlagshipProgress;
   private List<String> listOfFlagships;
-  private List<ProjectExpectedStudy> covidAnalysisStudies;
 
 
   @Inject
@@ -98,7 +94,7 @@ public class FlagshipProgressAction extends BaseAction {
     AuditLogManager auditLogManager, UserManager userManager, CrpProgramManager crpProgramManager,
     FlagshipProgress2018Validator validator,
     ReportSynthesisFlagshipProgressManager reportSynthesisFlagshipProgressManager,
-    SectionStatusManager sectionStatusManager, ProjectExpectedStudyManager projectExpectedStudyManager) {
+    SectionStatusManager sectionStatusManager) {
     super(config);
     this.crpManager = crpManager;
     this.liaisonInstitutionManager = liaisonInstitutionManager;
@@ -109,7 +105,6 @@ public class FlagshipProgressAction extends BaseAction {
     this.validator = validator;
     this.reportSynthesisFlagshipProgressManager = reportSynthesisFlagshipProgressManager;
     this.sectionStatusManager = sectionStatusManager;
-    this.projectExpectedStudyManager = projectExpectedStudyManager;
   }
 
 
@@ -129,10 +124,6 @@ public class FlagshipProgressAction extends BaseAction {
     String autoSaveFile = reportSynthesis.getId() + "_" + composedClassName + "_" + this.getActualPhase().getName()
       + "_" + this.getActualPhase().getYear() + "_" + actionFile + ".json";
     return Paths.get(config.getAutoSaveFolder() + autoSaveFile);
-  }
-
-  public List<ProjectExpectedStudy> getCovidAnalysisStudies() {
-    return covidAnalysisStudies;
   }
 
   public List<ReportSynthesisFlagshipProgress> getFlagshipsReportSynthesisFlagshipProgress() {
@@ -409,22 +400,6 @@ public class FlagshipProgressAction extends BaseAction {
       .filter(c -> c.getCrpProgram() == null && c.isActive() && c.getAcronym() != null && c.getAcronym().equals("PMU"))
       .collect(Collectors.toList()));
 
-    // Covid Analysis Studies
-    covidAnalysisStudies = projectExpectedStudyManager.findAll().stream()
-      .filter(s -> s.getProjectExpectedStudyInfo(this.getActualPhase()) != null
-        && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis() != null
-        && s.getProjectExpectedStudyInfo(this.getActualPhase()).getHasCovidAnalysis())
-      .collect(Collectors.toList());
-
-    for (ProjectExpectedStudy study : covidAnalysisStudies) {
-      if (study.getProjectExpectedStudyFlagships() != null) {
-        study.setFlagships(new ArrayList<>(study.getProjectExpectedStudyFlagships().stream()
-          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())
-            && o.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue())
-          .collect(Collectors.toList())));
-      }
-    }
-
     // Base Permission
     String params[] = {loggedCrp.getAcronym(), reportSynthesis.getId() + ""};
     this.setBasePermission(this.getText(Permission.REPORT_SYNTHESIS_FLAGSHIP_PROGRESS_BASE_PERMISSION, params));
@@ -494,10 +469,6 @@ public class FlagshipProgressAction extends BaseAction {
     } else {
       return NOT_AUTHORIZED;
     }
-  }
-
-  public void setCovidAnalysisStudies(List<ProjectExpectedStudy> covidAnalysisStudies) {
-    this.covidAnalysisStudies = covidAnalysisStudies;
   }
 
   public void setFlagshipsReportSynthesisFlagshipProgress(

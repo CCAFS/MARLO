@@ -62,11 +62,7 @@ public class RepIndFillingTypeMySQLDAO extends AbstractMarloDAO<RepIndFillingTyp
   public List<RepIndFillingType> findAll() {
     String query = "from " + RepIndFillingType.class.getName();
     List<RepIndFillingType> list = super.findAll(query);
-    if (list.size() > 0) {
-      return list;
-    }
-    return null;
-
+    return list;
   }
 
   @Override

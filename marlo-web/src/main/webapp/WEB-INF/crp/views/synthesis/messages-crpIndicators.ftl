@@ -6,7 +6,7 @@
       <p>[@s.text name="crpIndicators.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="crpIndicators.message.historyVersion" ]  
-          [@s.param]<span>${currentLiaisonInstitution.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${currentLiaisonInstitution.modifiedBy.composedName}</span>[/@s.param]
           [@s.param]<span>${currentLiaisonInstitution.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="liaisonInstitutionID" value=liaisonInstitutionID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]

@@ -4,15 +4,15 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?2026092104",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20261006",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
-  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlCdn}/global/js/impactGraphic.js?20261006",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
    "//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?2026092104",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20261006",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]

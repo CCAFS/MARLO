@@ -71,14 +71,6 @@
       "formats": [ "Excel" ],
       "cycles": [ "Planning","Reporting" ]
     },
-    { "active": !centerGlobalUnit && action.hasSpecificities("crp_show_section_impact_covid19") && !action.isAiccra(),
-      "available": true,
-      "title": "summaries.board.report.impactCovid19Summary", 
-      "description": "summaries.board.report.impactCovid19Summary.description",
-      "namespace": "/projects",
-      "action": "${crpSession}/impactCovid19Summary",
-      "formats": [ "Excel" ]
-    },
     { "active": !centerGlobalUnit,
       "available": true,
       "title": "summaries.board.report.outcomeCaseStudies", 
