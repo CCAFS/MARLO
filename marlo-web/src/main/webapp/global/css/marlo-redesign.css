@@ -1508,24 +1508,53 @@ header {
 /************* 6. FLOATING HELP BUTTON ***************/
 /* The guide trigger becomes the circular action in the bottom-right corner.
    The support chat opposite it is a Tawk.to iframe and is styled by Tawk. */
+
+/* Pages that save keep their Save button in the same bottom-right corner: the
+   OPI bar floats 12px off the bottom, and the shared .buttons-content bar is
+   pinned to it by global.js. Below ~1500px the two met and the "?" covered
+   Save (A2-2595). Those pages lift the action, and the guide anchored to it,
+   clear of the bar; every other page keeps it in the corner.
+   :where() keeps both rules at the specificity of a bare body selector, so the
+   narrow-screen override below wins by order alone. */
+body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
+  --marlo-guide-lift: 76px;
+}
+
+/* Below the tablet breakpoint the OPI bar wraps its save state, last-edit
+   message and buttons onto separate lines, about 140px in all. */
+@media (max-width: 767px) {
+  body:has(:where(.opi-saveBar)) {
+    --marlo-guide-lift: 150px;
+  }
+}
+
 #guide-button.guide-button {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: calc(20px + var(--marlo-guide-lift, 0px));
   z-index: 30;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 52px;
   height: 52px;
+  /* It is a <button> now: drop the native chrome and global.css's old padding. */
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: var(--marlo-brand);
   box-shadow: var(--marlo-shadow-fab);
   cursor: pointer;
 }
 
-#guide-button.guide-button:hover {
+#guide-button.guide-button:hover,
+#guide-button.guide-button[aria-expanded="true"] {
   background: var(--marlo-brand-dark);
+}
+
+#guide-button.guide-button:focus-visible {
+  outline: 3px solid var(--marlo-brand-light);
+  outline-offset: 3px;
 }
 
 #guide-button.guide-button img {
@@ -1536,6 +1565,123 @@ header {
   content: '?';
   color: #fff;
   font: 700 22px/1 var(--marlo-font-sans);
+}
+
+/* The guide panel, on the same type scale and surface as the redesign's dialogs.
+   global.css still styles it through #guide and .popup-guide descendants, so
+   every rule here carries both. It opens 12px above the "?" and follows it up. */
+#guide.popup-guide {
+  right: 20px;
+  bottom: calc(20px + 52px + 12px + var(--marlo-guide-lift, 0px));
+  width: min(420px, calc(100vw - 40px));
+  max-width: none;
+  padding: 18px 20px 14px;
+  border: 1px solid var(--marlo-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(31, 42, 55, 0.18);
+  font-family: var(--marlo-font-sans);
+  color: var(--marlo-text);
+}
+
+#guide.popup-guide:focus {
+  outline: none;
+}
+
+#guide.popup-guide .guide-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--marlo-text-muted);
+  font: 400 14px/1 var(--marlo-font-sans);
+  cursor: pointer;
+}
+
+#guide.popup-guide .guide-close:hover {
+  background: var(--marlo-surface-sunken);
+  color: var(--marlo-ink);
+}
+
+#guide.popup-guide .guide-close:focus-visible {
+  outline: 2px solid var(--marlo-brand);
+  outline-offset: 1px;
+}
+
+#guide.popup-guide .title-modal-evidences {
+  margin: 0 0 12px;
+  padding-right: 32px;
+  color: var(--marlo-ink);
+  font: 600 16px/1.35 var(--marlo-font-sans);
+}
+
+#guide.popup-guide .line-modal,
+#guide.popup-guide .line-modal-bottom {
+  height: 1px;
+  margin: 0;
+  background: var(--marlo-border);
+}
+
+#guide.popup-guide .text-modal-evidences {
+  padding: 12px 0;
+  font: 400 13.5px/1.55 var(--marlo-font-sans);
+}
+
+#guide.popup-guide .text-modal-evidences h3 {
+  margin: 0 0 6px;
+  color: var(--marlo-ink);
+  font: 600 14px/1.4 var(--marlo-font-sans);
+}
+
+/* Long guidance scrolls inside the panel, which never grows past the space
+   left above the "?". Left-aligned: justified text opened rivers at this width. */
+#guide.popup-guide .text-inter {
+  margin: 0;
+  max-height: min(325px, calc(100vh - 300px - var(--marlo-guide-lift, 0px)));
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: left;
+}
+
+#guide.popup-guide .text-inter p {
+  margin: 0 0 8px;
+}
+
+#guide.popup-guide .container-buttons-evidences {
+  float: none;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+#guide.popup-guide .button-pdf-modal {
+  gap: 6px;
+  min-width: 0;
+  height: auto;
+  padding: 4px 0;
+  border: 0;
+  color: var(--marlo-brand);
+  font: 500 13px/1.3 var(--marlo-font-sans);
+  text-decoration: none;
+}
+
+#guide.popup-guide .button-pdf-modal:hover {
+  text-decoration: underline;
+}
+
+#guide.popup-guide .button-pdf-modal p {
+  margin: 0;
+}
+
+#guide.popup-guide .button-pdf-modal img {
+  width: 16px;
+  margin: 0;
 }
 
 /************* 7. CRP ADMIN SIDE NAV ***************/
