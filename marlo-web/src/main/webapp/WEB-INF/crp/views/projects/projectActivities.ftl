@@ -207,7 +207,11 @@
       [#-- Activity Title --]
       [#if !action.isProjectActivityCreationActive()]
         <div class="form-group">
-          [@customForm.select name="${customName}.activityTitle.id" label="" className="activityTitle" i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" multiple=false required=true editable=(action.canAccessSuperAdmin() || action.isRole("PC") || action.isRole("PL")) && isActive/]
+          [#-- A completed activity keeps its catalog entry, but one that has none (its title was typed while the
+               specificity was on) must be able to get one, or its missing title can never be fixed. Read-only, the
+               select cannot resolve the entry's text from the value stack and printed "Not provided": displayTitle
+               is shown instead --]
+          [@customForm.select name="${customName}.activityTitle.id" label="" className="activityTitle" i18nkey="project.activities.inputTitle" listName="activityTitles" keyFieldName="id" displayFieldName="title" forcedValue=(element.displayTitle)!"" multiple=false required=true editable=(action.canAccessSuperAdmin() || action.isRole("PC") || action.isRole("PL")) && (isActive || !((element.activityTitle.id)??))/]
         </div>
       [/#if]
       [#-- Description --]
