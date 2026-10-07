@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -304,5 +305,56 @@ public class ActivityManagerImplReplicationTest {
     assertEquals("one link in the saved phase and one in the copy", Arrays.asList(24406L, 24406L), daoCreated);
     assertEquals("each link in its own phase", Arrays.asList(429L, 433L), daoCreatedPhases);
     assertTrue(daoDeleted.isEmpty());
+  }
+
+  private Activity sourceIn(String phaseDescription, String progress) {
+    Phase sourcePhase = this.phase(429L);
+    sourcePhase.setDescription(phaseDescription);
+    Activity activity = this.sourceActivity(this.requestLink(24406L));
+    activity.setPhase(sourcePhase);
+    activity.setDescription("Planned description");
+    activity.setActivityStatus(2);
+    activity.setActivityProgress(progress);
+    return activity;
+  }
+
+  private Activity reportedCopy() {
+    Activity copy = this.existingCopy(this.link(1L, 24406L, true));
+    copy.setDescription("Reported description");
+    copy.setActivityStatus(3);
+    copy.setActivityProgress("Reported progress");
+    return copy;
+  }
+
+  @Test
+  public void aPlanningSaveKeepsTheProgressReportedInALaterPhase() {
+    Activity copy = this.reportedCopy();
+    copiesInNextPhase = new ArrayList<>(Collections.singletonList(copy));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceIn("Planning", null));
+
+    assertEquals("the progress is only written by a Reporting save", "Reported progress", copy.getActivityProgress());
+    assertEquals("the other fields still follow the Planning save", "Planned description", copy.getDescription());
+    assertEquals(Integer.valueOf(2), copy.getActivityStatus());
+  }
+
+  @Test
+  public void aCopyCreatedByAPlanningSaveStartsWithoutProgress() {
+    copiesInNextPhase = new ArrayList<>();
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceIn("Planning", "Left by an older replication"));
+
+    Activity created = (Activity) savedActivities.get(0);
+    assertNull(created.getActivityProgress());
+  }
+
+  @Test
+  public void aReportingSaveCarriesItsProgressForward() {
+    Activity copy = this.reportedCopy();
+    copiesInNextPhase = new ArrayList<>(Collections.singletonList(copy));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceIn("Reporting", "New progress"));
+
+    assertEquals("New progress", copy.getActivityProgress());
   }
 }

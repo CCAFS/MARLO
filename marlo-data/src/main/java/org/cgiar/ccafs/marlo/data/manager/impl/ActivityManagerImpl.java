@@ -279,6 +279,9 @@ public class ActivityManagerImpl implements ActivityManager {
     if (activities == null || activities.isEmpty()) {
       Activity activityAdd = new Activity();
       this.cloneActivity(activityAdd, activity, phase);
+      if (!this.carriesProgress(activity)) {
+        activityAdd.setActivityProgress(null);
+      }
 
       activityDAO.save(activityAdd);
 
@@ -294,7 +297,11 @@ public class ActivityManagerImpl implements ActivityManager {
       // Update activity
 
       Activity activityAdd = activities.get(0);
+      String storedProgress = activityAdd.getActivityProgress();
       this.cloneActivity(activityAdd, activity, phase);
+      if (!this.carriesProgress(activity)) {
+        activityAdd.setActivityProgress(storedProgress);
+      }
 
       activityDAO.save(activityAdd);
       this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
@@ -306,6 +313,15 @@ public class ActivityManagerImpl implements ActivityManager {
     }
 
 
+  }
+
+  /**
+   * Only the Reporting form has the progress field. A Planning row (AWPB, Progress) holds no progress, or one left
+   * there by an older replication, so copying it from a Planning save erased what was reported in the open Reporting
+   * phase. The other fields are replicated as usual.
+   */
+  private boolean carriesProgress(Activity activity) {
+    return activity.getPhase() != null && APConstants.REPORTING.equals(activity.getPhase().getDescription());
   }
 
   private boolean isInPhase(DeliverableActivity deliverableActivity, Phase phase) {
