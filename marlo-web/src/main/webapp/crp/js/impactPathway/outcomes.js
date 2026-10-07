@@ -1084,6 +1084,10 @@ $(document).ready(function() {
   $page.on('click', '.addBaselineIndicator, .removeBaselineIndicator', function() {
     var $card = $(this).closest('.outcome');
     setTimeout(function() { opiRefreshQuestions($card); }, 0);
+    // Adding or removing a question only reaches the database on Save. The live dirty
+    // tracking listens to field edits, so without this a removed question left the bar on
+    // "All changes saved" -- and a reload brought the question back (A2-2626).
+    opiMarkDirty();
   });
 
   // ---- a brand-new indicator opens the column for the closing year it is given ----

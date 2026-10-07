@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "blueimp-file-upload", "cytoscape","cytoscape-panzoom", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlMedia}/js/impactPathway/programSubmit.js",
-  "${baseUrlMedia}/js/impactPathway/outcomes.js?20261006",
+  "${baseUrlMedia}/js/impactPathway/outcomes.js?20261007",
   [#-- "${baseUrlCdn}/global/js/autoSave.js", --]
   "${baseUrlCdn}/global/js/impactGraphic.js?20261006",
   "${baseUrlCdn}/global/js/fieldsValidation.js",
@@ -773,15 +773,17 @@
             <span>[@s.text name="outcomes.questions.question"/]</span>
             <span></span>
           </div>
+          [#-- Always rendered, and hidden while the indicator has questions: opiRefreshQuestions()
+               shows it again once the last one is removed, which it could not do when the block only
+               existed for indicators that loaded with none. --]
+          <div class="opi-empty opi-empty--sm opi-q__empty"[#if outcome.indicators?has_content] style="display:none"[/#if]>
+            <span class="opi-empty__title">[@s.text name="outcomes.questions.empty.title"/]</span>
+            <span class="opi-empty__hint">[@s.text name="outcomes.questions.empty.hint"/]</span>
+          </div>
           [#if outcome.indicators?has_content]
             [#list outcome.indicators as baselineIndicator]
               [@baselineIndicatorMacro indicator=baselineIndicator name="${outcomeCustomName}.indicators" index=baselineIndicator_index /]
             [/#list]
-          [#else]
-            <div class="opi-empty opi-empty--sm opi-q__empty">
-              <span class="opi-empty__title">[@s.text name="outcomes.questions.empty.title"/]</span>
-              <span class="opi-empty__hint">[@s.text name="outcomes.questions.empty.hint"/]</span>
-            </div>
           [/#if]
         </div>
         [#if editable]
