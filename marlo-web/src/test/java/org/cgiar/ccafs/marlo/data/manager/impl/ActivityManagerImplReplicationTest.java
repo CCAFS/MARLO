@@ -20,7 +20,6 @@ import org.cgiar.ccafs.marlo.data.dao.DeliverableActivityDAO;
 import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
@@ -31,12 +30,15 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -44,8 +46,10 @@ import static org.junit.Assert.assertTrue;
  * Forward replication of a cluster activity into a later phase (A2-2614). The deliverable links were matched by
  * entity although the ones bound from the request carry no id, so every save deactivated every link and created it
  * again. These tests pin the reconciliation by deliverable: only the links that really changed are touched, repeated
- * links to one deliverable in the saved phase are reduced to the oldest, and links of other phases are left alone. The
- * lookup is stubbed here; the composed-id lookup that never matches in the DAO is tracked in
+ * links to one deliverable in the saved phase are reduced to the oldest, and links of other phases are left alone.
+ * Every link is written through the DAO, one row each: the phase walk already gives each later copy its own links,
+ * and DeliverableActivityManager replicated every link once more into those phases, attached to the activity of the
+ * phase being saved. The lookup is stubbed here; the composed-id lookup that never matches in the DAO is tracked in
  * docs/specs/bugfix/activities-save-performance, because fixing it changes what a Planning save writes into an
  * open Reporting phase.
  */
@@ -55,8 +59,12 @@ public class ActivityManagerImplReplicationTest {
   private static final String COMPOSED_ID = "102076-23882";
 
   private final List<Object> savedActivities = new ArrayList<>();
-  private final List<Long> deletedLinks = new ArrayList<>();
-  private final List<Long> savedLinkDeliverables = new ArrayList<>();
+  /** Links written through DeliverableActivityDAO: one row each. */
+  private final List<Long> daoDeleted = new ArrayList<>();
+  private final List<Long> daoCreated = new ArrayList<>();
+  /** The phase of each created link, in the same order as daoCreated. */
+  private final List<Long> daoCreatedPhases = new ArrayList<>();
+  private final Map<Long, Phase> phases = new HashMap<>();
   private List<Activity> copiesInNextPhase = new ArrayList<>();
 
   private ActivityManagerImpl manager;
@@ -125,6 +133,7 @@ public class ActivityManagerImplReplicationTest {
   public void setUp() {
     nextPhase = new Phase();
     nextPhase.setId(433L);
+    phases.put(nextPhase.getId(), nextPhase);
 
     ActivityDAO activityDAO = this.stub(ActivityDAO.class, (name, args) -> {
       if ("getActivitiesByComposedIDPhaseIDProjectID".equals(name)) {
@@ -137,7 +146,7 @@ public class ActivityManagerImplReplicationTest {
       }
       return null;
     });
-    PhaseDAO phaseDAO = this.stub(PhaseDAO.class, (name, args) -> "find".equals(name) ? nextPhase : null);
+    PhaseDAO phaseDAO = this.stub(PhaseDAO.class, (name, args) -> "find".equals(name) ? phases.get(args[0]) : null);
     ProjectDAO projectDAO = this.stub(ProjectDAO.class, (name, args) -> {
       if ("find".equals(name)) {
         Project project = new Project();
@@ -146,18 +155,19 @@ public class ActivityManagerImplReplicationTest {
       }
       return null;
     });
-    DeliverableActivityManager linkManager = this.stub(DeliverableActivityManager.class, (name, args) -> {
+    DeliverableActivityDAO linkDAO = this.stub(DeliverableActivityDAO.class, (name, args) -> {
       if ("deleteDeliverableActivity".equals(name)) {
-        deletedLinks.add((Long) args[0]);
-      } else if ("saveDeliverableActivity".equals(name)) {
-        savedLinkDeliverables.add(((DeliverableActivity) args[0]).getDeliverable().getId());
+        daoDeleted.add((Long) args[0]);
+      } else if ("save".equals(name)) {
+        DeliverableActivity created = (DeliverableActivity) args[0];
+        daoCreated.add(created.getDeliverable().getId());
+        daoCreatedPhases.add(created.getPhase().getId());
         return args[0];
       }
       return null;
     });
-    manager = new ActivityManagerImpl(activityDAO, phaseDAO, projectDAO,
-      this.stub(DeliverableActivityDAO.class, (name, args) -> null),
-      this.stub(ProjectPartnerPersonDAO.class, (name, args) -> null), linkManager);
+    manager = new ActivityManagerImpl(activityDAO, phaseDAO, projectDAO, linkDAO,
+      this.stub(ProjectPartnerPersonDAO.class, (name, args) -> null));
   }
 
   @Test
@@ -180,8 +190,8 @@ public class ActivityManagerImplReplicationTest {
     manager.saveActvityPhase(nextPhase, PROJECT_ID,
       this.sourceActivity(this.requestLink(24406L), this.requestLink(24407L)));
 
-    assertTrue("no link is deactivated: " + deletedLinks, deletedLinks.isEmpty());
-    assertTrue("no link is created: " + savedLinkDeliverables, savedLinkDeliverables.isEmpty());
+    assertTrue("no link is deactivated: " + daoDeleted, daoDeleted.isEmpty());
+    assertTrue("no link is created: " + daoCreated, daoCreated.isEmpty());
   }
 
   @Test
@@ -192,9 +202,8 @@ public class ActivityManagerImplReplicationTest {
     manager.saveActvityPhase(nextPhase, PROJECT_ID,
       this.sourceActivity(this.requestLink(24406L), this.requestLink(24428L)));
 
-    assertEquals("the link to the removed deliverable", Collections.singletonList(2L), deletedLinks);
-    assertEquals("an inactive link does not count as stored", Collections.singletonList(24428L),
-      savedLinkDeliverables);
+    assertEquals("the link to the removed deliverable", Collections.singletonList(2L), daoDeleted);
+    assertEquals("an inactive link does not count as stored", Collections.singletonList(24428L), daoCreated);
   }
 
   @Test
@@ -204,7 +213,7 @@ public class ActivityManagerImplReplicationTest {
     manager.saveActvityPhase(nextPhase, PROJECT_ID,
       this.sourceActivity(this.requestLink(24406L), this.requestLink(24406L)));
 
-    assertEquals(Collections.singletonList(24406L), savedLinkDeliverables);
+    assertEquals(Collections.singletonList(24406L), daoCreated);
   }
 
   @Test
@@ -215,8 +224,8 @@ public class ActivityManagerImplReplicationTest {
     manager.saveActvityPhase(nextPhase, PROJECT_ID,
       this.sourceActivity(this.requestLink(24406L), this.requestLink(24407L)));
 
-    assertEquals("the newer duplicate of each deliverable", Arrays.asList(5L, 8L), deletedLinks);
-    assertTrue("no link is created: " + savedLinkDeliverables, savedLinkDeliverables.isEmpty());
+    assertEquals("the newer duplicate of each deliverable", Arrays.asList(5L, 8L), daoDeleted);
+    assertTrue("no link is created: " + daoCreated, daoCreated.isEmpty());
   }
 
   @Test
@@ -226,8 +235,8 @@ public class ActivityManagerImplReplicationTest {
 
     manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceActivity(this.requestLink(24406L)));
 
-    assertTrue("a past phase is never written: " + deletedLinks, deletedLinks.isEmpty());
-    assertTrue(savedLinkDeliverables.isEmpty());
+    assertTrue("a past phase is never written: " + daoDeleted, daoDeleted.isEmpty());
+    assertTrue(daoCreated.isEmpty());
   }
 
   @Test
@@ -237,8 +246,8 @@ public class ActivityManagerImplReplicationTest {
 
     manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceActivity(this.requestLink(24406L)));
 
-    assertTrue("the other phase's link is kept: " + deletedLinks, deletedLinks.isEmpty());
-    assertEquals(Collections.singletonList(24406L), savedLinkDeliverables);
+    assertTrue("the other phase's link is kept: " + daoDeleted, daoDeleted.isEmpty());
+    assertEquals(Collections.singletonList(24406L), daoCreated);
   }
 
   @Test
@@ -248,8 +257,8 @@ public class ActivityManagerImplReplicationTest {
 
     manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceActivity((DeliverableActivity[]) null));
 
-    assertEquals("only the active link", Collections.singletonList(1L), deletedLinks);
-    assertTrue(savedLinkDeliverables.isEmpty());
+    assertEquals("only the active link", Collections.singletonList(1L), daoDeleted);
+    assertTrue(daoCreated.isEmpty());
   }
 
   @Test
@@ -262,6 +271,90 @@ public class ActivityManagerImplReplicationTest {
     Activity created = (Activity) savedActivities.get(0);
     assertEquals(COMPOSED_ID, created.getComposeID());
     assertSame(nextPhase, created.getPhase());
-    assertEquals(Collections.singletonList(24406L), savedLinkDeliverables);
+    assertEquals(Collections.singletonList(24406L), daoCreated);
+  }
+
+  @Test
+  public void theSavedReportingPhaseWritesOnlyItsOwnLinks() {
+    Phase reportingPhase = this.phase(431L);
+    reportingPhase.setDescription("Reporting");
+    phases.put(reportingPhase.getId(), reportingPhase);
+    Activity activity = this.sourceActivity(this.requestLink(24406L));
+    activity.setPhase(reportingPhase);
+    activity.getDeliverableActivities().add(this.link(9L, 24407L, true, reportingPhase));
+
+    manager.saveActivity(activity);
+
+    assertEquals("the new link of the saved phase", Collections.singletonList(24406L), daoCreated);
+    assertEquals(Collections.singletonList(431L), daoCreatedPhases);
+    assertEquals("the removed link of the saved phase", Collections.singletonList(9L), daoDeleted);
+  }
+
+  @Test
+  public void aPlanningSaveGivesTheSavedPhaseAndEachLaterCopyOneLink() {
+    Phase planningPhase = this.phase(429L);
+    planningPhase.setDescription("Planning");
+    planningPhase.setNext(nextPhase);
+    phases.put(planningPhase.getId(), planningPhase);
+    copiesInNextPhase = new ArrayList<>();
+    Activity activity = this.sourceActivity(this.requestLink(24406L));
+    activity.setPhase(planningPhase);
+
+    manager.saveActivity(activity);
+
+    assertEquals("one link in the saved phase and one in the copy", Arrays.asList(24406L, 24406L), daoCreated);
+    assertEquals("each link in its own phase", Arrays.asList(429L, 433L), daoCreatedPhases);
+    assertTrue(daoDeleted.isEmpty());
+  }
+
+  private Activity sourceIn(String phaseDescription, String progress) {
+    Phase sourcePhase = this.phase(429L);
+    sourcePhase.setDescription(phaseDescription);
+    Activity activity = this.sourceActivity(this.requestLink(24406L));
+    activity.setPhase(sourcePhase);
+    activity.setDescription("Planned description");
+    activity.setActivityStatus(2);
+    activity.setActivityProgress(progress);
+    return activity;
+  }
+
+  private Activity reportedCopy() {
+    Activity copy = this.existingCopy(this.link(1L, 24406L, true));
+    copy.setDescription("Reported description");
+    copy.setActivityStatus(3);
+    copy.setActivityProgress("Reported progress");
+    return copy;
+  }
+
+  @Test
+  public void aPlanningSaveKeepsTheProgressReportedInALaterPhase() {
+    Activity copy = this.reportedCopy();
+    copiesInNextPhase = new ArrayList<>(Collections.singletonList(copy));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceIn("Planning", null));
+
+    assertEquals("the progress is only written by a Reporting save", "Reported progress", copy.getActivityProgress());
+    assertEquals("the other fields still follow the Planning save", "Planned description", copy.getDescription());
+    assertEquals(Integer.valueOf(2), copy.getActivityStatus());
+  }
+
+  @Test
+  public void aCopyCreatedByAPlanningSaveStartsWithoutProgress() {
+    copiesInNextPhase = new ArrayList<>();
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceIn("Planning", "Left by an older replication"));
+
+    Activity created = (Activity) savedActivities.get(0);
+    assertNull(created.getActivityProgress());
+  }
+
+  @Test
+  public void aReportingSaveCarriesItsProgressForward() {
+    Activity copy = this.reportedCopy();
+    copiesInNextPhase = new ArrayList<>(Collections.singletonList(copy));
+
+    manager.saveActvityPhase(nextPhase, PROJECT_ID, this.sourceIn("Reporting", "New progress"));
+
+    assertEquals("New progress", copy.getActivityProgress());
   }
 }

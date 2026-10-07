@@ -22,7 +22,6 @@ import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -51,20 +50,17 @@ public class ActivityManagerImpl implements ActivityManager {
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
   private DeliverableActivityDAO deliverableActivityDAO;
-  private DeliverableActivityManager deliverableActivityManager;
   private ProjectPartnerPersonDAO projectPartnerPersonDAO;
 
 
   @Inject
   public ActivityManagerImpl(ActivityDAO activityDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO,
-    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO,
-    DeliverableActivityManager deliverableActivityManager) {
+    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO) {
     this.activityDAO = activityDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
     this.deliverableActivityDAO = deliverableActivityDAO;
     this.projectPartnerPersonDAO = projectPartnerPersonDAO;
-    this.deliverableActivityManager = deliverableActivityManager;
   }
 
   /**
@@ -283,6 +279,9 @@ public class ActivityManagerImpl implements ActivityManager {
     if (activities == null || activities.isEmpty()) {
       Activity activityAdd = new Activity();
       this.cloneActivity(activityAdd, activity, phase);
+      if (!this.carriesProgress(activity)) {
+        activityAdd.setActivityProgress(null);
+      }
 
       activityDAO.save(activityAdd);
 
@@ -298,7 +297,11 @@ public class ActivityManagerImpl implements ActivityManager {
       // Update activity
 
       Activity activityAdd = activities.get(0);
+      String storedProgress = activityAdd.getActivityProgress();
       this.cloneActivity(activityAdd, activity, phase);
+      if (!this.carriesProgress(activity)) {
+        activityAdd.setActivityProgress(storedProgress);
+      }
 
       activityDAO.save(activityAdd);
       this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
@@ -312,13 +315,25 @@ public class ActivityManagerImpl implements ActivityManager {
 
   }
 
+  /**
+   * Only the Reporting form has the progress field. A Planning row (AWPB, Progress) holds no progress, or one left
+   * there by an older replication, so copying it from a Planning save erased what was reported in the open Reporting
+   * phase. The other fields are replicated as usual.
+   */
+  private boolean carriesProgress(Activity activity) {
+    return activity.getPhase() != null && APConstants.REPORTING.equals(activity.getPhase().getDescription());
+  }
+
   private boolean isInPhase(DeliverableActivity deliverableActivity, Phase phase) {
     return deliverableActivity.getPhase() != null && deliverableActivity.getPhase().getId() != null && phase != null
       && deliverableActivity.getPhase().getId().equals(phase.getId());
   }
 
   /**
-   * Save/Delete activityDeliverable of the current phase
+   * Save/Delete activityDeliverable of the current phase.
+   * Links are written through the DAO, one row each. saveActivity and saveActvityPhase already visit every later
+   * phase and give each copy its own links; DeliverableActivityManager would replicate every link once more into
+   * those phases, attached to the activity of the phase being saved.
    */
   private void saveCurrentPhaseDeliverables(Activity activityUI, List<DeliverableActivity> deliverableActivitiesUI,
     Phase currentPhase) {
@@ -340,12 +355,12 @@ public class ActivityManagerImpl implements ActivityManager {
           deliverableActivity.getDeliverable() != null ? deliverableActivity.getDeliverable().getId() : null;
         if (deliverableId == null || !deliverableIdsUI.contains(deliverableId)) {
           // The deliverable is no longer listed
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         } else if (this.isInPhase(deliverableActivity, currentPhase)
           && !deliverableIdsInPhase.add(deliverableId)) {
           // A repeated link to the same deliverable in this phase adds nothing and inflated the form past the
           // server's request parameter limit. Links of other phases are left alone: a past phase is never written.
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 
@@ -358,7 +373,7 @@ public class ActivityManagerImpl implements ActivityManager {
         }
         DeliverableActivity deliverableActivityNew = new DeliverableActivity();
         this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
-        deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
+        deliverableActivityDAO.save(deliverableActivityNew);
         // This is to add DeliverableActivity to generate correct auditlog.
         activityUI.getDeliverableActivities().add(deliverableActivityNew);
       }
@@ -366,7 +381,7 @@ public class ActivityManagerImpl implements ActivityManager {
       // delete all from db
       if (deliverableActivitiesDB != null && !deliverableActivitiesDB.isEmpty()) {
         for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 

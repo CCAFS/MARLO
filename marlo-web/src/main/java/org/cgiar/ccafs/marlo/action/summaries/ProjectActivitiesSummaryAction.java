@@ -1719,6 +1719,9 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
       this.setCrpSession(this.getLoggedCrp().getAcronym());
+    } catch (NumberFormatException e) {
+      // A missing or non-numeric projectID is a bad request, not a failure: execute() answers it as not found
+      LOG.warn("The {} parameter is missing or not a number: {}", APConstants.PROJECT_REQUEST_ID, e.getMessage());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
     }

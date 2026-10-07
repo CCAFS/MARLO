@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implements ActivityDAO {
@@ -121,27 +122,35 @@ public class ActivityMySQLDAO extends AbstractMarloDAO<Activity, Long> implement
     return list;
   }
 
+  /**
+   * The composed id is bound as a parameter. Concatenated into the query, "102076-23877" was read as a subtraction
+   * and never matched, so every save created a new copy of the activity in each later phase. Oldest first: among
+   * the copies those saves left, the first one is the one reported on.
+   */
   @Override
   public List<Activity> getActivitiesByComposedID(String composedID, long phaseId) {
-    String query = "from " + Activity.class.getName() + " where composed_id=" + composedID + " and id_phase=" + phaseId
-      + " and is_active=1";
-    List<Activity> list = super.findAll(query);
-    if (!list.isEmpty()) {
-      return list;
-    }
-    return Collections.emptyList();
+    Query<Activity> query = this.getSessionFactory().getCurrentSession().createQuery("from "
+      + Activity.class.getName() + " where composeID = :composedID and phase.id = :phaseId and active = true"
+      + " order by id", Activity.class);
+    query.setParameter("composedID", composedID);
+    query.setParameter("phaseId", phaseId);
+    return super.findAll(query);
   }
 
 
+  /**
+   * Bound as parameters and ordered oldest first, as in {@link #getActivitiesByComposedID(String, long)}.
+   */
   @Override
   public List<Activity> getActivitiesByComposedIDPhaseIDProjectID(String composedID, long phaseId, long projectId) {
-    String query = "from " + Activity.class.getName() + " where composed_id=" + composedID + " and id_phase=" + phaseId
-      + " and project_id=" + projectId + " and is_active=1";
-    List<Activity> list = super.findAll(query);
-    if (!list.isEmpty()) {
-      return list;
-    }
-    return Collections.emptyList();
+    Query<Activity> query = this.getSessionFactory().getCurrentSession().createQuery("from "
+      + Activity.class.getName()
+      + " where composeID = :composedID and phase.id = :phaseId and project.id = :projectId and active = true"
+      + " order by id", Activity.class);
+    query.setParameter("composedID", composedID);
+    query.setParameter("phaseId", phaseId);
+    query.setParameter("projectId", projectId);
+    return super.findAll(query);
   }
 
   @Override

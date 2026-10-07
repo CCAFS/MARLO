@@ -855,7 +855,11 @@ public class ProjectActivitiesAction extends BaseAction {
       activityEntity.setDescription(activityUI.getDescription());
       activityEntity.setStartDate(activityUI.getStartDate());
       activityEntity.setEndDate(activityUI.getEndDate());
-      activityEntity.setActivityProgress(activityUI.getActivityProgress());
+      // Only the Reporting form has the progress field: a save from a Planning phase brings none, and
+      // writing that null erased the stored progress
+      if (activityUI.getActivityProgress() != null) {
+        activityEntity.setActivityProgress(activityUI.getActivityProgress());
+      }
 
       int status = activityUI.getActivityStatus() != -1 ? activityUI.getActivityStatus()
         : Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId());
