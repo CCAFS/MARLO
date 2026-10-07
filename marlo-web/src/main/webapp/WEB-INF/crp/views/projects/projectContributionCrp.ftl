@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
   "${baseUrlMedia}/js/projects/projectContributionCrp.js?20260928", 
-  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20260923",
+  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20261007",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   "https://www.gstatic.com/charts/loader.js",
@@ -16,7 +16,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20240517",
-  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20260930",
+  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20261007",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -192,7 +192,10 @@
               <div class="content-modal">
                 <div class="button-exit close-modal-evidences"><div class="x-close-modal"></div></div>
                 <p class="title-modal-evidences">[@s.text name="projectContributionCrp.guidance.title" /]</p>
-                <div class="text-modal-evidences"><p>${(cpiOutcome.instructions)!}</p></div>
+                [#-- The instructions are rich text from the OPI editor, stored as HTML. Auto-escaping
+                     prints them as literal markup, so decodeHTML (global.js) renders them, the way the
+                     additional questions below are rendered. --]
+                <div class="text-modal-evidences decodeHTML">${(cpiOutcome.instructions)!}</div>
                 <div class="container-buttons-evidences">
                   [#if !action.isPOWB() && ((cpiOutcome.file.fileName??)!false)]
                     <a href="${action.getBaseLineFileURL((cpiOutcome.id?string)!-1)}&filename=${(cpiOutcome.file.fileName)!}" target="_blank">
@@ -222,6 +225,11 @@
           [#-- ═══ Yearly contribution to intermediate targets ═══ --]
           <div class="cpi-periods">
             <h4 class="cpi-card__title cpi-periods__title">[@s.text name="projectOutcome.contributionToMilestones" /]</h4>
+            [#-- Texts for the percentage resolution drawn by projectContributionCrpRedesign.js;
+                 {0} {1} {2} are passed through as literal placeholders. --]
+            <span id="cpiI18n" style="display:none"
+              data-pct-of="[@s.text name="projectContributionCrp.pctOf"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
+              data-pct-no-base="[@s.text name="projectContributionCrp.pctOfNoBase"][@s.param]{0}[/@s.param][/@s.text]"></span>
             [#if cpiYears?has_content]
               <ul class="nav nav-tabs cpi-tabs" role="tablist">
                 [#list cpiYears as year]
@@ -239,9 +247,11 @@
 
                     [#-- Headline period target: the milestone on the principal row --]
                     [#assign cpiHeadlineDone = false /]
+                    [#assign cpiPrincipalValue = "" /]
                     [#list cpiAllMilestones as m]
                       [#if !cpiHeadlineDone && cpiRowOf[m_index] == 0 && ((m.year)!-1) == year]
                         [#assign cpiHeadlineDone = true /]
+                        [#if (m.value)?has_content][#assign cpiPrincipalValue = m.value /][/#if]
                         [@cpiMilestoneFields element=m year=year isPrincipal=true /]
                       [/#if]
                     [/#list]
@@ -268,6 +278,7 @@
                                   [#if (m.code)?has_content]<span class="cpi-chip">${m.code}</span>[/#if]
                                 </div>
                                 <div class="cpi-dt__body" id="cpiDt-${year?c}-${row}" style="display:none">
+                                  [@cpiDtTarget element=m year=year principalValue=cpiPrincipalValue /]
                                   [@cpiMilestoneFields element=m year=year isPrincipal=false /]
                                 </div>
                               </div>
@@ -277,6 +288,7 @@
                             <div class="cpi-dt cpi-dt--empty">
                               <span class="cpi-dt__title">[@s.text name="projectContributionCrp.target" /] ${row}</span>
                               <span class="cpi-dt__note">[@s.text name="projectContributionCrp.noTargetForYear" /] ${year?c}.</span>
+                              [@cpiOpiLink /]
                             </div>
                           [/#if]
                         [/#list]
@@ -291,18 +303,21 @@
             [/#if]
           </div>
           [#-- ═══ Additional questions for this performance indicator ═══
-               Answered in the annual report only (A2-2439). The card is still
-               rendered in the other cycles but not shown: saveIndicators()
-               deletes every ProjectOutcomeIndicator the form does not post
-               back, so leaving the markup out would drop the answers rather
-               than hide them. --]
-          [#assign cpiShowQuestions = !((action.isAiccra())!false) || reportingActive /]
-          [#if action.hasSpecificities('crp_baseline_indicators') && (cpiOutcome.indicators?has_content)!false]
-            <div class="cpi-card cpi-questions"[#if !cpiShowQuestions] style="display:none"[/#if]>
+               Shown in every cycle and answered in the annual report only (A2-2439,
+               A2-2622): outside it each answer reads back, or "Not answered". The
+               markup must be posted in every cycle anyway: saveIndicators() deletes
+               every ProjectOutcomeIndicator the form does not send back. --]
+          [#assign cpiAnswerQuestions = !((action.isAiccra())!false) || reportingActive /]
+          [#if action.hasSpecificities('crp_baseline_indicators')]
+            <div class="cpi-card cpi-questions">
               <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
-              [#list cpiOutcome.indicators as indicator]
-                [@cpiQuestion element=indicator index=indicator_index /]
-              [/#list]
+              [#if (cpiOutcome.indicators?has_content)!false]
+                [#list cpiOutcome.indicators as indicator]
+                  [@cpiQuestion element=indicator index=indicator_index /]
+                [/#list]
+              [#else]
+                <p class="cpi-empty">[@s.text name="projectContributionCrp.noAdditionalQuestions" /]</p>
+              [/#if]
             </div>
           [/#if]
 
@@ -394,6 +409,57 @@
   [#return ((raw!"")?replace("\xA0", " ")?replace("\x200B", "")?replace("\x200C", "")?replace("\x200D", "")?replace("\xFEFF", "")?replace("\\s+", " ", "r"))?trim /]
 [/#function]
 
+[#-- A target reports a percentage when its unit's name carries "%" ("%", "% / year",
+     "% increase"...). Same rule as the Overall Performance Indicators matrix
+     (opiRefreshCell in impactPathway/outcomes.js), so both screens agree on which
+     rows are shares of the principal target. --]
+[#function cpiIsPercentage milestone]
+  [#return ((milestone.srfTargetUnit.name)!"")?contains("%") /]
+[/#function]
+
+[#-- A number as the screens print it: thousands grouped, up to two decimals. --]
+[#function cpiNum n]
+  [#return n?string(",##0.##") /]
+[/#function]
+
+[#-- The link from a disaggregated target back to where it is defined: the indicator's
+     card in Overall Performance Indicators (outcomes.js scrolls to the #opi-outcome-<id>
+     anchor). It opens a new tab so the contribution being edited here is not lost. --]
+[#macro cpiOpiLink]
+  [#if (cpiOutcome.crpProgram.id)??]
+    <a class="cpi-opi-link" target="_blank" rel="noopener" href="[@s.url namespace='/impactPathway' action='${crpSession}/outcomes'][@s.param name='crpProgramID' value=cpiOutcome.crpProgram.id /][#if (actualPhase.id)?has_content][@s.param name='phaseID' value=actualPhase.id /][/#if][/@s.url]#opi-outcome-${cpiOutcome.id?c}">
+      [@s.text name="projectContributionCrp.configuredInOpi" /]
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M5 2.5H2.5v7h7V7M7 2.5h2.5V5M9.5 2.5 5.5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sr-only">[@s.text name="projectContributionCrp.opensInNewTab" /]</span>
+    </a>
+  [/#if]
+[/#macro]
+
+[#-- The head of an open disaggregated target: its period target as configured in Overall
+     Performance Indicators and, when it is a percentage, the absolute figure that share
+     represents of the principal target of the same period (A2-2620). --]
+[#macro cpiDtTarget element year principalValue]
+  <div class="cpi-dt__target">
+    <span class="cpi-pane__headline">
+      [@s.text name="projectContributionCrp.targetTo" /] ${year?c}:
+      [#if (element.value)?has_content]
+        [#if cpiIsPercentage(element)]
+          <strong>${cpiNum(element.value)}%</strong>
+          [#if principalValue?is_number]
+            <span class="cpi-dt__resolved">[@s.text name="projectContributionCrp.pctOf"][@s.param]${cpiNum(element.value)}[/@s.param][@s.param]${cpiNum(principalValue)}[/@s.param][@s.param]${cpiNum(element.value * principalValue / 100)}[/@s.param][/@s.text]</span>
+          [/#if]
+        [#else]
+          <strong>${cpiNum(element.value)}</strong>
+        [/#if]
+      [#else]
+        <strong>&mdash;</strong>
+      [/#if]
+      <span class="cpi-chip">[@s.text name="projectContributionCrp.inheritedFromOpi" /]</span>
+    </span>
+    [@cpiOpiLink /]
+  </div>
+[/#macro]
+
 [#-- One period target: the three values and the two narratives the cluster reports for a
      single milestone, whether that milestone is the indicator's own statement or one of
      its disaggregated targets.
@@ -413,7 +479,7 @@
 [#macro cpiQuestion element index]
   [#local projectOutcomeIndicator = action.getIndicator(element.id) /]
   [#local customName = "projectOutcome.indicators[${index}]" /]
-  [#local canAnswer = editable && cpiShowQuestions /]
+  [#local canAnswer = editable && cpiAnswerQuestions /]
   <div class="cpi-question">
     <span class="cpi-question__n">${index + 1}</span>
     <div class="cpi-question__body">
@@ -494,7 +560,12 @@
        rule, so the form and the missing-fields check agree. --]
   [#local achievedRequired = isCurrentPeriod && isAiccraRules?then(reportingActive, achievedPhase) /]
 
-  <div class="cpi-fields">
+  [#-- A disaggregated target whose unit is a percentage reports shares of the
+       principal target's figures. projectContributionCrpRedesign.js resolves each
+       value against the principal's value of the same field and period. --]
+  [#local isPct = !isPrincipal && cpiIsPercentage(element) /]
+
+  <div class="cpi-fields" data-cpi-role="${isPrincipal?string('principal','dt')}"[#if isPct] data-cpi-pct="true"[/#if]>
     <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
     <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" />
     <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
@@ -521,14 +592,17 @@
               [@cpiHelp key="projectOutcomeMilestone.pmcValue.helpText" /]
             </span>
             [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=false editable=canSetted showTitle=false /]
+            [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="settedValue" aria-live="polite"></span>[/#if]
             <span class="cpi-field__note">[@s.text name="projectContributionCrp.pmcNote" /]</span>
           </div>
           <div class="cpi-field ${canExpected?string('is-edit', (reportingActive || !isCurrentPeriod)?string('is-read','is-locked'))}">
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=isCurrentPeriod editable=canExpected /]
+            [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="expectedValue" aria-live="polite"></span>[/#if]
             [#if !canExpected && !isCurrentPeriod]<span class="cpi-field__note">[@s.text name="projectContributionCrp.otherPeriod" /]</span>[/#if]
           </div>
           <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
             [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=achievedRequired editable=canAchieved /]
+            [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="achievedValue" aria-live="polite"></span>[/#if]
             [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
           </div>
         </div>

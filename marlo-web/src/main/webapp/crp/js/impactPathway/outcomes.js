@@ -46,6 +46,32 @@ $('.targetUnit-block select').on('change', function(){
   setFormatInput(`input[name="${selector}"]`, {isRecallMethod: true});
 })
 
+opiScrollToLinkedOutcome();
+
+}
+
+/**
+ * Cluster Contribution links each disaggregated target back here with
+ * #opi-outcome-<id> (A2-2623). The cards carry no id of their own -- theirs is the
+ * list index -- so the indicator is found by its hidden outcome id.
+ */
+function opiScrollToLinkedOutcome() {
+  var match = /^#opi-outcome-(\d+)$/.exec(window.location.hash || '');
+  if (!match) {
+    return;
+  }
+  var $card = $('.outcomes-list .outcome input.outcomeId').filter(function() {
+    return this.value === match[1];
+  }).closest('.outcome');
+  if (!$card.length) {
+    return;
+  }
+  $card.removeClass('is-collapsed');
+  $card.find('.to-minimize-outcome').removeClass('minimizeOutcome');
+  $card.find('.btn-expand-Outcome').attr('aria-expanded', 'true');
+  // Clear the fixed top bar, which would otherwise cover the card's first line.
+  $card[0].style.scrollMarginTop = '96px';
+  $card[0].scrollIntoView({ block: 'start' });
 }
 
 function attachEvents() {
