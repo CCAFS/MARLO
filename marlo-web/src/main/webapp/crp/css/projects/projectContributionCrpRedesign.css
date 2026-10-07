@@ -243,7 +243,11 @@
   gap: 16px;
 }
 .cpi-page .cpi-fields__values > .cpi-field { min-width: 0; margin-bottom: 8px; }
-.cpi-page .cpi-field { margin-bottom: 16px; position: relative; }
+/* flow-root keeps each field's floats inside it. A textarea's word counter (p.charCount,
+   global.css) floats right at nearly full width; uncleared, it ran into the next field,
+   and that field's .feedback-flex-items -- a flex container, so it avoids floats -- shrank
+   to the few pixels left and squeezed its textarea against the left edge. */
+.cpi-page .cpi-field { display: flow-root; margin-bottom: 16px; position: relative; }
 /* With feedback on, addfeedbackFlexItemsClass() (feedbackAutoImplementation.js)
    moves a commentable field and its comment bubble into this wrapper. It must keep
    its content's height: a 0-height wrapper centres the field on a zero line, so
