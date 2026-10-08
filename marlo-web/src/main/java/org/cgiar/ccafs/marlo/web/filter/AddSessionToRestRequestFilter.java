@@ -192,7 +192,7 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
     Long currentUserId = (Long) subject.getPrincipal();
 
     User user = userManager.getUser(currentUserId);
-    // Logged only if the request fails; reuses the user already loaded here, so no query is added
+    // Name and email logged only if the request fails; reuses the user already loaded here, so no query is added
     LogContext.putUserName(user);
 
     // Save the information to Clarisa Monitoring Table

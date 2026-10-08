@@ -63,6 +63,7 @@ public class ErrorStatusLogInterceptorTest {
     user.setId(1082L);
     user.setFirstName("Ana");
     user.setLastName("Perez");
+    user.setEmail("a.perez@example.org");
     return user;
   }
 
@@ -134,11 +135,24 @@ public class ErrorStatusLogInterceptorTest {
   }
 
   @Test
-  public void aNameIsOnlyLoggedOnceTheRequestFailed() throws Exception {
+  public void aNameAndEmailAreOnlyLoggedOnceTheRequestFailed() throws Exception {
     LogContext.putUserName(user());
     assertNull("the name must stay out of the context before the failure", MDC.get(LogContext.USER_NAME));
+    assertNull("the email must stay out of the context before the failure", MDC.get(LogContext.USER_EMAIL));
     this.session.put(APConstants.SESSION_USER, user());
     this.run(BaseAction.NOT_AUTHORIZED);
+    assertEquals("Ana Perez", this.onlyEvent().getMDCPropertyMap().get(LogContext.USER_NAME));
+    assertEquals("a.perez@example.org", this.onlyEvent().getMDCPropertyMap().get(LogContext.USER_EMAIL));
+  }
+
+  @Test
+  public void anEmailThatCouldForgeALineIsNotLogged() throws Exception {
+    User user = user();
+    user.setEmail("a.perez@example.org status_code=200");
+    LogContext.putUserName(user);
+    this.session.put(APConstants.SESSION_USER, user);
+    this.run(BaseAction.NOT_AUTHORIZED);
+    assertNull(this.onlyEvent().getMDCPropertyMap().get(LogContext.USER_EMAIL));
     assertEquals("Ana Perez", this.onlyEvent().getMDCPropertyMap().get(LogContext.USER_NAME));
   }
 
@@ -184,14 +198,16 @@ public class ErrorStatusLogInterceptorTest {
   }
 
   @Test
-  public void removingTheStatusAlsoRemovesTheNameItPublished() throws Exception {
+  public void removingTheStatusAlsoRemovesTheNameAndEmailItPublished() throws Exception {
     LogContext.putUserName(user());
     this.session.put(APConstants.SESSION_USER, user());
     this.run(BaseAction.NOT_FOUND);
     assertEquals("Ana Perez", MDC.get(LogContext.USER_NAME));
+    assertEquals("a.perez@example.org", MDC.get(LogContext.USER_EMAIL));
     LogContext.removeStatusCode();
     assertNull(MDC.get(LogContext.STATUS_CODE));
     assertNull(MDC.get(LogContext.USER_NAME));
+    assertNull(MDC.get(LogContext.USER_EMAIL));
   }
 
   @Test

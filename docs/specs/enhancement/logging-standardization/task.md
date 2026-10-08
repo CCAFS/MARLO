@@ -3,7 +3,7 @@
 **Spec ID:** ENH-LOGGING-STANDARDIZATION-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-10-08
 **Implements design:** docs/specs/enhancement/logging-standardization/design.md
 **Branching:** `logging-standardization`, branched from `staging` (continues the A2-2435 work already merged there).
 **Target merge:** staging (then promoted to main per release process).
@@ -115,17 +115,25 @@
   exists in a fresh checkout.
 - **Verification:** Fresh clone, `run-marlo-java17.sh`, confirm the log file is created without a manual edit.
 
-### ENH-LOGGING-STANDARDIZATION-001-T04 — `APConfig.getEnvironment()`
+### ENH-LOGGING-STANDARDIZATION-001-T04 — `environment` from the Spring profile
 
+- **Status:** Done, 2026-10-08, ahead of T08: `environment=` is in the text log, not yet in a JSON one. Built as
+  a logback `PropertyDefiner` instead of the `APConfig.getEnvironment()` first specified, and an `api`-only
+  profile prints `API` instead of DEV/TEST/PROD. See `requirements.md` §9, 2026-10-08 entries.
 - **Depends on:** —
-- **Module:** marlo-utils
+- **Module:** marlo-web
 - **Files touched:**
-  - `utils/APConfig.java` (modified)
-- **Constitutional checks:** Existing `@Named` / `@Value` bean conventions preserved; no dependency added.
+  - `logging/LogEnvironmentDefiner.java` (new)
+  - `resources/logback.xml` (modified — `<define name="environment">` and ` environment=` in each pattern)
+  - `test/.../logging/LogEnvironmentDefinerTest.java` (new)
+- **Constitutional checks:** GPL header on the new files; no dependency added.
 - **Tests:**
-  - Unit: `dev|test|pro|fast|api` → `DEV|TEST|PROD`; unknown profile → a safe default, never null.
+  - Unit: `pro` → PROD, `test` → TEST, `dev|fast|none` → DEV, other profile upper-cased, unsafe value →
+    `UNKNOWN`, never null; the override wins; an unset `${marlo.environment:-}` is not an override.
+  - Integration: the `<define>` of the shipped `logback.xml` is configured through `JoranConfigurator`, and
+    every `<pattern>` prints the field.
 - **Done when:**
-  - `getEnvironment()` returns the environment derived from the Spring active profile
+  - Every log line carries `environment`, derived from the Spring active profile
     (`ApplicationContextConfig.java:58-62` defines the profile names).
   - An optional `marlo.environment` override exists for the case where one profile serves two machines.
   - **No new property is required for the default path** (OPS-001) — `marlo-pro.properties` is gitignored and
@@ -146,7 +154,8 @@
   - Integration: two sequential requests on one worker thread share no context.
 - **Done when:**
   - Registered on `/*` immediately after `CORSFilter`, so it is the outermost MARLO filter.
-  - Sets `request_id`, `environment`, `tool_name` (when resolvable) and `controller_affected`.
+  - Sets `request_id`, `tool_name` (when resolvable) and `controller_affected`. Not `environment`: it is a
+    logback context property set once by `LogEnvironmentDefiner` (T04), never an MDC value.
   - `MDC.clear()` is in a `finally` (NF-003). Follows the push/pop shape already used at
     `MARLOCustomPersistFilter:109,164`.
   - A failure inside the filter cannot fail the request (NF-005).
@@ -290,11 +299,15 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T13 — Notification: identifiers, deduplication, REST 5xx
 
+- **Status:** Done, 2026-10-06, branch `logging-error-notification` (commit `c4a902f95d`), ahead of T08: the
+  `request_id` is in the text log, not yet in a JSON one. See `requirements.md` §9, 2026-10-06 entries.
 - **Depends on:** T02, T08
 - **Module:** marlo-web
 - **Files touched:**
   - `action/UnhandledExceptionAction.java` (modified)
   - `rest/errors/ExceptionTranslator.java` (modified — route 5xx to the same notifier)
+  - `logging/ErrorNotificationThrottle.java` (new — the deduplication decision and the correlation lines)
+  - `logging/LogContext.java` (modified — `request_id`) and `logback.xml` (modified — prints it)
 - **Constitutional checks:** No new notifier and no new channel — `SendMailS` is reused. Never expose a stack
   trace to the client (`detailed-design.md` §9.2); the trace goes to the internal mail and the log only.
 - **Tests:**
@@ -302,11 +315,28 @@
   - Integration: a REST 5xx reaches the notifier; a REST 4xx does not.
 - **Done when:**
   - The mail carries `request_id` and `status_code` (FN-007).
-  - Deduplication on `tool_name + module_section + status_code` (FN-008).
+  - Deduplication on `tool_name + route + exception class + throwing frame + status_code`, one hour, the
+    suppressed count in the next mail (FN-008; key amended 2026-10-06, `requirements.md` §9).
   - 5xx notifies; 4xx does not (design ADR-3 — 177 of the REST layer's `HttpStatus` usages are `NOT_FOUND`).
   - Existing behaviour preserved: always notify for AICCRA, production-only otherwise.
 - **Verification:** Trigger the same exception twice; confirm one mail, and that its `request_id` finds the
   event in the JSON log.
+- **Verification notes (2026-10-06):**
+  - Gates: clean recompile of marlo-data + marlo-web (2405 + 1049 files), Checkstyle zero delta against HEAD,
+    Java hygiene check clean, `mvn -o -pl marlo-web -am test` 365 tests, 0 failures — 9 new in
+    `ErrorNotificationThrottleTest` (two identical faults → one mail, distinct faults mailed separately, count
+    after the window, tracker cap) and 2 in `ExceptionTranslatorRouteKeyTest` (two ids of one endpoint share a
+    key).
+  - Live, local server on this branch: `reportingSummary.do?projectID=abc` requested three times in one
+    session gave three ERROR lines (`request_id` `5ca5e71daddd61be`, `2fe72bc92689c6cb`, `8e6ef34e8ba65234`),
+    one "has sent a message" and two "already reported within the hour" lines, and exactly one mail. The mail
+    carried `Request id: 5ca5e71daddd61be`, `Status code: 500` and the route, and that id finds its lines in
+    `marlo-dev.log`. Every log line of a request now carries `request_id=`.
+  - REST: the dispatcher servlet loads on startup and started with no bean-creation error, so the constructor
+    injection of `SendMailS` and `APConfig` into `ExceptionTranslator` resolves. A live REST 5xx was **not**
+    exercised: `/api` answers 401 to the local dev account over BASIC, and a browser session is redirected to
+    the dashboard. Still to do on `marlotest` with an API account: two 5xx on one endpoint with different
+    ids → one mail; a 404 → no mail.
 
 ### ENH-LOGGING-STANDARDIZATION-001-T14 — Checkstyle guardrail
 
@@ -358,7 +388,7 @@
 T01 (delete aspect) ────┐
 T02 (REST handlers) ────┼──────────────────────────► T13 (notification)
 T03 (log.folder) ───────┤                                  ▲
-T04 (getEnvironment) ───┴─► T05 (LoggingContextFilter)      │
+T04 (environment) ──────┴─► T05 (LoggingContextFilter)      │
                                 └─► T06 (user_id)           │
                                       └─► T07 (name/email)  │
                                             └─► T08 (JSON appender) ──┘
@@ -380,8 +410,8 @@ T08 must come after T05–T07, or the JSON ships with empty context fields and r
 
 ### Unit
 
-- `APConfig.getEnvironment()`: each profile maps to its environment; unknown profile yields a safe default,
-  never null (T04).
+- `LogEnvironmentDefiner.resolve()`: each profile maps to its environment; unknown profile yields a safe
+  default, never null (T04).
 - `LoggingContextFilter`: `MDC.clear()` runs even when the downstream chain throws (T05).
 - `MarloMdcJsonProvider`: `status_code` and `user_id` are written as numbers; `user_name`/`user_email` are
   written when `status_code` is 400 or above and omitted otherwise, including when `status_code` is absent

@@ -42,6 +42,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.shiro.SecurityUtils;
@@ -53,6 +56,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.junit.After;
+import org.slf4j.LoggerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -155,6 +159,28 @@ public class LoginActionLogoutTest {
     this.action.getSession().put(APConstants.SESSION_USER, cgiarUser());
     this.action.getSession().put(APConstants.SESSION_CRP, globalUnit());
     return shiroSession;
+  }
+
+  /** The logout line names the user by id; the email is never written into the message text. */
+  @Test
+  public void logoutLineNamesTheUserByIdNotByEmail() {
+    this.signIn();
+    Logger logger = (Logger) LoggerFactory.getLogger(LoginAction.class);
+    ListAppender<ILoggingEvent> appender = new ListAppender<ILoggingEvent>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      assertEquals(Action.SUCCESS, this.action.logout());
+    } finally {
+      logger.detachAppender(appender);
+    }
+    boolean named = false;
+    for (ILoggingEvent event : appender.list) {
+      assertFalse("the email must not be in [" + event.getFormattedMessage() + "]",
+        event.getFormattedMessage().contains(EMAIL));
+      named |= event.getFormattedMessage().contains("User " + USER_ID + " logout");
+    }
+    assertTrue("expected the logout line to name the user by id", named);
   }
 
   /**
