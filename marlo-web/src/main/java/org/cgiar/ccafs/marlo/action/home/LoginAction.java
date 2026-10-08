@@ -347,8 +347,17 @@ public class LoginAction extends BaseAction {
       User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
       if (loggedUser != null) {
-
-        return this.login(loggedUser, loggedCrp);
+        String result = this.login(loggedUser, loggedCrp);
+        if (BaseAction.INPUT.equals(result)) {
+          // The login was refused after Subject.logout() stopped the session (no Global Unit selected, or not a
+          // member of it). Rendering login.ftl in this request would read that stopped session and answer with a 500
+          // (UnknownSessionException), so the browser is sent to a fresh login page instead, as
+          // CognitoCallbackAction does for the same refusals. An unmapped Global Unit type, the only other INPUT,
+          // keeps its session and lands on the same login page
+          this.url = this.getBaseUrl() + "/login.do";
+          return LOGIN;
+        }
+        return result;
       } else {
         LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
           + this.getSession().get(APConstants.LOGIN_MESSAGE));

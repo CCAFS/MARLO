@@ -15,6 +15,7 @@
 
 package org.cgiar.ccafs.marlo.action.home;
 
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
@@ -41,6 +42,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.realm.SimpleAccountRealm;
+import org.apache.shiro.util.ThreadContext;
 import org.apache.struts2.ServletActionContext;
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +54,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -73,6 +80,12 @@ public class LoginActionFinishLoginTest {
   private static final String BASE_URL = "https://marlo.example.org";
 
   private TestableLoginAction action;
+
+  private AlwaysMemberCrpUserManager crpUserManager;
+
+  private FakeUserManager userManager;
+
+  private NoOpGlobalUnitManager globalUnitManager;
 
   /**
    * The parameter is deliberately {@code Object}, not {@code LoginAction}: the old
@@ -152,8 +165,11 @@ public class LoginActionFinishLoginTest {
   @Before
   public void setUp() throws Exception {
     APConfig config = new APConfig();
-    this.action = new TestableLoginAction(config, new FakeUserManager(), new NoOpGlobalUnitManager(),
-      new AlwaysMemberCrpUserManager(), new NoCustomParametersManager(), new NoOpParameterManager());
+    this.crpUserManager = new AlwaysMemberCrpUserManager();
+    this.userManager = new FakeUserManager();
+    this.globalUnitManager = new NoOpGlobalUnitManager();
+    this.action = new TestableLoginAction(config, this.userManager, this.globalUnitManager, this.crpUserManager,
+      new NoCustomParametersManager(), new NoOpParameterManager());
     this.action.setSession(new HashMap<String, Object>());
     // The success log line dereferences the `user` FIELD, not the loggedUser argument. T01 leaves that
     // line alone (T08 is what makes the field non-null on the Cognito path), so the field must be set
@@ -164,6 +180,89 @@ public class LoginActionFinishLoginTest {
   @After
   public void tearDown() {
     ActionContext.clear();
+    SecurityUtils.setSecurityManager(null);
+    ThreadContext.remove();
+  }
+
+  /**
+   * Submits the login form for an account the user manager accepts. In production userManager.login() authenticates
+   * the Shiro subject, so the subject is logged in here first: a refusal must then log it out. The landing-page lists
+   * are preset so that login() does not load them from a Global Unit manager this suite does not wire.
+   */
+  private String submitLogin(GlobalUnit selectedGlobalUnit) throws Exception {
+    SimpleAccountRealm realm = new SimpleAccountRealm();
+    realm.addAccount("jane.smith", "secret");
+    SecurityUtils.setSecurityManager(new DefaultSecurityManager(realm));
+    SecurityUtils.getSubject().login(new UsernamePasswordToken("jane.smith", "secret"));
+    this.userManager.loginResult = loggedUser();
+    this.globalUnitManager.byAcronym = selectedGlobalUnit;
+    Field platformsList = LoginAction.class.getDeclaredField("platformsList");
+    platformsList.setAccessible(true);
+    platformsList.set(this.action, new ArrayList<GlobalUnit>());
+    setReferer(null);
+    return this.action.login();
+  }
+
+  /**
+   * A refusal stops the session with Subject.logout(), so login.ftl cannot be rendered in the same request: it reads
+   * the stopped session and the login was answered with a 500 (UnknownSessionException). The browser is redirected
+   * to a fresh login page instead.
+   */
+  @Test
+  public void aLoginWithoutGlobalUnitIsRedirectedToTheLoginPage() throws Exception {
+    assertEquals(Action.LOGIN, this.submitLogin(null));
+    assertEquals(BASE_URL + "/login.do", this.action.getUrl());
+  }
+
+  @Test
+  public void aLoginForANonMemberIsRedirectedToTheLoginPage() throws Exception {
+    this.crpUserManager.member = false;
+    assertEquals(Action.LOGIN, this.submitLogin(globalUnitOfType(1)));
+    assertEquals(BASE_URL + "/login.do", this.action.getUrl());
+  }
+
+  @Test
+  public void anAcceptedLoginIsNotRedirectedToTheLoginPage() throws Exception {
+    assertEquals(Action.SUCCESS, this.submitLogin(globalUnitOfType(1)));
+    assertTrue(SecurityUtils.getSubject().isAuthenticated());
+    assertNotNull(this.action.getSession().get(APConstants.SESSION_USER));
+  }
+
+  /**
+   * The redirect must not let a refused user through: the subject is logged out and the session holds nothing, not
+   * even what an earlier login in the same browser left in it.
+   */
+  @Test
+  public void aRefusedLoginLeavesTheUserLoggedOut() throws Exception {
+    this.action.getSession().put(APConstants.SESSION_USER, loggedUser());
+    assertEquals(Action.LOGIN, this.submitLogin(null));
+    assertFalse(SecurityUtils.getSubject().isAuthenticated());
+    assertTrue(this.action.getSession().isEmpty());
+  }
+
+  @Test
+  public void aRefusedNonMemberIsLeftLoggedOut() throws Exception {
+    this.action.getSession().put(APConstants.SESSION_USER, loggedUser());
+    this.crpUserManager.member = false;
+    assertEquals(Action.LOGIN, this.submitLogin(globalUnitOfType(1)));
+    assertFalse(SecurityUtils.getSubject().isAuthenticated());
+    assertTrue(this.action.getSession().isEmpty());
+  }
+
+  /**
+   * finishLogin's only other INPUT: a Global Unit type with no landing page. The user is not refused and keeps the
+   * session, and the login page the redirect leads to renders instead of redirecting again, so there is no loop.
+   */
+  @Test
+  public void anUnmappedGlobalUnitTypeIsRedirectedOnceWithItsSessionKept() throws Exception {
+    assertEquals(Action.LOGIN, this.submitLogin(globalUnitOfType(99)));
+    assertEquals(BASE_URL + "/login.do", this.action.getUrl());
+    assertTrue(SecurityUtils.getSubject().isAuthenticated());
+    assertNotNull(this.action.getSession().get(APConstants.SESSION_USER));
+
+    // The redirected GET of login.do: no form user, the session from above
+    setFormUser(this.action, null);
+    assertEquals(Action.INPUT, this.action.login());
   }
 
   /** A {@code Referer} carrying {@code .do} is the deep link to return to: {@code LOGIN} plus {@code url}. */
@@ -328,8 +427,13 @@ public class LoginActionFinishLoginTest {
     assertFalse(this.action.isCognitoFailed());
   }
 
-  /** Always reports the user as a member, so the happy path reaches the routing tail under test. */
+  /**
+   * Always reports the user as a member, so the happy path reaches the routing tail under test, unless a test clears
+   * {@link #member} to reach the non-member refusal.
+   */
   private static final class AlwaysMemberCrpUserManager implements CrpUserManager {
+
+    private boolean member = true;
 
     @Override
     public void deleteCrpUser(long crpUserId) {
@@ -347,7 +451,7 @@ public class LoginActionFinishLoginTest {
 
     @Override
     public boolean existCrpUser(long userId, long crpId) {
-      return true;
+      return this.member;
     }
 
     @Override
@@ -412,6 +516,10 @@ public class LoginActionFinishLoginTest {
   /** Echoes the user back from {@code getUser} and accepts {@code saveLastLogin}; nothing else is reached. */
   private static final class FakeUserManager implements UserManager {
 
+    /** The account login() accepts; null, the default, rejects every login. */
+    private User loginResult;
+
+
     @Override
     public User getActiveSuperAdminUserByUsernameOccurrence() {
       return null;
@@ -447,7 +555,7 @@ public class LoginActionFinishLoginTest {
 
     @Override
     public User login(String email, String password) {
-      return null;
+      return this.loginResult;
     }
 
     @Override
@@ -506,6 +614,10 @@ public class LoginActionFinishLoginTest {
   /** Unused on this path; present only to satisfy the constructor. */
   private static final class NoOpGlobalUnitManager implements GlobalUnitManager {
 
+    /** The Global Unit the login form selects; null, the default, is no selection. */
+    private GlobalUnit byAcronym;
+
+
     @Override
     public List<GlobalUnit> crpUsers(String email) {
       return new ArrayList<GlobalUnit>();
@@ -527,7 +639,7 @@ public class LoginActionFinishLoginTest {
 
     @Override
     public GlobalUnit findGlobalUnitByAcronym(String acronym) {
-      return null;
+      return this.byAcronym;
     }
 
     @Override
