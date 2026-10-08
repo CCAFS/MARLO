@@ -335,8 +335,9 @@ public class OutcomeValidator extends BaseValidator
     } else {
         // The key was being added as the message itself, so the raw key reached the user.
         action.addMessage(action.getText("outcome.action.milestones.required", params));
-        action.getInvalidFields().put(listPrefix + ".milestones",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] { "Milestones" }));
+        // Named with the block's own title, so each global unit reads its own term for it.
+        action.getInvalidFields().put(listPrefix + ".milestones", action.getText(InvalidFieldsMessages.EMPTYLIST,
+          new String[] {action.getText("outcome.milestone.sectionTitle")}));
     }
 
     // 8. Sub-IDOs
@@ -353,7 +354,7 @@ public class OutcomeValidator extends BaseValidator
             for (int j = 0; j < outcome.getSubIdos().size(); j++) {
                 outcome.getSubIdos().get(j).setCrpProgramOutcome(outcome);
                 
-                // ¡OJO AQUÍ! Debes entrar a este método también
+                // Careful here: this method has to be entered too
                 this.validateSubIDO(action, outcome.getSubIdos().get(j), i, j);
                 
                 if (outcome.getSubIdos().get(j).getContribution() != null) {
