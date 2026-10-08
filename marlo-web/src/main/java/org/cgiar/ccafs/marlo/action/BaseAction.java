@@ -2496,9 +2496,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public Long getCenterID() {
     if (this.session != null && !this.session.isEmpty()) {
       try {
-        GlobalUnit center = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-        this.centerID = center.getId();
+        GlobalUnit center = (GlobalUnit) this.session.get(APConstants.SESSION_CRP);
+        // No Global Unit in the session is the normal case on the login page and for anonymous requests
+        if (center != null) {
+          this.centerID = center.getId();
+        }
       } catch (Exception e) {
         LOG.warn("Could not read the center id from the session", e);
       }
@@ -2667,11 +2669,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getCenterSession() {
     if (this.session != null && !this.session.isEmpty()) {
       try {
-        GlobalUnit center = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
+        GlobalUnit center = (GlobalUnit) this.session.get(APConstants.SESSION_CRP);
         // Assumed there is only one center in the system, the default
         // one.
-        this.centerSession = center.getAcronym();
+        // No Global Unit in the session is the normal case on the login page and for anonymous requests
+        if (center != null) {
+          this.centerSession = center.getAcronym();
+        }
       } catch (Exception e) {
         LOG.warn("Could not read the center acronym from the session", e);
       }
@@ -2928,9 +2932,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public String getCrpSession() {
     if (this.session != null && !this.session.isEmpty()) {
       try {
-        GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP) != null
-          ? (GlobalUnit) this.session.get(APConstants.SESSION_CRP) : null;
-        this.crpSession = crp.getAcronym();
+        GlobalUnit crp = (GlobalUnit) this.session.get(APConstants.SESSION_CRP);
+        // No Global Unit in the session is the normal case on the login page and for anonymous requests
+        if (crp != null) {
+          this.crpSession = crp.getAcronym();
+        }
       } catch (Exception e) {
         LOG.warn("Could not read the CRP acronym from the session", e);
       }

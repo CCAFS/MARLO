@@ -1,7 +1,7 @@
 # Logging Standardization — Agent Context
 
 **Spec:** ENH-LOGGING-STANDARDIZATION-001
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-08
 **Read this first.** Open `requirements.md` / `design.md` / `task.md` only for broad, architectural or
 formally tracked work.
 
@@ -14,27 +14,28 @@ MARLO logs through **SLF4J + Logback** (`marlo-web/src/main/resources/logback.xm
 SLF4J 2.x and this checkout resolves SLF4J 1.7.x through logback-classic 1.2.13. There is no `log4j2.xml`.
 Do not "fix" the log by editing a Log4j2 config; there isn't one, and Logback is the active provider.
 
-Second thing: **`org.jfree.util.Log` is used as a logger in 21 files** and no `LogTarget` is ever registered,
+Second thing: **`org.jfree.util.Log` is used as a logger in 12 files** (measured 2026-10-08; list in §6.1) and no `LogTarget` is ever registered,
 so every one of those calls goes nowhere. If a class seems to log and nothing appears, check its import first.
 
 ## 2. The Schema, In One Table
 
 One JSON object per line, written by the `FILE-JSON` appender to
-`${log.folder}/marlo-json-${log.instance}.log`, alongside the unchanged text log.
+`${log.folder}/marlo-json-${log.instance}.log`, alongside the text log, whose format is unchanged apart from the
+`key=value` context fields NF-001 permits.
 
 | Field | Type | Where it comes from | When |
 |---|---|---|---|
 | `timestamp` | str | Logback | always, ISO 8601 UTC, ms |
 | `level` | str | call site | always |
 | `request_id` | str | `LogContext` request listener, random; already `request_id=` in the text log | every event inside a request |
-| `environment` | str | `APConfig.getEnvironment()` ← Spring active profile | always |
+| `environment` | str | `LogEnvironmentDefiner` (logback `<define>`) ← Spring active profile, `marlo.environment` override; already `environment=` in the text log | always |
 | `tool_name` | str | `BaseAction.getCurrentCrp()` / `SESSION_CRP`; REST: `AddSessionToRestRequestFilter.addCrpToSession()` | once the global unit is known |
 | `module_section` | str | logger name (the emitting class) | always |
 | `controller_affected` | str | request path **without query string**, `LoggingContextFilter` | every event inside a request |
 | `message` | str | call site | always |
 | `status_code` | **num** | `ExceptionTranslator` per handler; 500 from `UnhandledExceptionAction` | error events only |
 | `user_id` | **num** | `AddUserIdFilter`, Shiro principal | authenticated requests |
-| `user_name`, `user_email` | str | `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter` | **only** when `status_code >= 400` |
+| `user_name`, `user_email` | str | `LogContext.putUserName()` from `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter`; already in the text log | **only** when `status_code >= 400` |
 | `stack_trace` | str | Logback throwable provider, truncated | when an exception is passed |
 | `payload` | obj | call site, allow-list only | rarely, explicitly |
 | `service_affected` | — | — | **omitted**; no meaning for a monolith |
@@ -59,7 +60,7 @@ Two insertion points, because the Shiro subject does not exist before the Shiro 
 
 ```
 RemoveSessionFromUrlFilter → CORSFilter
-  → LoggingContextFilter   [owns MDC: request_id, environment, tool_name, controller_affected; clear() in finally]
+  → LoggingContextFilter   [owns MDC: request_id, tool_name, controller_affected; clear() in finally]
     → MARLOCustomPersistFilter   (AuditLogContext push/pop + tx — the pattern this copies)
     → Shiro filter
     → AddUserIdFilter      [user_id — subject available only from here on]
@@ -82,7 +83,9 @@ by that thread. It is a privacy defect and **it does not reproduce under single-
 
 ## 5. Conventions For Any Log Statement
 
-From A2-2435, now enforced by Checkstyle:
+From A2-2435. **Not yet enforced by Checkstyle:** as of 2026-10-08 neither `configuration/marlo-checkstyle.xml`
+nor `ccafs-java-style-config.xml` carries a rule for `System.out` / `System.err` or `printStackTrace()`, so
+nothing stops a new offender from landing (see §6.1).
 
 - `private static final Logger LOG = LoggerFactory.getLogger(MyClass.class);` — the repo has 8 declaration
   variants and 3 names (`LOG` 253, `logger` 59, `log` 5). Use `LOG`, `static final`.
@@ -93,6 +96,9 @@ From A2-2435, now enforced by Checkstyle:
 - Never swallow an exception and return `null`. Either propagate, or return an explicit empty result and stop
   calling it an ERROR.
 - **ERROR means someone must intervene.** A failed login is INFO.
+- **Name a user by id in the message text, never by email or name.** The email and name are log fields that
+  SEC-001 publishes on failed requests only; text in the message bypasses that rule. Never log what a login
+  form carried before the account is verified: it can be a password typed in the wrong field.
 - Log where you handle, throw where you detect. Not both for the same event.
 
 ## 6. Known Gaps And Traps
@@ -111,8 +117,10 @@ From A2-2435, now enforced by Checkstyle:
 - **`log.folder` shipped pointing at developer home directories** (`marlo-dev.properties:99`,
   `marlo-test.properties:139`). Production values live in a gitignored `marlo-pro.properties` this repo cannot
   see.
-- **`APConfig` has no profile accessor.** `isProduction()` and `getBaseUrl()` exist; `getEnvironment()` is new
-  and derives from `spring.profiles.active` precisely so no new server-side key is needed.
+- **`environment` is not in `APConfig`.** It is computed once by `logging/LogEnvironmentDefiner`, which
+  `logback.xml` declares, because logback configures before Spring starts. It derives from
+  `spring.profiles.active` precisely so no new server-side key is needed. If every line prints
+  `environment=UNKNOWN`, the `<define>` in `logback.xml` failed to load; `LogEnvironmentDefinerTest` guards it.
 - **`mvn checkstyle:check` cannot run here.** Plugin 2.9.1 against checkstyle 8.18 throws
   `NoSuchMethodError: Checker.setClassloader`. Use
   `~/.claude/skills/marlo-verify/scripts/checkstyle.sh --baseline`. Separate ticket.
@@ -122,6 +130,67 @@ From A2-2435, now enforced by Checkstyle:
   A2-2435) — do not obscure it while cleaning that file.
 - **`action/summaries` (168 offenders) and `utils` (84) are deliberately deferred.** Largest concentration,
   its own commit series.
+
+### 6.1 Remaining Offenders Inventory (measured 2026-10-08, on `staging`)
+
+Production sources only (`marlo-{core,data,utils,web}/src/main/java`), lines starting with `//` or `*` excluded.
+`src/test` has no `System.out`. Re-measure before quoting — these numbers move with every cleanup commit:
+
+```
+grep -rnE 'System\.(out|err)\.print|\.printStackTrace\(' --include='*.java' marlo-*/src/main/java \
+  | grep -vE ':[0-9]+:\s*(//|\*)'
+```
+
+| Pattern outside the SLF4J standard | Live lines | Files |
+|---|---|---|
+| `System.out.println` / `System.err.println` | 138 | 57 |
+| `e.printStackTrace()` | 91 | 58 |
+| `org.jfree.util.Log` (discards every call) | — | 12 |
+| `java.util.logging` | 2 | 2 |
+| `LOG.x("..." + e.getMessage())` (concatenation, stack trace lost) | ~149 | — |
+| Logger named `logger` / `log` instead of `LOG` | ~64 | — |
+
+**Fix first — these leak sensitive data to stdout (`catalina.out`), outside SEC-001:**
+
+1. `action/summaries/UserSummaryAction.java:267-283` — prints email, full name, last login and roles of every
+   user in the report.
+2. `action/summaries/ReportingSummaryAction.java:3223, 4246` — prints `"confidential " + delivConfidentialUrl`.
+3. `marlo-utils/.../utils/ExternalPostUtils.java:113, 175` — on a non-2xx response prints the full outgoing
+   request payload (`parameters`).
+4. `action/summaries/BaseStudySummaryData.java:1528`, `ReportingSummaryAction.java:7860` — print the exception
+   raised while reading the microservice API key.
+5. `rest/controller/v2/controllist/items/Deliverables/DeliverablesItem.java:338, 712, 1493, 1989` — print the
+   whole WoS JSON response on every REST save.
+
+**Where the rest concentrates:**
+
+- **Summaries / reports (~60% of `System.out`):** `ReportingSummaryAction` (26), `BaseStudySummaryData` (19),
+  `MicroserviceReportAction` (17), `StudySummaryAction` (9), `AIReportService` (3). Mostly caught errors that
+  belong in `LOG.error(..., e)`.
+- **REST v2 items (`rest/controller/v2/controllist/items/*`):** one copied idiom, ~25 times,
+  `fieldErrors.forEach(e -> System.out.println(e.getMessage()))` — Policy, ProgressTowards,
+  KeyExternalPartnership, CrossCGIARCollaborations, ExpectedStudies(+Other), StatusPlanned{Outcomes,Milestones},
+  Deliverables.
+- **Debug leftovers on hot paths:** `EditProjectInterceptor:238-239` and
+  `EditProjectLp6ContributionInterceptor:246-247` print years on every request; also
+  `CapacityDevelopmentDetailAction:568`, `ProjectInnovationAction:2825`, `StudiesOICRAction:313`.
+- **Scratch classes in `src/main`:** `action/center/capdev/test.java` and `TestJsonCompare.java` have no
+  references. Candidates to move or delete — a proposal, not part of a cleanup commit unless asked.
+- **`printStackTrace()`:** ~14 interceptors (`EditProject*`, `CanEdit*`, `FundingSourceInterceptor`), the
+  repository clients in `rest/services/deliverables/*` (CGSpace, MEL, CIMMYT, IFPRI, ILRI, Metadata, Dataverse),
+  `AbstractMarloDAO` (4), and — ironically — the two global handlers `UnhandledExceptionAction` (2) and
+  `ExceptionTranslator` (1).
+- **`org.jfree.util.Log` (12 files):** `DeliverableValidator`, `ProjectExpectedStudiesValidator`,
+  `ProjectSectionValidator`, `EditDeliverableInterceptor`, `SendNotificationEmailAction`,
+  `BaseStudySummaryData`, `PublicationAction`, `TIPManagementAction`, `ReportsManagementAction`,
+  `FundingSourceListAction`, `FundingSourceByInstitutionFinanceCodeAction`,
+  `DeliverablesByDisseminationURLHandleDOIAction`.
+- **`java.util.logging`:** `action/json/global/GetInstitutions.java:43` (JUL logger) and
+  `action/projects/PartnersSaveAction.java:574` (JUL call although the class already has an SLF4J `LOG`).
+
+**Trap — two `ExternalPostUtils` with the same FQN.** `org.cgiar.ccafs.marlo.utils.ExternalPostUtils` exists in
+both `marlo-utils` (uses `System.out`) and `marlo-web` (uses `LOG`). Which one loads depends on classpath order.
+Settle which is live before cleaning the `marlo-utils` copy.
 
 ## 7. Change Recipes
 

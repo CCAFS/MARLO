@@ -105,7 +105,7 @@ public class UserManagerImp implements UserManager {
     if (user != null) {
       return user;
     }
-    LOG.debug("Information related to the user {} wasn't found.", email);
+    LOG.debug("No user was found for the given email.");
     return null;
   }
 
@@ -115,13 +115,32 @@ public class UserManagerImp implements UserManager {
     if (email != null) {
       return this.getUserByEmail(email);
     }
-    LOG.debug("Information related to the user {} wasn't found.", username);
+    LOG.debug("No user was found for the given username.");
     return null;
   }
 
   @Override
   public User getActiveSuperAdminUserByUsernameOccurrence() {
     return userDAO.getActiveSuperAdminUserByUsernameOccurrence();
+  }
+
+  /**
+   * Returns the id of the account an email or username names, so that a log line about a failed login can name the
+   * account without logging what was typed: it can be a password entered in the wrong field. Never throws, so that a
+   * failure here cannot change the outcome of the login.
+   *
+   * @param emailOrUsername the identifier the login was attempted with
+   * @return the account id, or null when no account matches or the lookup fails
+   */
+  private Long accountIdForLog(String emailOrUsername) {
+    try {
+      User account = emailOrUsername.contains("@") ? this.getUserByEmail(emailOrUsername)
+        : this.getUserByUsername(emailOrUsername);
+      return account != null ? account.getId() : null;
+    } catch (RuntimeException e) {
+      LOG.debug("Could not resolve the account of a failed login for its log line", e);
+      return null;
+    }
   }
 
   @Override
@@ -132,7 +151,7 @@ public class UserManagerImp implements UserManager {
       Subject currentUser = SecurityUtils.getSubject();
       if (!currentUser.isAuthenticated()) {
         UsernamePasswordToken token = new UsernamePasswordToken(email, password);
-        LOG.info("Trying to log in the user {} against the database.", email);
+        LOG.info("Trying to log in a user against the database.");
         try {
 
           currentUser.login(token);
@@ -145,12 +164,11 @@ public class UserManagerImp implements UserManager {
             userFound = this.getUserByUsername(email);
           }
         } catch (UnknownAccountException uae) {
-          LOG.warn("There is no user with email of " + token.getPrincipal());
+          LOG.warn("Login failed: no account matches the given email or username.");
         } catch (IncorrectCredentialsException ice) {
-          LOG.warn("Password for account " + token.getPrincipal() + " was incorrect!");
+          LOG.warn("Login failed for user {}: the credentials were rejected.", this.accountIdForLog(email));
         } catch (LockedAccountException lae) {
-          LOG.warn("The account for username " + token.getPrincipal() + " is locked.  "
-            + "Please contact your administrator to unlock it.");
+          LOG.warn("Login failed for user {}: the account is locked.", this.accountIdForLog(email));
         }
       } else {
         Long userID = (Long) currentUser.getPrincipals().getPrimaryPrincipal();
