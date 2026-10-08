@@ -310,9 +310,10 @@ A2-2435 Part 1 already removed its false ERROR on the login path, so the two con
 
 ## 13. Security Considerations
 
-- **Personal data.** The agreed schema puts `user.name` and `user.email` on every event. SEC-001 restricts
-  them to events with `status_code >= 400`, the only case where someone must contact the affected user. This
-  is a deliberate divergence from the cross-tool schema, recorded in `requirements.md` §8.5 and §9.
+- **Personal data.** The agreed schema lists `user.name` and `user.email` as optional ("when applicable", "if
+  exists"), without saying on which events. SEC-001 restricts them to events with `status_code >= 400`, the
+  only case where someone must contact the affected user, and message text names a user by id only
+  (`requirements.md` §8.5 and §9, 2026-10-08).
 - **`payload` allow-list.** SEC-002 permits entity ids, section and phase only. The raw request or response
   body is never emitted, which keeps passwords out of login events and tokens out of authenticated ones. An
   explicit deny-list (`password`, `token`, `authorization`, `cookie`, session identifiers) backs the allow-list

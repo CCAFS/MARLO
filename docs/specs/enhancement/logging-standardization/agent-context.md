@@ -94,6 +94,9 @@ From A2-2435, now enforced by Checkstyle:
 - Never swallow an exception and return `null`. Either propagate, or return an explicit empty result and stop
   calling it an ERROR.
 - **ERROR means someone must intervene.** A failed login is INFO.
+- **Name a user by id in the message text, never by email or name.** The email and name are log fields that
+  SEC-001 publishes on failed requests only; text in the message bypasses that rule. Never log what a login
+  form carried before the account is verified: it can be a password typed in the wrong field.
 - Log where you handle, throw where you detect. Not both for the same event.
 
 ## 6. Known Gaps And Traps

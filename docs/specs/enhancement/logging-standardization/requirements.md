@@ -323,8 +323,11 @@ Questions that do not block this spec but shape its successor. Each belongs to t
 4. **Which status codes actually alert?** Still a TODO in the source document. MARLO's position: from 500.
    177 of the `HttpStatus` usages in MARLO's REST layer are `NOT_FOUND`, mostly legitimate "no record with
    that id" responses, so an alert threshold of 400 would bury the real failures.
-5. **Is the PII restriction in SEC-001 acceptable to the group?** It is a deliberate divergence from a schema
-   that requires `user.name` and `user.email` on every event.
+5. **Is the PII restriction in SEC-001 acceptable to the group?** The source schema lists `name` ("when
+   applicable") and `email` ("if exists") in its `user` object without saying on which events they are
+   required; its example is a 500, and its human-readable line names the user by id only (`[USER:1]`).
+   SEC-001 publishes them on failed requests only. Read against the Notion page on 2026-10-08, which
+   corrects the earlier reading that the schema requires them on every event (§9, 2026-10-08).
 6. **What happens to an event that fails validation?** The source document says "discard or flag". A discarded
    event is exactly the one needed during an incident; MARLO's position is a quarantine stream, never a drop.
 7. **Is the prescribed console line normative for tools that are not NestJS?** The required format carries a
@@ -434,6 +437,21 @@ Questions that do not block this spec but shape its successor. Each belongs to t
   the definer reads as "no override". Alternatives considered: `APConfig.getEnvironment()` as T04 specified
   (rejected: misses the lines before Spring starts); a per-request MDC value (rejected: misses every line
   outside a request).
+- 2026-10-08 — **The login path names the user by id in the message text, never by email.** — Rationale: the email is a
+  log field that SEC-001 publishes on failed requests only, but `LoginAction` and `UserManagerImp` wrote it into the
+  message text of every login attempt, success and logout, so the rule did not hold for them. Read against the Notion
+  page on 2026-10-08: `message` is "short and clear text describing the event", the schema's `email` is optional ("if
+  exists") with no rule that it appear on every event, and the prescribed human-readable line identifies the user as
+  `[USER:1]`. Every line about an account that exists names it by `user_id`: success, logout, both Global Unit refusals,
+  and also a wrong password, a locked account and a SEC-005 relay-guard refusal, whose id is looked up from the typed
+  identifier without logging it, so that support can still answer why a given account cannot log in. That lookup is one
+  to three read queries (two or three when a username was typed), on those failures only, and never throws. Where no
+  account matches (attempt started, unknown account), nothing the form carried is logged: it is not a verified account
+  and it can be a password typed in the wrong field (SEC-004). `request_id` ties the lines of one attempt together. The
+  extra queries make a failed login of an existing account slightly slower than one of an unknown account; this adds no
+  enumeration risk, because `crpByEmail.do` already answers whether an email has an account. Out of this decision, and
+  still logging the typed identifier: `ValidateUserAction:109,131`, `CognitoLoginAction:265` and `LDAPAuthenticator:86`
+  (ERROR), plus `UserMySQLDAO.verifiyCredentials` at DEBUG.
 - 2026-10-06 — **Recipients of the error mail left as they were.** — Rationale: the mail goes to the support
   mailbox as TO and again as BCC. JavaMail 1.5.5 sends two `RCPT TO` for the same address, but in one SMTP
   transaction with one body, and Exchange Online delivers a single copy: four past exception mails with the
