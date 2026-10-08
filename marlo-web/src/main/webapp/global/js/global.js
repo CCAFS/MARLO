@@ -632,6 +632,15 @@ function closeLoadPage() {
   $('.container_page_load').hide();
 }
 
+// The overlay is shown on click, right before the browser leaves the page. Going back restores that page
+// from the back/forward cache exactly as it was left -- overlay visible -- and document.ready does not run
+// again, so nothing would ever hide it. pageshow fires on every show, including bfcache restores.
+$(window).on('pageshow', function (e) {
+  if (e.originalEvent && e.originalEvent.persisted) {
+    closeLoadPage();
+  }
+});
+
 $(document).ajaxError(function (event, jqxhr, settings, exception) {
   if (production && (jqxhr.status == 500)) {
     var slackMessage = {
