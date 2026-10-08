@@ -4,6 +4,13 @@
     no properties, writes to log.folder_IS_UNDEFINED/ and attaches no appender, while Spring runs as dev -->
   <property resource="config/marlo-${spring.profiles.active:-dev}.properties" />
 
+  <!-- environment field of every line (DEV, TEST or PROD), derived from the Spring profile; marlo.environment, set as a
+    system property or in the properties file above, overrides it. See LogEnvironmentDefiner for every value -->
+  <define name="environment" scope="context" class="org.cgiar.ccafs.marlo.logging.LogEnvironmentDefiner">
+    <profiles>${spring.profiles.active:-dev}</profiles>
+    <override>${marlo.environment:-}</override>
+  </define>
+
   <!-- ======= Filters by levels to print logs in file ======= -->
 
   <appender name="FILE-PRODUCTION"
@@ -14,7 +21,7 @@
       <level>INFO</level>
     </filter>
     <encoder>
-      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}]%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
+      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}] environment=${environment:-UNKNOWN}%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( user_email=%X{user_email}){'^ user_email=$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <!-- 30 days, daily rollover -->   
@@ -27,7 +34,7 @@
     class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${log.folder}/marlo-${log.instance}.log</file>
     <encoder>     
-    <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}]%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
+    <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}] environment=${environment:-UNKNOWN}%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( user_email=%X{user_email}){'^ user_email=$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
     </encoder>    
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
         <!-- 30 days, daily rollover -->   
@@ -44,13 +51,13 @@
       <level>INFO</level>
     </filter>
     <encoder>
-      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}]%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
+      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}] environment=${environment:-UNKNOWN}%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( user_email=%X{user_email}){'^ user_email=$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
     </encoder>
   </appender>
 
   <appender name="CONSOLE-TEST" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}]%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
+      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z',UTC} - [%thread] [%-5level] [MARLO] [${spring.profiles.active:-dev}] [%logger{0}] environment=${environment:-UNKNOWN}%replace( request_id=%X{request_id}){'^ request_id=$', ''}%replace( tool_name=%X{tool_name}){'^ tool_name=$', ''}%replace( user_id=%X{user_id}){'^ user_id=$', ''}%replace( user_name="%X{user_name}"){'^ user_name=""$', ''}%replace( user_email=%X{user_email}){'^ user_email=$', ''}%replace( controller_affected=%X{controller_affected}){'^ controller_affected=$', ''}%replace( status_code=%X{status_code}){'^ status_code=$', ''}: %msg%n</pattern>
     </encoder>
   </appender>
 

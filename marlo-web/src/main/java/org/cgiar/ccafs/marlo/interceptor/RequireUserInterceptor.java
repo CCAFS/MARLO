@@ -80,9 +80,9 @@ public class RequireUserInterceptor extends AbstractInterceptor {
   }
 
   /**
-   * Puts the user id, the user's name (logged only if the request fails) and the session Global Unit in the log
-   * context. LogContext, as request listener, clears it when the request ends. Any failure is ignored, because the log
-   * context must never stop the request.
+   * Puts the user id, the user's name and email (logged only if the request fails) and the session Global Unit in
+   * the log context. LogContext, as request listener, clears it when the request ends. Any failure is ignored,
+   * because the log context must never stop the request.
    */
   private void putLogContext(User user, Map<String, Object> session) {
     try {
