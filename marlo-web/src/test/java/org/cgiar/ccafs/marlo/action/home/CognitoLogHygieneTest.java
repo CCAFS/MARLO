@@ -620,6 +620,56 @@ public class CognitoLogHygieneTest {
     assertEquals(Action.INPUT, result);
     assertLoggerFired(appender, LoginAction.class);
     assertMessageContaining(appender, "gate 4: crp_users membership");
+    assertMessageContaining(appender, "User 9001 denied: not a member of Global Unit TESTCRP");
+    assertNoMessageContains(appender, CGIAR_EMAIL, "user email");
+  }
+
+  /** The no-Global-Unit refusal names the resolved account by id, never by email. */
+  @Test
+  public void loginActionNoGlobalUnitRefusalNamesTheUserById() throws Exception {
+    TestableLoginAction action = new TestableLoginAction(new APConfig(), new RecordingUserManager(),
+      new NoOpGlobalUnitManager(), new MembershipCrpUserManager(true), new NoCustomParametersManager(),
+      new NoOpParameterManager());
+    action.setSession(new HashMap<String, Object>());
+    setFormUser(action, cgiarUser(9001L, CGIAR_EMAIL));
+
+    ListAppender<ILoggingEvent> appender = this.attachAtTrace(LoginAction.class);
+
+    assertEquals(Action.INPUT, action.finishLogin(cgiarUser(9001L, CGIAR_EMAIL), null, null));
+    assertMessageContaining(appender, "User 9001 denied: no Global Unit was selected.");
+    assertNoMessageContains(appender, CGIAR_EMAIL, "user email");
+  }
+
+  /**
+   * A failed local login logs nothing the form carried: it is not a verified account, and the field can hold a
+   * password typed in the wrong place. The account behind a wrong password is named by UserManagerImp, by id.
+   */
+  @Test
+  public void loginActionFailedLoginLogsNothingTheFormCarried() throws Exception {
+    // Lower case: LoginAction lower-cases what was typed, so this also catches the normalized value leaking
+    String typed = "sup3rs3cretpw-typed-as-username";
+    NoOpGlobalUnitManager crpManager = new NoOpGlobalUnitManager();
+    crpManager.unit = globalUnit(GLOBAL_UNIT_ID, "TESTCRP", 1);
+    crpManager.byAcronym.put("TESTCRP", crpManager.unit);
+    StubParameterManager parameterManager = new StubParameterManager();
+    parameterManager.catalogRow = catalogRow("false");
+    // Nothing is registered: userManager.login() rejects the attempt, as for a wrong password
+    TestableLoginAction action = new TestableLoginAction(new APConfig(), new RecordingUserManager(), crpManager,
+      new MembershipCrpUserManager(true), new StubCustomParameterManager(), parameterManager);
+    action.setSession(new HashMap<String, Object>());
+    setPlatformsList(action);
+    User formUser = new User();
+    formUser.setEmail(typed);
+    formUser.setPassword("whatever-password");
+    action.setUser(formUser);
+    action.setCrp("TESTCRP");
+    bindPostRequest();
+
+    ListAppender<ILoggingEvent> appender = this.attachAtTrace(LoginAction.class);
+
+    assertEquals(Action.INPUT, action.login());
+    assertMessageContaining(appender, "Login failed. Message:");
+    assertNoMessageContains(appender, typed, "what the login form carried");
   }
 
   /** The success line (design.md 11) must now name the Global Unit, not only the email. */
@@ -679,8 +729,11 @@ public class CognitoLogHygieneTest {
 
     assertEquals(Action.SUCCESS, result);
     assertLoggerFired(appender, LoginAction.class);
-    assertMessageContaining(appender, "Local login attempt started for " + CGIAR_EMAIL);
-    assertMessageContaining(appender, "Global Unit TESTCRP, mode LOCAL");
+    assertMessageContaining(appender, "Local login attempt started (Global Unit TESTCRP, mode LOCAL)");
+    // The success line names the user by id; the email the form carried is in no LoginAction line
+    // (ENH-LOGGING-STANDARDIZATION-001: the email is a log field, published on failed requests only)
+    assertMessageContaining(appender, "User 9001 logged in successfully for Global Unit TESTCRP");
+    assertNoMessageContains(appender, CGIAR_EMAIL, "user email");
   }
 
   /**
@@ -721,6 +774,8 @@ public class CognitoLogHygieneTest {
       action.getFieldErrors().get("loginMessage").get(0).toLowerCase().contains("sec-005"));
     assertLoggerFired(appender, LoginAction.class);
     assertMessageContaining(appender, "SEC-005 CGIAR relay guard");
+    assertMessageContaining(appender, "Login of user 9001 denied by the SEC-005 CGIAR relay guard");
+    assertNoMessageContains(appender, CGIAR_EMAIL, "user email");
   }
 
   /**
@@ -772,7 +827,7 @@ public class CognitoLogHygieneTest {
       if (formatted == null) {
         continue;
       }
-      if (formatted.startsWith("Local login attempt started for")) {
+      if (formatted.startsWith("Local login attempt started")) {
         foundAttemptStarted = true;
         assertFalse("the sanitized attempt-started line must never contain a raw newline: [" + formatted + "]",
           formatted.contains("\n") || formatted.contains("\r"));
@@ -785,6 +840,9 @@ public class CognitoLogHygieneTest {
     }
     assertTrue("expected the attempt-started line to have fired", foundAttemptStarted);
     assertTrue("expected the SEC-005 guard line to have fired", foundGuardLine);
+    assertNoMessageContains(appender, CGIAR_EMAIL, "user email");
+    // The account the guard refused is named by id, looked up without logging what the form carried
+    assertMessageContaining(appender, "Login of user 9001 denied by the SEC-005 CGIAR relay guard");
   }
 
   /** Same obligation, {@code ValidateUserAction}'s door: previously had no logger at all. */

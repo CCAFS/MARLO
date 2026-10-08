@@ -1,7 +1,7 @@
 # Logging Standardization — Agent Context
 
 **Spec:** ENH-LOGGING-STANDARDIZATION-001
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-08
 **Read this first.** Open `requirements.md` / `design.md` / `task.md` only for broad, architectural or
 formally tracked work.
 
@@ -20,21 +20,22 @@ so every one of those calls goes nowhere. If a class seems to log and nothing ap
 ## 2. The Schema, In One Table
 
 One JSON object per line, written by the `FILE-JSON` appender to
-`${log.folder}/marlo-json-${log.instance}.log`, alongside the unchanged text log.
+`${log.folder}/marlo-json-${log.instance}.log`, alongside the text log, whose format is unchanged apart from the
+`key=value` context fields NF-001 permits.
 
 | Field | Type | Where it comes from | When |
 |---|---|---|---|
 | `timestamp` | str | Logback | always, ISO 8601 UTC, ms |
 | `level` | str | call site | always |
 | `request_id` | str | `LogContext` request listener, random; already `request_id=` in the text log | every event inside a request |
-| `environment` | str | `APConfig.getEnvironment()` ← Spring active profile | always |
+| `environment` | str | `LogEnvironmentDefiner` (logback `<define>`) ← Spring active profile, `marlo.environment` override; already `environment=` in the text log | always |
 | `tool_name` | str | `BaseAction.getCurrentCrp()` / `SESSION_CRP`; REST: `AddSessionToRestRequestFilter.addCrpToSession()` | once the global unit is known |
 | `module_section` | str | logger name (the emitting class) | always |
 | `controller_affected` | str | request path **without query string**, `LoggingContextFilter` | every event inside a request |
 | `message` | str | call site | always |
 | `status_code` | **num** | `ExceptionTranslator` per handler; 500 from `UnhandledExceptionAction` | error events only |
 | `user_id` | **num** | `AddUserIdFilter`, Shiro principal | authenticated requests |
-| `user_name`, `user_email` | str | `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter` | **only** when `status_code >= 400` |
+| `user_name`, `user_email` | str | `LogContext.putUserName()` from `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter`; already in the text log | **only** when `status_code >= 400` |
 | `stack_trace` | str | Logback throwable provider, truncated | when an exception is passed |
 | `payload` | obj | call site, allow-list only | rarely, explicitly |
 | `service_affected` | — | — | **omitted**; no meaning for a monolith |
@@ -59,7 +60,7 @@ Two insertion points, because the Shiro subject does not exist before the Shiro 
 
 ```
 RemoveSessionFromUrlFilter → CORSFilter
-  → LoggingContextFilter   [owns MDC: request_id, environment, tool_name, controller_affected; clear() in finally]
+  → LoggingContextFilter   [owns MDC: request_id, tool_name, controller_affected; clear() in finally]
     → MARLOCustomPersistFilter   (AuditLogContext push/pop + tx — the pattern this copies)
     → Shiro filter
     → AddUserIdFilter      [user_id — subject available only from here on]
@@ -93,6 +94,9 @@ From A2-2435, now enforced by Checkstyle:
 - Never swallow an exception and return `null`. Either propagate, or return an explicit empty result and stop
   calling it an ERROR.
 - **ERROR means someone must intervene.** A failed login is INFO.
+- **Name a user by id in the message text, never by email or name.** The email and name are log fields that
+  SEC-001 publishes on failed requests only; text in the message bypasses that rule. Never log what a login
+  form carried before the account is verified: it can be a password typed in the wrong field.
 - Log where you handle, throw where you detect. Not both for the same event.
 
 ## 6. Known Gaps And Traps
@@ -111,8 +115,10 @@ From A2-2435, now enforced by Checkstyle:
 - **`log.folder` shipped pointing at developer home directories** (`marlo-dev.properties:99`,
   `marlo-test.properties:139`). Production values live in a gitignored `marlo-pro.properties` this repo cannot
   see.
-- **`APConfig` has no profile accessor.** `isProduction()` and `getBaseUrl()` exist; `getEnvironment()` is new
-  and derives from `spring.profiles.active` precisely so no new server-side key is needed.
+- **`environment` is not in `APConfig`.** It is computed once by `logging/LogEnvironmentDefiner`, which
+  `logback.xml` declares, because logback configures before Spring starts. It derives from
+  `spring.profiles.active` precisely so no new server-side key is needed. If every line prints
+  `environment=UNKNOWN`, the `<define>` in `logback.xml` failed to load; `LogEnvironmentDefinerTest` guards it.
 - **`mvn checkstyle:check` cannot run here.** Plugin 2.9.1 against checkstyle 8.18 throws
   `NoSuchMethodError: Checker.setClassloader`. Use
   `~/.claude/skills/marlo-verify/scripts/checkstyle.sh --baseline`. Separate ticket.
