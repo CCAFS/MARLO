@@ -3,9 +3,9 @@
 **Spec ID:** ENH-LOGGING-STANDARDIZATION-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-08
 **Implements requirements:** FN-001 … FN-009, NF-001 … NF-005, SEC-001 … SEC-004, OPS-001 … OPS-005
-**Touches modules:** marlo-web, marlo-data, marlo-utils
+**Touches modules:** marlo-web, marlo-data
 
 ---
 
@@ -18,14 +18,15 @@ appender pattern.
 
 The design adds one filter that owns the per-request context, enriches it from the two places that already
 know the user, and renders it through a second Logback appender that runs alongside the existing text ones.
-Nothing about the text log changes (NF-001).
+Nothing about the text log changes beyond the `key=value` context fields NF-001 permits after the logger name
+(`requirements.md` §9, 2026-10-06 and 2026-10-08).
 
 ```
 HTTP request
   │
   ├─ RemoveSessionFromUrlFilter ─ CORSFilter
   │
-  ├─ LoggingContextFilter            [NEW]  MDC.put request_id, environment, tool_name,
+  ├─ LoggingContextFilter            [NEW]  MDC.put request_id, tool_name,
   │    │                                    controller_affected  ·  MDC.clear() in finally
   │    ├─ MARLOCustomPersistFilter          (existing: AuditLogContext push/pop, tx)
   │    ├─ Shiro filter
@@ -42,7 +43,7 @@ HTTP request
   │
   └─ MDC.clear()
                         │
-   SLF4J ──► Logback ───┼──► FILE-TEST / FILE-PRODUCTION / CONSOLE-*   text, unchanged
+   SLF4J ──► Logback ───┼──► FILE-TEST / FILE-PRODUCTION / CONSOLE-*   text, + key=value fields (NF-001)
                         └──► FILE-JSON                        [NEW]    one JSON object per line
 ```
 
@@ -69,6 +70,13 @@ first (§15, ADR-2).
   `status_code` and `user_id` as numbers (NF-006), suppresses `user_name`/`user_email` unless the status is
   400 or above (SEC-001) and omits `service_affected` (§15, ADR-9).
 - Modified: `rest/errors/ExceptionTranslator.java` — one log call per `@ExceptionHandler`, carrying the status.
+- New: `logging/LogContext.java` — the request listener that carries the per-request context in place of
+  `LoggingContextFilter`, and holds `user_name`/`user_email` back until a status of 400 or more is recorded
+  (`requirements.md` §9, 2026-10-06 and 2026-10-08).
+- New: `logging/LogEnvironmentDefiner.java` — computes `environment` once, from the Spring profile and the
+  optional `marlo.environment` override, as a logback context property; not an MDC value.
+- Modified: `resources/logback.xml` — the `<define name="environment">` and the `key=value` context fields in
+  each text pattern.
 - Modified: `action/UnhandledExceptionAction.java` — `request_id` and `status_code` in the notification, plus
   deduplication.
 - Modified: `resources/logback.xml` — new `FILE-JSON` appender, wired into the conditional `<root>` block.
@@ -87,7 +95,8 @@ first (§15, ADR-2).
 
 ### marlo-utils
 
-- Modified: `utils/APConfig.java` — add `getEnvironment()`.
+- No change. `environment` was first planned as `APConfig.getEnvironment()`; it is computed by
+  `marlo-web` `logging/LogEnvironmentDefiner` instead (`requirements.md` §9, 2026-10-08).
 
 ### Repository root
 
@@ -187,7 +196,7 @@ This section is the substance of the spec.
 | `timestamp` | string | Logback | always, ISO 8601 UTC with milliseconds | — |
 | `level` | string | call site | always | — |
 | `request_id` | string | `LoggingContextFilter`, generated per request | every event inside a request | `request_id` |
-| `environment` | string | `APConfig.getEnvironment()`, from the Spring active profile | always | `environment` |
+| `environment` | string | `LogEnvironmentDefiner` (logback `<define>`), from the Spring active profile | always | `environment` |
 | `tool_name` | string | `BaseAction.getCurrentCrp()` / `SESSION_CRP` (Struts); `AddSessionToRestRequestFilter.addCrpToSession()` (REST) | once the global unit is known | `tool_name` |
 | `module_section` | string | logger name, i.e. the emitting class | always | — |
 | `controller_affected` | string | request URI **without the query string**, from `LoggingContextFilter` | every event inside a request | `controller_affected` |
@@ -325,7 +334,8 @@ A2-2435 Part 1 already removed its false ERROR on the login path, so the two con
 - **No migration, no data change, nothing to reverse in the database.**
 - **Client-visible behaviour is unchanged.** `ExceptionTranslator` keeps its statuses and its `ErrorDTO`
   shape; only logging is added. No REST consumer needs to be told.
-- **Dual-running by construction.** The text log continues exactly as before and the JSON file is additive.
+- **Dual-running by construction.** The text log keeps its format, gaining only the `key=value` context fields
+  NF-001 permits, and the JSON file is additive.
   Anyone reading `marlo.log` over SSH is unaffected, and `reports/ai-context/deployment-checklist.md:80,83`
   still works as written.
 - **Rollout:** deploy with `log.json=true` on `dev` first, then `test`, then production. No coordination with

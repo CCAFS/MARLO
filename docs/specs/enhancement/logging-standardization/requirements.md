@@ -4,7 +4,7 @@
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
 **Reviewers:** PMU lead, QA lead, Tech lead
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-08
 **Related PRD sections:** docs/prd.md §8 (assumptions, dependencies, constraints), §9 (open questions)
 **Related System Design sections:** Not applicable — no user-facing surface changes.
 **Related Detailed Design sections:** docs/detailed-design/detailed-design.md §9 (error handling & observability), §9.1 (logging), §9.3 (REST error handling), §9.4 (observability), §10.1 (static analysis)
@@ -95,7 +95,9 @@ enforces it: `configuration/marlo-checkstyle.xml` has eleven rules, none about l
 
 - ENH-LOGGING-STANDARDIZATION-001-NF-001 — The existing text log MUST keep its current format and content.
   The JSON output is additive; the text log remains what the team reads over SSH
-  (see reports/ai-context/deployment-checklist.md:80,83, which instruct reading it).
+  (see reports/ai-context/deployment-checklist.md:80,83, which instruct reading it). The only permitted change
+  is appending context fields as `key=value` pairs between the logger name and the message, leaving the
+  timestamp, thread, level, tool, profile, logger and message where they were (§9, 2026-10-06 and 2026-10-08).
 - ENH-LOGGING-STANDARDIZATION-001-NF-002 — Populating the per-request context MUST NOT issue any additional
   database query. Every value MUST come from data the request already holds.
 - ENH-LOGGING-STANDARDIZATION-001-NF-003 — The per-request context MUST NOT leak between requests served by
@@ -126,8 +128,9 @@ enforces it: `configuration/marlo-checkstyle.xml` has eleven rules, none about l
   `user_email` MUST be emitted only on events whose `status_code` is 400 or above — the only case where
   someone needs to contact the affected user. The restriction MUST be enforced **at emission, not at
   population**: both values enter the request context at the start of the request, while the status code is
-  known only at the end, so no context-based rule can express it. Design §11 names the single component that
-  enforces it.
+  known only at the end, so no rule applied when the context is populated can express it. Design §11 names
+  the single component that enforces it in the JSON event; in the text log, `LogContext` holds both values
+  back and publishes them only when `putStatusCode` records 400 or more (§9, 2026-10-08).
 - ENH-LOGGING-STANDARDIZATION-001-SEC-002 — `payload` MUST be an allow-list of non-identifying fields
   (entity ids, section, phase). It MUST NOT contain the raw request or response body, and MUST NOT contain a
   password, token, authorization header, cookie or session identifier.
@@ -208,7 +211,8 @@ decision by another team. It is listed here to stay traceable, not because it is
 - When a user logs in and opens a project section,
 - Then every line of the JSON log MUST parse as a JSON object (`jq -e .` succeeds on each),
 - And each line MUST carry non-empty `level`, `timestamp`, `environment`, `tool_name` and `controller_affected`,
-- And the existing text log MUST be unchanged in format from the same run before this change.
+- And the existing text log MUST be unchanged in format from the same run before this change, except for the
+  `key=value` context fields NF-001 permits after the logger name.
 
 **AC for FN-002 and NF-003:**
 - Given two different users hitting the application in sequence on the same Tomcat worker thread,
@@ -409,6 +413,27 @@ Questions that do not block this spec but shape its successor. Each belongs to t
   request, while a `ServletRequestListener` wraps every request. `logback.xml` prints `request_id=` with the
   other context fields as `key=value` pairs on each text line; T08 can add the same MDC key to the JSON event
   unchanged.
+- 2026-10-08 — **`environment` and `user_email` join the text log's `key=value` fields.** — Rationale: the
+  2026-10-06 entry put the request context on each text line ahead of the JSON appender; these are the two
+  agreed fields it still lacked. `environment=` is printed on **every** line, startup and scheduled jobs
+  included, since it is not request context. `user_email=` follows SEC-001 exactly like `user_name`: held aside
+  in `LogContext` and printed only once a status of 400 or more is recorded, and only when it matches a strict
+  address format, so that it is printed unquoted and cannot forge a field. NF-001 is amended to permit these
+  appended fields and nothing else. Nothing in the repository parses the text line (checked over `reports/`,
+  `scripts/`, `docs/`, `Docker/`); the Promtail agent on `marlotest` tails `catalina.out` and its scrape config
+  is outside the repository, so it is checked after deploy.
+- 2026-10-08 — **`environment` computed by a logback `PropertyDefiner`, not by `APConfig.getEnvironment()`.** —
+  Rationale: logback configures before Spring starts, so a Spring bean cannot label the startup lines, and
+  nothing else needed the value from Java. `logging/LogEnvironmentDefiner` is declared in `logback.xml` with the
+  profile (`${spring.profiles.active:-dev}`) and the optional `marlo.environment` override, both read once at
+  configuration time; OPS-001 holds, as no property is required. Mapping: `pro` → PROD (checked first, so no
+  allowed combination with `pro` is labelled otherwise), `test` → TEST, `dev`, `fast` or none → DEV. A profile
+  outside that list, such as `api` alone, is printed upper-cased (`API`) instead of being guessed into one of
+  the three, because nothing in the repository says which environment an `api`-only server is. Any value
+  outside `[A-Za-z0-9_-]{1,20}` prints `UNKNOWN`. logback 1.2 substitutes `${x:-}` with `x_IS_UNDEFINED`, which
+  the definer reads as "no override". Alternatives considered: `APConfig.getEnvironment()` as T04 specified
+  (rejected: misses the lines before Spring starts); a per-request MDC value (rejected: misses every line
+  outside a request).
 - 2026-10-06 — **Recipients of the error mail left as they were.** — Rationale: the mail goes to the support
   mailbox as TO and again as BCC. JavaMail 1.5.5 sends two `RCPT TO` for the same address, but in one SMTP
   transaction with one body, and Exchange Online delivers a single copy: four past exception mails with the
