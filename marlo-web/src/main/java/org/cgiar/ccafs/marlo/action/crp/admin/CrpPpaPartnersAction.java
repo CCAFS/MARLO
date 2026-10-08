@@ -41,7 +41,6 @@ import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -308,8 +307,16 @@ public class CrpPpaPartnersAction extends BaseAction {
    * @param user is a User object that could be the leader.
    */
   private void notifyNewUserCreated(User user) {
-    user = userManager.getUser(user.getId());
-
+    if (user == null || user.getId() == null) {
+      LOG.warn("There is no persisted user to notify of the account creation");
+      return;
+    }
+    Long userId = user.getId();
+    user = userManager.getUser(userId);
+    if (user == null) {
+      LOG.warn("The user {} does not exist, so no account creation email is sent", userId);
+      return;
+    }
     if (!user.isActive()) {
       String toEmail = user.getEmail();
       String ccEmail = null;
@@ -331,10 +338,23 @@ public class CrpPpaPartnersAction extends BaseAction {
 
       // get CRPAdmin contacts
       String crpAdmins = "";
-      long adminRol = Long.parseLong((String) this.getSession().get(APConstants.CRP_ADMIN_ROLE));
-      Role roleAdmin = roleManager.getRoleById(adminRol);
-      List<UserRole> userRoles = roleAdmin.getUserRoles().stream()
-        .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+      // The CRP admin role is a custom parameter of the Global Unit, so a session without one does not hold it.
+      Object adminRoleParam = this.getSession() == null ? null : this.getSession().get(APConstants.CRP_ADMIN_ROLE);
+      Role roleAdmin = null;
+      if (adminRoleParam != null) {
+        try {
+          roleAdmin = roleManager.getRoleById(Long.parseLong(adminRoleParam.toString()));
+        } catch (NumberFormatException e) {
+          LOG.error("The CRP admin role parameter {} is not a role id", adminRoleParam, e);
+        }
+      }
+      List<UserRole> userRoles = new ArrayList<>();
+      if (roleAdmin == null) {
+        LOG.error("The CRP admin role {} was not found, so the email lists no CRP admins", adminRoleParam);
+      } else {
+        userRoles = roleAdmin.getUserRoles().stream()
+          .filter(ur -> ur.getUser() != null && ur.getUser().isActive()).collect(Collectors.toList());
+      }
       for (UserRole userRole : userRoles) {
         if (crpAdmins.isEmpty()) {
           crpAdmins += userRole.getUser().getComposedCompleteName() + " (" + userRole.getUser().getEmail() + ")";
@@ -351,6 +371,9 @@ public class CrpPpaPartnersAction extends BaseAction {
       Map<String, Object> mapUser = new HashMap<>();
       mapUser.put("user", user);
       mapUser.put("password", password);
+      if (this.getUsersToActive() == null) {
+        this.setUsersToActive(new ArrayList<>());
+      }
       this.getUsersToActive().add(mapUser);
       this.addCrpUserIfNotExist(user);
 
@@ -367,10 +390,12 @@ public class CrpPpaPartnersAction extends BaseAction {
 
       try {
         inputStream = this.getClass().getResourceAsStream("/manual/" + fileName);
-        buffer = readFully(inputStream);
-      } catch (FileNotFoundException e) {
-        // The email is still sent, only without the manual attached, so this is the only trace of it.
-        LOG.error("The user manual {} was not found, so the email goes out without it", fileName, e);
+        if (inputStream == null) {
+          // getResourceAsStream returns null instead of throwing when the manual is missing.
+          LOG.error("The user manual {} was not found, so the email goes out without it", fileName);
+        } else {
+          buffer = readFully(inputStream);
+        }
       } catch (IOException e) {
         LOG.error("The user manual {} could not be read, so the email goes out without it", fileName, e);
       } finally {

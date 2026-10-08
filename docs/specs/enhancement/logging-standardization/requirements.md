@@ -4,7 +4,7 @@
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
 **Reviewers:** PMU lead, QA lead, Tech lead
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-10-06
 **Related PRD sections:** docs/prd.md §8 (assumptions, dependencies, constraints), §9 (open questions)
 **Related System Design sections:** Not applicable — no user-facing surface changes.
 **Related Detailed Design sections:** docs/detailed-design/detailed-design.md §9 (error handling & observability), §9.1 (logging), §9.3 (REST error handling), §9.4 (observability), §10.1 (static analysis)
@@ -392,6 +392,28 @@ Questions that do not block this spec but shape its successor. Each belongs to t
   fix the pointcut and add a class-scoped `<logger>` so the existing guard finally works. Both keep a
   component whose only correct output duplicates `ExceptionTranslator`. Consequence: T01 becomes a deletion
   and the substance of FN-004 moves entirely into T02.
+- 2026-10-06 — **Deduplication keyed on the error, not on the module.** — Rationale: the key first decided,
+  `tool_name + module_section + status_code`, collapses every Struts failure of a Global Unit into one alert,
+  because `module_section` is the emitting logger and every Struts 500 is emitted by `UnhandledExceptionAction`:
+  a second, unrelated error on another page would be suppressed for as long as the first one repeats. The key
+  is now `tool_name + route + exception class + throwing frame + status_code`. For REST the route is the
+  handler's mapping pattern (`/{CGIAREntity}/progresstowards/{id}`), not the called path, so the ids of one
+  broken endpoint stay one error. Repeats are suppressed for one hour; the first repeat after the hour is
+  emailed with the number suppressed. The state is per JVM and in memory, capped at 1000 keys, and fails open
+  (an untracked error is emailed). Alternatives considered: the original key (rejected for the collapse above);
+  a 24-hour window (rejected: a recurring error is seen too late).
+- 2026-10-06 — **`request_id` ships in the text log before the JSON appender.** — Rationale: FN-007 needs a
+  correlation id in the mail now, and T08 has not landed. The per-request context is carried by the
+  `LogContext` request listener (`logging/LogContext.java`), not by the `LoggingContextFilter` of the design:
+  the web.xml Struts filter ends the chain, so no filter registered in `WebAppInitializer` ever sees a `.do`
+  request, while a `ServletRequestListener` wraps every request. `logback.xml` prints `request_id=` with the
+  other context fields as `key=value` pairs on each text line; T08 can add the same MDC key to the JSON event
+  unchanged.
+- 2026-10-06 — **Recipients of the error mail left as they were.** — Rationale: the mail goes to the support
+  mailbox as TO and again as BCC. JavaMail 1.5.5 sends two `RCPT TO` for the same address, but in one SMTP
+  transaction with one body, and Exchange Online delivers a single copy: four past exception mails with the
+  same TO and BCC each arrived once, under distinct Message-IDs. Changing the recipients was therefore not
+  needed for FN-008, and the REST mail uses the same arguments as the Struts one.
 - 2026-09-07 — **A MARLO-owned `JsonProvider` emits the context fields, rather than the encoder's MDC
   provider.** — Rationale: three separate requirements cannot be met by the stock providers. NF-006 needs
   `status_code` and `user_id` as JSON numbers, and MDC is a `Map<String,String>` with no typed writer in the

@@ -3,7 +3,7 @@
 **Spec ID:** ENH-LOGGING-STANDARDIZATION-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-10-06
 **Implements requirements:** FN-001 … FN-009, NF-001 … NF-005, SEC-001 … SEC-004, OPS-001 … OPS-005
 **Touches modules:** marlo-web, marlo-data, marlo-utils
 
@@ -263,9 +263,11 @@ automatically, since they are logger-scoped rather than appender-scoped. No dupl
 ### Notification
 
 `UnhandledExceptionAction` + `SendMailS` already email the support team with user, CRP, phase and
-`actionName`. They gain `request_id` and `status_code` (FN-007) and a deduplication key of
-`tool_name + module_section + status_code` (FN-008). REST 5xx routes into the same notifier so both paths
-share one channel; 4xx does not notify (§15, ADR-3).
+`actionName`. They gain `request_id`, `status_code` and the route (FN-007), and a deduplication key of
+`tool_name + route + exception class + throwing frame + status_code` with a one-hour window (FN-008), held in
+`logging/ErrorNotificationThrottle.java`. REST 5xx routes into the same `SendMailS` and throttle from
+`ExceptionTranslator`, keyed on the handler's mapping pattern, so both paths share one channel; 4xx does not
+notify (§15, ADR-3).
 
 ### Audit
 
@@ -364,7 +366,9 @@ A2-2435 Part 1 already removed its false ERROR on the login path, so the two con
 ### ADR-ENH-LOGGING-STANDARDIZATION-001-3 — Alert from 500, reusing the existing notifier
 
 - **Decision:** Extend `UnhandledExceptionAction` + `SendMailS`; alert on 5xx only; deduplicate on
-  `tool_name + module_section + status_code`.
+  `tool_name + route + exception class + throwing frame + status_code` for one hour (amended 2026-10-06 from
+  `tool_name + module_section + status_code`, which merged every Struts 500 of a Global Unit into one alert;
+  see `requirements.md` §9).
 - **Rationale:** The notifier already exists and needs no external component. The source design's
   `status_code >= 400` threshold would fire on legitimate traffic: 177 of the `HttpStatus` usages in MARLO's
   REST layer are `NOT_FOUND`, overwhelmingly "no record with that id" responses. Without deduplication, one
