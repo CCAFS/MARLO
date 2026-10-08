@@ -208,6 +208,35 @@ public class LoginActionFinishLoginTest {
    * the stopped session and the login was answered with a 500 (UnknownSessionException). The browser is redirected
    * to a fresh login page instead.
    */
+  /**
+   * A login form posted without the email field binds a User whose email is null. validate() must answer with the
+   * required-field error, as for an empty email, instead of a NullPointerException (an HTTP 500 and a support email).
+   */
+  @Test
+  public void aFormWithoutEmailIsAFieldErrorNotAnException() throws Exception {
+    User formUser = new User();
+    formUser.setPassword("whatever-password");
+    setFormUser(this.action, formUser);
+
+    this.action.validate();
+
+    assertTrue(this.action.getFieldErrors().containsKey("user.email"));
+    assertNull("the password must not be echoed back to the form", formUser.getPassword());
+  }
+
+  @Test
+  public void aFormWithAnEmptyEmailIsStillAFieldError() throws Exception {
+    User formUser = new User();
+    formUser.setEmail("");
+    formUser.setPassword("whatever-password");
+    setFormUser(this.action, formUser);
+
+    this.action.validate();
+
+    assertTrue(this.action.getFieldErrors().containsKey("user.email"));
+    assertNull(formUser.getPassword());
+  }
+
   @Test
   public void aLoginWithoutGlobalUnitIsRedirectedToTheLoginPage() throws Exception {
     assertEquals(Action.LOGIN, this.submitLogin(null));

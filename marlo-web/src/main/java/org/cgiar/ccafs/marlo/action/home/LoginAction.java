@@ -594,7 +594,8 @@ public class LoginAction extends BaseAction {
   public void validate() {
     // If is the first time the user is loading the page
     if (user != null) {
-      if (user.getEmail().isEmpty()) {
+      // A form posted without the email field binds a null email: it is the same missing value as an empty one
+      if (user.getEmail() == null || user.getEmail().isEmpty()) {
         this.addFieldError("user.email", this.getText("validation.field.required"));
         user.setPassword(null);
       }
