@@ -29,7 +29,6 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -314,9 +313,11 @@ public class LoginAction extends BaseAction {
       // 11 names, logged before either gate below (the T11b relay guard, then userManager.login()) so a
       // rejection at either can be correlated back to this one line. "Resolved mode" is the literal LOCAL:
       // this endpoint IS the local path by construction (login.do) -- a fact about which endpoint was hit,
-      // never a value the caller told MARLO.
-      LOG.info("Local login attempt started for " + LogSanitizer.sanitizeForLog(user.getEmail()) + " (Global Unit "
-        + (loggedCrp == null ? "<unresolved>" : loggedCrp.getAcronym()) + ", mode LOCAL).");
+      // never a value the caller told MARLO. What the form typed is not logged on this line nor on the failure
+      // lines below: it is not yet a verified account, it can hold a password typed in the wrong field, and the
+      // request_id already ties the lines of one attempt together (ENH-LOGGING-STANDARDIZATION-001).
+      LOG.info("Local login attempt started (Global Unit {}, mode LOCAL).",
+        loggedCrp == null ? "<unresolved>" : loggedCrp.getAcronym());
 
       // Check if is a valid user
       String userEmail = user.getEmail().trim().toLowerCase();
@@ -332,9 +333,9 @@ public class LoginAction extends BaseAction {
         // attempt -- the T11b guard left this generic on purpose (execution.md 22.5). The field error two
         // lines below stays the byte-identical wrong-password message; only the LOG line, never anything
         // rendered to the caller, may say "SEC-005 relay guard".
-        LOG.info("User " + LogSanitizer.sanitizeForLog(user.getEmail())
-          + " denied by the SEC-005 CGIAR relay guard (local login blocked for a CGIAR-migrated account; "
-          + "Global Unit " + (loggedCrp == null ? "<none selected>" : loggedCrp.getAcronym()) + ").");
+        LOG.info("Login of user {} denied by the SEC-005 CGIAR relay guard (local login blocked for a "
+          + "CGIAR-migrated account; Global Unit {}).", this.accountIdForLog(userEmail),
+          loggedCrp == null ? "<none selected>" : loggedCrp.getAcronym());
         user.setPassword(null);
         // Same generic shape a wrong password produces (design.md 5.3, matching T11's ValidateUserAction
         // guard): no new oracle telling a caller which accounts are CGIAR-migrated (SEC-005's BUT MUST NOT
@@ -347,11 +348,19 @@ public class LoginAction extends BaseAction {
       User loggedUser = userManager.login(userEmail, user.getPassword());
       this.getLoginMessages();
       if (loggedUser != null) {
-
-        return this.login(loggedUser, loggedCrp);
+        String result = this.login(loggedUser, loggedCrp);
+        if (BaseAction.INPUT.equals(result)) {
+          // The login was refused after Subject.logout() stopped the session (no Global Unit selected, or not a
+          // member of it). Rendering login.ftl in this request would read that stopped session and answer with a 500
+          // (UnknownSessionException), so the browser is sent to a fresh login page instead, as
+          // CognitoCallbackAction does for the same refusals. An unmapped Global Unit type, the only other INPUT,
+          // keeps its session and lands on the same login page
+          this.url = this.getBaseUrl() + "/login.do";
+          return LOGIN;
+        }
+        return result;
       } else {
-        LOG.info("User " + user.getEmail() + " tried to log-in but failed. Message : "
-          + this.getSession().get(APConstants.LOGIN_MESSAGE));
+        LOG.info("Login failed. Message: {}", this.getSession().get(APConstants.LOGIN_MESSAGE));
         user.setPassword(null);
         if (this.getSession().get(APConstants.LOGIN_MESSAGE) != null) {
           this.addFieldError("loginMessage", this.getText((String) this.getSession().get(APConstants.LOGIN_MESSAGE)));
@@ -441,8 +450,8 @@ public class LoginAction extends BaseAction {
         // rejecting here previously emitted no log line at all -- the exact gap design.md 11's correction
         // names. This is the shared tail every authentication path uses (T01), so it covers the local AND
         // the Cognito path alike.
-        LOG.info("User " + loggedUser.getEmail() + " denied: not a member of Global Unit "
-          + loggedCrp.getAcronym() + " (gate 4: crp_users membership).");
+        LOG.info("User {} denied: not a member of Global Unit {} (gate 4: crp_users membership).",
+          loggedUser.getId(), loggedCrp.getAcronym());
         this.addFieldError("loginMessage", this.getText("login.error.invalidUserCrp"));
         this.setCrpSession(loggedCrp.getAcronym());
         this.getSession().clear();
@@ -452,7 +461,7 @@ public class LoginAction extends BaseAction {
         return BaseAction.INPUT;
       }
     } else {
-      LOG.info("User " + loggedUser.getEmail() + " denied: no Global Unit was selected.");
+      LOG.info("User {} denied: no Global Unit was selected.", loggedUser.getId());
       this.addFieldError("loginMessage", this.getText("login.error.selectCrp"));
       user.setPassword(null);
       this.getSession().clear();
@@ -464,7 +473,7 @@ public class LoginAction extends BaseAction {
     // CHG-COGNITO-AUTH-001-T14 (design.md 11): extended to include the Global Unit -- the pre-existing line
     // logged only the email. loggedCrp is guaranteed non-null here: both branches above that leave it null
     // or unresolved already returned.
-    LOG.info("User " + user.getEmail() + " logged in successfully for Global Unit " + loggedCrp.getAcronym() + ".");
+    LOG.info("User {} logged in successfully for Global Unit {}.", loggedUser.getId(), loggedCrp.getAcronym());
 
 
     loggedUser = userManager.getUser(loggedUser.getId());
@@ -515,7 +524,7 @@ public class LoginAction extends BaseAction {
   public String logout() {
     User user = (User) this.getSession().get(APConstants.SESSION_USER);
     if (user != null) {
-      LOG.info("User {} logout succesfully", user.getEmail());
+      LOG.info("User {} logout succesfully", user.getId());
     }
     this.getSession().clear();
     SecurityUtils.getSubject().logout();
@@ -531,6 +540,27 @@ public class LoginAction extends BaseAction {
     return SUCCESS;
   }
   
+  /**
+   * Returns the id of the account an email or username names, so that a log line about a refused login can name the
+   * account without logging what the form carried. Looks the account up the way isCgiarCredentialRelayBlocked does.
+   * Never throws, so that a failure here cannot change the outcome of the login.
+   *
+   * @param emailOrUsername the identifier the login form carried
+   * @return the account id, or null when no account matches or the lookup fails
+   */
+  private Long accountIdForLog(String emailOrUsername) {
+    try {
+      User account = this.userManager.getUserByEmail(emailOrUsername);
+      if (account == null) {
+        account = this.userManager.getUserByUsername(emailOrUsername);
+      }
+      return account != null ? account.getId() : null;
+    } catch (RuntimeException e) {
+      LOG.debug("Could not resolve the account of a refused login for its log line", e);
+      return null;
+    }
+  }
+
   public String randomColor() {
 
     Random random = new Random(); // Probably really put this somewhere where it gets executed only once
@@ -564,7 +594,8 @@ public class LoginAction extends BaseAction {
   public void validate() {
     // If is the first time the user is loading the page
     if (user != null) {
-      if (user.getEmail().isEmpty()) {
+      // A form posted without the email field binds a null email: it is the same missing value as an empty one
+      if (user.getEmail() == null || user.getEmail().isEmpty()) {
         this.addFieldError("user.email", this.getText("validation.field.required"));
         user.setPassword(null);
       }

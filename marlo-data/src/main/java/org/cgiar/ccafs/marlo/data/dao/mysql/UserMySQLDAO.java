@@ -219,13 +219,18 @@ public class UserMySQLDAO extends AbstractMarloDAO<User, Long> implements UserDA
 
   @Override
   public boolean verifiyCredentials(String email, String password) {
-    String query = "from " + User.class.getName() + " where email= '" + email + "' and password= '" + password
-      + "' and is_active = 1";
+    // Bound parameters, never concatenated values: a concatenated email or password hash was an HQL injection,
+    // and Hibernate's SQL logging (show_sql) printed both in clear on every login attempt
+    String queryString = "SELECT u FROM " + User.class.getName()
+      + " u WHERE u.email = :email AND u.password = :password AND u.active = true";
+    Query<User> query = this.getSessionFactory().getCurrentSession().createQuery(queryString, User.class);
+    query.setParameter("email", email);
+    query.setParameter("password", password);
     List<User> users = super.findAll(query);
-    if (users.size() > 0) {
+    if (!users.isEmpty()) {
       return true;
     }
-    LOG.debug("verifiyCredentials() > The credentials of {} did not match an active user", email);
+    LOG.debug("verifiyCredentials() > The credentials did not match an active user");
     return false;
   }
 

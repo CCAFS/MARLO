@@ -3,7 +3,7 @@
 **Spec ID:** ENH-LOGGING-STANDARDIZATION-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-10-06
+**Last Updated:** 2026-10-08
 **Implements design:** docs/specs/enhancement/logging-standardization/design.md
 **Branching:** `logging-standardization`, branched from `staging` (continues the A2-2435 work already merged there).
 **Target merge:** staging (then promoted to main per release process).
@@ -115,17 +115,25 @@
   exists in a fresh checkout.
 - **Verification:** Fresh clone, `run-marlo-java17.sh`, confirm the log file is created without a manual edit.
 
-### ENH-LOGGING-STANDARDIZATION-001-T04 — `APConfig.getEnvironment()`
+### ENH-LOGGING-STANDARDIZATION-001-T04 — `environment` from the Spring profile
 
+- **Status:** Done, 2026-10-08, ahead of T08: `environment=` is in the text log, not yet in a JSON one. Built as
+  a logback `PropertyDefiner` instead of the `APConfig.getEnvironment()` first specified, and an `api`-only
+  profile prints `API` instead of DEV/TEST/PROD. See `requirements.md` §9, 2026-10-08 entries.
 - **Depends on:** —
-- **Module:** marlo-utils
+- **Module:** marlo-web
 - **Files touched:**
-  - `utils/APConfig.java` (modified)
-- **Constitutional checks:** Existing `@Named` / `@Value` bean conventions preserved; no dependency added.
+  - `logging/LogEnvironmentDefiner.java` (new)
+  - `resources/logback.xml` (modified — `<define name="environment">` and ` environment=` in each pattern)
+  - `test/.../logging/LogEnvironmentDefinerTest.java` (new)
+- **Constitutional checks:** GPL header on the new files; no dependency added.
 - **Tests:**
-  - Unit: `dev|test|pro|fast|api` → `DEV|TEST|PROD`; unknown profile → a safe default, never null.
+  - Unit: `pro` → PROD, `test` → TEST, `dev|fast|none` → DEV, other profile upper-cased, unsafe value →
+    `UNKNOWN`, never null; the override wins; an unset `${marlo.environment:-}` is not an override.
+  - Integration: the `<define>` of the shipped `logback.xml` is configured through `JoranConfigurator`, and
+    every `<pattern>` prints the field.
 - **Done when:**
-  - `getEnvironment()` returns the environment derived from the Spring active profile
+  - Every log line carries `environment`, derived from the Spring active profile
     (`ApplicationContextConfig.java:58-62` defines the profile names).
   - An optional `marlo.environment` override exists for the case where one profile serves two machines.
   - **No new property is required for the default path** (OPS-001) — `marlo-pro.properties` is gitignored and
@@ -146,7 +154,8 @@
   - Integration: two sequential requests on one worker thread share no context.
 - **Done when:**
   - Registered on `/*` immediately after `CORSFilter`, so it is the outermost MARLO filter.
-  - Sets `request_id`, `environment`, `tool_name` (when resolvable) and `controller_affected`.
+  - Sets `request_id`, `tool_name` (when resolvable) and `controller_affected`. Not `environment`: it is a
+    logback context property set once by `LogEnvironmentDefiner` (T04), never an MDC value.
   - `MDC.clear()` is in a `finally` (NF-003). Follows the push/pop shape already used at
     `MARLOCustomPersistFilter:109,164`.
   - A failure inside the filter cannot fail the request (NF-005).
@@ -379,7 +388,7 @@
 T01 (delete aspect) ────┐
 T02 (REST handlers) ────┼──────────────────────────► T13 (notification)
 T03 (log.folder) ───────┤                                  ▲
-T04 (getEnvironment) ───┴─► T05 (LoggingContextFilter)      │
+T04 (environment) ──────┴─► T05 (LoggingContextFilter)      │
                                 └─► T06 (user_id)           │
                                       └─► T07 (name/email)  │
                                             └─► T08 (JSON appender) ──┘
@@ -401,8 +410,8 @@ T08 must come after T05–T07, or the JSON ships with empty context fields and r
 
 ### Unit
 
-- `APConfig.getEnvironment()`: each profile maps to its environment; unknown profile yields a safe default,
-  never null (T04).
+- `LogEnvironmentDefiner.resolve()`: each profile maps to its environment; unknown profile yields a safe
+  default, never null (T04).
 - `LoggingContextFilter`: `MDC.clear()` runs even when the downstream chain throws (T05).
 - `MarloMdcJsonProvider`: `status_code` and `user_id` are written as numbers; `user_name`/`user_email` are
   written when `status_code` is 400 or above and omitted otherwise, including when `status_code` is absent

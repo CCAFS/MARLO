@@ -36,8 +36,9 @@ import org.slf4j.MDC;
  * Puts a request id, the current user id, Global Unit acronym, request route and HTTP status in the SLF4J MDC, so
  * that logback.xml can print them on every log line of the request. The keys are the field names of the logging
  * standard proposed for the CGIAR tools (ENH-LOGGING-STANDARDIZATION-001): request_id, tool_name (the Global Unit),
- * user_id, user_name, controller_affected (the route) and status_code. The request id is random and carries no data:
- * it only ties together the lines of one request, and the support email of a failed request to those lines.
+ * user_id, user_name, user_email, controller_affected (the route) and status_code. The request id is random and
+ * carries no data: it only ties together the lines of one request, and the support email of a failed request to those
+ * lines.
  * logback.xml prints only the keys that have a value, as key=value pairs (logfmt), so that the text log can be queried
  * by field without a JSON appender.
  * <p>
@@ -45,9 +46,9 @@ import org.slf4j.MDC;
  * ;jsessionid path parameter is cut off because a session id in a log file can be used to hijack the session. A quote,
  * backslash or equals sign in the path is percent-encoded, so that the key=value line stays parseable.
  * <p>
- * The numeric user id is logged on every line. The user's first and last name are personal data, so they are only
- * logged on the lines of a failed request: {@link #putUserName(User)} keeps the name aside, and it reaches the log
- * only once {@link #putStatusCode(int)} records a status of 400 or more. The email is never logged.
+ * The numeric user id is logged on every line. The user's name and email are personal data, so they are only logged on
+ * the lines of a failed request: {@link #putUserName(User)} keeps them aside, and they reach the log only once
+ * {@link #putStatusCode(int)} records a status of 400 or more.
  * <p>
  * Writing the context must never break a request, so no method ever throws: null values are ignored, and any runtime
  * failure (a detached Hibernate proxy behind getAcronym(), for example) is caught and logged at DEBUG. Callers sit in
@@ -79,6 +80,8 @@ public final class LogContext implements ServletContextListener, ServletRequestL
 
   public static final String USER_ID = "user_id";
 
+  public static final String USER_EMAIL = "user_email";
+
   public static final String USER_NAME = "user_name";
 
   private static final Pattern GLOBAL_UNIT_ACRONYM = Pattern.compile("[A-Za-z0-9_.-]{1,50}");
@@ -104,12 +107,21 @@ public final class LogContext implements ServletContextListener, ServletRequestL
 
   private static final int NAME_MAX_LENGTH = 100;
 
+  // Only the characters an address normally uses: any other value (a space, double quote, equals sign, line break...)
+  // is not logged, so that the email can be printed unquoted in key=value form and can never forge a log line
+  private static final Pattern EMAIL_FORMAT = Pattern.compile("[A-Za-z0-9._%+'-]{1,64}@[A-Za-z0-9.-]{1,253}");
+
   private static final int ERROR_STATUS = 400;
 
   /**
    * The name of the request's user, kept out of the MDC until the request fails. Cleared with the rest of the context.
    */
   private static final ThreadLocal<String> PENDING_USER_NAME = new ThreadLocal<>();
+
+  /**
+   * The email of the request's user, kept out of the MDC until the request fails. Cleared with the rest of the context.
+   */
+  private static final ThreadLocal<String> PENDING_USER_EMAIL = new ThreadLocal<>();
 
   private static final Logger LOG = LoggerFactory.getLogger(LogContext.class);
 
@@ -121,7 +133,9 @@ public final class LogContext implements ServletContextListener, ServletRequestL
       MDC.remove(CONTROLLER_AFFECTED);
       MDC.remove(STATUS_CODE);
       MDC.remove(USER_NAME);
+      MDC.remove(USER_EMAIL);
       PENDING_USER_NAME.remove();
+      PENDING_USER_EMAIL.remove();
     } catch (RuntimeException e) {
       LOG.debug("Could not clear the log context", e);
     }
@@ -213,9 +227,8 @@ public final class LogContext implements ServletContextListener, ServletRequestL
     try {
       if (statusCode >= 100 && statusCode <= 599) {
         MDC.put(STATUS_CODE, String.valueOf(statusCode));
-        String userName = PENDING_USER_NAME.get();
-        if (statusCode >= ERROR_STATUS && userName != null) {
-          MDC.put(USER_NAME, userName);
+        if (statusCode >= ERROR_STATUS) {
+          publishUser();
         }
       }
     } catch (RuntimeException e) {
@@ -264,12 +277,30 @@ public final class LogContext implements ServletContextListener, ServletRequestL
   }
 
   /**
-   * Keeps the first and last name of the request's user, to be logged only if the request fails (status 400 or more).
-   * If the failure was already recorded, the name is logged right away. Control characters (Unicode C0 and C1, line
-   * breaks included), square brackets, double quotes and backslashes become spaces, and invisible format characters
-   * are removed, so that a name can neither split a line, break out of its quoted value, imitate another field nor
-   * disguise the line in a terminal; whitespace is then collapsed and the result truncated. A user with neither name is
-   * ignored.
+   * Copies the pending user name and email into the MDC, where logback.xml prints them.
+   */
+  private static void publishUser() {
+    String userName = PENDING_USER_NAME.get();
+    if (userName != null) {
+      MDC.put(USER_NAME, userName);
+    }
+    String userEmail = PENDING_USER_EMAIL.get();
+    if (userEmail != null) {
+      MDC.put(USER_EMAIL, userEmail);
+    }
+  }
+
+  /**
+   * Keeps the first and last name and the email of the request's user, to be logged only if the request fails (status
+   * 400 or more). If the failure was already recorded, they are logged right away.
+   * <p>
+   * In the name, control characters (Unicode C0 and C1, line breaks included), square brackets, double quotes and
+   * backslashes become spaces, and invisible format characters are removed, so that a name can neither split a line,
+   * break out of its quoted value, imitate another field nor disguise the line in a terminal; whitespace is then
+   * collapsed and the result truncated. A user with neither name logs no name.
+   * <p>
+   * The email is trimmed and kept only if it is made of the characters an address normally uses (see EMAIL_FORMAT);
+   * any other value logs no email.
    *
    * @param user the user of the request, may be null
    */
@@ -289,15 +320,18 @@ public final class LogContext implements ServletContextListener, ServletRequestL
       if (userName.length() > NAME_MAX_LENGTH) {
         userName = userName.substring(0, NAME_MAX_LENGTH).trim();
       }
-      if (userName.isEmpty()) {
-        return;
+      if (!userName.isEmpty()) {
+        PENDING_USER_NAME.set(userName);
       }
-      PENDING_USER_NAME.set(userName);
+      String userEmail = user.getEmail() != null ? user.getEmail().trim() : null;
+      if (userEmail != null && EMAIL_FORMAT.matcher(userEmail).matches()) {
+        PENDING_USER_EMAIL.set(userEmail);
+      }
       if (isErrorStatus(MDC.get(STATUS_CODE))) {
-        MDC.put(USER_NAME, userName);
+        publishUser();
       }
     } catch (RuntimeException e) {
-      LOG.debug("Could not keep the user name for the log context", e);
+      LOG.debug("Could not keep the user name and email for the log context", e);
     }
   }
 
@@ -323,13 +357,15 @@ public final class LogContext implements ServletContextListener, ServletRequestL
   }
 
   /**
-   * Removes the HTTP status from the log context, and with it the user name it published, for a request whose status
-   * is no longer known: one that set a status for the page it was about to render and then failed while rendering it.
+   * Removes the HTTP status from the log context, and with it the user name and email it published, for a request
+   * whose status is no longer known: one that set a status for the page it was about to render and then failed while
+   * rendering it.
    */
   public static void removeStatusCode() {
     try {
       MDC.remove(STATUS_CODE);
       MDC.remove(USER_NAME);
+      MDC.remove(USER_EMAIL);
     } catch (RuntimeException e) {
       LOG.debug("Could not remove the status code from the log context", e);
     }
