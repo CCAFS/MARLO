@@ -3,7 +3,7 @@
 **Spec ID:** ENH-LOGGING-STANDARDIZATION-001
 **Status:** Draft
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-10-06
 **Implements design:** docs/specs/enhancement/logging-standardization/design.md
 **Branching:** `logging-standardization`, branched from `staging` (continues the A2-2435 work already merged there).
 **Target merge:** staging (then promoted to main per release process).
@@ -290,11 +290,15 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T13 — Notification: identifiers, deduplication, REST 5xx
 
+- **Status:** Done, 2026-10-06, branch `logging-error-notification` (commit `c4a902f95d`), ahead of T08: the
+  `request_id` is in the text log, not yet in a JSON one. See `requirements.md` §9, 2026-10-06 entries.
 - **Depends on:** T02, T08
 - **Module:** marlo-web
 - **Files touched:**
   - `action/UnhandledExceptionAction.java` (modified)
   - `rest/errors/ExceptionTranslator.java` (modified — route 5xx to the same notifier)
+  - `logging/ErrorNotificationThrottle.java` (new — the deduplication decision and the correlation lines)
+  - `logging/LogContext.java` (modified — `request_id`) and `logback.xml` (modified — prints it)
 - **Constitutional checks:** No new notifier and no new channel — `SendMailS` is reused. Never expose a stack
   trace to the client (`detailed-design.md` §9.2); the trace goes to the internal mail and the log only.
 - **Tests:**
@@ -302,11 +306,28 @@
   - Integration: a REST 5xx reaches the notifier; a REST 4xx does not.
 - **Done when:**
   - The mail carries `request_id` and `status_code` (FN-007).
-  - Deduplication on `tool_name + module_section + status_code` (FN-008).
+  - Deduplication on `tool_name + route + exception class + throwing frame + status_code`, one hour, the
+    suppressed count in the next mail (FN-008; key amended 2026-10-06, `requirements.md` §9).
   - 5xx notifies; 4xx does not (design ADR-3 — 177 of the REST layer's `HttpStatus` usages are `NOT_FOUND`).
   - Existing behaviour preserved: always notify for AICCRA, production-only otherwise.
 - **Verification:** Trigger the same exception twice; confirm one mail, and that its `request_id` finds the
   event in the JSON log.
+- **Verification notes (2026-10-06):**
+  - Gates: clean recompile of marlo-data + marlo-web (2405 + 1049 files), Checkstyle zero delta against HEAD,
+    Java hygiene check clean, `mvn -o -pl marlo-web -am test` 365 tests, 0 failures — 9 new in
+    `ErrorNotificationThrottleTest` (two identical faults → one mail, distinct faults mailed separately, count
+    after the window, tracker cap) and 2 in `ExceptionTranslatorRouteKeyTest` (two ids of one endpoint share a
+    key).
+  - Live, local server on this branch: `reportingSummary.do?projectID=abc` requested three times in one
+    session gave three ERROR lines (`request_id` `5ca5e71daddd61be`, `2fe72bc92689c6cb`, `8e6ef34e8ba65234`),
+    one "has sent a message" and two "already reported within the hour" lines, and exactly one mail. The mail
+    carried `Request id: 5ca5e71daddd61be`, `Status code: 500` and the route, and that id finds its lines in
+    `marlo-dev.log`. Every log line of a request now carries `request_id=`.
+  - REST: the dispatcher servlet loads on startup and started with no bean-creation error, so the constructor
+    injection of `SendMailS` and `APConfig` into `ExceptionTranslator` resolves. A live REST 5xx was **not**
+    exercised: `/api` answers 401 to the local dev account over BASIC, and a browser session is redirected to
+    the dashboard. Still to do on `marlotest` with an API account: two 5xx on one endpoint with different
+    ids → one mail; a 404 → no mail.
 
 ### ENH-LOGGING-STANDARDIZATION-001-T14 — Checkstyle guardrail
 
