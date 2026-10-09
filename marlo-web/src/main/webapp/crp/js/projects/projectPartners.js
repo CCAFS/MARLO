@@ -7,8 +7,9 @@ var lWordsResp = 100;
 /* A2-2440 redesign state */
 var ptnText = {};
 var ptnFilter = 'all';
-var ptnDirtyFields = {};
-var ptnDirtyOps = 0;
+// What the section held when the page loaded, partner by partner; the save state is the
+// difference between it and the page now (see ptnSnapshot).
+var ptnInitialState = null;
 var ptnToastTimer = null;
 var ptnUndo = null;
 // The contact row created by an "Add ..." button while the users popup is open. It is
@@ -79,6 +80,7 @@ function init() {
     });
   });
 
+  ptnInitialState = ptnSnapshot();
   ptnRefreshAll();
   ptnRegisterCheckDetails();
 
@@ -369,11 +371,10 @@ function attachEvents() {
     if(!name || this.id === 'partnersSearch' || name.indexOf('partner-') === 0) {
       return;
     }
-    // A new partner's fields are counted once, when it is added to the list
+    // A new partner is not compared until it is added to the list
     if($(this).closest('.is-draft').exists()) {
       return;
     }
-    ptnDirtyFields[name] = true;
     ptnRefreshSaveState();
   });
   $page.on('click', '[data-ptn-toast-undo]', function() {
@@ -815,24 +816,83 @@ function ptnApplyFilters() {
  * --------------------------------------------------------------------------------------------- */
 
 /**
- * Counts a change made inside a partner card. A new partner's edits stay out of the
- * count until "Add to cluster" (which counts once), so cancelling the draft leaves the
- * save state exactly as it was.
+ * The section's saved content, keyed by partner so that re-indexing after an add or a
+ * removal does not read as a change: responsibilities, sub-department, country offices,
+ * linked managing partners, contacts with their role, and divisions. New partners are
+ * left out while they are still a draft.
  */
-function ptnBumpIn($el,delta) {
-  if($el && $el.closest('.is-draft').exists()) {
-    return;
-  }
-  ptnBump(delta);
+function ptnSnapshot() {
+  var state = {};
+  var sorted = function($els,fn) {
+    return $els.map(fn).get().sort().join('|');
+  };
+  ptnCards().not('.is-draft').each(function() {
+    var $card = $(this);
+    var id = $card.find('.partnerId').val();
+    var key = id ? 'id-' + id : 'inst-' + ptnInstitutionId($card);
+    state[key] = {
+        resp: $.trim($card.find('[name$=".responsibilities"]').val() || ''),
+        sub: $.trim($card.find('input[name$=".subDepartment"]').val() || ''),
+        countries: sorted($card.find('.locElement input.locElementCountry'), function() {
+          return this.value;
+        }),
+        linked: sorted($card.find('.ppaPartnersList ul.list li input.id'), function() {
+          return this.value;
+        }),
+        contacts: sorted($card.find('.contactPerson'), function() {
+          var userId = $(this).find('input.userId').val();
+          return userId ? userId + ':' + $(this).find('.partnerPersonType').val() : null;
+        }),
+        divisions: sorted($card.find('.contactPerson select.divisionField'), function() {
+          return $(this).closest('.contactPerson').find('input.userId').val() + ':' + this.value;
+        })
+    };
+  });
+  return state;
 }
 
-function ptnBump(delta) {
-  ptnDirtyOps = Math.max(0, ptnDirtyOps + (delta === undefined ? 1 : delta));
+/** How many changes the page holds against what it loaded with. */
+function ptnCountChanges() {
+  if(!ptnInitialState) {
+    return 0;
+  }
+  var current = ptnSnapshot();
+  var count = 0;
+  var keys = {};
+  $.each(ptnInitialState, function(k) {
+    keys[k] = true;
+  });
+  $.each(current, function(k) {
+    keys[k] = true;
+  });
+  $.each(keys, function(k) {
+    var before = ptnInitialState[k];
+    var now = current[k];
+    if(!before || !now) {
+      // A partner added or removed is one change, whatever it holds
+      count++;
+      return;
+    }
+    $.each(before, function(field,value) {
+      if(now[field] !== value) {
+        count++;
+      }
+    });
+  });
+  return count;
+}
+
+/** Kept as the hook every edit calls; the count itself is always recomputed. */
+function ptnBumpIn($el) {
+  ptnRefreshSaveState();
+}
+
+function ptnBump() {
   ptnRefreshSaveState();
 }
 
 function ptnRefreshSaveState() {
-  var count = Object.keys(ptnDirtyFields).length + ptnDirtyOps;
+  var count = ptnCountChanges();
   var $state = $('[data-ptn-save-state]');
   $state.toggleClass('is-dirty', count > 0);
   $state.find('[data-ptn-save-text]').text(!count ? ptnText.saveClean : (count == 1 ? ptnText.unsavedOne : ptnText_(
@@ -1124,7 +1184,7 @@ function ptnRemovePartner($card) {
     updateProjectPPAPartnersLists();
     setProjectPartnersIndexes();
     ptnRefreshAll();
-    ptnBump(-1);
+    ptnBump();
   });
 }
 
@@ -1466,7 +1526,7 @@ function ptnRemovePerson($person) {
     setProjectPartnersIndexes();
     ptnRefreshCard($card);
     ptnRefreshSummary();
-    ptnBumpIn($card, -1);
+    ptnBumpIn($card);
   });
 }
 
