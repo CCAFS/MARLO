@@ -63,6 +63,14 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
   private Integer orderIndex;
   @Expose
   private BigDecimal value;
+
+  private BigDecimal baselineValue;
+
+  /**
+   * Answer to "Does this indicator have disaggregations?".
+   * Null means the question was never answered, which is distinct from an explicit false.
+   */
+  private Boolean hasDisaggregations;
   @Expose
   private Portfolio portfolio;
 
@@ -112,6 +120,8 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setModifiedBy(other.getModifiedBy());
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
+    this.setBaselineValue(other.getBaselineValue());
+    this.setHasDisaggregations(other.getHasDisaggregations());
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
     this.setOrderIndex(other.getOrderIndex());
@@ -139,6 +149,8 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     this.setModifiedBy(other.getModifiedBy());
     this.setSrfTargetUnit(other.getSrfTargetUnit());
     this.setValue(other.getValue());
+    this.setBaselineValue(other.getBaselineValue());
+    this.setHasDisaggregations(other.getHasDisaggregations());
     this.setYear(other.getYear());
     this.setStartYear(other.getStartYear());
     this.setOrderIndex(other.getOrderIndex());
@@ -279,6 +291,14 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
     return subIdos;
   }
 
+  public BigDecimal getBaselineValue() {
+    return baselineValue;
+  }
+
+  public Boolean getHasDisaggregations() {
+    return hasDisaggregations;
+  }
+
   public BigDecimal getValue() {
     return this.value;
   }
@@ -373,6 +393,14 @@ public class CrpProgramOutcome extends MarloAuditableEntity implements java.io.S
 
   public void setSubIdos(List<CrpOutcomeSubIdo> subIdos) {
     this.subIdos = subIdos;
+  }
+
+  public void setBaselineValue(BigDecimal baselineValue) {
+    this.baselineValue = baselineValue;
+  }
+
+  public void setHasDisaggregations(Boolean hasDisaggregations) {
+    this.hasDisaggregations = hasDisaggregations;
   }
 
   public void setValue(BigDecimal value) {

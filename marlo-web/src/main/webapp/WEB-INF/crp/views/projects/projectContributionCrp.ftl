@@ -3,9 +3,10 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20230310", 
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20260928", 
+  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20261007",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
-  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260826",
+  "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   "https://www.gstatic.com/charts/loader.js",
   "https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js",
   "//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js",
@@ -15,6 +16,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20240517",
+  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20261007-1",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -55,41 +57,43 @@
 
 <input type="hidden" id="sectionNameToFeedback" value="projectContributionCrp" />
 
-<section class="container">
+<section class="container cpi-page">
     <div class="row">
       [#-- Project Menu --]
-      <div class="col-md-3">
+      <div class="col-md-3 cpi-side">
         [#include "/WEB-INF/crp/views/projects/menu-projects.ftl" /]
       </div>
       [#-- Project Section Content --]
       <div class="col-md-9">
         [#-- Section Messages --]
         [#include "/WEB-INF/crp/views/projects/messages-projectOutcomes.ftl" /]
-        
-      
-        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
-          [#--  Feedback Status --]
+
+        [#-- Feedback status legend, drawn by dataInfo-projects.ftl in the top quote beside
+             the cluster chip, so it never pushes or overlaps the section header. --]
+        [#macro topQuoteExtras]
           [#if action.hasSpecificities('feedback_active') ]
-            <div class="form-group col-md-12 legendContent">
-              <div class="colors">
-                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
-              </div>
+            <div class="cpi-feedback-legend" role="note">
+              <span class="cpi-feedback-legend__title">[@s.text name="feedbackStatus.title" /]</span>
+              <span class="cpi-feedback-legend__item"><img src="${baseUrlCdn}/global/images/comment.png" alt="" />[@s.text name="feedbackStatus.blue" /]</span>
+              <span class="cpi-feedback-legend__item"><img src="${baseUrlCdn}/global/images/comment_yellow.png" alt="" />[@s.text name="feedbackStatus.yellow" /]</span>
+              <span class="cpi-feedback-legend__item"><img src="${baseUrlCdn}/global/images/comment_green.png" alt="" />[@s.text name="feedbackStatus.green" /]</span>
             </div>
           [/#if]
+        [/#macro]
+        [#-- Cluster quote, immediately before the form so it sits with the section --]
+        [#include "/WEB-INF/crp/views/projects/dataInfo-projects.ftl" /]
 
-          [#-- Back --]
-          <small class="pull-right">
-            <a href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the clusters contributions
+        [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
+          [#-- ═══ A2-2439 · section header ═══ --]
+          <div class="cpi-head">
+            <div class="cpi-head__titles">
+              <h3 class="cpi-head__title">[@s.text name="projectOutcome.projectContribution" /]</h3>
+              <span class="cpi-head__subtitle">${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} &middot; ${(project.projectInfo.title)!''}</span>
+            </div>
+            <a class="cpi-head__back" href="[@s.url action='${crpSession}/contributionsCrpList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <span class="glyphicon glyphicon-circle-arrow-left"></span> [@s.text name="projectContributionCrp.backToList" /]
             </a>
-          </small>
-          
-          [#-- Title --]
-          <h3 class="headTitle">[@s.text name="projectOutcome.projectContribution" /] </h3>
-
+          </div>
           <span id="parentID" style="display: none;">${projectOutcomeID!}</span>
           <span id="phaseID" style="display: none;">${phaseID!}</span>
           <span id="userID" style="display: none;">${currentUser.id!}</span>
@@ -102,325 +106,221 @@
           <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
           <span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()?c)!}</span>
 
-          [#-- Outcome name --]
-          [#assign showOutcomeValue = projectOutcome.crpProgramOutcome.srfTargetUnit??  && projectOutcome.crpProgramOutcome.srfTargetUnit.id?? && (projectOutcome.crpProgramOutcome.srfTargetUnit.id != -1) /]
+          [#-- ═══════════════════════════════════════════════════════════════════════
+               A2-2439 · Contribution to Period Targets
+               The outcome's milestones are grouped into the same matrix the Overall
+               Performance Indicators screen builds: row 0 carries the indicator's own
+               statement and is the headline period target, the remaining rows are its
+               disaggregated targets, and the distinct years are the period tabs. The
+               grouping is lifted from impactPathway/outcomes.ftl so a milestone lands
+               on the same row on both screens.
+               ═══════════════════════════════════════════════════════════════════════ --]
+          [#assign cpiOutcome = projectOutcome.crpProgramOutcome /]
+          [#assign cpiUnit = (cpiOutcome.srfTargetUnit.name)!'' /]
+          [#assign showOutcomeValue = cpiOutcome.srfTargetUnit?? && cpiOutcome.srfTargetUnit.id?? && (cpiOutcome.srfTargetUnit.id != -1) /]
+          [#assign cpiAllMilestones = (milestones)![] /]
+          [#assign cpiOutcomeStmt = opiStmtKey((cpiOutcome.description)!"") /]
+          [#assign cpiRowStmts = [] /]
+          [#assign cpiRowOf = [] /]
+          [#assign cpiRowYearTaken = [] /]
+          [#assign cpiYears = [] /]
+          [#if cpiAllMilestones?has_content]
+            [#list cpiAllMilestones as m]
+              [#if opiStmtKey((m.title)!"") == cpiOutcomeStmt][#assign cpiRowStmts = [cpiOutcomeStmt] /][#break][/#if]
+            [/#list]
+            [#list cpiAllMilestones as m]
+              [#assign cpiStmt = opiStmtKey((m.title)!"") /]
+              [#assign cpiYear = (m.year)!-1 /]
+              [#assign cpiRow = -1 /]
+              [#list cpiRowStmts as s]
+                [#if s == cpiStmt && !cpiRowYearTaken?seq_contains("${s_index?c}@${cpiYear?c}")]
+                  [#assign cpiRow = s_index /][#break]
+                [/#if]
+              [/#list]
+              [#if cpiRow == -1]
+                [#assign cpiRowStmts = cpiRowStmts + [cpiStmt] /]
+                [#assign cpiRow = cpiRowStmts?size - 1 /]
+              [/#if]
+              [#assign cpiRowYearTaken = cpiRowYearTaken + ["${cpiRow?c}@${cpiYear?c}"] /]
+              [#assign cpiRowOf = cpiRowOf + [cpiRow] /]
+              [#if !cpiYears?seq_contains(cpiYear)][#assign cpiYears = cpiYears + [cpiYear] /][/#if]
+            [/#list]
+            [#assign cpiYears = cpiYears?sort /]
+          [/#if]
+          [#if cpiRowStmts?size == 0][#assign cpiRowStmts = [cpiOutcomeStmt] /][/#if]
 
-          <div class="grayBox">
-            <div class="col-md-12">
-              <strong>${(projectOutcome.crpProgramOutcome.crpProgram.acronym)!} - Performance Indicator ${(projectOutcome.crpProgramOutcome.year)!}</strong>: ${projectOutcome.crpProgramOutcome.description}
+          [#-- The tab that opens: the period of the current cycle when the indicator has
+               one, otherwise the last period so the screen never opens on a blank pane. --]
+          [#assign cpiOpenYear = -1 /]
+          [#list cpiYears as y][#if y == currentCycleYear][#assign cpiOpenYear = y /][/#if][/#list]
+          [#if cpiOpenYear == -1 && cpiYears?has_content][#assign cpiOpenYear = cpiYears?last /][/#if]
+
+          [#-- ═══ Indicator card ═══ --]
+          <div class="cpi-card cpi-indicator">
+            <div class="cpi-indicator__top">
+              <span class="cpi-indicator__code">${(cpiOutcome.acronym)!(cpiOutcome.composeID)!'&mdash;'}</span>
+              <span class="cpi-indicator__name">${(cpiOutcome.description)!}</span>
+              [#if (cpiOutcome.instructions?? && cpiOutcome.instructions != '')]
+                <button type="button" class="button-evidences cpi-indicator__details">
+                  [@s.text name="projectContributionCrp.seeDetails" /]
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.4v3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="5.3" r=".9" fill="currentColor"/></svg>
+                </button>
+              [/#if]
             </div>
-            <div class="clearfix"></div>
-            [#if showOutcomeValue]
-              <div class="form-group">          
-                <div class="col-md-4"><strong>AICCRA Target Value:</strong> ${projectOutcome.crpProgramOutcome.value?string(",##0")} </div>
-                <div class="col-md-6 targetUnit-block" data-targetUnit="${projectOutcome.crpProgramOutcome.srfTargetUnit.id}"><strong>Target Unit:</strong> ${projectOutcome.crpProgramOutcome.srfTargetUnit.name}</div>
-              </div>
-            [/#if]
-            </br>
-            </br>
-            [#if (projectOutcome.crpProgramOutcome.instructions?? && projectOutcome.crpProgramOutcome.instructions != '')]
-              <div class="container-evidences">
-                <p class="text-evidences">Here you could find information about the evidences that expects to be reported</p>
-                <div class="button-evidences">
-                [#-- animated animate__shakeX --]
-                  <p>See details</p>
-                  <img class="animate__animated animate__delay-3s animate__rubberBand" src="${baseUrlCdn}/global/images/28-info-outline.png" width="28" />
-                </div>
-              </div>
-              <div class="clearfix"></div>
-            [/#if]
-           
+            <span class="cpi-indicator__meta">
+              [#if showOutcomeValue][@s.text name="projectContributionCrp.meta.unit" /]: ${cpiUnit} &middot; [/#if]
+              [#-- The closing year is always captured; the start year is optional, so the
+                   pair only reads as a period when both are there. --]
+              [#if ((cpiOutcome.startYear)!-1) gt 0 && (cpiOutcome.year)?has_content]
+                [@s.text name="projectContributionCrp.meta.period" /]: ${cpiOutcome.startYear?c}&ndash;${cpiOutcome.year?c} &middot;
+              [#elseif (cpiOutcome.year)?has_content]
+                [@s.text name="projectContributionCrp.meta.closingYear" /]: ${cpiOutcome.year?c} &middot;
+              [/#if]
+              [#if (cpiOutcome.baselineValue)?has_content][@s.text name="projectContributionCrp.meta.baseline" /]: ${(cpiOutcome.baselineValue?string(",##0"))!} &middot; [/#if]
+              [@s.text name="projectContributionCrp.meta.closingTarget" /]: [#if (cpiOutcome.value)?has_content]${cpiOutcome.value?string(",##0")}[#else]&mdash;[/#if]
+            </span>
+            <span class="cpi-indicator__meta">
+              [#if cpiRowStmts?size gt 1]
+                [@s.text name="projectContributionCrp.meta.disaggregations" /]: ${cpiRowStmts?size - 1}
+              [#else]
+                [@s.text name="projectContributionCrp.meta.noDisaggregations" /]
+              [/#if]
+            </span>
+            <span class="cpi-indicator__note text-evidences">[@s.text name="projectContributionCrp.evidenceNote" /]</span>
+            [#-- Guidance modal, driven by the existing projectContributionCrp.js handlers --]
             <div class="modal-evidences" style="display: none">
-             
               <div class="content-modal">
-                <div class="button-exit close-modal-evidences">
-                  <div class="x-close-modal" ></div>
-                </div>
-                  <p class="title-modal-evidences">Important information</p>
-                <div class="text-modal-evidences">
-                  <p>
-                    ${(projectOutcome.crpProgramOutcome.instructions)!}
-                  </p>          
-                </div>
-                
+                <div class="button-exit close-modal-evidences"><div class="x-close-modal"></div></div>
+                <p class="title-modal-evidences">[@s.text name="projectContributionCrp.guidance.title" /]</p>
+                [#-- The instructions are rich text from the OPI editor, stored as HTML. Auto-escaping
+                     prints them as literal markup, so decodeHTML (global.js) renders them, the way the
+                     additional questions below are rendered. --]
+                <div class="text-modal-evidences decodeHTML">${(cpiOutcome.instructions)!}</div>
                 <div class="container-buttons-evidences">
-                [#-- hide button guide for phase AWPB --]
-                [#if !action.isPOWB()]
-                  [#if (projectOutcome.crpProgramOutcome.file.fileName??)!false]
-                    <a href="${action.getBaseLineFileURL((projectOutcome.crpProgramOutcome.id?string)!-1)}&filename=${(projectOutcome.crpProgramOutcome.file.fileName)!}" target="_blank">
-                      <div class="button-pdf-modal" >
-                        <p>Read full guidance</p>
+                  [#if !action.isPOWB() && ((cpiOutcome.file.fileName??)!false)]
+                    <a href="${action.getBaseLineFileURL((cpiOutcome.id?string)!-1)}&filename=${(cpiOutcome.file.fileName)!}" target="_blank">
+                      <div class="button-pdf-modal">
+                        <p>[@s.text name="projectContributionCrp.guidance.readFull" /]</p>
                         <img src="${baseUrlCdn}/global/images/pdf.png" alt="Download document" />
                       </div>
                     </a>
                   [/#if]
-                  [/#if]
-                  <div class="button-close-modal close-modal-evidences">
-                    <p>Close</p>
-                  </div>
-                </div>    
-              
-              </div>
-              
-            </div>
-              
-          </div>
-          <br />
-          
-          [#-- Project Targets --]
-          [#assign showExpectedTarget = true /]
-          [#assign showAchievedTarget = (reportingActive && (endYear == currentCycleYear)) /]
-          
-          
-          <div class="borderBox">
-            [#-- Project Outcome expected target (AT THE BEGINNING) --]
-            [#if showExpectedTarget]
-            <h5 class="sectionSubTitle">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h5>
-            <div class="form-group">
-              <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
-                <div class="col-md-5 input-container">
-                  [#if editable]
-                  
-                    [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(projectOutcome.crpProgramOutcome.year)!afYear type="text"  placeholder="" className="targetValue targetValueNumber" required=true  editable=!reportingActive && editOutcomeExpectedValue/]
-                    
-                  [#else]
-                    <label for="">[@s.text name="projectOutcome.expectedValueAF" /]${(projectOutcome.crpProgramOutcome.year)!afYear}: </label>
-                    <div class="input"><p class="text"> ${(projectOutcome.expectedValue?string(",##0"))!'No expected value indicated'}</p></div>
-                  [/#if]               
+                  <div class="button-close-modal close-modal-evidences"><p>[@s.text name="form.buttons.close" /]</p></div>
                 </div>
-
-              </div>
-              <div class="form-group ">
-                [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false))/]
-              </div>
-              
-            </div> 
-            [/#if]
-            
-            [#-- Project Outcome achieved target (AT THE END) --]
-            [#if showAchievedTarget && false]
-            <h5 class="sectionSubTitle">Achieved Target</h5>
-            <div class="form-group">
-              <div class="row form-group" style="display:${showOutcomeValue?string('block', 'none')}">
-                <div class="col-md-5">
-                  [#if editable]
-                    [@customForm.input name="projectOutcome.achievedValue" type="text"  placeholder="" className="targetValue targetValueNumber ${reportingActive?string('fieldFocus','')}" required=true /]
-                  [#else]
-                    <label for="">[@s.text name="projectOutcome.achievedValue" /]:</label>
-                    <div class="input"><p>${(projectOutcome.achievedValue?string(",##0"))!'No achieved value indicated'}</p></div>
-                  [/#if]
-                </div>               
-                <div class="col-md-7">
-                  <div class="select">
-                    <label for="">[@s.text name="projectOutcome.achievedUnit" /]:</label>
-                    <div class="selectList">   
-                        <input type="hidden" name="projectOutcome.achievedUnit.id" value="${(projectOutcome.crpProgramOutcome.srfTargetUnit.id)!}" class="">
-                        <p>${(projectOutcome.crpProgramOutcome.srfTargetUnit.name)!'Not provided'}</p>
-                    </div> 
-                  </div>
-                </div>               
-              </div>
-              <div class="form-group">
-                [@customForm.textArea name="projectOutcome.narrativeAchieved" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
               </div>
             </div>
-            [/#if]
-                                    
           </div>
-          
-          [#if action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active') ]
-	          [#-- Project Milestones and Communications contributions per year--]
-	          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
-	          	          
-	          [#-- List milestones 
-	          <div class="milestonesYearBlock borderBox" listname="milestonesProject"> --]
-	            
-	            [#-- Year Tabs --]
-							[#if milestonesYears?has_content]
-							  <ul class="nav nav-tabs budget-tabs" role="tablist">
-							    [#list milestonesYears as year]
 
-							      <li class="[#if year == currentCycleYear]active[/#if]">
-							        <a href="#milestoneYear-${year}" role="tab" data-toggle="tab">
-							          [@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year}
-							        </a>
-							      </li>
-							    [/#list]
-							  </ul>
-							
-							  <div class="tab-content contributionContent">
-							    [#list milestonesYears as year]
-							      <div class="tab-pane [#if year == currentCycleYear]active[/#if]" id="milestoneYear-${year}">
-							        <div class="milestonesYearList">
-							          [#assign foundMilestone = false]
-							          [#list milestonesProject as milestone]
-							            [#if milestone.year == year]
-							              [#assign foundMilestone = true]
-							              [@milestoneMacroOld element=milestone name="projectOutcome.milestones" index=milestone_index /]
-							            [/#if]
-							          [/#list]
-							          [#if !foundMilestone]
-							            <p class="emptyMessage text-center">There is no [@s.text name="global.CrpMilestone"/] added for ${year}.</p>
-							          [/#if]
-							        </div>
-							      </div>
-							    [/#list]
-							    </br>
-							  </div>
-							  
-							[/#if]
+          [#-- ═══ Overall cluster contribution ═══ --]
+          <div class="cpi-card">
+            <h4 class="cpi-card__title">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h4>
+            <div class="cpi-field" style="display:${showOutcomeValue?string('block', 'none')}">
+              [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(cpiOutcome.year)!afYear type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingActive && editOutcomeExpectedValue /]
+            </div>
+            <div class="cpi-field">
+              [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false)) /]
+            </div>
+          </div>
 
-	          [/#if]          
-                     
-          [#if !(action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active')) ]
-          [#-- Project Milestones and Communications contributions per year AICCRA 2--]
-          <h4 class="headTitle"> [@s.text name="projectOutcome.contributionToMilestones" /]</h4>
-          
-          [#-- Year Tabs --]
-          [#if milestonesProjectYear?has_content]
-            <ul class="nav nav-tabs budget-tabs" role="tablist">
-              [#list milestonesProjectYear as year]
-                <li class="[#if year == currentCycleYear]active[#elseif year_index == 0]active[/#if]"><a href="#milestoneYear-${year}" role="tab" data-toggle="tab">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year} </a></li>
-              [/#list]
-            </ul>
-          
+          [#-- ═══ Yearly contribution to intermediate targets ═══ --]
+          <div class="cpi-periods">
+            <h4 class="cpi-card__title cpi-periods__title">[@s.text name="projectOutcome.contributionToMilestones" /]</h4>
+            [#-- Texts for the percentage resolution drawn by projectContributionCrpRedesign.js;
+                 {0} {1} {2} are passed through as literal placeholders. --]
+            <span id="cpiI18n" style="display:none"
+              data-pct-of="[@s.text name="projectContributionCrp.pctOf"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][@s.param]{2}[/@s.param][/@s.text]"
+              data-pct-no-base="[@s.text name="projectContributionCrp.pctOfNoBase"][@s.param]{0}[/@s.param][/@s.text]"></span>
+            [#if cpiYears?has_content]
+              <ul class="nav nav-tabs cpi-tabs" role="tablist">
+                [#list cpiYears as year]
+                  <li role="presentation" class="[#if year == cpiOpenYear]active[/#if]">
+                    <a href="#cpiYear-${year?c}" role="tab" data-toggle="tab">
+                      [@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${year?c}
+                      [#if year == currentCycleYear]<span class="cpi-tabs__now">[@s.text name="projectContributionCrp.currentPeriod" /]</span>[/#if]
+                    </a>
+                  </li>
+                [/#list]
+              </ul>
+              <div class="tab-content cpi-panes">
+                [#list cpiYears as year]
+                  <div role="tabpanel" class="tab-pane cpi-pane [#if year == cpiOpenYear]active[/#if]" id="cpiYear-${year?c}">
 
-          [#-- Years Content --]
-          <div class="tab-content contributionContent">
-          
-              [#list milestonesProjectYear as year]
-                <div role="tabpanel" class="tab-pane [#if year == currentCycleYear]active[#elseif year_index == 0]active[/#if]" id="milestoneYear-${year}" role="tab" data-toggle="tab">
-                
-                [#assign milestoneElement = action.milestonesYear!{}/]
-                [#assign milestoneIndex = (action.indexMilestone(year))!'-1' /]
+                    [#-- Headline period target: the milestone on the principal row --]
+                    [#assign cpiHeadlineDone = false /]
+                    [#assign cpiPrincipalValue = "" /]
+                    [#list cpiAllMilestones as m]
+                      [#if !cpiHeadlineDone && cpiRowOf[m_index] == 0 && ((m.year)!-1) == year]
+                        [#assign cpiHeadlineDone = true /]
+                        [#if (m.value)?has_content][#assign cpiPrincipalValue = m.value /][/#if]
+                        [@cpiMilestoneFields element=m year=year isPrincipal=true /]
+                      [/#if]
+                    [/#list]
+                    [#if !cpiHeadlineDone]
+                      <p class="cpi-empty">[@s.text name="projectContributionCrp.noTargetForYear" /] ${year?c}.</p>
+                    [/#if]
 
-                    <!--<div class="milestonesYearBlock borderBox" listname="milestonesProject">-->
-                      <div class="milestonesYearList">
-                          
-                          [#if milestoneElement?has_content]           
-                              [@milestoneMacro element=milestoneElement[milestoneIndex] name="projectOutcome.milestones" index=0 /]
-
-                              [#-- progress targets --]
-                              <br>
-                              [#if year == currentCycleYear && projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                <h5 class="sectionSubTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h5>
-                                [#--  <h4 class="headTitle">Progress to Targets</h4>--]
-
-                                [#if reportingActive]
-                                  <div class="deliverableTabs"> 
-                                    <ul class="nav nav-tabs" role="tablist"> 
-                                      <li role="presentation" class="active"><a index="1" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Reporting <!--${currentCycleYear}--></a></li>                            
-                                      <li role="presentation" class=""><a index="2" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">Mid-year <!--${currentCycleYear}--></a></li>                       
-                                    </ul>
-                                    <div class="tab-content ">          
-                                      [#-- Progress tab --]  
-                                        <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade">
-                                          [#if projectOutcomeLastPhase?has_content && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?size != 0]
-                                          <h4 class="headTitle" style="font-size: 15px;"> <i>This information is only for reference and is not editable</i></h4>
-                                            [#-- 
-                                            && projectOutcomeLastPhase.crpProgramOutcome?has_content && projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content
-                                            --]
-                                              <div class="nextUsersList">
-                                                [#-- Baseline Indicators --]
-                                                [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcomeLastPhase.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcomeLastPhase.crpProgramOutcome.indicators?has_content)!false)]
-                                                  <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
-                                                  <div class="form-group">
-                                                    <div class="" id="baseline">
-                                                      <div class="form-group text-right">
-                                                        [#if (projectOutcomeLastPhase.crpProgramOutcome.file.fileName??)!false]
-                                                          [#-- <a href="${action.getBaseLineFileURL((projectOutcomeLastPhase.crpProgramOutcome.id?string)!-1)}&filename=${ (projectOutcomeLastPhase.crpProgramOutcome.file.fileName)!}" target="_blank" class="downloadBaseline"><img src="${baseUrlCdn}/global/images/pdf.png" width="30px" alt="Download document" />&nbsp &nbsp Download Indicator Guidance &nbsp &nbsp &nbsp &nbsp</a>--] 
-                                                        [#else]
-                                                          <p class="note"><i>[@s.text name="projectOutcome.askForBaselineInstructions" /]</i></p>
-                                                        [/#if]
-                                                      </div>
-                                                      [#-- Indicators --]
-                                                      [#list projectOutcomeLastPhase.crpProgramOutcome.indicators as  indicator   ]
-                                                          [@baselineAiccraPrevIndicatorMacro element=indicator name="projectOutcomeLastPhase.indicators" index=indicator_index  AREditable=false/]                
-                                                      [/#list]
-                                                    </div>
-                                                  </div>
-                                                [/#if]
-                                            </div>
-                                          [/#if]
-                                        </div>  
-                                        [#-- Reporting tab --]
-                                        
-                                          <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade in active">
-                                            [#if projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                              [#--  <h4 class="headTitle">Progress to Targets</h4> --]
-                                                <div class="nextUsersList">
-                                                  [#-- Baseline Indicators --]
-                                                  [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                                                    <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
-                                                    <div class="form-group">
-                                                      <div class="" id="baseline">
-
-                                                        [#-- Indicators --]
-                                                        [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                                                            [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index AREditable=true/]
-                                                        [/#list]
-                                                      </div>
-                                                    </div>
-                                                  [/#if]
-                                                </div>           
-                                            [#else]
-                                              <h5 class="headTitle">No Progress to Target indicators added</h5>
-                                            [/#if]
-                                          </div>                     
-                                    </div>   
-                                  </div>
-                                [#else]     
-                                  [#if projectOutcome.crpProgramOutcome.indicators?size != 0]
-                                            <div class="nextUsersList">
-                                              [#-- Baseline Indicators --]
-                                              [#if action.hasSpecificities('crp_baseline_indicators') && ((projectOutcome.crpProgramOutcome.crpProgram.baseLine)!false) && ((projectOutcome.crpProgramOutcome.indicators?has_content)!false)]
-                                                <!--<h5 class="sectionSubTitle">Progress to Key Performance Indicator</h5>-->
-                                                <div class="form-group">
-                                                  <div class="" id="baseline">
-
-                                                    [#-- Indicators --]
-                                                    [#list projectOutcome.crpProgramOutcome.indicators as  indicator   ]
-                                                        [@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
-                                                    [/#list]
-                                                  </div>
-                                                </div>
-                                              [/#if]
-                                            </div>           
-                                  [/#if]
-                                [/#if]
-                              [/#if]   
-                              [#-- end progress targets--]
-                              
-                          [#else]
-                            <p class="emptyMessage text-center">There is not a [@s.text name="global.CrpMilestone"/] added for ${year}.</p>
+                    [#-- Disaggregated targets: every further row of the matrix --]
+                    [#if cpiRowStmts?size gt 1]
+                      <div class="cpi-dts">
+                        <span class="cpi-dts__label">
+                          [@s.text name="projectContributionCrp.disaggregatedTargets" /]:
+                          <span class="cpi-dts__note">${cpiRowStmts?size - 1} [@s.text name="projectContributionCrp.disaggregatedTargets.note" /]</span>
+                        </span>
+                        [#list 1..(cpiRowStmts?size - 1) as row]
+                          [#assign cpiRowDone = false /]
+                          [#list cpiAllMilestones as m]
+                            [#if !cpiRowDone && cpiRowOf[m_index] == row && ((m.year)!-1) == year]
+                              [#assign cpiRowDone = true /]
+                              <div class="cpi-dt">
+                                <div class="cpi-dt__head" data-cpi-toggle="cpiDt-${year?c}-${row}" role="button" tabindex="0" aria-controls="cpiDt-${year?c}-${row}" aria-expanded="false">
+                                  <span class="cpi-dt__caret" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M4 2.5 7.5 6 4 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                                  <span class="cpi-dt__title">[@s.text name="projectContributionCrp.target" /] ${row}: ${(m.title)!}</span>
+                                  [#if (m.code)?has_content]<span class="cpi-chip">${m.code}</span>[/#if]
+                                </div>
+                                <div class="cpi-dt__body" id="cpiDt-${year?c}-${row}" style="display:none">
+                                  [@cpiDtTarget element=m year=year principalValue=cpiPrincipalValue /]
+                                  [@cpiMilestoneFields element=m year=year isPrincipal=false /]
+                                </div>
+                              </div>
+                            [/#if]
+                          [/#list]
+                          [#if !cpiRowDone]
+                            <div class="cpi-dt cpi-dt--empty">
+                              <span class="cpi-dt__title">[@s.text name="projectContributionCrp.target" /] ${row}</span>
+                              <span class="cpi-dt__note">[@s.text name="projectContributionCrp.noTargetForYear" /] ${year?c}.</span>
+                              [@cpiOpiLink /]
+                            </div>
                           [/#if]
+                        [/#list]
                       </div>
-                      
-                      [#if false] 
-                        <div class="milestonesYearSelect"> 
-                          <div class="pull-left"> <span class="glyphicon glyphicon-plus"></span>  &nbsp</div>
-                          <span class="milestonesSelectedIds" style="display:none">[#if milestonesProject?has_content][#list milestonesProject as e]${(e.id)!}[#if e_has_next],[/#if][/#list][/#if]</span>
-                          [@customForm.select name="" label="" disabled=!canEdit i18nkey="projectContributionCrp.selectMilestone${reportingActive?string('.reporting', '')}"  listName="" keyFieldName="id" displayFieldName="title" className="" value="" /]
-                        </div>
-                      [/#if]
-                      [#-- 
-                      [#if totalParticipants?number > 0]
-                        </br>
-                        <div id="note" class="note left helpMessage3">
-                          <p><i>[@s.text name="projectOutcomes.helpParticipantsSection" /]</i></p>
-                        </div>
-                        </br>
-                      [/#if]
-                      --]
-                    <!--</div>-->      
-                </div>
-              [/#list]
+                    [/#if]
+
+                  </div>
+                [/#list]
+              </div>
+            [#else]
+              <p class="cpi-empty">[@s.text name="projectContributionCrp.noPeriods" /]</p>
+            [/#if]
           </div>
-          [#else]
-          <p>No information</p>
+          [#-- ═══ Additional questions for this performance indicator ═══
+               Shown in every cycle and answered in the annual report only (A2-2439,
+               A2-2622): outside it each answer reads back, or "Not answered". The
+               markup must be posted in every cycle anyway: saveIndicators() deletes
+               every ProjectOutcomeIndicator the form does not send back. --]
+          [#assign cpiAnswerQuestions = !((action.isAiccra())!false) || reportingActive /]
+          [#if action.hasSpecificities('crp_baseline_indicators')]
+            <div class="cpi-card cpi-questions">
+              <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
+              [#if (cpiOutcome.indicators?has_content)!false]
+                [#list cpiOutcome.indicators as indicator]
+                  [@cpiQuestion element=indicator index=indicator_index /]
+                [/#list]
+              [#else]
+                <p class="cpi-empty">[@s.text name="projectContributionCrp.noAdditionalQuestions" /]</p>
+              [/#if]
+            </div>
           [/#if]
-          [/#if]
-                          
+
           [#-- Communications --]
           [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
           <div class="">
@@ -439,22 +339,6 @@
           </div>
           [/#if]          
                                   
-          [#-- AICCRA Indicators --]
-          [#if action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active') && action.hasSpecificities('crp_baseline_indicators') && projectOutcome.crpProgramOutcome.indicators?size != 0]
-          <h4 class="headTitle">[@s.text name="projectOutcome.additionalQuestions" /]</h4>
-          <div class="nextUsersBlock borderBox">
-            <div class="nextUsersList">
-              [#if projectOutcome.crpProgramOutcome.indicators?has_content]
-                [#list projectOutcome.crpProgramOutcome.indicators as indicator]
-                	[@baselineAiccraIndicatorMacro element=indicator name="projectOutcome.indicators" index=indicator_index  AREditable=true/]
-                [/#list]
-              [#else]
-              	<h5 class="headTitle">No Progress to Target indicators added</h5>
-              [/#if]
-            </div>
-    
-          </div>
-          [/#if]
                   
           
           [#-- Next Users --]
@@ -506,627 +390,255 @@
 </section>
 [/#if]
 
-[#-- Milestone Template --]
-[@milestoneMacro element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
-[@milestoneMacroOld element={} name="projectOutcome.milestones" index="-1" isTemplate=true /]
-
 [#-- Next user Template --]
 [@nextUserMacro element={} name="projectOutcome.nextUsers" index="-1" isTemplate=true /]
 
 [#-- indicators Template --]
-[#if action.hasSpecificities('contribution_performance_indicators_show_multiple_milestones_per_year_active')]
-	[@baselineAiccraIndicatorMacro element={} name="projectOutcome.indicators" index="-1" isTemplate=true AREditable=true /]
-[/#if]
+[@baselineAiccraIndicatorMacro element={} name="projectOutcome.indicators" index="-1" isTemplate=true AREditable=true /]
 
 
   
 [#include "/WEB-INF/global/pages/footer.ftl"]
 
 
-[#macro milestoneMacro element name index isTemplate=false]
+[#-- The key a period-target row is grouped on. Statements reach crp_milestones through
+     copy/paste, so the same sentence is stored with a doubled space here and a zero-width
+     space left over from a Word paste there. None of it is visible, and none of it may
+     split a row -- see impactPathway/outcomes.ftl, which groups on the same key. --]
+[#function opiStmtKey raw]
+  [#return ((raw!"")?replace("\xA0", " ")?replace("\x200B", "")?replace("\x200C", "")?replace("\x200D", "")?replace("\xFEFF", "")?replace("\\s+", " ", "r"))?trim /]
+[/#function]
 
-  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear" style="display:${isTemplate?string('none','block')}">
-    [#-- Milestone content --]
-    [#if isTemplate]
-      [#local year = -1 /]
-      [#local projectMilestone = {} /]
-      [#local projectMilestoneIndex = -1 /]
-    [#else]
-      [#local year = element.year /]
-      [#local projectMilestone = action.getMilestone(element.id, year) /]
-      [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
-    [/#if]
-    
-    [#-- Getting the milestone year --]
-    [#local hasExtendedYear = (element.extendedYear?has_content) && (element.extendedYear != -1)]
-    [#local milestoneYear =  (element.year)!currentCycleYear ]
-    [#if hasExtendedYear]
-      [#local milestoneYear =  element.extendedYear ]
-    [/#if]
-    
-    [#local isNewAtReporting =  reportingActive && (!(projectMilestone.narrativeTarget?has_content))!true]
+[#-- A target reports a percentage when its unit's name carries "%" ("%", "% / year",
+     "% increase"...). Same rule as the Overall Performance Indicators matrix
+     (opiRefreshCell in impactPathway/outcomes.js), so both screens agree on which
+     rows are shares of the principal target. --]
+[#function cpiIsPercentage milestone]
+  [#return ((milestone.srfTargetUnit.name)!"")?contains("%") /]
+[/#function]
 
-    [#-- Remove Button --]
-    [#-- 
-    [#if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if]
-    
-    <div class="leftHead sm">
-      <span class="index">${index+1}</span>
-      <span class="index">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /] ${(element.year)!}</span>
-    </div>
-      --]
-    
-      
-    [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
-    [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
-    
+[#-- A number as the screens print it: thousands grouped, up to two decimals. --]
+[#function cpiNum n]
+  [#return n?string(",##0.##") /]
+[/#function]
 
-    <div role="tabpanel" class="tab-pane [#if milestoneYear == currentCycleYear]active[/#if]" id="milestoneYear${index}-${milestoneYear}">
-      [#local customName = "${name}[${projectMilestoneIndex}]" /]
-      <div class="outcomeMilestoneYear">
-        [#-- Hidden inputs --]
-        <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
-        <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
-        <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
-        
-        <div class="row">
-          <div class="col-md-12">
-            <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value?string(",##0"))!}
-            </br>           
-            </br>
-          </div>
-        </div>
-        
-        <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
-          <div class="col-md-4 input-container" style="padding-top:3px">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
-          </div>
-          
-          <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true /]
-          </div>
-          
-          [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
-              <div class="col-md-4">
-                [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isYearRequired(milestoneYear) && reportingActive editable=reportingActive && (editable || isTemplate) && isYearRequired(milestoneYear) /]
-                 [#if totalParticipants?number > 0 && year == currentCycleYear]   
-                 [#--  IPI 2.3 --]   
-                  <div class="note left textAchived">
-                    <div id="popup" class="helpMessage3">
-                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
-                    </div>
-                  </div> 
-                 [/#if]    
-                 
-                 [#--  IPI 1.2 --]   
-                 [#if journalDeliverables?number > 0 && year == currentCycleYear]   
-                  <div class="note left textAchived">
-                    <div id="popup" class="helpMessage3">
-                      <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.journal.helpText" paramText="${journalDeliverables}"][@s.param]<b>${journalDeliverables}</b>[/@s.param][/@s.text]</a></p>
-                    </div>
-                  </div> 
-                 [/#if]       
-              </div>
-           [#else]
-             [#if action.isUpKeepActive() ]
-              <div class="col-md-4">
-                  [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedSoFar" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && isYearRequired(milestoneYear) && (reportingActive || action.isUpKeepActive()) /]              
-                 [#if totalParticipants?number > 0 && year == currentCycleYear]   
-                   [#--  IPI 2.3 --]   
-                   <div class="note left textAchived">
-                     <div id="popup" class="helpMessage3">
-                       <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.capdev.helpText" paramText="${totalOwnParticipants}"][@s.param]<b>${totalOwnParticipants}</b>[/@s.param][/@s.text]</a></p>
-                     </div>
-                   </div> 
-                 [/#if]    
-                   
-                  [#--  IPI 1.2 --]   
-                 [#if journalDeliverables?number > 0 && year == currentCycleYear]   
-                   <div class="note left textAchived">
-                     <div id="popup" class="helpMessage3">
-                       <p><a id="opener"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="projectOutcomeMilestone.journal.helpText" paramText="${journalDeliverables}"][@s.param]<b>${journalDeliverables}</b>[/@s.param][/@s.text]</a></p>
-                     </div>
-                   </div> 
-                 [/#if]   
-              </div>
-             [/#if]
+[#-- The link from a disaggregated target back to where it is defined: the indicator's
+     card in Overall Performance Indicators (outcomes.js scrolls to the #opi-outcome-<id>
+     anchor). It opens a new tab so the contribution being edited here is not lost. --]
+[#macro cpiOpiLink]
+  [#if (cpiOutcome.crpProgram.id)??]
+    <a class="cpi-opi-link" target="_blank" rel="noopener" href="[@s.url namespace='/impactPathway' action='${crpSession}/outcomes'][@s.param name='crpProgramID' value=cpiOutcome.crpProgram.id /][#if (actualPhase.id)?has_content][@s.param name='phaseID' value=actualPhase.id /][/#if][/@s.url]#opi-outcome-${cpiOutcome.id?c}">
+      [@s.text name="projectContributionCrp.configuredInOpi" /]
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M5 2.5H2.5v7h7V7M7 2.5h2.5V5M9.5 2.5 5.5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sr-only">[@s.text name="projectContributionCrp.opensInNewTab" /]</span>
+    </a>
+  [/#if]
+[/#macro]
+
+[#-- The head of an open disaggregated target: its period target as configured in Overall
+     Performance Indicators and, when it is a percentage, the absolute figure that share
+     represents of the principal target of the same period (A2-2620). --]
+[#macro cpiDtTarget element year principalValue]
+  <div class="cpi-dt__target">
+    <span class="cpi-pane__headline">
+      [@s.text name="projectContributionCrp.targetTo" /] ${year?c}:
+      [#if (element.value)?has_content]
+        [#if cpiIsPercentage(element)]
+          <strong>${cpiNum(element.value)}%</strong>
+          [#if principalValue?is_number]
+            <span class="cpi-dt__resolved">[@s.text name="projectContributionCrp.pctOf"][@s.param]${cpiNum(element.value)}[/@s.param][@s.param]${cpiNum(principalValue)}[/@s.param][@s.param]${cpiNum(element.value * principalValue / 100)}[/@s.param][/@s.text]</span>
           [/#if]
-          
-          
-                      
-      
-          [#--  
-          <div class="col-md-4">
-            <div class="select">
-              <label for="">[@s.text name="projectOutcomeMilestone.expectedUnit" /]:</label>
-              <div class="selectList">   
-                  <input type="hidden" class="crpMilestoneTargetUnitInput" name="${customName}.expectedUnit.id" value="${(element.srfTargetUnit.id)!}" class="">
-                  <p class="crpMilestoneTargetUnit">${(element.srfTargetUnit.name)!}</p>
-              </div> 
-            </div>
-          </div>
-          --]
-          [#-- REPORTING BLOCK --]
-    
-        </div>
-        <br>
-        [#-- capdev with shared cluster specificity --]
-        [#if totalParticipants?number > 0 && year == currentCycleYear && action.hasSpecificities('deliverable_shared_clusters_trainees_active')]
-          <div class="form-group deliverableTypeMessage">
-            <div id="dialog" title="Capacity development" style="display: none">
-                                
-                <div class="borderBox">
-                      [#-- CapDevCharts--]
-                        <div class="form-group row">
-                          <div class="col-md-12" display="flex">                    
-                              <br>
-                              <table id="trainees" class="annual-report-table table-border">
-                              <thead>
-                                <tr>                                                                                                 
-                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.project" /]</th>
-                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.participants" /]</th>        
-                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.females" /]</th>
-                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.africans" /]</th>
-                                  <th id="tb-type" class="color-bg_top_table text-center">[@s.text name="involveParticipants.sharedClusters.youth" /]</th>
-                                </tr>
-                              </thead>
-                              <tbody style="font-size: 24px;">
-                              [#-- Loading --]
-                                  <tr>          
-                                    [#-- Cluster --]
-                                    <td class="text-center">
-                                       <span>${(project.acronym)!''}</span>
-                                    </td>
-                                    [#-- Total Participants --]
-                                    <td class="text-center">
-                                       <span>${(totalOwnParticipants?number?string(",##0"))!0}</span>
-                                    </td>                              
-                                    [#-- Total Females --]
-                                    <td class="text-center">
-                                       <span>${(totalOwnFemales?number?string(",##0"))!0}</span>
-                                    </td>                                      
-                                    [#-- Total Africans --]
-                                    <td class="text-center">
-                                       <span>${(totalOwnAfricans?number?string(",##0"))!0}</span>
-                                    </td>
-                                    [#-- Total Youth --]
-                                    <td class="text-center">                                 
-                                       <span>${(totalOwnYouth?number?string(",##0"))!0}</span>
-                                    </td>
-                                   
-                                    </td>
-                                  </tr>
-                      
-                              </tbody>
-                              </table>                    
-                                                                                  
-                          </div>
-                          <!--<div class="col-md-8">
-                            [#-- Trainees in Short-Term --]
-                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                            <div id="chart12" class="chartBox simpleBox">
-                              [#assign chartData = [
-                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                              ] /] 
-                              <ul class="chartData" style="display:none">
-                                <li>
-                                  <span>[@s.text name="{customLabel}" /]</span>
-                                  <span>[@s.text name="Short-Term" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                </li>
-                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                                  [#list chartData as data]
-                                    <li>
-                                      <span>${data.name}</span>
-                                      <span class="number">${data.value}</span>
-                                      <span>${data.value}</span>
-                                    </li>
-                                  [/#list]
-                                [/#if]
-                              </ul>
-                            </div>
-                            [/#if]
-                            <br />
-                            [#-- Trainees in Long-Term --]
-                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                            <div id="chart13" class="chartBox simpleBox">
-                              [#assign chartData = [
-                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                              ] /] 
-                              <ul class="chartData" style="display:none">
-                                <li>
-                                  <span>[@s.text name="chart13" /]</span>
-                                  <span>[@s.text name="Long-Term" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                  <span>[@s.text name="PhD" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                </li>
-                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                                  [#list chartData as data]
-                                    <li><span>${data.name}</span>
-                                    <span class="number">${data.value}</span>
-                                    <span>${data.value}</span>
-                                    <span class="number">${data.valuePhD}</span>
-                                    <span>${data.valuePhD}</span></li>
-                                  [/#list]
-                                [/#if]
-                              </ul>
-                            </div>
-                            [/#if]
-                          </div>-->
-                        </div>
-                        
-                        [#-- Deliverables Participants & Trainees --]
-                        <div class="form-group">
-                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Trainees" /]</h4>
-                          <div class="viewMoreSyntesis-block">                    
-                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
-                              [@tableParticipantsTrainingsMacroSharedCluster list=(deliverableParticipants)![] /]
-                            </div>
-                          </div>
-                        </div> 
-                </div>  
-              
-            
-            </div> <!-- End dialog-->
-
-            
-            <div class="clearfix"></div>
-          </div>
+        [#else]
+          <strong>${cpiNum(element.value)}</strong>
         [/#if]
-        
-        [#-- capdev without shared cluster specificity --]
-        [#if totalParticipants?number > 0 && year == currentCycleYear && !action.hasSpecificities('deliverable_shared_clusters_trainees_active')]
-          <div class="form-group deliverableTypeMessage">
-            <div id="dialog" title="Capacity development" style="display: none">
-                
-              <!--<h4 class="headTitle"> <a id="capdev">Capacity Development</a></h4>-->
-                <div class="borderBox">
-                      [#-- CapDevCharts--]
-                        <div class="form-group row">
-                          <div class="col-md-12" display="flex">
-                            <div id="" class="simpleBox numberBox col-md-3" >
-                                <label for="">Total of Trainees</label><br />
-                                <span>${(totalParticipants?number?string(",##0"))!0}</span>
-                            </div>
-                            <div id="" class="simpleBox numberBox col-md-3">
-                                <label for="">Total of Females</label><br />
-                                <span>${(totalFemales?number?string(",##0"))!0}</span>
-                            </div>
-                            <div id="" class="simpleBox numberBox col-md-3">
-                                <label for="">Total of Africans</label><br />
-                                <span>${(totalAfricans?number?string(",##0"))!0}</span>
-                            </div>
-                            [#--  
-                            <div id="" class="simpleBox numberBox">
-                                <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
-                                <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                            </div>
-                            --]
-                          </div>
-                          <!--<div class="col-md-8">
-                            [#-- Trainees in Short-Term --]
-                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                            <div id="chart12" class="chartBox simpleBox">
-                              [#assign chartData = [
-                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                              ] /] 
-                              <ul class="chartData" style="display:none">
-                                <li>
-                                  <span>[@s.text name="{customLabel}" /]</span>
-                                  <span>[@s.text name="Short-Term" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                </li>
-                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                                  [#list chartData as data]
-                                    <li>
-                                      <span>${data.name}</span>
-                                      <span class="number">${data.value}</span>
-                                      <span>${data.value}</span>
-                                    </li>
-                                  [/#list]
-                                [/#if]
-                              </ul>
-                            </div>
-                            [/#if]
-                            <br />
-                            [#-- Trainees in Long-Term --]
-                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                            <div id="chart13" class="chartBox simpleBox">
-                              [#assign chartData = [
-                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                              ] /] 
-                              <ul class="chartData" style="display:none">
-                                <li>
-                                  <span>[@s.text name="chart13" /]</span>
-                                  <span>[@s.text name="Long-Term" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                  <span>[@s.text name="PhD" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                </li>
-                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                                  [#list chartData as data]
-                                    <li><span>${data.name}</span>
-                                    <span class="number">${data.value}</span>
-                                    <span>${data.value}</span>
-                                    <span class="number">${data.valuePhD}</span>
-                                    <span>${data.valuePhD}</span></li>
-                                  [/#list]
-                                [/#if]
-                              </ul>
-                            </div>
-                            [/#if]
-                          </div>-->
-                        </div>
-                        
-                        [#-- Deliverables Participants & Trainees --]
-                        <div class="form-group">
-                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Deliverables Trainees" /]</h4>
-                          <div class="viewMoreSyntesis-block">                    
-                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
-                              [@tableParticipantsTrainingsMacro list=(deliverableParticipants)![] /]
-                            </div>
-                          </div>
-                        </div> 
-                </div>  
-              
-            
-            </div> <!-- End dialog-->
-
-            
-            <div class="clearfix"></div>
-          </div>
-        [/#if]
-        
-        
-        
-        [#-- journal --]
-        [#if journalDeliverables?number > 0 && year == currentCycleYear]
-          <div class="form-group deliverableTypeMessage">
-            <div id="dialog" title="Journals Articles" style="display: none">
-                
-              <!--<h4 class="headTitle center"> <a id="capdev">Journal Articles</a></h4>-->
-                <div class="borderBox">
-                      [#-- CapDevCharts--]
-                        <div class="form-group row center">
-                          <div class="col-md-12 center" display="flex">
-                            <div id="" class="simpleBox center numberBox col-md-3" >
-                                <label for="">Total of peer-review research papers</label><br />
-                                <span>${(journalDeliverables?number?string(",##0"))!0}</span>
-                            </div>
-                            
-                            [#--  
-                            <div id="" class="simpleBox numberBox">
-                                <label for="">Participants in [@s.text name="totalParticipantFormalTraining" /]</label><br />
-                                <span>${(totalParticipantFormalTraining?number?string(",##0"))!0}</span>
-                            </div>
-                            --]
-                          </div>
-                          <!--<div class="col-md-8">
-                            [#-- Trainees in Short-Term --]
-                            [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                            <div id="chart12" class="chartBox simpleBox">
-                              [#assign chartData = [
-                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingShortMale)!0}"},
-                                {"name":"Female", "value": "${(totalParticipantFormalTrainingShortFemale)!0}"}
-                              ] /] 
-                              <ul class="chartData" style="display:none">
-                                <li>
-                                  <span>[@s.text name="{customLabel}" /]</span>
-                                  <span>[@s.text name="Short-Term" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                </li>
-                                [#if (((totalParticipantFormalTrainingShortMale)!0) + ((totalParticipantFormalTrainingShortFemale)!0)) > 0 ]
-                                  [#list chartData as data]
-                                    <li>
-                                      <span>${data.name}</span>
-                                      <span class="number">${data.value}</span>
-                                      <span>${data.value}</span>
-                                    </li>
-                                  [/#list]
-                                [/#if]
-                              </ul>
-                            </div>
-                            [/#if]
-                            <br />
-                            [#-- Trainees in Long-Term --]
-                            [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                            <div id="chart13" class="chartBox simpleBox">
-                              [#assign chartData = [
-                                {"name":"Male",   "value": "${(totalParticipantFormalTrainingLongMale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdMale)!0}"}
-                                {"name":"Female", "value": "${(totalParticipantFormalTrainingLongFemale)!0}",   "valuePhD": "${(totalParticipantFormalTrainingPhdFemale)!0}"}
-                              ] /] 
-                              <ul class="chartData" style="display:none">
-                                <li>
-                                  <span>[@s.text name="chart13" /]</span>
-                                  <span>[@s.text name="Long-Term" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                  <span>[@s.text name="PhD" /]</span>
-                                  <span class="json">{"role":"annotation"}</span>
-                                </li>
-                                [#if (((totalParticipantFormalTrainingLongMale)!0) + ((totalParticipantFormalTrainingLongFemale)!0)) > 0 ]
-                                  [#list chartData as data]
-                                    <li><span>${data.name}</span>
-                                    <span class="number">${data.value}</span>
-                                    <span>${data.value}</span>
-                                    <span class="number">${data.valuePhD}</span>
-                                    <span>${data.valuePhD}</span></li>
-                                  [/#list]
-                                [/#if]
-                              </ul>
-                            </div>
-                            [/#if]
-                          </div>-->
-                        </div>
-                        
-                        [#-- Deliverables Participants & Trainees --]
-                        <div class="form-group">
-                          <h4 class="simpleTitle headTitle annualReport-table">[@s.text name="Peer-reviewed research papers owned by this cluster" /]</h4>
-                          <div class="viewMoreSyntesis-block">                    
-                            <div id="Layer1" style="width:100%; min-height:200px height:auto; overflow: auto;"><br>
-                              [@tableJournalsMacro list=(deliverableJournals)![] /]
-                            </div>
-                          </div>
-                        </div> 
-                     </div>  
-              
-            
-            </div> <!-- End dialog-->
-
-            
-            <div class="clearfix"></div>
-          </div>
-        [/#if]
-
-
-        </br>
-        </br>
-        <div class="form-group text-area-container">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-200" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
-              [#if isYearRequired(milestoneYear)]
-                <div class="text-left">
-                  [@popUps.relationsMacro element=projectOutcome labelText=true /]
-                  [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
-                  [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
-                </div>
-              [/#if]
-        </div>
-        [#-- REPORTING BLOCK --]
-        [#if (!action.isUpKeepActive() && !isYearRequired(milestoneYear) && action.isPOWB()) || action.isReportingActive()]
-          <div class="form-group ">
-            [@customForm.textArea help="projectOutcome.narrativeAchieved.helpText" helpIcon=false name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) && reportingActive className="limitWords-200 ${(reportingActive)?string('fieldFocus','')}" editable= reportingActive && (editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
-          </div>
-        [/#if]
-      </div>
-    </div>
-       
+      [#else]
+        <strong>&mdash;</strong>
+      [/#if]
+      <span class="cpi-chip">[@s.text name="projectContributionCrp.inheritedFromOpi" /]</span>
+    </span>
+    [@cpiOpiLink /]
   </div>
 [/#macro]
 
-[#macro milestoneMacroOld element name index isTemplate=false]
-  <div id="milestoneYear-${isTemplate?string('template', index)}" class="milestoneYear simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#-- Milestone content --]
-    [#if isTemplate]
-      [#local year = -1 /]
-      [#local projectMilestone = {} /]
-      [#local projectMilestoneIndex = -1 /]
-    [#else]
-      [#local year = element.year /]
-      [#local projectMilestone = action.getMilestone(element.id, year) /]
-      [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
-    [/#if]
-    
-    [#-- Getting the milestone year --]
-    [#local hasExtendedYear = (element.extendedYear?has_content) && (element.extendedYear != -1)]
-    [#local milestoneYear =  (element.year)!currentCycleYear ]
-    [#if hasExtendedYear]
-      [#local milestoneYear =  element.extendedYear ]
-    [/#if]
-    
-    [#local isNewAtReporting =  reportingActive && (!(projectMilestone.narrativeTarget?has_content))!true]
+[#-- One period target: the three values and the two narratives the cluster reports for a
+     single milestone, whether that milestone is the indicator's own statement or one of
+     its disaggregated targets.
 
+     Which field is open follows the phase that owns it -- the PMC target is set in AWPB,
+     the expected value in planning, the achieved value in the annual report -- and, on top
+     of that, only the period of the current cycle can be edited at all; earlier and later
+     periods stay read-only so a closed cycle is never rewritten from here.
 
-    [#-- Remove Button --]
-    [#--  if editable && (!reportingActive || isNewAtReporting) && (milestoneYear gte currentCycleYear)!true]<div class="removeElement removeIcon removeProjectMilestone" title="Remove"></div>[/#if --]
-    <div class="leftHead sm">
-      <span class="index">${(element.code)!'Empty Code'}</span>
-      [#-- <span class="elementId">[@s.text name="projectOutcomeMilestone.projectMilestoneTarget" /]</span>--]
-    </div>
-
-
-    [#local showMilestoneValue = element.srfTargetUnit??  && element.srfTargetUnit.id?? && (element.srfTargetUnit.id != -1) /]
-    [#local prefilled]<p style="opacity:0.6">[@s.text name="form.values.fieldEmpty" /]</p>[/#local]
-    
-    [#-- Milestone Title --]
-    <div class="form-group grayBox">
-      [#if showMilestoneValue]
-        <div class="form-group pull-right">
-          <strong>Overall AICCRA target to ${(element.year)!}:</strong> ${(element.value?string(",##0"))!}
-        </div>
-      [/#if]
-      [#-- Milestone Year 
-      <div class="row">
-        <div class="col-md-6">
-          <strong>Milestone for <span class="crpMilestoneYear">${(element.year)!} [#if hasExtendedYear] Extended to ${(element.extendedYear)!}[/#if]  </span> </strong> 
-        </div>
-      </div>
-      --]
-      [#--  Title --]
-      <div class="form-group">
-        <span class="title">${(element.title)!}</span>
-      </div>
-      [#if action.hasSpecificities('impact_pathway_cross_cutting_markets_active')]
-	      [#--  Means of verification
-	      <div class="form-group">
-	        <strong>[@s.text name="outcome.milestone.powbMilestoneVerification" /]</strong>
-	        <br /> [#if (element.powbMilestoneVerification?has_content)!false]${element.powbMilestoneVerification}[#else]${prefilled}[/#if]
-	      </div>
-	       --]
-	      [#-- DAC Markers --]
-	      <div class="form-group row">
-	        <div class="col-md-3"><strong>Gender</strong> <br /> ${(element.genderFocusLevel.powbName)!prefilled} </div>
-	        <div class="col-md-3"><strong>Youth</strong> <br /> ${(element.youthFocusLevel.powbName)!prefilled}</div>
-	        <div class="col-md-3"><strong>CapDev</strong> <br /> ${(element.capdevFocusLevel.powbName)!prefilled}</div>
-	        <div class="col-md-3"><strong>Climate Change</strong> <br /> ${(element.climateFocusLevel.powbName)!prefilled}</div>
-	      </div>
-      [/#if]
-    </div>
-    
-    <div role="tabpanel" class="tab-pane [#if milestoneYear == currentCycleYear]active[/#if]" id="milestoneYear${index}-${milestoneYear}">
-      [#local customName = "${name}[${projectMilestoneIndex}]" /]
-      <div class="outcomeMilestoneYear">
-        [#-- Hidden inputs --]
-        <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
-        <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" class="year" />
-        <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
-                
-        
-        <div class="row form-group milestoneTargetValue" style="display:${showMilestoneValue?string('block', 'none')}">
-          <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=false editable=action.canAccessSuperAdmin() && isYearRequired(milestoneYear) help="projectOutcomeMilestone.pmcValue.helpText" helpIcon=true/]
-          </div>
-          
-          <div class="col-md-4 input-container">
-            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text"  placeholder="" className="targetValue targetValueNumber" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) && !reportingActive && isYearRequired(milestoneYear) && (milestoneYear gte currentCycleYear)!true /]
-          </div>
-          
-          <div class="col-md-4 input-container">
-          	[@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=isYearRequired(milestoneYear) && reportingActive editable= (editable || isTemplate) && isYearRequired(milestoneYear) /]
-          </div>
- 
-          [#-- REPORTING BLOCK --]
-          [#if reportingActive]
-          <div class="col-md-4">
-            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text"  placeholder="" className=" ${reportingActive?string('fieldFocus','')}" required=isYearRequired(milestoneYear) editable=(editable || isTemplate) /]
-          </div>
-          [/#if]
-        </div>
-        <br>
-        
-        <div class="form-group text-area-container">
-          [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isYearRequired(milestoneYear) className="limitWords-200" editable=(editable || isTemplate) && !reportingActive && (milestoneYear gte currentCycleYear)!true help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false/]
-              [#if isYearRequired(milestoneYear)]
-                <div class="text-left">
-                  [@popUps.relationsMacro element=projectOutcome labelText=true /]
-                  [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
-                  [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
-                </div>
-              [/#if]
-        </div>
-        [#-- REPORTING BLOCK --]
-        [#if reportingActive]
-        <div class="form-group">
-          [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=isYearRequired(milestoneYear) className="limitWords-100 ${(reportingActive)?string('fieldFocus','')}" editable=(editable || isTemplate) &&( milestoneYear gte currentCycleYear)!true /]
-        </div>
-        [/#if]
+     Every field is rendered even when it is closed: customForm keeps a hidden input
+     carrying the stored value, and ProjectOutcomeAction.saveMilestones() writes back
+     whatever the form posts, so a field left out of the markup would be saved as empty. --]
+[#-- One additional question: the statement configured in Overall Performance
+     Indicators, numbered, with the cluster's answer underneath. The question is
+     the field's label, so customForm's own label is suppressed and the required
+     marker is rendered next to the statement instead. --]
+[#macro cpiQuestion element index]
+  [#local projectOutcomeIndicator = action.getIndicator(element.id) /]
+  [#local customName = "projectOutcome.indicators[${index}]" /]
+  [#local canAnswer = editable && cpiAnswerQuestions /]
+  <div class="cpi-question">
+    <span class="cpi-question__n">${index + 1}</span>
+    <div class="cpi-question__body">
+      <span class="cpi-question__text">
+        [#-- decodeHTML is the functional class (global.js unescapes the stored HTML).
+             trumbowyg-editor is the editor's own chrome -- inset shadow, 80px
+             min-height, 10px padding and a forced #505050 -- so it is left out. --]
+        <span class="decodeHTML">${(element.indicator)!}</span>
+        [#if canAnswer]<span class="cpi-question__req">*</span>[/#if]
+      </span>
+      <input type="hidden" name="${customName}.id" value="${(projectOutcomeIndicator.id)!}" />
+      <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" />
+      <div class="cpi-field cpi-field--text ${canAnswer?string('is-edit','is-read')}">
+        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-150" editable=canAnswer showTitle=false fieldEmptyText="projectContributionCrp.notAnswered" /]
       </div>
     </div>
-       
   </div>
+[/#macro]
+
+[#macro cpiMilestoneFields element year isPrincipal=false]
+  [#local projectMilestone = action.getMilestone(element.id, year) /]
+  [#local projectMilestoneIndex = action.getIndexMilestone(element.id, year) /]
+  [#local customName = "projectOutcome.milestones[${projectMilestoneIndex}]" /]
+
+  [#-- An extended milestone reports against the year it was extended to. --]
+  [#local milestoneYear = (element.year)!currentCycleYear /]
+  [#if (element.extendedYear?has_content) && (element.extendedYear != -1)]
+    [#local milestoneYear = element.extendedYear /]
+  [/#if]
+
+  [#local isCurrentPeriod = isYearRequired(milestoneYear) /]
+
+  [#-- ═══ A2-2439 · which field the cycle owns ═══════════════════════
+       MARLO has no "Progress" phase description: the mid-year cycle is a
+       Planning phase carrying upkeep = 1, so the three AICCRA cycles are told
+       apart as AWPB (Planning, no upkeep), Progress (Planning, upkeep) and
+       AR (Reporting).
+
+         field                 AWPB      Progress   AR
+         end-year target PMC   read      read       read     (admin / PMU: edit)
+         expected end-year     edit      edit       read
+         narrative contrib.    edit      edit       read
+         achieved value        hidden    optional   required
+         narrative achieved    hidden    optional   required
+
+       Legacy CRPs keep their own rules: their UpKeep phase exists precisely so
+       reported figures can still be corrected, and 15 of them still have one
+       open, so only AICCRA takes the cycle above.
+
+       Each default is resolved on its own line. FreeMarker's `!` default binds
+       looser than `&&`, so `(x)!false && y` reads as `x ! (false && y)` -- the
+       default swallows the rest of the expression and y is dropped. --]
+  [#local isAiccraRules = (action.isAiccra())!false /]
+  [#local isUpkeepCycle = (action.isUpKeepActive())!false /]
+  [#local isPlanningCycle = (action.isPlanningActive())!false /]
+  [#local isAwpbCycle = isAiccraRules && isPlanningCycle && !isUpkeepCycle /]
+
+  [#-- The PMC target is the programme's own figure: every user reads it in every
+       cycle, and only an administrator or the PMU edits it. saveMilestones() holds
+       the same rule through canEditPmcTarget(), so an edit made here is kept. --]
+  [#local isSuperAdmin = (action.canAccessSuperAdmin())!false /]
+  [#local isCrpAdmin = (action.canEditCrpAdmin())!false /]
+  [#local isPmu = (action.isPMU())!false /]
+  [#local isAdminOrPmu = isSuperAdmin || isCrpAdmin || isPmu /]
+  [#local achievedPhase = reportingActive || isUpkeepCycle /]
+  [#local showAchieved = !isAwpbCycle /]
+
+  [#-- A hidden field is still rendered: customForm leaves an input carrying the
+       stored value, and saveMilestones() writes expectedValue and achievedValue
+       back in every phase, outside its planning/reporting branches. Dropping the
+       markup would post nothing and blank the stored figure. --]
+  [#local canSetted = editable && isCurrentPeriod && isAiccraRules?then(isAdminOrPmu, isSuperAdmin) /]
+  [#local canExpected = editable && !reportingActive && isCurrentPeriod /]
+  [#local canNarrative = editable && !reportingActive && isCurrentPeriod /]
+  [#local canAchieved = editable && achievedPhase && isCurrentPeriod /]
+  [#-- Progress takes the achieved figure as an early read, so it is optional there
+       and only the annual report requires it. ProjectOutcomeValidator holds the same
+       rule, so the form and the missing-fields check agree. --]
+  [#local achievedRequired = isCurrentPeriod && isAiccraRules?then(reportingActive, achievedPhase) /]
+
+  [#-- A disaggregated target whose unit is a percentage reports shares of the
+       principal target's figures. projectContributionCrpRedesign.js resolves each
+       value against the principal's value of the same field and period. --]
+  [#local isPct = !isPrincipal && cpiIsPercentage(element) /]
+
+  <div class="cpi-fields" data-cpi-role="${isPrincipal?string('principal','dt')}"[#if isPct] data-cpi-pct="true"[/#if]>
+    <input type="hidden" name="${customName}.id" value="${(projectMilestone.id)!}" />
+    <input type="hidden" name="${customName}.year" class="crpMilestoneYearInput" value="${(year)!}" />
+    <input type="hidden" name="${customName}.crpMilestone.id" value="${(element.id)!}" class="crpMilestoneId" />
+
+    <div class="cpi-fields__top">
+      <div class="cpi-fields__main">
+        [#if isPrincipal]
+          <div class="cpi-pane__head">
+            <span class="cpi-pane__headline">
+              [@s.text name="projectContributionCrp.overallTargetTo" /] ${year?c}:
+              <strong>[#if (element.value)?has_content]${element.value?string(",##0")}[#else]&mdash;[/#if]</strong>
+              <span class="cpi-chip">[@s.text name="projectContributionCrp.inheritedFromOpi" /]</span>
+            </span>
+          </div>
+        [/#if]
+        <div class="cpi-fields__values"[#if !showOutcomeValue] style="display:none"[/#if]>
+          [#-- The label is drawn here rather than by customForm so the help sits on the
+               label's own line, right of the text. customForm prints its help as an
+               <img title> after a block label, which drops it onto a line of its own,
+               and only while the field is editable. --]
+          <div class="cpi-field ${canSetted?string('is-edit','is-read')}">
+            <span class="cpi-field__label">
+              <label for="${customName}.settedValue" class="${canSetted?string('editable','readOnly')}">[@s.text name="projectOutcomeMilestone.settedValue" /]:</label>
+              [@cpiHelp key="projectOutcomeMilestone.pmcValue.helpText" /]
+            </span>
+            [@customForm.input name="${customName}.settedValue" i18nkey="projectOutcomeMilestone.settedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=false editable=canSetted showTitle=false /]
+            [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="settedValue" aria-live="polite"></span>[/#if]
+            <span class="cpi-field__note">[@s.text name="projectContributionCrp.pmcNote" /]</span>
+          </div>
+          <div class="cpi-field ${canExpected?string('is-edit', (reportingActive || !isCurrentPeriod)?string('is-read','is-locked'))}">
+            [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=isCurrentPeriod editable=canExpected /]
+            [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="expectedValue" aria-live="polite"></span>[/#if]
+            [#if !canExpected && !isCurrentPeriod]<span class="cpi-field__note">[@s.text name="projectContributionCrp.otherPeriod" /]</span>[/#if]
+          </div>
+          <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
+            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=achievedRequired editable=canAchieved /]
+            [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="achievedValue" aria-live="polite"></span>[/#if]
+            [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
+          </div>
+        </div>
+      </div>
+
+      [#-- Evidence already linked to the indicator: the headline's companion, so it only
+           appears on the principal target of the period being reported. --]
+      [#if isPrincipal && isCurrentPeriod]
+        <div class="cpi-fields__relations">
+          [@popUps.relationsMacro element=projectOutcome labelText=true /]
+          [@popUps.relationsMacro element=projectOutcome tag="expectedOutcomes" labelText=true /]
+          [@popUps.relationsMacro element=projectOutcome tag="innovationOutcomes" labelText=true /]
+        </div>
+      [/#if]
+    </div>
+
+    <div class="cpi-field cpi-field--text ${canNarrative?string('is-edit','is-read')}">
+      [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isCurrentPeriod className="limitWords-200" editable=canNarrative help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false /]
+    </div>
+    <div class="cpi-field cpi-field--text ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
+      [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=achievedRequired className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=canAchieved /]
+      [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
+    </div>
+  </div>
+[/#macro]
+
+[#-- A field's help, as a quiet icon beside its label. The text reaches the reader
+     through the app-wide jQuery UI tooltip, which every [title] gets on hover and on
+     keyboard focus. s.text hands back the key itself when a program has no text for
+     it, so an untranslated key renders nothing rather than a tooltip reading the key. --]
+[#macro cpiHelp key]
+  [#local text][@s.text name=key /][/#local]
+  [#local plain = (text?is_markup_output)?then(text?markup_string, text)?trim /]
+  [#if plain?has_content && plain != key]
+    <span class="cpi-help" tabindex="0" role="img" aria-label="${text}" title="${text}">?</span>
+  [/#if]
 [/#macro]
 
 [#macro nextUserMacro element name index isTemplate=false]
@@ -1249,28 +761,6 @@
         </div>
       [/#if]
       --]
-  </div>
-[/#macro]
-
-[#macro baselineAiccraPrevIndicatorMacro element name index isTemplate=false AREditable=true]
-  <div id="baselineIndicator-${isTemplate?string('template', index)}" class="baselineIndicator simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local indexIndicator = action.getPrevIndexIndicator(element.id) /]
-    [#local projectOutcomePrevIndicator  = action.getPrevIndicator(element.id) /]
-    [#local customName = "${name}[${indexIndicator}]" /]
-    <div class="leftHead gray sm">
-      <span class="index">${index+1}</span>
-    </div>
-    <div class="form-group grayBox">
-      <div class="decodeHTML trumbowyg-editor">${(element.indicator)!}</div>
-    </div>
-    <input type="hidden" name="${customName}.id" value="${(projectOutcomePrevIndicator.id)!}" >
-    <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomePrevIndicator.crpProgramOutcomeIndicator.id)!}" >
-        
-      <div class="form-group ">
-        [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomePrevIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && AREditable/]
-        [#-- && !reportingActive  --]
-      </div>
-
   </div>
 [/#macro]
 

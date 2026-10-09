@@ -851,6 +851,17 @@ input.target {
 input.targetValueNumber{
 	text-align: right;
 	position: relative;
+	/* Room for the unit chip, so a right-aligned value does not run under it. */
+	padding-right: 34px;
+}
+
+/* The unit chip below is absolutely positioned, so the wrapper that owns it has
+   to be its containing block. Without this it anchors to whatever ancestor
+   happens to be positioned - a bootstrap .col-* if there is one, otherwise the
+   page .container, where bottom: 0 drops it at the foot of the section. */
+.input:has(input[type="text"].targetValueNumber),
+.input:has(input[type="number"].targetValueNumber) {
+	position: relative;
 }
 
 .input:has(input[type="text"].targetValueNumber)::after {
@@ -860,6 +871,7 @@ input.targetValueNumber{
 	background-color: #a39e9e1c;
 	position: absolute;
 	bottom: 0;
+	right: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -867,12 +879,13 @@ input.targetValueNumber{
 }
 
 .input:has(input[type="number"].targetValueNumber)::after {
-	content: attr(data-targetunit) '#';
+	content: attr(data-targetunit) '';
 	height: 27px;
 	width: 27px;
 	background-color: #a39e9e1c;
 	position: absolute;
 	bottom: 0;
+	right: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -9342,3 +9355,127 @@ img.qaOptionsComment {
 	}
 
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * Cluster menu (A2-2439 redesign).
+ * menu-projects.ftl tags its nav with .clusterMenu, so these rules reach every
+ * screen of the cluster module and no other: #secondaryMenu on its own is also
+ * the admin, POWB, annual report and impact pathway sidebars.
+ * ────────────────────────────────────────────────────────────────────────── */
+#secondaryMenu.clusterMenu {
+  /* #secondaryMenu sets 'Open Sans', which this page never loads: the fallback
+     face has no 500, so 400 and 500 rendered identically. header.ftl already
+     loads Figtree 400/500/600/700. */
+  font-family: Figtree, 'Open Sans', sans-serif;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EF;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  padding: 14px 12px;
+}
+#secondaryMenu.clusterMenu > p {
+  margin: 0 2px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #0277A2;
+  line-height: 1.2;
+}
+#secondaryMenu.clusterMenu > p small {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6B7280;
+}
+#secondaryMenu.clusterMenu p.menuTitle {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  margin: 12px 0 3px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #0277A2;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #fff;
+  text-transform: none;
+}
+#secondaryMenu.clusterMenu ul { list-style: none; padding: 0; margin: 0; }
+#secondaryMenu.clusterMenu ul ul li {
+  font-weight: 400;
+  margin: 0 0 3px;
+  border: 1px solid #EEF2F5;
+  border-radius: 7px;
+  background: #fff;
+}
+#secondaryMenu.clusterMenu ul ul li > a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 5px 8px 5px 10px !important;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #1F2A37;
+}
+
+/* The sprite rules above are (1,1,5), so the reset has to reach that weight or
+ * the old icon keeps showing through the badge. */
+#secondaryMenu.clusterMenu ul li > ul li.submitted > a,
+#secondaryMenu.clusterMenu ul li > ul li.toSubmit > a {
+  background-image: none;
+}
+
+/* Section status, drawn the way the design and the OPI sidebar draw it:
+ * complete reuses .opi-menu__badge.is-ok, still-to-fill is the amber dot. */
+#secondaryMenu.clusterMenu ul ul li.submitted > a::after,
+#secondaryMenu.clusterMenu ul ul li.toSubmit > a::after {
+  content: '';
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#secondaryMenu.clusterMenu ul ul li.submitted > a::after {
+  content: '\2713';
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #EDF7ED;
+  border: 1px solid #BEE0BE;
+  color: #2E6B2F;
+  font: 500 12px Figtree, sans-serif;
+}
+#secondaryMenu.clusterMenu ul ul li.toSubmit > a::after {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #F3DCAF;
+  background: #FDF3E4 radial-gradient(circle at center, #875703 0 2.5px, rgba(0, 0, 0, 0) 2.6px);
+}
+#secondaryMenu.clusterMenu ul ul li.currentSection {
+  background: #F2F9FC;
+  border-color: #BEDFEC;
+}
+
+/* Two legacy rules shrink single items with !important -- 0.95em on the active
+ * "Contribution to Performance Indicators" link and 0.88em on the LP6 one -- so
+ * those two rows rendered a size smaller than the rest. The redesigned rows wrap
+ * on their own, so the sizing is normalised back here, and the bold the old
+ * current-section rule sets on the <li> comes down with it. */
+#secondaryMenu.clusterMenu ul ul li,
+#secondaryMenu.clusterMenu ul ul li > a,
+#secondaryMenu.clusterMenu ul ul li.currentSection > a {
+  font-size: 12.5px !important;
+}
+#secondaryMenu.clusterMenu ul li ul > li.currentSection {
+  font-weight: 400;
+}
+#secondaryMenu.clusterMenu ul ul li.currentSection > a {
+  font-weight: 500;
+  color: #015C7D;
+}
+#secondaryMenu.clusterMenu ul ul li.disabled > a { color: #9AA4B0; }

@@ -149,6 +149,9 @@ function processTasks(tasks,id,button) {
   }
   var completed = 0;
   var index = 0;
+  // What each section answered, kept so a section that presents the result itself gets the
+  // fields the validator flagged and not just the tally.
+  var results = [];
   $(button).fadeOut(function() {
     $(button).next().fadeIn();
   });
@@ -171,6 +174,11 @@ function processTasks(tasks,id,button) {
             if(jQuery.isEmptyObject(data)) {
               $sectionMenu.removeClass('submitted');
             } else {
+              results.push({
+                  sectionName: sectionName,
+                  missingFields: data.section.missingFields,
+                  invalidFields: data.section.invalidFields || {}
+              });
               if(data.section.missingFields == "") {
                 $sectionMenu.addClass('submitted').removeClass('toSubmit');
                 completed++;
@@ -188,7 +196,16 @@ function processTasks(tasks,id,button) {
             $(button).next().progressbar("value", index + 1);
             index++;
             if(index == tasksLength) {
-              if(completed == tasksLength) {
+              // A section can take the result over and present it its own way. The OPI redesign
+              // does: it paints the flagged fields inline and reports through a live region, and
+              // it has no green check marks to send anyone looking for. Every other section --
+              // clusterActivities included -- falls through to the dialogs below, unchanged.
+              if(typeof window.impactPathwayValidationReport === 'function') {
+                window.impactPathwayValidationReport(results, completed == tasksLength);
+                $(button).next().fadeOut(function() {
+                  $(button).fadeIn("slow").on('click', validateButtonEvent);
+                });
+              } else if(completed == tasksLength) {
                 var notyOptions = jQuery.extend({}, notyDefaultOptions);
                 notyOptions.text = 'The program impact pathway can be submmited now';
                 notyOptions.type = 'success';

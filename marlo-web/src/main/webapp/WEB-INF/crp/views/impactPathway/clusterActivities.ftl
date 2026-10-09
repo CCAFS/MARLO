@@ -6,7 +6,7 @@
   "${baseUrlCdn}/global/js/usersManagement.js?20260925", 
   "${baseUrlMedia}/js/impactPathway/programSubmit.js", 
   "${baseUrlCdn}/global/js/autoSave.js", 
-  "${baseUrlCdn}/global/js/impactGraphic.js",
+  "${baseUrlCdn}/global/js/impactGraphic.js?20261006",
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlMedia}/js/impactPathway/clusterActivities.js?20202710"
   ] 
