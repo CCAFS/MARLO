@@ -7,7 +7,7 @@
   "${baseUrlMedia}/js/impactPathway/output.js", 
   "${baseUrlCdn}/global/js/fieldsValidation.js", 
   "${baseUrlCdn}/global/js/autoSave.js",
-  "${baseUrlCdn}/crp/js/projects/projectPartners.js"
+  "${baseUrlCdn}/crp/js/projects/projectPartnersCenter.js?20261009"
   ] 
 /]
 [#assign customCSS = [

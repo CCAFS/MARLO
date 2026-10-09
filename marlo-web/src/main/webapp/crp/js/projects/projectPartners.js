@@ -1,19 +1,37 @@
-var $removePartnerDialog, $projectPPAPartners;
+var $partnersBlock, $projectPPAPartners;
 var canUpdatePPAPartners, allPPAInstitutions, partnerPersonTypes, leaderType, coordinatorType, defaultType, partnerRespRequired;
+var partnerOfficeRequired, managingContactsRequired, projectEditLeader, permissionLeader, permissionCoordinator;
 var projectLeader;
 var lWordsResp = 100;
+
+/* A2-2440 redesign state */
+var ptnText = {};
+var ptnFilter = 'all';
+var ptnDirtyFields = {};
+var ptnDirtyOps = 0;
+var ptnToastTimer = null;
+var ptnUndo = null;
+// The contact row created by an "Add ..." button while the users popup is open. It is
+// dropped again when the popup closes without a pick.
+var ptnPendingContact = null;
+var ptnRoleOrder = ['PL', 'PC', 'CP'];
 
 $(document).ready(init);
 
 function init() {
 
   // Setting global variables
-  $removePartnerDialog = $('#partnerRemove-dialog');
   $partnersBlock = $('#projectPartnersBlock');
   $projectPPAPartners = $('#projectPPAPartners');
   allPPAInstitutions = JSON.parse($('#allPPAInstitutions').val());
   canUpdatePPAPartners = ($("#canUpdatePPAPartners").val() === "true");
   partnerRespRequired = ($("#partnerRespRequired").val() === "true");
+  partnerOfficeRequired = ($("#partnerOfficeRequired").val() === "true");
+  managingContactsRequired = ($("#managingContactsRequired").val() === "true");
+  projectEditLeader = ($("#projectEditLeader").val() === "true");
+  permissionLeader = ($("#permissionLeader").val() === "true");
+  permissionCoordinator = ($("#permissionCoordinator").val() === "true");
+  ptnText = ptnReadText($('#ptn-i18n')[0]);
   leaderType = 'PL';
   coordinatorType = 'PC';
   defaultType = 'CP';
@@ -28,46 +46,46 @@ function init() {
     if(!canUpdatePPAPartners) {
       removePPAPartnersFromList('#projectPartner-template .institutionsList');
     }
-    // Update initial project CCAFS partners list for each partner
-    updateProjectPPAPartnersLists();
-
   }
-  // Activate the chosen to the existing partners
+  // Update initial project managing partners list for each partner
+  updateProjectPPAPartnersLists();
+
+  // Activate the select2 to the existing partners
   addSelect2();
 
-  addUser = function(composedName,userId) {
-    var $contact = $elementSelected.parents('.contactsPerson ').find('input[value="' + userId + '"]');
-
-    if(!$contact.exists()) {
-      $elementSelected.parents('.userField ').find("input.userName").val(composedName).addClass('animated flash');
-      $elementSelected.parents('.userField ').find("input.userId").val(userId);
-    } else {
-      var notyOptions = jQuery.extend({}, notyDefaultOptions);
-      notyOptions.text = 'Contact person cannot be repeated';
-      noty(notyOptions);
-    }
+  // The users popup writes the picked person into the contact row it was opened from
+  addUser = function(composedName,userId,user) {
+    ptnPickUser($elementSelected.closest('.contactPerson'), composedName, userId, user || {});
     dialog.dialog("close");
-  }
+  };
 
   // This function enables launch the pop up window
   popups();
   // Attaching listeners
   attachEvents();
 
-  // Set the unique person as leader
- /*
-   * if(editable){ var contactPeople = $partnersBlock.find('.projectPartner'); if ((contactPeople.length == 1)){ var
-   * person = new PartnerPersonObject(contactPeople); person.setPartnerType(leaderType); person.changeType(); } }
-   */
+  // The design's save bar carries only the save state: the shared last-edit message goes
+  $('.ptn-saveBar #lastUpdateMessage').remove();
 
-  $('.loadingBlock').hide().next().fadeIn(500, function() {
+  // The help text keeps its first paragraph in view; the rest (the role descriptions some
+  // global units append after a line break) waits behind "View more" with the legend.
+  ptnSplitHelpText();
+
+  $('.loadingBlock').hide();
+  $('.ptn-content').fadeIn(300, function() {
     // Missing fields in parter person
     $("form .projectPartner ").each(function(i,e) {
       verifyMissingFields(e);
     });
-    showHelpText();
-    setViewMore();
   });
+
+  ptnRefreshAll();
+  ptnRegisterCheckDetails();
+
+  // A section with no partner opens straight on a new one
+  if(editable && $('.addProjectPartner').exists() && !ptnCards().exists()) {
+    ptnStartDraft();
+  }
 
   $("textarea[id!='justification']").autoGrow();
 }
@@ -77,31 +95,60 @@ function attachEvents() {
   /**
    * General
    */
+  var $page = $('.ptn');
 
-  $('.blockTitle').on('click', function() {
-    if($(this).hasClass('closed')) {
-      $('.blockContent').slideUp();
-      $('.blockTitle').removeClass('opened').addClass('closed');
-      $(this).removeClass('closed').addClass('opened');
-    } else {
-      $(this).removeClass('opened').addClass('closed');
-    }
+  // Expand / collapse one partner
+  $page.on('click', '.projectPartner [data-ptn-toggle]', function(e) {
+    e.preventDefault();
+    var $card = $(this).closest('.projectPartner');
+    ptnSetOpen($card, !$card.hasClass('is-open'));
+    ptnRefreshExpandLabel();
+  });
 
-    $(this).next().slideToggle(500, function() {
-      $(this).find('textarea').autoGrow();
-      $(this).find(".errorTag").hide();
-      $(this).find(".errorTag").css("left", $(this).outerWidth());
-      $(this).find(".errorTag").fadeIn(1000);
-
-      // Scroll to selected partner
-      $('html, body').animate({scrollTop: $(this).offset().top - 100}, 500);
+  // Expand / collapse every visible partner
+  $page.on('click', '[data-ptn-expand-all]', function() {
+    var $visible = ptnCards().filter(':visible');
+    var open = $visible.filter(':not(.is-open)').length > 0;
+    $visible.each(function() {
+      ptnSetOpen($(this), open);
     });
+    ptnRefreshExpandLabel();
+  });
+
+  // Legend behind "View more"
+  $page.on('click', '[data-ptn-legend-toggle]', function() {
+    var $legend = $('#ptn-legend');
+    var open = $legend.is('[hidden]');
+    $legend.prop('hidden', !open);
+    var $extra = $('[data-ptn-note-extra]');
+    $extra.prop('hidden', !open || !$.trim($extra.text()));
+    $(this).attr('aria-expanded', open).text($(this).data(open ? 'labelLess' : 'labelMore'));
+  });
+
+  // Partner type filter
+  $page.on('click', '[data-ptn-filter]', function() {
+    ptnFilter = $(this).data('ptnFilter');
+    $page.find('[data-ptn-filter]').each(function() {
+      var on = $(this).data('ptnFilter') === ptnFilter;
+      $(this).toggleClass('is-on', on).attr('aria-pressed', on);
+    });
+    ptnApplyFilters();
+  });
+  $page.on('click', '[data-ptn-clear-filters]', function() {
+    $('#partnersSearch').val('');
+    $page.find('[data-ptn-filter="all"]').trigger('click');
   });
 
   $('.button-save').on('click', function(e) {
+    // A new partner with no organization yet holds nothing to save
+    ptnCards().filter('.is-draft').each(function() {
+      if(!ptnHasOrganization($(this))) {
+        ptnCancelDraft($(this));
+      }
+    });
     var missingFields = 0
     $('form select.institutionsList').each(function(i,e){
-      if(!e.value){
+      if(!e.value || e.value == "-1"){
         missingFields++;
       }
     });
@@ -122,7 +169,7 @@ function attachEvents() {
    * Project partner Events
    */
   // Filter the partner blocks by organization name or contact person
-  $('#partnersSearch').on('input', filterPartnersBySearch);
+  $('#partnersSearch').on('input', ptnApplyFilters);
   // The search box lives inside the section form, so Enter would submit (and save) the whole section
   $('#partnersSearch').on('keydown', function(e) {
     if(e.which === 13) {
@@ -132,12 +179,26 @@ function attachEvents() {
   // Add a project partner Event
   $(".addProjectPartner").on('click', addPartnerEvent);
   // Remove a project partner Event
-  $(".removePartner").on('click', removePartnerEvent);
-  // When Partner Type change
-  $("select.partnerTypes, select.countryList").change(updateOrganizationsList);
+  $page.on('click', '.removePartner', removePartnerEvent);
+  $page.on('click', '[data-ptn-confirm-cancel]', function() {
+    ptnHideConfirm($(this).closest('.projectPartner'));
+  });
+  $page.on('click', '[data-ptn-confirm-ok]', function() {
+    var $card = $(this).closest('.projectPartner');
+    ptnHideConfirm($card);
+    ptnRemovePartner($card);
+  });
+  // New partner (draft) actions
+  $page.on('click', '[data-ptn-draft-cancel]', function() {
+    ptnCancelDraft($(this).closest('.projectPartner'));
+  });
+  $page.on('click', '[data-ptn-draft-commit]', function() {
+    ptnCommitDraft($(this).closest('.projectPartner'));
+  });
   // When organization change
-  $("select.institutionsList").on("change", function(e) {
-    var partner = new PartnerObject($(this).parents('.projectPartner'));
+  $page.on("change", "select.institutionsList", function(e) {
+    var $card = $(this).closest('.projectPartner');
+    var partner = new PartnerObject($card);
     // Update Partner Title
     partner.updateBlockContent();
 
@@ -155,7 +216,7 @@ function attachEvents() {
           partner.clearCountries();
 
           $(partner.countriesSelect).empty();
-          $(partner.countriesSelect).addOption(-1, "Select a country...");
+          $(partner.countriesSelect).addOption(-1, ptnText.countryAdd || "Select a country...");
 
           // Validate if the current partner is not selected, then add the countries
           if(!($('input.institutionsList[value=' + partner.institutionId + ']').exists())) {
@@ -164,74 +225,29 @@ function attachEvents() {
               if((branch.name).indexOf("HQ") != "-1") {
                 partner.addCountry({
                     iso: branch.iso,
-                    name: branch.name
+                    name: branch.name,
+                    auto: true
                 });
               } else {
                 $(partner.countriesSelect).addOption(branch.iso, branch.name);
               }
             });
           }
-
-          $(partner.countriesSelect).trigger("change.select2");
         },
         complete: function() {
           partner.stopLoader();
+          ptnRefreshCard($card);
         }
     });
 
     // Update PPA Partners List
     updateProjectPPAPartnersLists(e);
+    ptnRefreshCard($card);
   });
-  // Partnership Geographic Scope
-  $(".geographicScopeSelect").on('change', function(){
-    var $partner = $(this).parents('.projectPartner');
-    var $regionalBlock = $partner.find('.regionalBlock');
-    var $nationalBlock = $partner.find('.nationalBlock');
-
-    var isRegional = this.value == 2;
-    var isMultiNational = this.value == 3;
-    var isNational = this.value == 4;
-    var isSubNational = this.value == 5;
-
-    // Regions
-    if(isRegional){
-      $regionalBlock.show();
-    }else{
-      $regionalBlock.hide();
-    }
-
-    // Countries
-    $nationalBlock.find("select").val(null).trigger('change');
-    if(isMultiNational || isNational || isSubNational){
-      if (isMultiNational){
-        $nationalBlock.find("select").select2({
-          maximumSelectionLength: 0,
-          placeholder: "Select a country(ies)",
-          templateResult: formatStateCountries,
-          templateSelection: formatStateCountries,
-          width: '100%'
-        });
-      }else{
-        $nationalBlock.find("select").select2({
-          maximumSelectionLength: 1,
-          placeholder: "Select a country(ies)",
-          templateResult: formatStateCountries,
-          templateSelection: formatStateCountries,
-          width: '100%'
-        });
-      }
-      $nationalBlock.show();
-    }else{
-      $nationalBlock.hide();
-    }
-
-  });
-  // Partners filters
-  $(".filters-link span").on("click", filterInstitutions);
 
   // Location Elements events
-  $(".countriesList").on('change', addLocElementCountry);
-  $('.removeLocElement').on('click', removeLocElement);
+  $page.on('change', '.countriesList', addLocElementCountry);
+  $page.on('click', '.removeLocElement', removeLocElement);
 
   // Request country office
   $('#requestModal').on(
@@ -264,21 +280,10 @@ function attachEvents() {
           $modal.find('.loading').fadeIn();
         },
         success: function(data) {
-          console.log(data);
           if(data.sucess.result == "1") {
             // Hide Form & button
             $modal.find('form, .requestButton').hide();
             $modal.find('.messageBlock').show();
-
-            // Noty Message
-            /*
-             * var message = $modal.find('.messageBlock .notyMessage').html(); var notyOptions = jQuery.extend({},
-             * notyDefaultOptions); notyOptions.text = message; notyOptions.type = 'info'; notyOptions.timeout = 5000;
-             * notyOptions.animation = { open: 'animated fadeIn', // Animate.css class names close: 'animated fadeOut', //
-             * Animate.css class names easing: 'swing', // unavailable - no need speed: 400 // unavailable - no need };
-             * notyOptions.callback = { onClose : function(){ $modal.modal('hide'); } }; $modal.find('.messageBlock
-             * .notyMessage').noty(notyOptions);
-             */
           }
         },
         complete: function() {
@@ -288,35 +293,617 @@ function attachEvents() {
   });
 
   /**
-   * CCAFS Partners list events
+   * Linked managing partners (toggle chips)
    */
-  $('.ppaPartnersList select').on('change', function(e) {
-    addItemList($(this).find('option:selected'));
-  });
-  $('ul li .remove').on('click', function(e) {
-    removeItemList($(this).parents('li'));
+  $page.on('click', '[data-ptn-linked-options] .ptn-toggle', function() {
+    var $card = $(this).closest('.projectPartner');
+    var instID = $(this).data('id');
+    var $list = $card.find('.ppaPartnersList ul.list');
+    var $current = $list.find('li input.id').filter(function() {
+      return this.value == instID;
+    }).closest('li');
+    if($current.exists()) {
+      $current.remove();
+    } else {
+      var $li = $("#ppaListTemplate").clone(true).removeAttr("id");
+      $li.find('.id').val(instID);
+      $li.find('.name').text($(this).attr('title') || $(this).text());
+      $li.appendTo($list);
+    }
+    setProjectPartnersIndexes();
+    updateProjectPPAPartnersLists();
+    ptnRefreshCard($card);
+    ptnBumpIn($card);
   });
 
   /**
    * Partner Person Events
    */
-  // Add partner Person Event
-  // $(".addContact a.addLink").on('click', addContactEvent);
-  $(".addContact .addPartnerbutton").on('click', addContactEvent);
+  // Add partner Person Event, one button per role group
+  $page.on('click', '[data-ptn-add-contact]', addContactEvent);
   // Remove partner person event
-  $(".removePerson").on('click', removePersonEvent);
-  // When partnerPersonType change
-  $("select.partnerPersonType").on("change", changePartnerPersonType);
-  // Event to open dialog box and search an contact person
-  $(".searchUser, input.userName").on("click", changePersonEmail);
+  $page.on('click', '.removePerson', removePersonEvent);
   // Event when click in a relation tag of partner person
-  $(".tag").on("click", showPersonRelations);
+  $page.on('click', '.tag', showPersonRelations);
+  // The users popup closed without a pick: the row it was opened for goes away
+  $('#dialog-searchUsers').on('dialogclose', function() {
+    if(ptnPendingContact) {
+      var $person = ptnPendingContact.$person;
+      ptnPendingContact = null;
+      var $card = $person.closest('.projectPartner');
+      $person.remove();
+      setProjectPartnersIndexes();
+      ptnRefreshCard($card);
+    }
+  });
+
+  /**
+   * Role tooltips
+   */
+  $page.on('click', '.ptn-tip__btn', function(e) {
+    e.preventDefault();
+    ptnToggleTip($(this).closest('.ptn-tip'));
+  });
+  $page.on('mouseenter focusin', '.ptn-tip', function() {
+    ptnToggleTip($(this), true);
+  });
+  $page.on('mouseleave focusout', '.ptn-tip', function() {
+    ptnToggleTip($(this), false);
+  });
+  $(document).on('keydown', function(e) {
+    if(e.which === 27) {
+      $('.ptn-tip').each(function() {
+        ptnToggleTip($(this), false);
+      });
+    }
+  });
+
+  /**
+   * Live refresh and change tracking
+   */
+  $page.on('input', 'textarea.resp', function() {
+    ptnRefreshCard($(this).closest('.projectPartner'));
+  });
+  $page.on('input change', ':input[name]', function() {
+    var name = $(this).attr('name');
+    if(!name || this.id === 'partnersSearch' || name.indexOf('partner-') === 0) {
+      return;
+    }
+    // A new partner's fields are counted once, when it is added to the list
+    if($(this).closest('.is-draft').exists()) {
+      return;
+    }
+    ptnDirtyFields[name] = true;
+    ptnRefreshSaveState();
+  });
+  $page.on('click', '[data-ptn-toast-undo]', function() {
+    if(ptnUndo) {
+      var undo = ptnUndo;
+      ptnUndo = null;
+      undo();
+    }
+    ptnHideToast();
+  });
 
 }
 
-function showHelpText() {
-  $('.helpMessage').show();
-  $('.helpMessage').addClass('animated flipInX');
+/* ------------------------------------------------------------------------------------------------
+ * Partner cards
+ * --------------------------------------------------------------------------------------------- */
+
+/**
+ * The copy the FTL hands over as data-* attributes on #ptn-i18n, keyed in camelCase.
+ * Read off the attributes rather than through $.data(), which would try to parse
+ * values such as "{0} people" as JSON or numbers.
+ */
+function ptnReadText(el) {
+  var text = {};
+  if(!el) {
+    return text;
+  }
+  $.each(el.attributes, function(i,attr) {
+    if(attr.name.indexOf('data-') === 0) {
+      text[attr.name.slice(5).replace(/-([a-z])/g, function(m,c) {
+        return c.toUpperCase();
+      })] = attr.value;
+    }
+  });
+  return text;
+}
+
+/** Moves everything after the help text's first line break into the "View more" area. */
+function ptnSplitHelpText() {
+  var $text = $('.ptn-note__text');
+  var $extra = $('[data-ptn-note-extra]');
+  var br = $text.find('br').get(0);
+  if(!br || !$extra.exists()) {
+    return;
+  }
+  var nodes = [];
+  for(var n = br.nextSibling; n; n = n.nextSibling) {
+    nodes.push(n);
+  }
+  $(br).remove();
+  $extra.append(nodes);
+}
+
+/** Every partner card on the page, the template excluded. */
+function ptnCards() {
+  return $partnersBlock.find('.projectPartner');
+}
+
+function ptnText_(key, values) {
+  var template = ptnText[key];
+  if(template === undefined || template === null) {
+    return '';
+  }
+  return String(template).replace(/\{(\d+)\}/g, function(match, i) {
+    return(values && values[i] !== undefined) ? values[i] : match;
+  });
+}
+
+function ptnSetOpen($card,open) {
+  var $body = $card.find('> .blockContent');
+  $card.toggleClass('is-open', open);
+  $card.find('> .blockTitle').toggleClass('opened', open).toggleClass('closed', !open);
+  $card.find('> .blockTitle .ptn-card__caret').attr('aria-expanded', open);
+  if(open) {
+    $body.slideDown(200, function() {
+      $(this).find('textarea').autoGrow();
+    });
+  } else {
+    $body.slideUp(200);
+    ptnHideConfirm($card);
+  }
+  ptnRefreshToggleLabel($card);
+}
+
+function ptnRefreshToggleLabel($card) {
+  var name = $.trim($card.find('.ptn-card__acr').text());
+  var key = $card.hasClass('is-open') ? 'collapse' : 'expand';
+  $card.find('> .blockTitle .ptn-card__caret').attr('aria-label', ptnText_(key, [
+    name
+  ]));
+}
+
+function ptnRefreshExpandLabel() {
+  var $btn = $('[data-ptn-expand-all]');
+  var $visible = ptnCards().filter(':visible');
+  var allOpen = $visible.length > 0 && $visible.filter(':not(.is-open)').length === 0;
+  $btn.text($btn.data(allOpen ? 'labelCollapse' : 'labelExpand'));
+}
+
+function ptnRefreshAll() {
+  ptnCards().each(function() {
+    ptnRefreshCard($(this));
+  });
+  ptnRefreshSummary();
+  ptnApplyFilters();
+  ptnRefreshSaveState();
+}
+
+/** The organization this card stands for, or -1 while a new partner has none. */
+function ptnInstitutionId($card) {
+  var value = parseInt($card.find('.institutionsList').val());
+  return isNaN(value) ? -1 : value;
+}
+
+function ptnHasOrganization($card) {
+  return ptnInstitutionId($card) > 0;
+}
+
+function ptnIsPPA($card) {
+  return allPPAInstitutions.indexOf(ptnInstitutionId($card)) != -1;
+}
+
+function ptnWords(text) {
+  var trimmed = $.trim(text || '');
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
+
+function ptnInitials(first,last) {
+  return((first || '').charAt(0) + (last || '').charAt(0)).toUpperCase();
+}
+
+/** Contacts of a card, ordered leader, coordinators, collaborators and then by name. */
+function ptnContacts($card) {
+  var list = [];
+  $card.find('.contactPerson').each(function() {
+    var $p = $(this);
+    if(!$p.find('input.userId').val()) {
+      return;
+    }
+    list.push({
+        $el: $p,
+        type: $p.find('.partnerPersonType').val() || defaultType,
+        name: $.trim($p.find('[data-ptn-person-name]').text()),
+        email: $.trim($p.find('[data-ptn-person-email]').text()),
+        initials: $.trim($p.find('[data-ptn-initials]').text())
+    });
+  });
+  list.sort(function(a,b) {
+    var byRole = ptnRoleOrder.indexOf(a.type) - ptnRoleOrder.indexOf(b.type);
+    return byRole || a.name.localeCompare(b.name);
+  });
+  return list;
+}
+
+function ptnCountries($card) {
+  return $card.find('.countries-list .locElement').map(function() {
+    return $.trim($(this).find('.name').text());
+  }).get();
+}
+
+/** Acronyms of the managing partners this card is linked through. */
+function ptnLinkedNames($card) {
+  return $card.find('.ppaPartnersList ul.list li input.id').map(function() {
+    var id = $(this).val();
+    var acronym = $.trim($('#instID-' + id + ' .acronym').text());
+    return acronym || $.trim($(this).closest('li').find('.name').text());
+  }).get();
+}
+
+/**
+ * What the partner still misses, mirroring ProjectPartnersValidator rule for rule, each
+ * gated by the same specificity: the chip must never claim more (or less) than the
+ * server will flag when the section is checked.
+ */
+function ptnIssues($card) {
+  var issues = [];
+  var isPPA = ptnIsPPA($card);
+  if(!ptnHasOrganization($card)) {
+    issues.push(ptnText.issueOrg);
+  }
+  if(managingContactsRequired && projectEditLeader && partnerRespRequired) {
+    var resp = $card.find('textarea.resp, input[name$=".responsibilities"]').first().val();
+    if(!$.trim(resp)) {
+      issues.push(ptnText.issueResp);
+    } else if(ptnWords(resp) > lWordsResp) {
+      issues.push(ptnText.issueRespLong);
+    }
+  }
+  if(partnerOfficeRequired && !ptnCountries($card).length) {
+    issues.push(ptnText.issueCountry);
+  }
+  if(managingContactsRequired && projectEditLeader && !isPPA && !ptnLinkedNames($card).length) {
+    issues.push(ptnText.issueLinked);
+  }
+  if(managingContactsRequired && isPPA && !ptnContacts($card).length) {
+    issues.push(ptnText.issueContact);
+  }
+  return issues;
+}
+
+/** Why this partner cannot be removed, or '' when it can. Same rules as before the redesign. */
+function ptnRemoveBlockReason($card) {
+  var partner = new PartnerObject($card);
+  if(partner.hasLeader()) {
+    return ptnText.removeBlockedLeader;
+  }
+  var isPPA = ptnIsPPA($card);
+  if(isPPA) {
+    var linked = partner.hasPartnerContributions();
+    if(linked.length) {
+      return ptnText_('removeBlockedLinked', [
+        linked.join(', ')
+      ]);
+    }
+    if(!canUpdatePPAPartners) {
+      return ptnText.removeBlockedPpa;
+    }
+  }
+  var activities = partner.getRelationsNumber('activities');
+  if(activities > 0) {
+    return ptnText_('removeBlockedActivities', [
+      activities
+    ]);
+  }
+  return '';
+}
+
+/** Redraws everything on a card that is derived from its fields. */
+function ptnRefreshCard($card) {
+  if(!$card || !$card.exists()) {
+    return;
+  }
+  var isPPA = ptnIsPPA($card);
+  var instID = ptnInstitutionId($card);
+  var contacts = ptnContacts($card);
+  var countries = ptnCountries($card);
+  var linked = ptnLinkedNames($card);
+
+  // Title: acronym and full name. Saved partners are rendered by the server; a new one
+  // takes them from the hidden institutions list.
+  if(instID > 0 && $('#instID-' + instID).exists()) {
+    var acronym = $.trim($('#instID-' + instID + ' .acronym').text());
+    var name = $.trim($('#instID-' + instID + ' .name').text());
+    if(!acronym) {
+      acronym = name;
+      name = '';
+    }
+    $card.find('.ptn-card__acr').text(acronym);
+    $card.find('.ptn-card__name').text(name ? '— ' + name : '').attr('title', name);
+  }
+  $card.toggleClass('is-ppa', isPPA).toggleClass('is-orgless', instID <= 0);
+
+  // Meta line
+  $card.find('[data-ptn-countries-text]').text(countries.length ? countries.join(', ') : ptnText.noCountry);
+  var $avatars = $card.find('[data-ptn-avatars]').empty();
+  $.each(contacts.slice(0, 4), function(i,c) {
+    $('<span class="ptn-avatar ptn-avatar--xs"></span>').addClass('ptn-avatar--' + c.type).text(c.initials).appendTo(
+        $avatars);
+  });
+  var leader = contacts.filter(function(c) {
+    return c.type == leaderType;
+  })[0];
+  var contactsLine = !contacts.length ? ptnText.noContacts : (contacts.length == 1 ? ptnText.contactsOne : ptnText_(
+      'contactsOther', [
+        contacts.length
+      ]));
+  if(leader) {
+    contactsLine += ' · ' + ptnText_('contactsLeader', [
+      leader.name
+    ]);
+  }
+  $card.find('[data-ptn-contacts-text]').text(contactsLine);
+  var showLinked = !isPPA && linked.length > 0;
+  $card.find('[data-ptn-linked]').prop('hidden', !showLinked);
+  $card.find('[data-ptn-linked-text]').text(ptnText_('linkedVia', [
+    linked.join(', ')
+  ]));
+  $card.find('[data-ptn-haystack]').text($.map(contacts, function(c) {
+    return c.name + ' ' + c.email;
+  }).join(' '));
+
+  // Partner type tag
+  $card.find('[data-ptn-type]').text(isPPA ? ptnText.tagManaging : ptnText.tagPartner).toggleClass(
+      'ptn-tag--managing', isPPA).toggleClass('ptn-tag--partner', !isPPA);
+
+  // The leader cannot be removed (replace the leader first): its remove button says so
+  $card.find('.contactPerson').each(function() {
+    var isLeader = $(this).find('.partnerPersonType').val() == leaderType;
+    $(this).find('.removePerson').toggleClass('is-disabled', isLeader).attr('aria-disabled', isLeader ? 'true' : 'false')
+        .attr('title', isLeader ? ptnText.personRemoveBlockedLeader : $(this).find('.removePerson').attr('aria-label'));
+  });
+
+  // What is still missing; the relations (OICRs, deliverables...) take the slot when nothing is
+  var issues = $card.hasClass('is-draft') ? [] : ptnIssues($card);
+  var $issues = $card.find('[data-ptn-issues]');
+  $issues.prop('hidden', !issues.length).text(ptnText_('missing', [
+    issues.length
+  ])).attr('title', ptnText_('missingTitle', [
+    issues.join(', ')
+  ]));
+  $card.find('[data-ptn-relations]').prop('hidden', issues.length > 0);
+  $card.toggleClass('has-issues', issues.length > 0);
+
+  // Remove button: disabled, with the reason, when a rule blocks it
+  var reason = ptnRemoveBlockReason($card);
+  var acronymText = $.trim($card.find('.ptn-card__acr').text());
+  $card.find('.removePartner').attr('aria-disabled', reason ? 'true' : 'false').toggleClass('is-disabled', !!reason)
+      .attr('title', reason || ptnText_('remove', [
+        acronymText
+      ]));
+
+  // Responsibilities: word counter and its error
+  var $resp = $card.find('textarea.resp');
+  if($resp.exists()) {
+    var words = ptnWords($resp.val());
+    var over = words > lWordsResp;
+    var tried = $card.hasClass('is-tried');
+    var empty = tried && partnerRespRequired && !$.trim($resp.val());
+    $card.find('[data-ptn-resp-counter]').text(ptnText_('respCounter', [
+      lWordsResp - words
+    ])).toggleClass('is-over', over);
+    $card.find('[data-ptn-resp-error]').text(over ? ptnText.respOver : (empty ? ptnText.respRequired : ''));
+    $resp.toggleClass('is-invalid', over || empty);
+  }
+  // "+ Add country" only while the organization still has an office to add
+  var $countrySelect = $card.find('select.countriesList');
+  var officesLeft = $countrySelect.find('option').filter(function() {
+    return this.value && this.value != '-1';
+  }).length;
+  $card.find('.ptn-chips__add').prop('hidden', !officesLeft);
+  $card.find('.countries-list').toggleClass('is-invalid', $card.hasClass('is-tried') && partnerOfficeRequired &&
+      !countries.length);
+
+  // Linked managing partners: note under the chips
+  var linkedMissing = $card.hasClass('is-tried') && !isPPA && !linked.length;
+  var hasOptions = $card.find('[data-ptn-linked-options] .ptn-toggle').length > 0;
+  $card.find('[data-ptn-linked-note]').text(
+      linkedMissing ? ptnText.linkedMissing : (hasOptions ? ptnText.linkedNote : ptnText.linkedNone)).toggleClass(
+      'is-error', linkedMissing);
+  $card.find('[data-ptn-linked-options]').toggleClass('is-invalid', linkedMissing);
+  // Hidden for managing partners, and on a new partner until its organization is known
+  $card.find('.ppaPartnersList').toggle(!isPPA && instID > 0);
+
+  // Contacts: per-role counts, empty states and the add / replace leader buttons
+  // Read the live value: .val() changes the property, never the value attribute a
+  // [value="PL"] selector would match.
+  var clusterHasLeader = ptnCards().find('.contactPerson .partnerPersonType').filter(function() {
+    return this.value == leaderType && $(this).closest('.contactPerson').find('input.userId').val();
+  }).length > 0;
+  $card.find('[data-ptn-group]').each(function() {
+    var role = $(this).data('ptnGroup');
+    var count = $(this).find('.contactPerson').filter(function() {
+      return $(this).find('input.userId').val();
+    }).length;
+    $(this).find('[data-ptn-group-count]').text(count);
+    $(this).find('[data-ptn-group-empty]').prop('hidden', count > 0);
+    if(role == leaderType) {
+      var $add = $(this).find('[data-ptn-add-contact]');
+      $add.find('[data-ptn-add-label]').text(clusterHasLeader ? ptnText.replaceLeader : ptnText.addLeader);
+      // Said through aria-describedby, not a native title: a title tooltip stays on screen
+      // after the users popup it opened has closed.
+      $add.attr('aria-label', clusterHasLeader ? ptnText.replaceLeader + '. ' + ptnText.replaceLeaderTitle : null);
+    }
+  });
+  $card.find('[data-ptn-people]').text(!contacts.length ? '' : (contacts.length == 1 ? ptnText.peopleOne : ptnText_(
+      'peopleOther', [
+        contacts.length
+      ])));
+  $card.find('[data-ptn-no-contacts]').prop('hidden', contacts.length > 0 || !isPPA);
+  $card.find('.contactsPerson .requiredTag').toggle(isPPA);
+
+  // Draft footer note
+  if($card.hasClass('is-draft')) {
+    ptnRefreshDraftNote($card);
+  }
+  ptnRefreshToggleLabel($card);
+}
+
+/** Header summary line and the filter counts. */
+function ptnRefreshSummary() {
+  var $cards = ptnCards().not('.is-draft');
+  var managing = $cards.filter('.is-ppa').length;
+  var people = 0;
+  $cards.each(function() {
+    people += ptnContacts($(this)).length;
+  });
+  $('[data-ptn-summary]').text(ptnText_('summary', [
+      $cards.length, managing, people
+  ]));
+  $('[data-ptn-count="all"]').text($cards.length);
+  $('[data-ptn-count="mp"]').text(managing);
+  $('[data-ptn-count="partner"]').text($cards.length - managing);
+  $('.ptn-empty--none').css('display', ptnCards().exists() ? 'none' : 'flex');
+}
+
+/**
+ * Shows the cards that match the search and the partner-type filter. Only visibility
+ * changes: a hidden partner's inputs are still part of the form and are still posted,
+ * so a filtered list saves exactly like an unfiltered one.
+ */
+function ptnApplyFilters() {
+  var term = ($('#partnersSearch').val() || '').toLowerCase().trim();
+  var shown = 0;
+  ptnCards().each(function() {
+    var $card = $(this);
+    var $match = $card.find('[data-ptn-match]');
+    if($card.hasClass('is-draft')) {
+      $card.show();
+      $match.prop('hidden', true);
+      return;
+    }
+    var title = ($card.find('.ptn-card__acr').text() + ' ' + $card.find('.ptn-card__name').text()).toLowerCase();
+    var matchedPeople = [];
+    if(term && title.indexOf(term) === -1) {
+      $.each(ptnContacts($card), function(i,c) {
+        if((c.name + ' ' + c.email).toLowerCase().indexOf(term) !== -1) {
+          matchedPeople.push(c.name);
+        }
+      });
+    }
+    var matchesTerm = !term || title.indexOf(term) !== -1 || matchedPeople.length > 0;
+    var isPPA = $card.hasClass('is-ppa');
+    var matchesType = ptnFilter === 'all' || (ptnFilter === 'mp' && isPPA) || (ptnFilter === 'partner' && !isPPA);
+    var visible = matchesTerm && matchesType;
+    $card.toggle(visible);
+    $match.prop('hidden', !matchedPeople.length).text(ptnText_('match', [
+      matchedPeople.join(', ')
+    ]));
+    if(visible) {
+      shown++;
+    }
+  });
+  $('.partnersSearch-empty').css('display', (ptnCards().exists() && !shown) ? 'flex' : 'none');
+  ptnRefreshExpandLabel();
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Change tracking, toast and undo
+ * --------------------------------------------------------------------------------------------- */
+
+/**
+ * Counts a change made inside a partner card. A new partner's edits stay out of the
+ * count until "Add to cluster" (which counts once), so cancelling the draft leaves the
+ * save state exactly as it was.
+ */
+function ptnBumpIn($el,delta) {
+  if($el && $el.closest('.is-draft').exists()) {
+    return;
+  }
+  ptnBump(delta);
+}
+
+function ptnBump(delta) {
+  ptnDirtyOps = Math.max(0, ptnDirtyOps + (delta === undefined ? 1 : delta));
+  ptnRefreshSaveState();
+}
+
+function ptnRefreshSaveState() {
+  var count = Object.keys(ptnDirtyFields).length + ptnDirtyOps;
+  var $state = $('[data-ptn-save-state]');
+  $state.toggleClass('is-dirty', count > 0);
+  $state.find('[data-ptn-save-text]').text(!count ? ptnText.saveClean : (count == 1 ? ptnText.unsavedOne : ptnText_(
+      'unsavedOther', [
+        count
+      ])));
+}
+
+function ptnShowToast(text,undo) {
+  var $toast = $('[data-ptn-toast]');
+  clearTimeout(ptnToastTimer);
+  ptnUndo = undo || null;
+  $toast.find('[data-ptn-toast-text]').text(text);
+  $toast.find('[data-ptn-toast-undo]').prop('hidden', !undo);
+  $toast.prop('hidden', false);
+  ptnToastTimer = setTimeout(ptnHideToast, 7000);
+}
+
+function ptnHideToast() {
+  clearTimeout(ptnToastTimer);
+  ptnUndo = null;
+  $('[data-ptn-toast]').prop('hidden', true);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Role tooltips
+ * --------------------------------------------------------------------------------------------- */
+
+function ptnToggleTip($tip,show) {
+  var $body = $tip.find('.ptn-tip__body');
+  var open = (show === undefined) ? $body.is('[hidden]') : show;
+  $body.prop('hidden', !open);
+  $tip.find('.ptn-tip__btn').attr('aria-expanded', open);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * "Check for missing fields" in the sidebar: the Partners row lists each partner
+ * --------------------------------------------------------------------------------------------- */
+
+function ptnRegisterCheckDetails() {
+  if(typeof clusterMenuSectionDetails === 'undefined') {
+    return;
+  }
+  clusterMenuSectionDetails.partners = function() {
+    var rows = [];
+    var section = $.trim($('#menu-partners > a').text());
+    ptnCards().not('.is-draft').each(function() {
+      var $card = $(this);
+      var issues = ptnIssues($card);
+      if(!issues.length) {
+        return;
+      }
+      $card.addClass('is-tried');
+      ptnRefreshCard($card);
+      rows.push({
+          title: section + ' · ' + $.trim($card.find('.ptn-card__acr').text()),
+          detail: ptnText_('checkMissing', [
+            issues.join(', ')
+          ]),
+          onPick: function() {
+            $('#partnersSearch').val('');
+            $('[data-ptn-filter="all"]').trigger('click');
+            ptnSetOpen($card, true);
+            $('html, body').animate({
+              scrollTop: $card.offset().top - 90
+            }, 400);
+          }
+      });
+    });
+    return rows;
+  };
 }
 
 function getProjectLeader() {
@@ -332,45 +919,6 @@ function getProjectLeader() {
 
 function setProjectLeader(obj) {
   projectLeader = jQuery.extend({}, obj);
-}
-
-function filterInstitutions(e) {
-  var $filterContent = $(e.target).parent().next();
-  if($filterContent.is(":visible")) {
-    updateOrganizationsList(e);
-  }
-  $filterContent.slideToggle();
-}
-
-function changePersonEmail(e) {
-  var person = new PartnerPersonObject($(e.target).parents('.contactPerson'));
-  // Validate if the person has any activity related for be changed
-  if(!person.canEditEmail) {
-    e.stopImmediatePropagation();
-    var messages = '';
-    messages +=
-        '<li>This contact cannot be changed due to is currently the Activity Leader for '
-            + person.getRelationsNumber('activities') + ' activity(ies)';
-    messages += '<ul>';
-    messages += person.getRelations('activities');
-    messages += '</ul>';
-    messages += '</li>';
-    // Show a pop up with the message
-    $("#contactChange-dialog").find('.messages').append(messages);
-    $("#contactChange-dialog").dialog({
-        modal: true,
-        closeText: "",
-        width: 500,
-        buttons: {
-          Close: function() {
-            $(this).dialog("close");
-          }
-        },
-        close: function() {
-          $(this).find('.messages').empty();
-        }
-    });
-  }
 }
 
 function showPersonRelations(e) {
@@ -393,83 +941,12 @@ function showPersonRelations(e) {
   });
 }
 
-function changePartnerPersonType(e) {
-  var $contactPerson = $(e.target).parents('.contactPerson');
-  var contact = new PartnerPersonObject($contactPerson);
-  // Set as unique contact type in the project
-  if((contact.type == leaderType)) {
-    setPartnerTypeToDefault(contact.type);
+/** Moves a contact card under the heading of its role. */
+function ptnPlaceInGroup($person,type) {
+  var $group = $person.closest('.projectPartner').find('[data-ptn-group="' + type + '"] .ptn-group__members');
+  if($group.exists() && !$person.parent().is($group)) {
+    $group.append($person);
   }
-  // Change partner person type
-  contact.changeType();
-  // Change parent partner type
-  var partner = new PartnerObject($contactPerson.parents('.projectPartner'));
-  partner.changeType();
-  console.log(contact.type);
-  // If the contact type selected is PL
-  if(contact.type == leaderType) {
-    // If there is a PL previous selected
-    if(!jQuery.isEmptyObject(projectLeader)) {
-      var previousLeaderName = projectLeader.contactInfo;
-      var messages = '<li>Please note that there can only be one project leader per project. <br/>';
-      messages +=
-          'Therefore <strong>' + previousLeaderName
-              + '</strong> was assigned a Project collaborator/partner role.</li>';
-      // Show a pop up with the message
-      $("#contactChangeType-dialog").find('.messages').append(messages);
-      $("#contactChangeType-dialog").dialog({
-          modal: true,
-          closeText: "",
-          width: 500,
-          buttons: {
-            Close: function() {
-              $(this).dialog("close");
-            }
-          },
-          close: function() {
-            $(this).find('.messages').empty();
-          }
-      });
-    }
-  }
-  // Update project leader contact person
-  setProjectLeader(getProjectLeader());
-}
-
-function updateOrganizationsList(e) {
-  var $parent = $(e.target).parents('.projectPartner');
-  var partner = new PartnerObject($parent);
-  var $selectInstitutions = $parent.find("select.institutionsList"); // Institutions list
-  var optionSelected = $selectInstitutions.find('option:selected').val(); // Institution selected
-  var source = baseURL + "/institutionsByTypeAndCountry.do";
-
-  if($(e.target).parent().attr("class") != "filters-link") {
-    var partnerTypes = $parent.find("select.partnerTypes").find('option:selected').val() || -1; // Type value
-    var countryList = $parent.find("select.countryList").find('option:selected').val() || -1; // Value value
-    source += "?institutionTypeID=" + partnerTypes + "&countryID=" + countryList;
-  } else {
-    source += "?institutionTypeID=-1&countryID=-1";
-  }
-  $.ajax({
-      url: source,
-      beforeSend: function() {
-        partner.startLoader();
-        $selectInstitutions.empty().append(setOption(-1, "Select an option"));
-      },
-      success: function(data) {
-        $.each(data.institutions, function(index,institution) {
-          $selectInstitutions.append(setOption(institution.id, institution.name));
-        });
-        if(!canUpdatePPAPartners) {
-          removePPAPartnersFromList($selectInstitutions);
-        }
-      },
-      complete: function() {
-        partner.stopLoader();
-        $selectInstitutions.val(optionSelected);
-        $selectInstitutions.trigger("change.select2");
-      }
-  });
 }
 
 function removePPAPartnersFromList(list) {
@@ -479,6 +956,10 @@ function removePPAPartnersFromList(list) {
   $(list).trigger("change.select2");
 }
 
+/**
+ * Refreshes the project's managing partners and, for every other partner, the toggle chips
+ * used to say which of them it is linked through.
+ */
 function updateProjectPPAPartnersLists(e) {
   var projectInstitutions = [];
   // Clean PPA partners from hidden select
@@ -491,7 +972,7 @@ function updateProjectPPAPartnersLists(e) {
     // Validating if the partners is PPA Partner
     if(partner.isPPA()) {
       partner.hidePPAs();
-      // Collecting list CCAFS partners from all project partners
+      // Collecting the managing partners of the project
       $projectPPAPartners.append(setOption(partner.institutionId, partner.institutionName));
     } else {
       if(partner.institutionId == -1) {
@@ -501,7 +982,6 @@ function updateProjectPPAPartnersLists(e) {
       }
     }
   });
-  $projectPPAPartners.trigger("change.select2");
 
   // Validating if the institution chosen is already selected
   if(e) {
@@ -520,34 +1000,67 @@ function updateProjectPPAPartnersLists(e) {
       var institutionName_saved =
           $('input.institutionsList[value=' + e.target.value + ']').parents('.projectPartner').find('.partnerTitle')
               .text();
-      $fieldError.html('<i>"' + (institutionName || institutionName_saved) + '</i>" is already selected').animateCss(
+      $fieldError.text('"' + (institutionName || institutionName_saved) + '" is already selected').animateCss(
           'flipInX');
-      e.target.value = -1;
+      $(e.target).val(null).trigger('change.select2');
     }
   }
 
-  // Filling CCAFS partners lists for each project partner cooment
+  // Drawing the linked managing partner chips for each partner
   $partnersBlock.find('.projectPartner').each(function(i,partner) {
-    var $select = $(partner).find('select.ppaPartnersSelect');
-    $select.empty().append(setOption(-1, "Select an option"));
-    $select.append($projectPPAPartners.html());
-    // Removing of the list CCAFS partners previously selected by project partner
-    $(partner).find('li input.id').each(function(i_id,id) {
-      $select.find('option[value=' + $(id).val() + ']').remove();
+    var $options = $(partner).find('[data-ptn-linked-options]');
+    if(!$options.exists()) {
+      return;
+    }
+    var selected = $(partner).find('.ppaPartnersList ul.list li input.id').map(function() {
+      return $(this).val();
+    }).get();
+    var seen = {};
+    $options.empty();
+    var addChip = function(id,name) {
+      if(seen[id]) {
+        return;
+      }
+      seen[id] = true;
+      var on = selected.indexOf(String(id)) != -1;
+      var acronym = $.trim($('#instID-' + id + ' .acronym').text()) || name;
+      var $chip = $('<button type="button" class="ptn-toggle"></button>').attr({
+          'data-id': id,
+          'aria-pressed': on,
+          title: name
+      }).toggleClass('is-on', on).prop('disabled', !editable);
+      $('<span class="ptn-toggle__box" aria-hidden="true"></span>').html(
+          '<svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 5.2 4.1 7.2 8 3" stroke="#fff" '
+              + 'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>').appendTo($chip);
+      $('<span></span>').text(acronym).appendTo($chip);
+      if(editable || on) {
+        $chip.appendTo($options);
+      }
+    };
+    $projectPPAPartners.find('option').each(function() {
+      addChip($(this).val(), $(this).text());
     });
-    $select.trigger("change.select2");
+    // A link to a managing partner that is no longer in the section stays visible, so it
+    // can still be removed.
+    $(partner).find('.ppaPartnersList ul.list li').each(function() {
+      addChip($(this).find('input.id').val(), $.trim($(this).find('.name').text()));
+    });
   });
-
 }
 
-function setPartnerTypeToDefault(type) {
+/** Turns every contact of the given type into a collaborator: there is one leader per project. */
+function setPartnerTypeToDefault(type,$except) {
   $partnersBlock.find('.projectPartner').each(function(i,partner) {
     var projectPartner = new PartnerObject($(partner));
     $(partner).find('.contactPerson').each(function(i,partnerPerson) {
+      if($except && $(partnerPerson).is($except)) {
+        return;
+      }
       var contact = new PartnerPersonObject($(partnerPerson));
       if(contact.type == type) {
         $(partnerPerson).removeClass(partnerPersonTypes.join(' ')).addClass(defaultType);
         contact.setPartnerType(defaultType);
+        ptnPlaceInGroup($(partnerPerson), defaultType);
       }
     });
     projectPartner.changeType();
@@ -556,139 +1069,100 @@ function setPartnerTypeToDefault(type) {
 
 function removePartnerEvent(e) {
   e.preventDefault();
-  var partner = new PartnerObject($(e.target).parent().parent());
-  var messages = "";
-  var activities = partner.getRelationsNumber('activities');
+  var $card = $(this).closest('.projectPartner');
+  var reason = ptnRemoveBlockReason($card);
+  if(reason) {
+    var notyOptions = jQuery.extend({}, notyDefaultOptions);
+    notyOptions.text = reason;
+    noty(notyOptions);
+    return;
+  }
+  var partner = new PartnerObject($card);
+  var acronym = $.trim($card.find('.ptn-card__acr').text()) || partner.institutionName;
+  var text = ptnText_('removeConfirm', [
+    acronym
+  ]);
+  var contacts = ptnContacts($card).length;
+  if(contacts) {
+    text += ' ' + ptnText_('removeConfirmContacts', [
+      contacts
+    ]);
+  }
   var deliverables = partner.getRelationsNumber('deliverables');
-  var partnerContributions = partner.hasPartnerContributions();
-  var removeDialogOptions = {
-      modal: true,
-      width: 500,
-      buttons: {},
-      closeText: "",
-      close: function() {
-        $(this).find('.messages').empty();
-      }
-  };
-  // The budget related with this partner will be deleted
-  if(partner.id != -1) {
-    // messages += '<li>Note that the budget affected to this partner will also be deleted.</li>';
-    removeDialogOptions.buttons = {
-        "Remove partner": function() {
-          partner.remove();
-          $(this).dialog("close");
-        },
-        Close: function() {
-          $(this).dialog("close");
-        }
-    };
-  }
-  // Validate if there are any deliverables linked to any contact persons from this partner
   if(deliverables > 0) {
-    messages +=
-        '<li>Please bear in mind that if you delete this partner, ' + deliverables
-            + ' deliverables relations will be deleted</li>';
-    removeDialogOptions.buttons = {
-        "Remove partner": function() {
-          partner.remove();
-          $(this).dialog("close");
-        },
-        Close: function() {
-          $(this).dialog("close");
-        }
-    };
+    text += ' ' + ptnText_('removeConfirmDeliverables', [
+      deliverables
+    ]);
   }
-  // Validate if the CCAFS partner is currently contributing has any contributions to another partner
-  if(partner.isPPA() && (partnerContributions.length > 0)) {
-    messages += '<li>' + partner.institutionName + ' is currently allocating budget to the following partner(s):';
-    messages += '<ul>';
-    for(var i = 0, len = partnerContributions.length; i < len; i++) {
-      messages += '<li>' + partnerContributions[i] + '</li>';
-    }
-    messages += '</ul> </li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
-    };
-  }
-  // Validate if the project partner has any project leader assigned
-  if(partner.hasLeader()) {
-    messages +=
-        '<li>Please indicate another project leader from a different partner before deleting this partner.</li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
-    };
-  }
-  // Validate if the user has privileges to remove CCAFS Partners
-  if(partner.isPPA() && !canUpdatePPAPartners) {
-    messages += '<li>You don\'t have enough privileges to delete CCAFS Partners.</li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
-    };
-  }
-  // Validate if there are any activity linked to any contact person of this partner
-  if(activities > 0) {
-    messages +=
-        '<li>This partner cannot be deleted because at least one or more contact persons is leading ' + activities
-            + ' activity(ies)</li>';
-    messages +=
-        '<li>If you want to proceed with the deletion, please go to the activities and change the activity leader</li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
-    };
-  }
+  var $confirm = $card.find('> .ptn-confirm');
+  $confirm.find('[data-ptn-confirm-text]').text(text);
+  $confirm.prop('hidden', false);
+  $confirm.find('[data-ptn-confirm-cancel]').trigger('focus');
+}
 
-  if(messages === "") {
-    // Remove partner if there is not any problem
-    partner.remove();
-  } else {
-    // Show pop up if there are any message
-    $("#partnerRemove-dialog").find('.messages').append(messages);
-    $("#partnerRemove-dialog").dialog(removeDialogOptions);
-  }
+function ptnHideConfirm($card) {
+  $card.find('> .ptn-confirm').prop('hidden', true);
+}
+
+/** Takes a partner out of the form, with an undo while the toast is up. */
+function ptnRemovePartner($card) {
+  var $prev = $card.prev();
+  var acronym = $.trim($card.find('.ptn-card__acr').text());
+  $card.detach();
+  updateProjectPPAPartnersLists();
+  setProjectPartnersIndexes();
+  ptnRefreshAll();
+  ptnBump();
+  ptnShowToast(ptnText_('removed', [
+    acronym
+  ]), function() {
+    if($prev.exists() && $prev.parent().exists()) {
+      $prev.after($card);
+    } else {
+      $partnersBlock.prepend($card);
+    }
+    updateProjectPPAPartnersLists();
+    setProjectPartnersIndexes();
+    ptnRefreshAll();
+    ptnBump(-1);
+  });
 }
 
 function addPartnerEvent(e) {
+  e.preventDefault();
+  ptnStartDraft();
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * New partner (draft card)
+ * --------------------------------------------------------------------------------------------- */
+
+function ptnStartDraft() {
+  if(ptnCards().filter('.is-draft').exists()) {
+    return;
+  }
+  // The draft always shows, so the filters step aside for it
+  $('#partnersSearch').val('');
+  $('[data-ptn-filter="all"]').trigger('click');
+
   var $newElement = $("#projectPartner-template").clone(true).removeAttr("id");
-  $(this).before($newElement);
-  $newElement.find('.blockTitle').trigger('click');
-  $newElement.show("slow", function() {
-    // Update component
-    $(document).trigger('updateComponent');
-  });
+  var draftId = 'draft-' + new Date().getTime();
+  $newElement.addClass('is-draft is-open is-orgless');
+  $newElement.find('#ptn-body-template').attr('id', 'ptn-body-' + draftId);
+  $newElement.find('.ptn-card__caret').attr('aria-controls', 'ptn-body-' + draftId);
+  $newElement.find('textarea.resp').attr('id', 'resp-' + draftId);
+  $newElement.find('label[for="resp-template"]').attr('for', 'resp-' + draftId);
+  $partnersBlock.append($newElement);
+  $newElement.find('> .blockContent').show();
+  $newElement.show();
+  $('.addProjectPartner').prop('disabled', true);
+  $(document).trigger('updateComponent');
 
   // Activate the select2 plugin for new partners created
   // Organization
   $newElement.find("select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
-  $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder")
-      .text(placeholderText); 
-
-  // Role Selection
-  $newElement.find("select.partnerPersonType").select2({
-      templateResult: formatState,
-      width: "100%"
-  });
-
-  // Research Phase
-  $newElement.find("select.researchPhasesSelect ").select2({
-      placeholder: "Select here...",
-      width: '100%'
-  });
-
-  // Countries
-  $newElement.find('select.countriesList, select.countriesSelect').select2({
-      placeholder: "Select a country(ies)",
-      templateResult: formatStateCountries,
-      templateSelection: formatStateCountries,
-      width: '100%'
-  });
+  $newElement.find("select.institutionsList").parent().find("span.select2-selection__placeholder").text(
+      ptnText.orgPlaceholder || placeholderText);
 
   // Other Selects
   $newElement.find('select.setSelect2').select2({
@@ -697,99 +1171,303 @@ function addPartnerEvent(e) {
 
   // Update indexes
   setProjectPartnersIndexes();
+  updateProjectPPAPartnersLists();
+  ptnRefreshCard($newElement);
+  ptnRefreshSummary();
+  ptnApplyFilters();
+
+  $('html, body').animate({
+    scrollTop: $newElement.offset().top - 90
+  }, 300, function() {
+    $newElement.find("select.institutionsList").select2('open');
+  });
 }
 
+function ptnDraftMissing($card) {
+  var missing = [];
+  if(!ptnHasOrganization($card)) {
+    missing.push(ptnText.draftFieldOrg);
+  }
+  if(projectEditLeader && partnerRespRequired && !$.trim($card.find('textarea.resp').val())) {
+    missing.push(ptnText.draftFieldResp);
+  }
+  if(partnerOfficeRequired && !ptnCountries($card).length) {
+    missing.push(ptnText.draftFieldCountry);
+  }
+  // A managing partner is not linked through anyone: only the others need this
+  if(ptnHasOrganization($card) && !ptnIsPPA($card) && !ptnLinkedNames($card).length) {
+    missing.push(ptnText.draftFieldLinked);
+  }
+  return missing;
+}
+
+function ptnRefreshDraftNote($card) {
+  var tried = $card.hasClass('is-tried');
+  var $note = $card.find('[data-ptn-draft-note]');
+  if(!tried) {
+    var required = [
+      ptnText.draftFieldOrg
+    ];
+    if(projectEditLeader && partnerRespRequired) {
+      required.push(ptnText.draftFieldResp);
+    }
+    if(partnerOfficeRequired) {
+      required.push(ptnText.draftFieldCountry);
+    }
+    if(!ptnHasOrganization($card) || !ptnIsPPA($card)) {
+      required.push(ptnText.draftFieldLinked);
+    }
+    $note.text(ptnText_('draftRequired', [
+      required.join(', ')
+    ])).removeClass('is-error');
+  } else {
+    var missing = ptnDraftMissing($card);
+    $note.text(missing.length ? ptnText_('draftMissing', [
+      missing.join(', ')
+    ]) : ptnText.draftReady).toggleClass('is-error', missing.length > 0);
+  }
+  $card.find('[data-ptn-org-error]').prop('hidden', !(tried && !ptnHasOrganization($card)));
+  $card.find('.partnerName').toggleClass('is-invalid', tried && !ptnHasOrganization($card));
+
+  // Where the first country office came from
+  var $auto = $card.find('.locElement [data-ptn-auto]:not([hidden])').first();
+  $card.find('[data-ptn-country-note]').text(
+      $auto.exists() ? ptnText_('countryFilled', [
+        $.trim($auto.closest('.locElement').find('.name').text())
+      ]) + ' ' : '');
+}
+
+function ptnCancelDraft($card) {
+  $card.remove();
+  $('.addProjectPartner').prop('disabled', false);
+  setProjectPartnersIndexes();
+  updateProjectPPAPartnersLists();
+  ptnRefreshAll();
+}
+
+function ptnCommitDraft($card) {
+  $card.addClass('is-tried');
+  ptnRefreshCard($card);
+  if(ptnDraftMissing($card).length) {
+    return;
+  }
+  $card.removeClass('is-draft is-tried');
+  $card.find('[data-ptn-country-note]').text('');
+  $card.find('[data-ptn-draft-commit], [data-ptn-draft-cancel]').prop('disabled', true);
+  ptnRefreshAll();
+  ptnBump();
+  // "Add to cluster" saves the section straight away, through the regular Save button so
+  // its checks (organization, justification) and the server's validation still apply.
+  var $save = $('.ptn-saveBar button[name="save"], .ptn-saveBar .button-save').first();
+  if($save.exists()) {
+    $save[0].click();
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Contact people
+ * --------------------------------------------------------------------------------------------- */
+
+/** "Add coordinator" and the like: a new row under that role, filled from the users popup. */
 function addContactEvent(e) {
   e.preventDefault();
+  var role = $(this).data('ptnAddContact');
+  var $card = $(this).closest('.projectPartner');
+  var partner = new PartnerObject($card);
   var $newElement = $("#contactPerson-template").clone(true).removeAttr("id");
-  var contact = new PartnerPersonObject($newElement);
-  var partner = new PartnerObject($(this).parents('.projectPartner'));
-  $(e.target).parent().before($newElement);
-  $newElement.show("slow");
-  // Activate the select2 plugin for new partners created
-  $newElement.find("select").select2({
-      templateResult: formatState,
+  $newElement.find('.partnerPersonType').val(role);
+  $newElement.removeClass(partnerPersonTypes.join(' ')).addClass(role + ' is-pending');
+  $card.find('[data-ptn-group="' + role + '"] .ptn-group__members').append($newElement);
+  $newElement.css('display', 'flex');
+
+  // IFPRI Division
+  if(partner.institutionId == 89) {
+    $newElement.find('.divisionBlock.division-IFPRI').show();
+  }
+  $newElement.find('select.setSelect2').select2({
       width: '100%'
   });
 
-  // IFPRI Division
-  if(partner.institutionId == 89){
-    $newElement.find('.divisionBlock.division-IFPRI').show();
-  }
-
-  // Remove "No contact person added" message
-  $(e.target).parents('.contactsPerson').find('.noContactMessage').hide();
-
-  // Update PPA partners requirements
-  updateProjectPPAPartnersLists();
-
   // Update indexes
   setProjectPartnersIndexes();
+
+  ptnPendingContact = {
+      $person: $newElement,
+      role: role
+  };
+  openSearchDialog($newElement.find('input.userName'));
+}
+
+/** Splits the popup's "Last, First <email>" when it does not hand over the parts. */
+function ptnParseComposedName(composedName) {
+  var match = /^(.*?),\s*(.*?)\s*<(.*)>$/.exec(composedName || '');
+  return match ? {
+      lName: match[1],
+      fName: match[2],
+      email: match[3]
+  } : {
+      lName: composedName || '',
+      fName: '',
+      email: ''
+  };
+}
+
+function ptnPickUser($person,composedName,userId,user) {
+  var $card = $person.closest('.projectPartner');
+  var pending = ptnPendingContact && $person.is(ptnPendingContact.$person) ? ptnPendingContact : null;
+  var $existing = $card.find('.contactPerson').not($person).filter(function() {
+    return $(this).find('input.userId').val() == userId;
+  });
+
+  if($existing.exists()) {
+    if(pending && pending.role == leaderType) {
+      // "Replace leader" with someone already listed here: their row becomes the leader
+      ptnPendingContact = null;
+      $person.remove();
+      ptnMakeLeader($existing.first());
+    } else {
+      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+      notyOptions.text = ptnText.duplicateContact || 'Contact person cannot be repeated';
+      noty(notyOptions);
+    }
+    return;
+  }
+
+  var parsed = ptnParseComposedName(composedName);
+  var first = user.fName || parsed.fName;
+  var last = user.lName || parsed.lName;
+  var email = user.email || parsed.email;
+  $person.find('input.userName').val(composedName);
+  $person.find('input.userId').val(userId);
+  $person.find('[data-ptn-person-name]').text($.trim(first + ' ' + last));
+  $person.find('[data-ptn-person-email]').text(email).attr('href', 'mailto:' + email);
+  $person.find('[data-ptn-initials]').text(ptnInitials(first, last));
+  $person.removeClass('is-pending');
+
+  if(pending) {
+    ptnPendingContact = null;
+    if(pending.role == leaderType) {
+      ptnMakeLeader($person);
+    } else {
+      ptnAfterContactChange($card);
+    }
+  } else {
+    ptnAfterContactChange($card);
+  }
+}
+
+/** Makes this contact the project leader; whoever led before becomes a collaborator. */
+function ptnMakeLeader($person) {
+  var previous = getProjectLeader();
+  var previousName = '';
+  if(!jQuery.isEmptyObject(previous)) {
+    previousName = $.trim($partnersBlock.find('.contactPerson').filter(function() {
+      return new PartnerPersonObject($(this)).isLeader() && !$(this).is($person);
+    }).first().find('[data-ptn-person-name]').text());
+  }
+  setPartnerTypeToDefault(leaderType, $person);
+  var contact = new PartnerPersonObject($person);
+  contact.type = leaderType;
+  contact.changeType();
+  ptnPlaceInGroup($person, leaderType);
+  setProjectLeader(getProjectLeader());
+  ptnAfterContactChange($person.closest('.projectPartner'));
+  if(previousName) {
+    ptnShowToast(ptnText_('replaceConfirm', [
+      previousName
+    ]));
+  }
+}
+
+function ptnAfterContactChange($card) {
+  new PartnerObject($card).changeType();
+  setProjectPartnersIndexes();
+  updateProjectPPAPartnersLists();
+  ptnCards().each(function() {
+    ptnRefreshCard($(this));
+  });
+  ptnRefreshSummary();
+  ptnApplyFilters();
+  ptnBumpIn($card);
 }
 
 function removePersonEvent(e) {
   e.preventDefault();
-  var person = new PartnerPersonObject($(e.target).parent());
-  var messages = "";
-  var activities = person.getRelationsNumber('activities');
-  var deliverables = person.getRelationsNumber('deliverables');
-  var removeDialogOptions = {
-      modal: true,
-      closeText: "",
-      width: 500,
-      buttons: {},
-      close: function() {
-        $(this).find('.messages').empty();
-      }
-  };
-  // Validate if there are any deliverable linked to this person
-  if(deliverables > 0) {
-    messages +=
-        '<li>Please bear in mind that if you delete this contact, ' + deliverables
-            + ' deliverables relations will be deleted.</li>';
-    removeDialogOptions.buttons = {
-        "Remove Person": function() {
-          person.remove();
-          $(this).dialog("close");
-        },
-        Close: function() {
-          $(this).dialog("close");
-        }
-    };
-  }
+  var $person = $(this).closest('.contactPerson');
+  var person = new PartnerPersonObject($person);
+  var notyOptions = jQuery.extend({}, notyDefaultOptions);
   // Validate if the person type is PL
   if(person.isLeader()) {
-    messages +=
-        '<li>There must be one project leader per project. Please select another project leader before deleting this contact.</li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
-    };
+    notyOptions.text = ptnText.personRemoveBlockedLeader;
+    noty(notyOptions);
+    return;
   }
   // Validate if there are any activity linked to this person
+  var activities = person.getRelationsNumber('activities');
   if(activities > 0) {
-    messages += '<li>This contact person cannot be deleted because he/she is leading activity(ies)';
-    messages +=
-        '<li>If you want to proceed with the deletion, please go to the following activities and change the activity leader</li>';
-    messages += '<ul>';
-    messages += person.getRelations('activities');
-    messages += '</ul>';
-    messages += '</li>';
-    removeDialogOptions.buttons = {
-      Close: function() {
-        $(this).dialog("close");
-      }
-    };
+    notyOptions.text = ptnText_('personRemoveBlockedActivities', [
+      activities
+    ]);
+    noty(notyOptions);
+    return;
   }
-  if(messages === "") {
-    // Remove person if there is not any message
-    person.remove();
-  } else {
-    // Show a pop up with the message
-    $("#contactRemove-dialog").find('.messages').append(messages);
-    $("#contactRemove-dialog").dialog(removeDialogOptions);
+  // Validate if there are any deliverable linked to this person
+  var deliverables = person.getRelationsNumber('deliverables');
+  if(deliverables > 0) {
+    notyOptions.text = ptnText_('personRemoveConfirm', [
+      deliverables
+    ]);
+    notyOptions.type = 'confirm';
+    notyOptions.layout = 'center';
+    notyOptions.modal = true;
+    notyOptions.buttons = [
+        {
+            addClass: 'btn btn-danger',
+            text: 'Remove',
+            onClick: function($noty) {
+              $noty.close();
+              ptnRemovePerson($person);
+            }
+        }, {
+            addClass: 'btn btn-default',
+            text: 'Cancel',
+            onClick: function($noty) {
+              $noty.close();
+            }
+        }
+    ];
+    noty(notyOptions);
+    return;
   }
+  ptnRemovePerson($person);
+}
+
+/** Takes a contact out of the form, with an undo while the toast is up. */
+function ptnRemovePerson($person) {
+  var $card = $person.closest('.projectPartner');
+  var $parent = $person.parent();
+  var $prev = $person.prev();
+  var name = $.trim($person.find('[data-ptn-person-name]').text());
+  $person.detach();
+  new PartnerObject($card).changeType();
+  setProjectPartnersIndexes();
+  ptnRefreshCard($card);
+  ptnRefreshSummary();
+  ptnBumpIn($card);
+  ptnShowToast(ptnText_('removed', [
+    name
+  ]), function() {
+    if($prev.exists() && $prev.parent().exists()) {
+      $prev.after($person);
+    } else {
+      $parent.prepend($person);
+    }
+    new PartnerObject($card).changeType();
+    setProjectPartnersIndexes();
+    ptnRefreshCard($card);
+    ptnRefreshSummary();
+    ptnBumpIn($card, -1);
+  });
 }
 
 function setProjectPartnersIndexes() {
@@ -799,58 +1477,15 @@ function setProjectPartnersIndexes() {
   });
 }
 
-/**
- * Items list functions
- */
-
-function removeItemList($item) {
-  // Adding option to the select
-  var $select = $item.parents('.panel').find('select');
-  $select.append(setOption($item.find('.id').val(), $item.find('.name').text()));
-  $select.trigger("change.select2");
-  // Removing from list
-  $item.hide("slow", function() {
-    $item.remove();
-    setProjectPartnersIndexes();
-  });
-}
-
-function addItemList($option) {
-  var $select = $option.parent();
-  var $list = $option.parents('.panel').find('ul.list');
-  // Adding element to the list
-  var $li = $("#ppaListTemplate").clone(true).removeAttr("id");
-  $li.find('.id').val($option.val());
-  $li.find('.name').html($option.text());
-  $li.appendTo($list).hide().show('slow');
-  // Removing option from select
-  $option.remove();
-  $select.trigger("change.select2");
-  setProjectPartnersIndexes();
-}
-
-// Activate the chosen plugin to the countries, partner types and partners lists.
+// Activate the select2 plugin on the organization and division lists. The country office
+// picker stays a native select: the design draws it as an inline "+ Add country" control.
 function addSelect2() {
 
   // Organization / institution
   $("form select.institutionsList").select2(searchInstitutionsOptions(canUpdatePPAPartners));
   $("form select.institutionsList").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
-  // Role Selection
-  $("form select.partnerPersonType").select2({
-      templateResult: formatState,
-      width: "100%"
-  });
-
-  // Research Phase
-  $("form select.researchPhasesSelect ").select2({
-      placeholder: "Select here...",
-      width: '100%'
-  });
-
-
-
-  $('form select.countriesList, select.countriesRequest, form select.countriesSelect').select2({
+  $('select.countriesRequest').select2({
       placeholder: "Select a country(ies)",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
@@ -864,36 +1499,9 @@ function addSelect2() {
 
 }
 
-/*
- * Filters the partner blocks against what is typed in the search box. Only the block visibility is touched: the
- * inputs of a hidden partner are still part of the form and are still submitted, and the indexes are untouched,
- * so a filtered list saves exactly like an unfiltered one.
- *
- * The match runs over the block title, which carries the organization composed name and the contact people
- * rendered by projectPartners.ftl.
- */
-function filterPartnersBySearch() {
-  var searchTerm = ($(this).val() || '').toLowerCase().trim();
-  var $partners = $partnersBlock.find('.projectPartner');
-  var matches = 0;
-
-  $partners.each(function() {
-    var partnerText = ($(this).find('> .blockTitle').text() || '').toLowerCase();
-
-    if(!searchTerm || partnerText.indexOf(searchTerm) !== -1) {
-      $(this).show();
-      matches++;
-    } else {
-      $(this).hide();
-    }
-  });
-
-  $partnersBlock.find('.partnersSearch-empty').toggle(searchTerm !== '' && matches === 0);
-}
-
 /**
  * PartnerObject
- * 
+ *
  * @param {DOM} Project partner
  */
 
@@ -902,10 +1510,12 @@ function PartnerObject(partner) {
   var types = [];
   this.id = parseInt($(partner).find('.partnerId').val());
   this.institutionId = parseInt($(partner).find('.institutionsList').val());
+  if(isNaN(this.institutionId)) {
+    this.institutionId = -1;
+  }
   this.institutionName =
       $('#instID-' + this.institutionId + ' .composedName').text() || $(partner).find('.partnerTitle').text();
   this.allowSubDepart = ($('#instID-' + this.institutionId + ' .allowSubDepart').text() === "true") || false;
-  this.subDepartments = $('#instID-' + this.institutionId + ' .subDepartments option');
   this.ppaPartnersList = $(partner).find('.ppaPartnersList');
   this.persons = $(partner).find('.contactsPerson .contactPerson');
   this.countriesSelect = $(partner).find('.countriesList');
@@ -913,16 +1523,10 @@ function PartnerObject(partner) {
 
     // Updating indexes
     $(partner).setNameIndexes(1, index);
-    // Update index for project Partner
-    $(partner).find("> .blockTitle .index_number").html(index + 1);
-    // Update index for CCAFS Partners
+    // Update index for the linked managing partners
     $(partner).find('.ppaPartnersList ul.list li').each(function(li_index,li) {
       $(li).setNameIndexes(2, li_index);
     });
-
-    // Update radio buttons labels and for
-    $(partner).find('input.hasPartnerships-yes').attr('id', "hasPartnerships-yes-"+ index).next().attr('for',"hasPartnerships-yes-"+ index);
-    $(partner).find('input.hasPartnerships-no').attr('id', "hasPartnerships-no-"+ index).next().attr('for',"hasPartnerships-no-"+ index);
 
     // Update index for partner persons
     $(partner).find('.contactPerson').each(function(person_index,partnerPerson) {
@@ -953,7 +1557,7 @@ function PartnerObject(partner) {
       var projectPartner = new PartnerObject($(element));
       $(element).find('.ppaPartnersList ul.list li input.id').each(function(i_id,id) {
         if($(id).val() == institutionId) {
-          partners.push(projectPartner.institutionName);
+          partners.push($.trim($(element).find('.ptn-card__acr').text()) || projectPartner.institutionName);
         }
       });
     });
@@ -971,17 +1575,7 @@ function PartnerObject(partner) {
   };
   this.isPPA = function() {
     var instID = parseInt($(partner).find('.institutionsList').val());
-    if(instID == -1) {
-      $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
-      return false;
-    }
-    if(allPPAInstitutions.indexOf(instID) != -1) {
-      $(partner).find("> .blockTitle .index").addClass('ppa').text('Managing Partner');
-      return true;
-    } else {
-      $(partner).find("> .blockTitle .index").removeClass('ppa').text('Partner');
-      return false;
-    }
+    return allPPAInstitutions.indexOf(instID) != -1;
   };
   this.getRelationsNumber = function(relation) {
     var count = 0;
@@ -994,9 +1588,7 @@ function PartnerObject(partner) {
   this.checkLeader = function() {
     if($(partner).find('.contactPerson.PL').length == 0) {
       $(partner).removeClass('leader');
-      $(partner).find('.type-leader').hide();
     } else {
-      $(partner).find('.type-leader').show();
       $(partner).addClass('leader');
       types.push('Leader');
     }
@@ -1004,10 +1596,8 @@ function PartnerObject(partner) {
   this.checkCoordinator = function() {
     if($(partner).find('.contactPerson.PC').length == 0) {
       $(partner).removeClass('coordinator');
-      $(partner).find('.type-coordinator').hide();
     } else {
       $(partner).addClass('coordinator');
-      $(partner).find('.type-coordinator').show();
       types.push('Coordinator');
     }
   };
@@ -1015,18 +1605,6 @@ function PartnerObject(partner) {
     types = [];
     this.checkLeader();
     this.checkCoordinator();
-    if(types.length != 0) {
-      $(partner).find('strong.type').text(' (' + types.join(", ") + ')');
-    } else {
-      $(partner).find('strong.type').text('');
-    }
-  };
-  this.remove = function() {
-    $(partner).hide("slow", function() {
-      $(partner).remove();
-      updateProjectPPAPartnersLists();
-      setProjectPartnersIndexes();
-    });
   };
   this.clearCountries = function() {
     var $list = $(partner).find(".countries-list.items-list ul");
@@ -1035,7 +1613,7 @@ function PartnerObject(partner) {
   this.addCountry = function(country) {
     var contryISO = country.iso;
     var countryName = country.name;
-    if(contryISO == "-1") {
+    if(!contryISO || contryISO == "-1") {
       return
 
     }
@@ -1058,46 +1636,32 @@ function PartnerObject(partner) {
 
     // Fill item values
     $item.find('span.name').text(countryName);
-    $item.find('span.coordinates').text("");
-    $item.find('input.locElementName').val(countryName);
     $item.find('input.locElementCountry').val(contryISO);
+    $item.find('.removeLocElement').attr('aria-label', ptnText_('countryRemove', [
+      countryName
+    ]) || countryName);
+    // "From location": the office the organization's headquarters filled in
+    $item.find('[data-ptn-auto]').prop('hidden', !country.auto);
 
     // Add Flag
-    var $flag = $item.find('.flag-icon');
-    var flag = '<i class="flag-icon flag-icon-' + contryISO.toLowerCase() + '"></i>';
-    $flag.html(flag);
-    // Remove coordinates span
-    $item.find('.coordinates').remove();
+    $item.find('.flag-icon').html('<i class="flag-icon flag-icon-' + contryISO.toLowerCase() + '"></i>');
     // Adding item to the list
     $list.append($item);
+    $item.css('display', 'inline-flex');
     // Update Locations Indexes
     setProjectPartnersIndexes();
-    // Show item
-    $item.show('slow');
-    // Remove message
-    $list.parent().find('p.message').hide();
 
     // Reset select
-    $(this.countriesSelect).removeOption(contryISO)
+    $(this.countriesSelect).removeOption(contryISO);
     $(this.countriesSelect).val('-1');
-    $(this.countriesSelect).trigger('select2:change');
   };
   this.showPPAs = function() {
-    $(this.ppaPartnersList).slideDown();
-    // $(partner).find('.partnerResponsabilities .requiredTag').hide();
+    $(this.ppaPartnersList).show();
     $(partner).find('.contactsPerson .requiredTag').hide();
   };
   this.hidePPAs = function() {
-    $(this.ppaPartnersList).slideUp();
-
-    // Add a contact person by default
-    if($(this.persons).length <= 0) {
-      $(partner).find('.addContact .addLink').trigger('click');
-    }
-
-    // $(partner).find('.partnerResponsabilities .requiredTag').show();
+    $(this.ppaPartnersList).hide();
     $(partner).find('.contactsPerson .requiredTag').show();
-
   };
 
   this.startLoader = function() {
@@ -1110,17 +1674,18 @@ function PartnerObject(partner) {
 
 /**
  * PartnerPersonObject
- * 
+ *
  * @param {DOM} Partner person
  */
 function PartnerPersonObject(partnerPerson) {
   this.id = parseInt($(partnerPerson).find('.partnerPersonId').val());
   this.type = $(partnerPerson).find('.partnerPersonType').val();
-  this.contactInfo = $(partnerPerson).find('.userName').val();
+  this.contactInfo = $.trim($(partnerPerson).find('[data-ptn-person-name]').text())
+      || $(partnerPerson).find('.userName').val();
   this.canEditEmail = ($(partnerPerson).find('input.canEditEmail').val() === "true");
   this.setPartnerType = function(type) {
     this.type = type;
-    $(partnerPerson).find('.partnerPersonType').val(type).trigger('change.select2');
+    $(partnerPerson).find('.partnerPersonType').val(type);
   };
   this.getPartnerType = function() {
     return $(partnerPerson).find('.partnerPersonType').val();
@@ -1147,25 +1712,7 @@ function PartnerPersonObject(partnerPerson) {
   this.isLeader = function() {
     return(this.type == leaderType);
   };
-  this.remove = function() {
-    var partner = new PartnerObject($(partnerPerson).parents('.projectPartner'));
-    $(partnerPerson).hide("slow", function() {
-      $(partnerPerson).remove();
-      partner.changeType(this.type);
-      setProjectPartnersIndexes();
-    });
-  };
 }
-
-function formatState(state) {
-  var $state =
-      $("<span><b>"
-          + state.text
-          + "</b> <br><small style='margin-top:2px; font-size:85%; line-height:13px; display:block; font-style:normal; font-weight:600;'>"
-          + $('span.contactPersonRole-' + state.id).text() + "</small> </span>");
-  return $state;
-
-};
 
 function formatStateCountries(state) {
   if(!state.id) {
@@ -1191,16 +1738,20 @@ function addLocElementCountry() {
       iso: $countrySelected.val(),
       name: $countrySelected.text()
   });
+  ptnRefreshCard($partner);
+  ptnBumpIn($partner);
 }
 
-function removeLocElement() {
-  var $parent = $(this).parent();
-  var $select = $parent.parents('.countries-list ').find('select.countriesList');
+function removeLocElement(e) {
+  e.preventDefault();
+  var $parent = $(this).closest('.locElement');
+  var $partner = $parent.closest('.projectPartner');
+  var $select = $parent.closest('.countries-list').find('select.countriesList');
   // Add removed item to the selection list
-  $select.addOption($parent.find('input.locElementCountry').val(), $parent.find('span.name').text());
+  $select.addOption($parent.find('input.locElementCountry').val(), $.trim($parent.find('span.name').text()));
   // Removing item
-  $parent.hide('slow', function() {
-    $parent.remove();
-    setProjectPartnersIndexes();
-  });
+  $parent.remove();
+  setProjectPartnersIndexes();
+  ptnRefreshCard($partner);
+  ptnBumpIn($partner);
 }

@@ -104,6 +104,12 @@
   </p> 
   <ul>
     [#assign sectionsChecked = 0 /]
+    [#-- Display-only completeness counters for the status card below the menu. They
+         count only the rows that carry a status badge (showCheck), so sections such as
+         Feedback never weigh on "X of Y sections". sectionsChecked / completed keep
+         their own rules: the submit flow depends on them. --]
+    [#assign trackedTotal = 0 /]
+    [#assign trackedDone = 0 /]
     [#list menus as menu]
       [#if menu.show]
       <li>
@@ -119,7 +125,12 @@
             [/#if]
             [#assign hasDraft = (action.getAutoSaveFilePath(project.class.simpleName, item.action, project.id))!false /]
             [#if (item.show)!true ]
-              <li id="menu-${item.action}" class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if (item.hasBackground)!false]hasBackground[/#if] [#if (item.showCheck)!true] ${submitStatus?string('submitted','toSubmit')} [/#if] ${(item.active)?string('enabled','disabled')}">
+              [#assign isTracked = ((item.showCheck)!true) && item.active /]
+              [#if isTracked]
+                [#assign trackedTotal = trackedTotal + 1 /]
+                [#if submitStatus][#assign trackedDone = trackedDone + 1 /][/#if]
+              [/#if]
+              <li id="menu-${item.action}" [#if isTracked]data-tracked="true"[/#if] class="${hasDraft?string('draft', '')} [#if item.slug == currentStage]currentSection[/#if] [#if (item.hasBackground)!false]hasBackground[/#if] [#if (item.showCheck)!true] ${submitStatus?string('submitted','toSubmit')} [/#if] ${(item.active)?string('enabled','disabled')}">
                 <a href="[@s.url action="${crpSession}/${item.action}"][@s.param name="projectID" value=projectID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" onclick="return ${item.active?string}" class="action-${crpSession}/${item.action}">
                   [#if (item.icon?has_content)!false][@menuIcon name="${item.icon}" width="15px" height="15px" /][/#if]
                   [#-- Name --]
@@ -146,78 +157,120 @@
 [#assign projectEditLeader = (project.projectInfo.isProjectEditLeader())!false /]
 [#assign completed = (sectionsChecked == sectionsForChecking?size) &&  projectEditLeader/]
 [#assign completedPreProject = (sectionsChecked == sectionsForChecking?size) /]
+[#assign trackedMissing = trackedTotal - trackedDone /]
+[#assign trackedPct = (trackedTotal > 0)?then(((trackedDone * 100) / trackedTotal)?round, 0) /]
+[#-- "project" / "cluster" / ..., per global unit, for the status card copy. --]
+[#assign menuNoun = (action.getText("projects.menu.status.noun"))!"project" /]
 
 [#-- Sections for checking (Using by JS) --]
 <span id="sectionsForChecking" style="display:none">[#list sectionsForChecking as item]${item}[#if item_has_next],[/#if][/#list]</span>
 
-[#-- Open for Project Leaders --]
+[#-- Status card (A2-2440): completeness, "Check for missing fields" and the submit
+     flow, drawn as the second sidebar card of the design. The ids and classes
+     projectSubmit.js binds to (validateProject-, progressbar-, submitProject-,
+     .projectEditLeader, #unSubmit-justification) are unchanged. --]
+<div class="clusterMenu-status" data-tracked-total="${trackedTotal}">
 
-[#if !reportingActive && canSwitchProject && ( completedPreProject || projectEditLeader) && !crpClosed && !centerGlobalUnit]
-
-  [#if !submission]
-  <div class="grayBox text-center">
-    [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader text-center" /]  
+  [#-- Completeness --]
+  [#if trackedTotal > 0]
+  <div class="clusterMenu-status__progress">
+    <span class="clusterMenu-status__progressHead">
+      <span class="clusterMenu-status__label">[@s.text name="projects.menu.status.completeness"][@s.param]${menuNoun?cap_first}[/@s.param][/@s.text]</span>
+      <span class="clusterMenu-status__count" data-cluster-done data-template="[@s.text name="projects.menu.status.sectionsDone"][@s.param]{0}[/@s.param][@s.param]{1}[/@s.param][/@s.text]">[@s.text name="projects.menu.status.sectionsDone"][@s.param]${trackedDone}[/@s.param][@s.param]${trackedTotal}[/@s.param][/@s.text]</span>
+    </span>
+    <span class="clusterMenu-status__bar" role="progressbar" aria-valuemin="0" aria-valuemax="${trackedTotal}" aria-valuenow="${trackedDone}" aria-label="[@s.text name="projects.menu.status.completeness"][@s.param]${menuNoun?cap_first}[/@s.param][/@s.text]">
+      <span class="clusterMenu-status__barFill" data-cluster-bar style="width:${trackedPct}%"></span>
+    </span>
   </div>
-  <br />
   [/#if]
-[#else]
-  [#if !projectEditLeader]
-    <p class="text-justify note"><small>All sections need to be completed (green check mark) for the Project Leader to be able to enter the project details.</small></p>
-  [/#if]
-[/#if]
 
-[#if !centerGlobalUnit]
-  [#-- Submition message --]
-  [#if !submission && completed && !canSubmit]
-    [#if action.isAiccra()]
-      <p class="text-center" style="display:block">You complete your Progress report, you can access the information through the Summaries section.</p>
-    [#else]
-      <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
+  [#-- Open for Project Leaders --]
+  [#if !reportingActive && canSwitchProject && ( completedPreProject || projectEditLeader) && !crpClosed && !centerGlobalUnit]
+    [#if !submission]
+    <div class="clusterMenu-status__toggle">
+      [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader" /]
+    </div>
     [/#if]
-  [/#if]
-  
-  [#-- Check button --]
-  [#if canEdit && !completed && !submission  && projectEditLeader]
-    <p class="projectValidateButton-message text-center">Check for missing fields.<br /></p>
-    <div id="validateProject-${projectID}" class="projectValidateButton ${(project.type)!''}">[@s.text name="form.buttons.check" /]</div>
-    <div id="progressbar-${projectID}" class="progressbar" style="display:none"></div>
-  [/#if]
-  
-  [#assign enableUnsubmitButton = !upKeepActive ]
-  
-  [#if action.canAccessSuperAdmin()]
-            
-    [#-- Submit button --]
-    [#assign showSubmit=(!submission)]
-    [#if enableUnsubmitButton && showSubmit]
-      <br>        
-      <div class="borderBox text-center">
-        <p class="projectValidateButton-message text-center">Only for SuperAdmin<br/></p>          
-        <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-          [@s.text name="form.buttons.submit" /]
-        </a>
-      </div>
-    [/#if]
-    
   [#else]
-  
-    [#-- Submit button --]
-    [#if enableUnsubmitButton && canEdit]
-      [#assign showSubmit=(canSubmit && !submission && completed)]
-      <a id="submitProject-${projectID}" class="projectSubmitButton" style="display:${showSubmit?string('block','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-        [@s.text name="form.buttons.submit" /]
+    [#if !projectEditLeader]
+      <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.presetNote" /]</p>
+    [/#if]
+  [/#if]
+
+  [#if !centerGlobalUnit]
+    [#-- Submission message --]
+    [#if !submission && completed && !canSubmit]
+      [#if action.isAiccra()]
+        <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.completedAiccra" /]</p>
+      [#else]
+        <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.completedLeader" /]</p>
+      [/#if]
+    [/#if]
+
+    [#-- Check button --]
+    [#if canEdit && !completed && !submission  && projectEditLeader]
+      <div id="validateProject-${projectID}" class="projectValidateButton clusterMenu-status__check ${(project.type)!''}" role="button" tabindex="0" data-label-again="[@s.text name="projects.menu.status.checkAgain" /]">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.5"></circle><path d="M5.2 8.2 7.1 10l3.7-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span class="clusterMenu-status__checkLabel">[@s.text name="projects.menu.status.check" /]</span>
+      </div>
+      <div id="progressbar-${projectID}" class="progressbar clusterMenu-status__checking" style="display:none"></div>
+      [#-- What the check found, in words. projectSubmit.js fills it; empty until then. --]
+      <div class="clusterMenu-results" data-cluster-results role="status" aria-live="polite"
+        data-text-ok="[@s.text name="projects.menu.status.allGood"][@s.param]${menuNoun}[/@s.param][/@s.text]"
+        data-text-missing="[@s.text name="projects.menu.status.sectionMissing" /]"></div>
+    [/#if]
+
+    [#assign enableUnsubmitButton = !upKeepActive ]
+
+    [#if action.canAccessSuperAdmin()]
+
+      [#-- Submit button: SuperAdmin can always submit, complete or not (override). --]
+      [#assign showSubmit=(!submission)]
+      [#if enableUnsubmitButton && showSubmit]
+        <div class="clusterMenu-status__admin">
+          <span class="clusterMenu-status__adminCaption">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3.2" y="7" width="9.6" height="6.6" rx="1.6" stroke="currentColor" stroke-width="1.5"></rect><path d="M5.6 7V5.2a2.4 2.4 0 0 1 4.8 0V7" stroke="currentColor" stroke-width="1.5"></path></svg>
+            [@s.text name="projects.menu.status.superAdminOnly" /]
+          </span>
+          <a id="submitProject-${projectID}" class="projectSubmitButton clusterMenu-status__submit" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 10.5V2.8M5 5.6 8 2.6l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 9.5v3.2h10V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            [@s.text name="projects.menu.status.submit"][@s.param]${menuNoun}[/@s.param][/@s.text]
+          </a>
+          <span class="clusterMenu-status__submitNote" data-cluster-submit-note
+            data-text-ready="[@s.text name="projects.menu.status.submitReady"][@s.param]${menuNoun}[/@s.param][/@s.text]"
+            data-text-pending="[@s.text name="projects.menu.status.submitPending"][@s.param]{0}[/@s.param][/@s.text]">
+            [#if trackedMissing > 0]
+              [@s.text name="projects.menu.status.submitPending"][@s.param]${trackedMissing}[/@s.param][/@s.text]
+            [#else]
+              [@s.text name="projects.menu.status.submitReady"][@s.param]${menuNoun}[/@s.param][/@s.text]
+            [/#if]
+          </span>
+        </div>
+      [/#if]
+
+    [#else]
+
+      [#-- Submit button: hidden until every section is complete; the check reveals it. --]
+      [#if enableUnsubmitButton && canEdit]
+        [#assign showSubmit=(canSubmit && !submission && completed)]
+        <a id="submitProject-${projectID}" class="projectSubmitButton clusterMenu-status__submit" style="display:${showSubmit?string('flex','none')}" href="[@s.url action="${crpSession}/submit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 10.5V2.8M5 5.6 8 2.6l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3 9.5v3.2h10V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          [@s.text name="projects.menu.status.submit"][@s.param]${menuNoun}[/@s.param][/@s.text]
+        </a>
+      [/#if]
+
+    [/#if]
+
+    [#-- Unsubmit button --]
+    [#if enableUnsubmitButton && (canUnSubmit && submission) && canEditPhase && !crpClosed ]
+      <a id="submitProject-${projectID}" class="projectUnSubmitButton clusterMenu-status__unsubmit" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
+        [@s.text name="form.buttons.unsubmit" /]
       </a>
     [/#if]
-      
   [/#if]
-  
-  [#-- Unsubmit button --]
-  [#if enableUnsubmitButton && (canUnSubmit && submission) && canEditPhase && !crpClosed ]
-    <a id="submitProject-${projectID}" class="projectUnSubmitButton" href="[@s.url action="${crpSession}/unsubmit"][@s.param name='projectID']${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" >
-      [@s.text name="form.buttons.unsubmit" /]
-    </a>
-  [/#if]
-  
+</div>
+
+[#if !centerGlobalUnit]
   [#-- Justification --]
   <div id="unSubmit-justification" title="[@s.text name="form.buttons.unsubmit" /] justification" style="display:none"> 
     <div class="dialog-content"> 
@@ -242,7 +295,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20180530" ] + customJS  /]
+[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20261009-2" ] + customJS  /]
 
 [#macro menuIcon name="" show=true width="" height="" ]
   <span style="display:${show?string('inline','none')};">
