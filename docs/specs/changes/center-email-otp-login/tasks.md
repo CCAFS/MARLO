@@ -105,7 +105,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T03 — `OtpChallenge` persistence and manager
 
-- **Status:** pending · **Size:** M · **Depends on:** T01 · **Module:** marlo-data
+- **Status:** done [x] · **Size:** M · **Depends on:** T01 · **Module:** marlo-data
 - **Requirements:** FN-007, FN-010, FN-012, FN-013, FN-014 (storage side); SEC-001, SEC-002; OPS-003; FN-002 (uncached read)
 - **Design:** §3, §5.1 steps 7–8, §5.2 steps 4, 6–7, DD-3, DD-6, DD-12; Premise Ledger P-10, P-15, P-16
 - **Files (new):**

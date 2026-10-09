@@ -196,3 +196,138 @@ The user decided in advance: if the `sql_mode=''` rerun also failed, the synthet
 - **runtime events:** none.
 - **spawns:** implementer 38 calls, 131,295 tokens, ended complete; reviewer 14 calls, 53,973 tokens, ended complete.
 - **Final verification:** VERIFIED; Reviewer PASS.
+
+### CHG-OTP-LOGIN-001-T03 — `OtpChallenge` persistence and manager
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-09
+- **Requirements:** FN-007, FN-010, FN-012, FN-013, FN-014 (storage side); SEC-001, SEC-002; OPS-003; FN-002 (uncached read)
+- **Skills assigned:** `marlo-verify`, `error-handling-patterns` (listed), plus `tdd` for the manager-branching tests. Reason: logic-heavy branching that test-first pays for; the SQL itself is proven by the scripted run. Effort `xhigh` (concurrency). Review: parallel lens reviewers (concurrency, security).
+- **Forward pointers carried in the brief:** T01 advisory ('' / NULL / missing row = off); one time source.
+
+#### Attempt 1
+
+- **Files changed:**
+  - new in `marlo-data/.../data/`: `model/OtpChallenge.java`, `dao/OtpChallengeDAO.java`, `dao/mysql/OtpChallengeMySQLDAO.java`, `manager/OtpChallengeManager.java`, `manager/impl/OtpChallengeManagerImpl.java`;
+  - new `marlo-data/src/main/resources/xmls/OtpChallenges.hbm.xml`;
+  - `hibernate.cfg.xml`: one mapping line, LF kept;
+  - new test `marlo-web/src/test/.../data/manager/impl/OtpChallengeManagerImplTest.java`.
+- **Time source:** Java UTC everywhere. The manager holds one `Clock.systemUTC()`, and every `DATETIME` is bound as UTC text. There is no `NOW()` and no `CURRENT_TIMESTAMP`; `created_at` is set explicitly. The local database runs at -05. The stored text is identical under JVM time zones Tokyo, Bogota and New York, and database session time zones +09:00 and -11:00 change no count.
+- **Allow-list "off" cases:** NULL, '' and whitespace-only collapse to `""`, and so does a unit absent from the result. Tests: `aNullValueIsOff`, `anEmptyValueIsOff`, `aWhitespaceOnlyValueIsOff`, `aGlobalUnitAbsentFromTheStoreResultIsOff`. An active custom row wins even when blank, and an inactive custom row is ignored. The read is native SQL with no entity and no `setCacheable`.
+- **Scripted SQL** (DAO statement text, `PREPARE`/`EXECUTE`, `ROW_COUNT()` in the same session, autocommit on):
+  - Red runs: without `attempts<3`, exhausted → **1**; without the expiry term, expired → 1; without `consumed_at IS NULL`, consumed → 1.
+  - Real consume: exhausted **0**, open **1**, second **0**, expired 0, expiring exactly now 0, attempts=2 1, missing 0.
+  - Increment: 1, 1, 1, then 0.
+  - Supersede, 2 open rows of the email: 2. Purge, 1-h cutoff: 1.
+- **`registerMismatch`:** returns `MismatchOutcome` (`MISMATCH` / `EXHAUSTED` / `INVALID`). With 1 row affected, attempts of 3 or more → `EXHAUSTED`. With 0 rows, it re-reads: missing or consumed → `INVALID`, attempts of 3 or more → `EXHAUSTED`, anything else → `INVALID`.
+- **`@Transactional`:** `issue`, `consume`, `registerMismatch`, `purgeExpired` (`REQUIRES_NEW`). Reads carry none.
+- **Compile:** exit 0; 2410 / 1051 / 58. **Checkstyle:** 0 on the new files. **Tests:** the full `marlo-web -am` suite, 442 tests, 0 failures. The new class has 32 tests, observed red then green; 6 mutants were killed.
+- **Consumers:** `grep OtpChallenge` finds only the 7 new files and `hibernate.cfg.xml`.
+- **Implementer-declared gaps (verbatim gist):**
+  1. The design gives no return type for `registerMismatch`, so it returns an enum.
+  2. §5.2 step 6 lists consumed/expired before exhausted; the code follows RJ-3 and step 4, so a row that is both exhausted and expired → `EXHAUSTED`.
+  3. DD-12 says "fall back to the default" while §9 says the row wins; the code implements row-wins.
+  4. Supersede touches every open row of the email.
+  5. Inserts are native SQL; the entity is a read mapping.
+  6. The `otp_challenges` query space is declared on native DML, to avoid evicting every L2 cache region. Not measured.
+  7. Two first-ever concurrent issues for one email can deadlock on the gap lock; the loser answers `unavailable`. Not tested.
+  8. `REQUIRES_NEW` is asserted as an annotation only.
+  9. The throwaway copy held 4 tables plus the migration.
+  10. One read-only grep of `tasks.md`.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.**
+  - Clean compile exit 0 (2410/1051/58); `OtpChallengeManagerImplTest` 32/32; Checkstyle 0 on the new files.
+  - On a fresh throwaway database (real `global_unit_types` and `parameters` DDL plus the T01 migration), with the exact DAO text:
+    - consume: the no-`attempts<3` falsifier on the exhausted row → 1; real consume exhausted 0, open 1, again 0, expired 0, attempts=2 1;
+    - increment: 1, 1, 1, 0.
+  - Throwaway dropped.
+
+#### Reviewer verdicts — attempt 1 (parallel lenses, `opus`; Implementer `sonnet`)
+
+- **Concurrency lens: `PASS`.**
+  - The statements match DD-3 and §5.2 steps 6–7. `issue` is one transaction (FN-007), the purge runs in its own transaction, and the clock is single.
+  - Gap 7 is no spec violation: the loser rolls back whole, at most one open row remains, and the failure maps to `unavailable` per §5.1 step 7. It requires a cooldown bypass. Accepted; T15 exercises it.
+  - The first-level cache is not stale: `findByNonce` evicts the row it loads.
+  - Gap 2: RJ-3 wins. The step 6 wording should be clarified in the design, which is not a defect of this task.
+- **Security lens: `PASS`.**
+  - SEC-001 and SEC-002 hold: only MACs are stored, there is no cache region, and exception messages carry no values.
+  - Every value is bound; the only concatenation is an `int` constant.
+  - No write path misses `@Transactional`. `toString` exposes no MAC.
+  - Row-wins matches §9 and the `CognitoAuthSpecificity.isActiveFor` shape, and it is fail-closed, so it is consistent with DD-12 and FN-001.
+  - With several custom rows, the newest `cp.id` wins deterministically.
+  - The empty `IN` list is guarded by the manager.
+- **Decisions made (adjudicated by the Leader from both verdicts):**
+  - `registerMismatch` returns `MismatchOutcome` instead of "post-update attempts", carrying the same classification.
+  - A row that is both exhausted and expired → `EXHAUSTED`, per RJ-3 and step 4.
+  - Allow-list precedence is row-wins, and a blank active custom value means off.
+  - The design.md §5.2 step 6 wording is left for `/akili-validate`; no execute-time edit, since RJ-3 already governs.
+- **ADVISORY (recorded, not gating):**
+  - *Resilience:* the 0-row re-read in `registerMismatch` is a snapshot read. If it shares a transaction with step 4's `findByNonce` under REPEATABLE-READ, a challenge exhausted concurrently answers `INVALID` instead of `EXHAUSTED`. This fails closed. Possible fix: `SELECT … FOR SHARE`.
+  - *Resilience:* a range-DELETE purge can deadlock with an issue when every row is past the cutoff. It fails closed (`unavailable`).
+  - *Reliability:* reads go through Hibernate `LocalDateTime` → `Timestamp` in the JVM time zone, and `hibernate.jdbc.time_zone` is unset. On a JVM in a daylight-saving zone, a UTC wall time in a spring-forward gap reads back shifted by 1 h.
+  - *Risk:* the allow-list joins custom rows through the unit's own type parameter, while the cached lookup matches on key alone. A mismatched row resolves to off, which is fail-closed but can disagree with the admin screen.
+  - *Readability:* "newest row wins" depends on the `ORDER BY` plus a map overwrite; add a comment.
+  - *Risk:* a duplicate-nonce MySQL error message contains the nonce. Callers must not log the exception message.
+  - *Reliability:* the native allow-list SELECT has no query space, so in AUTO flush mode it flushes the session. Harmless before authentication.
+- **Forward pointers (Leader):**
+  - **T10:** compute `expiresAt` from the same UTC clock as `now` (or let `issue` compute it). Never log a store exception's message, because a duplicate-nonce error carries the nonce.
+  - **T11:** the §5.2 step 4 `now > expires_at` check uses the same UTC clock. Be aware of the snapshot re-read advisory when step 4 and `registerMismatch` share a transaction.
+  - **T15:** probe concurrent first-ever issues for one email (deadlock → one `unavailable`, at most one open row), purge against issue, and REQUIRES_NEW behaviour in a real Spring context.
+  - **T16:** go-live premises: the production JVM time zone is UTC, or `hibernate.jdbc.time_zone=UTC` is set; and the allow-list is set on the unit's own type parameter.
+- **runtime events:** none.
+- **spawns:** implementer 62 calls, 272,929 tokens, ended complete; reviewer (concurrency) 12 calls, 84,812 tokens, ended complete; reviewer (security) 14 calls, 83,430 tokens, ended complete.
+- **Final verification:** VERIFIED; both lenses PASS.
+
+---
+
+## Pre-commit safety check: T01–T03 (user request, 2026-10-09)
+
+The user asked to verify that every change so far is safe before the T03 commit.
+
+### Mechanical checks (Leader inline)
+
+- **Full suite:** `mvn -o -pl marlo-web -am test` exited 0 with `Tests run: 442, Failures: 0, Errors: 0, Skipped: 0`.
+- **Debug leftovers:** `grep System.out|printStackTrace` over the new and changed main sources found nothing.
+- **Local DB (`aiccradb_actsave`), where the T02 run applied the T01 migration through Flyway:**
+  - `schema_version` holds `2.6.0.20261009.1025`, `success=1`;
+  - there are 0 failed migrations;
+  - 4 catalog rows exist and 0 `custom_parameters` rows;
+  - the 3 OTP tables are present.
+- **Startup smoke:** `scripts/run-marlo-java17.sh` was run with no `OTP_HMAC_SECRET`, with the uncommitted T03 hbm mapping included.
+  - The log has 0 lines matching `SEVERE`, `Error creating bean`, `HibernateException` or `MappingException`.
+  - `/marlo-web/` returns 302 and `/marlo-web/login.do` returns 200.
+  - The only OTP-related log line is Tomcat's generic resource-cache warning, which every migration file triggers.
+  - The app was left running.
+- **Existing password login (local test account, localhost only):**
+  - `POST login.do` returned 302 to `/marlo-web/AICCRA/crpDashboard.do`, and the dashboard returned 200.
+  - Cognito login is not reproducible locally and was not exercised.
+
+### Independent branch-wide review (`akili-reviewer`, `opus`, author of none of T01–T03): `SAFE WITH NOTES`
+
+**Affects existing behaviour now (notes):**
+1. The admin specificities screen lists `crp_otp_allowed_email_domains`. A value an admin saves now would switch the feature on once later PRs deploy, provided the secret is also set.
+2. The `INSERT … SELECT` on `parameters` takes millisecond next-key locks. It may log a STATEMENT-binlog "unsafe" warning. No fix needed.
+3. `CREATE TABLE IF NOT EXISTS` would keep a wrong-shaped pre-existing table. Check `SHOW CREATE TABLE` on staging before production.
+
+**Checked safe:**
+- Startup: `hbm2ddl` validation is off, and the `@Value` defaults are empty.
+- `OtpKeys` is not a bean, and the DAO and manager constructors touch no database.
+- No L2 cache region is evicted, because the native writes declare the `otp_challenges` space.
+- No credentials and no debug output in the diff; GPL headers present.
+- All values are bound and only MACs are stored.
+
+**Affects the feature once enabled:**
+4. *Should-fix before the request action ships.* Concurrent `issue` calls for one email can deadlock under REPEATABLE-READ. Unless the action catches it, the result is a 500 with a timing difference. Under READ COMMITTED both calls could commit and leave two open rows.
+5. The constant-time MAC compare (`MessageDigest.isEqual`) belongs to the verify flow.
+6. A line-wrapped base64 secret fails closed, so the runbook must give the `-base64 48` / `-A` recipe.
+7. The `expiresAt` read-back can shift by 1 h on a non-UTC JVM during a DST gap. Expiry is decided in SQL, so never decide it from `getExpiresAt()` in Java.
+8. `REQUIRES_NEW` on purge can block on its own caller if that caller holds `otp_challenges` locks. Call it outside such a transaction.
+9. With duplicate active `custom_parameters` rows, the highest `cp.id` wins, which may differ from `BaseAction`.
+10. A comment in `OtpChallengeMySQLDAO` refers to an external probe script.
+
+### Leader adjudication
+
+No blocker. The T03 commit is safe. Forward pointers added:
+- **T10:** catch lock and deadlock exceptions from `issue` and answer through the neutral or `unavailable` path, never a 500 (finding 4). Call manager writes only from `execute()`, never from `validate()`. Run `purgeExpired` outside any transaction that holds `otp_challenges` locks (finding 8).
+- **T11:** compare MACs with `MessageDigest.isEqual` on decoded bytes (finding 5). Do not decide expiry from `getExpiresAt()` in Java; rely on the SQL condition (finding 7).
+- **T15:** the concurrency probe records the isolation level and covers concurrent first-ever issues for one email (finding 4).
+- **T16:** the runbook gives the single-line secret recipe (finding 6), and the rollout checklist covers finding 1 (no admin value before release) and finding 3 (`SHOW CREATE TABLE` on staging).
