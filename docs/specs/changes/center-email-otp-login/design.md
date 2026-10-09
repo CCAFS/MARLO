@@ -148,12 +148,16 @@ only at consume time (DD-5).
 | `window_start` | DATETIME | NO | PK part 2. Start of the bucket's fixed 15-min window |
 | `hits` | INT | NO | Atomic upsert increment |
 
+Index `idx_otp_rate_limits_window_start (window_start)`: the purge deletes by `window_start` alone, which the PK cannot serve because `bucket` leads it. *Added at execute time, 2026-10-09 (user decision; `execution.md` T01).*
+
 **Table `otp_cooldowns`** (RJ-1). This is a sliding interval, not a window.
 
 | Column | Type | Null | Notes |
 |---|---|---|---|
 | `bucket` | CHAR(64) | NO | PK. Hex HMAC of `cooldown|email|<normalised>` |
 | `last_request_at` | DATETIME(3) | NO | Time of the last accepted request |
+
+Index `idx_otp_cooldowns_last_request_at (last_request_at)`: serves the purge of cooldown rows older than 1 h. *Added at execute time, 2026-10-09 (user decision; `execution.md` T01).*
 
 **Catalog seed.** The rows are inserted **from `global_unit_types`**, by selecting the ids among 1, 2, 3 and 4 that exist. A database missing a type gets no row and no FK failure (P-23, JI-10). Type 2 is included because migration-only databases hold "Center" as id 2 (RJ-4). Each row has:
 - key `crp_otp_allowed_email_domains`;
