@@ -202,6 +202,18 @@ public class APConfig {
   private String COGNITO_JWKS_URI;
   @Value("${cognito.identity.provider:}")
   private String COGNITO_IDENTITY_PROVIDER;
+  /*
+   * CHG-OTP-LOGIN-001-T02 -- Center email one-time-code sign-in settings. Same ${key:} empty-default form
+   * and for the same reason as the cognito.* fields above: an unresolvable placeholder would stop the
+   * application from starting on every environment that never enables the feature (SEC-008).
+   * The secret is delivered by the environment (OTP_HMAC_SECRET), never by a committed property.
+   */
+  @Value("${otp.hmac.secret:}")
+  private String OTP_HMAC_SECRET;
+  @Value("${otp.trusted.proxies:}")
+  private String OTP_TRUSTED_PROXIES;
+  @Value("${otp.smtp.timeout.ms:}")
+  private String OTP_SMTP_TIMEOUT_MS;
 
   public APConfig() {
   }
@@ -962,6 +974,29 @@ public class APConfig {
    */
   public String getCognitoJwksUri() {
     return this.cognitoSetting(COGNITO_JWKS_URI);
+  }
+
+  /**
+   * @return the raw (base64) secret the email one-time-code MAC keys derive from, or empty when unset. The value is
+   *         validated by the caller; never log it
+   */
+  public String getOtpHmacSecret() {
+    return this.cognitoSetting(OTP_HMAC_SECRET);
+  }
+
+  /**
+   * @return the connect, read and write timeout in milliseconds for the one-time-code mail session as configured, or
+   *         empty when unset (the caller applies its own default)
+   */
+  public String getOtpSmtpTimeoutMs() {
+    return this.cognitoSetting(OTP_SMTP_TIMEOUT_MS);
+  }
+
+  /**
+   * @return the comma-separated trusted proxy addresses or CIDR ranges, or empty when unset
+   */
+  public String getOtpTrustedProxies() {
+    return this.cognitoSetting(OTP_TRUSTED_PROXIES);
   }
 
   /**

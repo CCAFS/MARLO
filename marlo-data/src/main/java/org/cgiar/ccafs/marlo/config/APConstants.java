@@ -124,6 +124,9 @@ public final class APConstants {
   public static final String PROJECT_ACTIVITY_CREATION_ACTIVE = "project_activity_creation_active";
   // CHG-COGNITO-AUTH-001: per-Global-Unit switch to Amazon Cognito for CGIAR users. Value MUST equal parameters.key
   public static final String COGNITO_AUTH_ACTIVE = "cognito_auth_active";
+  // CHG-OTP-LOGIN-001: per-Global-Unit email domain allow-list for the Center email one-time-code sign-in
+  // (empty = off). Value MUST equal parameters.key
+  public static final String OTP_ALLOWED_EMAIL_DOMAINS = "crp_otp_allowed_email_domains";
   public static final String FEEDBACK_ACTIVE = "feedback_active";
   public static final String FEEDBACK_CLARIFICATION_NEEDED_ACTIVE = "feedback_clarification_needed_active";
   public static final String FEEDBACK_DRAFT_ACTIVE = "feedback_draft_active";

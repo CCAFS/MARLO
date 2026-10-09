@@ -143,3 +143,56 @@ The user decided in advance: if the `sql_mode=''` rerun also failed, the synthet
 - **Requirements covered:** DA-001, DA-002 (seed), DA-003 (storage), FN-001 (seed off); OPS-003 purge supported by the indexes
 - **Decisions made:** the T01 Disqualifier amendment and P-23 outcome line in `tasks.md`; the design.md §3 index amendment (both user decisions, 2026-10-09)
 - **Forward pointers:** T03 handles the `''`, NULL and missing-row allow-list cases. T03/T04 use one time source for every `DATETIME` write and comparison.
+
+### CHG-OTP-LOGIN-001-T02 — Constants, configuration and `OtpKeys`
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-09
+- **Requirements:** SEC-008, DA-002 (constants in both files), NF-002
+- **Skills assigned:** `marlo-verify`, `tdd` (as listed). Effort `high`. Review: lens checklist; override (f) applies (secret handling).
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-utils/.../utils/APConfig.java` (CRLF kept): `otp.hmac.secret`, `otp.trusted.proxies` and `otp.smtp.timeout.ms` as `${key:}`, with getters.
+  - `marlo-data/.../config/APConstants.java`: adds `OTP_ALLOWED_EMAIL_DOMAINS`.
+  - `marlo-web/.../config/APConstants.java`: adds `OTP_ALLOWED_EMAIL_DOMAINS` and `OTP_PENDING_CHALLENGE = "otpPendingChallenge"`.
+  - `marlo-web/.../security/otp/OtpKeys.java` (new).
+  - `marlo-web/src/test/.../security/otp/OtpKeysTest.java` (new).
+- **P-18: settled — the environment variable reaches the getter.** Route: `./scripts/run-marlo-java17.sh` with `OTP_HMAC_SECRET` exported (`openssl rand -base64 32`), nothing in `marlo-dev.properties`. Getter length 44 with the variable, 0 without. The temporary probe (an `InitializingBean` plus `System.out` in `APConfig`) was removed; `APConfig` was restored from a clean copy. The run applied the T01 migration to the local `aiccradb_actsave`, as approved. The app was left stopped.
+- **Red run:** `OtpKeysTest.java:[72,56] cannot find symbol  symbol: class OtpKeys`.
+- **Green:** `Tests run: 13, Failures: 0, Errors: 0, Skipped: 0`.
+- **Falsifier (length floor 16 bytes):** `Failures: 3`, including `thirtyOneDecodedBytesIsUnconfigured`. Floor restored to 32.
+- **Compile:** exit 0; 6 / 2405 / 1051 / 57 files. **Checkstyle:** HEAD 9, tree 9, delta 0 (pre-existing `APConfig` method names).
+- **Consumers:** `grep APConstants.OTP_` is empty; both constant values equal `crp_otp_allowed_email_domains`, the T01 key.
+- **Implementer assumptions (verbatim gist):**
+  - derivation tags `otp-email` / `otp-code` / `otp-bucket`, pinned by external HMAC vectors;
+  - `OtpKeys(APConfig)` is public and `OtpKeys(String)` package-private;
+  - the accessors return copies, and an unconfigured instance throws `IllegalStateException`;
+  - one WARN `auth.otp.keys outcome=unconfigured`, carrying no value and no length;
+  - `getOtpSmtpTimeoutMs()` returns a raw trimmed String, which T09 parses with a default of 10000;
+  - the getters reuse the private `cognitoSetting` helper;
+  - decoding is strict standard base64.
+- **Issues encountered:**
+  - The first test-compile failed transiently with "class file for BaseAction not found"; the retry succeeded. A VS Code Java language server was running.
+  - The no-variable restart answered HTTP 404 on `/marlo-web/`.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.**
+  - Clean compile exit 0 (6/2405/1051/57).
+  - `mvn -o -pl marlo-web -am test -Dtest=OtpKeysTest` exit 0, `Tests run: 13, Failures: 0`.
+  - `checkstyle.sh` on the 5 files: 9 violations, all pre-existing `APConfig` `MethodName`.
+- **Reviewer verdict: `PASS`** (`akili-reviewer`, `opus`; Implementer `sonnet`).
+  - The scope items are met.
+  - The constants are byte-identical to the migration key.
+  - `OtpKeys` follows design §5.3 and DD-10: strict base64 of at least 32 bytes, unconfigured otherwise, one WARN with no value and no fallback key, and HMAC-SHA256 derivation with three distinct tags.
+  - The GPL headers are present.
+  - The Kaizen checks hold: the expected values are external vectors.
+  - P-18 was settled without the disqualifier.
+- **ADVISORY (recorded, not gating):**
+  - *Readability:* the `OTP_PENDING_CHALLENGE` comment cites "Cognito parity, DD-4", but this spec's DD-4 is "Pre-registered only". The intended reference is CHG-COGNITO-AUTH-001 DD-4.
+  - *Readability:* the `cognitoSetting` helper name and its javadoc now also serve the OTP getters. A rename is out of scope here.
+  - *Risk:* the no-variable 404 proves nothing about startup. **Forward pointer to T15 (AC-12):** check a known 2xx/3xx route, such as the login page, with no secret set. Do not cite this run.
+  - *Reliability:* strict decoding rejects wrapped base64 (`openssl rand -base64 64` or more wraps). **Forward pointer to T16:** name the `openssl rand -base64 32`/`48` single-line recipe in the runbook and go-live checklist.
+  - *Reliability:* no test exercises the public `OtpKeys(APConfig)` constructor. T09 or T15 will cover it once it is wired.
+- **runtime events:** none.
+- **spawns:** implementer 38 calls, 131,295 tokens, ended complete; reviewer 14 calls, 53,973 tokens, ended complete.
+- **Final verification:** VERIFIED; Reviewer PASS.

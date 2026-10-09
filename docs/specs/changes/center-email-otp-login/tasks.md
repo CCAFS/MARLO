@@ -73,7 +73,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T02 — Constants, configuration and `OtpKeys`
 
-- **Status:** pending · **Size:** S · **Depends on:** none · **Modules:** marlo-utils, marlo-data, marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** none · **Modules:** marlo-utils, marlo-data, marlo-web
 - **Requirements:** SEC-008; DA-002 (constants in both files); NF-002
 - **Design:** §2, §5.3 `OtpKeys`, DD-10; Premise Ledger P-18
 - **Files:**
