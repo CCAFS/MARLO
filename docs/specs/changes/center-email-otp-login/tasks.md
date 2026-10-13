@@ -252,7 +252,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T08 — Extract `ReturnUrls.sameOriginOrNull`
 
-- **Status:** pending · **Size:** XS · **Depends on:** none · **Module:** marlo-web
+- **Status:** done [x] · **Size:** XS · **Depends on:** none · **Module:** marlo-web
 - **Requirements:** FN-011 (landing parity, return URL); FN-019
 - **Design:** DD-11; Premise Ledger P-22
 - **Files:**

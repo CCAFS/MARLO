@@ -674,3 +674,40 @@ No blocker. The T03 commit is safe. Forward pointers added:
 - **runtime events:** none.
 - **spawns:** implementer 25 calls, 113,355 tokens, ended complete. Reviewer 8 calls, 56,733 tokens, ended complete.
 - **Final verification:** VERIFIED; Reviewer PASS.
+
+### CHG-OTP-LOGIN-001-T08 — Extract `ReturnUrls.sameOriginOrNull`
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-13
+- **Requirements:** FN-011 (return URL, landing parity), FN-019
+- **Skills assigned:** `marlo-verify` (listed) plus `tdd`, because the task orders the red test first. Effort `medium`. Review: checklist; override (f) applies (open-redirect guard).
+- **Leader brief constraint:** `CognitoLoginActionTest.java:158` reaches the private `sameOriginOrNull(String)` by reflection. The action therefore keeps that method as a one-line delegation, and the test stays untouched.
+
+#### Attempt 1
+
+- **Files:**
+  - `marlo-web/.../security/ReturnUrls.java` (new): `public static String sameOriginOrNull(String candidate, String baseUrl)`, plus `isAuthenticationEndpoint` and `AUTHENTICATION_ENDPOINT_PATHS`, moved verbatim as private static members.
+  - `CognitoLoginAction.java` (+2/−83): the private method now delegates with `ReturnUrls.sameOriginOrNull(candidate, this.getBaseUrl())`; 7 unused imports were removed.
+  - `ReturnUrlsTest.java` (new, 11 tests).
+  - All files are LF.
+- **Red:** test-compile failed with `cannot find symbol: ReturnUrls`. This is a compile red; the falsifier below proves the assertions.
+- **Falsifier (origin check replaced by `if (false)`):** 2 of 11 tests failed in `ReturnUrlsTest` and 4 of 34 in `CognitoLoginActionTest`. The failing `CognitoLoginActionTest` cases were `anExternalOriginIsStillRejected`, `anOffSiteReturnUrlIsDiscardedAndAnOnSiteOneSurvives` and both trailing-slash cases. The change was then restored.
+- **Green:** the `-Dtest` run passed 45/0; the full suite passed 617/0. `CognitoLoginActionTest` has no diff.
+- **Compile:** 2415/1059/67. **Checkstyle:** HEAD 0, now 0.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.** One command did the wipe, compile and test: exit 0, 2415/1059/67, 617 tests, 0 failures. `ReturnUrlsTest` passed 11/0 and `CognitoLoginActionTest` 34/0. Checkstyle 0; only 3 paths changed.
+
+#### Reviewer verdict — attempt 1: `PASS` (`akili-reviewer`, `opus`; Implementer `sonnet`)
+
+- **Behaviour identity:** a line-by-line comparison found no change. Every normalisation and fail-closed branch is preserved. `getBaseUrl()` is still read at call time.
+- **Reversion challenge (DD-11):** the only consumer is `CognitoLoginAction:241`. That path is pinned by the unchanged suite, which is green.
+- **Tests:** the test literals cover every required case. The malformed inputs really reach the `URISyntaxException` branch.
+- **Imports:** removing the unused imports is inert.
+- **ADVISORY (recorded, not gating):**
+  - *Risk/readability:* the moved log messages say "Cognito login:" and now log under the `ReturnUrls` logger. Once OTP reuses the class, an OTP rejection would be labelled as Cognito.
+  - *Readability:* the Javadoc `{@link}` references at `CognitoLoginActionTest` lines 569 and 640 now dangle. This breaks javadoc generation, not the compile. The test must stay unchanged, so this is a follow-up.
+- **Forward pointer (Leader):** **T10/T11**, when reusing `ReturnUrls`, make the log label caller-neutral by dropping the "Cognito login:" prefix or passing a label. The change must keep `CognitoLoginActionTest` green and unchanged.
+- **runtime events:** none.
+- **spawns:**
+  - implementer: 17 calls, 93,050 tokens, ended complete;
+  - reviewer: 8 calls, 47,413 tokens, ended complete.
+- **Final verification:** VERIFIED; Reviewer PASS.
