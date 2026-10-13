@@ -1085,3 +1085,106 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
 - **runtime events:** none.
 - **spawns:** Implementer, 19 calls, 108,132 tokens, ended complete. Reviewer, 9 calls, 49,792 tokens, ended complete.
 - **Review rounds:** 21 of 28.
+
+### CHG-OTP-LOGIN-001-T14 — Login page: FTL, JS and copy
+
+- **User decisions (2026-10-13), before the walkthrough:**
+  - The feature-on walkthrough may write a **temporary** allow-list row to `custom_parameters` in the local `aiccradb_actsave` for AICCRA. The row is removed afterwards, and the before and after states are recorded here.
+  - A temporary `OTP_HMAC_SECRET` lives in the environment only.
+  - The success state uses a non-CGIAR test mailbox that the user supplies and reads.
+- **Attempt 1 — Implementer:** STATUS DONE.
+  - `loginForm.ftl`: hidden `#login-step-otp`, `#login-otp-request-container`, `.otpRequestError` and the `#login-otp-copy` spans.
+  - `login.js`: +285 lines, 1 changed line.
+  - `global.properties`: 17 `login.otp.*` keys.
+  - The cache-buster `?20261013` is in `login.ftl` and `error/401.ftl`.
+  - Evidence: `node --check` OK; `i18n-check` no findings; clean compile 2415/1062; off-state live smoke (`login.do` 200, bumped JS served, OTP markup hidden, `otpEnabled=false`, `otpRequestCode` answers `domainNotEnabled`).
+- **Evidence re-run (Leader, non-author):** `node --check` OK; the diff stat matches (+358/-3); no line-ending change; no apostrophe in the added properties lines. **VERIFIED**.
+- **Attempt 1 — Reviewer (full):** **FAIL**.
+  - Issue 1: "Go back" stays active while a code request is in flight. `showProjectStep()` does not bump `otpRequestSeq`, so a late `sent` jumps from the project step to the code step for the unit the user left. Violates design §6 "Request sequencing" ("Stale responses are dropped") and UI-004.
+  - Remediation: guard Go back on `otpRequestInFlight || otpVerifyInFlight`; bump `otpRequestSeq` and clear the in-flight state in `showProjectStep()`.
+  - Advisories:
+    - "Use a different email" stays enabled during a redirect.
+    - `loadAvailableItems` clicks the AICCRA card before rewriting its `data-*`. The same flaw pre-exists for `cognitoEnabled`.
+    - `.replace("__DEST__", …)` interprets `$` patterns.
+    - `btn-link` colour and the `label` weight need the walkthrough.
+    - The `failed` copy says "CGIAR sign-in" (a T11/design copy gap).
+- **Attempt 2 — Implementer:** STATUS DONE, a delta of about 25 lines in `login.js` only.
+  - The Go-back handler returns while `isSubmitting || otpRequestInFlight || otpVerifyInFlight`.
+  - `showProjectStep()` bumps `otpRequestSeq`, clears both in-flight flags and refreshes the buttons.
+  - `#login-otp-different` is a no-op and disabled while `otpRedirecting`.
+  - `__DEST__` and `__N__` use function replacers.
+  - Extra: `requestOtpCode` records `stepAtStart`, and a late answer is dropped if the step changed or a password submit started.
+- **Evidence re-run (Leader):** `node --check` OK. **VERIFIED**.
+- **Attempt 2 — Reviewer (full):** **PASS**.
+  - Finding 1 is fixed on both sides (guard and invalidation).
+  - The off-state is identical to HEAD: with both flags false, the Go-back guard reduces to HEAD's `if(isSubmitting)`, and the new lines touch only hidden OTP elements.
+  - No stuck state: the 20 s timeout and the reset paths always clear the in-flight flag.
+- **Advisory applied (Leader decision):** the same `stepAtStart`/`isSubmitting` drop rule is added to `failedRequest`, so a failed code request that lands during a password submit shows nothing.
+- **Remaining advisories, for the walkthrough to judge:**
+  - the `loadAvailableItems` ordering (pre-existing, unchanged);
+  - the `btn-link` colour and the `label` weight;
+  - the "CGIAR sign-in" wording on a `failed` answer.
+- **Walkthrough checklist (Reviewer):**
+  - Go back during an in-flight request with several units.
+  - "Log in" during an in-flight request.
+  - "Use a different email" disabled after an `ok` verify.
+  - The `requestSeq` falsifier.
+  - A double click, and Enter held down, each giving 1 request.
+  - Every UI-002 state, with a real ellipsis and the 30→0 countdown.
+  - Focus on open.
+  - A code entered with reCAPTCHA showing.
+  - Password-only and Cognito units identical to HEAD, including terms unchecked.
+- **Status:** `[~]` until the feature-on walkthrough artifacts are recorded (Done-when).
+- **Review rounds:** 23 of 28.
+- **Feature-on walkthrough (Leader, claude-in-chrome, 2026-10-13):**
+  - **Setup:**
+    - Temporary `custom_parameters` row id 2609 (`parameter_id` 397, value `outlook.com`, AICCRA 45).
+    - A random `OTP_HMAC_SECRET` in the environment only.
+    - Test account id 3862 (`kenjitm@outlook.com`): active, non-CGIAR, active AICCRA member.
+  - **SMTP:** the first attempt logged `auth.otp.delivery outcome=email_failed` (`SendFailedException`). Cause: the local `email.host` is CGIAR's inbound MessageLabs gateway, which refuses to relay to external domains (`453 … as a relay … (#4.7.1)`, probed with RCPT only, no message sent). This is an environment limit, not a code defect.
+    - With the user's approval, the app was restarted with `EMAIL_HOST`/`EMAIL_PORT` (and the backups) pointing at a local SMTP sink, `scratchpad/smtp_sink.py` on 127.0.0.1:2525, set through environment variables only.
+    - Nothing left the machine.
+  - **Results:**
+    - **UI-001:** "Email me a sign-in code" shows for the allowed unit.
+    - **Terms:** with terms unchecked, the click shows the terms message and sends 0 requests.
+    - **UI-004:** a double click on Request sent 1 `otpRequestCode.do` request.
+    - **Code step:** the input is focused; the status reads "…a code is on its way to k***@outlook.com"; Resend counts down from 30 s.
+    - **UI-003:** `inputmode=numeric`, `autocomplete=one-time-code`, `maxlength=6`, a `<label for>`, no `name`; `#login-otp-status` has `role=status aria-live=polite`; `#login-otp-error` has `role=alert`.
+    - **Short code:** "123" shows "Please enter the 6-digit code." and sends 0 requests.
+    - **Wrong code:** a wrong code with Enter pressed ×3 sent 1 verify request, showed "That code is not correct. Please try again.", cleared and refocused the input, and did not submit the password form.
+    - **Captured email:** subject "Your MARLO sign-in code", envelope and `To` `kenjitm@outlook.com`, text and HTML parts, 5-minute expiry copy.
+    - **Success:** the correct code with a double click on Verify sent 1 verify request (`auth.otp.verify outcome=ok`) and redirected to `AICCRA/crpDashboard.do`.
+    - **Database after success:** challenge consumed; `otp_challenges` holds only 64-character HMACs (searching for the code or `outlook` matched 0 rows); `agree_terms` 0→1 and `last_login` updated, as in a normal login.
+    - **Exhausted state:** three wrong codes gave mismatch, mismatch, exhausted ("Too many incorrect attempts. Please request a new code."), and Resend was enabled at once.
+    - **Stale response:** jQuery callbacks were delayed 3 s in-page, then Resend was clicked followed by "Use a different email". The late answer was dropped: the page stayed on the email step, the OTP step stayed hidden, and no request error showed. The late answer was `rate_limited` (the 30 s cooldown); its drop is the same `requestSeq` path a late `sent` takes.
+    - **Off-state for other paths:** for a CGIAR user (`k.tanaka@cgiar.org`), every card has `data-otp-enabled=false` (SEC-009). The AICCRA (Cognito-flagged) card opened its usual password and terms step with no OTP control.
+  - **Server log of the run:**
+
+    | Event | Outcome | Count |
+    |---|---|---|
+    | `auth.otp.request` | `sent` | 2 |
+    | `auth.otp.request` | `rate_limited` | 1 |
+    | `auth.otp.delivery` | `delivered` | 2 |
+    | `auth.otp.verify` | `ok` | 1 |
+    | `auth.otp.verify` | `mismatch` | 2 |
+    | `auth.otp.verify` | `exhausted` | 1 |
+
+  - **Not exercised:**
+    - **Removal-based `requestSeq` falsifier:** it needs a modified `login.js` to be served. The positive drop test above stands in for it.
+    - **Go back during an in-flight request with several units:** the test account has a single unit, whose path goes through `showEmailStep`.
+    - **"Log in" during an in-flight request.**
+    - **Expired (`invalid`) state:** needs a 5-minute wait. It is covered by the T11 unit tests.
+    - **reCAPTCHA overlap.**
+    - **Visual comparison of password and Cognito units against a HEAD build:** the code-level identity is established by the Reviewer.
+    - These items go to T15.
+  - **Artifact:** the GIF (50 frames, 29 MB) is `~/Downloads/otp_login_walkthrough_t14.gif`. It is kept out of git because of its size.
+  - **Cleanup:**
+    - Deleted `custom_parameters` row 2609.
+    - Deleted the walkthrough rows in `otp_challenges`, `otp_rate_limits` and `otp_cooldowns`.
+    - Final counts: OTP `custom_parameters` 0, total `custom_parameters` 1623 (as before), `otp_*` 0/0/0.
+    - The app, the SMTP sink and the captured mailbox file are stopped or removed.
+    - `agree_terms=1` on user 3862 is kept: the user accepted the terms in the flow.
+- **Forward pointers (Leader):**
+  - **T15:** run the items listed under "Not exercised" above.
+  - **T16 runbook:** local and non-production SMTP may refuse external recipients. A local walkthrough needs a sink, set through `EMAIL_HOST`/`EMAIL_PORT`.
+- **Final:** Reviewer PASS (attempt 2) and walkthrough recorded. T14 **done**.

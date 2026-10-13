@@ -36,6 +36,19 @@ var selectedGlobalUnitId = null;
 // template is what restores it if the same page later needs the LOCAL branch again. Never
 // inserted directly - always re-cloned, so it can restore the field more than once per page load
 var passwordFieldTemplate;
+// CHG-OTP-LOGIN-001-T14: per-unit "Email me a sign-in code" flag (crpByEmail.do otpEnabled) of the Global Unit
+// card currently selected. False unless the server said exactly true, so every flow below behaves as it did
+// before this feature whenever the specificity is off
+var otpEnabled = false;
+// Incremented on every OTP request/verify call and on "use a different email". A response whose number is no
+// longer the latest belongs to an attempt the user has left and is dropped untouched (UI-004)
+var otpRequestSeq = 0;
+var otpRequestInFlight = false, otpVerifyInFlight = false;
+// True once verification succeeded and the redirect has started: any later verify answer is ignored
+var otpRedirecting = false;
+var otpCooldownTimer = null, otpCooldownLeft = 0;
+var OTP_COOLDOWN_SECONDS = 30;
+var OTP_REQUEST_TIMEOUT_MS = 20000;
 
 function init() {
   initJreject();
@@ -78,6 +91,7 @@ function init() {
     // which Global Unit was actually selected
     selectedGlobalUnitId = $(this).attr('data-global-unit-id') || null;
     cognitoEnabled = $(this).attr('data-cognito-enabled') === 'true';
+    otpEnabled = $(this).attr('data-otp-enabled') === 'true';
 
     // Mirror the selected project card (image/acronym) into the step 3 full-width card(s) -
     // .selected-project-card matches the mirror in both the password step and the cgiar step
@@ -242,7 +256,7 @@ function init() {
   $('.login-back-container .loginBack').on('click', function() {
     // Ignore clicks while a login attempt is still running: navigating away mid-request left the
     // form on another step while the pending response was still about to repaint the button
-    if(isSubmitting) {
+    if(isSubmitting || otpRequestInFlight || otpVerifyInFlight) {
       return;
     }
 
@@ -273,6 +287,39 @@ function init() {
         + "&agree=" + $('input#terms').is(':checked');
   });
 
+  // CHG-OTP-LOGIN-001-T14: the OTP controls. All of them are inert unless showPasswordStep() revealed the
+  // request button, which only happens when the selected unit reported otpEnabled === true
+  $('#login-otp-button').on('click', function() {
+    requestOtpCode();
+  });
+  $('#login-otp-resend').on('click', function() {
+    requestOtpCode();
+  });
+  $('#login-otp-verify').on('click', function() {
+    verifyOtpCode();
+  });
+  $('#login-otp-different').on('click', function() {
+    // A verified code is already redirecting: leaving now would strand the user on the email step
+    if(otpRedirecting) {
+      return;
+    }
+    showEmailStep();
+  });
+  // Digits only, six at most. Enter verifies here instead of falling through to the form's implicit submit,
+  // whose first submit button is the (hidden) "Log in" one
+  $('#login-otp-code').on('input', function() {
+    var digits = this.value.replace(/\D/g, '').slice(0, 6);
+    if(digits !== this.value) {
+      this.value = digits;
+    }
+    $('#login-otp-error').addClass("hidden");
+  }).on('keydown', function(event) {
+    if(event.keyCode === 13) {
+      event.preventDefault();
+      verifyOtpCode();
+    }
+  });
+
   // Reflect the initial state of the email field (it may be prefilled from the cookie) on the button
   updateNextButtonState();
 
@@ -288,6 +335,7 @@ function showEmailStep() {
   isCgiarUser = false;
   cognitoEnabled = false;
   selectedGlobalUnitId = null;
+  resetOtpState();
 
   cleanWrongData();
 
@@ -369,6 +417,13 @@ function showProjectSkeleton() {
 function showProjectStep() {
   currentStep = "project";
 
+  // CHG-OTP-LOGIN-001-T14: an OTP answer still in flight belongs to the step just left, so drop it (UI-004).
+  // Both flags are false whenever OTP is off, so this changes nothing there
+  otpRequestSeq++;
+  otpRequestInFlight = false;
+  otpVerifyInFlight = false;
+  otpRefreshButtons();
+
   cleanWrongData();
 
   $("#login-step-email, #login-step-password, #login-step-cgiar").addClass("hidden");
@@ -389,6 +444,7 @@ function showProjectStep() {
   $("input#login_next").val("Log in");
   $("input#login_next").removeClass("hidden");
   $("#login-cgiar-button").addClass("hidden");
+  $("#login-otp-request-container").addClass("hidden");
 
   clearLoginButtonLoading();
   updateNextButtonState();
@@ -426,6 +482,7 @@ function showPasswordStep() {
     if($activeCard.length) {
       selectedGlobalUnitId = $activeCard.attr('data-global-unit-id') || null;
       cognitoEnabled = $activeCard.attr('data-cognito-enabled') === 'true';
+      otpEnabled = $activeCard.attr('data-otp-enabled') === 'true';
     }
   }
 
@@ -483,6 +540,7 @@ function showPasswordStep() {
     // the dedicated Cognito control, which navigates to cognitoLogin.do instead of submitting
     $("input#login_next").addClass("hidden");
     $("#login-cgiar-button").removeClass("hidden");
+    $("#login-otp-request-container").addClass("hidden");
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 3): hiding input#login_next above can leave focus
     // on <body> when it held focus, so the Cognito control mirrors the LOCAL arm's own focus call
@@ -494,6 +552,8 @@ function showPasswordStep() {
 
     $("#login-cgiar-button").addClass("hidden");
     $("input#login_next").removeClass("hidden");
+    // CHG-OTP-LOGIN-001-T14 / UI-001: the additive code option, only when the unit enables it
+    $("#login-otp-request-container").toggleClass("hidden", otpEnabled !== true);
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 1): a prior visit to the COGNITO branch above
     // .remove()d #login-password from the document. Restore it from the template captured in
@@ -631,7 +691,8 @@ function loadAvailableItems(email) {
                 // without a second round trip to crpByEmail.do
                 $('.selection-bar-options ul #crp-' + data.crps[i].acronym).attr({
                   'data-global-unit-id': data.crps[i].id,
-                  'data-cognito-enabled': data.crps[i].cognitoEnabled ? 'true' : 'false'
+                  'data-cognito-enabled': data.crps[i].cognitoEnabled ? 'true' : 'false',
+                  'data-otp-enabled': data.crps[i].otpEnabled === true ? 'true' : 'false'
                 });
 
                 // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
@@ -990,6 +1051,256 @@ function updateNextButtonState() {
 function showTermsCheckbox() {
   $('.terms-container').removeClass("hidden");
 
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// CHG-OTP-LOGIN-001-T14: e-mailed sign-in code (UI-001 .. UI-005). Everything below is reachable only from the
+// OTP controls, which stay hidden unless the selected Global Unit reported otpEnabled === true
+// ---------------------------------------------------------------------------------------------------------------
+
+// Text of one i18n message rendered (hidden) by loginForm.ftl
+function otpCopy(key) {
+  return $('#login-otp-copy [data-otp-copy="' + key + '"]').text();
+}
+
+// Show exactly one OTP message: inside the code step once it is open, otherwise under the password step
+function otpShowError(key) {
+  cleanWrongData();
+  var $target = (currentStep == "otp") ? $('#login-otp-error') : $('.loginForm p.invalidField.otpRequestError');
+  $target.text(otpCopy(key)).removeClass("hidden");
+}
+
+// One place that derives every OTP button's state, so a request in flight can never leave one stuck
+function otpRefreshButtons() {
+  var busy = otpRequestInFlight || otpVerifyInFlight || otpRedirecting;
+
+  $('#login-otp-button').attr("disabled", otpRequestInFlight)
+      .text(otpRequestInFlight ? otpCopy("sending") : otpCopy("button"));
+
+  $('#login-otp-verify').attr("disabled", busy).text(otpVerifyInFlight ? otpCopy("verifying") : otpCopy("verify"));
+
+  var resendText = otpCopy("resend");
+  if(otpRequestInFlight) {
+    resendText = otpCopy("sending");
+  } else if(otpCooldownLeft > 0) {
+    resendText = otpCopy("resendIn").replace("__N__", function() {
+      return String(otpCooldownLeft);
+    });
+  }
+  $('#login-otp-resend').attr("disabled", busy || otpCooldownLeft > 0).text(resendText);
+  $('#login-otp-different').attr("disabled", otpRedirecting);
+}
+
+function stopOtpCooldown() {
+  if(otpCooldownTimer !== null) {
+    clearInterval(otpCooldownTimer);
+    otpCooldownTimer = null;
+  }
+  otpCooldownLeft = 0;
+}
+
+// Resend countdown. A restart replaces any timer still running
+function startOtpCooldown() {
+  stopOtpCooldown();
+  otpCooldownLeft = OTP_COOLDOWN_SECONDS;
+  otpCooldownTimer = setInterval(function() {
+    otpCooldownLeft--;
+    if(otpCooldownLeft <= 0) {
+      stopOtpCooldown();
+    }
+    otpRefreshButtons();
+  }, 1000);
+  otpRefreshButtons();
+}
+
+// Back to a clean slate: called by showEmailStep(), which is also what "use a different email" runs. The
+// sequence bump is what makes a response still in flight stale
+function resetOtpState() {
+  otpRequestSeq++;
+  otpRequestInFlight = false;
+  otpVerifyInFlight = false;
+  otpRedirecting = false;
+  otpEnabled = false;
+  stopOtpCooldown();
+  $("#login-step-otp").addClass("hidden");
+  $("#login-otp-request-container").addClass("hidden");
+  $("#login-otp-code").val("");
+  $("#login-otp-status").text("");
+  $("#login-otp-error").addClass("hidden").text("");
+  otpRefreshButtons();
+}
+
+// Opens (or refreshes, on a resend) the code step
+function showOtpStep(destination) {
+  currentStep = "otp";
+
+  cleanWrongData();
+
+  $("#login-step-email, #login-step-project, #login-step-password, #login-step-cgiar").addClass("hidden");
+  $("#login-step-otp").removeClass("hidden");
+  $("input#login_next, #login-cgiar-button, #login-otp-request-container").addClass("hidden");
+  $('.terms-container, .login-back-container').addClass("hidden");
+
+  $("#login-otp-status").text(otpCopy("sent").replace("__DEST__", function() {
+    return destination == null ? "" : String(destination);
+  }));
+  $("#login-otp-error").addClass("hidden").text("");
+  $("#login-otp-code").val("").focus();
+
+  startOtpCooldown();
+}
+
+// "Email me a sign-in code" and "Resend code"
+function requestOtpCode() {
+  if(otpRequestInFlight || otpVerifyInFlight || otpRedirecting) {
+    return;
+  }
+  // Same gate as the other buttons, before any request. The server refuses it too (termsRequired)
+  if(!termsAccepted()) {
+    return;
+  }
+
+  var seq = ++otpRequestSeq;
+  var stepAtStart = currentStep;
+  otpRequestInFlight = true;
+  cleanWrongData();
+  otpRefreshButtons();
+
+  // A non-JSON answer, a network error and a timeout are all "unavailable"
+  var failedRequest = function() {
+    if(seq !== otpRequestSeq) {
+      return;
+    }
+    // Same drop rule as the success path: a password attempt or another step owns the page now
+    if(currentStep !== stepAtStart || isSubmitting) {
+      otpRequestInFlight = false;
+      otpRefreshButtons();
+      return;
+    }
+    otpRequestInFlight = false;
+    otpShowError("unavailable");
+    otpRefreshButtons();
+  };
+
+  $.ajax({
+    url: baseUrl + "/otpRequestCode.do",
+    type: "POST",
+    dataType: "json",
+    timeout: OTP_REQUEST_TIMEOUT_MS,
+    data: {
+      email: $.trim(username.val()),
+      globalUnitId: selectedGlobalUnitId,
+      agree: $('input#terms').is(':checked')
+    },
+    success: function(data) {
+      if(seq !== otpRequestSeq) {
+        return;
+      }
+      if(data == null || typeof data.status != "string") {
+        failedRequest();
+        return;
+      }
+      otpRequestInFlight = false;
+      // A password attempt started meanwhile (or any other step change) owns the page now
+      if(currentStep !== stepAtStart || isSubmitting) {
+        otpRefreshButtons();
+        return;
+      }
+      if(data.status == "sent") {
+        showOtpStep(data.destination);
+      } else if(data.status == "termsRequired") {
+        wrongData("termsRequired");
+      } else if(data.status == "domainNotEnabled" || data.status == "rateLimited") {
+        otpShowError(data.status);
+      } else {
+        otpShowError("unavailable");
+      }
+      otpRefreshButtons();
+    },
+    error: function(jqXHR) {
+      // Browser console logging is limited to the HTTP status
+      if(window.console && jqXHR) {
+        console.log("otpRequestCode.do status " + jqXHR.status);
+      }
+      failedRequest();
+    }
+  });
+}
+
+// "Verify code"
+function verifyOtpCode() {
+  if(otpRequestInFlight || otpVerifyInFlight || otpRedirecting) {
+    return;
+  }
+
+  var code = $.trim($('#login-otp-code').val());
+  if(!/^\d{6}$/.test(code)) {
+    otpShowError("codeRequired");
+    $('#login-otp-code').focus();
+    return;
+  }
+
+  var seq = ++otpRequestSeq;
+  otpVerifyInFlight = true;
+  cleanWrongData();
+  otpRefreshButtons();
+
+  var failedVerify = function() {
+    if(seq !== otpRequestSeq || otpRedirecting) {
+      return;
+    }
+    otpVerifyInFlight = false;
+    otpShowError("unavailable");
+    otpRefreshButtons();
+  };
+
+  $.ajax({
+    url: baseUrl + "/otpVerifyCode.do",
+    type: "POST",
+    dataType: "json",
+    timeout: OTP_REQUEST_TIMEOUT_MS,
+    data: {
+      code: code
+    },
+    success: function(data) {
+      if(seq !== otpRequestSeq || otpRedirecting) {
+        return;
+      }
+      if(data == null || typeof data.status != "string") {
+        failedVerify();
+        return;
+      }
+
+      // "failed" carries the generic login redirect the server picked, so it navigates like "ok" does
+      if((data.status == "ok" || data.status == "failed") && typeof data.redirect == "string" && data.redirect != "") {
+        otpRedirecting = true;
+        otpRefreshButtons();
+        window.location.href = data.redirect;
+        return;
+      }
+
+      otpVerifyInFlight = false;
+      if(data.status == "mismatch") {
+        otpShowError("mismatch");
+        $('#login-otp-code').val("").focus();
+      } else if(data.status == "exhausted" || data.status == "invalid") {
+        // The code is spent: let the user ask for a new one at once. The server still enforces its own bucket
+        otpShowError(data.status);
+        stopOtpCooldown();
+      } else if(data.status == "rateLimited") {
+        otpShowError("rateLimited");
+      } else {
+        otpShowError("unavailable");
+      }
+      otpRefreshButtons();
+    },
+    error: function(jqXHR) {
+      if(window.console && jqXHR) {
+        console.log("otpVerifyCode.do status " + jqXHR.status);
+      }
+      failedVerify();
+    }
+  });
 }
 
 // Show the image of the selected crp (big image)

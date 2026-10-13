@@ -419,7 +419,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T14 — Login page: FTL, JS and copy
 
-- **Status:** pending · **Size:** M · **Depends on:** T12, T13 · **Module:** marlo-web (webapp)
+- **Status:** done [x] · **Size:** M · **Depends on:** T12, T13 · **Module:** marlo-web (webapp)
 - **Requirements:** UI-001, UI-002, UI-003, UI-004, UI-005, FN-019 (password and Cognito UI unchanged), FN-011 (redirect)
 - **Design:** §6 (every row); Premise Ledger P-1, P-24
 - **Files:**
