@@ -799,3 +799,90 @@ No blocker. The T03 commit is safe. Forward pointers added:
 - **runtime events:** none (the dirty-tree compile is an environmental retry of the Leader's re-run, not a worker event).
 - **spawns:** implementer attempt 2, 17 calls, cumulative 176,546 tokens, ended complete; reviewer 9 calls, 66,038 tokens, ended complete.
 - **Final verification:** VERIFIED; Reviewer PASS.
+
+### CHG-OTP-LOGIN-001-T10 — `OtpRequestCodeAction`
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-13
+- **User-approved scope amendment, made before the spawn:** no task owned the Spring wiring of `OtpKeys`, `OtpRateLimiter`, `OtpCodes` and `OtpEligibility`. That is the same gap as the T09 FAIL. Building them per Struts request would reset the purge throttle and repeat the unconfigured WARN. The user chose to widen T10 rather than add a separate task. `tasks.md` T10 gains the four files: `@Named` plus `@Inject`, and a startup proof. Requirements are unchanged.
+
+#### Attempt 1
+
+- **Files:**
+  - New: `marlo-web/.../action/home/OtpRequestCodeAction.java`, and `OtpRequestCodeActionTest.java` with 40 tests.
+  - Changed: `@Named` plus `@Inject` on `security/otp/OtpKeys`, `OtpRateLimiter`, `OtpCodes` and `OtpEligibility`, +35 lines (the amended scope).
+- **Surface:**
+  - Extends `BaseAction`, with setters `email`, `globalUnitId` and `agree`.
+  - The `response` is `{status, destination?}` and defaults to `unavailable`. `execute()` always returns SUCCESS.
+  - Seams: a `CodeSender`, plus a package-private constructor that takes a `ClientIpResolver` and a `Clock`.
+- **Forward pointers:**
+  - Met: 1–5, 7–11. Pointer 10 is met by mapping a predicate exception to the neutral `sent` (logged `internal_error`), because `unavailable` would be an oracle.
+  - Not met: 6, the cooldown query timeout, which lives in marlo-data outside the file list. And 12, the `ReturnUrls` "Cognito login:" label, which spans 3 literals.
+- **FN-005 mapping:**
+  - `everyIneligibleStateAnswersExactlyAsTheEligibleOneApartFromTheMaskedEmail`
+  - `aRowIsIssuedInEveryAccountStateAndOnlyTheEligibleOneIsMailed`
+  - `aResendIsAnsweredLikeAnEligibleOneForAnIneligibleAccountToo`
+  - `noResponseValueNamesTheCause…`
+  - `anAccountThatCannotBeEvaluated…`
+  - The verify half belongs to T11.
+- **Red:** 34 of 40 tests failed, for example `aRowIsIssuedInEveryAccountStateAndOnlyTheEligibleOneIsMailed … expected:<1> but was:<0>`. **Green:** 40/0; full suite 671/0.
+- **Falsifier F1** (skip `issue()` for ineligible accounts): 5 tests went red. All 14 mutants were killed.
+- **Startup proof:**
+  - `login.do` returned 200 without the secret.
+  - The `OtpKeys` unconfigured WARN appeared once and stayed at 1 after 3 more requests, which proves the bean is a singleton.
+  - SEVERE and "Error creating bean": 0. The app was stopped afterwards.
+- **Compile:** 2415/1061/69. **Checkstyle:** 0.
+- **Implementer-declared gaps:**
+  - `BaseAction`, not `LoginAction`.
+  - `ClientIpResolver` is built per request.
+  - Each request makes 2 allow-list reads.
+  - The pending value lives in the Shiro session.
+  - If the session write fails after the mail is handed off, the response is `unavailable` even though a code was mailed.
+  - Struts registration and the parameter allow-list are T12's work.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.** One wipe+compile+test command: exit 0, 2415/1061/69, 671 tests, 0 failures, 0 dirty-tree lines. Checkstyle 0 on the 6 files.
+
+#### Reviewer verdicts — attempt 1 (parallel lenses, `opus`; Implementer `sonnet`)
+
+- **Anti-enumeration and security lens: `PASS`.**
+  - Eligible and ineligible accounts get the same map, key order, HTTP status, row issue, limiter consumption and session write.
+  - Only two things differ, both accepted: the mail hand-off is a timing residual (§13, RJ-10), and the outcome is server-side log only.
+  - A session failure after the mail is state-independent: only the mailbox owner can see it.
+  - Answering `sent` on a predicate exception conforms. The shared "" bucket cannot collide with a real email.
+  - Running the unconfigured check first conforms to SEC-008 and §4.
+  - SEC-001 holds, and the recipient is `pending.getEmail()`.
+- **Correctness lens: `PASS`.**
+  - §5.1 steps 1–11 are as specified.
+  - DD-5 holds.
+  - The issue is `REQUIRED` and the purge `REQUIRES_NEW`; a purge failure still yields `sent`.
+  - There is exactly one request line on every path.
+  - Expiry and purge use a single clock.
+  - There is no `validate()`.
+  - Each of the four beans has exactly one instance, there is no cycle, and nothing calls `new`.
+  - The session write uses `setAttribute` on the Shiro session, which replaces any earlier value; this matches DD-2.
+  - The exception mapping follows §4.
+- **Execute-time spec edits (recorded now, meaning-preserving; carried into the next Reviewer brief):**
+  - design.md §2: `OtpRequestCodeAction` extends `BaseAction`, and only `OtpVerifyCodeAction` extends `LoginAction`.
+  - design.md §5.1 step 3: the configured check runs **before** step 1. This resolves an inconsistency inside the design, because the limiter answers `unavailable` when there are no keys, which contradicts §4.
+  - design.md §12 "Load": the allow-list is read 2 times, not 1.
+- **ADVISORY (recorded, not gating):**
+  - *Reliability:* `isEligible` catches only `RuntimeException`, so an `Error` from the predicate would become a 500. Catch `RuntimeException | Error`, as `handOff` does.
+  - *Reliability:* `ClientIpResolver` is built per request, so a malformed proxy-list WARN repeats on every request. Candidate for a fifth bean.
+  - *Resilience:* "after the issue commits" is not proven at runtime. `MARLOCustomPersistFilter` opens a request-wide transaction; if `issue` joins it, the purge (`REQUIRES_NEW`) could wait on the supersede's locks.
+  - *Readability:* `logFault` writes a second line, `auth.otp.fault`, on fault paths.
+  - *UX:* a request refused with `termsRequired` still starts the 30-s cooldown.
+  - *Resilience:* a session failure after the mail costs usability only.
+- **Forward pointers (Leader):**
+  - **T11:**
+    - Read `OtpPending` from the **Shiro Subject session** under `APConstants.OTP_PENDING_CHALLENGE`.
+    - Catch `RuntimeException | Error` around the eligibility re-check.
+    - Inject the beans; never `new` them.
+    - Consider making `ClientIpResolver` a bean only if it is in T11's file list; otherwise leave it as recorded.
+  - **T12:** the parameter allow-list permits `email`, `globalUnitId` and `agree` (Strings) on `otpRequestCode`. This is the first runtime proof of the action's Spring wiring.
+  - **T14:** block an unchecked-terms submit on the client, because the cooldown starts even when the server refuses for `termsRequired`.
+  - **T15:**
+    - Prove `issue` commits before the purge (no request-wide transaction holding the supersede's locks).
+    - Confirm that AC-11 counts `request` lines, not `auth.otp.fault`.
+  - **T16:** note that a session failure after the mail yields `unavailable` with a valid code already mailed; a retry supersedes it.
+- **runtime events:** none.
+- **spawns:** implementer 94 calls, 360,532 tokens, ended complete; reviewer (enumeration) 16 calls, 76,084 tokens, ended complete; reviewer (correctness) 27 calls, 94,848 tokens, ended complete.
+- **Final status:** PASS (attempt 1). **Final verification:** VERIFIED; both lenses PASS.

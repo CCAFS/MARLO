@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +57,11 @@ import org.slf4j.LoggerFactory;
  * <b>One time source.</b> The check reads the clock once and uses that {@code now} for every bucket and for the
  * purge cutoffs. The purge runs after the counting, throttled to one run per interval and per instance, in
  * transactions of its own, and a failure never reaches the caller.
+ * <p>
+ * It is a container singleton: {@code @Named}, found by the component scan. The purge throttle is instance state, so
+ * it holds only while every action shares this one instance. Do not construct it in an action: inject it.
  */
+@Named
 public final class OtpRateLimiter {
 
   /** The verdict of one check. */
@@ -102,6 +108,8 @@ public final class OtpRateLimiter {
   private final Clock clock;
   private final AtomicReference<Instant> lastPurge = new AtomicReference<>(Instant.EPOCH);
 
+  /** The only constructor the container may use; the one below is the test seam. */
+  @Inject
   public OtpRateLimiter(OtpKeys keys, OtpRateLimitManager manager) {
     this(keys, manager, Clock.systemUTC());
   }

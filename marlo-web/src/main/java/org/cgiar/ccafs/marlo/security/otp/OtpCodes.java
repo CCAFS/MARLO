@@ -26,6 +26,8 @@ import java.util.function.IntUnaryOperator;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Codes, nonces and code MACs of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T05, FN-009, SEC-001,
@@ -36,7 +38,11 @@ import javax.crypto.spec.SecretKeySpec;
  * {@code HMAC-SHA256(k_code, "<nonce>|<code>")} in lower-case hex, so a MAC is bound to its challenge. The check
  * decodes the stored hex and compares the bytes with {@link MessageDigest#isEqual(byte[], byte[])}, which takes
  * constant time; it returns {@code false} on any shape error and never throws.
+ * <p>
+ * It is a container singleton: {@code @Named}, found by the component scan, so every action shares one seeded
+ * {@link SecureRandom}. Do not construct it in an action: inject it.
  */
+@Named
 public final class OtpCodes {
 
   private static final int CODE_BOUND = 1_000_000;
@@ -49,8 +55,11 @@ public final class OtpCodes {
   private final SecureRandom random = new SecureRandom();
 
   /**
+   * The only constructor the container may use; the one below is the test seam.
+   *
    * @param keys the derived MAC keys
    */
+  @Inject
   public OtpCodes(OtpKeys keys) {
     this.keys = keys;
     this.codeSource = this.random::nextInt;

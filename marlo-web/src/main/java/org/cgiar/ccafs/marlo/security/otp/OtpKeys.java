@@ -24,6 +24,8 @@ import java.util.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,12 @@ import org.slf4j.LoggerFactory;
  * When configured, {@code k_email}, {@code k_code} and {@code k_bucket} are
  * {@code HMAC-SHA256(decoded secret, "<tag>\0")} with the distinct tags {@code otp-email}, {@code otp-code}
  * and {@code otp-bucket}, so a MAC made for one purpose can never be replayed as another.
+ * <p>
+ * It is a container singleton: {@code @Named}, found by the component scan and created once from the
+ * {@link APConfig} constructor, so the secret is read once and the unconfigured WARN is written once, not per
+ * request. Do not construct it in an action: inject it.
  */
+@Named
 public final class OtpKeys {
 
   private static final Logger LOG = LoggerFactory.getLogger(OtpKeys.class);
@@ -60,8 +67,11 @@ public final class OtpKeys {
   /**
    * Reads the secret once from the configuration.
    *
+   * The only constructor the container may use; the one below is the test seam.
+   *
    * @param config the application configuration; its OTP secret getter never returns {@code null}
    */
+  @Inject
   public OtpKeys(APConfig config) {
     this(config.getOtpHmacSecret());
   }

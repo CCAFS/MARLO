@@ -86,7 +86,7 @@ loginForm.ftl / login.js  (step 1 email → crpByEmail.do → step 2 Global Unit
   - `ClientIpResolver`
 - New: `security/ReturnUrls.java`. Holds `sameOriginOrNull`, extracted from `CognitoLoginAction`, which now delegates to it (DD-11).
 - New: `utils/OtpMailSender.java`.
-- New: `action/home/OtpRequestCodeAction.java` and `action/home/OtpVerifyCodeAction.java`. Both extend `LoginAction` to reach `finishLogin`.
+- New: `action/home/OtpRequestCodeAction.java` and `action/home/OtpVerifyCodeAction.java`. `OtpVerifyCodeAction` extends `LoginAction` to reach `finishLogin`. `OtpRequestCodeAction` needs no login state and extends `BaseAction`, like `CognitoLoginAction` (amended 2026-10-13, T10).
 - Modified: `action/json/global/CrpByUserEmailAction.java`. Adds the `otpEnabled` key per Global Unit.
 - Modified: `resources/struts-home.xml`. New package `homeOtp` (DD-1).
 - Modified: `config/APConstants.java`. Adds `OTP_ALLOWED_EMAIL_DOMAINS` and `OTP_PENDING_CHALLENGE`.
@@ -236,7 +236,7 @@ identically for every account (JD-1).
 
    An atomic upsert per bucket makes concurrent requests safe (JI-12). Over any limit, or a rejected cooldown → `rateLimited`.
 2. **Shape.** The email must have valid syntax, at most 254 characters, and exactly one `@`; `globalUnitId` must be numeric. Otherwise → `domainNotEnabled`.
-3. **Configured?** If `OtpKeys` is unconfigured → `domainNotEnabled` (SEC-008).
+3. **Configured?** If `OtpKeys` is unconfigured → `domainNotEnabled` (SEC-008). *Execution order amended 2026-10-13 (T10): this check runs **before** step 1. It reads no account state, so JD-1 and SEC-010 still hold. The limiter itself answers `unavailable` without keys, so running this check after it would contradict §4.*
 4. **Domain.** Read the Global Unit's allow-list through the uncached read (DD-12), then normalise and match exactly. `cgiar.org` is ignored. No match, or an unknown Global Unit → `domainNotEnabled`.
 5. **Terms.** If `agree` is not `true` → `termsRequired`.
 6. **Eligibility** (`OtpEligibility`, the single predicate):
@@ -371,7 +371,7 @@ entity is saved.
 
 | Topic | Design |
 |---|---|
-| Load | A request-code call costs:<br>• 2 window upserts, and the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update (amended 2026-10-13);<br>• 1 uncached allow-list read;<br>• 1 user lookup;<br>• 1 transaction (supersede + insert).<br>The mail send runs off the request thread (NF-001). `crpByEmail.do`, which is pre-auth and unthrottled as it is today, gains **one** uncached query per call, and only when the feature is configured (RJ-6) |
+| Load | A request-code call costs:<br>• 2 window upserts, and the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update (amended 2026-10-13);<br>• 2 uncached allow-list reads (step 4, then again inside `OtpEligibility`; amended 2026-10-13, T10);<br>• 1 user lookup;<br>• 1 transaction (supersede + insert).<br>The mail send runs off the request thread (NF-001). `crpByEmail.do`, which is pre-auth and unthrottled as it is today, gains **one** uncached query per call, and only when the feature is configured (RJ-6) |
 | Volume | Expected in the tens per day. Decoy rows are bounded by the rate limits and purged after 1 h |
 | Concurrency probe | A script under `probes/` runs against a **throwaway copy** of the local MySQL. It runs four cases: 10 parallel correct verifies (exactly 1 consume); 10 parallel wrong codes (`attempts` ends at 3); a mixed burst of 3 wrong + 1 correct after exhaustion (0 consumes); and concurrent requests for one email (at most 1 open row). Output is recorded at the execute HITL pause (requirements §6) |
 

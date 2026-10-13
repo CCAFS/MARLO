@@ -34,6 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 /**
  * The single eligibility predicate of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T06, FN-004, FN-005,
  * FN-015, SEC-009, FN-001, DD-4).
@@ -69,7 +72,11 @@ import java.util.Map;
  * The email is normalised here, and only after {@link OtpDomainPolicy#domainOf(String)} has accepted it, because
  * {@link OtpDomainPolicy#normaliseEmail(String)} answers the empty string for a rejected (non-ASCII) address, which
  * must never be looked up.
+ * <p>
+ * It is a container singleton: {@code @Named}, found by the component scan and created once from its managers, so
+ * every action shares one instance. Do not construct it in an action: inject it.
  */
+@Named
 public final class OtpEligibility {
 
   private final OtpKeys keys;
@@ -80,6 +87,7 @@ public final class OtpEligibility {
   private final CustomParameterManager customParameterManager;
   private final ParameterManager parameterManager;
 
+  @Inject
   public OtpEligibility(OtpKeys keys, UserManager userManager, GlobalUnitManager globalUnitManager,
     CrpUserManager crpUserManager, OtpChallengeManager otpChallengeManager,
     CustomParameterManager customParameterManager, ParameterManager parameterManager) {

@@ -305,10 +305,11 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T10 — `OtpRequestCodeAction`
 
-- **Status:** pending · **Size:** M · **Depends on:** T03, T04, T05, T06, T08, T09 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** M · **Depends on:** T03, T04, T05, T06, T08, T09 · **Module:** marlo-web
 - **Requirements:** FN-001, FN-004, FN-005 (and its scenario: BUT and both AND IT MUST clauses), FN-006, FN-007, FN-008, SEC-006 (request side), SEC-008, SEC-010, OPS-001, NF-001
 - **Design:** §4 status table, §5.1 (all 11 steps), DD-5
 - **Files:** `action/home/OtpRequestCodeAction.java` and `OtpRequestCodeActionTest.java` (both new)
+- **Files added 2026-10-13 (user-approved scope amendment, `execution.md` T10):** `@Named` plus an `@Inject` constructor on `security/otp/OtpKeys`, `OtpRateLimiter`, `OtpCodes` and `OtpEligibility`, so that every action shares one instance of each. Test-seam constructors carry no `@Inject`. The app must start with the four beans (`login.do` 200), proven as in T09.
 - **Tests (fakes for the managers, the mailer and the eligibility predicate):**
   - **Order:** the rate-limit buckets are counted before any user lookup (the lookup fake records the call order).
   - **Neutrality:** for unknown, inactive, non-member and CGIAR-refused accounts, `response` equals the eligible case except for the masked email. A row is issued in every state. The mailer is called **only** when eligible.
