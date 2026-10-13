@@ -431,7 +431,7 @@ entity is saved.
 
 ### DD-4 — Pre-registered only; one eligibility predicate
 - **Decision:** `OtpEligibility` is reused at request and after consume, and its disclosure-safe variant in `otpEnabled`. The membership check requires an **active** `crp_users` row (`existActiveCrpUser`). The variant used by `otpEnabled` omits active state and membership (JI-11).
-- **Rationale:** FN-005 and FN-015 (a removed member is refused; MARLO removes by soft delete, P-13). This deliberately departs from `finishLogin` parity on this one point: password login keeps the activity-blind `existCrpUser`, and that gap is tracked separately (to be filed as an A2 Jira issue; the key is added to the requirements Decision Log when it exists), outside this spec. After consume, the shared `finishLogin` tail still runs its own gate 4 unchanged.
+- **Rationale:** FN-005 and FN-015 (a removed member is refused; MARLO removes by soft delete, P-13). This deliberately departs from `finishLogin` parity on this one point: password login keeps the activity-blind `existCrpUser`, and that gap is tracked separately (A2-2637, under the epic Bugs 2026 A2-2054), outside this spec. After consume, the shared `finishLogin` tail still runs its own gate 4 unchanged.
 
 ### DD-5 — Decoys are real rows with an undeliverable code
 - **Decision:** every request that passes steps 1–5 issues a row and supersedes, eligible or not. Only eligible issues are mailed. Eligibility is re-checked after consume.

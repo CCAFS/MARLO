@@ -1355,3 +1355,13 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
 - **Attempt 2 — Reviewer:** **PASS**. Advisory: the A7 Source column cites task ids, which is acceptable as traceability.
 - **Done-when:** the runbook was walked (Part C), the DD-12 falsifier held, and every open premise and OQ has a named owner and a Blocks scope: P-4, P-6, P-25, OQ-1, OQ-2 and OQ-5 block go-live, not merge.
 - **Carried to `/akili-archive` on `staging`:** runbook Part D (`docs/trd/trd.md` §8.1 and §9.5, `docs/infrastructure.md` §6), plus the A2 Jira key for the password-login soft-delete gap in the requirements Decision Log.
+
+### Follow-up — password-login soft-delete gap (A2-2637)
+
+- **User request (2026-10-13):** probe the password-login gap live, then file the Jira issue under the epic "Bugs 2026" (A2-2054).
+- **Live probe:** run on a throwaway copy `aiccradb_pwgap_probe`, dropped afterwards. `aiccradb_actsave` unchanged: `crp_users` 5136, both test memberships `is_active=1`, roles intact.
+  - A removed member still signs in with a password. A direct `POST login.do` with `crp=AICCRA` answers 302 to the dashboard, which loads; the login page hides the unit because `crpByEmail` filters inactive memberships.
+  - A Project Leader removed through the admin UI loses edit access only at the next sign-in. A session already open keeps edit access.
+  - With the membership inactive but roles left in place, edit access stays with no time limit.
+  - Cause: `finishLogin` gate 4 uses `existCrpUser`; `ValidPhaseInterceptor` checks `existActiveCrpUser` only for another unit's phase; `getPermissions` ignores `is_active`; the Shiro authorization cache is cleared only at the user's own next sign-in.
+- **Filed:** A2-2637 (Bug, parent A2-2054, Priority, Complexity and Readiness set, assigned). The key is recorded in the requirements Decision Log, design DD-4 and runbook A9 and B1. The runbook Part D placeholder row is removed.

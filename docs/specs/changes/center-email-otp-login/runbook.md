@@ -205,8 +205,8 @@ screens and tells the user only that it was done, **replying only to the registe
 `finishLogin` (gate 4) and the session interceptors use the **activity-blind `existCrpUser`**, which ignores
 `crp_users.is_active`. A member removed through MARLO's soft delete can still use the password route. The code route
 refuses them (a deliberate departure from password-login parity). This is **out of scope** and
-**tracked separately: an A2 Jira issue still to be filed**, after the user confirms the parent epic. Its **key goes into the
-requirements Decision Log** before `/akili-archive`. No key exists yet.
+**tracked separately as A2-2637** (epic Bugs 2026). Verified live on a throwaway copy: a removed member still signs in with a
+password, and keeps edit rights while an old session is open or while roles survive the removal.
 
 ---
 
@@ -231,7 +231,7 @@ to the row, with its source. Nothing here has been settled by infra yet.
 | Relay | The production relay delivers to **external** domains (A4) | Kenji, with infra | **Go-live** | Open. The local gateway refuses them |
 | Sender | SPF, DKIM, DMARC aligned for the sender; partner IT allow-listing | Kenji, with infra | Pilot | Open |
 | JVM time zone | Production JVM is UTC, or `hibernate.jdbc.time_zone=UTC` is set. Reads convert through the JVM zone; in a DST zone a UTC wall time in a spring-forward gap reads back one hour off | Kenji, with infra | Go-live (low) | Open. Tokyo and `-05` passes were green (T15) |
-| Password gap | File the A2 issue and record its key (A9) | Kenji | Before `/akili-archive` | Open |
+| Password gap | Filed as A2-2637 (A9) | Kenji | Not this release | Filed, key in the requirements Decision Log |
 
 ## B2. OQ-2: Guest-exposure audit
 
@@ -332,4 +332,3 @@ They are recorded here and applied on `staging`.
 | `docs/trd/trd.md` | **8.1 Authentication** | Add the Center email one-time-code route as a second non-CGIAR sign-in path beside Cognito. Pre-registered members only. Challenge handle in the Shiro session. `OtpAuthenticationToken` accepted by `APCustomRealm` with no I/O. The session sequence matches Cognito's. Eligibility requires an **active** membership and refuses CGIAR users where Cognito is active. Per-unit switch `crp_otp_allowed_email_domains`, read uncached (DD-12). Secret `OTP_HMAC_SECRET`. Known gap shared with Cognito route C (A7) |
 | `docs/trd/trd.md` | **9.5 Rate limiting** | Add a bullet for the OTP sign-in endpoints: they are limited in the database (`otp_rate_limits`, `otp_cooldowns`), shared by every instance: request 5 per email and 20 per IP per 15 minutes, 30 s cooldown; verify 10 per email and 50 per IP per 15 minutes; 3 attempts per code; 5-minute expiry. The REST statement is unchanged |
 | `docs/infrastructure.md` | **6 Local Environment** | Document `OTP_HMAC_SECRET` (`openssl rand -base64 48`, at least 32 decoded bytes, environment only, feature off without it) and `OTP_TRUSTED_PROXIES` (comma separated IPv4/IPv6 literals or CIDR, no link-local). Optional `otp.smtp.timeout.ms`. Add to the known local-versus-governed gaps that the local relay refuses non-CGIAR recipients and a local SMTP sink is needed to test. Mention the `MYSQL_DATABASE` and `EMAIL_*` environment overrides used to run against a throwaway copy |
-| `docs/specs/changes/center-email-otp-login/requirements.md` | Decision Log | The A2 key of the password-login gap, once filed (A9). Not a shared file; listed so it is not forgotten |
