@@ -140,7 +140,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T04 — Rate limiting and cooldown persistence
 
-- **Status:** pending · **Size:** S · **Depends on:** T01, T02 · **Module:** marlo-data, plus the `OtpRateLimiter` facade in marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** T01, T02 · **Module:** marlo-data, plus the `OtpRateLimiter` facade in marlo-web
 - **Requirements:** SEC-010, FN-008, DA-003
 - **Design:** §3 (`otp_rate_limits`, `otp_cooldowns`), §5.1 step 1, §5.3 `OtpRateLimiter`, DD-8
 - **Files (new):**
@@ -150,14 +150,15 @@ Field conventions:
   - `OtpRateLimiterTest.java`
 - **Scope:**
   - **Window bucket:** upsert `hits + 1`, then read it back in the same transaction.
-  - **Cooldown:** a conditional upsert that sets `last_request_at = :now` only when the stored value is at least 30 s older; then read it back and compare with `:now`.
-  - Store failure → limited, i.e. fail closed.
+  - **Cooldown:** the locking read-decide-write of design §5.1 step 1, as amended 2026-10-13. An exclusive no-op upsert ensures the row, `SELECT … FOR UPDATE` reads it, and Java sets `last_request_at = :now` only when the stored value is at least 30 s older. *Amended 2026-10-13 (Pivot Record: T04). It was a conditional upsert with a read-back compared to `:now`.*
+  - **Same-millisecond case (added 2026-10-13):** parallel requests that carry the same `:now` produce exactly one acceptance. Prove it with a parallel SQL probe of at least 20 sessions, and record the count of accepted, rejected and `unavailable` results.
+  - Store failure → `unavailable` (design §4, §5.3), i.e. fail closed. *Aligned 2026-10-13; it read "limited".*
   - Purge stale rows opportunistically.
   - Buckets are HMAC'd with `k_bucket`, so no raw email or IP is stored.
 - **Tests (OtpRateLimiterTest, fake manager):**
   - limits 5, 20, 10 and 50 trip on the 6th, 21st, 11th and 51st call;
   - cooldown at t+29.9 s → limited, at t+30.0 s → accepted, across a minute boundary as well;
-  - store exception → limited.
+  - store exception → `unavailable` (refused). *Aligned 2026-10-13.*
 - **Verification:**
   - Unit tests.
   - The scripted cooldown SQL on the throwaway copy, with two `:now` values 1 s apart that straddle a minute boundary: second request rejected.

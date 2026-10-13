@@ -228,10 +228,11 @@ identically for every account (JD-1).
    - the cooldown in `otp_cooldowns` (FN-008, RJ-1).
 
    For the cooldown, the request computes `now` once in Java. One transaction then:
-   - upserts the bucket, setting `last_request_at = now` only if the stored value is at least 30 s older than `now`;
-   - reads the value back. It equals `now` only when this request was accepted.
+   - makes sure the bucket row exists and takes its exclusive lock, using a no-op upsert (`INSERT … ON DUPLICATE KEY UPDATE`) that writes a far-past sentinel when the row is new;
+   - reads `last_request_at` with `SELECT … FOR UPDATE`;
+   - decides in Java. If the stored value is at least 30 s older than `now`, it sets `last_request_at = now` and accepts. Otherwise it rejects and leaves the row unchanged.
 
-   This gives a true "at least 30 seconds apart" interval with no reliance on affected-row semantics.
+   The row lock, not a comparison of values, picks the single winner. Requests for one email therefore serialize, and exactly one of them is accepted even when several compute the same millisecond. The lock is taken exclusively from the first statement, never upgraded from shared, so the bucket cannot deadlock on itself. A lock timeout or deadlock is a store failure (`unavailable`). This gives a true "at least 30 seconds apart" interval with no reliance on affected-row semantics. *Amended at execute time, 2026-10-13 (user decision, `execution.md` Pivot Record: T04). The previous upsert-and-read-back let parallel requests with the same `now` all pass.*
 
    An atomic upsert per bucket makes concurrent requests safe (JI-12). Over any limit, or a rejected cooldown → `rateLimited`.
 2. **Shape.** The email must have valid syntax, at most 254 characters, and exactly one `@`; `globalUnitId` must be numeric. Otherwise → `domainNotEnabled`.
@@ -298,7 +299,7 @@ identically for every account (JD-1).
 | `OtpCodes` | `SecureRandom.nextInt(1_000_000)`, zero-padded to 6. 16-byte nonce. HMAC-SHA256 hex. Compares with `MessageDigest.isEqual` on decoded bytes; returns false on any shape error and never throws | FN-009, SEC-001/003 |
 | `OtpDomainPolicy` | Pure: `normaliseEmail`, `domainOf` (exactly one `@`), `parseAllowList` (guide §6.2 rules plus dropping `cgiar.org`), `isAllowed`, `mask` | FN-003, SEC-009 |
 | `OtpEligibility` | The one predicate (§5.1 step 6), called at request and after consume | FN-004/005/015 |
-| `OtpRateLimiter` → `OtpRateLimitManager` | **Window buckets.** In its own `@Transactional` call, a bucket upserts `hits = hits + 1` for `(bucket, window_start)`, then reads `hits` back in the same transaction. Over the limit → limited.<br>**Cooldown.** The conditional upsert-and-read-back on `otp_cooldowns` (§5.1 step 1).<br>A store failure **fails closed** (`unavailable`). Windows older than 1 day and cooldown rows older than 1 h are purged opportunistically in a separate transaction | SEC-010, FN-008, DA-003 |
+| `OtpRateLimiter` → `OtpRateLimitManager` | **Window buckets.** In its own `@Transactional` call, a bucket upserts `hits = hits + 1` for `(bucket, window_start)`, then reads `hits` back in the same transaction. Over the limit → limited.<br>**Cooldown.** The locking read-decide-write on `otp_cooldowns` (§5.1 step 1, amended 2026-10-13).<br>A store failure **fails closed** (`unavailable`). Windows older than 1 day and cooldown rows older than 1 h are purged opportunistically in a separate transaction | SEC-010, FN-008, DA-003 |
 | `ClientIpResolver` | Starts from `getRemoteAddr()`. If that address falls inside an entry of `otp.trusted.proxies` (comma-separated IPv4/IPv6 addresses **or CIDR ranges**), walks `X-Forwarded-For` from the right and takes the first hop not inside the list. A missing, empty or malformed header from a trusted peer → `getRemoteAddr()`. Headers from untrusted peers are ignored (JI-5) | SEC-011 |
 | `OtpPending` | Serializable session value under `APConstants.OTP_PENDING_CHALLENGE`: nonce, normalised email, `globalUnitId`, `returnUrl`, `agree`. No code and no MAC. Binds the challenge to session, email and Global Unit (SEC-004, JD-3) | SEC-004 |
 | `OtpMailSender` | Builds its own `javax.mail` `Session` from the `APConfig` SMTP getters `SendMailS` uses (P-8), plus connect, read and write timeouts (`otp.smtp.timeout.ms`, default 10 000).<br>Sends to **one** recipient on a dedicated executor: 2 daemon threads, a bounded queue of 100, and an abort policy that is caught.<br>A rejection, a timeout or a send error is logged as an `auth.otp.delivery outcome=email_failed` line at WARN; a success as `outcome=delivered`. The response was already `sent` for every state, so a rejection reveals nothing (JI-4).<br>It never touches `email_log`, the notification flag or the support redirect. The recipient is always the submitted address, in every environment (OQ-5 default, JI-2) | SEC-001, OPS-002, FN-018, NF-001 |
@@ -370,7 +371,7 @@ entity is saved.
 
 | Topic | Design |
 |---|---|
-| Load | A request-code call costs:<br>• 2 window upserts and 1 cooldown upsert;<br>• 1 uncached allow-list read;<br>• 1 user lookup;<br>• 1 transaction (supersede + insert).<br>The mail send runs off the request thread (NF-001). `crpByEmail.do`, which is pre-auth and unthrottled as it is today, gains **one** uncached query per call, and only when the feature is configured (RJ-6) |
+| Load | A request-code call costs:<br>• 2 window upserts, and the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update (amended 2026-10-13);<br>• 1 uncached allow-list read;<br>• 1 user lookup;<br>• 1 transaction (supersede + insert).<br>The mail send runs off the request thread (NF-001). `crpByEmail.do`, which is pre-auth and unthrottled as it is today, gains **one** uncached query per call, and only when the feature is configured (RJ-6) |
 | Volume | Expected in the tens per day. Decoy rows are bounded by the rate limits and purged after 1 h |
 | Concurrency probe | A script under `probes/` runs against a **throwaway copy** of the local MySQL. It runs four cases: 10 parallel correct verifies (exactly 1 consume); 10 parallel wrong codes (`attempts` ends at 3); a mixed burst of 3 wrong + 1 correct after exhaustion (0 consumes); and concurrent requests for one email (at most 1 open row). Output is recorded at the execute HITL pause (requirements §6) |
 

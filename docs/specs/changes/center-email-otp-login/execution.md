@@ -331,3 +331,137 @@ No blocker. The T03 commit is safe. Forward pointers added:
 - **T11:** compare MACs with `MessageDigest.isEqual` on decoded bytes (finding 5). Do not decide expiry from `getExpiresAt()` in Java; rely on the SQL condition (finding 7).
 - **T15:** the concurrency probe records the isolation level and covers concurrent first-ever issues for one email (finding 4).
 - **T16:** the runbook gives the single-line secret recipe (finding 6), and the rollout checklist covers finding 1 (no admin value before release) and finding 3 (`SHOW CREATE TABLE` on staging).
+
+### CHG-OTP-LOGIN-001-T04 — Rate limiting and cooldown persistence
+
+- **Status:** in progress (`[~]`). Escalated to the user over a design gap in the attempt 1 report.
+- **Date:** 2026-10-09
+- **Skills assigned:** `marlo-verify`, `tdd` (listed). Effort `xhigh`: concurrency, despite the S size.
+- **Forward pointers carried in the brief:** one UTC clock; `@Transactional` writes, never called from `validate()`; lock or deadlock errors count as a fail-closed store failure, logged without the message.
+
+#### Attempt 1 (Implementer report; no review yet)
+
+- **Files (all new):**
+  - `marlo-data`: `OtpRateLimitDAO`, `OtpRateLimitMySQLDAO`, `OtpRateLimitManager`, `OtpRateLimitManagerImpl`.
+  - `marlo-web`: `security/otp/OtpRateLimiter.java`.
+  - Tests: `OtpRateLimiterTest` (31) and `OtpRateLimitManagerImplTest` (11). The second is not in the task's file list; it covers the threshold arithmetic and the annotations.
+- **Buckets:** `request|email` 5, `request|ip` 20, `verify|email` 10, `verify|ip` 50, per 15-min UTC window. Each key is HMAC'd with `k_bucket`. The cooldown is `cooldown|email`, sliding 30 s, computed as `notAfter = now - 30 s` in Java, followed by a conditional upsert and a read-back compared with `now`.
+- **Red run:** a fixed 30-s cooldown failed 7 tests, including `aRequestOneSecondAfterAnotherIsLimitedAcrossAMinuteBoundary` (`expected:<LIMITED> but was:<ALLOWED>`).
+- **Green:** 42/42 in the new tests; full suite 484/484. Falsifier (fixed window) failed 7; 13 mutants killed.
+- **Straddle SQL** (DAO text, same session, autocommit): 12:07:59.500 accepted; 12:08:00.500 rejected; +29.9 s rejected; +30.0 s accepted. Session time zones made no difference.
+- **Concurrency:** `RuntimeException` → `UNAVAILABLE`, logged by class only. In 6 rounds of 20 parallel window upserts: 0 errors, and the read-backs were exactly 1..20.
+- **Purge:** runs after counting, at most once per 10 min per instance, with `REQUIRES_NEW`. Failures are caught. `EXPLAIN` uses the T01 indexes.
+- **Compile:** 2414 / 1052 / 60. **Checkstyle:** 0.
+- **Implementer-declared gaps (verbatim gist):**
+  1. **Same-millisecond cooldown bypass.** Parallel requests that carry the same `now` text are all accepted: 20 of 20 in the probe, against 1 of 20 with distinct values. The 5-per-15-min email window caps the damage. Closing it needs a design change.
+  2. A store failure yields `UNAVAILABLE`, which design §5.3 names, rather than "limited" as the brief said. **The design wins; no issue.**
+  3. When the secret is unconfigured, the limiter returns `UNAVAILABLE`. The action must check `isConfigured` first or map that outcome.
+  4. The counting order, the purge throttle and `REQUIRES_NEW` are judgment calls.
+  5. No Spring bean for the limiter yet; wiring is left for the action task.
+  6. The app was not started.
+  7. The Implementer printed the Leader's scratchpad helper, which holds the local dev MySQL password, into its own transcript once. Nothing was committed.
+
+#### Leader adjudication
+
+- Gap 1 is a **spec gap**, not an implementation defect. Design §5.1 step 1 says the read-back "equals `now` only when this request was accepted", which is false when two requests compute the same millisecond. FN-008 (30-s minimum spacing per email) can then be bypassed by a parallel burst; the SEC-010 email window still caps it at 5 per 15 min. Per the Pivot rule, no review is spent until the user decides.
+
+## Pivot Record: CHG-OTP-LOGIN-001-T04
+
+- **Date:** 2026-10-13
+- **Blocker:** design §5.1 step 1 decided the cooldown winner by reading `last_request_at` back and comparing it with the request's own `now`. Parallel requests that compute the same millisecond all match, so all of them pass. The Implementer's probe: 20 of 20 accepted, against 1 of 20 when the values differ. This defeats FN-008 (at least 30 s apart per email) for a parallel burst.
+- **Alternatives presented to the user:**
+  1. A row lock: an exclusive no-op upsert, then `SELECT … FOR UPDATE`, then the decision in Java. No schema change.
+  2. A tie-break token column, which needs a new migration.
+  3. Accept the gap, capped by the 5-per-15-min email window.
+  4. Pause.
+- **User decision:** option 1, the row lock.
+- **Revised direction:** design §5.1 step 1 and the §5.3 `OtpRateLimiter` row are amended. The lock is taken exclusively from the first statement, never upgraded from shared. A lock timeout or deadlock is a store failure (`unavailable`). `tasks.md` T04: the Cooldown scope line is amended, and a "Same-millisecond case" line requires a parallel probe of at least 20 sessions that yields exactly one acceptance.
+- **Requirements meaning:** unchanged. FN-008 is now actually met. No ADR in the TRD is affected.
+- **Closure sweep:**
+  - Forward: `grep "upsert-and-read-back|reads the value back"` over the spec folder (excluding `execution.md`) found no remaining hits.
+  - Backward: DD-8 and design.md:153 cite the sliding interval and RJ-1 only, and both still hold. No other document cites the mechanism.
+  - Diff check: the only removed lines are the two old bullets and the old §5.3 phrase.
+- **Effect on the window buckets:** none. Their upsert-and-read-back of `hits` is unaffected, because each request increments, so equal timestamps cannot collide.
+- **Re-issued brief:** the attempt 1 Implementer is resumed with the amended text. This counts as a post-Pivot attempt 2, not a FAIL, and it is reviewed in full.
+
+#### Attempt 2 — post-Pivot row-lock cooldown
+
+- **Files changed:**
+  - `OtpRateLimitDAO`, `OtpRateLimitMySQLDAO`, `OtpRateLimitManager` (javadoc) and `OtpRateLimitManagerImpl`, under `marlo-data`;
+  - `OtpRateLimiter`, under `marlo-web` (comments only);
+  - both tests.
+  - All of these files are new relative to HEAD.
+- **Cooldown, in one `REQUIRES_NEW` transaction:**
+  1. `INSERT … VALUES (:bucket, :sentinel) ON DUPLICATE KEY UPDATE last_request_at = last_request_at` (the sentinel is the epoch);
+  2. `SELECT CAST(last_request_at AS CHAR) … FOR UPDATE`;
+  3. the decision is made in Java: `UPDATE … SET last_request_at = :now` runs only when the stored value is at least 30 s older;
+  4. an UPDATE count other than 1 throws `IllegalStateException`, which yields `UNAVAILABLE`.
+  - The window buckets are unchanged.
+- **Red / green / falsifier:**
+  - Red: 11 assertion failures. The key case is a stored value equal to now, which was `ALLOWED` under the old read-back.
+  - Green: 49 tests.
+  - Falsifier: the fixed window turns 7 tests red; 20 mutants were killed.
+- **Straddle** (real DAO and manager through Hibernate, throwaway DB):
+
+  | Request | Result |
+  |---|---|
+  | 12:07:59.500 | accepted |
+  | +1.0 s | rejected |
+  | +29.9 s | rejected |
+  | +30.0 s | accepted |
+
+  The JVM time zone (Tokyo or Bogota) made no difference.
+- **Parallel probe:** 20 sessions with the same `now`, behind a barrier.
+  - Fresh bucket, rounds 1–5: 1 accepted, 19 rejected, 0 unavailable each round.
+  - Existing bucket 45 s old, rounds 6–10: the same.
+  - Old read-back statement in the same probe: 20 of 20 accepted.
+  - 0 deadlocks and 0 lock timeouts.
+- **Gates:** compile 2414/1052/60; Checkstyle 0; full suite 491/0.
+- **Implementer-declared gaps:**
+  - `@Transactional` was checked by annotation only;
+  - an unconfigured secret returns `UNAVAILABLE` before §5.1 step 3, so T10 maps it;
+  - with the default `innodb_lock_wait_timeout` of 50 s, a queued request can wait up to 50 s.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.**
+  - Clean compile exit 0 (2414/1052/60).
+  - `mvn -o -pl marlo-web -am test` exit 0, 491 tests, 0 failures.
+  - An independent parallel CLI probe on a throwaway DB used the exact DAO cooldown statements, with the decision emulated in the same transaction. Across 3 rounds on a fresh bucket and 3 on a 45-s-old bucket, every round of 20 sessions gave 1 ACCEPT and 19 REJECT, with 0 errors.
+
+#### Reviewer verdicts — attempt 2 (parallel lenses, `opus`; Implementer `sonnet`)
+
+- **Concurrency lens: `PASS`.**
+  - The design as amended is matched.
+  - The window upsert holds its X lock until commit, so its read-back is exact, and there is no same-timestamp issue there.
+  - There is one clock read per check, aligned to UTC.
+  - The amendment changes no requirement's meaning: FN-008 is now met, and a deadlock or timeout leads to `unavailable`, the existing store-failure contract.
+- **Security lens: `PASS`.**
+  - SEC-010 limits and order hold, and nothing reads account state before counting.
+  - Buckets are HMAC'd, with the key returned as a clone.
+  - Every failure fails closed, and logs carry the class name only, never a bucket, email or IP.
+  - All values are bound, and all four writes run under `REQUIRES_NEW`.
+  - The amendment keeps the meaning of SEC-010, FN-008 and DA-003.
+- **Execute-time spec edits made while closing the review (meaning-preserving; carried into the next Reviewer brief):**
+  - The Pivot closure sweep missed one site: design.md §12 "Load" row still read "1 cooldown upsert". It now reads "the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update".
+  - tasks.md T04 said "Store failure → limited" and "store exception → limited". Both now read `unavailable`, aligned to design §4 and §5.3, which the code already follows.
+- **ADVISORY (recorded, not gating):**
+  - *Resilience:* the purge DELETE locks the secondary index and then the PK, while a cooldown accept locks the PK and then the secondary index. A user whose row is more than 1 h old, requesting exactly while the purge runs, can deadlock; this happens at most once per 10 min per instance. The loser gets `unavailable` (fail closed), or the purge is skipped. Possible fix: delete by PK in batches with `FOR UPDATE SKIP LOCKED`.
+  - *Resilience:* the 50-s default lock wait can hold a pool connection. A short query timeout (2–3 s) on the cooldown statements would bound it.
+  - *Risk:* clock skew between instances can delay acceptance by the skew. Worth one line under the accepted risks.
+  - *Reliability:* if `purgeWindowsBefore` throws, the cooldown purge is skipped until the next cycle.
+  - *Note:* a request rejected by the cooldown still uses up its window quota. This is consistent with SEC-010's "count before lookup".
+  - *Risk:* the limiter logs its own `auth.otp.ratelimit` line, outside `OtpLog`. The content is safe; record it as accepted or route it through `OtpLog`.
+  - *Risk:* a null `clientIp` would share a single IP bucket across clients.
+- **Forward pointers (Leader):**
+  - **T10:**
+    - check `OtpKeys.isConfigured()` before the limiter, so that an unconfigured secret answers `domainNotEnabled` per §4 and not `unavailable`;
+    - wire `OtpRateLimiter` as a singleton bean so the purge throttle holds;
+    - guarantee a non-null client IP from `ClientIpResolver`;
+    - call the limiter first, before any entity load, and never from `validate()`;
+    - consider a 2–3 s query timeout on the cooldown statements.
+  - **T15:** probe a cooldown accept against a concurrent purge, and lock waits under load.
+  - **T16:** name the accepted risks of cross-instance clock skew and a purge deadlock answering `unavailable`.
+- **runtime events:** none.
+- **spawns:**
+  - implementer: attempt 1, 41 calls, 246,226 tokens, ended partial (spec gap); attempt 2, cumulative 60 calls, 323,066 tokens, ended complete;
+  - reviewer (concurrency): 10 calls, 75,269 tokens, ended complete;
+  - reviewer (security): 14 calls, 96,211 tokens, ended complete.
+- **Final status:** PASS (attempt 2, post-Pivot). **Final verification:** VERIFIED; both lenses PASS.
