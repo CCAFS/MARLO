@@ -230,7 +230,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T07 — Shiro token and realm branch
 
-- **Status:** pending · **Size:** S · **Depends on:** T02 · **Module:** marlo-data, plus a test in marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** T02 · **Module:** marlo-data, plus a test in marlo-web
 - **Requirements:** FN-011 (authentication), SEC-007, FN-019
 - **Design:** §5.4; Premise Ledger P-3, P-19
 - **Files:**

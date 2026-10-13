@@ -620,3 +620,57 @@ No blocker. The T03 commit is safe. Forward pointers added:
 - **runtime events:** none.
 - **spawns:** implementer 25 calls, 126,210 tokens, ended complete. Reviewer 17 calls, 66,677 tokens, ended complete.
 - **Final verification:** VERIFIED; Reviewer PASS.
+
+### CHG-OTP-LOGIN-001-T07 — Shiro token and realm branch
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-13
+- **Requirements:** FN-011 (authentication), SEC-007, FN-019
+- **Skills assigned:** `marlo-verify` (from the task) plus `tdd`. Reason for `tdd`: the task requires the red test first. Effort `high`. Review: `full`, as a lens checklist, because the change touches shared state.
+
+#### Attempt 1
+
+- **Files:**
+  - `marlo-data/.../security/OtpAuthenticationToken.java` (new, LF).
+  - `marlo-data/.../security/APCustomRealm.java` (CRLF preserved; 11 lines added, 2 removed). `supports()` now also accepts `OtpAuthenticationToken`, and a branch above the cast returns `SimpleAuthenticationInfo(userId, token, getName())`.
+  - `marlo-web/src/test/.../APCustomRealmDispatchTest.java` (+3 tests; no existing method changed).
+- **Credentials:** the token itself, per design §5.4. It holds no secret.
+- **Red:** `supports()` returned false ("Shiro must accept this token type…"), and `Subject.login` reported "does not support authentication token".
+- **Falsifier (branch moved below the cast):** `ClassCastException: …OtpAuthenticationToken cannot be cast to class org.apache.shiro.authc.UsernamePasswordToken`.
+- **Green:** full suite 606/0. Named consumers, all with 0 failures and 0 errors:
+
+  | Test class | Tests |
+  |---|---|
+  | `APCustomRealmDispatchTest` | 8 |
+  | `CognitoCallbackActionTest` | 30 |
+  | `CognitoLogHygieneTest` | 17 |
+  | `LoginActionCgiarGuardTest` | 6 |
+  | `LoginActionLogoutTest` | 3 |
+  | `ValidateUserActionGuardTest` | 7 |
+  | `ShiroRequestSessionCacheResetterTest` | 6 |
+  | `CognitoUnloggedStackReachabilityTest` | 1 |
+  | `CognitoAssertionTest` | 10 |
+  | `CognitoIdentityMappingTest` | 9 |
+  | `UserMySQLDAOEmailNormalizationTest` | 5 |
+
+  `LoginActionFinishLoginTest` and `CognitoLoginActionTest` are also green.
+- **Compile:** 2415/1058/66. **Checkstyle:** HEAD 0, now 0.
+- **Issue encountered:** the VS Code Java language server (Eclipse JDT) rewrote `target/classes` after a clean compile. Two intermediate runs then showed 177 `Unresolved compilation problem` errors. The fix is to wipe, compile and test in a single command.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.** One command wiped the classes and ran `mvn -o -pl marlo-data,marlo-web -am test`: exit 0, 2415/1058/66 compiled, 606 tests, 0 failures, 0 errors, 0 `Unresolved compilation` lines. Checkstyle 0 on the 3 files; `APCustomRealm.java` is still CRLF.
+
+#### Reviewer verdict — attempt 1: `PASS` (`akili-reviewer`, `opus`; Implementer `sonnet`)
+
+- **Summary:**
+  - The existing branches are byte-identical. The only changes are the inserted block, the `supports()` line, and one word of Javadoc.
+  - The unknown-token refusal is already covered by `anUnknownTokenTypeIsStillRefusedByTheRealm`.
+  - Using the token as credentials is safe: the matcher is `AllowAllCredentialsMatcher`, authentication caching is off, and the session keeps only the `Long` principal.
+  - SEC-007 holds.
+  - The test expectations are literals.
+- **ADVISORY (recorded, not gating):**
+  - *Reliability:* the OTP dispatch test does not assert `assertSame(token, info.getCredentials())`, unlike its Cognito sibling.
+  - *Readability:* the test class Javadoc and the `ExplodingUserManager` messages still mention only the Cognito path.
+  - *Risk:* with an allow-all matcher, any code that builds `new OtpAuthenticationToken(id)` and calls `Subject.login` logs in as that user.
+- **Forward pointer (Leader):** **T11** must be the only site in the codebase that builds `OtpAuthenticationToken`, and it may do so only after the consume (§5.2 step 7) and the eligibility re-check (step 8). The T11 Reviewer verifies this with `grep -rn "new OtpAuthenticationToken" marlo-*/src/main`.
+- **runtime events:** none.
+- **spawns:** implementer 25 calls, 113,355 tokens, ended complete. Reviewer 8 calls, 56,733 tokens, ended complete.
+- **Final verification:** VERIFIED; Reviewer PASS.

@@ -391,6 +391,52 @@ public class APCustomRealmDispatchTest {
   }
 
   /**
+   * CHG-OTP-LOGIN-001-T07: an {@link OtpAuthenticationToken} is accepted by {@code supports()} and returns
+   * {@link AuthenticationInfo} whose principal is the {@code users.id} {@link Long}, with no I/O. Every
+   * collaborator is an exploding double, so a fall-through to the code below the cast fails loudly.
+   */
+  @Test
+  public void otpTokenReturnsInfoWithTheUserIdPrincipalAndNoIo() {
+    APCustomRealm realm = new APCustomRealm(new ExplodingAuthenticator("dbAuthenticator"),
+      new ExplodingAuthenticator("ldapAuthenticator"), new ExplodingUserManager(), new APConfig());
+
+    Long resolvedUserId = Long.valueOf(4242L);
+    OtpAuthenticationToken token = new OtpAuthenticationToken(resolvedUserId);
+
+    assertTrue("Shiro must accept this token type, or the branch below is never reached",
+      realm.supports(token));
+    AuthenticationInfo info = realm.doGetAuthenticationInfo(token);
+
+    Object principal = info.getPrincipals().getPrimaryPrincipal();
+    assertTrue("the principal must be a Long, exactly as the local path produces", principal instanceof Long);
+    assertEquals(resolvedUserId, principal);
+    assertTrue(info.getPrincipals().getRealmNames().contains("APCustomRealm"));
+  }
+
+  /**
+   * CHG-OTP-LOGIN-001-T07: the OTP token authenticates through the real {@code Subject.login(...)} path.
+   */
+  @Test
+  public void anOtpTokenAuthenticatesThroughTheRealSubjectLoginPath() {
+    APCustomRealm realm = new APCustomRealm(new ExplodingAuthenticator("dbAuthenticator"),
+      new ExplodingAuthenticator("ldapAuthenticator"), new ExplodingUserManager(), new APConfig());
+    DefaultSecurityManager securityManager = new DefaultSecurityManager(realm);
+
+    Long resolvedUserId = Long.valueOf(5151L);
+    Subject subject = new Subject.Builder(securityManager).buildSubject();
+    subject.login(new OtpAuthenticationToken(resolvedUserId));
+
+    assertTrue("the subject must actually be authenticated", subject.isAuthenticated());
+    assertEquals(resolvedUserId, subject.getPrincipal());
+  }
+
+  /** The OTP token rejects a null user id, so it cannot exist for an unresolved user. */
+  @Test(expected = IllegalArgumentException.class)
+  public void anOtpTokenCannotBeBuiltWithoutAUserId() {
+    new OtpAuthenticationToken(null);
+  }
+
+  /**
    * T06 test 2: a {@link UsernamePasswordToken} for a CGIAR user ({@code is_cgiar_user = 1}) still routes
    * to the LDAP branch. The realm has no Global Unit and no session at authentication time (design.md
    * 9.1), so there is no specificity flag it could even read here -- this test demonstrates that
