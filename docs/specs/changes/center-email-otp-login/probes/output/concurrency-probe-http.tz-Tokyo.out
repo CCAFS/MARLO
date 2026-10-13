@@ -1,0 +1,51 @@
+database under test: aiccradb_otp_probe   base: http://localhost:8080/marlo-web
+
+[case 4] 10 parallel request-code calls, ONE email, fresh buckets, stale rows of all three tables pre-seeded (FN-007/008, T04 pointer)
+  (guard: challenge rows of the application's own requests are in aiccradb_otp_probe)
+  statuses: {'rateLimited': 9, 'sent': 1}   overlap: True   start spread: 0.3 ms
+  open rows: 1   rows total: 1   mails delivered: 1   pre-seeded 3h-old expired row still present: 0
+  stale otp_cooldowns row (2 h) left: 0   control cooldown (10 min) left: 1   stale otp_rate_limits window (2 days) left: 0   control window (1 h) left: 1
+  => PASS: case 4: at most 1 open row   (open=1)
+  => PASS: case 4: exactly 1 sent, none unavailable (no deadlock/lock timeout)   ({'rateLimited': 9, 'sent': 1})
+  => PASS: case 4: exactly 1 mail   (mails=1)
+  => PASS: case 4: purge of the expired challenge ran alongside, no failure   (stale=0)
+  => PASS: case 4: the stale cooldown and the stale rate-limit window were purged during the accept burst, the in-retention controls survived   (cooldown stale=0 control=1, window stale=0 control=1 (a nonzero stale count with the app not freshly started means the 10-minute throttle was not due))
+
+[case 1] 10 parallel CORRECT verifies, one challenge (AC-7, FN-013)
+  (guard: challenge rows of the application's own requests are in aiccradb_otp_probe)
+  statuses: {'invalid': 9, 'ok': 1}   all-started-before-first-finished: True   start spread: 0.5 ms
+  otp_challenges (attempts, consumed): [['0', '1']]
+  => PASS: case 1: exactly 1 sign-in   (ok=1 consumed rows=1)
+  => PASS: case 1: burst was concurrent   (overlap=True)
+
+[case 2] 10 parallel WRONG codes, one challenge (FN-012)
+  statuses: {'mismatch': 2, 'exhausted': 8}   overlap: True   start spread: 0.9 ms
+  otp_challenges (attempts, consumed): [['3', '0']]
+  => PASS: case 2: attempts ends at 3 (never above)   (attempts=3 consumed=0)
+  => PASS: case 2: no more than 2 mismatch answers, at least 1 exhausted   ({'mismatch': 2, 'exhausted': 8})
+  => PASS: case 2: the correct code is refused afterwards (AC-6)   (answer=exhausted)
+
+[case 3] 3 wrong + 1 correct AFTER exhaustion (0 consumes expected)
+  round 1: statuses {'exhausted': 4} overlap=True -> rows [['3', '0']]
+  round 2: statuses {'exhausted': 4} overlap=True -> rows [['3', '0']]
+  round 3: statuses {'exhausted': 4} overlap=True -> rows [['3', '0']]
+  round 4: statuses {'exhausted': 4} overlap=True -> rows [['3', '0']]
+  round 5: statuses {'exhausted': 4} overlap=True -> rows [['3', '0']]
+  => PASS: case 3: 0 consumes and 0 sign-ins after exhaustion (5 rounds)   (consumes+ok = 0)
+
+[case 3b] race burst from attempts=0: 3 wrong + 1 correct fired together, 25 rounds
+  outcomes (signed-in?, attempts, consumed) -> count: {('no-ok', 'attempts=3', 'consumed=0'): 8, ('ok', 'attempts=2', 'consumed=1'): 11, ('ok', 'attempts=1', 'consumed=1'): 4, ('ok', 'attempts=0', 'consumed=1'): 2}
+  => PASS: case 3b: never consumed AND attempts=3; never 2 sign-ins   (violations=0 of 25 rounds)
+
+[case 4b] first-ever concurrency, 8 rounds x 10 parallel, fresh email each round (deadlock hunt)
+  round 1: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 2: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 3: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 4: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 5: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 6: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 7: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  round 8: {'rateLimited': 9, 'sent': 1} open=1 overlap=True
+  => PASS: case 4b: every round 1 sent, <=1 open row, 0 unavailable   (bad=0)
+
+SUMMARY: 13 checks, 0 failed

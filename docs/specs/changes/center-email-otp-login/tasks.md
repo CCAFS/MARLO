@@ -444,7 +444,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T15 — End-to-end verification: probes, leaks and acceptance walkthrough
 
-- **Status:** pending · **Size:** M · **Depends on:** T01–T14 · **Module:** spec folder (`probes/`)
+- **Status:** done [x] · **Size:** M · **Depends on:** T01–T14 · **Module:** spec folder (`probes/`)
 - **Requirements:** AC-1 to AC-17 (requirements §7); the defect-class gates of requirements §6 that have no automated check
 - **Design:** §12 probe, §13, §14 steps 4–5
 - **Files:** `probes/concurrency-probe.sh` (or `.sql`) and `probes/README.md` with the recorded output (both new).

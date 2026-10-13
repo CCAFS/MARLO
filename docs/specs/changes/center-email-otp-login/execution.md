@@ -1260,3 +1260,46 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - **VERIFIED**.
 - **Attempt 2 — Reviewer:** **PASS**. Every remaining `existCrpUser` mention in the spec is intentional: the departure note, P-2, P-13 and the falsifier. Advisory: file the A2 issue for the password-login gap and put its key in the Decision Log before `/akili-archive`.
 - **Forward pointer:** T15 must re-run AC-9 with a real soft delete (`is_active = 0`) on a fresh throwaway copy.
+
+### CHG-OTP-LOGIN-001-T15 — End-to-end verification (continued after the T06 rework)
+
+- **Attempt 2 — Implementer:** STATUS DONE, no `src/main` changes, HEAD `ece163ef2e` (T06 fix included).
+  - **AC-9** now uses MARLO's soft delete (`is_active = 0`):
+    - A code issued while the member was active and verified after the soft delete answers `invalid`. The challenge is consumed and the session is not authenticated.
+    - A request after the soft delete gets the neutral answer and 0 mails.
+    - The hard delete is kept as supporting evidence, and an "active again" control signs in.
+  - **AC-4** has six states, the soft-deleted one included.
+  - **Isolation** is REPEATABLE-READ, both global and per session, and the live app pool shows REPEATABLE-READ x15. The app sets none of its own.
+  - **Case 4 is made deterministic for the throttled limiter purge** (it runs first after a fresh start). A 2-hour-old `otp_cooldowns` row and a 2-day-old `otp_rate_limits` window are purged and the in-retention controls are kept, with 1 `sent` and 0 `unavailable`. A negative control run inside the throttle window fails as expected (`throttle-not-due.out`).
+  - **`shortsecret.out`** holds the real WARN line and the `ps eww` result, value redacted.
+  - **`SessDump.java`** has the GPL header and braces, and compiles.
+  - **Advisories applied:**
+    - a probe-DB guard in the app-driven probes;
+    - AC-1 recorded as PASS with an environment note;
+    - AC-4 cites `aDecoyGuessed`;
+    - the spread text is fixed;
+    - `ac17-migration.sh` records its invocation;
+    - dead code removed;
+    - `stage_smtp` restores the saved value;
+    - the T14 `requestSeq` note;
+    - `/Users` paths replaced by `<logs>`.
+  - **Final runs:** `ac-probe.sh` 59 checks, 0 failed; HTTP concurrency 13 checks and SQL concurrency 4 checks, all green; SQL falsifier `S3 consumes=10`, `S3b 25/30`; suite 737 tests, 0 failures.
+  - **Run discarded:** one accidental double run, recorded in README §2.
+- **Leader checks and evidence re-run (non-author):**
+  - **Environment:** only `?? probes/` in the tree; no `*probe*` database; ports 8080 and 2525 free.
+  - **`aiccradb_actsave`:** `otp_*` 0/0/0, OTP `custom_parameters` 0, 1623 in total. User 3862's `last_login` is still `2026-10-13 12:56:27`, and its AICCRA `crp_users.is_active` is 1.
+  - **Probe folder:** no personal address, `/Users` path or DB password. `bash -n` passes on all 4 scripts, and `javac SessDump.java` is clean.
+  - **SQL probe on a fresh minimal database:** it prints the isolation lines and reports `4 checks, 0 failed`. The falsifier through `PROBE_DAO` reports `S3 consumes=10` and `S3b 24/30`.
+  - **VERIFIED**.
+- **Attempt 2 — Reviewer (full):** **PASS**. All five blocking issues are fixed and every README figure matches the output files.
+  - Advisories:
+    - The probe-DB guard fires only after the first `sent`, so a password login in `stage_session` and `stage_smtp` could write `last_login` to a misconfigured database before the abort. The README §2 `ps eww` check covers it in practice.
+    - The README wording on the interceptors was wrong. The Leader fixed it: `ValidPhaseInterceptor` already uses `existActiveCrpUser`.
+    - The address in pushed history was already decided by the user and is not rewritten.
+- **Handed to T16:**
+  - the post-login failure gap, which leaves an authenticated session and is shared with Cognito route C;
+  - "Log in" stays enabled while a code request is in flight;
+  - the accepted "purge deadlock means `unavailable`" risk;
+  - deliverability through the real relay;
+  - the reCAPTCHA overlap and screen-reader behaviour, which were not verified locally.
+- **Open before `/akili-archive`:** file the A2 Jira issue for the password-login soft-delete gap, after the user confirms the parent epic, and put its key in the requirements Decision Log.
