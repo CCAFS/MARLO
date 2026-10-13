@@ -395,7 +395,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T13 — `crpByEmail.do` `otpEnabled` flag
 
-- **Status:** pending · **Size:** S · **Depends on:** T03, T06 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** T03, T06 · **Module:** marlo-web
 - **Requirements:** UI-001, SEC-006 (no new disclosure), FN-002 (live)
 - **Design:** §6 `crpByEmail.do` row; Premise Ledger P-20
 - **Files:**

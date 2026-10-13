@@ -1058,3 +1058,30 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
 - **runtime events:** none.
 - **spawns:** Implementer, 53 calls, 193,322 tokens, ended complete. Reviewer, 19 calls, 70,661 tokens, ended complete.
 - **Review rounds:** 20 of 28.
+
+### CHG-OTP-LOGIN-001-T13 — `crpByEmail.do` `otpEnabled` flag
+
+- **Attempt 1 — Implementer:** STATUS DONE.
+  - `CrpByUserEmailAction` takes `OtpEligibility` as a sixth constructor argument. A private `otpEnabledByUnit` calls `otpEnabledFor(userEmail, usrDB.isCgiarUser(), globalUnits)` once per request, before the unit loop.
+  - Any `RuntimeException` is caught and logged null-safely (fixed message plus the exception), and an empty map is returned, so every flag is `false`.
+  - Each unit entry gains `otpEnabled` after the existing keys. `prepare()` is untouched.
+  - `CrpByUserEmailActionTest` gains 8 tests (13 in the class). The stub `getGlobalUnitById` now records calls and returns the listed unit; the Reviewer confirmed no pre-existing assertion depended on its throw.
+- **Red run:** compile error only ("actual and formal argument lists differ in length"). It is weak, and the falsifier carries the behavioural proof.
+- **Falsifier:** computing the flag with `isEligible` per unit turned 5 of 13 red, including `otpEnabledIsIdenticalForAnActiveAndAnInactiveUserAndForMemberAndNonMemberUnits` ("expected:<{AAA=true, BBB=false}> but was:<{AAA=false, BBB=false}>") and `oneAllowListQueryIsMadePerCallWhateverTheNumberOfUnits` (expected 1, was 2). Production code restored afterwards.
+- **Implementer verification:** full suite 735/735, BUILD SUCCESS. Checkstyle delta 0.
+- **`crpUsers.js` read (Done-when):** `findUserEmail()` (~lines 211–245) posts `userEmail`, checks `data.user == null`, loops `data.crps` comparing `crp.acronym`, and reads `data.user.name`. It never iterates an entry's keys, so the additive `otpEnabled` key cannot affect it. The Implementer read it, and the Reviewer re-read lines 229–232.
+- **Off-state / fail-closed:**
+  - `unconfiguredMakesNoAllowListQueryAndEveryFlagIsFalse`: 0 queries, all `false`.
+  - `aFailingAllowListReadFailsClosedAndLeavesTheLoginLookupUnchanged`: all `false`, normal response, `cognitoEnabled` unchanged.
+  - `everyPreExistingKeyAndValueIsUnchangedOnAndOff`: the complete key sets of `user` and each `crps[]` entry.
+- **Evidence re-run (Leader, non-author):** after a clean wipe, `CrpByUserEmailActionTest`, `CognitoLoginActionTest`, `LoginActionCgiarGuardTest`, `ValidateUserActionGuardTest`, `ErrorStatusLogStackCoverageTest` and `OtpEligibilityTest` ran 85/85 green, BUILD SUCCESS. **VERIFIED.**
+- **Live check (Leader):** `scripts/run-marlo-java17.sh` without `OTP_HMAC_SECRET`.
+  - There were no bean-creation errors, so Spring builds the 6-argument constructor.
+  - `crpByEmail.do` was called for an active member account: `user` keys are `agree`, `isCgiarUser`, `name`. Each unit (AICCRA, AICCRA_III) has keys `acronym, cognitoEnabled, id, idType, name, otpEnabled, type`, with `otpEnabled=false`.
+  - Read-only `otp_*` counts: 0/0/0.
+  - The app was stopped afterwards.
+- **Attempt 1 — Reviewer (checklist):** **PASS**. No findings. The constructor-wiring gap was closed by the live check above.
+- **Note:** username input (no `@`) gives every flag `false`, so OTP is offered only to an email entry. The logger declared against `FlaghshipsByCrpAction.class` predates this change.
+- **runtime events:** none.
+- **spawns:** Implementer, 19 calls, 108,132 tokens, ended complete. Reviewer, 9 calls, 49,792 tokens, ended complete.
+- **Review rounds:** 21 of 28.

@@ -16,8 +16,10 @@
 package org.cgiar.ccafs.marlo.action.json.global;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.OtpChallengeManager;
 import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
@@ -25,14 +27,22 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility;
+import org.cgiar.ccafs.marlo.security.otp.OtpKeys;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +80,15 @@ public class CrpByUserEmailActionTest {
   private StubGlobalUnitManager crpManager;
   private StubCustomParameterManager customParameterManager;
   private StubParameterManager parameterManager;
+
+  /** CHG-OTP-LOGIN-001-T13: the one-time-code world. {@code otpSecret} {@code null} means unconfigured. */
+  private static final String SECRET_32_BYTES = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";
+  private static final String PARTNER_EMAIL = "ann@partner.org";
+  private String otpSecret;
+  private final Map<Long, String> allowLists = new HashMap<Long, String>();
+  private final List<String> allowListReads = new ArrayList<String>();
+  private final Set<Long> memberUnitIds = new HashSet<Long>();
+  private boolean allowListThrows;
 
   /**
    * Global Unit ids and Global Unit TYPE ids are deliberately disjoint number ranges here. If they overlapped,
@@ -120,11 +139,238 @@ public class CrpByUserEmailActionTest {
     // Catalog default is "false" everywhere unless a test overrides it -- matches CognitoLoginActionTest's
     // baseline and keeps a Global Unit disabled unless something explicitly turns it on.
     this.parameterManager.catalogDefault = "false";
+    this.otpSecret = null;
+    this.allowLists.clear();
+    this.allowListReads.clear();
+    this.memberUnitIds.clear();
+    this.allowListThrows = false;
   }
 
   private CrpByUserEmailAction newAction() {
     return new CrpByUserEmailAction(new APConfig(), this.crpManager, this.userManager, this.customParameterManager,
-      this.parameterManager);
+      this.parameterManager, this.newEligibility());
+  }
+
+  /** The real predicate over fakes: only the managers are doubles, so the real SEC-009 and domain rules run. */
+  private OtpEligibility newEligibility() {
+    APConfig config = new APConfig() {
+
+      @Override
+      public String getOtpHmacSecret() {
+        return CrpByUserEmailActionTest.this.otpSecret == null ? "" : CrpByUserEmailActionTest.this.otpSecret;
+      }
+    };
+    OtpChallengeManager challengeManager = fake(OtpChallengeManager.class, (method, args) -> {
+      if ("allowListFor".equals(method)) {
+        Collection<?> ids = (Collection<?>) args[1];
+        this.allowListReads.add(args[0] + "|" + ids);
+        if (this.allowListThrows) {
+          throw new IllegalStateException("allow-list read failed");
+        }
+        Map<Long, String> answer = new HashMap<Long, String>();
+        for (Object id : ids) {
+          answer.put((Long) id, this.allowLists.get(id));
+        }
+        return answer;
+      }
+      throw new UnsupportedOperationException("not needed by this suite: " + method);
+    });
+    CrpUserManager crpUserManager = fake(CrpUserManager.class, (method, args) -> {
+      if ("existCrpUser".equals(method) && args.length == 2) {
+        this.crpUserChecks++;
+        return Boolean.valueOf(this.memberUnitIds.contains(args[1]));
+      }
+      throw new UnsupportedOperationException("not needed by this suite: " + method);
+    });
+    return new OtpEligibility(new OtpKeys(config), this.userManager, this.crpManager, crpUserManager,
+      challengeManager, this.customParameterManager, this.parameterManager);
+  }
+
+  private int crpUserChecks;
+
+  @SuppressWarnings("unchecked")
+  private static <T> T fake(Class<T> type, Answer answer) {
+    InvocationHandler handler =
+      (proxy, method, args) -> answer.answer(method.getName(), args == null ? new Object[0] : args);
+    return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, handler);
+  }
+
+  private interface Answer {
+
+    Object answer(String method, Object[] args);
+  }
+
+  private static User partnerUser(boolean active, boolean cgiar) {
+    User user = new User();
+    user.setId(Long.valueOf(9002L));
+    user.setEmail(PARTNER_EMAIL);
+    user.setCgiarUser(cgiar);
+    user.setActive(active);
+    return user;
+  }
+
+  /** Runs the action for {@link #PARTNER_EMAIL} and returns the per-unit {@code otpEnabled} flags by acronym. */
+  private Map<String, Object> otpFlags(User user, GlobalUnit... units) {
+    this.crpManager.units = Arrays.asList(units);
+    this.userManager.register(user);
+    CrpByUserEmailAction action = this.newAction();
+    this.setUserEmail(action, PARTNER_EMAIL);
+    this.execute(action);
+    Map<String, Object> flags = new HashMap<String, Object>();
+    for (Map<String, Object> entry : action.getCrps()) {
+      assertTrue("every unit entry carries otpEnabled", entry.containsKey("otpEnabled"));
+      flags.put((String) entry.get("acronym"), entry.get("otpEnabled"));
+    }
+    return flags;
+  }
+
+  private void configureOtp() {
+    this.otpSecret = SECRET_32_BYTES;
+    this.allowLists.put(Long.valueOf(1L), "partner.org");
+    this.allowLists.put(Long.valueOf(2L), "partner.org");
+  }
+
+  /** The flag is true only when configured, the domain is allowed for the unit and SEC-009 passes. */
+  @Test
+  public void otpEnabledIsTrueOnlyWhenConfiguredDomainAllowedAndSec009Passes() {
+    this.configureOtp();
+    this.allowLists.put(Long.valueOf(3L), "other.org");
+    this.allowLists.put(Long.valueOf(4L), "partner.org");
+    this.customParameterManager.overridesByUnitId.put(Long.valueOf(4L), activeOverride("true"));
+    GlobalUnit allowed = globalUnit(1L, "AAA");
+    GlobalUnit notAllowed = globalUnit(3L, "CCC");
+    GlobalUnit cognitoUnit = globalUnit(4L, "DDD");
+
+    Map<String, Object> asCgiar = this.otpFlags(partnerUser(true, true), allowed, notAllowed, cognitoUnit);
+    assertEquals(Boolean.TRUE, asCgiar.get("AAA"));
+    assertEquals("domain not on the unit's allow-list", Boolean.FALSE, asCgiar.get("CCC"));
+    assertEquals("SEC-009: a CGIAR user on a Cognito unit", Boolean.FALSE, asCgiar.get("DDD"));
+
+    Map<String, Object> asLocal = this.otpFlags(partnerUser(true, false), allowed, notAllowed, cognitoUnit);
+    assertEquals(Boolean.TRUE, asLocal.get("AAA"));
+    assertEquals(Boolean.FALSE, asLocal.get("CCC"));
+    assertEquals("a non-CGIAR user passes SEC-009 on a Cognito unit", Boolean.TRUE, asLocal.get("DDD"));
+  }
+
+  /** JI-11: the flag does not depend on whether the account is active, nor on membership of the listed unit. */
+  @Test
+  public void otpEnabledIsIdenticalForAnActiveAndAnInactiveUserAndForMemberAndNonMemberUnits() {
+    this.configureOtp();
+    this.memberUnitIds.add(Long.valueOf(1L));
+    GlobalUnit member = globalUnit(1L, "AAA");
+    GlobalUnit nonMember = globalUnit(2L, "BBB");
+
+    Map<String, Object> active = this.otpFlags(partnerUser(true, false), member, nonMember);
+    Map<String, Object> inactive = this.otpFlags(partnerUser(false, false), member, nonMember);
+
+    assertEquals("an inactive user is told exactly what an active one is", active, inactive);
+    assertEquals("a non-member unit is flagged exactly as a member unit", active.get("AAA"), active.get("BBB"));
+    assertEquals(Boolean.TRUE, active.get("AAA"));
+  }
+
+  /** The disclosure-safe variant reads no account state beyond the user found and asks no membership question. */
+  @Test
+  public void otpEnabledReadsNoMembershipOrUnitLookup() {
+    this.configureOtp();
+    this.memberUnitIds.add(Long.valueOf(1L));
+    this.otpFlags(partnerUser(true, false), globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
+    assertEquals(0, this.crpUserChecks);
+    assertEquals(0, this.crpManager.byIdCalls);
+  }
+
+  /** One uncached allow-list query for all the listed units. */
+  @Test
+  public void oneAllowListQueryIsMadePerCallWhateverTheNumberOfUnits() {
+    this.configureOtp();
+    this.otpFlags(partnerUser(true, false), globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
+    assertEquals(1, this.allowListReads.size());
+  }
+
+  /** Off state: unconfigured means no allow-list query at all and every flag false. */
+  @Test
+  public void unconfiguredMakesNoAllowListQueryAndEveryFlagIsFalse() {
+    this.allowLists.put(Long.valueOf(1L), "partner.org");
+    this.otpSecret = null;
+    Map<String, Object> flags =
+      this.otpFlags(partnerUser(true, false), globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
+    assertEquals(0, this.allowListReads.size());
+    assertEquals(Boolean.FALSE, flags.get("AAA"));
+    assertEquals(Boolean.FALSE, flags.get("BBB"));
+  }
+
+  /** An email matching no account still discloses nothing, and asks no allow-list question. */
+  @Test
+  public void anUnknownEmailMakesNoAllowListQuery() {
+    this.configureOtp();
+    this.crpManager.units = Arrays.asList(globalUnit(1L, "AAA"));
+    CrpByUserEmailAction action = this.newAction();
+    this.setUserEmail(action, "nobody@partner.org");
+    this.execute(action);
+    assertNull(action.getUser());
+    assertTrue(action.getCrps().isEmpty());
+    assertEquals(0, this.allowListReads.size());
+  }
+
+  /** Fail closed: a throwing allow-list read leaves every flag false and the normal response intact. */
+  @Test
+  public void aFailingAllowListReadFailsClosedAndLeavesTheLoginLookupUnchanged() {
+    this.configureOtp();
+    this.allowListThrows = true;
+    GlobalUnit unitA = globalUnit(1L, "AAA");
+    GlobalUnit unitB = globalUnit(2L, "BBB");
+    Map<String, Object> flags = this.otpFlags(partnerUser(true, false), unitA, unitB);
+    assertEquals(1, this.allowListReads.size());
+    assertEquals(Boolean.FALSE, flags.get("AAA"));
+    assertEquals(Boolean.FALSE, flags.get("BBB"));
+
+    CrpByUserEmailAction action = this.runFor(partnerUser(true, false), unitA, unitB);
+    assertEquals(2, action.getCrps().size());
+    assertNotNull(action.getUser());
+    assertEquals(Boolean.FALSE, this.byAcronym(action.getCrps(), "AAA").get("cognitoEnabled"));
+  }
+
+  /**
+   * Disqualifier guard: the complete key set of the response is asserted, and every pre-existing key and value is
+   * identical with the feature on and off.
+   */
+  @Test
+  public void everyPreExistingKeyAndValueIsUnchangedOnAndOff() {
+    GlobalUnit unitA = globalUnit(1L, "AAA");
+    GlobalUnit unitB = globalUnit(2L, "BBB");
+    this.customParameterManager.overridesByUnitId.put(Long.valueOf(1L), activeOverride("true"));
+
+    this.otpSecret = null;
+    CrpByUserEmailAction off = this.runFor(partnerUser(true, false), unitA, unitB);
+    this.configureOtp();
+    CrpByUserEmailAction on = this.runFor(partnerUser(true, false), unitA, unitB);
+
+    Set<String> unitKeys = new LinkedHashSet<String>(
+      Arrays.asList("id", "name", "acronym", "type", "idType", "cognitoEnabled", "otpEnabled"));
+    Set<String> userKeys = new LinkedHashSet<String>(Arrays.asList("name", "agree", "isCgiarUser"));
+    assertEquals(userKeys, new HashSet<String>(off.getUser().keySet()));
+    assertEquals(userKeys, new HashSet<String>(on.getUser().keySet()));
+    assertEquals(off.getUser(), on.getUser());
+    assertEquals(2, on.getCrps().size());
+    for (int i = 0; i < on.getCrps().size(); i++) {
+      assertEquals(unitKeys, new HashSet<String>(on.getCrps().get(i).keySet()));
+      assertEquals(unitKeys, new HashSet<String>(off.getCrps().get(i).keySet()));
+      Map<String, Object> onEntry = new HashMap<String, Object>(on.getCrps().get(i));
+      Map<String, Object> offEntry = new HashMap<String, Object>(off.getCrps().get(i));
+      assertEquals(Boolean.TRUE, onEntry.remove("otpEnabled"));
+      assertEquals(Boolean.FALSE, offEntry.remove("otpEnabled"));
+      assertEquals(offEntry, onEntry);
+    }
+    assertEquals(Boolean.TRUE, on.getCrps().get(0).get("cognitoEnabled"));
+    assertEquals(Boolean.FALSE, on.getCrps().get(1).get("cognitoEnabled"));
+  }
+
+  private CrpByUserEmailAction runFor(User user, GlobalUnit... units) {
+    this.crpManager.units = Arrays.asList(units);
+    this.userManager.register(user);
+    CrpByUserEmailAction action = this.newAction();
+    this.setUserEmail(action, PARTNER_EMAIL);
+    this.execute(action);
+    return action;
   }
 
   /**
@@ -302,6 +548,7 @@ public class CrpByUserEmailActionTest {
 
     private List<GlobalUnit> units = new ArrayList<GlobalUnit>();
     private boolean crpUsersCalled;
+    private int byIdCalls;
 
     @Override
     public List<GlobalUnit> crpUsers(String email) {
@@ -336,7 +583,13 @@ public class CrpByUserEmailActionTest {
 
     @Override
     public GlobalUnit getGlobalUnitById(long globalUnitID) {
-      throw new UnsupportedOperationException("not needed by this suite");
+      this.byIdCalls++;
+      for (GlobalUnit unit : this.units) {
+        if (unit.getId().longValue() == globalUnitID) {
+          return unit;
+        }
+      }
+      return null;
     }
 
     @Override

@@ -25,9 +25,11 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -77,15 +79,18 @@ public class CrpByUserEmailAction extends BaseAction {
   private UserManager userManager;
   private CustomParameterManager customParameterManager;
   private ParameterManager parameterManager;
+  private OtpEligibility otpEligibility;
 
   // @Inject
   public CrpByUserEmailAction(APConfig config, GlobalUnitManager crpManager, UserManager userManager,
-    CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+    CustomParameterManager customParameterManager, ParameterManager parameterManager,
+    OtpEligibility otpEligibility) {
     super(config);
     this.crpManager = crpManager;
     this.userManager = userManager;
     this.customParameterManager = customParameterManager;
     this.parameterManager = parameterManager;
+    this.otpEligibility = otpEligibility;
   }
 
 
@@ -112,6 +117,7 @@ public class CrpByUserEmailAction extends BaseAction {
 
     List<GlobalUnit> globalUnits = this.crpManager.crpUsers(this.userEmail);
     globalUnits.sort(Comparator.comparing(GlobalUnit::getAcronym));
+    Map<Long, Boolean> otpEnabled = this.otpEnabledByUnit(usrDB, globalUnits);
 
     for (GlobalUnit crp : globalUnits) {
       try {
@@ -124,6 +130,9 @@ public class CrpByUserEmailAction extends BaseAction {
         // Per-unit, resolved through the shared resolver (PS-16) -- never a single scalar on `user`.
         crpMap.put("cognitoEnabled",
           CognitoAuthSpecificity.isActiveFor(crp, this.customParameterManager, this.parameterManager));
+        // CHG-OTP-LOGIN-001-T13 (UI-001): whether the one-time-code option may be offered for this unit. It is
+        // the same answer for every account state (SEC-006), and false for every unit when the feature is off.
+        crpMap.put("otpEnabled", Boolean.valueOf(Boolean.TRUE.equals(otpEnabled.get(crp.getId()))));
 
         this.crps.add(crpMap);
       } catch (Exception e) {
@@ -138,6 +147,19 @@ public class CrpByUserEmailAction extends BaseAction {
 
   }
 
+
+  /**
+   * Resolves the {@code otpEnabled} flag of every listed unit, failing closed: the OTP computation must never break
+   * or change the existing login lookup, so any failure is logged and answers {@code false} for every unit.
+   */
+  private Map<Long, Boolean> otpEnabledByUnit(User account, List<GlobalUnit> units) {
+    try {
+      return this.otpEligibility.otpEnabledFor(this.userEmail, account.isCgiarUser(), units);
+    } catch (RuntimeException e) {
+      this.logger.error("unable to resolve otpEnabled; answering false for every unit", e);
+      return Collections.<Long, Boolean>emptyMap();
+    }
+  }
 
   public List<Map<String, Object>> getCrps() {
     return crps;
