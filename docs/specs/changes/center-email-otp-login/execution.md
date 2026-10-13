@@ -996,3 +996,65 @@ No blocker. The T03 commit is safe. Forward pointers added:
 
 - **Budget:** the user approved extending the review-round budget from 23 to **28**. The cause of the overrun is recorded above: quality rounds the user chose (the amendments in T01, T05 and T10, the T04 Pivot), the real FAIL in T09, and the parallel-lens reviews in T03, T04, T10 and T11. A new tripwire stop fires if 28 is exceeded.
 - **Post-login failure gap:** not hardened in T11. **Pending item for T16:** record it in the runbook as a known gap shared with Cognito route C: a `RuntimeException` after `Subject.login`, or the unmapped-unit-type `INPUT` branch, leaves an authenticated session behind an `unavailable` or `failed` answer. A `logout()` hardening, if wanted, belongs in a separate task that covers both flows.
+
+#### Off-state audit before T12 (2026-10-13, user request)
+
+The user asked to confirm, before T12, that the feature is a specificity and that, when it is off, login behaves exactly as before the change. Leader audit of the committed code (T01–T11):
+
+- **Specificity:** `crp_otp_allowed_email_domains` is a `parameters` row per Global Unit type (DA-002), with constants equal to the key in both `APConstants.java` files. The per-unit value comes from `custom_parameters`. `OtpChallengeMySQLDAO.ALLOW_LIST_SQL` resolves it the MARLO way: an active `custom_parameters` row wins, otherwise `parameters.default_value`. The read is uncached, so a change applies on the next request (FN-002).
+- **Shipped off:** the migration seeds `default_value = ''` and inserts no `custom_parameters` row. An empty list is off for that unit (FN-001).
+- **Two switches:** per unit, the allow-list. Global, `otp.hmac.secret`: unset makes `OtpKeys.isConfigured()` false. `OtpRequestCodeAction` then refuses before any database access; `OtpEligibility` returns false; `OtpRateLimiter` answers unavailable.
+- **Off at the server:** with the secret set but the unit's list empty, a direct `otpRequestCode` call is refused with `domain_not_enabled`. No challenge row, no email, no session write. Only the rate-limit counters are touched, by design (step 1 limits before any lookup).
+- **Existing login paths:**
+  - `LoginAction` and `ValidateUserAction` are not modified.
+  - `APCustomRealm` gains only a `supports()` term and a branch reachable solely through `OtpAuthenticationToken`, which is built in one place: `OtpVerifyCodeAction` after a consumed code.
+  - `CognitoLoginAction` changed by the T08 behaviour-preserving extraction to `ReturnUrls`, covered by its existing tests.
+- **Idle cost:** `OtpMailSender` creates its worker threads lazily, on the first send. With the feature off, no thread runs.
+- **Remaining off-state obligations, carried into the open tasks:**
+  - **T12:** the new endpoints refuse with the feature off. Adding the `homeOtp` package must not alter any existing package or stack.
+  - **T13:** when unconfigured, no allow-list query runs. An allow-list read failure must fail closed (every flag `false`) and must never break `crpByEmail.do`. Every existing key stays unchanged.
+  - **T14:** with `otpEnabled` false, the page is visibly and behaviourally identical. No OTP control shows, and no extra request is sent.
+  - **T15:** run AC-1 (every list empty, existing login tests unchanged, no OTP control).
+- **Conclusion:** the off-state contract (FN-001, FN-019, the §8 rollback) holds for T01–T11. No spec change is needed.
+
+### CHG-OTP-LOGIN-001-T12 — Struts `homeOtp` package
+
+- **Attempt 1 — Implementer:** STATUS DONE.
+  - `struts-home.xml`: +49/-0, `struts.xml` untouched. The `homeOtp` package (`namespace="/"`, `extends="marlo-default,json-default"`); `otpUnloggedStack` = `logErrorStatus` → `i18nFile` → `defaultStack`; a global `input` result plus a `success` result per action, all `json` with `root=response`, `noCache` and `excludeNullProperties`.
+  - `OtpRequestCodeAction` and `OtpVerifyCodeAction` implement `ParameterNameAware`. The exact allow-lists are `{email, globalUnitId, agree}` and `{code}`.
+  - New `OtpStrutsPackageTest` (8 tests); `ErrorStatusLogStackCoverageTest` gains 1 homeOtp guard.
+- **P-26 settled:** the multi-parent `extends="marlo-default,json-default"` loads. Proven by `homeOtpIsRegisteredAndExtendsBothMarloDefaultAndJsonDefault`, which loads the real `struts-default.xml`, the json plugin's `struts-plugin.xml` and `struts.xml`, and by the live curl. The DD-1 fallback was not needed.
+- **P-21 settled:** neither consumer test pins an action list. `ErrorStatusLogStackCoverageTest` enumerates every `struts*.xml` generically (≥440 actions; exemptions only `homeJson/crpByEmail`, `homeJson/validateUser`, `api/institutions/*`), and it now guards that both OTP actions stay on `otpUnloggedStack` and are not exempted. `CognitoUnloggedStackReachabilityTest` pins only `ValidCrpActionInterceptor` against `cognitoLogin`; it is unchanged and green.
+- **"Invalid conversion" bullet:** unreachable by construction. Every accepted setter (`setEmail`, `setGlobalUnitId`, `setAgree`, `setCode`) takes `String` and the allow-list is exact, so no accepted parameter can fail conversion. The substitute test (a field error in `prepare()`, the real `workflow` returns `input`, the package's global JSON result renders `{"status":"unavailable"}`) proves what RJ-9 needs. The Reviewer accepted it on that basis.
+- **Red run:** before the package: `Tests run: 8, Failures: 3, Errors: 4` ("struts-home.xml must declare the package homeOtp (DD-1)"; `default-action-ref` fell through to `LoginAction`).
+- **Falsifier:** removing `root=response` gave `Failures: 3`, including "root must be response expected:<response> but was:<null>". The XML was then restored.
+- **Implementer verification:**
+  - Full suite 727/727 (718 + 9), BUILD SUCCESS.
+  - Compile: 2415 / 1062 / 71 files.
+  - Checkstyle delta 0 on all four changed files.
+- **Live run** (`scripts/run-marlo-java17.sh`, no `OTP_HMAC_SECRET`):
+  - Spring wiring succeeded; the log shows `OtpKeys ... outcome=unconfigured`.
+  - `otpRequestCode.do` answers 200 `{"status":"domainNotEnabled"}` with no parameters, with valid parameters, and with injected `crpSession`/`user.email`/`url`.
+  - `otpVerifyCode.do` answers 200 `{"status":"unavailable"}`.
+  - `login.do` answers 200.
+  - Read-only `otp_challenges`/`otp_rate_limits`/`otp_cooldowns` counts were 0/0/0 before and after.
+  - The app was stopped afterwards.
+- **Off-state:** confirmed. The XML diff is purely additive, and with the feature unconfigured the endpoints refuse and write nothing.
+- **Evidence re-run (Leader, non-author):**
+  - Clean wipe and compile: 2415/1062/71 files.
+  - Tests: `OtpStrutsPackageTest` 8, `ErrorStatusLogStackCoverageTest` 4, `CognitoUnloggedStackReachabilityTest` 1, `OtpRequestCodeActionTest` 40, `OtpVerifyCodeActionTest` 47; 100/100 green, BUILD SUCCESS.
+  - Result: **VERIFIED**.
+- **Attempt 1 — Reviewer (full):** **PASS**. Conditions (bookkeeping, recorded above): P-21/P-26 settlement, and the conversion bullet recorded as unreachable by construction.
+- **Advisories (not rework):**
+  - *Readability:* rename `anInvalidConversionYieldsTheJsonInputResult` to say "workflow input interruption"; replace inline fully qualified names with imports.
+  - *Reliability:* no test shows an *accepted* parameter reaching the action through the package. Unconfigured, both actions answer before reading `email`/`code`.
+  - *Risk:* `marlo-default`'s global exception mapping means an exception thrown by an interceptor (for example `i18nFile`) answers the HTML error page, not JSON. `cognitoUnloggedStack` shares the exposure.
+- **Pre-existing, outside scope:** `crpByEmail.do` without `userEmail` throws `IndexOutOfBounds` in `CrpByUserEmailAction.prepare` (line 155). T13 touches this file; it is noted for its brief, not fixed here.
+- **Observation:** unconfigured verify logs `auth.otp.verify outcome=internal_error` (T11 behaviour, limiter UNAVAILABLE), while unconfigured request logs `unconfigured`.
+- **Forward pointers (Leader):**
+  - **T13:** the `CrpByUserEmailAction.prepare:155` IndexOutOfBounds on a missing `userEmail` predates this spec. Keep it out of scope unless the user approves; T13 must not make it worse.
+  - **T14:** the client must handle a non-JSON (HTML error page) answer from both endpoints as `unavailable`.
+  - **T15:** with the secret configured, prove that `email`/`globalUnitId`/`agree` and `code` bind through the real package (a sent code on an allowed domain; a verify that reaches the store).
+- **runtime events:** none.
+- **spawns:** Implementer, 53 calls, 193,322 tokens, ended complete. Reviewer, 19 calls, 70,661 tokens, ended complete.
+- **Review rounds:** 20 of 28.

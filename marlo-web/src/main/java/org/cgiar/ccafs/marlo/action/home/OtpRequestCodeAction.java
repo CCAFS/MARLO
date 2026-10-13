@@ -41,9 +41,11 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -53,6 +55,7 @@ import javax.inject.Inject;
 
 import com.opensymphony.xwork2.TextProvider;
 import org.apache.shiro.SecurityUtils;
+import org.apache.struts2.action.ParameterNameAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +95,7 @@ import org.slf4j.LoggerFactory;
  * come from the same clock as {@code now}. Nothing logs a store exception's message: a duplicate-nonce error carries
  * the nonce, so only the class name is written.
  */
-public class OtpRequestCodeAction extends BaseAction {
+public class OtpRequestCodeAction extends BaseAction implements ParameterNameAware {
 
   /** The send seam: the production one is {@link OtpMailSender#sendAsync}; tests substitute a recorder. */
   @FunctionalInterface
@@ -124,6 +127,10 @@ public class OtpRequestCodeAction extends BaseAction {
 
   /** Design 5.1 step 2: the longest accepted email, in characters of the normalised form. */
   static final int MAX_EMAIL_LENGTH = 254;
+
+  /** RJ-9: the only request parameters this action binds. Every inherited setter stays unreachable from a request. */
+  private static final Set<String> ACCEPTED_PARAMETERS =
+    Collections.unmodifiableSet(new HashSet<String>(Arrays.asList("email", "globalUnitId", "agree")));
 
   private static final String REFERER_HEADER = "Referer";
   private static final String MAC_ALGORITHM = "HmacSHA256";
@@ -221,6 +228,15 @@ public class OtpRequestCodeAction extends BaseAction {
     } finally {
       Arrays.fill(key, (byte) 0);
     }
+  }
+
+  /**
+   * RJ-9: refuses every request parameter but {@code email}, {@code globalUnitId} and {@code agree}, by exact name,
+   * so a dotted or OGNL name, and the setters inherited from {@link BaseAction}, can never be bound.
+   */
+  @Override
+  public boolean acceptableParameterName(String parameterName) {
+    return parameterName != null && ACCEPTED_PARAMETERS.contains(parameterName);
   }
 
   @Override

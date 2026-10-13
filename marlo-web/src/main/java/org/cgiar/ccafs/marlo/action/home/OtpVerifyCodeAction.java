@@ -55,6 +55,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.session.Session;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.action.ParameterNameAware;
 import org.apache.struts2.dispatcher.SessionMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +100,7 @@ import org.slf4j.LoggerFactory;
  * built per request. Nothing logs a store exception's message: it can carry the nonce, so only the class name is
  * written.
  */
-public class OtpVerifyCodeAction extends LoginAction {
+public class OtpVerifyCodeAction extends LoginAction implements ParameterNameAware {
 
   private static final long serialVersionUID = 1L;
 
@@ -184,6 +185,15 @@ public class OtpVerifyCodeAction extends LoginAction {
   /** Design 5.2 step 1: the resolved client address, never {@code null} (an unknown peer shares one bucket). */
   private String clientIp() {
     return this.request == null ? this.ipResolver.resolve((String) null, null) : this.ipResolver.resolve(this.request);
+  }
+
+  /**
+   * RJ-9: refuses every request parameter but {@code code}, by exact name, so a dotted or OGNL name, and the setters
+   * inherited from {@link LoginAction} and {@code BaseAction}, can never be bound.
+   */
+  @Override
+  public boolean acceptableParameterName(String parameterName) {
+    return "code".equals(parameterName);
   }
 
   @Override

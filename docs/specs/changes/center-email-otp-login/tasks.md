@@ -368,7 +368,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T12 — Struts `homeOtp` package
 
-- **Status:** pending · **Size:** S · **Depends on:** T10, T11 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** T10, T11 · **Module:** marlo-web
 - **Requirements:** FN-001 (reachability), SEC-004 (only `response` serialized), NF-002; requirements §8 (declared stack)
 - **Design:** §4, DD-1; Premise Ledger P-14, P-21, P-26, P-28
 - **Files:**
