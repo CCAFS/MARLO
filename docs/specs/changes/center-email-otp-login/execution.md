@@ -465,3 +465,104 @@ No blocker. The T03 commit is safe. Forward pointers added:
   - reviewer (concurrency): 10 calls, 75,269 tokens, ended complete;
   - reviewer (security): 14 calls, 96,211 tokens, ended complete.
 - **Final status:** PASS (attempt 2, post-Pivot). **Final verification:** VERIFIED; both lenses PASS.
+
+### CHG-OTP-LOGIN-001-T05 — Pure OTP helpers
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-13
+- **Requirements:** FN-003, FN-009, SEC-001, SEC-003, SEC-004, SEC-009, SEC-011, OPS-001 (line shape)
+- **Skills assigned:** `tdd`, `marlo-verify` (listed). Effort `high`. Review: checklist; override (f) applies (security helpers).
+- **Forward pointer carried in the brief:** `ClientIpResolver` never returns null (T04 security review).
+
+#### Attempt 1
+
+- **Files (new, `marlo-web/.../security/otp/`):** `OtpCodes`, `OtpDomainPolicy`, `ClientIpResolver`, `OtpPending`, `OtpLog`, with a test for each.
+- **API, as reported:**
+  - `OtpCodes` (`newCode`, `newNonce`, `mac`, `matches`) uses `MessageDigest.isEqual` on decoded bytes and returns false on any shape error.
+  - `OtpDomainPolicy` is static and implements FN-003.
+  - `ClientIpResolver` turns a null or blank remote address into `UNKNOWN`. It reads `X-Forwarded-For` from the right and matches proxies by CIDR, IPv4 and IPv6.
+  - `OtpPending` is `Serializable` with 5 fields and holds no code and no MAC.
+  - `OtpLog` writes the request, verify and delivery lines through `LogSanitizer`.
+- **Red run:** `Tests run: 170, Failures: 66, Errors: 5`. The 5 errors are NPEs where tests dereference the null a skeleton returned. **Green:** 76 own tests; the task command ran 170 with 0 failures; the full suite ran 567 with 0 failures.
+- **Falsifier (`endsWith`):** `suffixLookalikeIsNotAllowed` and `unlistedSubdomainIsNotAllowed` went red; the code was restored byte-identical.
+- **Compile:** 2414/1057/65. **Checkstyle:** 0. **Hygiene:** no FIX.
+- **Gaps:**
+  - The "guide §6.2" citation cannot be resolved because the guide is not in the repo; FN-003 and the task vectors were implemented.
+  - `OtpCodes` carries its own private HMAC.
+  - `OtpLog` has no guard for a null outcome.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.** Clean compile exit 0 (2414/1057/65); `mvn -o -pl marlo-web -am test` exit 0 with 567 tests and 0 failures; Checkstyle 0 on the new files.
+
+#### Reviewer verdict — attempt 1: `PASS` (`akili-reviewer`, `opus`; Implementer `sonnet`)
+
+- **Summary:** all five helpers match design §5.3 and DD-9, and every task vector is present with a literal expectation.
+  - The compare is constant time; its length guard leaks nothing.
+  - `nextInt(1_000_000)` is unbiased, and the test asserts its argument.
+  - The allow-list follows FN-003; `cgiar.org` is dropped on exact match, which is consistent with SEC-009.
+  - The IP walk is right-to-left with CIDR for IPv4 and IPv6, and untrusted headers are ignored.
+  - `OtpPending` has exactly five fields, pinned by reflection.
+  - The `OtpLog` shape is exact.
+  - The Kaizen checks hold.
+  - The red run with 5 NPEs is accepted: it is a contract failure, not a setup error.
+- **ADVISORY (recorded, not gating):**
+  - **RISK (high value):** `normaliseEmail` uses `toLowerCase(Locale.ROOT)`, which folds the Kelvin sign U+212A into an ASCII `k`.
+    - Suppose the email is sent to the *raw* submitted address. An attacker who submits a lookalike non-ASCII address could then receive the code for the ASCII account, which is an account takeover.
+    - Remediation: send only to the normalised `pending.email`, or reject non-ASCII email.
+    - Design §5.3 L305 says "the recipient is always the submitted address", which is ambiguous between raw and normalised.
+  - **RISK:** on `denied_domain`, the attacker-controlled `domain` is stripped of CR/LF only. A value such as `evil.org outcome=ok` forges a key/value pair inside the line. Remediation: replace any character outside `[a-z0-9.-]` in `domain` and `gu` before logging.
+  - **RELIABILITY:** `parseAddress` can fall through to a DNS lookup for an odd hop such as `.:`. That hop is reachable only from a trusted peer. Remediation: require the first character to be a hex digit or `:`.
+  - **RELIABILITY:** `OtpLog` throws an NPE on a null outcome. A null-safe `internal_error` would keep the one-line-per-call rule.
+  - **READABILITY:** one `OtpCodesTest` literal is 49 characters, not 64.
+  - **RESILIENCE (out of scope):** IPv6 clients can rotate addresses within their /64. Bucketing by /64 would close that.
+- **Forward pointer (Leader, binding regardless of the user's choice below):** **T09/T10** send the code only to the normalised email held in `OtpPending` (`pending.email`), never to the raw request parameter.
+- **runtime events:** none.
+- **spawns:** implementer 25 calls, 146,176 tokens, ended complete; reviewer 12 calls, 85,657 tokens, ended complete.
+- **Final verification:** VERIFIED; Reviewer PASS.
+
+#### T05 reopened — user-approved hardening amendment (2026-10-13)
+
+- **User decision:** apply all four Reviewer advisories before the commit.
+- **Execute-time spec edits:**
+  - requirements.md FN-003 adds: reject any email or entry with a character outside printable ASCII. A Decision Log entry is added.
+  - design.md §5.3 is amended in three rows:
+    - `OtpDomainPolicy`: rejects non-ASCII input;
+    - `OtpLog`: `domain` and `gu` are reduced to `[a-z0-9.-]`, and a null outcome is logged as `internal_error`;
+    - `ClientIpResolver`: parses IP literals only, never through DNS.
+  - tasks.md T05 gains a "Hardening" test list.
+- **Requirement meaning:** FN-003 is narrowed. Non-ASCII input is now refused. This is a user-approved requirement change, recorded in the Decision Log; no other requirement changes. AC-2 still holds.
+- **Not a FAIL:** the attempt 1 PASS stands for the original scope. Attempt 2 is the amendment and gets a full review. T05 is back to `[~]`.
+
+#### Attempt 2 — hardening amendment
+
+- **Files changed:** `OtpDomainPolicy`, `OtpLog`, `ClientIpResolver`; tests `OtpDomainPolicyTest`, `OtpLogTest`, `ClientIpResolverTest`, `OtpCodesTest`.
+- **Red run:** 185 run, 16 failures, 3 errors.
+  - Kelvin sign: `kelvinSignEmailIsRejectedAndDoesNotFoldOntoAnotherDomain`.
+  - Log forgery: `expected:<...gu=[ccafs domain=evil.org_outcome_]ok> but was:<...gu=[CCAFS domain=evil.org outcome=]ok>`.
+  - DNS: a child JVM's `jdk.net.hosts.file` mapped `.:` to 192.0.2.7, and the old code returned the hop.
+  - Null outcome: NPE.
+- **Green:** 91 own tests; task command 185/0; full suite 582/0.
+- **Fix 3:** a literal-only IPv4/IPv6 parser. `InetAddress` appears only in Javadoc.
+- **Gaps:**
+  - `gu` is now logged in lower case.
+  - `normaliseEmail` returns `""` for rejected input.
+  - A null delivery outcome logs `internal_error` at WARN.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.** Clean compile exit 0 (2414/1057/65); full suite exit 0, 582 tests, 0 failures; Checkstyle 0.
+- **Reviewer verdict: `PASS`** (`akili-reviewer`, `opus`; Implementer `sonnet`).
+  - **FN-003:** the ASCII check runs before and after lower-casing, and `""` never counts as valid.
+  - **Log values:** reduction to `[a-z0-9.-]` runs after `LogSanitizer`, so `outcome` and `ms` cannot be forged.
+  - **IP parsing:** no DNS. The IPv6 parser handles `::`, a second `::`, groups longer than 4, embedded IPv4, and zone IDs (refused). IPv4 refuses values above 255, leading zeros and short addresses. CIDR checks the length first.
+  - **Security:** no input makes an untrusted hop trusted, and every mis-parse falls back to `getRemoteAddr()`.
+  - **Kaizen:** expected values are literals and test-double arguments are asserted.
+- **ADVISORY (recorded, not gating):**
+  - *Reliability:* a link-local trusted proxy address (`fe80::1%2`) is refused, so all users would share the proxy's bucket. This fails safe but hurts availability.
+  - *Risk:* hops are not canonicalised before hashing (`2001:DB8::1` and `2001:db8:0::1`). The hop is written by the trusted proxy, so this is low risk.
+  - *Readability:* `trim()` removes leading control characters before the ASCII check, so FN-003's "before normalisation" wording differs slightly from the code. There is no folding risk.
+  - *Risk:* callers must decide through `domainOf`/`isAllowed` before they store `normaliseEmail(...)`.
+  - *Readability:* `internal_error` lies outside the closed `DeliveryOutcome` set; dashboards should know.
+  - *Reliability:* the DNS probe test compares the child JVM's whole output, so `JAVA_TOOL_OPTIONS` on a CI host would make it fail spuriously.
+  - Cosmetic: import order and field placement.
+- **Forward pointers (Leader):**
+  - **T06, T10, T11:** decide eligibility through `OtpDomainPolicy.domainOf`/`isAllowed`. Never use or store `normaliseEmail(...)` before that check passes, because it returns `""` for rejected input.
+  - **T16 runbook:** `otp.trusted.proxies` must not rely on link-local addresses. Tell log dashboards about `internal_error` on delivery lines.
+- **runtime events:** none.
+- **spawns:** implementer, attempt 2: 15 calls, cumulative 181,280 tokens, ended complete. Reviewer: 11 calls, 86,473 tokens, ended complete.
+- **Final status:** PASS (attempt 2, user-approved amendment). **Final verification:** VERIFIED; Reviewer PASS.

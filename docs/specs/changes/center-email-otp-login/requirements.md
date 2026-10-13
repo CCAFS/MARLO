@@ -108,7 +108,7 @@ Current behavior this spec builds on:
 
 #### Requirement: Exact domain matching
 
-- **CHG-OTP-LOGIN-001-FN-003** — The server MUST decide eligibility by **exact equality** between the domain of the normalised email (trimmed, lower-cased, the part after the single `@`) and a normalised allow-list entry. Normalising an entry trims it, lower-cases it, strips one leading `@`, drops it when empty or still containing `@`, and de-duplicates. Suffix, substring and sub-domain matches MUST NOT qualify unless that sub-domain is listed itself (guide §6.2–6.3).
+- **CHG-OTP-LOGIN-001-FN-003** — The server MUST decide eligibility by **exact equality** between the domain of the normalised email (trimmed, lower-cased, the part after the single `@`) and a normalised allow-list entry. Normalising an entry trims it, lower-cases it, strips one leading `@`, drops it when empty or still containing `@`, and de-duplicates. Suffix, substring and sub-domain matches MUST NOT qualify unless that sub-domain is listed itself (guide §6.2–6.3). An email or allow-list entry containing any character outside printable ASCII MUST be rejected, before and after normalisation. *Amended 2026-10-13 (user decision, `execution.md` T05): Unicode case folding, such as the Kelvin sign U+212A folding to `k`, would otherwise let a lookalike address normalise onto another account's.*
 
 ##### Scenario: Lookalike rejected
 
@@ -375,3 +375,4 @@ Current behavior this spec builds on:
   - Closure sweep (forward): `grep -n -iE "one \`auth.otp.\*\` line|types 1, 3 and 4|neutral-response request|1-h TTL|window \(15 min, or 30 s"` over `requirements.md` and `design.md` → only amended lines remain.
   - Closure sweep (backward): AC-10 (FN-008) and AC-17 (DA-002) re-read; they still hold.
 - Closure sweep (2026-10-09): forward `grep -n -iE "no challenge|no row|create a challenge|exactly one structured|every Global Unit type|synchronous|byte-for-byte"` over `requirements.md`, `design.md`, `proposal.md` — remaining hits are intentional: FN-001 scenario (disabled domain truly writes nothing), design DD-5/DD-7 deviation notes, and `proposal.md` (approved, historical). Backward: `requirements.md` §6/§7 rows citing FN-005/OPS-001 re-read and updated (AC-4).
+- 2026-10-13 — T05 hardening (user decision, `execution.md` T05): FN-003 rejects non-ASCII emails and entries; logged `domain` and `gu` values are reduced to `[a-z0-9.-]`; the code is sent only to the normalised email in `OtpPending`. Rationale: the T05 Reviewer showed that Unicode case folding could map a lookalike address onto another account, and that an attacker-supplied domain could forge a log field.

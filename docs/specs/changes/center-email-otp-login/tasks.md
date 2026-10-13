@@ -172,7 +172,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T05 — Pure OTP helpers
 
-- **Status:** pending · **Size:** M · **Depends on:** T02 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** M · **Depends on:** T02 · **Module:** marlo-web
 - **Requirements:** FN-003, FN-009, SEC-001, SEC-003, SEC-009 (`cgiar.org` dropped), SEC-011, OPS-001 (line shape), SEC-004 (`OtpPending` content)
 - **Design:** §5.3 (`OtpCodes`, `OtpDomainPolicy`, `ClientIpResolver`, `OtpPending`, `OtpLog`), DD-9
 - **Files (new):**
@@ -190,6 +190,11 @@ Field conventions:
     - Trusted peer with an empty or malformed header → the remote address.
     - IPv6 works.
   - **OtpLog.** A captured line contains no code, nonce, full email or session id. Newlines in the domain are sanitised.
+  - **Hardening (added 2026-10-13, user decision):**
+    - `x@\u212Aey.org` (Kelvin sign) and any non-ASCII email or allow-list entry → rejected;
+    - a logged `domain` of `evil.org outcome=ok` cannot produce a second `outcome=` field;
+    - a hop of `.:` is treated as malformed without a DNS lookup;
+    - a null outcome logs `internal_error`.
 - **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest='Otp*Test,ClientIpResolverTest'`
 - **Falsifier:** make the domain match use `endsWith`. The `attackertrusted.org` case must go red. Make the compare use `String.equals`; that is caught by review, because constant time cannot be tested.
 - **Red run:** the tests are written first and fail on their assertions.
