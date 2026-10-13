@@ -242,7 +242,7 @@ identically for every account (JD-1).
 6. **Eligibility** (`OtpEligibility`, the single predicate):
    - the user exists, by case-insensitive lookup (P-12);
    - `isActive()`;
-   - `existCrpUser(user, gu)`, the same gate as `finishLogin` (P-2);
+   - `existActiveCrpUser(user, gu)`: an **active** membership (`crp_users.is_active = 1`). MARLO removes a member by soft delete (`CrpUserMySQLDAO.deleteCrpUser` sets `active=false`), so the activity-blind `existCrpUser` that `finishLogin` calls (P-2, P-13) would admit a removed member (FN-005, FN-015). This is a deliberate departure from password-login parity on this one point (DD-4; `requirements.md` §10, 2026-10-13);
    - **not** (`isCgiarUser()` **and** `CognitoAuthSpecificity.isActiveFor(gu, customParameterManager, parameterManager)`) (SEC-009).
 7. **Issue.** `OtpChallengeManager.issue(emailHmac, gu, nonce, codeHmac, expiresAt)` runs in **one transaction**: it supersedes the email's open rows, then inserts the new row. It runs for **both** outcomes. The code is a fresh CSPRNG code:
    - **eligible:** the code is handed to `OtpMailSender.sendAsync`;
@@ -430,8 +430,8 @@ entity is saved.
 - **Rationale:** correct at InnoDB REPEATABLE-READ without explicit locks (P-15).
 
 ### DD-4 — Pre-registered only; one eligibility predicate
-- **Decision:** `OtpEligibility` is reused at request, after consume and in `otpEnabled`. The variant used by `otpEnabled` omits active state and membership (JI-11).
-- **Rationale:** parity with `finishLogin` (P-13).
+- **Decision:** `OtpEligibility` is reused at request and after consume, and its disclosure-safe variant in `otpEnabled`. The membership check requires an **active** `crp_users` row (`existActiveCrpUser`). The variant used by `otpEnabled` omits active state and membership (JI-11).
+- **Rationale:** FN-005 and FN-015 (a removed member is refused; MARLO removes by soft delete, P-13). This deliberately departs from `finishLogin` parity on this one point: password login keeps the activity-blind `existCrpUser`, and that gap is tracked separately (to be filed as an A2 Jira issue; the key is added to the requirements Decision Log when it exists), outside this spec. After consume, the shared `finishLogin` tail still runs its own gate 4 unchanged.
 
 ### DD-5 — Decoys are real rows with an undeliverable code
 - **Decision:** every request that passes steps 1–5 issues a row and supersedes, eligible or not. Only eligible issues are mailed. Eligibility is re-checked after consume.
@@ -511,7 +511,7 @@ No DD removes, disables or inverts shipped behavior. DD-11 only relocates code, 
 | P-10 | `custom_parameters` are read through a cacheable query, and both entities use a read-write second-level cache. The caches are per-JVM ehcache: `timeToLiveSeconds="3600"` on `StandardQueryCache`, `5000` on the two entity caches | `data-env` | `CustomParameterMySQLDAO.java:86-90`; `CustomParameters.hbm.xml:7`; `MarloDatabaseConfiguration.java:109-110`; `marlo-web/src/main/resources/ehcache.xml:24-30` (query cache 3600 s), `:44-55` (`Parameter` and `CustomParameter` 5000 s) | `398d7b4058` | DD-12 is unnecessary. **Low** | — |
 | P-11 | `custom_parameters.value` is `varchar(500)`, and `parameters.format = 4` is used for string settings | `data-env` | `SHOW CREATE TABLE custom_parameters`; `SELECT format, category, COUNT(*) FROM parameters GROUP BY …` (local `aiccradb1`) | `398d7b4058` | The allow-list needs other storage. **Low** | — |
 | P-12 | The user lookup by email is case-insensitive and trimmed | `existence` | `UserMySQLDAO.java:94, 109, 118` | `398d7b4058` | `OtpEligibility` normalises itself. **Low** | — |
-| P-13 | `existCrpUser` ignores `crp_users.is_active` | `existence` | `CrpUserMySQLDAO.java:67-74` | `398d7b4058` | The DD-4 parity statement changes. **Low** | — |
+| P-13 | `existCrpUser` ignores `crp_users.is_active` | `existence` | `CrpUserMySQLDAO.java:67-74` | `398d7b4058` | The DD-4 parity statement changes: the OTP gate uses `existActiveCrpUser` and departs from password-login parity (decision 2026-10-13). Password login stays unchanged. **Low** | — |
 | P-14 | Pre-auth JSON actions already serve the login page (`crpByEmail`, `validateUser` in `homeJson`) | `other` | `struts-home.xml:7-22` | `398d7b4058` | DD-1 must be revisited under Hard rule 3. **High** | — |
 | P-15 | MySQL 8.0 InnoDB runs at REPEATABLE-READ locally | `data-env` | `SELECT @@version, @@transaction_isolation` → `8.0.43`, `REPEATABLE-READ` | `398d7b4058` | DD-3 needs locking. **Low** | — |
 | P-16 | A native `executeUpdate` with an affected-row count exists, and `EmailLog` is a plain hbm/DAO/manager trio | `existence` | `grep -rn executeUpdate marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql` → 11; `RoleMySQLDAO.java:135-137, 167-171`; `EmailLog.java:10`; `EmailLogMySQLDAO.java:37-42`; `EmailLogManagerImpl.java:73, 104` | `398d7b4058` | The DAO pattern differs. **Low** | — |

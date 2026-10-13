@@ -213,14 +213,14 @@ Field conventions:
 - **Design:** §5.1 step 6, DD-4, §6 (the `otpEnabled` variant); Premise Ledger P-12, P-13
 - **Files:** `security/otp/OtpEligibility.java` and `OtpEligibilityTest.java` (both new)
 - **Scope:**
-  - Full predicate: allow-list match, user exists, user active, `existCrpUser`, not (CGIAR user **and** `CognitoAuthSpecificity.isActiveFor(...)`).
+  - Full predicate: allow-list match, user exists, user active, `existActiveCrpUser` (an **active** membership, `crp_users.is_active = 1`; requirements Decision Log 2026-10-13), not (CGIAR user **and** `CognitoAuthSpecificity.isActiveFor(...)`).
   - Disclosure-safe variant for `crpByEmail`: configured, domain match and SEC-009 only.
 - **Tests:**
-  - Each refusal reason alone returns false: unknown, inactive, non-member, CGIAR on a Cognito-active unit, domain not allowed, unconfigured.
+  - Each refusal reason alone returns false: unknown, inactive, non-member, soft-deleted member (`is_active = 0`), CGIAR on a Cognito-active unit, domain not allowed, unconfigured.
   - A CGIAR user on a unit where Cognito is **inactive** is eligible (OQ-4 default).
   - The variant ignores active state and membership.
 - **Verification:** `-Dtest=OtpEligibilityTest`
-- **Falsifier:** remove the `existCrpUser` term. The non-member case must go red.
+- **Falsifier:** remove the membership term; the non-member case must go red. Revert to the activity-blind `existCrpUser`; the soft-deleted cases in `OtpEligibilityTest`, `OtpRequestCodeActionTest` and `OtpVerifyCodeActionTest` must go red.
 - **Red run:** the tests are written first.
 - **Disqualifier:** fakes that return a hard-coded `true` regardless of the arguments they receive. Assert the userId and globalUnitId each fake received (KZ-…-auth-flow-2).
 - **Consumers:** T10, T11, T13. They are the only callers.

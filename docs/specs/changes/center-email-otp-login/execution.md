@@ -1140,7 +1140,7 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - **Setup:**
     - Temporary `custom_parameters` row id 2609 (`parameter_id` 397, value `outlook.com`, AICCRA 45).
     - A random `OTP_HMAC_SECRET` in the environment only.
-    - Test account id 3862 (`kenjitm@outlook.com`): active, non-CGIAR, active AICCRA member.
+    - Test account id 3862 (`probe.user@outlook.com` (real address replaced)): active, non-CGIAR, active AICCRA member.
   - **SMTP:** the first attempt logged `auth.otp.delivery outcome=email_failed` (`SendFailedException`). Cause: the local `email.host` is CGIAR's inbound MessageLabs gateway, which refuses to relay to external domains (`453 … as a relay … (#4.7.1)`, probed with RCPT only, no message sent). This is an environment limit, not a code defect.
     - With the user's approval, the app was restarted with `EMAIL_HOST`/`EMAIL_PORT` (and the backups) pointing at a local SMTP sink, `scratchpad/smtp_sink.py` on 127.0.0.1:2525, set through environment variables only.
     - Nothing left the machine.
@@ -1152,7 +1152,7 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
     - **UI-003:** `inputmode=numeric`, `autocomplete=one-time-code`, `maxlength=6`, a `<label for>`, no `name`; `#login-otp-status` has `role=status aria-live=polite`; `#login-otp-error` has `role=alert`.
     - **Short code:** "123" shows "Please enter the 6-digit code." and sends 0 requests.
     - **Wrong code:** a wrong code with Enter pressed ×3 sent 1 verify request, showed "That code is not correct. Please try again.", cleared and refocused the input, and did not submit the password form.
-    - **Captured email:** subject "Your MARLO sign-in code", envelope and `To` `kenjitm@outlook.com`, text and HTML parts, 5-minute expiry copy.
+    - **Captured email:** subject "Your MARLO sign-in code", envelope and `To` `probe.user@outlook.com` (real address replaced), text and HTML parts, 5-minute expiry copy.
     - **Success:** the correct code with a double click on Verify sent 1 verify request (`auth.otp.verify outcome=ok`) and redirected to `AICCRA/crpDashboard.do`.
     - **Database after success:** challenge consumed; `otp_challenges` holds only 64-character HMACs (searching for the code or `outlook` matched 0 rows); `agree_terms` 0→1 and `last_login` updated, as in a normal login.
     - **Exhausted state:** three wrong codes gave mismatch, mismatch, exhausted ("Too many incorrect attempts. Please request a new code."), and Resend was enabled at once.
@@ -1188,3 +1188,75 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - **T15:** run the items listed under "Not exercised" above.
   - **T16 runbook:** local and non-production SMTP may refuse external recipients. A local walkthrough needs a sink, set through `EMAIL_HOST`/`EMAIL_PORT`.
 - **Final:** Reviewer PASS (attempt 2) and walkthrough recorded. T14 **done**.
+
+### CHG-OTP-LOGIN-001-T15 — End-to-end verification
+
+- **User decision (2026-10-13), before the run:** T15 runs on a throwaway copy. `aiccradb_actsave` is cloned into `aiccradb_otp_probe`, the app is pointed at the copy with environment variables only, and the copy is dropped at the end.
+- **Attempt 1 — Implementer:** STATUS DONE, no production code changed.
+  - New untracked folder `probes/`: `concurrency-probe.sh` (HTTP level), `concurrency-probe-sql.sh` (statement level), `ac-probe.sh`, `tools/SessDump.java` (reads Shiro sessions over JDI), `README.md` with a verdict per AC, and 13 recorded runs in `output/`.
+  - Claimed: AC-2 to AC-15 and AC-17 PASS; AC-1 PASS except the live Cognito hand-off (not configured locally); AC-16 PASS except reCAPTCHA overlap and screen-reader behaviour.
+  - Falsifier: `CONSUME_SQL` without `AND attempts < 3` turns S3, S3b and HTTP case 3b red; reverted, `git diff --stat` empty.
+  - Five findings handed to the Leader, none fixed:
+    1. A post-login failure leaves an authenticated session (the known gap shared with Cognito route C).
+    2. "Log in" is not disabled while a code request is in flight.
+    3. `crp_users.is_active = 0` does not stop a code login.
+    4. `requestSeq` is redundant.
+    5. Supersede plus insert without the cooldown deadlocks at statement level.
+- **Leader checks after the report:** only `?? probes/` in the tree; `aiccradb_otp_probe` dropped; `aiccradb_actsave` holds 0/0/0 `otp_*` rows, 0 OTP `custom_parameters`, 1623 in total, no `global_unit_types` 99; nothing listens on 8080 or 2525.
+- **Leader edit:** the real test mailbox address was replaced with `probe.user@outlook.com` (masked `p***@outlook.com`) in `ac-probe.sh`, `README.md` and two output files, and the README notes it. The repository is public.
+- **Evidence re-run (Leader, non-author):** a minimal throwaway database `otp_probe_rerun` with only the three OTP tables from the migration.
+  - `concurrency-probe-sql.sh`: `SUMMARY: 4 checks, 0 failed`.
+  - The falsifier, run against a scratch copy of `OtpChallengeMySQLDAO.java` through `PROBE_DAO`: `S3: FAIL (consumes=10)`, `S3b: FAIL (violations=24 of 30)`, while S1 and S2 pass.
+  - The database was dropped and `src` was not touched. **VERIFIED**.
+- **Attempt 1 — Reviewer (full):** **FAIL**. Blocking issues:
+  1. **AC-9 PASS rests on a removal MARLO never performs.** The probe hard-deletes the `crp_users` row. MARLO's removal is a soft delete: `CrpUserMySQLDAO.deleteCrpUser` sets `active=false`, and every admin path calls it. With `is_active=0` the code login answers `ok`, and the request side mails a real code to a deactivated member. That breaks FN-015 and FN-005 ("not a member of G"). The implementation follows design §5.1 step 6 (`existCrpUser`, P-2 parity with the password login), so this is a spec conflict, not an Implementer defect. It needs a user decision, not just a T16 note.
+  2. The isolation level is not recorded, which execution.md (T03 adjudication) said T15 would do.
+  3. The README marks the T04 "cooldown accept against a concurrent purge" pointer closed, but case 4 seeds only an expired `otp_challenges` row. No stale `otp_cooldowns` or `otp_rate_limits` row was purged during an accept.
+  4. `output/ac-probe.shortsecret.out` is identical to `nosecret.out` and does not contain the 16-byte-secret WARN the README cites. The `ps eww` check is not recorded.
+  5. `tools/SessDump.java` has no GPL header and has braceless `if`/`for` bodies (Hard rules 6 and 7).
+  - On the Implementer findings: 1 is a T16 item already decided at the T11 gate; 2 is not a UI-004 violation (a T16 or UX note); 3 is blocking issue 1; 4 is advisory, and it means the T14 `requestSeq` falsifier as written cannot fail; 5 is the accepted T03 "gap 7", fail-closed and unreachable over HTTP.
+  - Advisories:
+    - The "probe" guard checks only the database `PROBE_MYSQL` opens, not the app's database. Assert the first `issue()` row lands in the probe copy.
+    - User id 3862 and the real address are still paired in the tracked T14 entry of this file, which is already pushed.
+    - Local `/Users/...` log paths remain in two output files.
+    - AC-1: record PASS with an environment note, because the live Cognito hand-off is not an accepted gap in requirements §6.
+    - AC-4: cite T11's decoy unit test for "no recorded challenge can authenticate".
+    - README "spread 0.4 to 2.8 ms": 2.8 appears in no output.
+    - `ac17-migration.out` does not record the invocation or the database names.
+    - `ac-probe.sh` has dead code (`:600`, `:435`, `:592`), and `stage_smtp` restores `'true'` instead of the saved value.
+- **Leader check of blocking issue 1:** confirmed. `deleteCrpUser` is a soft delete, and `existCrpUser` has no `is_active` condition. The Leader also wrote that `existActiveCrpUser` has inverted semantics. **That was a misreading** of two concatenated line ranges, corrected in the T06 rework entry below: the method returns `true` when an active row exists.
+- **Status:** `[~]`, waiting for the user's decision on issue 1 and on the address already in the pushed history.
+- **User decisions (2026-10-13), after the FAIL:**
+  - **Issue 1: fix in the OTP path only.** `OtpEligibility` must require an **active** membership, so a member removed through MARLO's soft delete neither receives a code nor signs in with one (FN-005, FN-015). This deliberately departs from P-2/P-13 parity: the code login becomes stricter than the password login. The password-login gap (`finishLogin` and the session interceptors use `existCrpUser`, which ignores `is_active`) is out of scope and is tracked separately. T06 is reopened for this fix, then T15 re-runs AC-9 on a fresh throwaway copy.
+  - **Personal address:** replaced in this file from now on. The pushed history (`d743181e58`) is not rewritten.
+
+### CHG-OTP-LOGIN-001-T06 — rework: active membership gate (reopened by the T15 FAIL)
+
+- **Attempt 1 — Implementer:** STATUS DONE.
+  - `OtpEligibility.java:128` now calls `existActiveCrpUser`, a one-token swap, and the Javadoc is fixed. No DAO or manager change.
+  - The Implementer corrected the Leader's premise: `existActiveCrpUser` filters `is_active = 1` and returns `true` when a row exists. It is not inverted.
+  - Callers: `OtpRequestCodeAction` and the `OtpVerifyCodeAction` FN-015 re-check both go through `isEligible`. `CrpByUserEmailAction` uses only `otpEnabledFor`, which never reads membership (JI-11). `finishLogin` gate 4 keeps `existCrpUser`.
+  - Tests: two new `OtpEligibilityTest` cases, and a `State.SOFT_DELETED` value in the request and verify suites, so every `State.values()` loop covers it. Every stub now answers on `existActiveCrpUser`, and the old `existCrpUser` is an activity-blind double.
+  - Spec: design §5.1 step 6, DD-4 and the P-13 row; the requirements line-26 wording and a Decision Log entry.
+  - Gates claimed: clean compile, Checkstyle delta none, `Tests run: 737, Failures: 0`.
+- **Evidence re-run (Leader, non-author):**
+  - Clean compile: 2415 / 1062 / 71 files.
+  - The four affected classes: 123 tests, 0 failures.
+  - Falsifier, call reverted to `existCrpUser` temporarily: 11 tests red (5 / 4 / 2), including "soft-deleted … expected invalid but was ok". Restored; the diff is unchanged.
+  - **VERIFIED**.
+- **Attempt 1 — Reviewer (full):** **FAIL**. The code fix is correct and complete on both OTP sides, and AC-4 holds for the soft-deleted state.
+  - Issue 1: `OtpVerifyCodeActionTest.java:585` is about 153 characters, a new line-length violation. The claimed Checkstyle delta had covered only the main class.
+  - Issue 2: `tasks.md` T06 still names `existCrpUser` in the predicate and the falsifier, and lists no soft-deleted test.
+  - Advisories: Decision Log order; a misleading test name; "tracked separately" names no tracker.
+- **Attempt 2 — Leader, mechanical fixes, with the Reviewer gate kept:**
+  - Wrapped the long line.
+  - Updated T06 in `tasks.md`: the predicate, the soft-deleted test and the falsifier.
+  - Moved the Decision Log entry after the T05 entry.
+  - Renamed the test to `softDeletedHereAndActiveElsewhereIsRefusedForThisUnit`.
+  - Pointed DD-4 and the Decision Log to an A2 Jira issue still to be filed.
+- **Evidence re-run (Leader):**
+  - Checkstyle 8.18 `--baseline` on all five Java files: HEAD=0, tree=0, delta=0.
+  - Clean build: the first try hit a stale MapStruct `generated-sources` NPE (environment, `PublicationAltmetricsWOSMapperImpl`). After wiping `generated-sources`: 2415 / 1062 / 71 files, `Tests run: 737, Failures: 0, Errors: 0, Skipped: 0`, BUILD SUCCESS.
+  - **VERIFIED**.
+- **Attempt 2 — Reviewer:** **PASS**. Every remaining `existCrpUser` mention in the spec is intentional: the departure note, P-2, P-13 and the falsifier. Advisory: file the A2 issue for the password-login gap and put its key in the Decision Log before `/akili-archive`.
+- **Forward pointer:** T15 must re-run AC-9 with a real soft delete (`is_active = 0`) on a fresh throwaway copy.

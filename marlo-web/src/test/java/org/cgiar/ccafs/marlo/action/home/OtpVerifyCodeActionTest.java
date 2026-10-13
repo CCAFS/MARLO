@@ -165,6 +165,8 @@ public class OtpVerifyCodeActionTest {
     UNKNOWN("alb@partner.org", 42L, BUCKET_EMAIL_ALB),
     INACTIVE("amy@partner.org", 43L, BUCKET_EMAIL_AMY),
     NON_MEMBER("ann@partner.org", 44L, BUCKET_EMAIL_ANN),
+    /** A crp_users row that exists with is_active=0: MARLO removes a member by soft delete. */
+    SOFT_DELETED("ann@partner.org", 44L, BUCKET_EMAIL_ANN),
     CGIAR_REFUSED("abe@partner.org", 45L, BUCKET_EMAIL_ABE);
 
     final String email;
@@ -580,13 +582,17 @@ public class OtpVerifyCodeActionTest {
 
   @Test
   public void anAccountThatLostEligibilitySinceTheRequestIsInvalidAndTheChallengeStaysConsumed() {
-    for (String lost : new String[] {"removed from the unit", "deactivated", "deleted", "allow-list emptied",
-      "refused by SEC-009"}) {
+    for (String lost : new String[] {"removed from the unit", "soft-deleted from the unit (is_active=0)", "deactivated",
+      "deleted", "allow-list emptied", "refused by SEC-009"}) {
       World world = this.with(State.ELIGIBLE);
       Row row = world.open(State.ELIGIBLE, NONCE_A, MAC_A);
       User user = world.users.get("ana@partner.org");
       switch (lost) {
         case "removed from the unit":
+          world.members.clear();
+          break;
+        case "soft-deleted from the unit (is_active=0)":
+          world.softDeleted.addAll(world.members);
           world.members.clear();
           break;
         case "deactivated":
@@ -830,8 +836,9 @@ public class OtpVerifyCodeActionTest {
   public void aMembershipRefusalInsideTheRealFinishLoginAnswersFailedWithTheGenericRedirectAndNoNpe() {
     World world = this.with(State.ELIGIBLE);
     Row row = world.open(State.ELIGIBLE, NONCE_A, MAC_A);
-    // The re-check (step 8) still sees the membership; gate 4 inside finishLogin no longer does.
-    world.memberAnswers.addAll(Arrays.asList(Boolean.TRUE, Boolean.FALSE));
+    // The re-check (step 8, existActiveCrpUser) still sees the membership; gate 4 inside finishLogin
+    // (existCrpUser) no longer does.
+    world.memberAnswers.add(Boolean.FALSE);
 
     OtpVerifyCodeAction action = world.call(CODE_A);
 
@@ -1288,6 +1295,8 @@ public class OtpVerifyCodeActionTest {
     final Map<Long, GlobalUnit> units = new HashMap<Long, GlobalUnit>();
     final Map<Long, String> allowLists = new HashMap<Long, String>();
     final Set<String> members = new HashSet<String>();
+    /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
+    final Set<String> softDeleted = new HashSet<String>();
     final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
     final List<CustomParameter> customParameters = new ArrayList<CustomParameter>();
 
@@ -1337,6 +1346,10 @@ public class OtpVerifyCodeActionTest {
           break;
         case NON_MEMBER:
           this.addUser(state, true, false);
+          break;
+        case SOFT_DELETED:
+          this.addUser(state, true, false);
+          this.softDeleted.add(state.userId + ":" + GU);
           break;
         case CGIAR_REFUSED:
           this.addUser(state, true, true);
@@ -1556,12 +1569,18 @@ public class OtpVerifyCodeActionTest {
 
     CrpUserManager crpUserManager() {
       return fake(CrpUserManager.class, (method, args) -> {
-        if ("existCrpUser".equals(method) && args.length == 2) {
+        if ("existActiveCrpUser".equals(method) && args.length == 2) {
           this.events.add("member");
+          return Boolean.valueOf(this.members.contains(args[0] + ":" + args[1]));
+        }
+        if ("existCrpUser".equals(method) && args.length == 2) {
+          // The old, activity-blind gate: it sees the soft-deleted row. Answering it makes a regression visible.
+          this.events.add("member-any-state");
           if (!this.memberAnswers.isEmpty()) {
             return this.memberAnswers.remove(0);
           }
-          return Boolean.valueOf(this.members.contains(args[0] + ":" + args[1]));
+          String pair = args[0] + ":" + args[1];
+          return Boolean.valueOf(this.members.contains(pair) || this.softDeleted.contains(pair));
         }
         return unsupported(method);
       });

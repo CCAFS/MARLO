@@ -176,7 +176,7 @@ public class CrpByUserEmailActionTest {
       throw new UnsupportedOperationException("not needed by this suite: " + method);
     });
     CrpUserManager crpUserManager = fake(CrpUserManager.class, (method, args) -> {
-      if ("existCrpUser".equals(method) && args.length == 2) {
+      if ("existActiveCrpUser".equals(method) && args.length == 2) {
         this.crpUserChecks++;
         return Boolean.valueOf(this.memberUnitIds.contains(args[1]));
       }

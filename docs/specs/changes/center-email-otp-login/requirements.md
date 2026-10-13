@@ -23,7 +23,7 @@
 A **pre-registered** MARLO user whose email domain is allow-listed for the Global Unit they select
 can sign in with a **6-digit code emailed to them**, with no password. The code is valid for 5
 minutes, allows 3 wrong attempts and works once. A verified code produces **exactly the session a
-password login produces**: same membership gate, roles, custom parameters and landing page.
+password login produces**: same `finishLogin` tail (membership gate 4, roles, custom parameters and landing page). The OTP eligibility check before it is stricter on one point: it requires an *active* membership (Decision Log, 2026-10-13).
 
 The capability is **off by default** and is enabled per Global Unit by listing domains. Emptying
 the list switches it off without a deploy. Password and Cognito logins do not change.
@@ -376,3 +376,4 @@ Current behavior this spec builds on:
   - Closure sweep (backward): AC-10 (FN-008) and AC-17 (DA-002) re-read; they still hold.
 - Closure sweep (2026-10-09): forward `grep -n -iE "no challenge|no row|create a challenge|exactly one structured|every Global Unit type|synchronous|byte-for-byte"` over `requirements.md`, `design.md`, `proposal.md` — remaining hits are intentional: FN-001 scenario (disabled domain truly writes nothing), design DD-5/DD-7 deviation notes, and `proposal.md` (approved, historical). Backward: `requirements.md` §6/§7 rows citing FN-005/OPS-001 re-read and updated (AC-4).
 - 2026-10-13 — T05 hardening (user decision, `execution.md` T05): FN-003 rejects non-ASCII emails and entries; logged `domain` and `gu` values are reduced to `[a-z0-9.-]`; the code is sent only to the normalised email in `OtpPending`. Rationale: the T05 Reviewer showed that Unicode case folding could map a lookalike address onto another account, and that an attacker-supplied domain could forge a log field.
+- 2026-10-13 — OTP eligibility requires an active membership (user decision, `execution.md` T06 rework after the T15 Reviewer FAIL) — `OtpEligibility` calls `existActiveCrpUser` (`crp_users.is_active = 1`) at request and at the FN-015 re-check, not the activity-blind `existCrpUser`. This deliberately departs from the password-login parity of DD-4 on this one point. Rationale: MARLO removes a member by soft delete (`CrpUserMySQLDAO.deleteCrpUser` sets `active=false`), so the old gate mailed a code to, and signed in, a removed member, violating FN-005 ("not a member of G"), FN-015 and AC-9 (live probe with `is_active=0`). Scope: OTP path only. The password-login gap (`LoginAction.finishLogin`, `ValidSessionCrpInterceptor`, the center `ValidSessionInterceptor`) is unchanged and tracked separately (to be filed as an A2 Jira issue; the key is added here when it exists), outside this spec.

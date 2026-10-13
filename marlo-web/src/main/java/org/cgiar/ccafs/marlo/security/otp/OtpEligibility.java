@@ -50,8 +50,10 @@ import javax.inject.Named;
  * <li>the Global Unit exists;</li>
  * <li>the user exists, by the case-insensitive and trimmed lookup of {@link UserManager#getUserByEmail} (P-12);</li>
  * <li>the user is active;</li>
- * <li>the user is a {@code crp_users} member of the Global Unit, through the same
- * {@link CrpUserManager#existCrpUser(long, long)} that {@code LoginAction.finishLogin} calls (P-2, P-13);</li>
+ * <li>the user is an <b>active</b> {@code crp_users} member of the Global Unit, through
+ * {@link CrpUserManager#existActiveCrpUser(long, long)} (FN-005: a soft-deleted row, {@code is_active=0}, is not a
+ * member). Password login ({@code LoginAction.finishLogin}) still uses the activity-blind {@code existCrpUser}; this
+ * is a deliberate departure from that parity (requirements Decision Log, 2026-10-13);</li>
  * <li>it is <b>not</b> the case that the user is a CGIAR user ({@link User#isCgiarUser()}, the
  * {@code users.is_cgiar_user} column) <b>and</b> {@link CognitoAuthSpecificity#isActiveFor} holds for the unit
  * (SEC-009). A CGIAR user on a unit where Cognito is inactive is eligible (OQ-4).</li>
@@ -123,7 +125,7 @@ public final class OtpEligibility {
     if (user == null || !user.isActive() || user.getId() == null) {
       return false;
     }
-    if (!this.crpUserManager.existCrpUser(user.getId().longValue(), globalUnitId)) {
+    if (!this.crpUserManager.existActiveCrpUser(user.getId().longValue(), globalUnitId)) {
       return false;
     }
     return !this.isRefusedBySec009(user.isCgiarUser(), globalUnit);

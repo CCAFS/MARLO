@@ -144,6 +144,8 @@ public class OtpRequestCodeActionTest {
     UNKNOWN("alb@partner.org", EMAIL_HMAC_ALB, 42L),
     INACTIVE("amy@partner.org", EMAIL_HMAC_AMY, 43L),
     NON_MEMBER("ann@partner.org", EMAIL_HMAC_ANN, 44L),
+    /** A crp_users row that exists with is_active=0: MARLO removes a member by soft delete. */
+    SOFT_DELETED("ann@partner.org", EMAIL_HMAC_ANN, 44L),
     CGIAR_REFUSED("abe@partner.org", EMAIL_HMAC_ABE, 45L);
 
     final String email;
@@ -1065,6 +1067,8 @@ public class OtpRequestCodeActionTest {
     final Map<Long, GlobalUnit> units = new HashMap<Long, GlobalUnit>();
     final Map<Long, String> allowLists = new HashMap<Long, String>();
     final Set<String> members = new HashSet<String>();
+    /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
+    final Set<String> softDeleted = new HashSet<String>();
     final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
 
     final List<String> events = new ArrayList<String>();
@@ -1107,6 +1111,10 @@ public class OtpRequestCodeActionTest {
           break;
         case NON_MEMBER:
           world.addUser(state, true, false);
+          break;
+        case SOFT_DELETED:
+          world.addUser(state, true, false);
+          world.softDeleted.add(state.userId + ":" + GU);
           break;
         case CGIAR_REFUSED:
           world.addUser(state, true, true);
@@ -1266,9 +1274,15 @@ public class OtpRequestCodeActionTest {
 
     CrpUserManager crpUserManager() {
       return fake(CrpUserManager.class, (method, args) -> {
-        if ("existCrpUser".equals(method) && args.length == 2) {
+        if ("existActiveCrpUser".equals(method) && args.length == 2) {
           this.events.add("member");
           return Boolean.valueOf(this.members.contains(args[0] + ":" + args[1]));
+        }
+        if ("existCrpUser".equals(method) && args.length == 2) {
+          // The old, activity-blind gate: it sees the soft-deleted row. Answering it makes a regression visible.
+          this.events.add("member-any-state");
+          String pair = args[0] + ":" + args[1];
+          return Boolean.valueOf(this.members.contains(pair) || this.softDeleted.contains(pair));
         }
         return unsupported(method);
       });

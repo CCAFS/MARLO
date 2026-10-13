@@ -122,6 +122,25 @@ public class OtpEligibilityTest {
   }
 
   @Test
+  public void softDeletedMembershipIsRefusedAndOnlyTheActiveGateIsAsked() {
+    this.world.members.clear();
+    this.world.softDeleted.add(USER_ID + ":" + GU);
+
+    assertFalse(this.world.subject().isEligible(SUBMITTED, GU));
+    assertEquals("only existActiveCrpUser is consulted", Arrays.asList(USER_ID + ":" + GU),
+      this.world.membershipChecks);
+  }
+
+  @Test
+  public void softDeletedHereAndActiveElsewhereIsRefusedForThisUnit() {
+    this.world.members.clear();
+    this.world.softDeleted.add(USER_ID + ":" + GU);
+    this.world.members.add(USER_ID + ":" + OTHER_GU);
+
+    assertFalse(this.world.subject().isEligible(SUBMITTED, GU));
+  }
+
+  @Test
   public void memberOfAnotherUnitOnlyIsRefusedForThisUnit() {
     this.world.members.clear();
     this.world.members.add(USER_ID + ":" + OTHER_GU);
@@ -301,6 +320,8 @@ public class OtpEligibilityTest {
     final Map<Long, GlobalUnit> unitsById = new HashMap<>();
     final Map<Long, String> allowLists = new HashMap<>();
     final Set<String> members = new HashSet<>();
+    /** crp_users rows with is_active=0 (soft delete): seen only by the activity-blind existCrpUser. */
+    final Set<String> softDeleted = new HashSet<>();
     final Map<Long, String> cognitoOverrides = new HashMap<>();
 
     final List<String> userLookups = new ArrayList<>();
@@ -352,10 +373,16 @@ public class OtpEligibilityTest {
         return unsupported(method);
       });
       CrpUserManager crpUserManager = fake(CrpUserManager.class, (method, args) -> {
-        if ("existCrpUser".equals(method) && args.length == 2) {
+        if ("existActiveCrpUser".equals(method) && args.length == 2) {
           String pair = args[0] + ":" + args[1];
           this.membershipChecks.add(pair);
           return this.members.contains(pair);
+        }
+        if ("existCrpUser".equals(method) && args.length == 2) {
+          // The old, activity-blind gate answers true for the soft-deleted row, so a regression to it is visible.
+          String pair = args[0] + ":" + args[1];
+          this.membershipChecks.add("any-state " + pair);
+          return this.members.contains(pair) || this.softDeleted.contains(pair);
         }
         return unsupported(method);
       });
