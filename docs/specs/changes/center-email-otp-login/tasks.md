@@ -333,7 +333,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T11 — `OtpVerifyCodeAction`
 
-- **Status:** pending · **Size:** L · **Depends on:** T03, T04, T05, T06, T07, T08 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** L · **Depends on:** T03, T04, T05, T06, T07, T08 · **Module:** marlo-web
 - **Requirements:** FN-011, FN-012, FN-013, FN-014, FN-015, FN-016, SEC-004, SEC-005, SEC-007, SEC-006 (verify side), OPS-001
 - **Design:** §4 status table, §5.2 (all 11 steps), DD-2, DD-3, DD-5; Premise Ledger P-2, P-27
 - **Files:** `action/home/OtpVerifyCodeAction.java` and `OtpVerifyCodeActionTest.java` (both new)
@@ -352,7 +352,7 @@ Field conventions:
     - `finishLogin` receives the **loaded** entity;
     - `agree_terms` is set only when `pending.agree`;
     - `redirect` = `<base>/<acronym>/crpDashboard.do` for type 1, and `centerDashboard.do` for type 2.
-  - Gate-4 refusal inside `finishLogin` → `failed` with the `authError=failed` redirect, and **no NPE**.
+  - Gate-4 refusal inside `finishLogin` → `failed` with the `authError=cognitoFailed` redirect (`LoginAction.AUTH_ERROR_FAILED`; clarified 2026-10-13), and **no NPE**.
   - A null user after consume → `failed`.
   - One `verify` line per call.
 - **Verification:**

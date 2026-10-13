@@ -288,7 +288,7 @@ identically for every account (JD-1).
 10. **`finishLogin(loggedUser, gu, pending.returnUrl)`**. Pass the loaded entity, never the detached `user` field: `finishLogin` reads `loggedUser.getId()` for gate 4 (RJ-2).
     - `SUCCESS` → `redirect = <baseUrl>/<crpSession>/crpDashboard.do`, the target of the `login` and `cognitoCallback` `success` results (`struts-home.xml:74-76, 86-88`). Types 1, 3, 4 and 5 return `SUCCESS` (`LoginAction.java:497-511`).
     - `LOGIN` → `redirect = url`. For type 2, `finishLogin` sets this to `centerDashboard.do`; for a `.do` return URL, it is that URL.
-    - `INPUT` → `failed`, with `redirect = /login.do?authError=failed` (Cognito V-7 parity).
+    - `INPUT` → `failed`, with `redirect = /login.do?authError=cognitoFailed`, which is `LoginAction.AUTH_ERROR_FAILED` (Cognito V-7 parity). *Clarified 2026-10-13 (T11): the literal "failed" was shorthand. `loginForm.ftl` renders only `cognitoFailed`, and `CognitoCallbackAction:552` uses the constant.*.
 11. **Log** one `verify` line. Outcomes: `ok`, `mismatch`, `exhausted`, `invalid`, `not_eligible`, `rate_limited`, `failed`, `internal_error`.
 
 ### 5.3 Supporting components

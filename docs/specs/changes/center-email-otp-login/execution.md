@@ -886,3 +886,113 @@ No blocker. The T03 commit is safe. Forward pointers added:
 - **runtime events:** none.
 - **spawns:** implementer 94 calls, 360,532 tokens, ended complete; reviewer (enumeration) 16 calls, 76,084 tokens, ended complete; reviewer (correctness) 27 calls, 94,848 tokens, ended complete.
 - **Final status:** PASS (attempt 1). **Final verification:** VERIFIED; both lenses PASS.
+
+### CHG-OTP-LOGIN-001-T11 — `OtpVerifyCodeAction`
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-13
+- **Requirements:** FN-011–FN-016, SEC-004, SEC-005, SEC-006 (verify side), SEC-007, OPS-001
+- **Skills assigned:** `marlo-verify`, `tdd`, `error-handling-patterns` (listed). Effort `xhigh`. Review: `lenses`, with three parallel reviewers (security, concurrency, session parity).
+- **Forward pointers carried in the brief:** 1–10, compiled from T03, T05, T06, T07, T08 and T10.
+
+#### Attempt 1
+
+- **Files (new):** `marlo-web/.../action/home/OtpVerifyCodeAction.java` (442 lines) and `OtpVerifyCodeActionTest.java` (1706 lines, 47 tests).
+- **Surface:**
+  - The class extends `LoginAction`. It exposes `setCode`, `getResponse` and `execute`; `execute` always returns SUCCESS.
+  - One `@Inject` constructor takes 10 parameters. A package-private seam takes `ClientIpResolver` and `Clock`.
+  - Statuses: `ok`, `mismatch`, `exhausted`, `invalid`, `rateLimited`, `unavailable`, `failed`.
+- **Steps:**
+  - Steps 1–3 run in `process()`.
+  - Step 4 is the Java pre-checks. They can only refuse.
+  - Steps 5–6 call `OtpCodes.matches` and then `registerMismatch`.
+  - Step 7 is `consume`.
+  - Step 8 removes the pending challenge and then calls `isEligible`.
+  - Steps 9–10 are `signIn()`.
+  - Step 11 writes one `OtpLog.verify` line.
+- **Transactions:** the action opens no transaction. `findByNonce` is a plain read. `registerMismatch` and `consume` are each `@Transactional`.
+- **Forward pointers:**
+  - 1–8 are met. The only `new OtpAuthenticationToken` in `src/main` is at `:406`, after consume and the re-check, and a test pins it. Expiry is never accepted on Java's word alone (2 tests). The re-check catches `RuntimeException | Error`.
+  - 9 does not apply (`ReturnUrls` is unused). 10 is left as is (`ClientIpResolver` per request).
+- **Clause mapping:**
+  - FN-012: `wrongCodesCountAndTheThird…`, `anExhaustedChallengeWithTheCorrectCode…`
+  - FN-013: `aSecondSubmissionOfTheSameCode…`, `aConcurrentConsumeThatWon…`, `aWrongCodeOnARowConsumedMeanwhile…`
+  - FN-014: `anExpiredChallenge…`, `aSupersededConsumedOrPurged…`, `expiryIsNeverAcceptedOnJavasWord…`
+  - FN-015: `anAccountThatLostEligibility…` (5 conditions), `aDecoyGuessed…`, `everyExceptionOfTheEligibilityRecheck…`
+  - FN-016: `noPendingChallenge…`, `afterAnyRequestTheVerifySequenceIsTheSame…`
+  - SEC-005: `theSessionIdIsRotated…`, `theStoppedSessionView…`, `aPostActionAccess…`
+- **Red (gate-4, real `LoginAction.finishLogin` with fake managers):** `expected:<{status=failed, redirect=…authError=cognitoFailed}> but was:<{status=unavailable}>`.
+- **Falsifier (`setUser(detached)` deleted):** 3 tests go red, and the gate-4 test reports `unexpected fault: [auth.otp.fault stage=verify cause=NullPointerException]`. 14 further mutants were all killed.
+- **Green:**
+  - own tests 47/0;
+  - `CognitoCallbackActionTest` 30, `CognitoLogHygieneTest` 17, `LoginActionFinishLoginTest` 17, all with 0 failures;
+  - full suite 718/0.
+- **Compile:** 2415/1062/70. **Checkstyle:** 0.
+- **Issues encountered:** two of the Implementer's Maven runs died on JDT `target/` interference. Both were re-run clean.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.**
+  - One wipe+compile+test command: exit 0, 2415/1062/70, 718 tests, 0 failures, 0 dirty-tree lines.
+  - Checkstyle 0.
+  - `grep -rn "new OtpAuthenticationToken" marlo-*/src/main` returns exactly `OtpVerifyCodeAction.java:406`.
+- **Execute-time spec edit, made before the reviews and named in all three Reviewer briefs:** design §5.2 and tasks T11 now give the `failed` redirect as `authError=cognitoFailed` (`LoginAction.AUTH_ERROR_FAILED`, Cognito V-7 parity; `CognitoCallbackAction:552`).
+  - The design's literal `authError=failed` was shorthand. `loginForm.ftl` renders only `cognitoFailed`.
+  - The sweep found no `authError=failed` left in the spec folder.
+
+#### Reviewer verdicts — attempt 1 (three parallel lenses, `opus`; Implementer `sonnet`)
+
+- **Security lens: `PASS`.**
+  - `process()` is linear. Only `consume == true` and then `isEligible == true` reach `signIn`, and every earlier exception answers `unavailable` with no login.
+  - Decoy and real challenges, and eligible and ineligible accounts, answer identically: an ineligible account or a predicate failure answers `invalid`, the same as an expired code.
+  - The pending challenge is removed right after a successful consume, and a failed re-check leaves the row consumed.
+  - The unit, email, return URL and agree flag all come from `OtpPending`.
+  - No code, nonce, MAC, email or session id appears anywhere.
+- **Concurrency lens: `PASS`.**
+  - Mixed bursts are serialised by the row lock, and every order is consistent with FN-012.
+  - Of two correct submissions, exactly one wins and the loser gets `invalid`.
+  - `MARLOCustomPersistFilter` most likely never wraps `.do` (match-after, and struts2 ends the chain), so each manager call commits on its own under autocommit.
+  - The step-8 ordering leaves no window. The limiter runs before any lookup and fails closed.
+- **Session-parity lens: `PASS`.**
+  - The sequence matches `CognitoCallbackAction:473-558` step by step. The justified differences are:
+    - the user is loaded by the pending email;
+    - `agree_terms` is set only when `pending.agree`;
+    - there is no `applyNamesFromToken`;
+    - the redirect is built directly, which is equivalent to `${crpSession}`.
+  - P-27 is confirmed: `setUser` gets the detached copy and `finishLogin` gets the loaded entity.
+  - Every failed path goes through the same `cognitoFailed` redirect.
+  - SEC-007 holds: the only writes are 2 `saveLastLogin` calls.
+- **ADVISORY (recorded, not gating):**
+  - *Risk (security):*
+    - A `RuntimeException` after `Subject.login` (for example in `finishLogin`'s custom parameter read, or an NPE on a null `GlobalUnitType`) answers `unavailable` while the subject stays authenticated.
+    - The unmapped-unit-type `INPUT` branch of `finishLogin` also never logs out.
+    - Both are parity with Cognito's accepted "route C" gap. Suggested hardening: call `Subject.logout()` on any failure after login.
+  - *Reliability:* a user deactivated between the re-check and `signIn`'s reload would still get in. The window is milliseconds, the same as password login.
+  - *Risk (drift):* `freshSessionMap` and the session-rotation block now exist in two copies (OTP and Cognito). Extract them into a `LoginAction` helper, or cross-reference them.
+  - *Concurrency:* an email-limited request is not counted against the IP bucket. That is T04 behaviour.
+  - *Concurrency:* a wrong code that crosses expiry answers `mismatch`, which conforms.
+  - *Concurrency:* a late `invalid` in a double-submit tab should be ignored by the client after a redirect (T14).
+  - *Readability:* the success redirect could use `getCrpSession()`.
+- **Forward pointers (Leader):**
+  - **T12:** `ParameterNameAware` on both actions. It must refuse the `LoginAction` setters (`url`, `user`, `crp`, `globalUnit`) and every other parameter except `code` on `otpVerifyCode`, and except `email`, `globalUnitId` and `agree` on `otpRequestCode`.
+  - **T14:** after a redirect starts, ignore any late verify response.
+  - **T15:**
+    - Confirm at runtime that `MARLOCustomPersistFilter` does not run for `/otpVerifyCode.do` and `/otpRequestCode.do`, and that connections are in autocommit outside `@Transactional`.
+    - Run the AC-7 and FN-012 mixed-burst probes against the real database.
+    - Probe a non-UTC JVM for false refusals.
+    - Probe the post-login failure path: does a failure after `Subject.login` leave an authenticated session?
+  - **T16:** record the post-login failure (`unavailable` or `failed` while authenticated) as a known gap shared with Cognito route C, unless the user approves the `logout()` hardening.
+- **runtime events:** none. The Implementer's two JDT-interference reruns were environmental retries, not worker events.
+- **spawns:**
+  - Implementer: 75 calls, 378,763 tokens, ended complete.
+  - Reviewer (security): 17 calls, 76,782 tokens, ended complete.
+  - Reviewer (concurrency): 20 calls, 85,358 tokens, ended complete.
+  - Reviewer (parity): 13 calls, 73,644 tokens, ended complete.
+- **Final verification:** VERIFIED; all three lenses PASS.
+
+#### Budget note (design §18 tripwire)
+
+- **Review rounds:** 19 of the 23 budgeted are used after T11, with 11 of 16 tasks done.
+- **Projection:** T12–T16 need at least 5 rounds, with 4 left, so the spec will exceed its budget by at least 1 round even if every task passes first time. Flagged to the user at the T11 gate, before the budget is exceeded.
+
+#### User decisions at the T11 gate (2026-10-13)
+
+- **Budget:** the user approved extending the review-round budget from 23 to **28**. The cause of the overrun is recorded above: quality rounds the user chose (the amendments in T01, T05 and T10, the T04 Pivot), the real FAIL in T09, and the parallel-lens reviews in T03, T04, T10 and T11. A new tripwire stop fires if 28 is exceeded.
+- **Post-login failure gap:** not hardened in T11. **Pending item for T16:** record it in the runbook as a known gap shared with Cognito route C: a `RuntimeException` after `Subject.login`, or the unmapped-unit-type `INPUT` branch, leaves an authenticated session behind an `unavailable` or `failed` answer. A `logout()` hardening, if wanted, belongs in a separate task that covers both flows.
