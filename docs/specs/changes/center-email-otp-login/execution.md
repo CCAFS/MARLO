@@ -1303,3 +1303,55 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - deliverability through the real relay;
   - the reCAPTCHA overlap and screen-reader behaviour, which were not verified locally.
 - **Open before `/akili-archive`:** file the A2 Jira issue for the password-login soft-delete gap, after the user confirms the parent epic, and put its key in the requirements Decision Log.
+
+### CHG-OTP-LOGIN-001-T16 — Runbook and rollout checklist
+
+- **User decision (2026-10-13):** the verification walk runs on a throwaway copy (`aiccradb_otp_probe`), the same recipe as T15, dropped at the end.
+- **Attempt 1 — Implementer:** STATUS DONE. New `runbook.md`:
+  - Part A: the runbook (A1 to A9).
+  - Part B: the rollout checklist, with an owner and a blocking scope per premise and OQ.
+  - Part C: the walk record.
+  - Part D: pending shared-file items for `/akili-archive` on `staging` (`docs/trd/trd.md` §8.1 and §9.5, `docs/infrastructure.md` §6).
+  - **Walk:**
+    - An admin UI enable (`/superadmin/marloParameters.do`, the row shown as `system_otp_allowed_email_domains`) gave `otpEnabled:true` with no restart.
+    - Code sign-in: `request sent`, `delivery delivered`, `verify ok`, then the dashboard.
+    - An admin UI disable gave `otpEnabled:false` and `domainNotEnabled` on the next request.
+  - **Falsifier (raw SQL):** the change applies on the next request, with the same pid. The DD-12 claim stands.
+  - **Corrections to the Leader's brief, applied in the runbook:**
+    - the domain-not-allowed case is not neutral (FN-006);
+    - rate limits are shared across instances through the database (DD-8);
+    - design §14 overstated the rollback;
+    - the admin screen writes blank rows for the other units;
+    - the env names `OTP_SMTP_TIMEOUT_MS` were not run.
+- **Leader edits:**
+  - design §14 rollback: only emptying the value applies on the next request. The secret is read once at start by the `OtpKeys` singleton, so unsetting it needs a restart.
+  - Two runbook notes that referred to the task brief were reworded.
+- **Leader checks and evidence re-run:**
+  - Cleanup confirmed: no probe database, ports free. `aiccradb_actsave` is unchanged: `otp_*` 0/0/0, OTP `custom_parameters` 0, 1623 in total, `last_login` unchanged.
+  - The runbook holds no personal data, `/Users` path or secret.
+  - Spot checks against the code match: limits 5/20/10/50 per 15 min, cooldown 30 s, retention 1 h and 1 day, purge every 10 min, timeout 10000 (max 30000), queue 100.
+  - The walk cannot be re-run without the stack and is accepted as recorded evidence.
+  - **VERIFIED** for what can be checked.
+- **Attempt 1 — Reviewer (full depth, last task):** **FAIL**. Blocking issues:
+  1. `runbook.md:76`: after a rotation or rolling restart, old codes fail as `mismatch` (the nonce lookup is unkeyed and the MAC compare under the new key fails), then `exhausted`, not `invalid`. A lost session also gives `mismatch`. A5 Step 3 must add "secret rotated or instance restarted" to `mismatch`.
+  2. `runbook.md:128` and `:150`: when the eligibility check throws, the log says `internal_error` but the user sees the neutral `sent` (request) or `invalid` (verify), not "unavailable". This is deliberate under SEC-006. Support must never mention an `internal_error` to the user.
+  - **Advisories:**
+    - `tasks.md:595` still lists the secret rollback with no restart.
+    - The Part B rule overstates which rows block go-live.
+    - The allow-list is comma-only: an inner space drops the entry and a semicolon never matches.
+    - The secret must be a single line with no trailing newline.
+    - A full queue logs `email_failed` at once, and the cause is on a separate `auth.otp.mail outcome=send_failed` line.
+    - A6: reply only to the registered mailbox.
+    - Part D §9.5 wording.
+    - Meta and process references remain.
+    - The `openssl rand -base64 48` (design §5.3) and `32` (runbook) recipes differ.
+    - `OTP_TRUSTED_PROXIES` env mapping not run.
+- **Leader edit:** `tasks.md:595`, rollback step 2 now says "and restart every instance (the secret is read once at start)".
+- **Attempt 2 — Implementer:** STATUS DONE, `runbook.md` only. Each change is checked against the code.
+  - Rotation (`:74`) and A5 `mismatch` (`:142`): old codes give `mismatch`, then `exhausted`. A restart that loses the session also gives `mismatch`.
+  - `internal_error` rows (`:126`, `:148`): when `stage=eligibility`, the user saw "code sent" or "Invalid or expired". A6 says never to tell the user.
+  - All advisories applied: commas only, `-base64 48` on a single line, the `auth.otp.mail send_failed` cause line, replies only to the registered mailbox, the reworded Part B rule, Part D §9.5 "Add a bullet", meta references removed, `OTP_TRUSTED_PROXIES` marked as not run.
+- **Evidence re-run (Leader, non-author):** `OtpVerifyCodeAction.java:326-327` (no pending gives `MISMATCH`), `:344-350` (MAC mismatch calls `registerMismatch`), `:359-362` (`STATUS_INVALID` with `INTERNAL_ERROR`); `OtpRequestCodeAction.java:413-416` (the `sent` map, then `INTERNAL_ERROR`). The runbook rows match. No personal data and no shared file touched. **VERIFIED**.
+- **Attempt 2 — Reviewer:** **PASS**. Advisory: the A7 Source column cites task ids, which is acceptable as traceability.
+- **Done-when:** the runbook was walked (Part C), the DD-12 falsifier held, and every open premise and OQ has a named owner and a Blocks scope: P-4, P-6, P-25, OQ-1, OQ-2 and OQ-5 block go-live, not merge.
+- **Carried to `/akili-archive` on `staging`:** runbook Part D (`docs/trd/trd.md` §8.1 and §9.5, `docs/infrastructure.md` §6), plus the A2 Jira key for the password-login soft-delete gap in the requirements Decision Log.

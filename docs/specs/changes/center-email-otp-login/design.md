@@ -404,9 +404,9 @@ entity is saved.
 4. **Pilot:** enable one Global Unit and one domain (OQ-1) with a test mailbox, then run the AC walkthrough.
 5. **Expand** domain by domain.
 
-**Rollback**, cheapest first. All of these apply on the next request (DD-12):
-- empty the value;
-- unset the secret;
+**Rollback**, cheapest first. Only the first applies on the next request (DD-12); the secret is read once at start by `OtpKeys` (corrected in T16, see `runbook.md` A1):
+- empty the value (next request, every instance);
+- unset the secret (restart of every instance);
 - revert the deploy;
 - drop the tables.
 

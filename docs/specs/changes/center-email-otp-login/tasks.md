@@ -472,7 +472,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T16 — Runbook and rollout checklist (T-rollout)
 
-- **Status:** pending · **Size:** S · **Depends on:** T15 · **Module:** spec folder
+- **Status:** done [x] · **Size:** S · **Depends on:** T15 · **Module:** spec folder
 - **Requirements:** OPS-004; the open premises' owner (Premise Ledger P-4, P-6, P-25); OQ-1, OQ-2, OQ-5
 - **Design:** §11, §14, §16
 - **Files:** `runbook.md` (new). Pending shared-file items are recorded only: `docs/trd/trd.md` §8.1 and §9.5, and `docs/infrastructure.md` §6 (`OTP_HMAC_SECRET`, `OTP_TRUSTED_PROXIES`). On this spec branch they are pending items for `/akili-archive` on `staging`, per root `CLAUDE.md` *Default Branch & Shared-File Write Discipline*.
@@ -592,7 +592,7 @@ Every clause has an owner. None is cleared by citing another requirement.
 ## 8. Rollback Plan
 
 1. Empty the Global Unit's `custom_parameters` value. This applies on the next request (DD-12).
-2. Unset `OTP_HMAC_SECRET`. The feature becomes inert everywhere.
+2. Unset `OTP_HMAC_SECRET` and restart every instance (the secret is read once at start). The feature becomes inert everywhere.
 3. Revert the merge on `staging` and redeploy. The tables are harmless.
 4. Drop `otp_challenges`, `otp_rate_limits` and `otp_cooldowns`. Only in-flight codes are lost.
 
