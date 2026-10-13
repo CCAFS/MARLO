@@ -979,9 +979,6 @@ span.icon-20 {
    control itself, which must keep the normal ink color. */
 .opi-page .opi-card__body span.red,
 .opi-page .opi-card__body .requiredTag { color: var(--opi-required); }
-/* outcomes.js sets .is-met once the field is answered. visibility, not display: the label
-   keeps its width, and the marker still counts as :visible for the missing-fields count. */
-.opi-page .opi-card__body .requiredTag.is-met { visibility: hidden; }
 
 .opi-page .opi-card__body input[type="text"],
 .opi-page .opi-card__body textarea,

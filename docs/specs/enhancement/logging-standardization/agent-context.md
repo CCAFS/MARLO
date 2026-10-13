@@ -14,7 +14,7 @@ MARLO logs through **SLF4J + Logback** (`marlo-web/src/main/resources/logback.xm
 SLF4J 2.x and this checkout resolves SLF4J 1.7.x through logback-classic 1.2.13. There is no `log4j2.xml`.
 Do not "fix" the log by editing a Log4j2 config; there isn't one, and Logback is the active provider.
 
-Second thing: **`org.jfree.util.Log` is used as a logger in 21 files** and no `LogTarget` is ever registered,
+Second thing: **`org.jfree.util.Log` is used as a logger in 12 files** (measured 2026-10-08; list in §6.1) and no `LogTarget` is ever registered,
 so every one of those calls goes nowhere. If a class seems to log and nothing appears, check its import first.
 
 ## 2. The Schema, In One Table
@@ -83,7 +83,9 @@ by that thread. It is a privacy defect and **it does not reproduce under single-
 
 ## 5. Conventions For Any Log Statement
 
-From A2-2435, now enforced by Checkstyle:
+From A2-2435. **Not yet enforced by Checkstyle:** as of 2026-10-08 neither `configuration/marlo-checkstyle.xml`
+nor `ccafs-java-style-config.xml` carries a rule for `System.out` / `System.err` or `printStackTrace()`, so
+nothing stops a new offender from landing (see §6.1).
 
 - `private static final Logger LOG = LoggerFactory.getLogger(MyClass.class);` — the repo has 8 declaration
   variants and 3 names (`LOG` 253, `logger` 59, `log` 5). Use `LOG`, `static final`.
@@ -128,6 +130,67 @@ From A2-2435, now enforced by Checkstyle:
   A2-2435) — do not obscure it while cleaning that file.
 - **`action/summaries` (168 offenders) and `utils` (84) are deliberately deferred.** Largest concentration,
   its own commit series.
+
+### 6.1 Remaining Offenders Inventory (measured 2026-10-08, on `staging`)
+
+Production sources only (`marlo-{core,data,utils,web}/src/main/java`), lines starting with `//` or `*` excluded.
+`src/test` has no `System.out`. Re-measure before quoting — these numbers move with every cleanup commit:
+
+```
+grep -rnE 'System\.(out|err)\.print|\.printStackTrace\(' --include='*.java' marlo-*/src/main/java \
+  | grep -vE ':[0-9]+:\s*(//|\*)'
+```
+
+| Pattern outside the SLF4J standard | Live lines | Files |
+|---|---|---|
+| `System.out.println` / `System.err.println` | 138 | 57 |
+| `e.printStackTrace()` | 91 | 58 |
+| `org.jfree.util.Log` (discards every call) | — | 12 |
+| `java.util.logging` | 2 | 2 |
+| `LOG.x("..." + e.getMessage())` (concatenation, stack trace lost) | ~149 | — |
+| Logger named `logger` / `log` instead of `LOG` | ~64 | — |
+
+**Fix first — these leak sensitive data to stdout (`catalina.out`), outside SEC-001:**
+
+1. `action/summaries/UserSummaryAction.java:267-283` — prints email, full name, last login and roles of every
+   user in the report.
+2. `action/summaries/ReportingSummaryAction.java:3223, 4246` — prints `"confidential " + delivConfidentialUrl`.
+3. `marlo-utils/.../utils/ExternalPostUtils.java:113, 175` — on a non-2xx response prints the full outgoing
+   request payload (`parameters`).
+4. `action/summaries/BaseStudySummaryData.java:1528`, `ReportingSummaryAction.java:7860` — print the exception
+   raised while reading the microservice API key.
+5. `rest/controller/v2/controllist/items/Deliverables/DeliverablesItem.java:338, 712, 1493, 1989` — print the
+   whole WoS JSON response on every REST save.
+
+**Where the rest concentrates:**
+
+- **Summaries / reports (~60% of `System.out`):** `ReportingSummaryAction` (26), `BaseStudySummaryData` (19),
+  `MicroserviceReportAction` (17), `StudySummaryAction` (9), `AIReportService` (3). Mostly caught errors that
+  belong in `LOG.error(..., e)`.
+- **REST v2 items (`rest/controller/v2/controllist/items/*`):** one copied idiom, ~25 times,
+  `fieldErrors.forEach(e -> System.out.println(e.getMessage()))` — Policy, ProgressTowards,
+  KeyExternalPartnership, CrossCGIARCollaborations, ExpectedStudies(+Other), StatusPlanned{Outcomes,Milestones},
+  Deliverables.
+- **Debug leftovers on hot paths:** `EditProjectInterceptor:238-239` and
+  `EditProjectLp6ContributionInterceptor:246-247` print years on every request; also
+  `CapacityDevelopmentDetailAction:568`, `ProjectInnovationAction:2825`, `StudiesOICRAction:313`.
+- **Scratch classes in `src/main`:** `action/center/capdev/test.java` and `TestJsonCompare.java` have no
+  references. Candidates to move or delete — a proposal, not part of a cleanup commit unless asked.
+- **`printStackTrace()`:** ~14 interceptors (`EditProject*`, `CanEdit*`, `FundingSourceInterceptor`), the
+  repository clients in `rest/services/deliverables/*` (CGSpace, MEL, CIMMYT, IFPRI, ILRI, Metadata, Dataverse),
+  `AbstractMarloDAO` (4), and — ironically — the two global handlers `UnhandledExceptionAction` (2) and
+  `ExceptionTranslator` (1).
+- **`org.jfree.util.Log` (12 files):** `DeliverableValidator`, `ProjectExpectedStudiesValidator`,
+  `ProjectSectionValidator`, `EditDeliverableInterceptor`, `SendNotificationEmailAction`,
+  `BaseStudySummaryData`, `PublicationAction`, `TIPManagementAction`, `ReportsManagementAction`,
+  `FundingSourceListAction`, `FundingSourceByInstitutionFinanceCodeAction`,
+  `DeliverablesByDisseminationURLHandleDOIAction`.
+- **`java.util.logging`:** `action/json/global/GetInstitutions.java:43` (JUL logger) and
+  `action/projects/PartnersSaveAction.java:574` (JUL call although the class already has an SLF4J `LOG`).
+
+**Trap — two `ExternalPostUtils` with the same FQN.** `org.cgiar.ccafs.marlo.utils.ExternalPostUtils` exists in
+both `marlo-utils` (uses `System.out`) and `marlo-web` (uses `LOG`). Which one loads depends on classpath order.
+Settle which is live before cleaning the `marlo-utils` copy.
 
 ## 7. Change Recipes
 

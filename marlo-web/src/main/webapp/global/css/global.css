@@ -9479,3 +9479,228 @@ img.qaOptionsComment {
   color: #015C7D;
 }
 #secondaryMenu.clusterMenu ul ul li.disabled > a { color: #9AA4B0; }
+
+/* Row hover and the per-section spinner, redrawn for the redesigned rows. The legacy
+ * hover adds a drop shadow and turns the label black, and the loading gif sits where
+ * the ::after status badge now is, so both read as glitches on the new rows. */
+#secondaryMenu.clusterMenu ul li > ul li:hover {
+  background-color: #F7F9FB;
+  border-color: #E5E9EF;
+  box-shadow: none;
+}
+#secondaryMenu.clusterMenu ul li > ul li.currentSection:hover {
+  background-color: #EAF5FA;
+  border-color: #BEDFEC;
+}
+#secondaryMenu.clusterMenu ul li > ul li:hover a { color: #1F2A37; }
+#secondaryMenu.clusterMenu ul li > ul li.currentSection:hover a { color: #015C7D; }
+#secondaryMenu.clusterMenu ul li ul li.loadingSection a { background-image: none; }
+#secondaryMenu.clusterMenu ul ul li.loadingSection > a::after {
+  content: '';
+  flex: none;
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  min-width: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid #DCEEF6;
+  border-top-color: #0277A2;
+  background: none;
+  animation: clusterMenuSpin .8s linear infinite;
+}
+@keyframes clusterMenuSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  #secondaryMenu.clusterMenu ul ul li.loadingSection > a::after { animation-duration: 2.4s; }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * Cluster menu status card (A2-2440 redesign): completeness, "Check for missing
+ * fields", what the check found, and the submit flow. The ids and legacy classes
+ * stay on the elements (projectSubmit.js binds to them), so every rule here is
+ * scoped under .clusterMenu-status to outweigh the old button rules.
+ * ────────────────────────────────────────────────────────────────────────── */
+.clusterMenu-status {
+  font-family: Figtree, 'Open Sans', sans-serif;
+  margin-top: 14px;
+  padding: 14px;
+  background: #FFFFFF;
+  border: 1px solid #E5E9EF;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.clusterMenu-status:empty { display: none; }
+.clusterMenu-status__progress { display: flex; flex-direction: column; gap: 7px; }
+.clusterMenu-status__progressHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.clusterMenu-status__label { font: 600 13.5px Figtree, sans-serif; color: #1F2A37; }
+.clusterMenu-status__count { font: 600 12.5px Figtree, sans-serif; color: #4B5563; white-space: nowrap; }
+.clusterMenu-status__bar {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: #EEF2F5;
+  overflow: hidden;
+}
+.clusterMenu-status__barFill {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: #2E6B2F;
+  transition: width .3s ease;
+}
+.clusterMenu-status__note {
+  margin: 0;
+  font: 400 12px/1.5 Figtree, sans-serif;
+  color: #6B7280;
+  text-align: left;
+}
+.clusterMenu-status__toggle .onoffswitch { text-align: left; }
+.clusterMenu-status__toggle .onoffswitch > label {
+  display: block;
+  margin-bottom: 6px;
+  font: 600 12.5px/1.4 Figtree, sans-serif;
+  color: #1F2A37;
+}
+
+/* Check for missing fields: the outlined green button of the design. global.css
+ * gives .projectValidateButton a sprite, a 1.3em light label and `margin: 0 8%`. */
+.clusterMenu-status .projectValidateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid #2E6B2F;
+  border-radius: 8px;
+  background: #FFFFFF none;
+  color: #2E6B2F;
+  font: 600 13.5px Figtree, sans-serif;
+  text-align: center;
+  cursor: pointer;
+}
+.clusterMenu-status .projectValidateButton:hover { background-color: #EDF7ED; }
+.clusterMenu-status .projectValidateButton:focus-visible,
+.clusterMenu-status .clusterMenu-results__row:focus-visible,
+.clusterMenu-status a:focus-visible {
+  outline: 2px solid #0277A2;
+  outline-offset: 2px;
+}
+
+/* The jQuery UI progress bar shown while the sections are validated. */
+.clusterMenu-status .progressbar.ui-progressbar {
+  height: 6px;
+  margin: 16px 0;
+  border: 0;
+  border-radius: 3px;
+  background: #EEF2F5;
+  overflow: hidden;
+}
+.clusterMenu-status .progressbar .ui-progressbar-value {
+  margin: 0;
+  height: 100%;
+  border: 0;
+  border-radius: 3px;
+  background: #0277A2;
+}
+
+/* What the check found. Empty until it runs, so it takes no room before then. */
+.clusterMenu-results { display: flex; flex-direction: column; gap: 2px; margin-top: -4px; }
+.clusterMenu-results:empty { display: none; }
+.clusterMenu-results__ok {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #EDF7ED;
+  border: 1px solid #BEE0BE;
+  font: 500 12.5px/1.45 Figtree, sans-serif;
+  color: #2E6B2F;
+}
+.clusterMenu-results__row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.clusterMenu-results__row:hover,
+.clusterMenu-results__row:focus { background: #FDF3E4; text-decoration: none; }
+.clusterMenu-results__title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font: 600 12.5px Figtree, sans-serif;
+  color: #1F2A37;
+}
+.clusterMenu-results__title::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C08A2E;
+}
+.clusterMenu-results__detail {
+  padding-left: 13px;
+  font: 400 12px/1.4 Figtree, sans-serif;
+  color: #6B7280;
+}
+
+/* Submit / Request changes. */
+.clusterMenu-status a.projectSubmitButton,
+.clusterMenu-status a.projectUnSubmitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background-image: none;
+  font: 600 13.5px Figtree, sans-serif;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+.clusterMenu-status a.projectSubmitButton { background-color: #0277A2; }
+.clusterMenu-status a.projectSubmitButton:hover { background-color: #015C7D; color: #FFFFFF; }
+.clusterMenu-status a.projectUnSubmitButton { background-color: #B03028; }
+.clusterMenu-status a.projectUnSubmitButton:hover { background-color: #8C3A2E; color: #FFFFFF; }
+.clusterMenu-status__admin {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-top: 12px;
+  border-top: 1px solid #EEF2F5;
+}
+.clusterMenu-status__admin:first-child { padding-top: 0; border-top: 0; }
+.clusterMenu-status__adminCaption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 11px Figtree, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #6B7280;
+}
+.clusterMenu-status__submitNote {
+  font: 400 11.5px/1.5 Figtree, sans-serif;
+  color: #6B7280;
+}
