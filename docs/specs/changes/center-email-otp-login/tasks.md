@@ -208,7 +208,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T06 — `OtpEligibility`
 
-- **Status:** pending · **Size:** S · **Depends on:** T03, T05 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** T03, T05 · **Module:** marlo-web
 - **Requirements:** FN-004, FN-005 (predicate), FN-015, SEC-009, FN-001 (domain plus configured)
 - **Design:** §5.1 step 6, DD-4, §6 (the `otpEnabled` variant); Premise Ledger P-12, P-13
 - **Files:** `security/otp/OtpEligibility.java` and `OtpEligibilityTest.java` (both new)

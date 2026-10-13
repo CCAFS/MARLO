@@ -566,3 +566,57 @@ No blocker. The T03 commit is safe. Forward pointers added:
 - **runtime events:** none.
 - **spawns:** implementer, attempt 2: 15 calls, cumulative 181,280 tokens, ended complete. Reviewer: 11 calls, 86,473 tokens, ended complete.
 - **Final status:** PASS (attempt 2, user-approved amendment). **Final verification:** VERIFIED; Reviewer PASS.
+
+### CHG-OTP-LOGIN-001-T06 — `OtpEligibility`
+
+- **Status:** PASS (attempt 1)
+- **Date:** 2026-10-13
+- **Requirements:** FN-001 (domain plus configured), FN-004, FN-005 (predicate), FN-015, SEC-009
+- **Skills assigned:** `tdd`, `marlo-verify` (as listed in the task). Effort `high`. Review: checklist; override (f) applies, because this is authentication eligibility.
+- **Forward pointers carried in the brief:**
+  - T05: decide through `domainOf` / `isAllowed` before calling `normaliseEmail`.
+  - T03: read the allow-list uncached.
+  - Never call this from `validate()`.
+
+#### Attempt 1
+
+- **Files (new):** `marlo-web/.../security/otp/OtpEligibility.java`, `OtpEligibilityTest.java`.
+- **API:**
+  - `isEligible(String email, long globalUnitId)`.
+  - `otpEnabledFor(String email, boolean cgiarUser, Collection<GlobalUnit> units)` makes one `allowListFor` call, and none when the feature is unconfigured or the email has no domain.
+  - "CGIAR user" means `User.isCgiarUser()`. The Cognito guard calls `CognitoAuthSpecificity.isActiveFor`.
+  - "Configured" means `OtpKeys.isConfigured()` plus a non-blank allow-list. The Implementer applied this to both predicates.
+- **Red:** 21 tests, 12 failures and 3 errors against a stub. The first failure: `unknownUserIsRefused: expected:<[user@partner.org]> but was:<[]>`.
+- **Green:** 21/21 own tests; full suite 603/0.
+- **Falsifier:** with `existCrpUser` replaced by `false`, 3 tests go red, including `nonMemberIsRefused`.
+- **Argument assertions:**
+  - `getUserByEmail("user@partner.org")`, `getGlobalUnitById(7)`, `allowListFor(key, [7] | [7, 8])`, `existCrpUser 42:7`, and the `cognito_auth_active` lookup with the unit id.
+  - Zero-call assertions for a non-ASCII email, an email with no domain, and an unconfigured feature.
+- **Compile:** 2414/1058/66. **Checkstyle:** 0.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.** Clean compile exit 0 (2414/1058/66). Full suite exit 0, 603 tests, 0 failures. Checkstyle 0.
+
+#### Reviewer verdict — attempt 1: `PASS` (`akili-reviewer`, `opus`; Implementer `sonnet`)
+
+- **Summary:**
+  - Each refusal reason, on its own, yields false. OQ-4 is covered.
+  - The variant reads no user or membership, so it is not a disclosure oracle (§6, DD-4, JI-11).
+  - The cached Cognito read is allowed by DD-12.
+  - Applying "configured" to the full predicate conforms to §9 and FN-001.
+  - The T05 ordering is proven by the zero-call assertions.
+  - The fakes answer from argument-keyed data, which clears the disqualifier.
+- **ADVISORY (recorded, not gating):**
+  - *Risk:* the FN-015 SEC-009 re-check reads `cognito_auth_active` from the cache. On another instance, a CGIAR user can therefore stay eligible for up to about 1 h after Cognito is enabled. DD-12 allows this, but it is worth listing as a residual in design §16.
+  - *Wiring:* neither `OtpEligibility` nor `OtpKeys` is a bean. If actions build `new OtpKeys(config)` per request, the "WARN once" message repeats on every request.
+  - *Resilience:* exceptions depend on account state. For example, `CognitoAuthSpecificity` throws an NPE on a null `GlobalUnitType`. T10 must map every predicate exception to one response that does not depend on account state.
+  - *Readability:* the test contains a literal U+212A; use the `K` escape instead.
+  - *Coverage:* no test covers Cognito being active through the catalog default alone.
+- **Forward pointers (Leader):**
+  - **T10:**
+    - Register `OtpKeys`, `OtpEligibility`, `OtpRateLimiter` and `OtpCodes` as singletons (`@Named` or Spring config), or share one instance. Never build them per request.
+    - Map every exception from `OtpEligibility` to the same neutral or `unavailable` path, independent of account state.
+  - **T11** (verify re-check): the same exception mapping applies.
+  - **T13:** use the `otpEnabledFor` variant only.
+  - **T16:** list the cached-Cognito re-check lag (up to about 1 h, cross-instance) as an accepted residual.
+- **runtime events:** none.
+- **spawns:** implementer 25 calls, 126,210 tokens, ended complete. Reviewer 17 calls, 66,677 tokens, ended complete.
+- **Final verification:** VERIFIED; Reviewer PASS.
