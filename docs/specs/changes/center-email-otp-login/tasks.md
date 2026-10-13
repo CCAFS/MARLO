@@ -273,7 +273,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T09 — `OtpMailSender` and email copy
 
-- **Status:** pending · **Size:** M · **Depends on:** T02, T05 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** M · **Depends on:** T02, T05 · **Module:** marlo-web
 - **Requirements:** FN-017, FN-018, SEC-001, OPS-002, NF-001, UI-005 (email copy)
 - **Design:** §5.3 `OtpMailSender`, DD-7; Premise Ledger P-7, P-8
 - **Files:**

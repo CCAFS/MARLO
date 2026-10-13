@@ -711,3 +711,91 @@ No blocker. The T03 commit is safe. Forward pointers added:
   - implementer: 17 calls, 93,050 tokens, ended complete;
   - reviewer: 8 calls, 47,413 tokens, ended complete.
 - **Final verification:** VERIFIED; Reviewer PASS.
+
+### CHG-OTP-LOGIN-001-T09 — `OtpMailSender` and email copy
+
+- **Status:** PASS (attempt 2, after a Reviewer FAIL on attempt 1)
+- **Date:** 2026-10-13
+- **Skills assigned:** `marlo-verify`, `error-handling-patterns` (listed), plus `tdd` because the task orders the tests first. Effort `high`. Review: `full`.
+
+#### Attempt 1
+
+- **Files:**
+  - `marlo-web/.../utils/OtpMailSender.java` (new)
+  - `OtpMailSenderTest.java` (new)
+  - `global.properties` (+7 lines: `login.otp.email.appName`, `subject`, `text`, `html`; the file stays pure ASCII)
+- **Behaviour:**
+  - The JavaMail session is built per send, with connect, read and write timeouts. The value is parsed from `getOtpSmtpTimeoutMs`, default 10000.
+  - The executor runs 2 daemon `otp-mail-N` threads with a queue of 100 and `AbortPolicy`. A rejection is caught and logged as `email_failed`.
+  - The body is rendered on the caller thread.
+  - The recipient must be exactly one bare ASCII address; 16 bad recipients are tested.
+  - Nothing goes to `email_log`. The notification and redirect flags are never read.
+- **Red:** 10 of 11 tests failed against a no-op stub (`expected:<1> but was:<0>`). **Green:** 11/11, full suite 628/0.
+- **Falsifier deviation:** the task's runtime falsifier (route the send through `SendMailS`, then watch the `EmailLogManager` fake) cannot attach, because the mailer has no `EmailLogManager` dependency. It was replaced by a static scan for `SendMailS`, `ThreadSendMail`, `EmailLog*`, `email_log`, `isProduction`, the flag and redirect methods, and `CustomParameter`. The scan went red when a `SendMailS` reference was added.
+- **Queue-full proof:** a latch holds 2 workers busy with 100 sends queued. The 103rd submission is rejected and logs a WARN before the latch is released.
+- **Compile:** 2415/1060/68. **Checkstyle:** 0. **i18n check:** no FIX findings.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.**
+  - wipe, compile and test in one command: exit 0, 628/0;
+  - Checkstyle 0; i18n check with no FIX findings;
+  - the added keys hold no unpaired `'` and no non-numeric `{…}`; the properties diff adds 7 lines only.
+- **Reviewer verdict: `FAIL`** (`akili-reviewer`, `opus`; Implementer `sonnet`). Verbatim:
+
+  > 1. **Discovered Issue:** Nothing makes the "2 threads, queue of 100" limit apply across the whole application. `OtpMailSender` is not a bean: it has no `@Named`, no `@Inject` constructor and no lifecycle hook. "The app must hold a single instance" is only a Javadoc request. No task in the plan wires it: design §3 lists the class as new with no wiring, and T10's Files list is the action and its test only. T10 is a Struts action, created per request, so it can only call `new OtpMailSender(config)` (a new pool every request, each leaving a core thread that never ends) or edit T09's file outside its scope. Also, `shutdown()` has no caller. The workers are daemon threads, but they keep the webapp classloader alive across Tomcat redeploys.
+  >    * **Violated Rule:** design.md §5.3, `OtpMailSender` row: "a dedicated executor: 2 daemon threads, a bounded queue of 100". That limit only holds if there is exactly one instance. Also NF-001 / OPS-002, whose rejection path depends on that one bounded queue.
+  >    * **Remediation Suggestion:** Make it a container singleton in this task, following the `SendMailS` pattern (`@Named` at `SendMailS.java:58`). Add `@Named` (with `@Singleton` if the scan does not default to singleton), put `@Inject` on the `OtpMailSender(APConfig)` constructor, and annotate `shutdown()` with `@PreDestroy`, or register an equivalent destroy hook. Keep the package-private constructor that takes the transport seam for tests. Add a test asserting the annotations are present and that `shutdown` is the destroy hook.
+
+  - **Passed on review:** SEC-001, FN-017, FN-018/OQ-5, recipient validation, thread safety, i18n. The falsifier substitute is accepted and recorded; the runtime proof is AC-11's `email_log` SELECT in T15.
+  - **ADVISORY:**
+    - the timeout has no upper cap (suggested 30000);
+    - `Error` is not caught on the worker;
+    - T10 should derive `expiresAt` from the same 5-minute constant the email cites;
+    - the charset is spelled two ways;
+    - the static scan is relative to the base directory.
+- **Leader adjudication:** the FAIL is in scope. The design's single bounded pool requires a single instance, and no later task owns the wiring. The rework is attempt 2, with effort raised to `xhigh`. Because `@Named` enters component scan, the rework must prove the Spring context still starts.
+- **spawns:** implementer 29 calls, 144,839 tokens, ended complete; reviewer 17 calls, 75,588 tokens, ended complete (FAIL).
+
+#### Attempt 2 — rework after the FAIL (effort `xhigh`)
+
+- **Changes:**
+  - `OtpMailSender` is `@Named`; the public `OtpMailSender(APConfig)` constructor is `@Inject`; `shutdown()` is `@PreDestroy`. The test-seam constructor stays package-private and has no `@Inject`.
+  - Advisories also applied:
+    - the parsed timeout is clamped to 30000 ms;
+    - the worker catches `Throwable` and logs the class only;
+    - one `CHARSET = "UTF-8"` constant.
+- **Scope, checked at source:**
+  - `ApplicationContextConfig` and `MarloDatabaseConfiguration` both scan the class into the same root context, which yields one bean.
+  - There is no `@Scope`, so it is a singleton.
+  - `@PreDestroy` is honoured through `CommonAnnotationBeanPostProcessor`; javax.annotation-api 1.3.2 is present.
+- **Red:** 4 of 14 failed, including `exactly one bean, found by @Named expected:<1> but was:<0>`. **Green:** 14/14; full suite 631/0.
+- **Startup proof:** `./scripts/run-marlo-java17.sh` without `OTP_HMAC_SECRET`.
+  - `login.do` returned HTTP 200.
+  - `grep -cE "SEVERE|Error creating bean|OtpMailSender"` on the run log returned 0.
+  - The app was stopped afterwards (`kill -9` after a slow Cargo shutdown).
+- **Compile:** 2415/1060/68. **Checkstyle:** 0. **i18n:** no FIX findings.
+- **Evidence re-run (Leader inline, non-author): VERIFIED.**
+  - The first run failed with dirty-tree compile errors: `cannot access User` and `User cannot be converted to User`. That is the concurrent-writer signature; the VS Code JDT language server (PID 2745) was writing `target/`.
+  - One retry, with wipe, compile and test in a single command: exit 0, 2415/1060/68, 631 tests, 0 failures, 0 "cannot access" lines.
+  - Checkstyle 0. No cargo process left running.
+- **Reviewer verdict: `PASS`** (`akili-reviewer`, `opus`; Implementer `sonnet`).
+  - The FAIL is resolved: one container instance (the dispatcher context scans `.rest` only), no other `new OtpMailSender(`, an unambiguous `@Inject` constructor, and a `@PreDestroy` proven by behaviour in a Spring test.
+  - Catching `Throwable` keeps exactly one delivery line per hand-off.
+  - The Spring test is contained.
+  - No attempt-1 PASS item regressed.
+- **Decisions made:**
+  - The SMTP timeout clamp of 30000 ms is a deviation from design §5.3. The design names only the 10000 default and no cap; the clamp only tightens NF-001. Recorded here; it goes into T16's runbook next to `otp.smtp.timeout.ms`.
+  - The falsifier substitute (a static scan, not the runtime `EmailLogManager` fake) is accepted. The runtime proof is AC-11's `email_log` SELECT in T15.
+- **ADVISORY (recorded, not gating):**
+  - A value above 30000 is clamped silently; a one-time WARN is optional.
+  - On the caller thread, `sendAsync` catches `MessagingException | RuntimeException` but not `Error`, which contradicts the "never throws" Javadoc.
+  - T10 must inject the mailer, never `new` it.
+- **Forward pointers (Leader):**
+  - **T10:**
+    - Inject `OtpMailSender` with `@Inject`; never construct it.
+    - Pass `pending.email` as the recipient.
+    - Derive `expiresAt` from the same 5-minute constant the email cites (`OtpMailSender.CODE_VALIDITY_MINUTES` or a shared constant), so the copy and the real expiry cannot drift.
+    - Map any `Error` from `sendAsync` to the neutral response.
+  - **T15:** AC-11 is the runtime proof that nothing reaches `email_log`.
+  - **T16:** document `otp.smtp.timeout.ms` (default 10000, clamped to 30000).
+- **runtime events:** none (the dirty-tree compile is an environmental retry of the Leader's re-run, not a worker event).
+- **spawns:** implementer attempt 2, 17 calls, cumulative 176,546 tokens, ended complete; reviewer 9 calls, 66,038 tokens, ended complete.
+- **Final verification:** VERIFIED; Reviewer PASS.
