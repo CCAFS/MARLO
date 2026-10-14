@@ -23,6 +23,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
+import org.cgiar.ccafs.marlo.data.model.EmailLog;
 import org.cgiar.ccafs.marlo.security.otp.OtpLog;
 
 import java.io.IOException;
@@ -38,11 +40,13 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntSupplier;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,6 +59,7 @@ import javax.mail.internet.MimeMultipart;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.read.ListAppender;
 import com.opensymphony.xwork2.TextProvider;
 import org.junit.After;
@@ -69,15 +74,17 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 
 /**
- * CHG-OTP-LOGIN-001-T09: the code email is built from the real {@code global.properties}, goes to one recipient on a
- * 2-thread executor, writes one {@code auth.otp.delivery} line per hand-off, and never touches the email log. The
- * transport is a stub; no SMTP server is involved. Expected values are literals from the requirements (FN-017,
- * OPS-002, NF-001).
+ * CHG-OTP-LOGIN-001-T09 and T18: the code email is built from the real {@code global.properties}, goes to one
+ * recipient on a 2-thread executor, writes one {@code auth.otp.delivery} line per hand-off, and leaves one
+ * {@code email_logs} row per queued message whose body is a placeholder (OPS-005). The transport and the log manager
+ * are stubs; no SMTP server or database is involved. Expected values are literals from the requirements (FN-017,
+ * OPS-002, OPS-005, NF-001).
  */
 public class OtpMailSenderTest {
 
   private static final String CODE = "123456";
   private static final String RECIPIENT = "jane.doe@partner.org";
+  private static final Long UNIT = Long.valueOf(7L);
   private static final String SOURCE =
     "src/main/java/org/cgiar/ccafs/marlo/utils/OtpMailSender.java";
 
@@ -88,7 +95,61 @@ public class OtpMailSenderTest {
   private Level deliveryLevel;
   private Level mailerLevel;
   private ListAppender<ILoggingEvent> appender;
+  private DeliveryCounter counter;
   private OtpMailSender sender;
+  private RecordingLogs logs;
+
+  /**
+   * Records the rows saved through the email log manager, the threads that saved them, how many
+   * {@code auth.otp.delivery} lines had been written at the moment of each save, and can fail on demand.
+   */
+  private static final class RecordingLogs {
+
+    final List<EmailLog> rows = Collections.synchronizedList(new ArrayList<EmailLog>());
+    final List<Thread> threads = Collections.synchronizedList(new ArrayList<Thread>());
+    final List<Integer> deliveryLinesAtSave = Collections.synchronizedList(new ArrayList<Integer>());
+    volatile IntSupplier deliveryLines;
+    volatile Throwable failWith;
+
+    EmailLogManager manager() {
+      return (EmailLogManager) Proxy.newProxyInstance(EmailLogManager.class.getClassLoader(),
+        new Class<?>[] {EmailLogManager.class}, (proxy, invoked, args) -> {
+          if (!"saveEmailLog".equals(invoked.getName())) {
+            throw new UnsupportedOperationException(invoked.getName());
+          }
+          this.threads.add(Thread.currentThread());
+          IntSupplier lines = this.deliveryLines;
+          if (lines != null) {
+            this.deliveryLinesAtSave.add(lines.getAsInt());
+          }
+          Throwable failure = this.failWith;
+          if (failure instanceof RuntimeException) {
+            throw (RuntimeException) failure;
+          }
+          if (failure instanceof Error) {
+            throw (Error) failure;
+          }
+          this.rows.add((EmailLog) args[0]);
+          return args[0];
+        });
+    }
+  }
+
+  /**
+   * Counts the {@code auth.otp.delivery} lines as they are written. The count is read from the worker thread while it
+   * saves a row, so it cannot iterate the list of the {@code ListAppender}, which the other worker is appending to.
+   */
+  private static final class DeliveryCounter extends AppenderBase<ILoggingEvent> {
+
+    final AtomicInteger lines = new AtomicInteger();
+
+    @Override
+    protected void append(ILoggingEvent event) {
+      if (event.getFormattedMessage().startsWith("auth.otp.delivery ")) {
+        this.lines.incrementAndGet();
+      }
+    }
+  }
 
   /** Records the messages and the threads that delivered them, and can fail or block on demand. */
   private static final class StubTransport implements OtpMailSender.MailTransport {
@@ -213,6 +274,7 @@ public class OtpMailSenderTest {
 
   @Before
   public void attachAppender() {
+    this.logs = new RecordingLogs();
     this.deliveryLogger = (Logger) LoggerFactory.getLogger(OtpLog.class);
     this.mailerLogger = (Logger) LoggerFactory.getLogger(OtpMailSender.class);
     this.deliveryLevel = this.deliveryLogger.getLevel();
@@ -221,7 +283,11 @@ public class OtpMailSenderTest {
     this.mailerLogger.setLevel(Level.TRACE);
     this.appender = new ListAppender<ILoggingEvent>();
     this.appender.start();
+    this.counter = new DeliveryCounter();
+    this.counter.start();
+    this.logs.deliveryLines = this.counter.lines::get;
     this.deliveryLogger.addAppender(this.appender);
+    this.deliveryLogger.addAppender(this.counter);
     this.mailerLogger.addAppender(this.appender);
   }
 
@@ -231,18 +297,42 @@ public class OtpMailSenderTest {
       this.sender.shutdown();
     }
     this.deliveryLogger.detachAppender(this.appender);
+    this.deliveryLogger.detachAppender(this.counter);
     this.mailerLogger.detachAppender(this.appender);
     this.deliveryLogger.setLevel(this.deliveryLevel);
     this.mailerLogger.setLevel(this.mailerLevel);
   }
 
   private OtpMailSender senderWith(StubTransport transport, String timeout) {
-    this.sender = new OtpMailSender(new TestConfig(timeout), transport);
+    this.sender = new OtpMailSender(new TestConfig(timeout), transport, this.logs.manager());
     return this.sender;
   }
 
   private void send(String recipient) {
-    this.sender.sendAsync(texts(global), recipient, CODE, "CCAFS");
+    this.sender.sendAsync(texts(global), recipient, CODE, "CCAFS", UNIT);
+  }
+
+  private List<EmailLog> awaitRows(int count) throws InterruptedException {
+    long deadline = System.currentTimeMillis() + 15000L;
+    while (this.logs.rows.size() < count && System.currentTimeMillis() < deadline) {
+      Thread.sleep(20L);
+    }
+    synchronized (this.logs.rows) {
+      return new ArrayList<EmailLog>(this.logs.rows);
+    }
+  }
+
+  /** Every String property of the row, by its getter: a field added later is covered without editing the test. */
+  private static List<String> stringFields(EmailLog row) throws Exception {
+    List<String> values = new ArrayList<String>();
+    for (Method getter : EmailLog.class.getMethods()) {
+      if (getter.getName().startsWith("get") && getter.getParameterCount() == 0
+        && getter.getReturnType() == String.class) {
+        String value = (String) getter.invoke(row);
+        values.add(getter.getName() + "=" + value);
+      }
+    }
+    return values;
   }
 
   /** The {@code auth.otp.delivery} lines written so far. */
@@ -421,7 +511,7 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(override("footer.contactEmail", "a<b>&\"c''")), RECIPIENT, CODE, "CCAFS");
+    this.sender.sendAsync(texts(override("footer.contactEmail", "a<b>&\"c''")), RECIPIENT, CODE, "CCAFS", UNIT);
 
     assertEquals(1, this.awaitDeliveryLines(1).size());
     String html = htmlOf(transport.delivered.get(0));
@@ -435,11 +525,12 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), RECIPIENT, CODE, "CCAFS");
+    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), RECIPIENT, CODE, "CCAFS",
+      UNIT);
     Properties noKey = new Properties();
     noKey.putAll(global);
     noKey.remove("login.otp.email.subject");
-    this.sender.sendAsync(texts(noKey), RECIPIENT, CODE, "CCAFS");
+    this.sender.sendAsync(texts(noKey), RECIPIENT, CODE, "CCAFS", UNIT);
 
     List<ILoggingEvent> lines = this.awaitDeliveryLines(2);
     assertEquals(2, lines.size());
@@ -477,8 +568,8 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(global), RECIPIENT, null, "CCAFS");
-    this.sender.sendAsync(texts(global), RECIPIENT, "  ", "CCAFS");
+    this.sender.sendAsync(texts(global), RECIPIENT, null, "CCAFS", UNIT);
+    this.sender.sendAsync(texts(global), RECIPIENT, "  ", "CCAFS", UNIT);
 
     assertEquals(2, this.awaitDeliveryLines(2).size());
     assertEquals(0, transport.threads.size());
@@ -491,9 +582,9 @@ public class OtpMailSenderTest {
       {"1.5", "10000"}, {"99999999999999999999", "10000"}, {null, "10000"}};
     for (String[] c : cases) {
       StubTransport transport = new StubTransport();
-      OtpMailSender local = new OtpMailSender(new TestConfig(c[0]), transport);
+      OtpMailSender local = new OtpMailSender(new TestConfig(c[0]), transport, this.logs.manager());
       try {
-        local.sendAsync(texts(global), RECIPIENT, CODE, "CCAFS");
+        local.sendAsync(texts(global), RECIPIENT, CODE, "CCAFS", UNIT);
         long deadline = System.currentTimeMillis() + 10000L;
         while (transport.delivered.isEmpty() && System.currentTimeMillis() < deadline) {
           Thread.sleep(20L);
@@ -545,7 +636,8 @@ public class OtpMailSenderTest {
     assertEquals("exactly one injectable constructor, so the container never picks the test seam", 1,
       injectable.size());
     assertTrue(Modifier.isPublic(injectable.get(0).getModifiers()));
-    assertEquals(Arrays.<Class<?>>asList(APConfig.class), Arrays.asList(injectable.get(0).getParameterTypes()));
+    assertEquals(Arrays.<Class<?>>asList(APConfig.class, EmailLogManager.class),
+      Arrays.asList(injectable.get(0).getParameterTypes()));
 
     Method shutdown = OtpMailSender.class.getDeclaredMethod("shutdown");
     assertTrue("shutdown is the destroy hook", shutdown.isAnnotationPresent(PreDestroy.class));
@@ -566,6 +658,7 @@ public class OtpMailSenderTest {
     scanner.scan("org.cgiar.ccafs.marlo.utils");
     // A ready instance: a bean definition would have its @Value fields injected, which needs the real properties.
     context.getBeanFactory().registerSingleton("apConfig", new TestConfig(""));
+    context.getBeanFactory().registerSingleton("emailLogManager", this.logs.manager());
     context.refresh();
     try {
       assertEquals("exactly one bean, found by @Named", 1, context.getBeanNamesForType(OtpMailSender.class).length);
@@ -587,12 +680,225 @@ public class OtpMailSenderTest {
   @Test
   public void theMailerNeverReachesTheEmailLogTheNotificationFlagOrTheSupportRedirect() throws IOException {
     // Static lock on the shipped file: SendMailS persists every body and honours the notification flag and the
-    // support redirect, all of which the code email must ignore (DD-7, P-7). Comments are stripped first.
+    // support redirect, all of which the code email must ignore (DD-7, P-7). Comments are stripped first. Since T18 the
+    // mailer writes its own placeholder row through EmailLogManager, which is allowed; the resend path is not.
     String source = new String(Files.readAllBytes(Paths.get(SOURCE)), StandardCharsets.UTF_8);
     String code = source.replaceAll("(?s)/\\*.*?\\*/", "").replaceAll("//[^\n]*", "");
-    for (String forbidden : new String[] {"SendMailS", "ThreadSendMail", "EmailLogManager", "EmailLog", "email_log",
-      "isNotificationDisabled", "isRestrictedToSupport", "getEmail_pmu", "isProduction", "CustomParameter"}) {
+    for (String forbidden : new String[] {"SendMailS", "ThreadSendMail", "email_log", "isNotificationDisabled",
+      "isRestrictedToSupport", "getEmail_pmu", "isProduction", "CustomParameter", "CRP_EMAIL_NOTIFICATIONS",
+      "CRP_EMAIL_SUPPORT_TEAM", "crp_enable_email_notification", "crp_email_support_team"}) {
       assertFalse("OtpMailSender must not use " + forbidden, code.contains(forbidden));
     }
+    assertTrue("the mailer records its row through the log manager", code.contains("emailLogManager.saveEmailLog"));
+  }
+
+  // ---- OPS-005 (T18): the email_logs row ----------------------------------------------------------------
+
+  @Test
+  public void aDeliveredCodeEmailLeavesOneRowWithThePlaceholderAndTheCodeInNoField() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    Date before = new Date();
+
+    this.send(RECIPIENT);
+
+    List<EmailLog> rows = this.awaitRows(1);
+    assertEquals(1, rows.size());
+    EmailLog row = rows.get(0);
+    for (String field : stringFields(row)) {
+      assertFalse("the code is in no string field: " + field, field.contains(CODE));
+    }
+    assertEquals(RECIPIENT, row.getTo());
+    assertEquals("Your MARLO sign-in code", row.getSubject());
+    assertEquals(UNIT, row.getGlobalUnitId());
+    assertEquals("/otpRequestCode", row.getSourceAction());
+    assertEquals(Integer.valueOf(1), row.getTried());
+    assertEquals(Boolean.TRUE, row.getSucces());
+    assertNull(row.getError());
+    assertEquals("Sign-in code email (code withheld)", row.getMessage());
+    assertNull(row.getCc());
+    assertNull(row.getBbc());
+    assertNull(row.getFileName());
+    assertNull(row.getFileContent());
+    assertNull(row.getMessageID());
+    assertNotNull(row.getDate());
+    assertFalse("the date is the send time", row.getDate().before(new Date(before.getTime() - 1000L)));
+    assertEquals(1, transport.delivered.size());
+    assertEquals("one row, one email", transport.delivered.size(), this.logs.rows.size());
+  }
+
+  @Test
+  public void theRowIsSavedOnTheWorkerThreadAfterTheDeliveryLine() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+
+    this.send(RECIPIENT);
+
+    assertEquals(1, this.awaitRows(1).size());
+    assertEquals(1, this.deliveryLines().size());
+    assertEquals("the delivery line was already written when the row was saved (OPS-005: the row follows the line)",
+      Collections.singletonList(1), new ArrayList<Integer>(this.logs.deliveryLinesAtSave));
+    for (Thread saver : new ArrayList<Thread>(this.logs.threads)) {
+      assertNotEquals("never on the calling thread (SEC-006)", Thread.currentThread(), saver);
+      assertTrue(saver.getName(), saver.getName().startsWith("otp-mail-"));
+    }
+    assertEquals("the row is saved by the thread that delivered", transport.threads.get(0),
+      this.logs.threads.get(0));
+  }
+
+  @Test
+  public void aFailedSendLeavesOneFailedRowWithTheClassNameAndNoExceptionMessage() throws Exception {
+    StubTransport transport = new StubTransport();
+    transport.failWith = new MessagingException("smtp-secret jane.doe@partner.org 123456");
+    this.senderWith(transport, "");
+
+    this.send(RECIPIENT);
+
+    List<EmailLog> rows = this.awaitRows(1);
+    assertEquals(1, rows.size());
+    EmailLog row = rows.get(0);
+    for (String field : stringFields(row)) {
+      assertFalse("the code is in no string field: " + field, field.contains(CODE));
+      assertFalse("the exception message is in no string field: " + field, field.contains("smtp-secret"));
+    }
+    assertEquals(Boolean.FALSE, row.getSucces());
+    assertEquals("MessagingException", row.getError());
+    assertEquals(RECIPIENT, row.getTo());
+    assertEquals(UNIT, row.getGlobalUnitId());
+    assertEquals("/otpRequestCode", row.getSourceAction());
+    assertEquals(Integer.valueOf(1), row.getTried());
+    assertEquals("Sign-in code email (code withheld)", row.getMessage());
+  }
+
+  @Test
+  public void aRuntimeFailureOfTheTransportRecordsItsClassNameOnly() throws Exception {
+    StubTransport transport = new StubTransport();
+    transport.failWith = new IllegalStateException("smtp-secret");
+    this.senderWith(transport, "");
+
+    this.send(RECIPIENT);
+
+    List<EmailLog> rows = this.awaitRows(1);
+    assertEquals("IllegalStateException", rows.get(0).getError());
+    assertEquals(Boolean.FALSE, rows.get(0).getSucces());
+  }
+
+  @Test
+  public void aFullQueueWritesNoRowForTheRejectedHandOff() throws Exception {
+    StubTransport transport = new StubTransport();
+    transport.entered = new CountDownLatch(2);
+    transport.release = new CountDownLatch(1);
+    this.senderWith(transport, "");
+    this.send(RECIPIENT);
+    this.send(RECIPIENT);
+    assertTrue("both workers are busy", transport.entered.await(10, TimeUnit.SECONDS));
+    for (int i = 0; i < 100; i++) {
+      this.send(RECIPIENT);
+    }
+
+    this.send(RECIPIENT);
+
+    assertEquals("the rejected hand-off is logged at once", 1, this.deliveryLines().size());
+    assertEquals("and writes no row, nor does anything queued before it ends", 0, this.logs.rows.size());
+    assertEquals("nothing is saved on the request thread", 0, this.logs.threads.size());
+    transport.release.countDown();
+    assertEquals(102, this.awaitRows(102).size());
+    assertEquals(103, this.awaitDeliveryLines(103).size());
+    assertEquals("102 queued sends, 102 rows: the rejected one left none", 102, this.logs.rows.size());
+  }
+
+  @Test
+  public void anUnbuildableMessageOrRecipientWritesNoRow() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+
+    this.send("a@b.org,c@d.org");
+    this.send(null);
+    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), RECIPIENT, CODE, "CCAFS",
+      UNIT);
+    this.sender.sendAsync(texts(global), RECIPIENT, " ", "CCAFS", UNIT);
+
+    assertEquals(4, this.awaitDeliveryLines(4).size());
+    Thread.sleep(200L);
+    assertEquals("no row for a message that was never queued", 0, this.logs.rows.size());
+    assertEquals(0, this.logs.threads.size());
+  }
+
+  @Test
+  public void aSendAfterShutdownWritesNoRow() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    this.sender.shutdown();
+
+    this.send(RECIPIENT);
+
+    assertEquals(1, this.deliveryLines().size());
+    Thread.sleep(200L);
+    assertEquals(0, this.logs.rows.size());
+  }
+
+  @Test
+  public void aSaveThatThrowsKeepsTheDeliveryLineAndTheNextSendStillRecordsItsRow() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.logs.failWith = new IllegalStateException("db-secret jane.doe@partner.org 123456");
+    this.senderWith(transport, "");
+
+    this.send(RECIPIENT);
+
+    List<ILoggingEvent> lines = this.awaitDeliveryLines(1);
+    assertEquals(1, lines.size());
+    assertTrue(lines.get(0).getFormattedMessage().contains("outcome=delivered"));
+    long deadline = System.currentTimeMillis() + 10000L;
+    while (this.logs.threads.isEmpty() && System.currentTimeMillis() < deadline) {
+      Thread.sleep(20L);
+    }
+    assertEquals("the save was attempted", 1, this.logs.threads.size());
+    boolean warned = false;
+    synchronized (this.appender.list) {
+      for (ILoggingEvent event : this.appender.list) {
+        String line = event.getFormattedMessage();
+        if (line.contains("log_failed")) {
+          warned = true;
+          assertEquals(Level.WARN, event.getLevel());
+          assertTrue(line, line.contains("cause=IllegalStateException"));
+        }
+        assertFalse("the save failure message is never logged: " + line, line.contains("db-secret"));
+        assertTrue("no exception is attached to a line", event.getThrowableProxy() == null);
+      }
+    }
+    assertTrue("the failed save is logged at WARN by class name", warned);
+
+    this.logs.failWith = null;
+    this.send(RECIPIENT);
+
+    assertEquals(2, this.awaitDeliveryLines(2).size());
+    assertEquals(1, this.awaitRows(1).size());
+    assertEquals("the worker survived and the email went out", 2, transport.delivered.size());
+  }
+
+  @Test
+  public void anErrorThrownByTheSaveIsContainedToo() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.logs.failWith = new LinkageError("db-secret");
+    this.senderWith(transport, "");
+
+    this.send(RECIPIENT);
+    assertEquals(1, this.awaitDeliveryLines(1).size());
+    this.logs.failWith = null;
+    this.send(RECIPIENT);
+
+    assertEquals(1, this.awaitRows(1).size());
+    assertEquals(2, transport.delivered.size());
+  }
+
+  @Test
+  public void aNullGlobalUnitIdIsRecordedAsNull() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+
+    this.sender.sendAsync(texts(global), RECIPIENT, CODE, "CCAFS", null);
+
+    List<EmailLog> rows = this.awaitRows(1);
+    assertNull(rows.get(0).getGlobalUnitId());
   }
 }

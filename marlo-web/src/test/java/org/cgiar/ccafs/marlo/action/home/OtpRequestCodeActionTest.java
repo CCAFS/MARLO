@@ -221,6 +221,8 @@ public class OtpRequestCodeActionTest {
     Mail mail = world.mails.get(0);
     assertEquals("sent to the normalised pending email, not the raw parameter", "ana@partner.org", mail.recipient);
     assertEquals(GU_ACRONYM, mail.guAcronym);
+    assertEquals("the Global Unit id reaches the mailer for its email_logs row (OPS-005)", Long.valueOf(GU),
+      mail.globalUnitId);
     assertSame("the action is the text provider that renders the email", action, mail.texts);
     assertTrue(mail.code, SIX_DIGITS.matcher(mail.code).matches());
     assertTrue("the mailed code is the code whose MAC was stored",
@@ -968,12 +970,14 @@ public class OtpRequestCodeActionTest {
     final String recipient;
     final String code;
     final String guAcronym;
+    final Long globalUnitId;
 
-    Mail(TextProvider texts, String recipient, String code, String guAcronym) {
+    Mail(TextProvider texts, String recipient, String code, String guAcronym, Long globalUnitId) {
       this.texts = texts;
       this.recipient = recipient;
       this.code = code;
       this.guAcronym = guAcronym;
+      this.globalUnitId = globalUnitId;
     }
   }
 
@@ -1180,9 +1184,9 @@ public class OtpRequestCodeActionTest {
     }
 
     OtpRequestCodeAction.CodeSender mailer() {
-      return (texts, recipient, code, guAcronym) -> {
+      return (texts, recipient, code, guAcronym, globalUnitId) -> {
         this.events.add("mail");
-        this.mails.add(new Mail(texts, recipient, code, guAcronym));
+        this.mails.add(new Mail(texts, recipient, code, guAcronym, globalUnitId));
         if (this.mailFailure instanceof Error) {
           throw (Error) this.mailFailure;
         }

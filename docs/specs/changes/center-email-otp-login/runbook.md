@@ -96,7 +96,7 @@ a proxy exists at all (Part B).
 
 | Item | Value |
 |---|---|
-| Sender | Dedicated: 2 daemon threads, a queue of 100. It reads the same SMTP settings as the rest of MARLO. It never touches `email_log`, the notification flag or the support redirect |
+| Sender | Dedicated: 2 daemon threads, a queue of 100. It reads the same SMTP settings as the rest of MARLO. It does not go through the general mailer, so it ignores the notification flag and the support redirect. It writes its own row in System Admin → Emails, without the code (see A5) |
 | Recipient | Always the submitted address, in every environment (OQ-5 default, FN-018) |
 | `otp.smtp.timeout.ms` | Connect, read and write timeout. **Default 10 000 ms, clamped to 30 000, a malformed value falls back to the default.** Set it like the other `otp.*` values (the environment form is `OTP_SMTP_TIMEOUT_MS`; the mapping is the same as the secret's, but this exact name was not run) |
 | Timing | The request answers **`sent` at once**. A failure shows up **later**, at WARN, as `auth.otp.delivery outcome=email_failed ms=<n>`; the cause class name (never its message) is on a separate line, `auth.otp.mail outcome=send_failed cause=<class>`, so search that one for the cause. A full queue, or a failure while building the message, logs `email_failed` at once instead of later. Walk: a mail server that never answered gave HTTP 200 in 0.17 s and `email_failed ms=10110` afterwards |
@@ -133,6 +133,17 @@ succeeded; `request` and `verify` are INFO.
 | `outcome=email_failed` (WARN) | The send failed: timeout, refusal, a full queue, or the relay refusing the recipient domain | Read the cause class on the `auth.otp.mail outcome=send_failed` line. A refusal of every external address means the relay note in A4 |
 | **No delivery line** | Still in flight (up to the timeout), or the instance restarted | Look again after the timeout |
 | `ms=` near the timeout (about 10 000) | The relay is slow or not answering | A4 |
+
+**Shortcut for support: System Admin → Emails.** Every code email the sender queued has a row there with source
+`/otpRequestCode`, found by the user's address:
+
+| What you find | Meaning | Next |
+|---|---|---|
+| A row under **Sent** | The relay accepted the mail | Same as `outcome=delivered` above |
+| A row under **Not sent**, with an error class | The send failed | Same as `outcome=email_failed` above. **Do not resend it**: the row has no code, and MARLO skips it. Ask the user to request a new code |
+| **No row** at the time of the attempt | Usually no code email was queued: the account was ineligible, the domain is not enabled, the user was rate-limited, or the hand-off was rejected. Two other cases leave no row: the send is still in flight (the row is written when the attempt ends, up to the timeout), or the row could not be saved (`auth.otp.mail outcome=log_failed` at WARN; the email itself may have been delivered) | Steps 1 and 2 are the authoritative check: the `request` and `delivery` lines exist even when the row does not |
+
+The row never contains the code: its message is the placeholder "Sign-in code email (code withheld)".
 
 **Step 3. If the user got a code but cannot sign in, search `auth.otp.verify`.**
 

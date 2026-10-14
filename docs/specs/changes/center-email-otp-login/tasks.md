@@ -284,18 +284,18 @@ Field conventions:
   - Build its own mail session from the `APConfig` SMTP getters, with connect, read and write timeouts.
   - Send to the single submitted recipient on an executor with 2 daemon threads, a queue of 100 and a caught abort policy.
   - Write one `delivery` log line per hand-off.
-  - Never write to `email_log`. Never read the notification flag or the support redirect.
+  - Never write to `email_log`. Never read the notification flag or the support redirect. (Superseded for `email_log` by T18, 2026-10-14.)
   - Render every FN-017 element from i18n keys, HTML-escaped. A render with an unresolved placeholder fails.
 - **Tests (seam: a transport stub):**
   - success → `delivered`;
   - transport exception → `email_failed` WARN;
   - queue full → `email_failed`, and the caller is not affected;
   - the rendered body contains the code, "5", the single-use text, the do-not-share text, the ignore text and the support contact, and no `http` URL containing the code;
-  - `EmailLogManager` is never invoked (a fake that records calls).
+  - `EmailLogManager` is never invoked (a fake that records calls). (Superseded by T18, 2026-10-14: one row per queued email, without the code.)
 - **Verification:**
   - `-Dtest=OtpMailSenderTest`.
   - `.properties` review for apostrophes and braces (`marlo-verify` Gate 6).
-- **Falsifier:** route the send through `SendMailS.send`. The `EmailLogManager`-never-called assertion must go red.
+- **Falsifier:** route the send through `SendMailS.send`. The `EmailLogManager`-never-called assertion must go red. (Superseded by T18, 2026-10-14: the falsifier is now the static lock on `SendMailS`.)
 - **Red run:** the tests are written first.
 - **Disqualifier:** a test stub that never runs on the executor thread cannot observe the queue-full case.
 - **Consumers:** none (new). `global.properties` keys must have no collisions: `grep -n "^login.otp" global.properties` is empty before this task.
@@ -525,6 +525,41 @@ Field conventions:
 - **Done when:** the walkthrough covers every branch above, the cache-buster is bumped, and the properties are reviewed.
 - **Skills:** `marlo-verify`, `frontend-design`, `claude-in-chrome`
 
+
+### CHG-OTP-LOGIN-001-T18 — Record code emails in `email_logs` for support (OPS-005)
+
+- **Status:** done [x] · **Size:** S · **Depends on:** T09, T10 · **Module:** marlo-web
+- **Requirements:** OPS-005 (new 2026-10-14), AC-18, AC-11 (amended), SEC-001, SEC-006, OPS-002, FN-018 (unchanged)
+- **Design:** §5.3 `OtpMailSender` (amended 2026-10-14), §11, DD-7 amendment; Decision Log 2026-10-14 in `requirements.md`
+- **Files:**
+  - `utils/OtpMailSender.java`: inject `EmailLogManager`; after the delivery attempt of a queued message, on the worker thread, save one row; a public `SOURCE_ACTION = "/otpRequestCode"` and the placeholder constant.
+  - `action/home/OtpRequestCodeAction.java`: the `CodeSender` seam also passes the Global Unit id, so the row carries `global_unit_id`.
+  - `action/json/global/SendFailEmailAction.java`: `selectedEmailLogs()` drops rows whose `source_action` is `OtpMailSender.SOURCE_ACTION`, for the single id and for the filtered bulk path.
+  - `OtpMailSenderTest.java`, `OtpRequestCodeActionTest.java`: updated; a test for `SendFailEmailAction` (new or extended).
+  - `runbook.md` (A4 sender row, A5 support shortcut): already amended with the spec; check it matches the code.
+  - `probes/ac-probe.sh` and `probes/README.md` (added after the attempt 1 review): the AC-11 check follows the amended AC-11, a new stage proves AC-18, and the ledger rows for AC-11 and AC-18 are re-recorded from a new run.
+- **Scope:**
+  - Row fields: `to_email` = the recipient, `subject` = the rendered subject, `date_email` = now, `global_unit_id`, `source_action`, `tried = 1`, `succes_email` = true on delivery and false on failure, `error_email` = the exception class simple name on failure, `message` = "Sign-in code email (code withheld)". `cc`, `bbc`, file columns stay null.
+  - The save goes through `EmailLogManager.saveEmailLog` (`@Transactional`), after `delivered` or `email_failed` is logged. Any exception from the save is caught, logged at WARN with the class name only, and swallowed: the worker keeps running.
+  - A hand-off rejected before queueing (full queue, a message that cannot be built, a bad recipient) writes no row.
+  - No row anywhere on the request thread; nothing changes in the response or its timing.
+- **Out of scope:** `SendMailS`, `ThreadSendMail`, the notification and support-redirect specificities, OQ-5, the System Admin → Emails UI, any migration.
+- **Tests:**
+  - delivered → one saved row with `succes_email` true, the placeholder message, the source, the unit id, and the code in no field (check every string field);
+  - transport failure → one row with `succes_email` false and the class name as error, no exception message;
+  - queue full and unbuildable message → no row;
+  - a save that throws → the delivery line is still written and the next send still works;
+  - `SendFailEmailAction`: an OTP row is excluded by id and in bulk, a non-OTP failed row is still selected;
+  - `OtpRequestCodeAction`: the unit id reaches the seam on the eligible path; the neutral path still calls the seam never.
+  - The T09 test `theMailerNeverReachesTheEmailLogTheNotificationFlagOrTheSupportRedirect` is narrowed: `SendMailS`, `ThreadSendMail`, the two specificity keys (`CRP_EMAIL_NOTIFICATIONS`, `CRP_EMAIL_SUPPORT_TEAM` and their key strings) and the redirect methods stay forbidden; `EmailLogManager`/`EmailLog` are now required.
+- **Verification:** compile gate (clean classes); Checkstyle delta against HEAD on the changed Java files; `mvn -q -o -pl marlo-web -am test -Dtest='OtpMailSenderTest,OtpRequestCodeActionTest,SendFailEmailAction*Test' -DfailIfNoTests=false`; a local run on `aiccradb_otp_probe` with the sink: one delivered and one failed code email give the two rows, and an ineligible request gives none.
+- **Falsifier:** write the rendered body (`message` with the code) instead of the placeholder; the code-in-no-field test must go red. Remove the `source_action` filter; the resend exclusion test must go red.
+- **Red run:** the new tests run red before the change.
+- **Disqualifier:** a test that saves on the calling thread instead of the executor thread; a local run against `aiccradb_actsave` or with mail pointed at a real relay.
+- **Consumers:** `OtpRequestCodeAction.handOff` (the only caller of the seam); System Admin → Emails (`EmailLogsAction`, list only) and `SendFailEmailAction` (resend).
+- **Verification notes (2026-10-14):** clean compile 2415 / 1062 / 72 files; tests green with `-am` (Leader re-run after attempt 1: 130 tests in six classes, 0 failures; attempt 2: `OtpMailSenderTest` 24, `SendFailEmailActionTest` 5); Checkstyle delta 0 on the changed Java files; no `.properties` change. Falsifiers red: the rendered body in `message` (code-in-no-field test), the source filter removed (4 of 5 resend tests), the delivery line after the save (order test), a specificity key in the sender (static lock). Live: `ac-probe.sh leak emaillog` on a clean build against `aiccradb_otp_probe` and the sink, `SUMMARY: 32 checks, 0 failed` (`probes/output/ac-probe.t18-leak-emaillog.out`, ledger rows AC-11 and AC-18 in `probes/README.md`). Reviewer PASS on attempt 3.
+- **Review:** `full` — the SEC-001 leak surface and the SEC-006 timing surface.
+
 ---
 
 ## 4. Dependency Graph
@@ -540,6 +575,7 @@ T08 ReturnUrls ──── T10, T11                                            
 T10 + T11 ── T12 struts ──┐                                                             │
 T12 + T13 ── T14 UI ──────┴── T15 end-to-end ── T16 runbook / rollout                   ┘
 T14 ── T17 step-3 method choice (added 2026-10-14)
+T09 + T10 ── T18 email_logs row for support (added 2026-10-14)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.
@@ -584,6 +620,7 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 | OPS-002 delivery failure logged, response neutral | T09 · T15 AC-15 |
 | OPS-003 purge, failure non-blocking | T03 · T10 |
 | OPS-004 runbook | T16 |
+| OPS-005 `email_logs` row without the code, not resendable | T18 AC-18 |
 | DA-001 migration safe and idempotent | T01 |
 | DA-002 seed off, existing types 1–4, constants in both files | T01 · T02 |
 | DA-003 shared rate-limit store | T01 · T04 |
@@ -630,7 +667,7 @@ Password and Cognito logins are unaffected at every level.
 
 ## 9. Definition of Done
 
-- [ ] T01–T17 done, each with its verification notes.
+- [ ] T01–T18 done, each with its verification notes.
 - [ ] Every AC in `requirements.md` §7 recorded `PASS` in `probes/README.md`. A `NOT VERIFIED` is allowed only for an accepted gap named in requirements §6.
 - [ ] Compile and Checkstyle gates green (zero new violations against HEAD); unit suite green with `-am`.
 - [ ] Every UNVERIFIED premise either settled, or listed as a go-live blocker in `runbook.md`.

@@ -205,8 +205,9 @@ Current behavior this spec builds on:
 ##### Scenario: Code never persisted
 
 - GIVEN a full request-and-verify flow
-- WHEN `otp_challenges`, `email_log` and the application log are searched for the 6-digit code and the full email
-- THEN neither value is found
+- WHEN `otp_challenges`, `email_logs` and the application log are searched for the 6-digit code and the full email
+- THEN the code is found in none of them
+- AND the full email is found in neither `otp_challenges` nor the log; its only copy is the recipient of the OPS-005 `email_logs` row (amended 2026-10-14)
 
 ##### Scenario: Missing secret fails closed
 
@@ -221,6 +222,14 @@ Current behavior this spec builds on:
 - **CHG-OTP-LOGIN-001-OPS-002** — An email delivery failure MUST be logged as outcome `email_failed` at WARN level. The user-facing response MUST stay the neutral one.
 - **CHG-OTP-LOGIN-001-OPS-003** — Challenges past their expiry by more than 1 hour MUST be purged. A purge failure MUST NOT block sign-in.
 - **CHG-OTP-LOGIN-001-OPS-004** — The spec MUST ship a runbook covering enable and disable per Global Unit, "code not received" triage, secret rotation, and the support note that ineligible accounts see "code sent" but receive nothing.
+- **CHG-OTP-LOGIN-001-OPS-005** — Each code email the sender accepts into its queue MUST leave exactly one `email_logs` row once the delivery attempt ends, so support can see it in System Admin → Emails (added 2026-10-14, Decision Log):
+  - the row holds the recipient, the subject, the date, the Global Unit id, `source_action = /otpRequestCode`, and whether the send succeeded;
+  - `message` is a fixed placeholder; the code MUST NOT appear in any column (SEC-001);
+  - on failure, `error_email` holds the exception class name only, never its message (it can carry the SMTP exchange);
+  - no row is written for a request that sends nothing (ineligible, denied, rate-limited), and the row is written after the send, on the sender's thread, so it adds no latency to the response (SEC-006);
+  - a failure to write the row is logged and never affects the send or the response;
+  - a hand-off rejected before queueing (full queue, a message that cannot be built) writes no row: it is already logged as `email_failed` at once, and a write on the request thread would add latency for eligible accounts only;
+  - System Admin → Emails MUST NOT resend these rows, one by one or in bulk: a resent code email would carry no code or an expired one. The answer to a failed code email is a new request.
 
 ### 3.4 Data & Migration
 
@@ -298,7 +307,7 @@ Current behavior this spec builds on:
 | Style violations | Checkstyle jar run directly, delta against HEAD | Yes |
 | Wrong normalisation, matching, code format, MAC, expiry or attempt arithmetic | JUnit unit tests (`mvn -q -o -pl marlo-web -am test`) | Yes |
 | Concurrency: double consume, attempts above 3, lost supersede | Parallel probe against a **throwaway copy** of the local MySQL. No in-repo harness runs Hibernate against a real database | **No** — scripted probe at the execute HITL pause, with recorded output |
-| Code or email persisted (SEC-001/002) | `SELECT` over `otp_challenges` and `email_log`, plus a grep of the run's log, after a real flow | Manual at the HITL pause |
+| Code or email persisted (SEC-001/002) | `SELECT` over `otp_challenges` and `email_logs` (code only there: the recipient is expected, OPS-005), plus a grep of the run's log, after a real flow | Manual at the HITL pause |
 | Session tail divergence from the password login (FN-011) | Session-attribute comparison between one password login and one code login on the local stack | Manual at the HITL pause |
 | Oracle leakage between account states (SEC-006) | Rendered-response comparison across the four states | Unit test for the action results, plus a manual browser check |
 | UI states and accessibility | Browser walkthrough (claude-in-chrome) of every UI-002 state; DOM attribute check for UI-003 | Manual at the HITL pause. An attribute check proves presence, not screen-reader behavior; that gap is accepted |
@@ -323,13 +332,14 @@ Current behavior this spec builds on:
 | AC-8 | FN-010, FN-014 | Given a challenge 5 min 1 s old, or superseded, when the correct code is submitted, then it is refused |
 | AC-9 | FN-015 | Given the user is removed from G after requesting, when the correct code is submitted, then it is refused and the challenge is consumed |
 | AC-10 | FN-007, FN-008 | Given a resend after 30 s, then the old code is refused and the new one works. A resend within 30 s returns the rate-limited response |
-| AC-11 | SEC-001, SEC-002, OPS-001 | After a full flow, neither the code nor the full email appears in `otp_challenges`, `email_log` or the log; exactly one `auth.otp.request` or `auth.otp.verify` line per call, plus one `auth.otp.delivery` line per handed-off email (amended 2026-10-09, RJ-7) |
+| AC-11 | SEC-001, SEC-002, OPS-001 | After a full flow, the code appears in none of `otp_challenges`, `email_logs` or the log, and the full email appears in neither `otp_challenges` nor the log (the `email_logs` row of OPS-005 holds the recipient, as every MARLO email row does; amended 2026-10-14); exactly one `auth.otp.request` or `auth.otp.verify` line per call, plus one `auth.otp.delivery` line per handed-off email (amended 2026-10-09, RJ-7) |
 | AC-12 | SEC-008 | Given no secret, the option is hidden, request-code is refused, and the application starts |
 | AC-13 | SEC-009 | Given an `is_cgiar_user = 1` account on a Cognito-active Global Unit, then it gets the neutral response and no email |
 | AC-14 | SEC-010 | Given 6 requests in 15 min for one email, then the 6th is rate-limited. The per-IP limit trips across different emails |
 | AC-15 | FN-018, OPS-002 | Given notifications are off for G, the code still arrives. Given SMTP is down, the response is neutral and `email_failed` is logged |
 | AC-16 | UI-001–UI-006 | Browser walkthrough of every state, with the attributes present and one request per double click; for UI-006, every step-3 branch (Cognito, password-only, choice → code, choice → password, back to the choice) |
 | AC-17 | DA-001, DA-002 | The migration applies twice cleanly on a throwaway copy and on a database without Global Units 45/47 |
+| AC-18 | OPS-005 | After a delivered and a failed code email, each left one `email_logs` row with `source_action = /otpRequestCode`, the placeholder message, `succes_email` 1 and 0, and no code in any column; an ineligible request left none; the failed row is listed by System Admin → Emails but resending it, by id or in bulk, sends nothing |
 
 ---
 
@@ -387,3 +397,4 @@ Current behavior this spec builds on:
 - 2026-10-13 — T05 hardening (user decision, `execution.md` T05): FN-003 rejects non-ASCII emails and entries; logged `domain` and `gu` values are reduced to `[a-z0-9.-]`; the code is sent only to the normalised email in `OtpPending`. Rationale: the T05 Reviewer showed that Unicode case folding could map a lookalike address onto another account, and that an attacker-supplied domain could forge a log field.
 - 2026-10-13 — OTP eligibility requires an active membership (user decision, `execution.md` T06 rework after the T15 Reviewer FAIL) — `OtpEligibility` calls `existActiveCrpUser` (`crp_users.is_active = 1`) at request and at the FN-015 re-check, not the activity-blind `existCrpUser`. This deliberately departs from the password-login parity of DD-4 on this one point. Rationale: MARLO removes a member by soft delete (`CrpUserMySQLDAO.deleteCrpUser` sets `active=false`), so the old gate mailed a code to, and signed in, a removed member, violating FN-005 ("not a member of G"), FN-015 and AC-9 (live probe with `is_active=0`). Scope: OTP path only. The password-login gap (`LoginAction.finishLogin`, `ValidSessionCrpInterceptor`, the center `ValidSessionInterceptor`) is unchanged and tracked separately (A2-2637, under the epic Bugs 2026 A2-2054, filed 2026-10-13 with live evidence: a removed member still signs in with a password, and keeps edit rights while an old session is open or while roles survive the removal), outside this spec.
 - 2026-10-14 — Step 3 asks for the sign-in method when both the code and the password apply (user decision after reviewing the PRMS login and two recorded prototypes) — UI-006 is added. On the LOCAL branch with `otpEnabled`, step 3 shows a choice, "Email me a sign-in code" or "Continue with your password", and each opens its own panel; the password field is no longer shown beside the code button. Rationale: in the local walk the user, an external Center member with no password, read the password field and the code button side by side as a two-factor step and asked whether the password was required. PRMS asks for the method first, but MARLO cannot: Cognito and the code are enabled per Global Unit, which is only known after step 2, so the choice moves to step 3, where `crpByEmail.do` has already resolved which methods apply to this user in this unit. A method that does not apply is never offered, and a single method is shown directly, which keeps the Cognito spec's 2026-09-04 rule ("a selection step offering only one valid method is artificial navigation"). Cognito stays exclusive for CGIAR users (SEC-005 of CHG-COGNITO-AUTH-001, re-confirmed by the user). Scope: frontend only (`loginForm.ftl`, `login.js`, `global.properties`); no endpoint, flag or server rule changes. Task T17.
+- 2026-10-14 — Code emails are recorded in `email_logs` for support (user decision while reviewing which specificities the code email honours) — OPS-005 and AC-18 are added; AC-11 and DD-7 are amended. Rationale: with only the `auth.otp.delivery` line, which carries no address, support could not answer "I did not get the code" from System Admin → Emails. The row keeps the original reasons of DD-7 intact: the body is replaced by a placeholder so the code is never stored (SEC-001), the row is written after the send on the sender's thread so it adds no latency oracle (SEC-006), and only real sends are recorded. The resend action skips these rows, since a resend would mail no code or an expired one. Unchanged: the code email still ignores `crp_enable_email_notification`, `crp_email_support_team` and the non-production redirect (FN-018, OQ-5 still open). Task T18.

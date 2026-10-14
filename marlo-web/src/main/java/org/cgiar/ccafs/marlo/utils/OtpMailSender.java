@@ -15,6 +15,8 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
+import org.cgiar.ccafs.marlo.data.model.EmailLog;
 import org.cgiar.ccafs.marlo.security.otp.OtpLog;
 import org.cgiar.ccafs.marlo.security.otp.OtpLog.DeliveryOutcome;
 
@@ -53,15 +55,21 @@ import org.slf4j.LoggerFactory;
  * It is deliberately not {@code SendMailS}. That class persists every body, sets no SMTP timeouts, and honours the
  * notification switch and the support redirect, none of which the code email may do. This class builds its own mail
  * session from the same {@link APConfig} SMTP getters, with connect, read and write timeouts, sends to one recipient
- * on a dedicated executor, and never writes to the email log, so the code is never persisted (SEC-001). It does not
- * read the notification switch or the support redirect (FN-018), so the code goes to the submitted address in every
- * environment (OQ-5 default).
+ * on a dedicated executor, and never hands the body to the email log, so the code is never persisted (SEC-001). It
+ * does not read the notification switch or the support redirect (FN-018), so the code goes to the submitted address
+ * in every environment (OQ-5 default).
  * <p>
  * The send is asynchronous: the request thread renders the message, hands it to a pool of 2 daemon threads behind a
  * queue of 100, and returns. A full queue is an {@code email_failed}, not an error for the caller, and the response
  * was already the neutral one. Every hand-off writes exactly one {@code auth.otp.delivery} line through
  * {@link OtpLog}: {@code delivered} at INFO, {@code email_failed} at WARN. A failure also writes the class name of
  * the cause, and never its message, which can carry the address or the SMTP exchange.
+ * <p>
+ * Support sees the email in System Admin -> Emails (OPS-005, DD-7): after the delivery attempt of a queued message,
+ * on the same worker thread, one {@code email_logs} row is saved through {@link EmailLogManager}. The row holds the
+ * recipient, the subject and the outcome, and a fixed placeholder instead of the body, so the code is never stored
+ * (SEC-001); writing it after the send, off the request thread, adds no latency to the response (SEC-006). A hand-off
+ * rejected before queueing writes no row. A failed save is logged by class name and swallowed.
  * <p>
  * It is a container singleton: {@code @Named}, found by the component scan of {@code ApplicationContextConfig} and
  * created once with the {@code APConfig} constructor. Spring's default scope is singleton, so the limit of 2 threads
@@ -95,6 +103,11 @@ public final class OtpMailSender {
   static final int QUEUE_CAPACITY = 100;
   static final String THREAD_PREFIX = "otp-mail-";
 
+  /** The {@code email_logs.source_action} of every code email; System Admin -> Emails never resends these rows. */
+  public static final String SOURCE_ACTION = "/otpRequestCode";
+  /** The {@code email_logs.message} of every code email: the body is never stored, so the code never is (SEC-001). */
+  public static final String PLACEHOLDER_MESSAGE = "Sign-in code email (code withheld)";
+
   private static final Logger LOG = LoggerFactory.getLogger(OtpMailSender.class);
 
   /** A placeholder left in a rendered text means an argument was missing: such a text is never sent. */
@@ -104,27 +117,30 @@ public final class OtpMailSender {
 
   private final APConfig config;
   private final MailTransport transport;
+  private final EmailLogManager emailLogManager;
   private final ThreadPoolExecutor executor;
 
   /**
    * The only constructor the container may use; the one below is the test seam.
    *
    * @param config the application settings the SMTP session is built from
+   * @param emailLogManager saves the {@code email_logs} row of each delivery attempt (OPS-005)
    */
   @Inject
-  public OtpMailSender(APConfig config) {
+  public OtpMailSender(APConfig config, EmailLogManager emailLogManager) {
     this(config, new MailTransport() {
 
       @Override
       public void deliver(MimeMessage message) throws MessagingException {
         Transport.send(message);
       }
-    });
+    }, emailLogManager);
   }
 
-  OtpMailSender(APConfig config, MailTransport transport) {
+  OtpMailSender(APConfig config, MailTransport transport, EmailLogManager emailLogManager) {
     this.config = config;
     this.transport = transport;
+    this.emailLogManager = emailLogManager;
     final AtomicInteger counter = new AtomicInteger();
     this.executor = new ThreadPoolExecutor(WORKERS, WORKERS, 0L, TimeUnit.MILLISECONDS,
       new ArrayBlockingQueue<Runnable>(QUEUE_CAPACITY), new ThreadFactory() {
@@ -150,8 +166,9 @@ public final class OtpMailSender {
    * @param recipient the single address to send to
    * @param code the clear code, which lives only in this call and the message; it is never logged
    * @param guAcronym the Global Unit acronym, for the delivery line
+   * @param globalUnitId the Global Unit id, for the {@code email_logs} row; may be {@code null}
    */
-  public void sendAsync(TextProvider texts, String recipient, String code, String guAcronym) {
+  public void sendAsync(TextProvider texts, String recipient, String code, String guAcronym, Long globalUnitId) {
     long started = System.nanoTime();
     String domain = "";
     try {
@@ -161,11 +178,13 @@ public final class OtpMailSender {
       final String gu = guAcronym;
       final String logDomain = domain;
       final long handedOff = started;
+      final String address = to.getAddress();
+      final Long unitId = globalUnitId;
       this.executor.execute(new Runnable() {
 
         @Override
         public void run() {
-          OtpMailSender.this.deliver(message, gu, logDomain, handedOff);
+          OtpMailSender.this.deliver(message, address, unitId, gu, logDomain, handedOff);
         }
       });
     } catch (MessagingException | RuntimeException e) {
@@ -231,16 +250,50 @@ public final class OtpMailSender {
     });
   }
 
-  private void deliver(MimeMessage message, String gu, String domain, long started) {
+  private void deliver(MimeMessage message, String recipient, Long globalUnitId, String gu, String domain,
+    long started) {
+    Throwable failure = null;
     try {
       this.transport.deliver(message);
     } catch (Throwable e) {
       // Throwable: an Error from the transport would otherwise end the worker without the delivery line. The class
       // name is all that is logged.
-      this.failed(e, gu, domain, started);
-      return;
+      failure = e;
     }
-    OtpLog.delivery(DeliveryOutcome.DELIVERED, gu, domain, elapsedMs(started));
+    if (failure == null) {
+      OtpLog.delivery(DeliveryOutcome.DELIVERED, gu, domain, elapsedMs(started));
+    } else {
+      this.failed(failure, gu, domain, started);
+    }
+    this.record(message, recipient, globalUnitId, failure);
+  }
+
+  /**
+   * Saves the {@code email_logs} row of one delivery attempt (OPS-005), after the delivery line. The body is the
+   * placeholder, never the rendered message, and the error is the class name of the failure, never its message. Any
+   * fault here is logged by class name and swallowed: the row is support information and must not stop the worker.
+   */
+  private void record(MimeMessage message, String recipient, Long globalUnitId, Throwable failure) {
+    try {
+      EmailLog row = new EmailLog();
+      row.setTo(recipient);
+      row.setSubject(subjectOf(message));
+      row.setDate(new Date());
+      row.setGlobalUnitId(globalUnitId);
+      row.setSourceAction(SOURCE_ACTION);
+      row.setTried(1);
+      row.setSucces(failure == null);
+      row.setError(failure == null ? null : failure.getClass().getSimpleName());
+      row.setMessage(PLACEHOLDER_MESSAGE);
+      this.emailLogManager.saveEmailLog(row);
+    } catch (Throwable e) {
+      LOG.warn("auth.otp.mail outcome=log_failed cause={}", e.getClass().getSimpleName());
+    }
+  }
+
+  private static String subjectOf(MimeMessage message) throws MessagingException {
+    String subject = message.getSubject();
+    return subject == null ? "" : subject;
   }
 
   private void failed(Throwable cause, String gu, String domain, long started) {

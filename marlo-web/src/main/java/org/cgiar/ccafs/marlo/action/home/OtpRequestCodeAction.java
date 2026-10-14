@@ -101,7 +101,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   @FunctionalInterface
   interface CodeSender {
 
-    void send(TextProvider texts, String recipient, String code, String guAcronym);
+    void send(TextProvider texts, String recipient, String code, String guAcronym, Long globalUnitId);
   }
 
   private static final long serialVersionUID = 1L;
@@ -426,7 +426,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
    */
   private void handOff(String recipient, String code) {
     try {
-      this.codeSender.send(this, recipient, code, this.acronymForLog());
+      this.codeSender.send(this, recipient, code, this.acronymForLog(), this.unitId);
     } catch (RuntimeException | Error e) {
       logFault("mail", e);
     }
