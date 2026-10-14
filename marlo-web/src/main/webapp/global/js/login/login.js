@@ -48,6 +48,9 @@ var otpRequestInFlight = false, otpVerifyInFlight = false;
 var otpRedirecting = false;
 var otpCooldownTimer = null, otpCooldownLeft = 0;
 var OTP_COOLDOWN_SECONDS = 30;
+// CHG-OTP-LOGIN-001-T17 / UI-006: what step 3 shows on the LOCAL branch. "direct" is today's password field with
+// "Log in" (the code is not offered); "choice", "code" and "password" only exist when otpEnabled === true
+var methodView = "direct";
 var OTP_REQUEST_TIMEOUT_MS = 20000;
 
 function init() {
@@ -218,6 +221,11 @@ function init() {
       }
       $(this).removeData("enterStartedHere");
 
+      // CHG-OTP-LOGIN-001-T17 / UI-006: Enter never submits a method that is not open
+      if(methodNotPassword()) {
+        return;
+      }
+
       // The button is disabled while step 1 is empty, and a disabled button is not guaranteed to
       // dispatch a click, so raise the validation message here instead of relying on one
       if(currentStep == "email" && $.trim(username.val()) == "") {
@@ -320,6 +328,33 @@ function init() {
     }
   });
 
+  // CHG-OTP-LOGIN-001-T17 / UI-006: the method choice. While the choice or the code panel is open, Enter on a
+  // control that is not a button (the terms checkbox is the one that can hold the focus) would run the form's
+  // implicit submission and post login.do with an empty password, so it is stopped here. Buttons keep their own
+  // Enter activation
+  $('.loginForm').on('keydown', function(event) {
+    if(event.keyCode === 13 && methodNotPassword() && !$(event.target).is('button, a')) {
+      event.preventDefault();
+    }
+  });
+  $('#login-method-code-button').on('click', function() {
+    $('#login-method-info').text(otpCopy("methodInfo").replace("__DEST__", function() {
+      return otpMaskedEmail(username.val());
+    }));
+    showMethodView("code");
+  });
+  $('#login-method-password-button').on('click', function() {
+    showMethodView("password");
+  });
+  $('#login-method-code-back, #login-method-password-back-button').on('click', function() {
+    // The code request owns the panel while it is in flight
+    if(otpRequestInFlight || otpRedirecting) {
+      return;
+    }
+    cleanWrongData();
+    showMethodView("choice");
+  });
+
   // Reflect the initial state of the email field (it may be prefilled from the cookie) on the button
   updateNextButtonState();
 
@@ -336,6 +371,7 @@ function showEmailStep() {
   cognitoEnabled = false;
   selectedGlobalUnitId = null;
   resetOtpState();
+  resetMethodView();
 
   cleanWrongData();
 
@@ -423,6 +459,7 @@ function showProjectStep() {
   otpRequestInFlight = false;
   otpVerifyInFlight = false;
   otpRefreshButtons();
+  resetMethodView();
 
   cleanWrongData();
 
@@ -541,6 +578,8 @@ function showPasswordStep() {
     $("input#login_next").addClass("hidden");
     $("#login-cgiar-button").removeClass("hidden");
     $("#login-otp-request-container").addClass("hidden");
+    // CHG-OTP-LOGIN-001-T17 / UI-006: the Cognito branch never renders the choice
+    resetMethodView();
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 3): hiding input#login_next above can leave focus
     // on <body> when it held focus, so the Cognito control mirrors the LOCAL arm's own focus call
@@ -552,7 +591,8 @@ function showPasswordStep() {
 
     $("#login-cgiar-button").addClass("hidden");
     $("input#login_next").removeClass("hidden");
-    // CHG-OTP-LOGIN-001-T14 / UI-001: the additive code option, only when the unit enables it
+    // CHG-OTP-LOGIN-001-T14 / UI-001: the additive code option, only when the unit enables it. Since T17 the
+    // request button is the "Send code" control of the code panel, which stays closed until it is chosen
     $("#login-otp-request-container").toggleClass("hidden", otpEnabled !== true);
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 1): a prior visit to the COGNITO branch above
@@ -567,9 +607,16 @@ function showPasswordStep() {
       inputPassword = $("input[name='user.password']");
     }
 
-    // Set focus on password input (LOCAL only - the Cognito control manages its own
-    // focus/activation and is not part of this form's tab-to-submit flow)
-    $(".loginForm #login-password input").focus();
+    // CHG-OTP-LOGIN-001-T17 / UI-006: with the code enabled, step 3 always opens on the method choice (and
+    // moves the focus into it). Otherwise it is today's password field, shown directly
+    if(otpEnabled === true) {
+      showMethodView("choice");
+    } else {
+      resetMethodView();
+      // Set focus on password input (LOCAL only - the Cognito control manages its own
+      // focus/activation and is not part of this form's tab-to-submit flow)
+      $(".loginForm #login-password input").focus();
+    }
   }
 
   clearLoginButtonLoading();
@@ -1075,7 +1122,9 @@ function otpRefreshButtons() {
   var busy = otpRequestInFlight || otpVerifyInFlight || otpRedirecting;
 
   $('#login-otp-button').attr("disabled", otpRequestInFlight)
-      .text(otpRequestInFlight ? otpCopy("sending") : otpCopy("button"));
+      .text(otpRequestInFlight ? otpCopy("sending") : otpCopy("sendCode"));
+  // T17: "Choose another way to sign in" is unavailable while the code request owns the panel
+  $('.login-method-back-container .loginBack').attr("disabled", otpRequestInFlight || otpRedirecting);
 
   $('#login-otp-verify').attr("disabled", busy).text(otpVerifyInFlight ? otpCopy("verifying") : otpCopy("verify"));
 
@@ -1130,6 +1179,51 @@ function resetOtpState() {
   otpRefreshButtons();
 }
 
+// CHG-OTP-LOGIN-001-T17 / UI-006: true while step 3 shows the method choice or the code panel, the two views in
+// which no password is being entered and Enter must not submit anything
+function methodNotPassword() {
+  return currentStep == "password" && (methodView == "choice" || methodView == "code");
+}
+
+// Browser-side twin of OtpDomainPolicy.mask(): first character, "***", then the domain, from the typed email.
+// Anything without exactly one "@" in the middle shows just "***", like the server
+function otpMaskedEmail(email) {
+  var typed = $.trim(email == null ? "" : String(email)).toLowerCase();
+  var at = typed.indexOf("@");
+  if(at <= 0 || at !== typed.lastIndexOf("@") || at === typed.length - 1) {
+    return "***";
+  }
+  return typed.charAt(0) + "***" + typed.substring(at);
+}
+
+// Leaves step 3 in its plain state: no choice, no code panel, the password field shown. Does not touch
+// "Log in" or the focus, which every caller already owns
+function resetMethodView() {
+  methodView = "direct";
+  $("#login-method-choice, #login-method-code, #login-method-password-back").addClass("hidden");
+  $("#login-password-label, #login-password").removeClass("hidden");
+}
+
+// Opens one view of step 3 when the code is enabled: "choice", "code" or "password". Only the opened view's
+// controls are shown, and the focus moves to the first of them
+function showMethodView(view) {
+  methodView = view;
+  var passwordOpen = (view == "password");
+  $("#login-method-choice").toggleClass("hidden", view != "choice");
+  $("#login-method-code").toggleClass("hidden", view != "code");
+  $("#login-password-label, #login-password").toggleClass("hidden", !passwordOpen);
+  $("input#login_next").toggleClass("hidden", !passwordOpen);
+  $("#login-method-password-back").toggleClass("hidden", !passwordOpen);
+
+  if(view == "choice") {
+    $("#login-method-code-button").focus();
+  } else if(view == "code") {
+    $("#login-otp-button").focus();
+  } else {
+    $(".loginForm #login-password input").focus();
+  }
+}
+
 // Opens (or refreshes, on a resend) the code step
 function showOtpStep(destination) {
   currentStep = "otp";
@@ -1139,7 +1233,7 @@ function showOtpStep(destination) {
   $("#login-step-email, #login-step-project, #login-step-password, #login-step-cgiar").addClass("hidden");
   $("#login-step-otp").removeClass("hidden");
   $("input#login_next, #login-cgiar-button, #login-otp-request-container").addClass("hidden");
-  $('.terms-container, .login-back-container').addClass("hidden");
+  $('.terms-container, .login-back-container, #login-method-password-back').addClass("hidden");
 
   $("#login-otp-status").text(otpCopy("sent").replace("__DEST__", function() {
     return destination == null ? "" : String(destination);

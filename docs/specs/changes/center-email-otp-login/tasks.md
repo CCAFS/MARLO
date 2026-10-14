@@ -496,6 +496,35 @@ Field conventions:
 - **Done when:** the runbook is walked, and the open premises have named infra answers or remain explicitly blocking go-live, not merge.
 - **Skills:** `cognitive-doc-design`
 
+### CHG-OTP-LOGIN-001-T17 — Step 3 method choice (UI-006)
+
+- **Status:** done [x] · **Size:** S · **Depends on:** T14 · **Module:** marlo-web (webapp)
+- **Requirements:** UI-006 (new 2026-10-14), UI-001, UI-004, UI-005, FN-019 (password and Cognito unchanged)
+- **Design:** §6 rows "`login.js` mode" and "Method choice (T17)"; Decision Log 2026-10-14 in `requirements.md`
+- **Files:**
+  - `loginForm.ftl`: the choice block and the code panel inside `#login-step-password`; the password panel reuses the existing `#login-password` and "Log in".
+  - `login.js`: the LOCAL arm of `showPasswordStep()` when `otpEnabled === true`; panel switching; focus; Enter guard; reset on leaving step 3.
+  - `global.properties`: the new strings (heading, two method buttons, code-panel text with `{0}` for the masked address, "Send code", "Choose another way to sign in"), apostrophes doubled.
+  - The CSS the login page already loads, for the method buttons and the panel, reusing `login-form-button`.
+  - The FTL that references `login.js` (and the CSS, if touched): bump the `?YYYYMMDD` cache-buster.
+- **Out of scope:** any Java, endpoint, flag, Struts or server rule; the Cognito branch; the code step `#login-step-otp` beyond reaching it from "Send code".
+- **Tests:** a browser walkthrough with claude-in-chrome on the local stack (throwaway database copy, mail to a local sink), covering:
+  - CGIAR user on a Cognito unit: only "Sign in with CGIAR", no choice, no password input in the DOM (as today);
+  - external user on a unit without the code: password field directly, no choice (as today);
+  - external user on a code unit: the choice; "Continue with your password" → password panel → sign-in with a password works; "Choose another way" → the choice; "Email me a sign-in code" → code panel with the masked address → "Send code" → the code step → verify → dashboard;
+  - Enter pressed on the choice and on the code panel does not submit `login.do` (network log);
+  - "Go back" from the choice and "use a different email" from the code step: step 3 reopens on the choice;
+  - focus lands on the first control of each opened view.
+- **Verification:** compile gate; Checkstyle n/a (no Java); i18n review of every added `.properties` line; a recorded GIF and network log of the walkthrough saved under `probes/`.
+- **Verification notes (2026-10-14):** compile exit 0 (Implementer and Leader re-run); Checkstyle n/a; i18n clean; Reviewer PASS; walkthrough recorded in `probes/output/t17-walkthrough.out` (the GIF stays local: it shows a personal test address).
+- **Falsifier:** remove the Enter guard. Pressing Enter on the code panel then posts `login.do` with an empty password, which the network log must show.
+- **Red run:** n/a. JS unit tests do not exist in MARLO.
+- **Disqualifier:** a walkthrough started before the page JS has initialised; a walkthrough against `aiccradb_actsave` or with mail pointed at a real relay.
+- **Consumers:** `showEmailStep()`, `showProjectStep()`, the "Go back" handler, the T14 OTP handlers (`#login-otp-button`, and "use a different email", the code step's only exit), `crpUsers.js` (P-20).
+- **Review:** `full`
+- **Done when:** the walkthrough covers every branch above, the cache-buster is bumped, and the properties are reviewed.
+- **Skills:** `marlo-verify`, `frontend-design`, `claude-in-chrome`
+
 ---
 
 ## 4. Dependency Graph
@@ -510,6 +539,7 @@ T02 config/keys ┬─ T04                       │                   └─ T1
 T08 ReturnUrls ──── T10, T11                                                            │
 T10 + T11 ── T12 struts ──┐                                                             │
 T12 + T13 ── T14 UI ──────┴── T15 end-to-end ── T16 runbook / rollout                   ┘
+T14 ── T17 step-3 method choice (added 2026-10-14)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.
@@ -600,7 +630,7 @@ Password and Cognito logins are unaffected at every level.
 
 ## 9. Definition of Done
 
-- [ ] T01–T16 done, each with its verification notes.
+- [ ] T01–T17 done, each with its verification notes.
 - [ ] Every AC in `requirements.md` §7 recorded `PASS` in `probes/README.md`. A `NOT VERIFIED` is allowed only for an accepted gap named in requirements §6.
 - [ ] Compile and Checkstyle gates green (zero new violations against HEAD); unit suite green with `-am`.
 - [ ] Every UNVERIFIED premise either settled, or listed as a go-live blocker in `runbook.md`.

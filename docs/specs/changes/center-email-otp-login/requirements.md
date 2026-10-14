@@ -247,6 +247,15 @@ Current behavior this spec builds on:
   Status and errors MUST be announced through an `aria-live` region, with `role="alert"` for errors.
 - **CHG-OTP-LOGIN-001-UI-004** — Buttons MUST be disabled while their request is in flight. A double click MUST send one request.
 - **CHG-OTP-LOGIN-001-UI-005** — All user-facing text, in the page and in the email, MUST come from i18n keys in `global.properties`.
+- **CHG-OTP-LOGIN-001-UI-006** — When the authentication step for G offers both the code and the password, it MUST first ask how the user wants to sign in (added 2026-10-14, Decision Log):
+  - one control per method: "Email me a sign-in code" (primary) and "Continue with your password";
+  - choosing a method reveals only that method's panel; each panel offers "Choose another way to sign in", which returns to the choice;
+  - the code panel names the masked destination and sends nothing until "Send code" is activated;
+  - focus moves to the first control of whatever opens (the choice, a panel);
+  - when a single method applies (the Cognito branch, a password-only unit or user), it is shown directly, with no choice;
+  - Enter never submits a method that is not open.
+
+  The server rules are unchanged: the screen decides what to offer, never what to permit.
 
 ### 3.6 Non-Functional
 
@@ -319,7 +328,7 @@ Current behavior this spec builds on:
 | AC-13 | SEC-009 | Given an `is_cgiar_user = 1` account on a Cognito-active Global Unit, then it gets the neutral response and no email |
 | AC-14 | SEC-010 | Given 6 requests in 15 min for one email, then the 6th is rate-limited. The per-IP limit trips across different emails |
 | AC-15 | FN-018, OPS-002 | Given notifications are off for G, the code still arrives. Given SMTP is down, the response is neutral and `email_failed` is logged |
-| AC-16 | UI-001–UI-005 | Browser walkthrough of every state, with the attributes present and one request per double click |
+| AC-16 | UI-001–UI-006 | Browser walkthrough of every state, with the attributes present and one request per double click; for UI-006, every step-3 branch (Cognito, password-only, choice → code, choice → password, back to the choice) |
 | AC-17 | DA-001, DA-002 | The migration applies twice cleanly on a throwaway copy and on a database without Global Units 45/47 |
 
 ---
@@ -377,3 +386,4 @@ Current behavior this spec builds on:
 - Closure sweep (2026-10-09): forward `grep -n -iE "no challenge|no row|create a challenge|exactly one structured|every Global Unit type|synchronous|byte-for-byte"` over `requirements.md`, `design.md`, `proposal.md` — remaining hits are intentional: FN-001 scenario (disabled domain truly writes nothing), design DD-5/DD-7 deviation notes, and `proposal.md` (approved, historical). Backward: `requirements.md` §6/§7 rows citing FN-005/OPS-001 re-read and updated (AC-4).
 - 2026-10-13 — T05 hardening (user decision, `execution.md` T05): FN-003 rejects non-ASCII emails and entries; logged `domain` and `gu` values are reduced to `[a-z0-9.-]`; the code is sent only to the normalised email in `OtpPending`. Rationale: the T05 Reviewer showed that Unicode case folding could map a lookalike address onto another account, and that an attacker-supplied domain could forge a log field.
 - 2026-10-13 — OTP eligibility requires an active membership (user decision, `execution.md` T06 rework after the T15 Reviewer FAIL) — `OtpEligibility` calls `existActiveCrpUser` (`crp_users.is_active = 1`) at request and at the FN-015 re-check, not the activity-blind `existCrpUser`. This deliberately departs from the password-login parity of DD-4 on this one point. Rationale: MARLO removes a member by soft delete (`CrpUserMySQLDAO.deleteCrpUser` sets `active=false`), so the old gate mailed a code to, and signed in, a removed member, violating FN-005 ("not a member of G"), FN-015 and AC-9 (live probe with `is_active=0`). Scope: OTP path only. The password-login gap (`LoginAction.finishLogin`, `ValidSessionCrpInterceptor`, the center `ValidSessionInterceptor`) is unchanged and tracked separately (A2-2637, under the epic Bugs 2026 A2-2054, filed 2026-10-13 with live evidence: a removed member still signs in with a password, and keeps edit rights while an old session is open or while roles survive the removal), outside this spec.
+- 2026-10-14 — Step 3 asks for the sign-in method when both the code and the password apply (user decision after reviewing the PRMS login and two recorded prototypes) — UI-006 is added. On the LOCAL branch with `otpEnabled`, step 3 shows a choice, "Email me a sign-in code" or "Continue with your password", and each opens its own panel; the password field is no longer shown beside the code button. Rationale: in the local walk the user, an external Center member with no password, read the password field and the code button side by side as a two-factor step and asked whether the password was required. PRMS asks for the method first, but MARLO cannot: Cognito and the code are enabled per Global Unit, which is only known after step 2, so the choice moves to step 3, where `crpByEmail.do` has already resolved which methods apply to this user in this unit. A method that does not apply is never offered, and a single method is shown directly, which keeps the Cognito spec's 2026-09-04 rule ("a selection step offering only one valid method is artificial navigation"). Cognito stays exclusive for CGIAR users (SEC-005 of CHG-COGNITO-AUTH-001, re-confirmed by the user). Scope: frontend only (`loginForm.ftl`, `login.js`, `global.properties`); no endpoint, flag or server rule changes. Task T17.

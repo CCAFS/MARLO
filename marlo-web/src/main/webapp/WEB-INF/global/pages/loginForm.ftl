@@ -97,7 +97,31 @@
               <span class="login-echoed-name"></span><span class="login-echoed-username"></span>
             </p>
           </div>
-          <p class="login-field-label">[@s.text name="login.password"/]:</p>
+          [#-- CHG-OTP-LOGIN-001-T17 / UI-006: the method choice and the code panel. Both stay hidden and inert
+               unless login.js opens them, which it does only on the LOCAL branch when otpEnabled === true. The
+               password label and #login-password below are the existing markup, reused as the password panel.
+               Placed before the label on purpose: #login-password must stay this step's last child, which
+               login.js relies on to restore it with append() --]
+          <div class="login-method-choice hidden" id="login-method-choice">
+            <p class="login-field-label" id="login-method-heading">[@s.text name="login.otp.method.heading"/]</p>
+            <div class="login-button-container">
+              <button type="button" id="login-method-code-button" class="login-form-button">[@s.text name="login.otp.method.code"/]</button>
+            </div>
+            <div class="login-button-container">
+              <button type="button" id="login-method-password-button" class="login-form-button login-form-button-secondary">[@s.text name="login.otp.method.password"/]</button>
+            </div>
+          </div>
+          <div class="login-method-code hidden" id="login-method-code">
+            <p class="login-method-info" id="login-method-info"></p>
+            [#-- The T14 request button, moved here as the panel's "Send code": same id, same handler --]
+            <div class="login-button-container hidden" id="login-otp-request-container">
+              <button type="button" id="login-otp-button" class="login-form-button">[@s.text name="login.otp.method.send"/]</button>
+            </div>
+            <div class="login-method-back-container">
+              <button type="button" id="login-method-code-back" class="loginBack">[@s.text name="login.otp.method.back"/]</button>
+            </div>
+          </div>
+          <p class="login-field-label" id="login-password-label">[@s.text name="login.password"/]:</p>
           <div class="login-input-container" id="login-password">
             <span class="glyphicon glyphicon-eye-close icon-show-password"></span>
             <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" placeholder="${passwordPlaceholder}" tabindex=0 required/>
@@ -165,7 +189,8 @@
           <span data-otp-copy="verifying">[@s.text name="login.otp.verifying"/]</span>
           <span data-otp-copy="resend">[@s.text name="login.otp.resend"/]</span>
           <span data-otp-copy="resendIn">[@s.text name="login.otp.resendIn"][@s.param]__N__[/@s.param][/@s.text]</span>
-          <span data-otp-copy="button">[@s.text name="login.otp.button"/]</span>
+          <span data-otp-copy="sendCode">[@s.text name="login.otp.method.send"/]</span>
+          <span data-otp-copy="methodInfo">[@s.text name="login.otp.method.info"][@s.param]__DEST__[/@s.param][/@s.text]</span>
           <span data-otp-copy="verify">[@s.text name="login.otp.verify"/]</span>
           <span data-otp-copy="codeRequired">[@s.text name="login.otp.error.codeRequired"/]</span>
           <span data-otp-copy="mismatch">[@s.text name="login.otp.error.mismatch"/]</span>
@@ -243,10 +268,11 @@
           </button>
         </div>
 
-        [#-- CHG-OTP-LOGIN-001-T14 / UI-001: additive "Email me a sign-in code" option. Hidden and inert unless
-             login.js reveals it, which it does only on the LOCAL branch when otpEnabled === true --]
-        <div class="login-button-container hidden" id="login-otp-request-container">
-          <button type="button" id="login-otp-button" class="login-form-button">[@s.text name="login.otp.button"/]</button>
+        [#-- CHG-OTP-LOGIN-001-T17 / UI-006: "Choose another way to sign in" of the password panel (the code
+             panel carries its own inside #login-step-password). Hidden unless login.js opens the password panel
+             of the method choice. The T14 request button now lives in the code panel above --]
+        <div class="login-method-back-container hidden" id="login-method-password-back">
+          <button type="button" id="login-method-password-back-button" class="loginBack">[@s.text name="login.otp.method.back"/]</button>
         </div>
 
         [#-- Go back to the previous step. A real <button> so it is in the tab order, exposes a

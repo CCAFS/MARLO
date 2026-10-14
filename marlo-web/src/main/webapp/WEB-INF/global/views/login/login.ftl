@@ -1,7 +1,7 @@
 [#ftl]
 [#assign title = "Welcome to MARLO" /]
 [#assign pageLibs = ["select2"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20261013"] /]
+[#assign customJS = ["${baseUrlCdn}/global/js/login/login.js?20261014"] /]
 [#assign currentSection = "home" /]
 [#assign avoidHeader = true /]
 
