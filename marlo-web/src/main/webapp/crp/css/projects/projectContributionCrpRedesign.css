@@ -556,14 +556,240 @@
 .cpi-page .cpi-question .cpi-field { margin-bottom: 0; }
 .cpi-page .cpi-question .textArea { width: 100%; }
 
+/* ── Narrative cards: (Next) users, Communications, Lessons ───────
+ * Stacks of .cpi-field rows whose labels the section draws (cpiLabel), so the
+ * required mark and the help follow the text on the same line.
+ */
+.cpi-page :is(.cpi-nextUsers, .cpi-communications, .cpi-lessons) .cpi-field { margin-bottom: 14px; }
+.cpi-page :is(.cpi-nextUsers, .cpi-communications, .cpi-lessons) .cpi-field:last-child { margin-bottom: 0; }
+/* The lessons of the previous cycle, read back above this cycle's answer. */
+.cpi-page .cpi-lessons__previous .textArea > p {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--cpi-soft);
+}
+
+/* (Next) users: a second user is set off by a rule and its own head, which a lone
+   user does not need. */
+.cpi-page .cpi-nextUser + .cpi-nextUser {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cpi-line);
+}
+.cpi-page .cpi-nextUser__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cpi-page .cpi-nextUsers__list > .cpi-nextUser:only-child .cpi-nextUser__head { display: none; }
+.cpi-page .cpi-nextUser__title { font-size: 13.5px; font-weight: 500; color: var(--cpi-ink); }
+/* updateNextUsers() renumbers this span; global.css would paint it as a grey badge. */
+.cpi-page .cpi-nextUser__title .index {
+  display: inline;
+  float: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+.cpi-page .cpi-nextUser__remove,
+.cpi-page .cpi-nextUsers__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--cpi-muted);
+  transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+.cpi-page .cpi-nextUser__remove:hover { border-color: #E8B4A6; background: #FDF3F0; color: #C7401C; }
+.cpi-page .cpi-nextUsers__add {
+  margin-top: 16px;
+  height: 34px;
+  border-style: dashed;
+  color: var(--cpi-brand);
+}
+.cpi-page .cpi-nextUsers__add:hover { border-color: var(--cpi-brand); background: #E8F4F9; }
+.cpi-page .cpi-nextUser__remove:focus,
+.cpi-page .cpi-nextUsers__add:focus { outline: none; }
+.cpi-page .cpi-nextUser__remove:focus-visible,
+.cpi-page .cpi-nextUsers__add:focus-visible { outline: 2px solid #E4572E; outline-offset: 2px; }
+/* The (Next) user is a single line: the design shows it as a full-width input. */
+.cpi-page .cpi-nextUsers .cpi-field input.form-control { width: 100%; }
+.cpi-page .cpi-field input.form-control::placeholder,
+.cpi-page .cpi-field textarea.form-control::placeholder { color: #9AA4B0; }
+/* The help follows the required mark, and the mark sits a space off the text. */
+.cpi-page :is(.cpi-nextUsers, .cpi-communications, .cpi-lessons) .cpi-field__label .requiredTag { margin-left: 4px; }
+.cpi-page :is(.cpi-nextUsers, .cpi-communications, .cpi-lessons) .cpi-help { margin-left: 7px; font-style: normal; }
+
+/* Word counters (applyWordCounter, utils.js) as the design draws them: a quiet caption
+   under the control's right edge. global.css floats them with a 12px right margin. */
+.cpi-page .cpi-field .charCount {
+  float: none;
+  display: block;
+  /* global.css sizes every .input p at 98%, which left the counter short of the edge. */
+  width: auto;
+  margin: 5px 0 0;
+  font-size: 11.5px !important;
+  line-height: 1.4;
+  color: var(--cpi-muted);
+  text-align: right !important;
+}
+.cpi-page .cpi-field .charCount.fieldError { color: #C7401C; }
+
+/* ── Save bar ─────────────────────────────────────────────────────
+ * The Overall Performance Indicators bar (impactPathway/outcomes.css): it follows
+ * the scroll 12px off the viewport bottom and settles at the end of the form.
+ */
+.cpi-page .cpi-saveBar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin-top: 16px;
+  padding: 12px 18px;
+  background: var(--cpi-surface);
+  border: 1px solid var(--cpi-line);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+}
+.cpi-page .cpi-saveBar__info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+.cpi-page .cpi-saveBar__state { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #2E6B2F; }
+.cpi-page .cpi-saveBar__dot { flex: none; display: block; width: 8px; height: 8px; border-radius: 50%; background: #2E6B2F; }
+.cpi-page .cpi-saveBar.is-dirty .cpi-saveBar__state { color: #8A5A00; }
+.cpi-page .cpi-saveBar.is-dirty .cpi-saveBar__dot { background: #C08A2E; }
+.cpi-page .cpi-saveBar__actions { flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+/* The buttons include: its float clearer and its own bar chrome are not needed here. */
+.cpi-page .cpi-saveBar .clearfix { display: none; }
+.cpi-page .cpi-saveBar .buttons,
+.cpi-page .cpi-saveBar .buttons-content {
+  float: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+/* global.js pins .buttons-content to the viewport on scroll; inside the sticky bar it stays put. */
+.cpi-page .cpi-saveBar .buttons-content.positionFixedBot { position: static; bottom: auto; right: auto !important; }
+.cpi-page .cpi-saveBar .buttons-content.animated { animation: none; }
+
+.cpi-page .cpi-saveBar .button-save,
+.cpi-page .cpi-saveBar .button-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--cpi-brand);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+/* global.css paints .button-save green; every state re-declares the brand colour. */
+.cpi-page .cpi-saveBar .button-save:hover,
+.cpi-page .cpi-saveBar .button-save:focus,
+.cpi-page .cpi-saveBar .button-save:active,
+.cpi-page .cpi-saveBar .button-edit:hover,
+.cpi-page .cpi-saveBar .button-edit:focus,
+.cpi-page .cpi-saveBar .button-edit:active {
+  border: 0;
+  background: var(--cpi-brand-dark);
+  color: #fff;
+}
+.cpi-page .cpi-saveBar .button-save:focus-visible,
+.cpi-page .cpi-saveBar .button-edit:focus-visible { outline: 2px solid #E4572E; outline-offset: 2px; }
+.cpi-page .cpi-saveBar .button-cancel,
+.cpi-page .cpi-saveBar .button-history {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* The last-edit message reads as the state's caption: no italics, no pull-right. */
+.cpi-page .cpi-saveBar #lastUpdateMessage {
+  display: block;
+  float: none !important;
+  width: auto;
+  margin: 0;
+  font-size: 12.5px;
+  font-style: normal;
+  color: var(--cpi-muted);
+  text-align: left;
+}
+/* Until the script moves it left it claims no room among the buttons; the ghost holds its slot. */
+.cpi-page .cpi-saveBar .cpi-saveBar__actions #lastUpdateMessage { display: none; }
+/* One caption at a time: while there are unsaved changes the state speaks alone. */
+.cpi-page .cpi-saveBar.is-dirty #lastUpdateMessage { display: none; }
+.cpi-page .cpi-saveBar__ghost {
+  flex: none;
+  width: 190px;
+  height: 11px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #EDF1F5 25%, #F7F9FB 37%, #EDF1F5 63%);
+  background-size: 400% 100%;
+  animation: cpiSaveBarGhost 1.2s ease-in-out infinite;
+}
+@keyframes cpiSaveBarGhost {
+  from { background-position: 100% 50%; }
+  to { background-position: 0 50%; }
+}
+
 @media (max-width: 767px) {
   .cpi-page .cpi-fields__top { flex-direction: column; }
   .cpi-page .cpi-fields__values { grid-template-columns: minmax(0, 1fr); }
   .cpi-page .cpi-dt__body { padding-left: 14px; }
+  /* The state and the last edit take a line each and the buttons wrap under them. */
+  .cpi-page .cpi-saveBar { flex-wrap: wrap; }
+  .cpi-page .cpi-saveBar__info,
+  .cpi-page .cpi-saveBar__state,
+  .cpi-page .cpi-saveBar #lastUpdateMessage { flex: 1 1 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cpi-page .cpi-help,
   .cpi-page .cpi-dt__caret,
-  .cpi-page .cpi-dt__caret svg { transition: none; }
+  .cpi-page .cpi-dt__caret svg,
+  .cpi-page .cpi-nextUser__remove,
+  .cpi-page .cpi-nextUsers__add { transition: none; }
+  .cpi-page .cpi-saveBar__ghost { animation: none; }
 }
