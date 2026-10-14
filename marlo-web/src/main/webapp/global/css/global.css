@@ -9565,9 +9565,65 @@ img.qaOptionsComment {
 .clusterMenu-status__toggle .onoffswitch { text-align: left; }
 .clusterMenu-status__toggle .onoffswitch > label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font: 600 12.5px/1.4 Figtree, sans-serif;
   color: #1F2A37;
+}
+
+/* The Yes / No answer as a segmented control: a soft track with the chosen half
+ * raised on it, green for "ready", neutral for "pre-set". projectSubmit.js moves
+ * .radio-checked once the change is confirmed, so the look follows that class only;
+ * the shared .button-label rules paint hover green / red and push on :active. */
+.clusterMenu-status__toggle .button-wrap {
+  display: flex;
+  gap: 3px;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid #DDE3EA;
+  border-radius: 9px;
+  background: #F2F5F8;
+}
+.clusterMenu-status__toggle .button-label,
+.clusterMenu-status__toggle .button-label:hover,
+.clusterMenu-status__toggle .button-label:active {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  margin: 0 !important;
+  padding: 0 10px;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  font: 600 13px Figtree, sans-serif;
+  color: #6B7280;
+  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.clusterMenu-status__toggle .button-label:hover { color: #1F2A37; background: rgba(255, 255, 255, .6); }
+.clusterMenu-status__toggle .button-label.radio-checked,
+.clusterMenu-status__toggle .button-label.radio-checked:hover {
+  background: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(31, 42, 55, .12), 0 0 0 1px rgba(31, 42, 55, .06);
+  color: #1F2A37;
+  cursor: default;
+}
+.clusterMenu-status__toggle .yes-button-label.radio-checked,
+.clusterMenu-status__toggle .yes-button-label.radio-checked:hover { color: #2E6B2F; }
+/* The dot carries the state at a glance, the way the save bar's does. */
+.clusterMenu-status__toggle .button-label.radio-checked::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9AA4B0;
+}
+.clusterMenu-status__toggle .yes-button-label.radio-checked::before { background: #2E6B2F; }
+@media (prefers-reduced-motion: reduce) {
+  .clusterMenu-status__toggle .button-label { transition: none; }
 }
 
 /* Check for missing fields: the outlined green button of the design. global.css

@@ -332,7 +332,7 @@ function addNextUser() {
 }
 
 function removeNextUser() {
-  var $parent = $(this).parent();
+  var $parent = $(this).closest('.nextUser');
   $parent.hide('slow', function () {
     // Remove milestone block
     $parent.remove();
@@ -347,6 +347,8 @@ function updateNextUsers() {
     $(e).find('.index').text(i + 1);
     $(e).setNameIndexes(1, i);
   });
+  // Lets the redesign's save bar re-read the form: adding or removing a user fires no field event.
+  $(document).trigger('cpi:formchange');
 }
 
 function formatState(state) {

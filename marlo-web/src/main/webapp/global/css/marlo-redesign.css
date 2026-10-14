@@ -1520,10 +1520,11 @@ body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
   --marlo-guide-lift: 76px;
 }
 
-/* Below the tablet breakpoint the OPI bar wraps its save state, last-edit
-   message and buttons onto separate lines, about 140px in all. */
+/* Below the tablet breakpoint the OPI bar, and the contribution bar built on it,
+   wrap their save state, last-edit message and buttons onto separate lines,
+   about 140px in all. */
 @media (max-width: 767px) {
-  body:has(:where(.opi-saveBar)) {
+  body:has(:where(.opi-saveBar, .cpi-saveBar)) {
     --marlo-guide-lift: 150px;
   }
 }

@@ -3,8 +3,8 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectOutcomeID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2", "trumbowyg", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20260928", 
-  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20261007",
+  "${baseUrlMedia}/js/projects/projectContributionCrp.js?20261014", 
+  "${baseUrlMedia}/js/projects/projectContributionCrpRedesign.js?20261014",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20221031",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   "https://www.gstatic.com/charts/loader.js",
@@ -16,7 +16,7 @@
 /] 
 [#assign customCSS = [ 
   "${baseUrlMedia}/css/projects/projectContributionCrp.css?20240517",
-  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20261007-1",
+  "${baseUrlMedia}/css/projects/projectContributionCrpRedesign.css?20261014-2",
   "${baseUrlMedia}/css/annualReport/annualReportGlobal.css?20250701",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
   ] 
@@ -321,32 +321,30 @@
             </div>
           [/#if]
 
-          [#-- Communications --]
-          [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]  
-          <div class="">
-            <h4 class="headTitle">Communications </h4>
-            <div class="borderBox" id="communicationsYear-${currentCycleYear}">
-              [#assign comunication = action.loadProjectCommunication(currentCycleYear) /]
-              [#assign comunicationIndex = action.getIndexCommunication(currentCycleYear) /]
-              <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
-              <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${currentCycleYear}"/>
-              <div class="communicationsBlock form-group">
-                <div class="form-group">
-                  [@customForm.textArea name="projectOutcome.communications[${comunicationIndex}].communication" i18nkey="projectOutcome.communicationEngagement" required=isYearRequired(currentCycleYear) className="limitWords-100 fieldFocus" editable=editable /]
-                </div>
-              </div>
+          [#-- ═══ Communications · annual report only ═══ --]
+          [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]
+          [#assign comunication = action.loadProjectCommunication(currentCycleYear) /]
+          [#assign comunicationIndex = action.getIndexCommunication(currentCycleYear) /]
+          [#assign comunicationName = "projectOutcome.communications[${comunicationIndex}].communication" /]
+          <div class="cpi-card cpi-communications" id="communicationsYear-${currentCycleYear}">
+            <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.communications" /]</h4>
+            <input type="hidden" name="projectOutcome.communications.id" value=${(projectOutcome.communications.id)!"-1"} />
+            <input type="hidden" name="projectOutcome.communications[${comunicationIndex}].year" value="${currentCycleYear}"/>
+            <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
+              [@cpiLabel name=comunicationName key="projectOutcome.communicationEngagement" required=isYearRequired(currentCycleYear) editable=editable /]
+              [@customForm.textArea name=comunicationName i18nkey="projectOutcome.communicationEngagement" required=isYearRequired(currentCycleYear) className="limitWords-100 fieldFocus" editable=editable showTitle=false /]
             </div>
           </div>
-          [/#if]          
-                                  
-                  
-          
+          [/#if]
+
           [#-- Next Users --]
           [#-- For A4NH CRP, nextusers aren't required --]
           [#if action.hasSpecificities('crp_next_users')]
-          <h4 class="headTitle">(Next) Users </h4>
-          <div class="nextUsersBlock borderBox">
-            <div class="nextUsersList">
+          [#-- A2-2439 · (Next) users. projectContributionCrp.js still owns adding and
+               removing users, through the nextUsersBlock / nextUsersList / nextUser hooks. --]
+          <div class="cpi-card cpi-nextUsers nextUsersBlock">
+            <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.nextUsers" /]</h4>
+            <div class="nextUsersList cpi-nextUsers__list">
               [#if projectOutcome.nextUsers?has_content]
                 [#list projectOutcome.nextUsers as nextUser]
                   [@nextUserMacro element=nextUser name="projectOutcome.nextUsers" index=nextUser_index /]
@@ -356,33 +354,58 @@
               [/#if]
             </div>
             [#if editable && !reportingActive]
-              <div class="addNextUser bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>[@s.text name="form.buttons.addNextUser"/]</div>
+              <button type="button" class="addNextUser cpi-nextUsers__add">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                [@s.text name="form.buttons.addNextUser"/]
+              </button>
             [/#if]
           </div>
           [/#if]
                     
-          [#-- Lessons and progress --]
+          [#-- ═══ Lessons · annual report only ═══ --]
           [#if !action.isProjectNew(project.id) && action.isReportingActive() && action.isLessonsActive()]
-          <div id="lessons" class="borderBox">
-            [#-- Lessons learnt from last planning/reporting cycle --]
+          [#assign lessonsCycle = reportingActive?string('reporting','planning') /]
+          <div id="lessons" class="cpi-card cpi-lessons">
+            <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.lessons" /]</h4>
+            [#-- Lessons learnt from last planning/reporting cycle, read back --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
-            <div class="fullBlock">
-              <label>[@customForm.text name="projectOutcome.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]:</label>
+            <div class="cpi-field cpi-field--text is-read cpi-lessons__previous">
+              <span class="cpi-field__label"><label class="readOnly">[@customForm.text name="projectOutcome.previousLessons.${lessonsCycle}" param="${reportingActive?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]</label></span>
               <div class="textArea"><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
             </div>
             [/#if]
             [#-- Planning/Reporting lessons --]
-            <div class="fullBlock ">
-              <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
-              <input type="hidden" name="projectOutcome.projectComponentLesson.year" value="${(actualPhase.year)!0}" />
-              <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
-              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${reportingActive?string('reporting','planning')}" help="projectOutcome.lessons.help" helpIcon=false className=" ${reportingActive?string('fieldFocus','')}" required=true editable=editable /]
+            <input type="hidden" name="projectOutcome.projectComponentLesson.id" value=${(projectOutcome.projectComponentLesson.id)!"-1"} />
+            <input type="hidden" name="projectOutcome.projectComponentLesson.year" value="${(actualPhase.year)!0}" />
+            <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
+            <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
+              [@cpiLabel name="projectOutcome.projectComponentLesson.lessons" key="projectOutcome.lessons.${lessonsCycle}" help="projectOutcome.lessons.help" editable=editable /]
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${lessonsCycle}" placeholder="projectContributionCrp.lessons.placeholder" className="${reportingActive?string('fieldFocus','')}" required=true editable=editable showTitle=false /]
             </div>
           </div>
           [/#if]
-          
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-projectOutcomes.ftl" /]
+
+          [#-- Save bar: save state and the shared last-edit message on the left, the
+               section buttons on the right. projectContributionCrpRedesign.js moves the
+               message out of the buttons include and tracks unsaved changes. --]
+          <div class="cpi-saveBar">
+            <div class="cpi-saveBar__info">
+              [#if editable]
+              <span class="cpi-saveBar__state" role="status" aria-live="polite">
+                <span class="cpi-saveBar__dot" aria-hidden="true"></span>
+                <span data-cpi-save-state
+                  data-saved="[@s.text name="outcomes.saveBar.saved"/]"
+                  data-unsaved="[@s.text name="outcomes.saveBar.unsaved"/]">[@s.text name="outcomes.saveBar.saved"/]</span>
+              </span>
+              [/#if]
+              [#-- Holds the last-edit message's slot until the script places it. --]
+              <span class="cpi-saveBar__ghost" data-cpi-save-ghost aria-hidden="true"></span>
+            </div>
+            <div class="cpi-saveBar__actions">
+              [#-- Section Buttons & hidden inputs--]
+              [#include "/WEB-INF/crp/views/projects/buttons-projectOutcomes.ftl" /]
+            </div>
+          </div>
 
         [/@s.form] 
       </div>
@@ -633,56 +656,70 @@
      through the app-wide jQuery UI tooltip, which every [title] gets on hover and on
      keyboard focus. s.text hands back the key itself when a program has no text for
      it, so an untranslated key renders nothing rather than a tooltip reading the key. --]
-[#macro cpiHelp key]
+[#macro cpiHelp key glyph="?"]
   [#local text][@s.text name=key /][/#local]
   [#local plain = (text?is_markup_output)?then(text?markup_string, text)?trim /]
   [#if plain?has_content && plain != key]
-    <span class="cpi-help" tabindex="0" role="img" aria-label="${text}" title="${text}">?</span>
+    <span class="cpi-help" tabindex="0" role="img" aria-label="${text}" title="${text}">${glyph}</span>
   [/#if]
 [/#macro]
 
 [#macro nextUserMacro element name index isTemplate=false]
-  <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser simpleBox" style="display:${isTemplate?string('none','block')}">
-    [#local customName = "${name}[${index}]" /]
-    [#-- Remove Button --]
-    [#if editable && !reportingActive]<div class="removeIcon removeNextUser" title="Remove"></div>[/#if]
-    <div class="leftHead sm">
-      <span class="index">${index+1}</span>
-      <span class="elementId">[@s.text name="projectOutcomeNextUser.projectNextUser" /]</span>
+  [#local customName = "${name}[${index}]" /]
+  [#-- The planning answers are written while planning; in the annual report an answer
+       already given reads back, and only an empty one stays open. --]
+  [#local canTitle = editable && (!reportingActive || (!element.nextUser?has_content)!true) /]
+  [#local canKnowledge = editable && (!reportingActive || (!element.knowledge?has_content)!true) /]
+  [#local canStrategies = editable && (!reportingActive || (!element.strategies?has_content)!true) /]
+  <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser cpi-nextUser" style="display:${isTemplate?string('none','block')}">
+    [#-- Only drawn while the list holds more than one user (see the stylesheet). --]
+    <div class="cpi-nextUser__head">
+      <span class="cpi-nextUser__title">[@s.text name="projectOutcomeNextUser.projectNextUser" /] <span class="index">${index+1}</span></span>
+      [#if editable && !reportingActive]
+        <button type="button" class="removeNextUser cpi-nextUser__remove">[@s.text name="projectContributionCrp.nextUser.remove" /]</button>
+      [/#if]
     </div>
     [#-- Hidden inputs --]
     <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
-     
-    <div class="form-group">
-      [#-- Title --]
-      <div class="form-group input-container">
-        [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" required=true className="limitWords-20" editable=editable && (!reportingActive || (!element.nextUser?has_content)!true) /]
-      </div>
-      [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
-      <div class="form-group ">
-        [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" required=true className="limitWords-100" editable=editable && (!reportingActive || (!element.knowledge?has_content)!true) /]
-      </div>
-      [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
-      <div class="form-group ">
-        [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" required=true className="limitWords-100" editable=editable && (!reportingActive || (!element.strategies?has_content)!true) /]
-      </div>
-     
+
+    [#-- (Next) user --]
+    <div class="cpi-field ${canTitle?string('is-edit','is-read')}">
+      [@cpiLabel name="${customName}.nextUser" key="projectOutcomeNextUser.title" help="projectOutcomeNextUser.title.help" editable=canTitle hasReadText=false /]
+      [@customForm.input name="${customName}.nextUser" i18nkey="projectOutcomeNextUser.title" required=true className="limitWords-20" placeholder="projectContributionCrp.nextUser.placeholder" editable=canTitle showTitle=false /]
     </div>
-    
+    [#-- Knowledge, attitude, skills and practice changes expected in this next user --]
+    <div class="cpi-field cpi-field--text ${canKnowledge?string('is-edit','is-read')}">
+      [@cpiLabel name="${customName}.knowledge" key="projectOutcomeNextUser.knowledge" help="projectOutcomeNextUser.knowledge.help" editable=canKnowledge /]
+      [@customForm.textArea name="${customName}.knowledge" i18nkey="projectOutcomeNextUser.knowledge" required=true className="limitWords-100" editable=canKnowledge showTitle=false /]
+    </div>
+    [#-- Strategies will be used to encourage and enable this next user to utilize deliverables and adopt changes --]
+    <div class="cpi-field cpi-field--text ${canStrategies?string('is-edit','is-read')}">
+      [@cpiLabel name="${customName}.strategies" key="projectOutcomeNextUser.strategies" help="projectOutcomeNextUser.strategies.help" editable=canStrategies /]
+      [@customForm.textArea name="${customName}.strategies" i18nkey="projectOutcomeNextUser.strategies" required=true className="limitWords-100" editable=canStrategies showTitle=false /]
+    </div>
+
     [#-- Reporting --]
     [#if reportingActive]
-      <br /> 
-      <div class="" id="nextUserYear-${currentCycleYear}">
-        <div class="form-group ">
-          [@customForm.textArea name="${customName}.knowledgeReport" i18nkey="projectOutcomeNextUser.reportOnProgress" help="" required=true className="limitWords-200 ${reportingActive?string('fieldFocus','')}" editable=editable /]
-        </div>
-        <div class="form-group ">
-          [@customForm.textArea name="${customName}.strategiesReport" i18nkey="projectOutcomeNextUser.strategiesEncourage" help="" required=true className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=editable /]
-        </div> 
-        <div class="clearfix"></div>
-      </div> 
+      <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
+        [@cpiLabel name="${customName}.knowledgeReport" key="projectOutcomeNextUser.reportOnProgress" editable=editable /]
+        [@customForm.textArea name="${customName}.knowledgeReport" i18nkey="projectOutcomeNextUser.reportOnProgress" required=true className="limitWords-200 fieldFocus" editable=editable showTitle=false /]
+      </div>
+      <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
+        [@cpiLabel name="${customName}.strategiesReport" key="projectOutcomeNextUser.strategiesEncourage" editable=editable /]
+        [@customForm.textArea name="${customName}.strategiesReport" i18nkey="projectOutcomeNextUser.strategiesEncourage" required=true className="limitWords-100 fieldFocus" editable=editable showTitle=false /]
+      </div>
     [/#if]
   </div>
+[/#macro]
+
+[#-- A field's label, drawn here so the required mark and the help sit on the label's own
+     line, the way the design shows them. customForm reads a closed narrative under its
+     ".readText" wording, so a read-only label does the same. --]
+[#macro cpiLabel name key editable help="" hasReadText=true required=true]
+  <span class="cpi-field__label">
+    <label for="${name}" class="${editable?string('editable','readOnly')}">[@s.text name=(editable || !hasReadText)?then(key, key + ".readText") /][@customForm.req required=required && editable /]</label>
+    [#if help?has_content && editable][@cpiHelp key=help glyph="i" /][/#if]
+  </span>
 [/#macro]
 
 [#macro baselineIndicatorMacro element name index isTemplate=false]
