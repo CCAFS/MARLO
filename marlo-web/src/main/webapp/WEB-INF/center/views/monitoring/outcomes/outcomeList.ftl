@@ -8,7 +8,7 @@
 /]
 [#assign customCSS = [
   "${baseUrlCdn}/global/css/customDataTable.css",
-  "${baseUrlMedia}/css/impactPathway/outcomes.css"
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20261008"
   ] 
 /]
 [#assign currentSection = "outcomes" /]

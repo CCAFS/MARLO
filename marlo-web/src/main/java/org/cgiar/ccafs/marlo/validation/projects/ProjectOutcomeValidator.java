@@ -169,6 +169,9 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
   public void validateProjectMilestone(BaseAction action, ProjectMilestone projectMilestone, int i) {
     List<String> params = new ArrayList<String>();
+    // AICCRA requires the achieved figure in the annual report only: Progress takes it as an
+    // optional early read and AWPB does not show it (A2-2439). Legacy CRPs keep their rules.
+    boolean aiccraRules = action.isAiccra();
     int counter = i + 1;
     params.add(String.valueOf(counter));
     if (projectMilestone != null && projectMilestone.getCrpMilestone() != null
@@ -192,8 +195,10 @@ public class ProjectOutcomeValidator extends BaseValidator {
         if (action.getActualPhase() != null && action.getActualPhase().getName() != null
           && (!action.getActualPhase().getName().equals("POWB")
             && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
-          if (projectMilestone.getAchievedValue() == null
-            || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
+          // The exemption was written for a phase named POWB; AICCRA calls its planning phase
+          // AWPB, so without the flag the achieved value was required in every AICCRA cycle.
+          if (!aiccraRules && (projectMilestone.getAchievedValue() == null
+            || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue())))) {
             action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
               InvalidFieldsMessages.EMPTYFIELD);
@@ -232,7 +237,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-        if (action.isUpKeepActive() && projectMilestone.getYear() == action.getActualPhase().getYear()) {
+        if (!aiccraRules && action.isUpKeepActive()
+          && projectMilestone.getYear() == action.getActualPhase().getYear()) {
           if (projectMilestone.getAchievedValue() == null
             || !this.isValidNumber(String.valueOf(projectMilestone.getAchievedValue()))) {
             action.addMessage(action.getText("projectOutcomeMilestone.requeried.achievedValue", params));
@@ -319,10 +325,13 @@ public class ProjectOutcomeValidator extends BaseValidator {
     // if (action.isAiccra() == false) {
     if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
       if (action.isPlanningActive()) {
-        List<ProjectMilestone> milestones = projectOutcome.getMilestones().stream()
-          .filter(c -> c != null && c.getYear() == action.getCurrentCycleYear()).collect(Collectors.toList());
-        for (int i = 0; i < milestones.size(); i++) {
-          this.validateProjectMilestone(action, milestones.get(i), i);
+        // Keep the posted index: the invalid-field key names the form input milestones[i], so an index taken
+        // from a filtered list flagged a field of another year (and painted that year's tab red).
+        for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
+          ProjectMilestone milestone = projectOutcome.getMilestones().get(i);
+          if (milestone != null && milestone.getYear() == action.getCurrentCycleYear()) {
+            this.validateProjectMilestone(action, milestone, i);
+          }
         }
       } else {
         for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {

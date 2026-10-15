@@ -18,8 +18,11 @@ function init() {
   // Capdev popup
   $('.helpMessage3').on("click", openDialog);
 
-  // Numeric inputs
-  $('input.targetValue').numericInput();
+  // Numeric inputs. numericInput() writes 0 into every empty field it gets, the
+  // hidden inputs of read-only and hidden fields included, so a figure nobody
+  // reported was posted back and saved as 0 (A2-2439). The value fields here are
+  // all .targetValueNumber and setFormatInput() below already validates them.
+  $('input.targetValue').not('.targetValueNumber').numericInput();
 
   // Load Milestones ones
   $('form .milestonesYearSelect').each(loadMilestonesByYear);
@@ -163,7 +166,9 @@ divDataTables_length.css("bottom", "8px");
 divDataTables_length.css("margin-left", "43%");
 divDataTables_length.css("z-index", "1");
 
-setFormatInput();
+// allowEmpty: clearing a value leaves it empty instead of snapping it back to 0,
+// so "not reported" stays distinguishable from a reported zero.
+setFormatInput('input.targetValueNumber', {allowEmpty: true});
 
 }
 
