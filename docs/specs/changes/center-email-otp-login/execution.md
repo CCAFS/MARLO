@@ -1389,3 +1389,36 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
 - **Attempt 3 — Reviewer (T3):** **PASS**. No code, test or probe-script change since attempt 2.
 - **Environment state after the task:** app running on 8080 against `aiccradb_otp_probe`, sink on 2525; the copy holds the re-added fixtures and the super admin test password. `aiccradb_actsave` and `aiccradb1`-`4` were not written to.
 
+---
+
+## CHG-OTP-LOGIN-001-T19 — Align the code email with MARLO's email rules (2026-10-15)
+
+- **Origin:** user decisions of 2026-10-15, taken while reviewing which rules the code email follows.
+  1. Outside production, no email may reach external users: OQ-5 is resolved as the support mailbox, matching `SendMailS.send`.
+  2. The `email_logs` row stores the full body, code included, accepted as a deviation from guide §3.2.
+  3. Outside production only, the log carries the code, accepted as a deviation from guide §3.11.
+- **Leader spec edits:** the Leader amended FN-018, SEC-001 and its scenario, OPS-001, OPS-005, AC-11 and AC-18, added AC-19, and wrote three Decision Log entries. Design: §5.3, §11, §13, §14 and DD-7. Runbook: A4, A5, A7 and B4. Tasks: the T19 block.
+- **Merge first:** a merge of `staging` (`ed87f3955f`) was in progress. The Leader resolved its two conflicts:
+  - `header.ftl`: cache-buster `?20261015`, because both sides changed `global.css`;
+  - `global.properties`: both appended blocks kept, no new duplicate keys.
+
+  The merged tree compiled clean (2415/1063/77) with 779 tests green. The user committed the merge.
+- **Implementer (T2), attempt 1:** `OtpMailSender` reads `isProduction()` once per send. Outside production the recipient is `email.notification` only (fail closed, no fallback to the user), with the `(TESTING ENVIRONMENT) ` prefix and a recipient header. The row holds the submitted address in `to_email`, the support mailbox in `bbc_email`, the subject without the prefix and the production HTML body. Outside production there is one `auth.otp.code` line. `PLACEHOLDER_MESSAGE` is removed. The scope addition for the code line arrived mid-task by message. The probe now finds codes by the body header and gains the stages `nonprod` and `nonprodblank`.
+- **Implementer evidence:**
+  - Checkstyle delta 0;
+  - full suite 792 tests, 0 failures;
+  - red run 10 of 32;
+  - seven falsifiers red (F1–F7);
+  - live run on a rebuilt throwaway copy with the sink and `EMAIL_NOTIFICATION=support.probe@sink.test`: `nonprod leak emaillog` 43/0, `enum` 11/0, `nonprodblank` 4/0;
+  - environment cleaned afterwards.
+
+  The production half is covered by unit tests only.
+- **Leader re-run (non-author):** clean compile 2415/1063/77; 137 tests in five OTP classes green; private-data grep clean; no listener on 8080 or 2525; no copy left.
+- **Attempt 1, Reviewer (T3):** **FAIL**. The code was correct; the text was not:
+  1. the SEC-001 scenario, AC-11 and runbook A5 still excluded the full email from every log line;
+  2. the overview bullet said only super admins can read the code;
+  3. the traceability matrix was stale.
+- **Leader edits:** the three findings fixed. Advisories applied: the `sendAsync` Javadoc, `PROBE_SUPPORT` required in `emaillog`, the BCC wording, the Decision Log bullet, the AC order, the §13 wording and the A4 whitespace note. Not taken: the flip-test strengthening (the same-value clause is proved by reading the code) and the expired code on the recorded output's `needles:` line.
+- **Attempt 2, Reviewer (T3):** **PASS**. Its two Javadoc advisories (the `recipient` parameter and the no-send list) were applied by the Leader, comment-only.
+- **Environment state after the task:** nothing running; `aiccradb_otp_probe` dropped; `aiccradb_actsave` read only; scratch credentials deleted.
+

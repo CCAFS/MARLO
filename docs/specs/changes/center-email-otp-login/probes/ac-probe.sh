@@ -9,10 +9,15 @@
 #   removed    AC-9: member soft-deleted (crp_users.is_active=0, as deleteCrpUser does) after the request; hard delete as support
 #   limits     AC-14: 6th request per email, 21st per client IP
 #   session    AC-5 (needs PROBE_JDWP): password login vs code login, session attributes and role rows
-#   leak       AC-11 (needs PROBE_JDWP, PROBE_LOGS): full flow, then database (otp_challenges, email_logs) and log search
+#   leak       AC-11 (needs PROBE_JDWP, PROBE_LOGS): full flow, then database (otp_challenges, email_logs) and log search. The code
+#              may be in the message of the OPS-005 row, and, outside production, in the one auth.otp.code log line (amended 2026-10-15)
 #   emaillog   AC-18 / OPS-005: the code email's email_logs row (delivered, failed, none for a request that sends nothing),
 #              and a resend by id and in bulk that sends nothing (the failed half needs PROBE_SINK_STOP and PROBE_SINK_START;
 #              the resend half needs PROBE_SA_EMAIL and PROBE_SA_PASS, a super admin test login of the copy)
+#   nonprod    AC-19 / FN-018 (needs PROBE_SUPPORT, the app's email.notification): the sink receives one email, only for the support
+#              mailbox, prefixed, with the submitted address in the body header; nothing for the submitted address; the code signs in
+#   nonprodblank  AC-19, the blank half: run against an application started with a blank email.notification (EMAIL_NOTIFICATION=):
+#              nothing is sent, no row, the delivery line says email_failed (needs PROBE_LOGS)
 #   live       FN-002 / AC-1: the allow-list emptied and restored without a restart, the page and the endpoint follow
 #   nosecret   AC-12: run against an application started with no (or a short) OTP_HMAC_SECRET; records the startup WARN and the JVM env
 #              (set PROBE_EXPECT_SECRET_ENV=present|absent to assert which case is running)
@@ -21,9 +26,12 @@
 #   blackhole  NF-001 / OPS-002: a mail server that accepts and never answers (needs PROBE_SINK_STOP)
 #   tz         one request-verify and expiry boundary, for an application started on another JVM time zone
 #
+# MAIL: a local run is non-production (marlo.production=false), so every code email reaches the sink addressed to the support
+# mailbox, whoever asked for it. The probe finds a user's code by the header at the top of the body, "To: <submitted address>",
+# never by the envelope or the To header.
 # SAFETY: writes to the database (state resets, test users) -- refuses unless the database name contains "probe".
 # Environment: PROBE_BASE, PROBE_MYSQL, PROBE_MBOX, PROBE_GU (as the concurrency probe), PROBE_JDWP (JDWP port of the
-# application JVM, or "auto"), PROBE_LOGS (colon-separated log files, the CURRENT run's console log first), PROBE_JAVA_CP
+# application JVM, or "auto"), PROBE_SUPPORT (the email.notification the application runs with), PROBE_LOGS (colon-separated log files, the CURRENT run's console log first), PROBE_JAVA_CP
 # (directory with SessDump.class, compiled from tools/SessDump.java), PROBE_PW_EMAIL / PROBE_PW_PASS (test password account),
 # PROBE_SINK_STOP / PROBE_SINK_START (commands that stop and restart the local SMTP sink), PROBE_SA_EMAIL / PROBE_SA_PASS
 # (a super admin test account of the copy, never a real credential) and PROBE_SA_CRP (its Global Unit acronym, default AICCRA).
@@ -133,15 +141,45 @@ def verify(code, cookie, **extra):
     return http_("POST", "/otpVerifyCode.do", d, cookie)
 
 
-def mbox_for(rcpt):
+def sink_chunks():
+    """Every message the local sink recorded, whoever it is addressed to."""
     raw = open(MBOX, "rb").read() if os.path.exists(MBOX) else b""
-    return [c for c in re.split(rb"(?m)^From sink ", raw)[1:] if ("-> <%s>" % rcpt).encode() in c.split(b"\n", 1)[0]]
+    return re.split(rb"(?m)^From sink ", raw)[1:]
+
+
+def envelope_rcpts(chunk):
+    """The SMTP recipients (RCPT TO) the sink recorded for one message."""
+    first = chunk.split(b"\n", 1)[0].decode("utf8", "replace")
+    return re.findall(r"<([^>]*)>", first.split(" -> ", 1)[1]) if " -> " in first else []
 
 
 def text_of(chunk):
     msg = email.message_from_bytes(chunk.split(b"\n", 1)[1])
     parts = {p.get_content_type(): p.get_payload(decode=True).decode("utf8", "replace") for p in msg.walk() if p.get_content_type().startswith("text/")}
     return msg, parts
+
+
+def submitted_of(chunk):
+    """The submitted address named by the non-production header at the top of the plain part ("To: <address>"), or None.
+    Outside production the envelope and the To header always name the support mailbox (FN-018), so the header is the only way
+    to tell whose code email this is."""
+    try:
+        parts = text_of(chunk)[1]
+    except (IndexError, ValueError):
+        return None
+    m = re.match(r"To: (\S+)\r?\n", parts.get("text/plain", ""))
+    return m.group(1) if m else None
+
+
+def mbox_for(rcpt):
+    """The code emails asked for by this address, found by the body header (see submitted_of), oldest first."""
+    return [c for c in sink_chunks() if submitted_of(c) == rcpt]
+
+
+def without_header(part, html):
+    """A body part with the non-production header removed, as the OPS-005 row stores it (line ends as Java wrote them)."""
+    pattern = r"^To: \S+<br>-+<br><br>" if html else r"^To: \S+\r?\n-+\r?\n\r?\n"
+    return re.sub(pattern, "", part, count=1).replace("\r\n", "\n")
 
 
 def code_from(rcpt, after):
@@ -241,7 +279,7 @@ def stage_enum():
         ("ignore if not requested", "ignore" in plain.lower()),
         ("support contact", "MARLOSupport@cgiar.org" in plain),
         ("no link carrying the code", not [h for h in re.findall(r'href="([^"]*)"', html) if code in h] and "http" not in plain.lower()),
-        ("addressed only to the typed address", re.findall(r"<([^>]+)>", mine.split(b"\n", 1)[0].decode()) [-1] == "probe.user@outlook.com"),
+        ("not addressed to the typed address (non-production: the support mailbox only, the typed address in the body header)", "probe.user@outlook.com" not in envelope_rcpts(mine) and len(envelope_rcpts(mine)) == 1 and submitted_of(mine) == "probe.user@outlook.com"),
     ])
     print("  FN-017 elements: %s" % dict(checks))
     verdict("AC-3", "challenge row + one email with a 6-digit code and every FN-017 element", all(checks.values()) and len(rows) >= 1)
@@ -500,6 +538,21 @@ def email_rows(after):
     return [dict(zip(EMAIL_LOG_COLS, r + [""] * (len(EMAIL_LOG_COLS) - len(r)))) for r in out]
 
 
+def show_row(row):
+    """A row for the output: the body holds the code, so only its length is printed."""
+    keep = ("id", "to_email", "bbc_email", "cc_email", "subject", "succes_email", "error_email", "source_action", "global_unit_id", "tried", "date_email")
+    out = {k: v for k, v in row.items() if k in keep}
+    if "message" in row:
+        out["message"] = "<%d chars>" % len(row["message"])
+    return out
+
+
+def code_in(message):
+    """The six-digit code as the HTML body shows it (the one element that is only the code), or None."""
+    m = re.search(r">\s*(\d{6})\s*<", message)
+    return m.group(1) if m else None
+
+
 def email_rows_after(after, expect=1, wait=15.0):
     """The number of email_logs rows above an id, waiting up to `wait` s for `expect` of them: the code email is recorded on
     the sender's worker thread once the delivery attempt ends (OPS-005), not on the request thread."""
@@ -524,12 +577,12 @@ def email_log_hits(after, needle, skip=()):
     return hits
 
 
-def email_log_six_digit_runs(after):
+def email_log_six_digit_runs(after, skip=()):
     """{column: rows} holding a run of exactly six digits, in every column but the numeric ones. For a row whose code the probe
     never saw (the mail was not delivered), this is the closest check that no code was written."""
     hits = {}
     for c in [r[0] for r in sql("SHOW COLUMNS FROM email_logs;")]:
-        if c in ("id", "tried", "succes_email", "global_unit_id"):
+        if c in ("id", "tried", "succes_email", "global_unit_id") or c in skip:
             continue
         n = int(sql("SELECT COUNT(*) FROM email_logs WHERE id > %d AND IFNULL(CAST(`%s` AS CHAR), '') REGEXP '(^|[^0-9])[0-9]{6}([^0-9]|$)';" % (after, c))[0][0])
         if n:
@@ -539,8 +592,7 @@ def email_log_six_digit_runs(after):
 
 def sink_total():
     """Every message the local sink has recorded, whoever it is addressed to (a resent mail can be redirected)."""
-    raw = open(MBOX, "rb").read() if os.path.exists(MBOX) else b""
-    return len(re.split(rb"(?m)^From sink ", raw)[1:])
+    return len(sink_chunks())
 
 
 def stage_leak():
@@ -576,15 +628,16 @@ def stage_leak():
         verdict("AC-11", "otp_challenges holds no %s" % n, not hit, "%d rows scanned" % len(rows))
     tables = [r[0] for r in sql("SHOW TABLES LIKE 'email_log%';")]
     # OPS-005: the code email leaves ONE email_logs row, written by the sender's worker thread once the delivery attempt ends.
-    # AC-11 (amended 2026-10-14): the code is in no column of it; the email and its local part are only in to_email, the
-    # recipient column, which every MARLO email row holds.
+    # AC-11 (amended 2026-10-15): the code is only in the message of that row (the HTML body, as MARLO stores every email); the
+    # email and its local part are only in to_email, the recipient column, which every MARLO email row holds.
     email_rows_after(el_max, 1)
     time.sleep(1.5)  # a second, unexpected row would land inside this grace
     new = email_rows(el_max)
     print("  email_logs: %d row(s) written since the flow began (id > %d); source_action %s; succes_email %s; global_unit_id %s" % (
         len(new), el_max, [r["source_action"] for r in new], [r["succes_email"] for r in new], [r["global_unit_id"] for r in new]))
     code_hits = email_log_hits(el_max, code)
-    verdict("AC-11", "email_logs (the real table name): the code is in no column of any row written for this flow", code_hits == {} and tables == ["email_logs"], "tables=%s code matches per column=%s" % (tables, code_hits))
+    verdict("AC-11", "email_logs (the real table name): the code is only in the message of the one row written for this flow, in no other column",
+            code_hits == {"message": 1} and tables == ["email_logs"], "tables=%s code matches per column=%s" % (tables, code_hits))
     verdict("AC-11", "email_logs: exactly one new row for the flow, with source_action /otpRequestCode (OPS-005)", len(new) == 1 and new[0]["source_action"] == "/otpRequestCode", "rows=%d" % len(new))
     other_hits = {n: email_log_hits(el_max, v, skip=("to_email",)) for n, v in needles.items() if n in ("full email", "local part")}
     verdict("AC-11", "email_logs: the full email and the local part are in no column but to_email, which holds the recipient",
@@ -597,24 +650,38 @@ def stage_leak():
             all_lines[p] = f.read().decode("utf8", "replace").splitlines()
     for p, lines in all_lines.items():
         print("  log %s: %d new lines since the flow began" % (p, len(lines)))
-        for label, needle in (("code", code), ("nonce", nonce or "NO-NONCE"), ("full email", addr), ("pre-auth session id", pre.cookie), ("authenticated session id", ok.cookie)):
+        # Amended 2026-10-15 (OPS-001): outside production the one auth.otp.code line of the handed-off email carries the code and the
+        # submitted address, and nothing else does. A local run is non-production, so that line is the only allowed hit of those two.
+        for label, needle in (("code", code), ("full email", addr)):
+            hits = [l for l in lines if needle in l]
+            stray = [l for l in hits if "auth.otp.code " not in l]
+            verdict("AC-11", "log %s: the %s is only in the one auth.otp.code line (non-production), in no other line" % (os.path.basename(p), label),
+                    not stray and len(hits) == 1, ("%d hits, %d outside the code line: %s" % (len(hits), len(stray), [h[:220] for h in stray[:2]])) if stray or len(hits) != 1 else "%d lines searched, 1 code line" % len(lines))
+        for label, needle in (("nonce", nonce or "NO-NONCE"), ("pre-auth session id", pre.cookie), ("authenticated session id", ok.cookie)):
             hits = [l for l in lines if needle in l]
             verdict("AC-11", "log %s has no line with the %s" % (os.path.basename(p), label), not hits, ("%d hits: %s" % (len(hits), [h[:220] for h in hits[:2]])) if hits else "%d lines searched" % len(lines))
+        code_lines = [l for l in lines if "auth.otp.code " in l]
+        shape = re.search(r"\[INFO *\].*auth\.otp\.code gu=(\S+) to=(\S+) code=(\d{6})$", code_lines[0]) if len(code_lines) == 1 else None
+        verdict("AC-11/OPS-001", "log %s: the auth.otp.code line is INFO, names the unit, the submitted address and the code of the email" % os.path.basename(p),
+                bool(shape) and shape.group(2) == addr and shape.group(3) == code, re.sub(r"code=\d{6}", "code=<code>", re.sub(r"^.*?(\[INFO)", r"\1", code_lines[0]))[:160] if code_lines else "no line")
     first = list(all_lines.values())[0] if all_lines else []
     otp = [l for l in first if "auth.otp." in l]
     for l in otp:
-        print("   " + re.sub(r"^.*?\[(INFO|WARN)", r"[\1", l)[:200])
+        print("   " + re.sub(r"code=\d{6}", "code=<code>", re.sub(r"^.*?\[(INFO|WARN)", r"[\1", l))[:200])
     kinds = collections.Counter(re.search(r"auth\.otp\.(\w+)", l).group(1) for l in otp)
-    verdict("AC-11/OPS-001", "exactly one auth.otp.request per request call, one auth.otp.verify per verify call, one auth.otp.delivery per mail", kinds == {"request": 1, "verify": 2, "delivery": 1}, dict(kinds))
+    verdict("AC-11/OPS-001", "exactly one auth.otp.request per request call, one auth.otp.verify per verify call, one auth.otp.delivery per mail, and (non-production) one auth.otp.code per mail", kinds == {"request": 1, "verify": 2, "delivery": 1, "code": 1}, dict(kinds))
     ok_lines = [l for l in otp if "outcome=ok" in l]
-    print("  structured fields present: %s" % bool(otp and all(re.search(r"outcome=\S+ gu=\S* domain=\S* ms=\d+", l) for l in otp)))
+    print("  structured fields present: %s" % bool(otp and all(re.search(r"outcome=\S+ gu=\S* domain=\S* ms=\d+", l) for l in otp if "auth.otp.code " not in l)))
 
 
 def stage_emaillog():
-    print("\n== emaillog: AC-18 / OPS-005 (the code email recorded in email_logs for support, without the code; resend sends nothing)")
+    print("\n== emaillog: AC-18 / OPS-005 (the code email recorded in email_logs for support, with its body; resend sends nothing)")
     addr = "probe.user@outlook.com"
     source = "/otpRequestCode"
-    placeholder = "Sign-in code email (code withheld)"
+    prefix = "(TESTING ENVIRONMENT) "
+    support = os.environ.get("PROBE_SUPPORT")
+    if not support:
+        raise SystemExit("emaillog needs PROBE_SUPPORT, the email.notification the application runs with")
     sink_stop, sink_start = os.environ.get("PROBE_SINK_STOP"), os.environ.get("PROBE_SINK_START")
     bare_class = re.compile(r"^[A-Za-z_][A-Za-z0-9_$]*$")
     # 1. a delivered code email, and a resend inside the cooldown, which sends nothing
@@ -625,18 +692,26 @@ def stage_emaillog():
     email_rows_after(el0, 1)
     time.sleep(2)
     rows = email_rows(el0)
-    mail_subject = str(text_of(mbox_for(addr)[-1])[0]["Subject"])
+    sent = mbox_for(addr)[-1]
+    mail_subject = str(text_of(sent)[0]["Subject"])
+    sent_html = without_header(text_of(sent)[1]["text/html"], True)
     r = rows[0] if len(rows) == 1 else {}
-    print("  delivered: %d row(s) above id %d: %s" % (len(rows), el0, {k: v for k, v in r.items() if k in ("id", "succes_email", "error_email", "source_action", "global_unit_id", "tried", "message", "subject", "date_email")}))
+    print("  delivered: %d row(s) above id %d: %s" % (len(rows), el0, show_row(r)))
     verdict("AC-18", "delivered code email: exactly one new email_logs row", len(rows) == 1, "rows=%d" % len(rows))
-    verdict("AC-18", "delivered row: succes_email 1, no error, source_action /otpRequestCode, the placeholder message, global_unit_id %s, tried 1, the recipient and the mail's own subject, a date" % GU,
-            bool(r) and r["succes_email"] == "1" and r["error_email"] == "NULL" and r["source_action"] == source and r["message"] == placeholder
-            and r["global_unit_id"] == GU and r["tried"] == "1" and r["to_email"] == addr and r["subject"] == mail_subject and r["date_email"] != "NULL",
-            "subject=%r" % (r.get("subject"),))
-    verdict("AC-18", "delivered row: cc, bcc, file name, file content and message id stay NULL",
-            bool(r) and all(r[c] == "NULL" for c in ("cc_email", "bbc_email", "file_name", "fileContent", "message_id")))
-    verdict("AC-18", "delivered row: the code is in no column, and no column holds a run of six digits",
-            email_log_hits(el0, code) == {} and email_log_six_digit_runs(el0) == {}, "code matches=%s six-digit runs=%s" % (email_log_hits(el0, code), email_log_six_digit_runs(el0)))
+    verdict("AC-18", "delivered row: succes_email 1, no error, source_action /otpRequestCode, global_unit_id %s, tried 1, the submitted address as recipient, the mail's subject without the non-production prefix, a date" % GU,
+            bool(r) and r["succes_email"] == "1" and r["error_email"] == "NULL" and r["source_action"] == source
+            and r["global_unit_id"] == GU and r["tried"] == "1" and r["to_email"] == addr and mail_subject.startswith(prefix) and r["subject"] == mail_subject[len(prefix):] and r["date_email"] != "NULL",
+            "mail subject %r, row subject %r" % (mail_subject, r.get("subject")))
+    expected_body = sent_html.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t")  # mysql -N prints a newline as \n
+    verdict("AC-18", "delivered row: message is the HTML part of the sent email with its code and without the non-production header (amended 2026-10-15)",
+            bool(r) and code in sent_html and r["message"] == expected_body and not r["message"].startswith("To:") and "TESTING" not in r["message"],
+            "message %d chars, equal to the sent HTML minus the header: %s" % (len(r.get("message", "")), bool(r) and r["message"] == expected_body))
+    verdict("AC-18", "delivered row: bcc is the support mailbox (non-production), cc, file name, file content and message id stay NULL",
+            bool(r) and all(r[c] == "NULL" for c in ("cc_email", "file_name", "fileContent", "message_id")) and r["bbc_email"] not in ("NULL", "") and r["bbc_email"] == support,
+            "bbc_email is the support mailbox: %s" % (bool(r) and r["bbc_email"] == support))
+    verdict("AC-18", "delivered row: the code is in the message and in no other column, and no other column holds a run of six digits",
+            email_log_hits(el0, code) == {"message": 1} and email_log_six_digit_runs(el0, skip=("message",)) == {},
+            "code matches=%s six-digit runs outside message=%s" % (email_log_hits(el0, code), email_log_six_digit_runs(el0, skip=("message",))))
     verdict("AC-18", "a resend inside the 30 s cooldown answers rateLimited and leaves no second row", again.st == "rateLimited" and len(rows) == 1, "answer=%s rows=%d" % (again.st, len(rows)))
     # 2. a failed code email: the sink is stopped, so the delivery fails; the probe restores it afterwards
     failed_id = None
@@ -654,13 +729,16 @@ def stage_emaillog():
             time.sleep(1)
         frows = email_rows(el1)
         f = frows[0] if len(frows) == 1 else {}
-        print("  failed (sink stopped): response %s ; %d row(s) above id %d: %s" % (d.body, len(frows), el1, {k: v for k, v in f.items() if k in ("id", "succes_email", "error_email", "source_action", "global_unit_id", "tried", "message", "subject", "date_email")}))
+        print("  failed (sink stopped): response %s ; %d row(s) above id %d: %s" % (d.body, len(frows), el1, show_row(f)))
         verdict("AC-18", "failed code email: the response is still the neutral one and exactly one new email_logs row exists", d.st == "sent" and len(frows) == 1, "answer=%s rows=%d" % (d.st, len(frows)))
-        verdict("AC-18", "failed row: succes_email 0, error_email a bare class name (no address, no space, no SMTP text), the source, the placeholder message, the unit, the recipient",
-                bool(f) and f["succes_email"] == "0" and bool(bare_class.match(f["error_email"])) and f["source_action"] == source and f["message"] == placeholder
-                and f["global_unit_id"] == GU and f["tried"] == "1" and f["to_email"] == addr, "error_email=%r" % (f.get("error_email"),))
-        verdict("AC-18", "failed row: no column holds a run of six digits (the code never reached the sink, so it cannot be searched for)",
-                email_log_six_digit_runs(el1) == {}, email_log_six_digit_runs(el1))
+        verdict("AC-18", "failed row: succes_email 0, error_email a bare class name (no address, no space, no SMTP text), the source, the unit, the submitted address as recipient, the support mailbox as bcc, the subject without the prefix",
+                bool(f) and f["succes_email"] == "0" and bool(bare_class.match(f["error_email"])) and f["source_action"] == source
+                and f["global_unit_id"] == GU and f["tried"] == "1" and f["to_email"] == addr and f["bbc_email"] == support and f["bbc_email"] not in ("NULL", "")
+                and not f["subject"].startswith(prefix), "error_email=%r" % (f.get("error_email"),))
+        fcode = code_in(f.get("message", ""))
+        verdict("AC-18", "failed row: the message holds the body with its code and no test header; the code is in no other column and no other column holds a run of six digits (the code never reached the sink)",
+                bool(fcode) and not f["message"].startswith("To:") and email_log_hits(el1, fcode or "NO-CODE") == {"message": 1} and email_log_six_digit_runs(el1, skip=("message",)) == {},
+                "code found in the body: %s, in %s" % (bool(fcode), email_log_hits(el1, fcode or "NO-CODE")))
         if len(frows) == 1:
             failed_id = int(f["id"])
     else:
@@ -732,6 +810,80 @@ def stage_emaillog():
                 got == ([str(ctl)], [str(ctl)], [str(ctl)]), got)
     finally:
         sql("DELETE FROM email_logs WHERE source_action = '/probe/control';")
+
+
+def stage_nonprod():
+    print("\n== nonprod: AC-19 / FN-018 (marlo.production=false: the support mailbox only, the prefix, the header; the row keeps the submitted address)")
+    support = os.environ.get("PROBE_SUPPORT")
+    if not support:
+        raise SystemExit("nonprod needs PROBE_SUPPORT, the email.notification the application runs with")
+    addr = "probe.user@outlook.com"
+    prefix = "(TESTING ENVIRONMENT) "
+    reset()
+    el0 = email_log_max()
+    total0 = sink_total()
+    ck, code = issue(addr)
+    time.sleep(3)
+    new = sink_chunks()[total0:]
+    verdict("AC-19", "an eligible request leaves exactly one email at the sink", len(new) == 1, "%d new message(s)" % len(new))
+    if len(new) != 1:
+        return
+    mail = new[0]
+    msg, parts = text_of(mail)
+    plain, html = parts.get("text/plain", ""), parts.get("text/html", "")
+    env = envelope_rcpts(mail)
+    print("  envelope recipients: %s ; To header: %s ; Cc: %s ; Bcc: %s ; subject: %r" % (env, msg.get_all("To"), msg.get_all("Cc"), msg.get_all("Bcc"), str(msg["Subject"])))
+    verdict("AC-19", "the only recipient (envelope and To header, no Cc or Bcc) is the support mailbox email.notification",
+            env == [support] and [a.strip() for a in (msg.get_all("To") or [])] == [support] and msg.get_all("Cc") is None and msg.get_all("Bcc") is None)
+    verdict("AC-19", "the subject starts with '(TESTING ENVIRONMENT) '", str(msg["Subject"]).startswith(prefix), str(msg["Subject"]))
+    verdict("AC-19", "the plain and the HTML part start with a header naming the submitted address",
+            re.match(r"To: %s\r?\n-+\r?\n\r?\n" % re.escape(addr), plain) is not None and re.match(r"To: %s<br>-+<br><br>" % re.escape(addr), html) is not None,
+            "plain starts %r ; html starts %r" % (plain[:60], html[:60]))
+    all_rcpts = [a for c in sink_chunks() for a in envelope_rcpts(c)]
+    all_to = [str(email.message_from_bytes(c.split(b"\n", 1)[1]).get("To")) for c in sink_chunks()]
+    verdict("AC-19", "the submitted address received nothing: it is no SMTP recipient and in no To header of any message at the sink",
+            addr not in all_rcpts and not [t for t in all_to if addr in t], "%d message(s) at the sink, recipients seen: %s" % (len(all_rcpts), sorted(set(all_rcpts))))
+    v = verify(code, ck)
+    verdict("AC-19", "the code from the redirected email signs the user in", v.st == "ok" and authed(v.cookie) in (True, None), v.st)
+    email_rows_after(el0, 1)
+    time.sleep(1.5)
+    rows = email_rows(el0)
+    r = rows[0] if len(rows) == 1 else {}
+    print("  email_logs row: %s" % (show_row(r)))
+    sent_html = without_header(html, True)
+    expected_body = sent_html.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t")
+    verdict("AC-19", "its email_logs row holds the submitted address in to_email, the support mailbox in bbc_email and the subject without the prefix",
+            bool(r) and r["to_email"] == addr and r["bbc_email"] == support and r["subject"] == str(msg["Subject"])[len(prefix):] and r["cc_email"] == "NULL"
+            and r["succes_email"] == "1" and r["source_action"] == "/otpRequestCode")
+    verdict("AC-19", "its message is the HTML as built for production (the code, no test header)",
+            bool(r) and code in sent_html and r["message"] == expected_body and not r["message"].startswith("To:") and "TESTING" not in r["message"])
+
+
+def stage_nonprodblank():
+    print("\n== nonprodblank: AC-19, blank email.notification (the application was started with EMAIL_NOTIFICATION= empty)")
+    addr = "probe.user@outlook.com"
+    reset()
+    el0 = email_log_max()
+    total0 = sink_total()
+    mark = os.path.getsize(LOGS[0]) if LOGS else 0
+    r = request_code(addr)
+    time.sleep(4)
+    new = sink_chunks()[total0:]
+    rows = email_rows(el0)
+    lines = []
+    if LOGS:
+        with open(LOGS[0], "rb") as f:
+            f.seek(mark)
+            lines = [l for l in f.read().decode("utf8", "replace").splitlines() if "auth.otp." in l]
+    for l in lines:
+        print("   " + re.sub(r"code=\d{6}", "code=<code>", re.sub(r"^.*?\[(INFO|WARN)", r"[\1", l))[:200])
+    print("  response %s ; messages at the sink: %d ; email_logs rows: %d" % (r.body, len(new), len(rows)))
+    verdict("AC-19", "with email.notification blank the response is still the neutral sent", r.st == "sent", r.body)
+    verdict("AC-19", "with email.notification blank nothing is sent: no message at the sink, none for the submitted address", len(new) == 0, "%d message(s)" % len(new))
+    verdict("AC-19", "with email.notification blank no email_logs row is written", len(rows) == 0, "%d row(s)" % len(rows))
+    delivery = [l for l in lines if "auth.otp.delivery" in l]
+    verdict("AC-19", "the delivery line says email_failed, at WARN, and no auth.otp.code line is written",
+            len(delivery) == 1 and "outcome=email_failed" in delivery[0] and "[WARN" in delivery[0] and not [l for l in lines if "auth.otp.code" in l], "%d delivery line(s)" % len(delivery))
 
 
 def stage_live():
@@ -917,7 +1069,7 @@ def stage_postlogin():
 
 
 STAGES = {"postlogin": stage_postlogin, "enum": stage_enum, "attempts": stage_attempts, "resend": stage_resend, "expiry": stage_expiry, "removed": stage_removed,
-          "limits": stage_limits, "session": stage_session, "leak": stage_leak, "emaillog": stage_emaillog, "live": stage_live, "nosecret": stage_nosecret,
+          "limits": stage_limits, "session": stage_session, "leak": stage_leak, "emaillog": stage_emaillog, "nonprod": stage_nonprod, "nonprodblank": stage_nonprodblank, "live": stage_live, "nosecret": stage_nosecret,
           "smtp": stage_smtp, "blackhole": stage_blackhole, "tz": stage_tz}
 for name in sys.argv[1:]:
     STAGES[name]()

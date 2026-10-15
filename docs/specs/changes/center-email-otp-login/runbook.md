@@ -96,8 +96,8 @@ a proxy exists at all (Part B).
 
 | Item | Value |
 |---|---|
-| Sender | Dedicated: 2 daemon threads, a queue of 100. It reads the same SMTP settings as the rest of MARLO. It does not go through the general mailer, so it ignores the notification flag and the support redirect. It writes its own row in System Admin → Emails, without the code (see A5) |
-| Recipient | Always the submitted address, in every environment (OQ-5 default, FN-018) |
+| Sender | Dedicated: 2 daemon threads, a queue of 100. It reads the same SMTP settings as the rest of MARLO. It does not go through the general mailer, so it ignores the notification flag and the `crp_email_support_team` redirect; outside production it applies MARLO's test rule itself (Recipient row). It writes its own row in System Admin → Emails, with the full email, code included (see A5) |
+| Recipient | **Production:** the submitted address. **Any other environment** (`marlo.production` not `true`): only the support mailbox `email.notification`, with `(TESTING ENVIRONMENT) ` in the subject and the submitted address at the top of the body, the same as every other MARLO email. If that mailbox is not set, the code email fails (`email_failed`) and is never sent to the user instead (FN-018, OQ-5 resolved 2026-10-15) Outside production the value must be a single bare address with no surrounding spaces, or every code email fails |
 | `otp.smtp.timeout.ms` | Connect, read and write timeout. **Default 10 000 ms, clamped to 30 000, a malformed value falls back to the default.** Set it like the other `otp.*` values (the environment form is `OTP_SMTP_TIMEOUT_MS`; the mapping is the same as the secret's, but this exact name was not run) |
 | Timing | The request answers **`sent` at once**. A failure shows up **later**, at WARN, as `auth.otp.delivery outcome=email_failed ms=<n>`; the cause class name (never its message) is on a separate line, `auth.otp.mail outcome=send_failed cause=<class>`, so search that one for the cause. A full queue, or a failure while building the message, logs `email_failed` at once instead of later. Walk: a mail server that never answered gave HTTP 200 in 0.17 s and `email_failed ms=10110` afterwards |
 | **Relay note** | In local and non-production environments the configured host `cluster5out.us.messagelabs.com` is CGIAR's inbound gateway. It delivers only to `@cgiar.org` and refuses relay for anything else (`453 ... as a relay ... (#4.7.1)`). **OTP users are non-CGIAR by definition**, so production needs a relay that delivers to external domains. **Confirming that is a go-live item (Part B).** To test locally, use a sink: `EMAIL_HOST`/`EMAIL_PORT` and `EMAIL_HOSTBACKUP`/`EMAIL_PORTBACKUP` to `127.0.0.1:2525` |
@@ -105,7 +105,7 @@ a proxy exists at all (Part B).
 
 ## A5. Code not received: triage (design section 11)
 
-One line per call, **no email, code, nonce or session id**:
+One line per call, **no email, code, nonce or session id**. The one exception is outside production only: the `auth.otp.code` line (A7) carries the address and the code.
 
 `auth.otp.<request|verify|delivery> outcome=<x> gu=<acronym> domain=<domain> ms=<n>`
 
@@ -140,10 +140,13 @@ succeeded; `request` and `verify` are INFO.
 | What you find | Meaning | Next |
 |---|---|---|
 | A row under **Sent** | The relay accepted the mail | Same as `outcome=delivered` above |
-| A row under **Not sent**, with an error class | The send failed | Same as `outcome=email_failed` above. **Do not resend it**: the row has no code, and MARLO skips it. Ask the user to request a new code |
+| A row under **Not sent**, with an error class | The send failed | Same as `outcome=email_failed` above. **Do not resend it**: its code has expired or been replaced, and MARLO skips it. Ask the user to request a new code |
 | **No row** at the time of the attempt | Usually no code email was queued: the account was ineligible, the domain is not enabled, the user was rate-limited, or the hand-off was rejected. Two other cases leave no row: the send is still in flight (the row is written when the attempt ends, up to the timeout), or the row could not be saved (`auth.otp.mail outcome=log_failed` at WARN; the email itself may have been delivered) | Steps 1 and 2 are the authoritative check: the `request` and `delivery` lines exist even when the row does not |
 
-The row never contains the code: its message is the placeholder "Sign-in code email (code withheld)".
+The row shows the full email, code included, so support can see exactly what the user received. The code is useless once it
+expires (5 minutes), is used or is replaced. **Never read a code out to anyone:** whoever is given a live code can sign in as
+that user. Outside production the row still shows the user's address in **To**, while the email itself went to the support
+mailbox; the row shows that mailbox in **BCC**.
 
 **Step 3. If the user got a code but cannot sign in, search `auth.otp.verify`.**
 
@@ -196,6 +199,8 @@ screens and tells the user only that it was done, **replying only to the registe
 | **Post-login failure gap** | A `RuntimeException` after `Subject.login`, or the unmapped-unit-type branch of `finishLogin`, answers `unavailable` or `failed` but **leaves an authenticated session**. Reproduced in T15. It is **shared with Cognito route C**. A `logout()` on any failure after login would cover both flows; it belongs to a separate task | T11, T15 |
 | **"Log in" stays enabled while a code request is in flight** | A password attempt can start meanwhile; the late `sent` then opens the code step. The page stays consistent and the mail really was sent. Observed in T15 | T15 |
 | **Rate-limit scope** | The limits and the cooldown are in the database, so **every instance shares them** (DD-8). What is per instance is the **pending challenge in the Shiro session**, which depends on affinity (P-4), and the purge throttle | DD-8, P-4 |
+| **Code in `email_logs`** | The code email's row stores the full body, code included, like every MARLO email. Anyone who can read `email_logs` (super admins, database, replica or backup access) can sign in as that user while the code is live: at most 5 minutes, until it is used or replaced, and within the attempt limits. A deviation from guide §3.2, accepted by the product owner | Requirements Decision Log 2026-10-15 |
+| **Code in non-production logs** | Outside production every code email also writes `auth.otp.code gu=<acronym> to=<address> code=<code>` at INFO. Anyone reading a test or local log can sign in as that test user while the code is live (5 minutes). A deviation from guide §3.11 for non-production only; in production the line never exists | Requirements Decision Log 2026-10-15 |
 | **Window edge** | A fixed window can admit up to 2x a limit across its edge | Requirements Decision Log |
 | **Victim lockout** | Per-email buckets let someone exhaust another person's 5 requests; other sign-in routes are unaffected | Design section 16 |
 | **Deliverability** | Unproven until the pilot | Design section 16 |
@@ -238,7 +243,7 @@ to the row, with its source. Nothing here has been settled by infra yet.
 | **OQ-2** | Baseline-role exposure for the pilot users (below) | Kenji + PMU | **Go-live** | Open. Procedure in B2 |
 | **OQ-3** | Does the A2-2629 owner accept a non-Cognito path under the epic? | A2-2629 owner | **Go-live** | Open. Default: proceed per A2-2631 |
 | OQ-4 | `is_cgiar_user = 1`: refuse always or only where Cognito is active | Kenji | Not blocking | Default adopted: only where Cognito is active; `cgiar.org` always ignored |
-| **OQ-5** | Outside production, does the code go to the real recipient or the support redirect? | Kenji + QA | **Go-live** (confirmation) | Default adopted and implemented: **real recipient in every environment**; the OTP mail ignores the support redirect. Needs confirmation, because UAT mailboxes will receive real codes |
+| OQ-5 | Outside production, does the code go to the real recipient or the support redirect? | Kenji + QA | Resolved | **Resolved 2026-10-15:** outside production the code goes only to the support mailbox, as every MARLO email does (T19). UAT testers read their code there |
 | Relay | The production relay delivers to **external** domains (A4) | Kenji, with infra | **Go-live** | Open. The local gateway refuses them |
 | Sender | SPF, DKIM, DMARC aligned for the sender; partner IT allow-listing | Kenji, with infra | Pilot | Open |
 | JVM time zone | Production JVM is UTC, or `hibernate.jdbc.time_zone=UTC` is set. Reads convert through the JVM zone; in a DST zone a UTC wall time in a spring-forward gap reads back one hour off | Kenji, with infra | Go-live (low) | Open. Tokyo and `-05` passes were green (T15) |
@@ -272,7 +277,8 @@ test user in the copy has one role (`G`) and two permission rows in AICCRA. The 
 - [ ] SMTP relay delivers to an external test mailbox (A4).
 - [ ] P-4, P-6, P-25 answers written next to B1.
 - [ ] OQ-2 audit done for every pilot user (B2).
-- [ ] OQ-5 confirmed.
+- [ ] On test, a code request reaches the support mailbox with the `(TESTING ENVIRONMENT)` prefix, and the test user's mailbox receives nothing (FN-018).
+- [ ] Production has `marlo.production=true`; otherwise its users' codes go to the support mailbox **and are written to the log**. After the first code request in production, confirm no `auth.otp.code` line exists.
 
 ## B5. Pilot and expansion (DD-12, design section 14)
 

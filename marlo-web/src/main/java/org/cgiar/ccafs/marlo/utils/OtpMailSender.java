@@ -52,12 +52,17 @@ import org.slf4j.LoggerFactory;
  * Sends the one-time-code email of the Center email sign-in (CHG-OTP-LOGIN-001-T09, FN-017, FN-018, SEC-001, OPS-002,
  * NF-001, DD-7).
  * <p>
- * It is deliberately not {@code SendMailS}. That class persists every body, sets no SMTP timeouts, and honours the
- * notification switch and the support redirect, none of which the code email may do. This class builds its own mail
- * session from the same {@link APConfig} SMTP getters, with connect, read and write timeouts, sends to one recipient
- * on a dedicated executor, and never hands the body to the email log, so the code is never persisted (SEC-001). It
- * does not read the notification switch or the support redirect (FN-018), so the code goes to the submitted address
- * in every environment (OQ-5 default).
+ * It is deliberately not {@code SendMailS}. That class sets no SMTP timeouts and honours the notification switch and
+ * the support redirect, neither of which the code email may do. This class builds its own mail session from the same
+ * {@link APConfig} SMTP getters, with connect, read and write timeouts, and sends to one recipient on a dedicated
+ * executor. It does not read the notification switch or the support redirect (FN-018).
+ * <p>
+ * Outside production ({@code !APConfig.isProduction()}, read on every send) it applies MARLO's non-production rule
+ * itself (FN-018, OQ-5 resolved 2026-10-15, T19): the only recipient is the support mailbox
+ * {@code email.notification}, the subject is prefixed {@code (TESTING ENVIRONMENT) } and both bodies open with a
+ * header naming the submitted address. A support mailbox that is not a single valid address fails the build, and the
+ * email is never sent to the submitted address instead. In production the message goes to the submitted address
+ * only, with no prefix and no header.
  * <p>
  * The send is asynchronous: the request thread renders the message, hands it to a pool of 2 daemon threads behind a
  * queue of 100, and returns. A full queue is an {@code email_failed}, not an error for the caller, and the response
@@ -66,10 +71,16 @@ import org.slf4j.LoggerFactory;
  * the cause, and never its message, which can carry the address or the SMTP exchange.
  * <p>
  * Support sees the email in System Admin -> Emails (OPS-005, DD-7): after the delivery attempt of a queued message,
- * on the same worker thread, one {@code email_logs} row is saved through {@link EmailLogManager}. The row holds the
- * recipient, the subject and the outcome, and a fixed placeholder instead of the body, so the code is never stored
- * (SEC-001); writing it after the send, off the request thread, adds no latency to the response (SEC-006). A hand-off
- * rejected before queueing writes no row. A failed save is logged by class name and swallowed.
+ * on the same worker thread, one {@code email_logs} row is saved through {@link EmailLogManager}, as {@code SendMailS}
+ * does: the submitted address in {@code to_email}, the support mailbox in {@code bbc_email} outside production and
+ * null in production, the subject without the prefix, the outcome, and the HTML body exactly as built for production,
+ * code included, without the non-production header. The code is stored in no other column (SEC-001, accepted
+ * exception 2026-10-15). Writing the row after the send, off the request thread, adds no latency to the response
+ * (SEC-006). A hand-off rejected before queueing writes no row. A failed save is logged by class name and swallowed.
+ * <p>
+ * Outside production only, the worker also writes one INFO line {@code auth.otp.code gu=<acronym> to=<submitted>
+ * code=<code>} per handed-off email, after the delivery attempt, for delivered and failed sends alike (OPS-001,
+ * accepted 2026-10-15). In production the line never exists and no log line carries the code or the address.
  * <p>
  * It is a container singleton: {@code @Named}, found by the component scan of {@code ApplicationContextConfig} and
  * created once with the {@code APConfig} constructor. Spring's default scope is singleton, so the limit of 2 threads
@@ -105,8 +116,10 @@ public final class OtpMailSender {
 
   /** The {@code email_logs.source_action} of every code email; System Admin -> Emails never resends these rows. */
   public static final String SOURCE_ACTION = "/otpRequestCode";
-  /** The {@code email_logs.message} of every code email: the body is never stored, so the code never is (SEC-001). */
-  public static final String PLACEHOLDER_MESSAGE = "Sign-in code email (code withheld)";
+  /** The prefix {@code SendMailS.send} puts on the subject outside production. */
+  static final String TESTING_PREFIX = "(TESTING ENVIRONMENT) ";
+  /** The separator line that closes the non-production header, as in {@code SendMailS.send}. */
+  static final String TESTING_SEPARATOR = "----------------------------------------------------";
 
   private static final Logger LOG = LoggerFactory.getLogger(OtpMailSender.class);
 
@@ -114,6 +127,31 @@ public final class OtpMailSender {
   private static final Pattern UNRESOLVED = Pattern.compile("\\{\\d");
 
   private static final String ADDRESS_FORBIDDEN = ",;<>\"()[]\\:";
+
+  /** What {@link #build} produces: the message to send and what the {@code email_logs} row must hold. */
+  private static final class Outgoing {
+
+    final MimeMessage message;
+    /** The subject without the non-production prefix. */
+    final String subject;
+    /** The HTML part as built for production: with the code, without the non-production header. */
+    final String body;
+    /** The support mailbox outside production, {@code null} in production. */
+    final String bbc;
+    /** The flag value that routed this email, so the code line follows the same read (OPS-001). */
+    final boolean production;
+    /** The clear code; it reaches only the message, the row body and, outside production, the code line. */
+    final String code;
+
+    Outgoing(MimeMessage message, String subject, String body, String bbc, boolean production, String code) {
+      this.message = message;
+      this.subject = subject;
+      this.body = body;
+      this.bbc = bbc;
+      this.production = production;
+      this.code = code;
+    }
+  }
 
   private final APConfig config;
   private final MailTransport transport;
@@ -156,15 +194,17 @@ public final class OtpMailSender {
 
   /**
    * Renders the code email and hands it to the executor. It never throws: a recipient that is not a single address,
-   * an unresolved text, a full queue and a transport failure are all logged as {@code email_failed}, and nothing is
-   * sent in the first three cases.
+   * outside production an {@code email.notification} that is blank or not a single address, an unresolved text, a full
+   * queue and a transport failure are all logged as {@code email_failed}, and nothing is sent in the first four cases.
    * <p>
    * Callers must pass {@code pending.email}, the normalised address held in the session's {@code OtpPending}, and
    * never the raw request parameter.
    *
    * @param texts the text provider that resolves the i18n keys, normally the action; read on the calling thread only
-   * @param recipient the single address to send to
-   * @param code the clear code, which lives only in this call and the message; it is never logged
+   * @param recipient the submitted address: the SMTP recipient in production, named in the body header outside
+   *        production
+   * @param code the clear code; it goes into the message and the {@code email_logs} row, and outside production into
+   *        the one {@code auth.otp.code} line
    * @param guAcronym the Global Unit acronym, for the delivery line
    * @param globalUnitId the Global Unit id, for the {@code email_logs} row; may be {@code null}
    */
@@ -174,7 +214,7 @@ public final class OtpMailSender {
     try {
       InternetAddress to = singleAddress(recipient);
       domain = domainOf(to);
-      final MimeMessage message = this.build(texts, to, code);
+      final Outgoing outgoing = this.build(texts, to, code);
       final String gu = guAcronym;
       final String logDomain = domain;
       final long handedOff = started;
@@ -184,7 +224,7 @@ public final class OtpMailSender {
 
         @Override
         public void run() {
-          OtpMailSender.this.deliver(message, address, unitId, gu, logDomain, handedOff);
+          OtpMailSender.this.deliver(outgoing, address, unitId, gu, logDomain, handedOff);
         }
       });
     } catch (MessagingException | RuntimeException e) {
@@ -202,7 +242,7 @@ public final class OtpMailSender {
     this.executor.shutdown();
   }
 
-  private MimeMessage build(TextProvider texts, InternetAddress to, String code) throws MessagingException {
+  private Outgoing build(TextProvider texts, InternetAddress submitted, String code) throws MessagingException {
     if (code == null || code.trim().isEmpty()) {
       throw new IllegalArgumentException("blank code");
     }
@@ -213,20 +253,37 @@ public final class OtpMailSender {
     String plain = text(texts, KEY_TEXT, appName, code, minutes, support);
     String html = text(texts, KEY_HTML, escapeHtml(appName), escapeHtml(code), minutes, escapeHtml(support));
 
+    // Read on every send, never cached: the flag decides who receives a sign-in code (FN-018).
+    boolean production = this.config.isProduction();
+    InternetAddress to = submitted;
+    InternetAddress supportMailbox = null;
+    String sentSubject = subject;
+    String sentPlain = plain;
+    String sentHtml = html;
+    if (!production) {
+      // A blank or invalid mailbox throws here and nothing is sent: never fall back to the submitted address.
+      supportMailbox = singleAddress(this.config.getEmailNotification());
+      to = supportMailbox;
+      sentSubject = TESTING_PREFIX + subject;
+      sentPlain = "To: " + submitted.getAddress() + "\n" + TESTING_SEPARATOR + "\n\n" + plain;
+      sentHtml = "To: " + escapeHtml(submitted.getAddress()) + "<br>" + TESTING_SEPARATOR + "<br><br>" + html;
+    }
+
     MimeMessage message = new MimeMessage(this.session());
     message.setFrom(new InternetAddress(require(this.config.getEmailNotification(), "sender")));
     message.setRecipient(Message.RecipientType.TO, to);
-    message.setSubject(subject, CHARSET);
+    message.setSubject(sentSubject, CHARSET);
     message.setSentDate(new Date());
     MimeMultipart body = new MimeMultipart("alternative");
     MimeBodyPart textPart = new MimeBodyPart();
-    textPart.setText(plain, CHARSET);
+    textPart.setText(sentPlain, CHARSET);
     body.addBodyPart(textPart);
     MimeBodyPart htmlPart = new MimeBodyPart();
-    htmlPart.setText(html, CHARSET, "html");
+    htmlPart.setText(sentHtml, CHARSET, "html");
     body.addBodyPart(htmlPart);
     message.setContent(body);
-    return message;
+    return new Outgoing(message, subject, html, supportMailbox == null ? null : supportMailbox.getAddress(),
+      production, code);
   }
 
   private Session session() {
@@ -250,11 +307,11 @@ public final class OtpMailSender {
     });
   }
 
-  private void deliver(MimeMessage message, String recipient, Long globalUnitId, String gu, String domain,
+  private void deliver(Outgoing outgoing, String recipient, Long globalUnitId, String gu, String domain,
     long started) {
     Throwable failure = null;
     try {
-      this.transport.deliver(message);
+      this.transport.deliver(outgoing.message);
     } catch (Throwable e) {
       // Throwable: an Error from the transport would otherwise end the worker without the delivery line. The class
       // name is all that is logged.
@@ -265,35 +322,48 @@ public final class OtpMailSender {
     } else {
       this.failed(failure, gu, domain, started);
     }
-    this.record(message, recipient, globalUnitId, failure);
+    this.codeLine(outgoing, recipient, gu);
+    this.record(outgoing, recipient, globalUnitId, failure);
   }
 
   /**
-   * Saves the {@code email_logs} row of one delivery attempt (OPS-005), after the delivery line. The body is the
-   * placeholder, never the rendered message, and the error is the class name of the failure, never its message. Any
-   * fault here is logged by class name and swallowed: the row is support information and must not stop the worker.
+   * Outside production only, writes the one {@code auth.otp.code} INFO line of a handed-off email, after the delivery
+   * line and for a failed send too, so testers and developers can read the code without a mailbox (OPS-001, accepted
+   * 2026-10-15). It uses the flag value that routed the email, so in production the line never exists and no log line
+   * carries the code or the address. The values pass through {@link LogSanitizer}, so none can add a line.
    */
-  private void record(MimeMessage message, String recipient, Long globalUnitId, Throwable failure) {
+  private void codeLine(Outgoing outgoing, String recipient, String gu) {
+    if (outgoing.production) {
+      return;
+    }
+    LOG.info("auth.otp.code gu={} to={} code={}", LogSanitizer.sanitizeForLog(gu),
+      LogSanitizer.sanitizeForLog(recipient), LogSanitizer.sanitizeForLog(outgoing.code));
+  }
+
+  /**
+   * Saves the {@code email_logs} row of one delivery attempt (OPS-005), after the delivery line. The recipient is
+   * the submitted address in every environment; the support mailbox is the BCC outside production, as
+   * {@code SendMailS} logs it. The body is the HTML as built for production, code included (SEC-001 exception
+   * 2026-10-15), and the error is the class name of the failure, never its message. Any fault here is logged by class
+   * name and swallowed: the row is support information and must not stop the worker.
+   */
+  private void record(Outgoing outgoing, String recipient, Long globalUnitId, Throwable failure) {
     try {
       EmailLog row = new EmailLog();
       row.setTo(recipient);
-      row.setSubject(subjectOf(message));
+      row.setBbc(outgoing.bbc);
+      row.setSubject(outgoing.subject);
       row.setDate(new Date());
       row.setGlobalUnitId(globalUnitId);
       row.setSourceAction(SOURCE_ACTION);
       row.setTried(1);
       row.setSucces(failure == null);
       row.setError(failure == null ? null : failure.getClass().getSimpleName());
-      row.setMessage(PLACEHOLDER_MESSAGE);
+      row.setMessage(outgoing.body);
       this.emailLogManager.saveEmailLog(row);
     } catch (Throwable e) {
       LOG.warn("auth.otp.mail outcome=log_failed cause={}", e.getClass().getSimpleName());
     }
-  }
-
-  private static String subjectOf(MimeMessage message) throws MessagingException {
-    String subject = message.getSubject();
-    return subject == null ? "" : subject;
   }
 
   private void failed(Throwable cause, String gu, String domain, long started) {

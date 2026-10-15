@@ -560,6 +560,74 @@ Field conventions:
 - **Verification notes (2026-10-14):** clean compile 2415 / 1062 / 72 files; tests green with `-am` (Leader re-run after attempt 1: 130 tests in six classes, 0 failures; attempt 2: `OtpMailSenderTest` 24, `SendFailEmailActionTest` 5); Checkstyle delta 0 on the changed Java files; no `.properties` change. Falsifiers red: the rendered body in `message` (code-in-no-field test), the source filter removed (4 of 5 resend tests), the delivery line after the save (order test), a specificity key in the sender (static lock). Live: `ac-probe.sh leak emaillog` on a clean build against `aiccradb_otp_probe` and the sink, `SUMMARY: 32 checks, 0 failed` (`probes/output/ac-probe.t18-leak-emaillog.out`, ledger rows AC-11 and AC-18 in `probes/README.md`). Reviewer PASS on attempt 3.
 - **Review:** `full` — the SEC-001 leak surface and the SEC-006 timing surface.
 
+### CHG-OTP-LOGIN-001-T19 — Align the code email with MARLO's email rules: non-production recipient and full body in `email_logs` (FN-018, OQ-5, OPS-005)
+
+- **Status:** done [x] · **Size:** S · **Depends on:** T09, T18 · **Module:** marlo-web, plus `probes/`
+- **Requirements:** FN-018 (amended 2026-10-15), AC-19 (new), OPS-005, SEC-001 and AC-11, AC-18 (amended 2026-10-15: full body), SEC-006, AC-15 (unchanged)
+- **Design:** §5.3 `OtpMailSender` (amended 2026-10-15), DD-7 amendment 2026-10-15, §14 step 4; Decision Log 2026-10-15 in `requirements.md`
+- **Files:**
+  - `utils/OtpMailSender.java`:
+    - outside production, route to `email.notification` and add the subject prefix and the body header;
+    - fill the row as `SendMailS` does, with the full HTML body in `message`;
+    - remove `PLACEHOLDER_MESSAGE`.
+  - `OtpMailSenderTest.java`: the production and non-production cases below.
+  - `probes/ac-probe.sh`, `probes/README.md`: the AC-11 and AC-18 checks follow the amended text (the code is allowed only in the `message` of the OPS-005 row). Local runs are non-production, so every code email now reaches the sink addressed to `email.notification`. The probe must find a user's code by the body header naming the submitted address, not by the envelope or TO, and a new stage proves AC-19. Re-record the ledger rows the run touches.
+  - `runbook.md` (A4 and A5) is already amended with the spec. Check that it matches the code.
+- **Scope:**
+  - "Non-production" is `!config.isProduction()`, read on every send, not cached at construction.
+  - **Non-production:**
+    - TO is `config.getEmailNotification()`, parsed through the existing `singleAddress` check;
+    - a blank or invalid value makes `build` fail, which logs `email_failed` at once and writes no row; never fall back to the submitted address;
+    - the subject is `"(TESTING ENVIRONMENT) " + subject`;
+    - the plain body starts with `To: <submitted>` and a separator line. The HTML body starts with the same header, the address HTML-escaped, using the `escapeHtml` helper;
+    - the header is a fixed English marker, not an i18n key, like `SendMailS`'s;
+    - the code, expiry and the rest of the copy are unchanged.
+  - **Production:** byte-for-byte the current message; only the submitted address.
+  - **Row (OPS-005):**
+    - `to_email` is the submitted address in both environments;
+    - `bbc_email` is the support mailbox outside production and null in production;
+    - `subject` has no prefix in either.
+  - `OtpLog` delivery `domain` stays the submitted address's domain.
+  - **Body in the row:**
+    - `message` is the rendered HTML part exactly as built for production, with the code and without the non-production header;
+    - it is still written on the worker after the attempt, and still excluded from resend;
+    - the code appears in no other column.
+  - **Code in the log, non-production only:** after the delivery attempt, on the worker, write one INFO line `auth.otp.code gu=<acronym> to=<submitted> code=<code>`. Use the same per-send `isProduction()` value that routed the email, and write it for delivered and failed sends alike. In production, write no such line, and no other log line may contain the code.
+- **Out of scope:** `SendMailS`, `crp_enable_email_notification`, `crp_email_support_team`, the resend exclusion (unchanged), the System Admin → Emails UI, any i18n or migration change.
+- **Tests:**
+  - non-production, delivered: one message whose only recipient (TO, no CC or BCC) is the support mailbox. The subject starts with the prefix; both parts start with the header naming the submitted address, escaped in HTML; the code is still in the body. The row has `to_email` = submitted, `bbc_email` = support, an unprefixed subject, and `message` equal to the production HTML body with the code and without the test header;
+  - non-production with `email.notification` null, blank or a list: no transport call, an `email_failed` delivery line, no row, and the submitted address is never a recipient;
+  - production: the recipient is the submitted address only, with no prefix, no header and a null `bbc_email`. The existing T09 and T18 assertions still pass;
+  - log line: outside production, exactly one `auth.otp.code` INFO line per handed-off email, for delivered and failed sends, with the unit, the submitted address and the code; in production, no captured log line contains the code or the submitted address;
+  - probe: the `leak` check allows the code only in the `auth.otp.code` line, since local runs are non-production;
+  - `isProduction()` is read per send: flip it between two sends on one instance and each send follows the current value.
+- **Verification:**
+  - compile gate with clean classes;
+  - Checkstyle delta against HEAD on the changed Java files;
+  - `mvn -q -o -pl marlo-web -am test -Dtest='OtpMailSenderTest,OtpRequestCodeActionTest,SendFailEmailActionTest' -DfailIfNoTests=false`;
+  - a live run on a fresh throwaway copy (`aiccradb_otp_probe` rebuilt from `aiccradb_actsave` with the T15 fixtures) and the local sink, with `marlo.production=false`. Run the new stage plus `leak emaillog`, and record the sink's TO and subject for one code email;
+  - afterwards, clean up as on 2026-10-14: stop the app and the sink, drop the copy, and delete the scratch credentials.
+- **Falsifier:**
+  - write the `auth.otp.code` line in production too: the production no-code-in-log test goes red;
+  - store the placeholder instead of the body: the body test goes red;
+  - store the body with the non-production header: the body test goes red;
+  - send to the submitted address when non-production: the recipient test goes red;
+  - fall back to the submitted address when the support mailbox is blank: the fail-closed test goes red;
+  - cache `isProduction()` in the constructor: the per-send test goes red.
+- **Red run:** the new tests run red before the change.
+- **Disqualifier:**
+  - a live run against `aiccradb_actsave` or `aiccradb1`–`4`;
+  - mail pointed at a real relay;
+  - a test that sets `marlo.production` in a tracked properties file.
+- **Consumers:** `OtpRequestCodeAction.handOff` (unchanged seam); System Admin → Emails (reads the row).
+- **Review:** `full`. The change decides who receives a sign-in code (SEC-001).
+- **Verification notes (Implementer, 2026-10-15; the Leader sets the status):**
+  - Red run: `OtpMailSenderTest` before the change, 32 tests, 10 failures. The `auth.otp.code` tests were added after and run red through falsifier F7.
+  - Green: `OtpMailSenderTest,OtpRequestCodeActionTest,SendFailEmailActionTest` 82 tests, 0 failures; full `mvn -q -o -pl marlo-web -am test` 792 tests, 0 failures. Clean compile 2415 / 1063 / 77 files, BUILD SUCCESS. Checkstyle on the two changed Java files: HEAD 0, working tree 0.
+  - Falsifiers, each red then restored: placeholder body (4 failures), body with header (1), submitted address as recipient (3), fallback on a blank mailbox (1), `isProduction()` cached in the constructor (10), code line in production (7), no code line at all (4).
+  - Live run on a fresh `aiccradb_otp_probe`: `nonprod leak emaillog` 43 checks, `enum` 11, `nonprodblank` 4, all passing. Output in `probes/output/ac-probe.t19-*.out`; `probes/README.md` section 10 and the AC-2, AC-3, AC-4, AC-11, AC-18 and AC-19 rows.
+  - The production half (recipient, no prefix or header, null `bbc_email`, no code line) is covered by unit tests only: `marlo.production` stayed false.
+
 ---
 
 ## 4. Dependency Graph
@@ -576,6 +644,7 @@ T10 + T11 ── T12 struts ──┐                                           
 T12 + T13 ── T14 UI ──────┴── T15 end-to-end ── T16 runbook / rollout                   ┘
 T14 ── T17 step-3 method choice (added 2026-10-14)
 T09 + T10 ── T18 email_logs row for support (added 2026-10-14)
+T09 + T18 ── T19 non-production recipient rule (added 2026-10-15)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.
@@ -603,9 +672,9 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 | FN-015 eligibility re-check after consume | T06 · T11 · T15 AC-9 |
 | FN-016 no pending → mismatch; after neutral request → same as eligible | T11 |
 | FN-017 email content, no code link | T09 |
-| FN-018 delivered with notifications off; recipient per OQ-5 | T09 · T15 AC-15 · T16 (OQ-5) |
+| FN-018 delivered with notifications off; outside production only to the support mailbox, prefixed, fail closed (OQ-5 resolved) | T09 · T15 AC-15 · T19 AC-19 |
 | FN-019 password and Cognito unchanged | T07 · T08 · T14 · T15 AC-1 |
-| SEC-001 scenario "Code never persisted" | T03 · T09 · T15 AC-11 |
+| SEC-001 scenario "Code never persisted" | T03 · T09 · T15 AC-11 · T19 AC-11 |
 | SEC-002 no clear email in the challenge store | T03 · T15 AC-11 |
 | SEC-003 constant time, no throw | T05 |
 | SEC-004 bound to session, email and unit; nothing client-side accepted as a session | T05 (`OtpPending`) · T11 · T12 (only `response`) |
@@ -616,11 +685,11 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 | SEC-009 Cognito guard · `cgiar.org` ignored | T05 · T06 · T15 AC-13 |
 | SEC-010 limits shared, counted before lookup, state-independent | T04 · T10 · T11 · T15 AC-14 |
 | SEC-011 untrusted headers ignored | T05 |
-| OPS-001 one request/verify line per call, one delivery line per email | T05 · T09 · T10 · T11 · T15 AC-11 |
+| OPS-001 one request/verify line per call, one delivery line per email; the non-production `auth.otp.code` line | T05 · T09 · T10 · T11 · T15 AC-11 · T19 AC-11 |
 | OPS-002 delivery failure logged, response neutral | T09 · T15 AC-15 |
 | OPS-003 purge, failure non-blocking | T03 · T10 |
 | OPS-004 runbook | T16 |
-| OPS-005 `email_logs` row without the code, not resendable | T18 AC-18 |
+| OPS-005 `email_logs` row (full body since 2026-10-15; the code in no other column), not resendable | T18 AC-18 · T19 AC-18 |
 | DA-001 migration safe and idempotent | T01 |
 | DA-002 seed off, existing types 1–4, constants in both files | T01 · T02 |
 | DA-003 shared rate-limit store | T01 · T04 |
@@ -667,11 +736,11 @@ Password and Cognito logins are unaffected at every level.
 
 ## 9. Definition of Done
 
-- [ ] T01–T18 done, each with its verification notes.
+- [ ] T01–T19 done, each with its verification notes.
 - [ ] Every AC in `requirements.md` §7 recorded `PASS` in `probes/README.md`. A `NOT VERIFIED` is allowed only for an accepted gap named in requirements §6.
 - [ ] Compile and Checkstyle gates green (zero new violations against HEAD); unit suite green with `-am`.
 - [ ] Every UNVERIFIED premise either settled, or listed as a go-live blocker in `runbook.md`.
-- [ ] No `email_log` row and no log line contains a code; evidence recorded.
+- [ ] In production no log line contains a code (outside production only the `auth.otp.code` line does), and in `email_logs` the code appears only in the body of its OPS-005 row (accepted 2026-10-15); evidence recorded.
 - [ ] Merged to `staging` through the PR strategy below; A2-2631 status checked per `marlo-commit`.
 - [ ] Shared-file pending items handed to `/akili-archive`.
 

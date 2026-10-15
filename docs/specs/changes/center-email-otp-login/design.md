@@ -26,7 +26,7 @@ decided only after a successful consume.
 - A verified code logs in through a **third Shiro token type**, then replays the **complete Cognito callback sequence** into the unchanged `finishLogin` tail.
 - The allow-list is a string specificity, read **without** the Hibernate caches.
 - The HMAC secret comes from the environment.
-- The code email goes through a **new asynchronous mailer** with timeouts. It is never persisted, and its outcome is logged.
+- The code email goes through a **new asynchronous mailer** with timeouts. Its outcome is logged, and its `email_logs` row stores the full body (amended 2026-10-15).
 
 Password and Cognito paths do not change behavior.
 
@@ -302,7 +302,7 @@ identically for every account (JD-1).
 | `OtpRateLimiter` → `OtpRateLimitManager` | **Window buckets.** In its own `@Transactional` call, a bucket upserts `hits = hits + 1` for `(bucket, window_start)`, then reads `hits` back in the same transaction. Over the limit → limited.<br>**Cooldown.** The locking read-decide-write on `otp_cooldowns` (§5.1 step 1, amended 2026-10-13).<br>A store failure **fails closed** (`unavailable`). Windows older than 1 day and cooldown rows older than 1 h are purged opportunistically in a separate transaction | SEC-010, FN-008, DA-003 |
 | `ClientIpResolver` | Starts from `getRemoteAddr()`. If that address falls inside an entry of `otp.trusted.proxies` (comma-separated IPv4/IPv6 addresses **or CIDR ranges**), walks `X-Forwarded-For` from the right and takes the first hop not inside the list. A missing, empty or malformed header from a trusted peer → `getRemoteAddr()`. An address is parsed only from IP literals, never through a DNS lookup (amended 2026-10-13). Headers from untrusted peers are ignored (JI-5) | SEC-011 |
 | `OtpPending` | Serializable session value under `APConstants.OTP_PENDING_CHALLENGE`: nonce, normalised email, `globalUnitId`, `returnUrl`, `agree`. No code and no MAC. Binds the challenge to session, email and Global Unit (SEC-004, JD-3) | SEC-004 |
-| `OtpMailSender` | Builds its own `javax.mail` `Session` from the `APConfig` SMTP getters `SendMailS` uses (P-8), plus connect, read and write timeouts (`otp.smtp.timeout.ms`, default 10 000).<br>Sends to **one** recipient on a dedicated executor: 2 daemon threads, a bounded queue of 100, and an abort policy that is caught.<br>A rejection, a timeout or a send error is logged as an `auth.otp.delivery outcome=email_failed` line at WARN; a success as `outcome=delivered`. The response was already `sent` for every state, so a rejection reveals nothing (JI-4).<br>After the delivery attempt of a queued message, on the same worker thread, it saves one `email_logs` row through `EmailLogManager.saveEmailLog` (`@Transactional`): recipient, subject, date, Global Unit id, `source_action = /otpRequestCode` (`OtpMailSender.SOURCE_ACTION`), `succes_email`, `tried = 1`, `error_email` = the exception class name on failure, and the placeholder `message` "Sign-in code email (code withheld)". No code, no attachment, no message id is required. A failed save is logged at WARN (class name only) and swallowed (amended 2026-10-14, OPS-005).<br>It never uses `SendMailS`, the notification flag or the support redirect. The recipient is always the submitted address, in every environment (OQ-5 default, JI-2) | SEC-001, OPS-002, OPS-005, FN-018, NF-001 |
+| `OtpMailSender` | Builds its own `javax.mail` `Session` from the `APConfig` SMTP getters `SendMailS` uses (P-8), plus connect, read and write timeouts (`otp.smtp.timeout.ms`, default 10 000).<br>Sends to **one** recipient on a dedicated executor: 2 daemon threads, a bounded queue of 100, and an abort policy that is caught.<br>A rejection, a timeout or a send error is logged as an `auth.otp.delivery outcome=email_failed` line at WARN; a success as `outcome=delivered`. The response was already `sent` for every state, so a rejection reveals nothing (JI-4).<br>After the delivery attempt of a queued message, on the same worker thread, it saves one `email_logs` row through `EmailLogManager.saveEmailLog` (`@Transactional`): recipient, subject, date, Global Unit id, `source_action = /otpRequestCode` (`OtpMailSender.SOURCE_ACTION`), `succes_email`, `tried = 1`, `error_email` = the exception class name on failure, and `message` = the HTML body as sent, code included, without the non-production header (amended 2026-10-15, SEC-001 exception). No attachment and no message id are required. A failed save is logged at WARN (class name only) and swallowed (amended 2026-10-14, OPS-005).<br>It never uses `SendMailS`, the notification flag or the `crp_email_support_team` redirect.<br>**Outside production** (`!APConfig.isProduction()`), it applies MARLO's non-production rule (FN-018, OQ-5 resolved 2026-10-15, T19):<br>- TO is `email.notification` only, validated as a single address; a blank or invalid value makes the build fail (`email_failed`, no row) and never falls back to the submitted address;<br>- the subject is prefixed `(TESTING ENVIRONMENT) `;<br>- both bodies open with a header naming the submitted address (HTML-escaped in the HTML part).<br>The row then holds the submitted address in `to_email`, the support mailbox in `bbc_email` and the subject without the prefix, as `SendMailS` logs it. In production, the recipient is the submitted address and there is no prefix or header | SEC-001, OPS-002, OPS-005, FN-018, NF-001 |
 | `OtpLog` | slf4j. `auth.otp.<request|verify|delivery> outcome=<enum> gu=<acronym> domain=<domain> ms=<n>`. Values pass through `LogSanitizer`; `domain` and `gu` are further reduced to `[a-z0-9.-]`, so an attacker-supplied value cannot forge a `key=value` field (amended 2026-10-13). A null outcome logs as `internal_error`. No code, nonce, full email or session ID. Writes exactly one `request` or `verify` line per call, and one `delivery` line per handed-off email (requirements OPS-001 as amended, JI-1) | OPS-001/002 |
 
 ### 5.4 Realm — `APCustomRealm`
@@ -367,7 +367,7 @@ entity is saved.
   - a `delivery outcome=email_failed` line means the send failed;
   - a `request outcome=neutral` line means the account was ineligible (server-side only);
   - neither line means the request never arrived.
-- **System Admin → Emails (OPS-005):** each queued code email has a row with `source_action = /otpRequestCode`, sent or not sent, so support can find it by address. The row has no body, and `SendFailEmailAction` skips these rows, singly and in bulk.
+- **System Admin → Emails (OPS-005):** each queued code email has a row with `source_action = /otpRequestCode`, sent or not sent, so support can find it by address. The row holds the full body, code included (amended 2026-10-15). `SendFailEmailAction` skips these rows, singly and in bulk.
 
 ## 12. Performance, Scalability & Concurrency Verification
 
@@ -390,7 +390,7 @@ entity is saved.
 | T10 races | Conditional updates, atomic upsert buckets, supersede + insert in one transaction (§12 probe) |
 | T11 session theft | Session rotated on login (SEC-005) |
 | T15 lookalikes | Exact match |
-| T16 log leakage | `OtpLog` only; the code never reaches `email_logs` (placeholder body, OPS-005, amended 2026-10-14) or the log |
+| T16 log leakage | `OtpLog` lines carry no code. In production the code never reaches the log; outside production it appears only in the one `auth.otp.code` line per handed-off email (accepted 2026-10-15). It is in `email_logs` only in the body of the OPS-005 row (accepted 2026-10-15: readable by super admins and anyone with database or backup access while the code is live, at most 5 minutes) |
 | Victim lockout | A third party can spend a user's per-email buckets and block code sign-in for 15 min. **Accepted**: password and Cognito logins are unaffected |
 | Victim code supersede | A third party can request for a victim's email once every 30 s, superseding the victim's open code (RJ-11). The victim then needs a new code. The per-email bucket caps this at 5 per 15 min. **Accepted** for the same reason |
 | Residual timing | An eligible request does more database work than an ineligible one: the membership read, the SEC-009 reads and the mail hand-off. The gap is a few indexed reads, and the send is async. It is not measured. **Accepted**, and recorded as residual for SEC-006 (RJ-10); the pre-existing `crpByEmail.do` disclosure dominates it |
@@ -403,7 +403,7 @@ entity is saved.
 3. **Per environment:**
    - set the secret and `OTP_TRUSTED_PROXIES`;
    - settle P-4 (affinity), P-6 (proxy), P-18 (environment binding) and P-25 (RDS).
-4. **Pilot:** enable one Global Unit and one domain (OQ-1) with a test mailbox, then run the AC walkthrough.
+4. **Pilot:** enable one Global Unit and one domain (OQ-1) with a test mailbox, then run the AC walkthrough. On a non-production environment the code arrives in the support mailbox `email.notification`, not in the test user's mailbox (FN-018).
 5. **Expand** domain by domain.
 
 **Rollback**, cheapest first. Only the first applies on the next request (DD-12); the secret is read once at start by `OtpKeys` (corrected in T16, see `runbook.md` A1):
@@ -445,12 +445,15 @@ entity is saved.
 - **Decision:** a new issue sets `consumed_at` on the email's open rows.
 - **Rationale:** one column and one refusal path (`invalid`).
 
-### DD-7 — Dedicated asynchronous mailer; `email_logs` row without the body (amended 2026-10-14)
+### DD-7 — Dedicated asynchronous mailer; its own `email_logs` row (amended 2026-10-14, 2026-10-15)
 - **Decision:** `OtpMailSender` as specified in §5.3.
 - **Rationale:** `SendMailS` persists bodies, has no timeouts, and honors flags the code email must ignore (P-7). Async removes the latency oracle. The `delivery` line keeps failures observable (OPS-002).
 - **Deviation from the approved proposal**, which said "synchronous send" (JI-2). Async is required by SEC-006; recorded in `requirements.md` §10.
 - **Amendment 2026-10-14 (OPS-005):** the mailer now writes its own `email_logs` row after the send, with a placeholder body, so support sees the email in the admin email-tracking view. It still does not go through `SendMailS`, so the body is never persisted and the flags above still do not apply. The resend action skips these rows.
 - **Trade-off:** the row cannot be resent from System Admin → Emails; the user requests a new code.
+- **Amendment 2026-10-15 (full body, user decision):** the row stores the HTML body as sent, code included, like every MARLO email row. This is a recorded deviation from guide §3.2; the accepted risk is in §13 and the requirements Decision Log. The placeholder constant is removed.
+- **Amendment 2026-10-15 (code in non-production logs, user decision):** outside production, after the delivery attempt, the worker writes one INFO line `auth.otp.code gu=<acronym> to=<submitted> code=<code>`. In production the line is never written. This is a recorded deviation from guide §3.11 for non-production only.
+- **Amendment 2026-10-15 (FN-018, OQ-5 resolved):** outside production the mailer applies MARLO's non-production rule itself, rather than calling `SendMailS`: support mailbox only, `(TESTING ENVIRONMENT) ` prefix, and a header naming the submitted address. `SendMailS` would also bring the persisted body and the two specificities, which this DD still excludes.
 
 ### DD-8 — Database-backed rate limiting
 - **Decision:** `otp_rate_limits` fixed-window upserts for the SEC-010 limits, plus `otp_cooldowns` as a sliding interval for FN-008. Both go through a `@Transactional` manager.
