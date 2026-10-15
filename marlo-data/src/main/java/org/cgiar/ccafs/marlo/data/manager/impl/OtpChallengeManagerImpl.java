@@ -53,21 +53,6 @@ public class OtpChallengeManagerImpl implements OtpChallengeManager {
   }
 
   @Override
-  public Map<Long, String> allowListFor(String key, Collection<Long> globalUnitIds) {
-    Map<Long, String> allowLists = new HashMap<>();
-    if (globalUnitIds == null || globalUnitIds.isEmpty()) {
-      return allowLists;
-    }
-    Map<Long, String> stored = this.otpChallengeDAO.findAllowListValues(key, globalUnitIds);
-    for (Long globalUnitId : globalUnitIds) {
-      String value = stored.get(globalUnitId);
-      // NULL, empty and whitespace-only all mean "off", as does a Global Unit the store did not return.
-      allowLists.put(globalUnitId, value == null || value.trim().isEmpty() ? "" : value);
-    }
-    return allowLists;
-  }
-
-  @Override
   @Transactional
   public boolean consume(String nonce) {
     return this.otpChallengeDAO.consume(nonce, this.clock.instant()) == 1;
@@ -116,5 +101,26 @@ public class OtpChallengeManagerImpl implements OtpChallengeManager {
     }
     // Expired, or a row that looks open although nothing was incremented, which no state explains: refuse.
     return MismatchOutcome.INVALID;
+  }
+
+  @Override
+  public Map<Long, Map<String, String>> specificityValuesFor(Collection<String> keys,
+    Collection<Long> globalUnitIds) {
+    Map<Long, Map<String, String>> resolved = new HashMap<>();
+    if (keys == null || keys.isEmpty() || globalUnitIds == null || globalUnitIds.isEmpty()) {
+      return resolved;
+    }
+    Map<Long, Map<String, String>> stored = this.otpChallengeDAO.findSpecificityValues(keys, globalUnitIds);
+    for (Long globalUnitId : globalUnitIds) {
+      Map<String, String> ofUnit = stored.get(globalUnitId);
+      Map<String, String> values = new HashMap<>();
+      for (String key : keys) {
+        String value = ofUnit == null ? null : ofUnit.get(key);
+        // NULL, empty and whitespace-only all mean "off", as does a key or a Global Unit the store did not return.
+        values.put(key, value == null || value.trim().isEmpty() ? "" : value);
+      }
+      resolved.put(globalUnitId, values);
+    }
+    return resolved;
   }
 }

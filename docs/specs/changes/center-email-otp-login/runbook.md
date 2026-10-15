@@ -15,9 +15,9 @@ obtained yet; none is claimed here.
 
 | I want to | Do this |
 |---|---|
-| Enable code sign-in for a unit | Set the secret (A2), then put the allowed domains in the unit's `system_otp_allowed_email_domains` value in the admin UI (A1) |
-| Disable it for a unit | Empty that value in the admin UI. It applies on the next request, with no restart (A1, proved in C) |
-| Disable it everywhere, fastest | Empty every unit's value. Unsetting the secret also works but needs a restart (A2) |
+| Enable code sign-in for a unit | Set the secret (A2), then turn the unit's `system_otp_login_active` on in the admin UI, with an optional `system_otp_excluded_email_domains` (A1) |
+| Disable it for a unit | Turn the unit's `system_otp_login_active` off in the admin UI. It applies on the next request, with no restart (A1, proved in C) |
+| Disable it everywhere, fastest | Turn every unit's switch off. Unsetting the secret also works but needs a restart (A2) |
 | Find out why a code did not arrive | A5. Search `auth.otp.` in the application log |
 | Answer a user who says "no code" | A6. One neutral answer for every ineligible account |
 
@@ -27,7 +27,7 @@ obtained yet; none is claimed here.
 
 ## A1. Enable and disable per Global Unit (DD-12, DD-13)
 
-*Rewritten 2026-10-15 for T21. Until T21 ships, the build still uses the old allow-list `crp_otp_allowed_email_domains`.*
+*Rewritten 2026-10-15 for T21. The build reads the switch and the exclusion; the T21 migration removes the old allow-list `crp_otp_allowed_email_domains`.*
 
 The feature uses **two specificities per Global Unit**, both stored with the `system_` prefix. Values live in `custom_parameters`, one row per unit. Both ship **off**. Change them **only through the admin UI** (DD-12); SQL is for evidence and for the falsifier, not for operations.
 
@@ -42,7 +42,7 @@ To change them:
 3. **Enable:** turn `system_otp_login_active` on. Optionally fill in the exclusion. **Disable:** turn the switch off. Press **Save**.
 4. Check that `crpByEmail.do` for an account of that unit reports `otpEnabled: true` (or `false`), and that the login page shows (or hides) "Email me a sign-in code".
 
-The exclusion list follows these rules (`OtpDomainPolicy.parseAllowList`, applied as an exclusion):
+The exclusion list follows these rules (`OtpDomainPolicy.parseExclusionList`):
 
 | Rule | Detail |
 |---|---|
@@ -60,7 +60,7 @@ Behaviour of the screen, observed in the walk (Part C):
 
 **Rollback, cheapest first** (design section 14). Only the first is "next request":
 
-1. Turn `system_otp_login_active` off in the admin UI: live, per unit (T21; before T21, empty the allow-list).
+1. Turn `system_otp_login_active` off in the admin UI: live, per unit (T21).
 2. Unset `OTP_HMAC_SECRET`: the secret is read **once at start** (`OtpKeys`), so this needs a restart of every instance.
 3. Revert the deploy.
 4. Drop the three `otp_*` tables. This is destructive and the last resort.
@@ -103,7 +103,7 @@ a proxy exists at all (Part B).
 | Recipient | **Production:** the submitted address. **Any other environment** (`marlo.production` not `true`): only the support mailbox `email.notification`, with `(TESTING ENVIRONMENT) ` in the subject and the submitted address at the top of the body, the same as every other MARLO email. If that mailbox is not set, the code email fails (`email_failed`) and is never sent to the user instead (FN-018, OQ-5 resolved 2026-10-15) Outside production the value must be a single bare address with no surrounding spaces, or every code email fails |
 | `otp.smtp.timeout.ms` | Connect, read and write timeout. **Default 10 000 ms, clamped to 30 000, a malformed value falls back to the default.** Set it like the other `otp.*` values (the environment form is `OTP_SMTP_TIMEOUT_MS`; the mapping is the same as the secret's, but this exact name was not run) |
 | Timing | The request answers **`sent` at once**. A failure shows up **later**, at WARN, as `auth.otp.delivery outcome=email_failed ms=<n>`; the cause class name (never its message) is on a separate line, `auth.otp.mail outcome=send_failed cause=<class>`, so search that one for the cause. A full queue, or a failure while building the message, logs `email_failed` at once instead of later. Walk: a mail server that never answered gave HTTP 200 in 0.17 s and `email_failed ms=10110` afterwards |
-| **Relay note** | In local and non-production environments the configured host `cluster5out.us.messagelabs.com` is CGIAR's inbound gateway. It delivers only to `@cgiar.org` and refuses relay for anything else (`453 ... as a relay ... (#4.7.1)`). **OTP users are non-CGIAR by definition**, so production needs a relay that delivers to external domains. **Confirming that is a go-live item (Part B).** To test locally, use a sink: `EMAIL_HOST`/`EMAIL_PORT` and `EMAIL_HOSTBACKUP`/`EMAIL_PORTBACKUP` to `127.0.0.1:2525` |
+| **Relay note** | In local and non-production environments the configured host `cluster5out.us.messagelabs.com` is CGIAR's inbound gateway. It delivers only to `@cgiar.org` and refuses relay for anything else (`453 ... as a relay ... (#4.7.1)`). **Code sign-in is meant above all for external users** (stage 1 excludes `cgiar.org`), so production needs a relay that delivers to external domains. **Confirming that is a go-live item (Part B).** To test locally, use a sink: `EMAIL_HOST`/`EMAIL_PORT` and `EMAIL_HOSTBACKUP`/`EMAIL_PORTBACKUP` to `127.0.0.1:2525` |
 | Deliverability | Unproven until the pilot. Needs a sender with aligned SPF, DKIM and DMARC. Partner IT may have to allow-list it |
 
 ## A5. Code not received: triage (design section 11)
@@ -122,7 +122,7 @@ succeeded; `request` and `verify` are INFO.
 | **No line** | The request never reached the app | Browser or network problem, a proxy dropping the POST, or a JavaScript error. Check the proxy log and `otpRequestCode.do` |
 | `outcome=sent` | Account eligible, code issued, mail handed to the sender | Step 2 |
 | `outcome=neutral` | The account was **ineligible** (see A6). Server-side only; the user saw "code sent" | Fix the account if it is meant to be eligible. Say nothing about why to the user |
-| `outcome=denied_domain` | The domain is not on the unit's list, the unit is unknown, or the shape was bad. The user saw the "not enabled" message | Check A1 for that unit |
+| `outcome=denied_domain` | The switch is off, the domain is on the unit's exclusion list, the unit is unknown, or the shape was bad. The user saw the "not enabled" message | Check A1 for that unit |
 | `outcome=unconfigured` | The secret is missing or too short | A2. Look for the startup WARN `auth.otp.keys` |
 | `outcome=rate_limited` (note `gu=` is empty, the limit runs before any lookup) | 5 requests per email or 20 per IP per 15 minutes, or the 30 s cooldown | Ask the user to wait. If many users hit it, suspect a shared IP bucket (A3) |
 | `outcome=terms_required` | The terms box was not ticked. The cooldown still started | Ask the user to tick it |
@@ -166,7 +166,7 @@ mailbox; the row shows that mailbox in **BCC**.
 
 ## A6. Support note: ineligible accounts
 
-Eight states, **one neutral answer** ("a code is on its way to k***@domain") **for the first five**. Nothing is mailed to them
+Seven states, **one neutral answer** ("a code is on its way to k***@domain") **for the first four**. Nothing is mailed to them
 and nothing in the response, the timing or the page tells them apart (anti-enumeration, FN-005).
 
 | Account state | What the user sees | Mail sent |
@@ -175,13 +175,12 @@ and nothing in the response, the timing or the page tells them apart (anti-enume
 | Inactive user (`users.is_active = 0`) | "Code sent" | No |
 | Not a member of that Global Unit | "Code sent" | No |
 | **Soft-deleted member** (`crp_users.is_active = 0`, how MARLO removes a member; refused) | "Code sent" | No |
-| CGIAR user (`is_cgiar_user = 1`) on a unit where Cognito is active | "Code sent" | No |
-| **Domain not on the unit's list** | **"Not enabled for this project"** (a different message, by design, FN-006) | No |
+| **Switch off, or the domain is on the unit's exclusion list** | **"Not enabled for this project"** (a different message, by design, FN-006) | No |
 | Eligible account | "Code sent" | Yes |
 | Eligible when asked, ineligible when the code is entered | "Invalid or expired" | n/a |
 
 > The domain case is deliberately not neutral: design section 4 and FN-006 answer it with `domainNotEnabled`. The login
-> page only offers the option when the domain is allowed, so a user normally cannot reach it.
+> page only offers the option when the switch is on and the domain is not excluded, so a user normally cannot reach it.
 
 **Support may say:** "If that address is registered for this project and its domain is enabled, a code arrives within a few
 minutes. Check spam. You can ask again after 30 seconds, up to 5 times in 15 minutes. A code lasts 5 minutes and allows
@@ -197,7 +196,6 @@ screens and tells the user only that it was done, **replying only to the registe
 |---|---|---|
 | **Clock skew between instances** | Cooldown and expiry use each instance's UTC clock. A skew can delay acceptance of a request by the skew. The JVM time zone does not matter, but see Part B (DST gap) | T04 review |
 | **Purge deadlock** | The opportunistic purge (at most every 10 minutes per instance) can deadlock with a request in the same moment. The request answers **`unavailable`** (fail closed), never a wrong answer. Not reproduced in two runs | T04 review, T15 |
-| **Cognito cache lag** | The re-check after the code is entered reads `cognito_auth_active` from the cache. On another instance a CGIAR user can stay eligible for up to about 1 hour after Cognito is enabled for the unit | T06 review, DD-12 |
 | **Session failure after the mail** | If the session write fails after the mail is handed off, the answer is `unavailable` though a code was mailed. Retrying supersedes it | T10 |
 | **Post-login failure gap** | A `RuntimeException` after `Subject.login`, or the unmapped-unit-type branch of `finishLogin`, answers `unavailable` or `failed` but **leaves an authenticated session**. Reproduced in T15. It is **shared with Cognito route C**. A `logout()` on any failure after login would cover both flows; it belongs to a separate task | T11, T15 |
 | **"Log in" stays enabled while a code request is in flight** | A password attempt can start meanwhile; the late `sent` then opens the code step. The page stays consistent and the mail really was sent. Observed in T15 | T15 |
@@ -245,7 +243,7 @@ to the row, with its source. Nothing here has been settled by infra yet.
 | **OQ-1** | Pilot Global Units and domains | Product owner | **Go-live** (nothing is enabled without it) | Open. All units ship off |
 | **OQ-2** | Baseline-role exposure for the pilot users (below) | Kenji + PMU | **Go-live** | Open. Procedure in B2 |
 | **OQ-3** | Does the A2-2629 owner accept a non-Cognito path under the epic? | A2-2629 owner | **Go-live** | Open. Default: proceed per A2-2631 |
-| OQ-4 | `is_cgiar_user = 1`: refuse always or only where Cognito is active | Kenji | Not blocking | Default adopted: only where Cognito is active; `cgiar.org` always ignored |
+| OQ-4 | `is_cgiar_user = 1`: refuse always or only where Cognito is active | Kenji | Not blocking | **Superseded 2026-10-15 (T21):** `is_cgiar_user` plays no part; each unit's exclusion list decides |
 | OQ-5 | Outside production, does the code go to the real recipient or the support redirect? | Kenji + QA | Resolved | **Resolved 2026-10-15:** outside production the code goes only to the support mailbox, as every MARLO email does (T19). UAT testers read their code there |
 | Relay | The production relay delivers to **external** domains (A4) | Kenji, with infra | **Go-live** | Open. The local gateway refuses them |
 | Sender | SPF, DKIM, DMARC aligned for the sender; partner IT allow-listing | Kenji, with infra | Pilot | Open |

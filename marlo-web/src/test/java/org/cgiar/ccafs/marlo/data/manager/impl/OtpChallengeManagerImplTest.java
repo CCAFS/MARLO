@@ -266,80 +266,119 @@ public class OtpChallengeManagerImplTest {
     assertEquals(cutoff, this.dao.deleteCutoff);
   }
 
-  // ---- allowListFor: NULL, blank and missing all mean "off" (T01 advisory, FN-001, FN-002) -----------------------
+  // ---- specificityValuesFor: NULL, blank and missing all mean "off" (T01 advisory, FN-001, FN-002, DD-13) ---------
 
-  private static final String ALLOW_LIST_KEY = "crp_otp_allowed_email_domains";
+  private static final String SWITCH_KEY = "system_otp_login_active";
+  private static final String EXCLUSION_KEY = "system_otp_excluded_email_domains";
+  private static final List<String> BOTH_KEYS = Arrays.asList(SWITCH_KEY, EXCLUSION_KEY);
+
+  /** What the manager answers for one key of one Global Unit. */
+  private String valueOf(long globalUnitId, String key) {
+    return this.manager.specificityValuesFor(BOTH_KEYS, Collections.singletonList(globalUnitId)).get(globalUnitId)
+      .get(key);
+  }
 
   @Test
   public void aNullValueIsOff() {
     // The existing format-4 catalog rows are seeded with NULL, and a custom row can hold NULL.
-    this.dao.allowListValues.put(GLOBAL_UNIT_ID, null);
+    this.dao.put(GLOBAL_UNIT_ID, SWITCH_KEY, null);
 
-    assertEquals("", this.manager.allowListFor(ALLOW_LIST_KEY, Collections.singletonList(GLOBAL_UNIT_ID))
-      .get(GLOBAL_UNIT_ID));
+    assertEquals("", this.valueOf(GLOBAL_UNIT_ID, SWITCH_KEY));
   }
 
   @Test
   public void anEmptyValueIsOff() {
-    // The OTP catalog rows are seeded with default_value ''.
-    this.dao.allowListValues.put(GLOBAL_UNIT_ID, "");
+    // The OTP catalog rows are seeded with default_value '' (the exclusion) or 'false' (the switch).
+    this.dao.put(GLOBAL_UNIT_ID, EXCLUSION_KEY, "");
 
-    assertEquals("", this.manager.allowListFor(ALLOW_LIST_KEY, Collections.singletonList(GLOBAL_UNIT_ID))
-      .get(GLOBAL_UNIT_ID));
+    assertEquals("", this.valueOf(GLOBAL_UNIT_ID, EXCLUSION_KEY));
   }
 
   @Test
   public void aWhitespaceOnlyValueIsOff() {
-    this.dao.allowListValues.put(GLOBAL_UNIT_ID, " \t ");
+    this.dao.put(GLOBAL_UNIT_ID, EXCLUSION_KEY, " \t ");
 
-    assertEquals("", this.manager.allowListFor(ALLOW_LIST_KEY, Collections.singletonList(GLOBAL_UNIT_ID))
-      .get(GLOBAL_UNIT_ID));
+    assertEquals("", this.valueOf(GLOBAL_UNIT_ID, EXCLUSION_KEY));
   }
 
   @Test
   public void aGlobalUnitAbsentFromTheStoreResultIsOff() {
     // A Global Unit that does not exist, so the request is refused as "domain not enabled".
-    assertEquals("", this.manager.allowListFor(ALLOW_LIST_KEY, Collections.singletonList(GLOBAL_UNIT_ID))
-      .get(GLOBAL_UNIT_ID));
+    assertEquals("", this.valueOf(GLOBAL_UNIT_ID, SWITCH_KEY));
+    assertEquals("", this.valueOf(GLOBAL_UNIT_ID, EXCLUSION_KEY));
+  }
+
+  @Test
+  public void aKeyWithNoCatalogRowForTheUnitsTypeIsOffWhileTheOtherKeyIsKept() {
+    this.dao.put(GLOBAL_UNIT_ID, SWITCH_KEY, "true");
+
+    assertEquals("true", this.valueOf(GLOBAL_UNIT_ID, SWITCH_KEY));
+    assertEquals("", this.valueOf(GLOBAL_UNIT_ID, EXCLUSION_KEY));
   }
 
   @Test
   public void aConfiguredValueIsReturnedExactlyAsStoredForTheCallerToParse() {
-    this.dao.allowListValues.put(GLOBAL_UNIT_ID, " Partner.org , other.org ");
+    this.dao.put(GLOBAL_UNIT_ID, EXCLUSION_KEY, " Partner.org , other.org ");
 
-    assertEquals(" Partner.org , other.org ",
-      this.manager.allowListFor(ALLOW_LIST_KEY, Collections.singletonList(GLOBAL_UNIT_ID)).get(GLOBAL_UNIT_ID));
+    assertEquals(" Partner.org , other.org ", this.valueOf(GLOBAL_UNIT_ID, EXCLUSION_KEY));
   }
 
   @Test
-  public void everyRequestedGlobalUnitGetsAnEntryAndOthersAreNotInvented() {
-    this.dao.allowListValues.put(12L, "a.org");
-    this.dao.allowListValues.put(14L, null);
+  public void everyRequestedGlobalUnitGetsBothKeysAndOthersAreNotInvented() {
+    this.dao.put(12L, SWITCH_KEY, "true");
+    this.dao.put(12L, EXCLUSION_KEY, "a.org");
+    this.dao.put(14L, SWITCH_KEY, null);
+    this.dao.put(99L, SWITCH_KEY, "true");
 
-    Map<Long, String> result = this.manager.allowListFor(ALLOW_LIST_KEY, Arrays.asList(12L, 13L, 14L));
+    Map<Long, Map<String, String>> result = this.manager.specificityValuesFor(BOTH_KEYS, Arrays.asList(12L, 13L, 14L));
 
-    Map<Long, String> expected = new HashMap<>();
-    expected.put(12L, "a.org");
-    expected.put(13L, "");
-    expected.put(14L, "");
+    Map<String, String> unit12 = new HashMap<>();
+    unit12.put(SWITCH_KEY, "true");
+    unit12.put(EXCLUSION_KEY, "a.org");
+    Map<String, String> off = new HashMap<>();
+    off.put(SWITCH_KEY, "");
+    off.put(EXCLUSION_KEY, "");
+    Map<Long, Map<String, String>> expected = new HashMap<>();
+    expected.put(12L, unit12);
+    expected.put(13L, off);
+    expected.put(14L, off);
     assertEquals(expected, result);
   }
 
   @Test
-  public void theKeyAndTheIdsGoToTheStoreAsGiven() {
+  public void theKeysAndTheIdsGoToTheStoreTogetherInOneCall() {
     List<Long> ids = Arrays.asList(12L, 13L);
 
-    this.manager.allowListFor(ALLOW_LIST_KEY, ids);
+    this.manager.specificityValuesFor(BOTH_KEYS, ids);
 
-    assertEquals(Collections.singletonList("findAllowListValues"), this.dao.calls);
-    assertEquals(ALLOW_LIST_KEY, this.dao.allowListKey);
-    assertEquals(ids, new ArrayList<>(this.dao.allowListIds));
+    assertEquals("one query for every key and every unit", Collections.singletonList("findSpecificityValues"),
+      this.dao.calls);
+    assertEquals(BOTH_KEYS, new ArrayList<>(this.dao.specificityKeys));
+    assertEquals(ids, new ArrayList<>(this.dao.specificityIds));
   }
 
   @Test
-  public void noGlobalUnitsAskNothingFromTheStoreBecauseAnEmptyInListIsNotValidSql() {
-    assertTrue(this.manager.allowListFor(ALLOW_LIST_KEY, Collections.<Long>emptyList()).isEmpty());
-    assertTrue(this.manager.allowListFor(ALLOW_LIST_KEY, null).isEmpty());
+  public void everyCallAsksTheStoreAgainSoAChangeIsSeenOnTheNextRequest() {
+    // DD-12, FN-002: the manager keeps nothing between calls, so the only caching that could delay a change is
+    // below it, and the DAO read is a native statement that goes through no cache.
+    this.dao.put(GLOBAL_UNIT_ID, SWITCH_KEY, "false");
+    assertEquals("false", this.valueOf(GLOBAL_UNIT_ID, SWITCH_KEY));
+
+    this.dao.put(GLOBAL_UNIT_ID, SWITCH_KEY, "true");
+    assertEquals("true", this.valueOf(GLOBAL_UNIT_ID, SWITCH_KEY));
+
+    this.dao.put(GLOBAL_UNIT_ID, EXCLUSION_KEY, "cgiar.org");
+    assertEquals("cgiar.org", this.valueOf(GLOBAL_UNIT_ID, EXCLUSION_KEY));
+    assertEquals(Arrays.asList("findSpecificityValues", "findSpecificityValues", "findSpecificityValues"),
+      this.dao.calls);
+  }
+
+  @Test
+  public void noKeysOrNoGlobalUnitsAskNothingFromTheStoreBecauseAnEmptyInListIsNotValidSql() {
+    assertTrue(this.manager.specificityValuesFor(BOTH_KEYS, Collections.<Long>emptyList()).isEmpty());
+    assertTrue(this.manager.specificityValuesFor(BOTH_KEYS, null).isEmpty());
+    assertTrue(this.manager.specificityValuesFor(Collections.<String>emptyList(), Arrays.asList(12L)).isEmpty());
+    assertTrue(this.manager.specificityValuesFor(null, Arrays.asList(12L)).isEmpty());
     assertTrue(this.dao.calls.isEmpty());
   }
 
@@ -406,9 +445,9 @@ public class OtpChallengeManagerImplTest {
     Integer attemptsAfterIncrement;
     OtpChallenge rowOnReRead;
 
-    final Map<Long, String> allowListValues = new HashMap<>();
-    String allowListKey;
-    Collection<Long> allowListIds;
+    final Map<Long, Map<String, String>> specificityValues = new HashMap<>();
+    Collection<String> specificityKeys;
+    Collection<Long> specificityIds;
 
     int deleteResult;
     Instant deleteCutoff;
@@ -426,12 +465,8 @@ public class OtpChallengeManagerImplTest {
     Instant insertExpiresAt;
     Instant insertNow;
 
-    @Override
-    public Map<Long, String> findAllowListValues(String key, Collection<Long> globalUnitIds) {
-      this.calls.add("findAllowListValues");
-      this.allowListKey = key;
-      this.allowListIds = globalUnitIds;
-      return this.allowListValues;
+    void put(long globalUnitId, String key, String value) {
+      this.specificityValues.computeIfAbsent(globalUnitId, id -> new HashMap<>()).put(key, value);
     }
 
     @Override
@@ -444,6 +479,15 @@ public class OtpChallengeManagerImplTest {
     public OtpChallenge findByNonce(String nonce) {
       this.calls.add("findByNonce");
       return this.rowOnReRead;
+    }
+
+    @Override
+    public Map<Long, Map<String, String>> findSpecificityValues(Collection<String> keys,
+      Collection<Long> globalUnitIds) {
+      this.calls.add("findSpecificityValues");
+      this.specificityKeys = keys;
+      this.specificityIds = globalUnitIds;
+      return this.specificityValues;
     }
 
     @Override

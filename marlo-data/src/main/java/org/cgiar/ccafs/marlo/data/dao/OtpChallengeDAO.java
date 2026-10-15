@@ -30,19 +30,6 @@ import java.util.Map;
 public interface OtpChallengeDAO {
 
   /**
-   * Reads the allow-list of each Global Unit straight from the tables, through neither the second-level cache nor
-   * the query cache (DD-12, FN-002). An active {@code custom_parameters} row for the Global Unit wins, even when its
-   * value is NULL or blank; otherwise the catalog {@code parameters.default_value} for the Global Unit's type
-   * applies.
-   *
-   * @param key the {@code parameters.key}.
-   * @param globalUnitIds the Global Units to resolve.
-   * @return the raw effective value by Global Unit id. A Global Unit that does not exist is absent. A value can be
-   *         NULL (no catalog row for the type, or a NULL value) or blank.
-   */
-  public Map<Long, String> findAllowListValues(String key, Collection<Long> globalUnitIds);
-
-  /**
    * Reads {@code attempts} of the row, as a fresh read of the database.
    *
    * @param nonce the challenge handle.
@@ -57,6 +44,21 @@ public interface OtpChallengeDAO {
    * @return the row, or null when none has that nonce.
    */
   public OtpChallenge findByNonce(String nonce);
+
+  /**
+   * Reads the value of each key for each Global Unit straight from the tables, through neither the second-level
+   * cache nor the query cache (DD-12, FN-002), in one statement. An active {@code custom_parameters} row for the
+   * Global Unit wins, even when its value is NULL or blank; otherwise the catalog {@code parameters.default_value}
+   * for the Global Unit's type applies.
+   *
+   * @param keys the {@code parameters.key} values.
+   * @param globalUnitIds the Global Units to resolve.
+   * @return the raw effective values by Global Unit id and then by key. A Global Unit that does not exist is
+   *         absent, and so is a key with no catalog row for the Global Unit's type. A value can be NULL (a NULL
+   *         default or a NULL custom value) or blank.
+   */
+  public Map<Long, Map<String, String>> findSpecificityValues(Collection<String> keys,
+    Collection<Long> globalUnitIds);
 
   /**
    * Adds one to {@code attempts} while the row is not consumed and has fewer than {@link OtpChallenge#MAX_ATTEMPTS}.

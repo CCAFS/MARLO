@@ -1444,3 +1444,31 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - no explicit test that the shared `LocalizedTextProvider` is untouched. It holds by construction, since the class has no reference to it.
 - **Environment state after the task:** nothing running; copy dropped; `aiccradb_actsave` not written.
 
+
+---
+
+## CHG-OTP-LOGIN-001-T21 — Per-unit switch and domain exclusion (2026-10-15)
+
+- **Origin:** the user redefined the specificity: code sign-in is switched on per Global Unit for every account with access, with an optional per-unit domain exclusion, and no CGIAR rule ("hazlo asi"). The definition was written and committed first (`ac4dcc50fd`), with OQ-9 approved by the user, then implemented on "implementalo".
+- **Implementer (T2), attempt 1:**
+  - **Migration** `V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql`: seeds `system_otp_login_active` and `system_otp_excluded_email_domains` for the existing types among 1–4 with the DA-002 texts, then deletes the `crp_otp_allowed_email_domains` child and parent rows. DML only, idempotent, no assumed unit id.
+  - **Constants:** `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` in both `APConstants.java`; `OTP_ALLOWED_EMAIL_DOMAINS` removed.
+  - **Reads:** one uncached native query returns both keys for every listed unit; a missing row reads as off.
+  - **Rule:** `OtpDomainPolicy.isOffered` (switch on and domain not excluded); `OtpEligibility` no longer reads `is_cgiar_user` or `CognitoAuthSpecificity`; `OtpRequestCodeAction` step 4 and `CrpByUserEmailAction` use it.
+  - **UI:** on a Cognito unit with the code on, step 3 opens on the choice "Sign in with CGIAR" / "Email me a sign-in code"; the password input is removed from the form. `login.js?20261015`.
+  - **Probes:** standing fixture in `ac-probe.sh`; new `ac21-migration.sh`; outputs under `probes/output/`.
+- **Implementer evidence:**
+  - clean compile 2415/1064/78; Checkstyle delta 0; full suite 832 tests, 0 failures (811 before);
+  - migration gate 17/0 (twice on a copy with an old-key child row, twice without units 45/47, twice without unit types; then applied by Flyway at app start);
+  - live stack on a throwaway copy with the sink: `enum` 18/0, `live` 7/0, `attempts removed limits nonprod postlogin emaillog` 30/0 (1 not run: the AC-18 resend half, covered by `SendFailEmailActionTest`), `session leak` 20/0;
+  - browser walkthrough of external, CGIAR on Cognito with the code, `cgiar.org` excluded live, and switch off. The Cognito redirect to the identity provider was not followed;
+  - falsifiers red: CGIAR check kept (7 failures), allow-list semantics (80 failures, 5 errors), remembered read (live-change unit test), `cgiar.org` drop (9 failures), Hibernate query cache on the live stack (`live` 3/7 red);
+  - environment cleaned; `aiccradb_actsave` unchanged; `marlo-dev.properties` checksum unchanged.
+- **Deviation accepted:** the Cognito choice reuses the step-3 password panel; "Sign in with CGIAR" in the choice starts the redirect directly after the terms check. Design §6 rows amended by the Leader.
+- **Not re-run:** `expiry`, `resend`, `smtp`, `blackhole`, `tz`, `nosecret`, `nonprodblank` and the concurrency probes; no code they exercise changed.
+- **Leader re-run (non-author):** clean compile 2415/1064/78; 509 tests in the OTP, Cognito, login and `crpByEmail` classes green; no private data or local paths in the diff.
+- **Attempt 1, Reviewer (T3):** **PASS**. Advisories:
+  - stale allow-list and old CGIAR wording in design, requirements and runbook: swept by the Leader (FN-015 amended, glossary "Exclusion list", personas row, §5.3, §6, DD-12 scope, load row, relay note);
+  - `ac21-migration.sh` prints "run N exit 0" under `set -e`, so those lines cannot show a failure; the script's final exit and row checks are the evidence. Not changed;
+  - the fixture `otp.staff@cgiar.org` is safe only with a `probe` database and the local sink. Kept as is.
+- **Environment state after the task:** nothing running; copies dropped.

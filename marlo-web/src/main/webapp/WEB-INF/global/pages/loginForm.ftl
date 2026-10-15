@@ -83,7 +83,7 @@
                headline/subtext pair steps 1 and 2 already use (loginForm.ftl:25, :38), so it reads as
                this step's heading rather than as a field label of the card below it. Placed before
                #login-password, which login.js restores with append() and must stay the last child --]
-          <p class="login-subtext">[@s.text name="login.externalUser"/]</p>
+          <p class="login-subtext" id="login-external-user-label">[@s.text name="login.externalUser"/]</p>
           <div class="selected-project-container">
             <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
             <ul class="selected-project-card-list">
@@ -98,7 +98,8 @@
             </p>
           </div>
           [#-- CHG-OTP-LOGIN-001-T17 / UI-006: the method choice and the code panel. Both stay hidden and inert
-               unless login.js opens them, which it does only on the LOCAL branch when otpEnabled === true. The
+               unless login.js opens them, which it does when otpEnabled === true, on the LOCAL branch and (T21) for
+               a CGIAR account on a Cognito unit, where "Sign in with CGIAR" replaces the password method. The
                password label and #login-password below are the existing markup, reused as the password panel.
                Placed before the label on purpose: #login-password must stay this step's last child, which
                login.js relies on to restore it with append() --]
@@ -107,8 +108,13 @@
             <div class="login-button-container">
               <button type="button" id="login-method-code-button" class="login-form-button">[@s.text name="login.otp.method.code"/]</button>
             </div>
-            <div class="login-button-container">
+            <div class="login-button-container" id="login-method-password-container">
               <button type="button" id="login-method-password-button" class="login-form-button login-form-button-secondary">[@s.text name="login.otp.method.password"/]</button>
+            </div>
+            [#-- CHG-OTP-LOGIN-001-T21: the other way of a CGIAR account on a Cognito unit. Same handler as
+                 #login-cgiar-button, which stays the single-method control when the code is not offered --]
+            <div class="login-button-container hidden" id="login-method-cgiar-container">
+              <button type="button" id="login-method-cgiar-button" class="login-form-button login-form-button-secondary">[@s.text name="login.cgiarSignIn"/]</button>
             </div>
           </div>
           <div class="login-method-code hidden" id="login-method-code">

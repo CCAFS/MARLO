@@ -278,8 +278,10 @@ function init() {
   // CHG-COGNITO-AUTH-001-T12: the CGIAR sign-in control (FN-001 COGNITO branch). A real
   // <button type="button">, so it is keyboard-reachable and activates on both Enter and Space for
   // free, and it never submits the login form - it navigates to cognitoLogin.do instead. The
-  // redirect is always user-initiated (design.md 5.5): nothing here fires without this click
-  $('#login-cgiar-button').on('click', function() {
+  // redirect is always user-initiated (design.md 5.5): nothing here fires without this click.
+  // CHG-OTP-LOGIN-001-T21 / UI-006: the same handler serves the "Sign in with CGIAR" control of the method choice,
+  // which a CGIAR account on a Cognito unit sees next to "Email me a sign-in code"
+  $('#login-cgiar-button, #login-method-cgiar-button').on('click', function() {
     // BUG-LOGIN-TERMS-001-FN-002: this control is type="button", so the HTML5 "required" that used to sit
     // on #terms never fired for it and the redirect carried &agree=false to a server that refuses it under
     // the generic "cognitoFailed" category (SEC-006) - a dead end the user could not diagnose, one page
@@ -564,7 +566,7 @@ function showPasswordStep() {
 
   var mode = (isCgiarUser && cognitoEnabled) ? "COGNITO" : "LOCAL";
 
-  if(mode == "COGNITO") {
+  if(mode == "COGNITO" && otpEnabled !== true) {
     // FN-001: the password input must not be rendered, focusable, or present in the submitted
     // form. .remove() - not .hide(), not disabled - a hidden or disabled input still ships in
     // FormData; this is the exact defect Judgment Day found in revision 1 (tasks.md T12)
@@ -578,14 +580,33 @@ function showPasswordStep() {
     $("input#login_next").addClass("hidden");
     $("#login-cgiar-button").removeClass("hidden");
     $("#login-otp-request-container").addClass("hidden");
-    // CHG-OTP-LOGIN-001-T17 / UI-006: the Cognito branch never renders the choice
+    // CHG-OTP-LOGIN-001-T17 / UI-006: Cognito alone is a single method, shown directly, with no choice
     resetMethodView();
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 3): hiding input#login_next above can leave focus
     // on <body> when it held focus, so the Cognito control mirrors the LOCAL arm's own focus call
     // below rather than leaving the user to tab in from the top of the document
     $("#login-cgiar-button").focus();
+  } else if(mode == "COGNITO") {
+    // CHG-OTP-LOGIN-001-T21 / UI-006: a CGIAR account on a Cognito unit whose code sign-in is on for this email
+    // (otpEnabled) chooses between "Sign in with CGIAR" and "Email me a sign-in code". The choice and the code panel
+    // are the ones the LOCAL branch uses; the password is not one of the methods, so its input stays out of the
+    // document exactly as on the single-method branch above (FN-001: not rendered, not focusable, not submitted)
+    $("#login-password").remove();
+
+    $("#login-step-email, #login-step-project, #login-step-cgiar").addClass("hidden");
+    $("#login-step-password").removeClass("hidden");
+
+    $("#login-cgiar-button").addClass("hidden");
+    $("input#login_next").addClass("hidden");
+    $("#login-otp-request-container").removeClass("hidden");
+
+    setChoiceAlternative(true);
+    showMethodView("choice");
   } else {
+    // The choice offers the password next to the code on this branch (UI-006)
+    setChoiceAlternative(false);
+
     $("#login-step-email, #login-step-project, #login-step-cgiar").addClass("hidden");
     $("#login-step-password").removeClass("hidden");
 
@@ -1196,10 +1217,19 @@ function otpMaskedEmail(email) {
   return typed.charAt(0) + "***" + typed.substring(at);
 }
 
+// CHG-OTP-LOGIN-001-T21 / UI-006: the other way the choice offers next to the code. "Continue with your password" for
+// the LOCAL branch, "Sign in with CGIAR" for a CGIAR account on a Cognito unit (then the "External user" caption of
+// the password step does not apply either)
+function setChoiceAlternative(cognito) {
+  $("#login-method-password-container, #login-external-user-label").toggleClass("hidden", cognito);
+  $("#login-method-cgiar-container").toggleClass("hidden", !cognito);
+}
+
 // Leaves step 3 in its plain state: no choice, no code panel, the password field shown. Does not touch
 // "Log in" or the focus, which every caller already owns
 function resetMethodView() {
   methodView = "direct";
+  setChoiceAlternative(false);
   $("#login-method-choice, #login-method-code, #login-method-password-back").addClass("hidden");
   $("#login-password-label, #login-password").removeClass("hidden");
 }

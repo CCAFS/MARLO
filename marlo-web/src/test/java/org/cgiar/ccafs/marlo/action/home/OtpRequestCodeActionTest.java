@@ -21,7 +21,6 @@ import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpChallengeManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpRateLimitManager;
-import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -101,7 +100,7 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * The managers, the mailer and the servlet request are fakes. The limiter, the code helper, the keys and the
  * eligibility predicate are the real classes over those fakes, so the neutrality tests run the real account rules:
- * unknown, inactive, non-member and CGIAR-refused accounts are made by changing one fact of an eligible world. The
+ * unknown, inactive, non-member and soft-deleted accounts are made by changing one fact of an eligible world. The
  * expected values are literals from the requirements and the design: the status words of design 4, and the MACs and
  * bucket names, which were computed once with an independent implementation (Python {@code hmac}) from the secret
  * below and the formulas of design 3 and 5.3, never with the code under test.
@@ -127,7 +126,6 @@ public class OtpRequestCodeActionTest {
   private static final String EMAIL_HMAC_ALB = "98ff87c51fb159ebce5ea350eceaa3a7fb17b8d22de015c96da5cdc1a6528328";
   private static final String EMAIL_HMAC_AMY = "4e4b8e8b16eb50284f251b615430dea6586121f2b533a06db58aa1c0b41008c4";
   private static final String EMAIL_HMAC_ANN = "86eaca754fc8e94b2adda3a20f8352a441cbcb82cd7d20e118c1a70b790e2495";
-  private static final String EMAIL_HMAC_ABE = "5dcee7adb6be9eabcd5750abcb510f205f6c4574b63432f45f7beb75150215f3";
 
   // HMAC-SHA256(k_bucket, "<route>|<dimension>|<value>"), k_bucket = HMAC(secret, "otp-bucket\0").
   private static final String BUCKET_EMAIL_ANA = "8e064215410d546342699cb24ea505835a264e01a111da2d1c380fd383d13823";
@@ -147,8 +145,7 @@ public class OtpRequestCodeActionTest {
     INACTIVE("amy@partner.org", EMAIL_HMAC_AMY, 43L),
     NON_MEMBER("ann@partner.org", EMAIL_HMAC_ANN, 44L),
     /** A crp_users row that exists with is_active=0: MARLO removes a member by soft delete. */
-    SOFT_DELETED("ann@partner.org", EMAIL_HMAC_ANN, 44L),
-    CGIAR_REFUSED("abe@partner.org", EMAIL_HMAC_ABE, 45L);
+    SOFT_DELETED("ann@partner.org", EMAIL_HMAC_ANN, 44L);
 
     final String email;
     final String emailHmac;
@@ -383,14 +380,14 @@ public class OtpRequestCodeActionTest {
     assertEquals(Arrays.asList("hit:" + BUCKET_EMAIL_ANA, "hit:" + BUCKET_IP_CLIENT,
       "cooldown:" + BUCKET_COOLDOWN_ANA), world.events.subList(0, 3));
     int lastLimiterEvent = world.events.indexOf("cooldown:" + BUCKET_COOLDOWN_ANA);
-    for (String read : new String[] {"allowList", "user:ana@partner.org", "unit", "member", "issue"}) {
+    for (String read : new String[] {"specificity", "user:ana@partner.org", "unit", "member", "issue"}) {
       assertTrue(read + " must come after the limiter: " + world.events,
         world.events.indexOf(read) > lastLimiterEvent);
     }
-    int allowList = world.events.indexOf("allowList");
+    int specificity = world.events.indexOf("specificity");
     int lookup = world.events.indexOf("user:ana@partner.org");
     int issue = world.events.indexOf("issue");
-    assertTrue(world.events.toString(), allowList < lookup);
+    assertTrue(world.events.toString(), specificity < lookup);
     assertTrue(world.events.toString(), lookup < issue);
     assertTrue("mail only after the row is committed", issue < world.events.indexOf("mail"));
     assertTrue("the purge follows the issue", issue < world.events.indexOf("purge"));
@@ -407,7 +404,7 @@ public class OtpRequestCodeActionTest {
     assertEquals(Arrays.asList("hit:" + BUCKET_EMAIL_EMPTY, "hit:" + BUCKET_IP_CLIENT), world.events.subList(0, 2));
     assertEquals(0, world.issues.size());
     assertEquals(0, world.count("user:"));
-    assertEquals(0, world.count("allowList"));
+    assertEquals(0, world.count("specificity"));
   }
 
   @Test
@@ -446,9 +443,9 @@ public class OtpRequestCodeActionTest {
   // ---- rejections ---------------------------------------------------------------------------------------
 
   @Test
-  public void aDomainNotOnTheAllowListAnswersDomainNotEnabledWithNoRowNoMailAndNoSession() {
+  public void anExcludedDomainAnswersDomainNotEnabledWithNoRowNoMailAndNoSession() {
     World world = World.with(State.ELIGIBLE);
-    world.allowLists.put(GU, "other.org");
+    world.exclusions.put(GU, "other.org, PARTNER.org");
 
     Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
 
@@ -456,38 +453,103 @@ public class OtpRequestCodeActionTest {
     assertEquals(0, world.issues.size());
     assertEquals(0, world.mails.size());
     assertNull(pending());
-    assertEquals("no account state is read for a domain that is not enabled", 0, world.count("user:"));
+    assertEquals("no account state is read for a domain that is excluded", 0, world.count("user:"));
     assertEquals("no purge either: nothing was written", 0, world.count("purge"));
   }
 
   @Test
-  public void lookalikeDomainsAndASubdomainAreNotEnabledUnlessListed() {
+  public void lookalikeDomainsAndASubdomainAreNotExcludedUnlessListedAndTheNormalisedFormIs() {
     for (String email : new String[] {"x@attackerpartner.org", "x@partner.org.evil.com", "x@sub.partner.org"}) {
       World world = World.with(State.ELIGIBLE);
+      world.exclusions.put(GU, "partner.org");
 
       Map<String, Object> response = world.call(email, "7", "true").getResponse();
 
-      assertEquals(email, Collections.singletonMap("status", "domainNotEnabled"), response);
-      assertEquals(email, 0, world.issues.size());
+      assertEquals(email + ": not excluded, so the request goes on and the unknown account gets the neutral answer",
+        "sent", response.get("status"));
+      assertEquals(email, 1, world.issues.size());
+      assertEquals(email + ": an unknown account is mailed nothing", 0, world.mails.size());
     }
+    World excluded = World.with(State.ELIGIBLE);
+    excluded.exclusions.put(GU, "partner.org");
+    assertEquals("the normalised form is excluded", Collections.singletonMap("status", "domainNotEnabled"),
+      excluded.call("  X@PARTNER.ORG ", "7", "true").getResponse());
+    assertEquals(0, excluded.issues.size());
   }
 
   @Test
-  public void aUnitWithNoAllowListOrNoSuchUnitAnswersDomainNotEnabled() {
-    for (String raw : new String[] {"", "   ", null}) {
+  public void aSwitchThatIsOffOrNoSuchUnitAnswersDomainNotEnabled() {
+    for (String raw : new String[] {"false", "", "   ", null, "no"}) {
       World world = World.with(State.ELIGIBLE);
-      world.allowLists.put(GU, raw);
+      world.switches.put(GU, raw);
 
       Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
 
-      assertEquals("allow-list <" + raw + ">", Collections.singletonMap("status", "domainNotEnabled"), response);
+      assertEquals("switch <" + raw + ">", Collections.singletonMap("status", "domainNotEnabled"), response);
       assertEquals(0, world.issues.size());
+      assertEquals(0, world.mails.size());
+      assertNull(pending());
+      assertEquals("no account state is read while the switch is off", 0, world.count("user:"));
     }
     World world = World.with(State.ELIGIBLE);
     Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "99", "true").getResponse();
     assertEquals("an unknown unit", Collections.singletonMap("status", "domainNotEnabled"), response);
     assertEquals(0, world.issues.size());
-    assertEquals("the unit id reached the uncached allow-list read", "allowList:[99]", world.allowListReads.get(0));
+    assertEquals("the unit id reached the uncached read, with both keys",
+      "specificity:[system_otp_login_active, system_otp_excluded_email_domains]|[99]",
+      world.specificityReads.get(0));
+  }
+
+  // ---- SEC-009 (amended 2026-10-15, T21): being a CGIAR account plays no part ---------------------------------
+
+  @Test
+  public void aCgiarAccountIsMailedLikeAnyOtherWhenItsDomainIsNotExcluded() {
+    World world = World.with(State.ELIGIBLE);
+    world.users.get(State.ELIGIBLE.email).setCgiarUser(true);
+
+    Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+    assertEquals("sent", response.get("status"));
+    assertEquals("one challenge row", 1, world.issues.size());
+    assertEquals("one email: the CGIAR flag decides nothing", 1, world.mails.size());
+    assertEquals("ana@partner.org", world.mails.get(0).recipient);
+  }
+
+  @Test
+  public void aCgiarOrgAddressIsMailedWithAnEmptyExclusionAndRefusedOnlyWhenTheUnitListsTheDomain() {
+    World open = World.with(State.ELIGIBLE);
+    open.addUser("staff@cgiar.org", 51L, true, true);
+    open.members.add("51:" + GU);
+    assertEquals("sent", open.call("staff@cgiar.org", "7", "true").getResponse().get("status"));
+    assertEquals("no domain is fixed in code: cgiar.org is mailed", 1, open.mails.size());
+
+    World excluded = World.with(State.ELIGIBLE);
+    excluded.addUser("staff@cgiar.org", 51L, true, true);
+    excluded.members.add("51:" + GU);
+    excluded.exclusions.put(GU, "cgiar.org");
+    assertEquals(Collections.singletonMap("status", "domainNotEnabled"),
+      excluded.call("staff@cgiar.org", "7", "true").getResponse());
+    assertEquals(0, excluded.issues.size());
+    assertEquals(0, excluded.mails.size());
+    assertEquals("the account is not even looked up", 0, excluded.count("user:"));
+  }
+
+  @Test
+  public void aChangeOfTheSwitchOrTheExclusionAppliesToTheNextRequestOfTheSameWorld() {
+    World world = World.with(State.ELIGIBLE);
+    assertEquals("sent", world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
+
+    world.switches.put(GU, "false");
+    assertEquals("domainNotEnabled",
+      world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
+
+    world.switches.put(GU, "true");
+    world.exclusions.put(GU, "partner.org");
+    assertEquals("domainNotEnabled",
+      world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
+
+    world.exclusions.put(GU, "");
+    assertEquals("sent", world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
   }
 
   @Test
@@ -507,7 +569,7 @@ public class OtpRequestCodeActionTest {
       assertTrue(label + ": the limiter ran first: " + world.events, world.events.get(0).startsWith("hit:"));
       assertEquals(label, 0, world.issues.size());
       assertEquals(label, 0, world.count("user:"));
-      assertEquals(label, 0, world.count("allowList"));
+      assertEquals(label, 0, world.count("specificity"));
     }
   }
 
@@ -543,7 +605,7 @@ public class OtpRequestCodeActionTest {
       assertTrue(world.events.toString(), world.events.get(0).startsWith("hit:"));
     }
     World disabled = World.with(State.ELIGIBLE);
-    disabled.allowLists.put(GU, "other.org");
+    disabled.exclusions.put(GU, "partner.org");
     assertEquals("the domain is decided before the terms",
       Collections.singletonMap("status", "domainNotEnabled"),
       disabled.call(State.ELIGIBLE.submitted(), "7", "false").getResponse());
@@ -573,7 +635,7 @@ public class OtpRequestCodeActionTest {
       assertEquals(0, world.issues.size());
       assertEquals(0, world.mails.size());
       assertNull(pending());
-      assertEquals("nothing is read after a refusal", 0, world.count("user:") + world.count("allowList"));
+      assertEquals("nothing is read after a refusal", 0, world.count("user:") + world.count("specificity"));
     }
   }
 
@@ -605,9 +667,9 @@ public class OtpRequestCodeActionTest {
   }
 
   @Test
-  public void aFailedAllowListReadAnswersUnavailableWithNoSessionWrite() {
+  public void aFailedSpecificityReadAnswersUnavailableWithNoSessionWrite() {
     World world = World.with(State.ELIGIBLE);
-    world.allowListFailure = new IllegalStateException("connection refused");
+    world.specificityFailure = new IllegalStateException("connection refused");
 
     Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
 
@@ -769,7 +831,7 @@ public class OtpRequestCodeActionTest {
     World sent = World.with(State.ELIGIBLE);
     World neutral = World.with(State.NON_MEMBER);
     World denied = World.with(State.ELIGIBLE);
-    denied.allowLists.put(GU, "other.org");
+    denied.exclusions.put(GU, "partner.org");
     World terms = World.with(State.ELIGIBLE);
     World limited = World.with(State.ELIGIBLE);
     limited.cooldownAccepted = false;
@@ -872,7 +934,7 @@ public class OtpRequestCodeActionTest {
       {OtpRateLimiter.class, new Class<?>[] {OtpKeys.class, OtpRateLimitManager.class}},
       {OtpCodes.class, new Class<?>[] {OtpKeys.class}},
       {OtpEligibility.class, new Class<?>[] {OtpKeys.class, UserManager.class, GlobalUnitManager.class,
-        CrpUserManager.class, OtpChallengeManager.class, CustomParameterManager.class, ParameterManager.class}}};
+        CrpUserManager.class, OtpChallengeManager.class}}};
     for (Object[] row : expected) {
       Class<?> type = (Class<?>) row[0];
       assertTrue(type.getSimpleName() + " is found by the component scan", type.isAnnotationPresent(Named.class));
@@ -910,8 +972,6 @@ public class OtpRequestCodeActionTest {
     context.getBeanFactory().registerSingleton("globalUnitManager", world.globalUnitManager());
     context.getBeanFactory().registerSingleton("crpUserManager", world.crpUserManager());
     context.getBeanFactory().registerSingleton("otpChallengeManager", world.challengeManager());
-    context.getBeanFactory().registerSingleton("customParameterManager", world.customParameterManager());
-    context.getBeanFactory().registerSingleton("parameterManager", world.parameterManager());
     context.refresh();
     try {
       for (Class<?> type : new Class<?>[] {OtpKeys.class, OtpRateLimiter.class, OtpCodes.class,
@@ -977,7 +1037,7 @@ public class OtpRequestCodeActionTest {
 
       assertEquals(state + ": one read, eligible or not: " + world.events, 1, world.count("custom-file"));
       int read = world.events.indexOf("custom-file");
-      assertTrue(state + ": after the eligibility check: " + world.events, read > world.events.indexOf("allowList"));
+      assertTrue(state + ": after the eligibility check: " + world.events, read > world.events.indexOf("specificity"));
       assertTrue(state + ": before the challenge row: " + world.events, read < world.events.indexOf("issue"));
       assertEquals(state + ": mailed only when eligible", state == State.ELIGIBLE ? 1 : 0, world.mails.size());
     }
@@ -1168,11 +1228,12 @@ public class OtpRequestCodeActionTest {
 
     final Map<String, User> users = new HashMap<String, User>();
     final Map<Long, GlobalUnit> units = new HashMap<Long, GlobalUnit>();
-    final Map<Long, String> allowLists = new HashMap<Long, String>();
+    /** The raw effective value of system_otp_login_active and of system_otp_excluded_email_domains, by unit. */
+    final Map<Long, String> switches = new HashMap<Long, String>();
+    final Map<Long, String> exclusions = new HashMap<Long, String>();
     final Set<String> members = new HashSet<String>();
     /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
     final Set<String> softDeleted = new HashSet<String>();
-    final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
     /** The crp_custom_file value of each Global Unit; a unit with no entry has no such parameter. */
     final Map<Long, String> customFiles = new HashMap<Long, String>();
 
@@ -1180,12 +1241,12 @@ public class OtpRequestCodeActionTest {
     final List<Issue> issues = new ArrayList<Issue>();
     final List<Mail> mails = new ArrayList<Mail>();
     final List<Instant> purges = new ArrayList<Instant>();
-    final List<String> allowListReads = new ArrayList<String>();
+    final List<String> specificityReads = new ArrayList<String>();
 
     final List<Integer> hitAnswers = new ArrayList<Integer>();
     boolean cooldownAccepted = true;
     RuntimeException rateStoreFailure;
-    RuntimeException allowListFailure;
+    RuntimeException specificityFailure;
     RuntimeException issueFailure;
     RuntimeException purgeFailure;
     RuntimeException userLookupFailure;
@@ -1203,7 +1264,8 @@ public class OtpRequestCodeActionTest {
       type.setId(Long.valueOf(GU_TYPE));
       unit.setGlobalUnitType(type);
       world.units.put(Long.valueOf(GU), unit);
-      world.allowLists.put(Long.valueOf(GU), "partner.org");
+      world.switches.put(Long.valueOf(GU), "true");
+      world.exclusions.put(Long.valueOf(GU), "");
       switch (state) {
         case ELIGIBLE:
           world.addUser(state, true, false);
@@ -1222,11 +1284,6 @@ public class OtpRequestCodeActionTest {
           world.addUser(state, true, false);
           world.softDeleted.add(state.userId + ":" + GU);
           break;
-        case CGIAR_REFUSED:
-          world.addUser(state, true, true);
-          world.members.add(state.userId + ":" + GU);
-          world.cognitoOverrides.put(Long.valueOf(GU), "true");
-          break;
         default:
           throw new IllegalArgumentException(state.toString());
       }
@@ -1234,12 +1291,16 @@ public class OtpRequestCodeActionTest {
     }
 
     private void addUser(State state, boolean active, boolean cgiar) {
+      this.addUser(state.email, state.userId, active, cgiar);
+    }
+
+    void addUser(String email, long id, boolean active, boolean cgiar) {
       User user = new User();
-      user.setId(Long.valueOf(state.userId));
-      user.setEmail(state.email);
+      user.setId(Long.valueOf(id));
+      user.setEmail(email);
       user.setActive(active);
       user.setCgiarUser(cgiar);
-      this.users.put(state.email, user);
+      this.users.put(email, user);
     }
 
     int count(String prefix) {
@@ -1275,7 +1336,7 @@ public class OtpRequestCodeActionTest {
       OtpChallengeManager challengeManager = this.challengeManager();
       GlobalUnitManager globalUnitManager = this.globalUnitManager();
       OtpEligibility eligibility = new OtpEligibility(keys, this.userManager(), globalUnitManager,
-        this.crpUserManager(), challengeManager, this.customParameterManager(), this.parameterManager());
+        this.crpUserManager(), challengeManager);
       OtpRequestCodeAction action = new OtpRequestCodeAction(config, keys,
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
         globalUnitManager, this.customParameterManager(), this.mailer(), new ClientIpResolver(this.proxies), CLOCK);
@@ -1320,17 +1381,21 @@ public class OtpRequestCodeActionTest {
 
     OtpChallengeManager challengeManager() {
       return fake(OtpChallengeManager.class, (method, args) -> {
-        if ("allowListFor".equals(method)) {
+        if ("specificityValuesFor".equals(method)) {
           Collection<?> ids = (Collection<?>) args[1];
-          this.events.add("allowList");
-          this.allowListReads.add("allowList:" + ids);
-          if (this.allowListFailure != null) {
-            throw this.allowListFailure;
+          this.events.add("specificity");
+          this.specificityReads.add("specificity:" + args[0] + "|" + ids);
+          if (this.specificityFailure != null) {
+            throw this.specificityFailure;
           }
-          Map<Long, String> answer = new HashMap<Long, String>();
+          Map<Long, Map<String, String>> answer = new HashMap<Long, Map<String, String>>();
           for (Object id : ids) {
-            String raw = this.allowLists.get(id);
-            answer.put((Long) id, raw == null ? "" : raw);
+            String switchValue = this.switches.get(id);
+            String exclusion = this.exclusions.get(id);
+            Map<String, String> values = new HashMap<String, String>();
+            values.put("system_otp_login_active", switchValue == null ? "" : switchValue);
+            values.put("system_otp_excluded_email_domains", exclusion == null ? "" : exclusion);
+            answer.put((Long) id, values);
           }
           return answer;
         }
@@ -1410,24 +1475,7 @@ public class OtpRequestCodeActionTest {
           parameter.setValue(file);
           return parameter;
         }
-        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)) {
-          String value = this.cognitoOverrides.get(args[1]);
-          if (value == null) {
-            return null;
-          }
-          CustomParameter override = new CustomParameter();
-          override.setValue(value);
-          return override;
-        }
-        return unsupported(method);
-      });
-    }
-
-    ParameterManager parameterManager() {
-      return fake(ParameterManager.class, (method, args) -> {
-        if ("getParameterByKey".equals(method)) {
-          return null;
-        }
+        // Any other key, the Cognito flag included, is unsupported: a read of it would fail the test (SEC-009).
         return unsupported(method);
       });
     }

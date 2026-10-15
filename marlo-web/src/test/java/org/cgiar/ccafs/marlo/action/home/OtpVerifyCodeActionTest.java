@@ -154,7 +154,6 @@ public class OtpVerifyCodeActionTest {
   private static final String BUCKET_EMAIL_ALB = "17192fcd4428ffc013826bc6dc3377bec395ee094ba8ebabea6e05be369fd9d8";
   private static final String BUCKET_EMAIL_AMY = "959c146e2fcab1724ddea52e71ed54db1d9bba693b510571e1f6b5da02366481";
   private static final String BUCKET_EMAIL_ANN = "3f0e46a5621229c2c60f833a65f5261c3c4125f38afc4b1bb36e3170aff41b62";
-  private static final String BUCKET_EMAIL_ABE = "1036dacc66be1da7dc014c2f1e3fd570605f7c5bf780b8a0eec0aacdd0828515";
 
   private static final Pattern VERIFY_OK_LINE =
     Pattern.compile("auth\\.otp\\.verify outcome=ok gu=testcrp domain=partner\\.org ms=[0-9]+");
@@ -166,8 +165,7 @@ public class OtpVerifyCodeActionTest {
     INACTIVE("amy@partner.org", 43L, BUCKET_EMAIL_AMY),
     NON_MEMBER("ann@partner.org", 44L, BUCKET_EMAIL_ANN),
     /** A crp_users row that exists with is_active=0: MARLO removes a member by soft delete. */
-    SOFT_DELETED("ann@partner.org", 44L, BUCKET_EMAIL_ANN),
-    CGIAR_REFUSED("abe@partner.org", 45L, BUCKET_EMAIL_ABE);
+    SOFT_DELETED("ann@partner.org", 44L, BUCKET_EMAIL_ANN);
 
     final String email;
     final long userId;
@@ -226,6 +224,21 @@ public class OtpVerifyCodeActionTest {
       SecurityUtils.getSubject().getPrincipal());
     assertEquals(1, world.verifyLines().size());
     assertTrue(world.verifyLines().get(0), VERIFY_OK_LINE.matcher(world.verifyLines().get(0)).matches());
+  }
+
+  @Test
+  public void aCgiarAccountSignsInWithItsCodeLikeAnyOtherAccountWhenItsDomainIsNotExcluded() {
+    // SEC-009 (T21): is_cgiar_user plays no part, so the account the Cognito rule used to refuse now signs in.
+    World world = this.with(State.ELIGIBLE);
+    world.users.get("ana@partner.org").setCgiarUser(true);
+    world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+
+    OtpVerifyCodeAction action = world.call(CODE_A);
+
+    assertNoFault();
+    assertEquals(ok(BASE_URL + "/TESTCRP/crpDashboard.do"), action.getResponse());
+    assertTrue(SecurityUtils.getSubject().isAuthenticated());
+    assertEquals(1, world.count("realm:"));
   }
 
   @Test
@@ -583,7 +596,7 @@ public class OtpVerifyCodeActionTest {
   @Test
   public void anAccountThatLostEligibilitySinceTheRequestIsInvalidAndTheChallengeStaysConsumed() {
     for (String lost : new String[] {"removed from the unit", "soft-deleted from the unit (is_active=0)", "deactivated",
-      "deleted", "allow-list emptied", "refused by SEC-009"}) {
+      "deleted", "switch turned off", "domain excluded"}) {
       World world = this.with(State.ELIGIBLE);
       Row row = world.open(State.ELIGIBLE, NONCE_A, MAC_A);
       User user = world.users.get("ana@partner.org");
@@ -601,12 +614,11 @@ public class OtpVerifyCodeActionTest {
         case "deleted":
           world.users.clear();
           break;
-        case "allow-list emptied":
-          world.allowLists.put(Long.valueOf(GU), "");
+        case "switch turned off":
+          world.switches.put(Long.valueOf(GU), "false");
           break;
-        case "refused by SEC-009":
-          user.setCgiarUser(true);
-          world.cognitoOverrides.put(Long.valueOf(GU), "true");
+        case "domain excluded":
+          world.exclusions.put(Long.valueOf(GU), "Partner.org");
           break;
         default:
           throw new IllegalArgumentException(lost);
@@ -1293,11 +1305,12 @@ public class OtpVerifyCodeActionTest {
 
     final Map<String, User> users = new HashMap<String, User>();
     final Map<Long, GlobalUnit> units = new HashMap<Long, GlobalUnit>();
-    final Map<Long, String> allowLists = new HashMap<Long, String>();
+    /** The raw effective value of system_otp_login_active and of system_otp_excluded_email_domains, by unit. */
+    final Map<Long, String> switches = new HashMap<Long, String>();
+    final Map<Long, String> exclusions = new HashMap<Long, String>();
     final Set<String> members = new HashSet<String>();
     /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
     final Set<String> softDeleted = new HashSet<String>();
-    final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
     final List<CustomParameter> customParameters = new ArrayList<CustomParameter>();
 
     final List<String> events = new ArrayList<String>();
@@ -1332,7 +1345,8 @@ public class OtpVerifyCodeActionTest {
       type.setId(Long.valueOf(GU_TYPE));
       unit.setGlobalUnitType(type);
       this.units.put(Long.valueOf(GU), unit);
-      this.allowLists.put(Long.valueOf(GU), "partner.org");
+      this.switches.put(Long.valueOf(GU), "true");
+      this.exclusions.put(Long.valueOf(GU), "");
       switch (state) {
         case ELIGIBLE:
           this.addUser(state, true, false);
@@ -1350,11 +1364,6 @@ public class OtpVerifyCodeActionTest {
         case SOFT_DELETED:
           this.addUser(state, true, false);
           this.softDeleted.add(state.userId + ":" + GU);
-          break;
-        case CGIAR_REFUSED:
-          this.addUser(state, true, true);
-          this.members.add(state.userId + ":" + GU);
-          this.cognitoOverrides.put(Long.valueOf(GU), "true");
           break;
         default:
           throw new IllegalArgumentException(state.toString());
@@ -1462,7 +1471,7 @@ public class OtpVerifyCodeActionTest {
       OtpChallengeManager challengeManager = this.store;
       GlobalUnitManager globalUnitManager = this.globalUnitManager();
       OtpEligibility eligibility = new OtpEligibility(keys, this.userManager(), globalUnitManager,
-        this.crpUserManager(), challengeManager, this.customParameterManager(), this.parameterManager());
+        this.crpUserManager(), challengeManager);
       OtpRequestCodeAction action = new OtpRequestCodeAction(config, keys,
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
         globalUnitManager, this.customParameterManager(),
@@ -1485,8 +1494,8 @@ public class OtpVerifyCodeActionTest {
       CrpUserManager crpUserManager = this.crpUserManager();
       CustomParameterManager customParameterManager = this.customParameterManager();
       ParameterManager parameterManager = this.parameterManager();
-      OtpEligibility eligibility = new OtpEligibility(keys, userManager, globalUnitManager, crpUserManager,
-        this.store, customParameterManager, parameterManager);
+      OtpEligibility eligibility =
+        new OtpEligibility(keys, userManager, globalUnitManager, crpUserManager, this.store);
       TestableOtpVerifyCodeAction action = new TestableOtpVerifyCodeAction(config, userManager, globalUnitManager,
         crpUserManager, customParameterManager, parameterManager, new OtpRateLimiter(keys, this.rateLimitManager()),
         new OtpCodes(keys), eligibility, this.store, new ClientIpResolver(""), this.actionClock);
@@ -1589,15 +1598,11 @@ public class OtpVerifyCodeActionTest {
 
     CustomParameterManager customParameterManager() {
       return fake(CustomParameterManager.class, (method, args) -> {
-        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)) {
-          String value = this.cognitoOverrides.get(args[1]);
-          if (value == null) {
-            return null;
-          }
-          CustomParameter override = new CustomParameter();
-          override.setValue(value);
-          override.setActive(true);
-          return override;
+        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)
+          && APConstants.CRP_CUSTOM_FILE.equals(args[0])) {
+          // The real request action of the round trip reads the unit's custom i18n file (T20). Any other key, the
+          // Cognito flag included, is unsupported: a read of it would fail the test (SEC-009).
+          return null;
         }
         if ("getAllCustomParametersByGlobalUnitId".equals(method)) {
           return this.customParameters;
@@ -1645,12 +1650,17 @@ public class OtpVerifyCodeActionTest {
       }
 
       @Override
-      public Map<Long, String> allowListFor(String key, Collection<Long> globalUnitIds) {
-        World.this.events.add("allowList");
-        Map<Long, String> answer = new HashMap<Long, String>();
+      public Map<Long, Map<String, String>> specificityValuesFor(Collection<String> keys,
+        Collection<Long> globalUnitIds) {
+        World.this.events.add("specificity");
+        Map<Long, Map<String, String>> answer = new HashMap<Long, Map<String, String>>();
         for (Long id : globalUnitIds) {
-          String raw = World.this.allowLists.get(id);
-          answer.put(id, raw == null ? "" : raw);
+          String switchValue = World.this.switches.get(id);
+          String exclusion = World.this.exclusions.get(id);
+          Map<String, String> values = new HashMap<String, String>();
+          values.put("system_otp_login_active", switchValue == null ? "" : switchValue);
+          values.put("system_otp_excluded_email_domains", exclusion == null ? "" : exclusion);
+          answer.put(id, values);
         }
         return answer;
       }

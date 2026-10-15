@@ -34,7 +34,7 @@ import org.hibernate.query.NativeQuery;
 
 /**
  * CHG-OTP-LOGIN-001-T03. Native, conditional statements whose affected-row count is the answer (DD-3), and the
- * uncached allow-list read (DD-12).
+ * uncached specificity read (DD-12, DD-13).
  * <p>
  * <b>One time source.</b> Every {@code DATETIME} value, written or compared, is a UTC text bound from the Java
  * {@link Instant} the caller gives, in {@code yyyy-MM-dd HH:mm:ss.SSS}. MySQL converts the text itself, so neither
@@ -72,13 +72,15 @@ public class OtpChallengeMySQLDAO extends AbstractMarloDAO<OtpChallenge, Long> i
 
   private static final String DELETE_EXPIRED_SQL = "DELETE FROM otp_challenges WHERE expires_at < :olderThan";
 
-  // An active custom_parameters row wins even when its value is NULL, so the CASE tests the row, not the value.
-  private static final String ALLOW_LIST_SQL = "SELECT g.id, "
+  // An active custom_parameters row wins even when its value is NULL, so the CASE tests the row, not the value. One
+  // statement answers every key for every listed Global Unit (DD-13). Ordered by cp.id, so the highest-id active
+  // row of a unit and key is the one the reader keeps.
+  private static final String SPECIFICITY_SQL = "SELECT g.id, p.`key`, "
     + "CASE WHEN cp.id IS NOT NULL THEN cp.value ELSE p.default_value END "
     + "FROM global_units g "
-    + "LEFT JOIN parameters p ON p.global_unit_type_id = g.global_unit_type_id AND p.`key` = :key "
+    + "INNER JOIN parameters p ON p.global_unit_type_id = g.global_unit_type_id AND p.`key` IN (:keys) "
     + "LEFT JOIN custom_parameters cp ON cp.parameter_id = p.id AND cp.global_unit_id = g.id AND cp.is_active = 1 "
-    + "WHERE g.id IN (:globalUnitIds) ORDER BY g.id, cp.id";
+    + "WHERE g.id IN (:globalUnitIds) ORDER BY g.id, p.`key`, cp.id";
 
   @Inject
   public OtpChallengeMySQLDAO(SessionFactory sessionFactory) {
@@ -108,20 +110,6 @@ public class OtpChallengeMySQLDAO extends AbstractMarloDAO<OtpChallenge, Long> i
 
   @Override
   @SuppressWarnings("unchecked")
-  public Map<Long, String> findAllowListValues(String key, Collection<Long> globalUnitIds) {
-    // Not cacheable and no entity: the read goes straight to the tables, so a change applies on the next request
-    // on every instance (DD-12, FN-002).
-    NativeQuery<Object[]> query = this.getSessionFactory().getCurrentSession().createNativeQuery(ALLOW_LIST_SQL);
-    List<Object[]> rows = query.setParameter("key", key).setParameterList("globalUnitIds", globalUnitIds).list();
-    Map<Long, String> values = new HashMap<>();
-    for (Object[] row : rows) {
-      values.put(((Number) row[0]).longValue(), row[1] == null ? null : row[1].toString());
-    }
-    return values;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
   public Integer findAttempts(String nonce) {
     NativeQuery<Number> query = this.getSessionFactory().getCurrentSession().createNativeQuery(FIND_ATTEMPTS_SQL);
     query.addSynchronizedQuerySpace(TABLE);
@@ -139,6 +127,24 @@ public class OtpChallengeMySQLDAO extends AbstractMarloDAO<OtpChallenge, Long> i
       this.getSessionFactory().getCurrentSession().evict(challenge);
     }
     return challenge;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public Map<Long, Map<String, String>> findSpecificityValues(Collection<String> keys,
+    Collection<Long> globalUnitIds) {
+    // Not cacheable and no entity: the read goes straight to the tables, so a change applies on the next request
+    // on every instance (DD-12, FN-002).
+    NativeQuery<Object[]> query = this.getSessionFactory().getCurrentSession().createNativeQuery(SPECIFICITY_SQL);
+    List<Object[]> rows =
+      query.setParameterList("keys", keys).setParameterList("globalUnitIds", globalUnitIds).list();
+    Map<Long, Map<String, String>> values = new HashMap<>();
+    for (Object[] row : rows) {
+      Long globalUnitId = Long.valueOf(((Number) row[0]).longValue());
+      values.computeIfAbsent(globalUnitId, id -> new HashMap<>()).put(row[1].toString(),
+        row[2] == null ? null : row[2].toString());
+    }
+    return values;
   }
 
   @Override

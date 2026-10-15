@@ -148,9 +148,12 @@ public final class APConstants {
   public static final String HOMEPAGE_HIDE_SECTION_MAP = "homepage_hide_section_map";
   // CHG-COGNITO-AUTH-001: per-Global-Unit switch to Amazon Cognito for CGIAR users. Value MUST equal parameters.key
   public static final String COGNITO_AUTH_ACTIVE = "cognito_auth_active";
-  // CHG-OTP-LOGIN-001: per-Global-Unit email domain allow-list for the Center email one-time-code sign-in
-  // (empty = off). Value MUST equal parameters.key
-  public static final String OTP_ALLOWED_EMAIL_DOMAINS = "crp_otp_allowed_email_domains";
+  // CHG-OTP-LOGIN-001-T21: per-Global-Unit switch for the Center email one-time-code sign-in (boolean, default
+  // false). Value MUST equal parameters.key
+  public static final String OTP_LOGIN_ACTIVE = "system_otp_login_active";
+  // CHG-OTP-LOGIN-001-T21: per-Global-Unit email domains excluded from that sign-in (comma-separated, empty = none).
+  // Value MUST equal parameters.key
+  public static final String OTP_EXCLUDED_EMAIL_DOMAINS = "system_otp_excluded_email_domains";
   public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";
   public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
   public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";

@@ -117,7 +117,7 @@ public class CrpByUserEmailAction extends BaseAction {
 
     List<GlobalUnit> globalUnits = this.crpManager.crpUsers(this.userEmail);
     globalUnits.sort(Comparator.comparing(GlobalUnit::getAcronym));
-    Map<Long, Boolean> otpEnabled = this.otpEnabledByUnit(usrDB, globalUnits);
+    Map<Long, Boolean> otpEnabled = this.otpEnabledByUnit(globalUnits);
 
     for (GlobalUnit crp : globalUnits) {
       try {
@@ -152,9 +152,9 @@ public class CrpByUserEmailAction extends BaseAction {
    * Resolves the {@code otpEnabled} flag of every listed unit, failing closed: the OTP computation must never break
    * or change the existing login lookup, so any failure is logged and answers {@code false} for every unit.
    */
-  private Map<Long, Boolean> otpEnabledByUnit(User account, List<GlobalUnit> units) {
+  private Map<Long, Boolean> otpEnabledByUnit(List<GlobalUnit> units) {
     try {
-      return this.otpEligibility.otpEnabledFor(this.userEmail, account.isCgiarUser(), units);
+      return this.otpEligibility.otpEnabledFor(this.userEmail, units);
     } catch (RuntimeException e) {
       this.logger.error("unable to resolve otpEnabled; answering false for every unit", e);
       return Collections.<Long, Boolean>emptyMap();

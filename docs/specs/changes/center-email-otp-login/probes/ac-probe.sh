@@ -2,8 +2,9 @@
 # CHG-OTP-LOGIN-001 -- T15 acceptance probe (requirements section 7), driven over HTTP against a RUNNING local stack.
 #
 # Usage:  ac-probe.sh <stage> [<stage> ...]
-#   enum       AC-4, AC-3, AC-13, FN-006, FN-003, FN-016: the account states, answered side by side
-#   attempts   AC-6, AC-14 (verify limits), parameter allow-list (RJ-9)
+#   enum       AC-4, AC-3, AC-13, FN-006, FN-003, FN-016: the account states, answered side by side; a CGIAR account on the
+#              Cognito-active unit gets a code and signs in, and is refused only where its domain is excluded (T21)
+#   attempts   AC-6, AC-14 (verify limits), request parameter allow-list (RJ-9)
 #   resend     AC-10, AC-8 (superseded), AC-8 (expired, DB-aged) -- includes a real 31 s wait
 #   expiry     AC-8: a real 5 min 1 s old challenge (waits 302 s)
 #   removed    AC-9: member soft-deleted (crp_users.is_active=0, as deleteCrpUser does) after the request; hard delete as support
@@ -18,7 +19,8 @@
 #              mailbox, prefixed, with the submitted address in the body header; nothing for the submitted address; the code signs in
 #   nonprodblank  AC-19, the blank half: run against an application started with a blank email.notification (EMAIL_NOTIFICATION=):
 #              nothing is sent, no row, the delivery line says email_failed (needs PROBE_LOGS)
-#   live       FN-002 / AC-1: the allow-list emptied and restored without a restart, the page and the endpoint follow
+#   live       FN-002 / AC-1 / AC-21: the switch turned off and on, a domain added to and removed from the exclusion, with no
+#              restart: the page and the endpoint follow on the next request (T21)
 #   nosecret   AC-12: run against an application started with no (or a short) OTP_HMAC_SECRET; records the startup WARN and the JVM env
 #              (set PROBE_EXPECT_SECRET_ENV=present|absent to assert which case is running)
 #   smtp       AC-15 / OPS-002: notifications off, then delivery failing (needs PROBE_SINK_STOP / PROBE_SINK_START)
@@ -30,6 +32,9 @@
 # mailbox, whoever asked for it. The probe finds a user's code by the header at the top of the body, "To: <submitted address>",
 # never by the envelope or the To header.
 # SAFETY: writes to the database (state resets, test users) -- refuses unless the database name contains "probe".
+# STANDING FIXTURE (T21): every run first sets, for the Global Unit PROBE_GU, system_otp_login_active = true and
+# system_otp_excluded_email_domains = excluded.test (a domain no fixture account uses), the way the Super Admin Specificities tab
+# writes them. The users of the README section 2 fixtures must exist, plus otp.staff@cgiar.org (is_cgiar_user=1, a member of the unit).
 # Environment: PROBE_BASE, PROBE_MYSQL, PROBE_MBOX, PROBE_GU (as the concurrency probe), PROBE_JDWP (JDWP port of the
 # application JVM, or "auto"), PROBE_SUPPORT (the email.notification the application runs with), PROBE_LOGS (colon-separated log files, the CURRENT run's console log first), PROBE_JAVA_CP
 # (directory with SessDump.class, compiled from tools/SessDump.java), PROBE_PW_EMAIL / PROBE_PW_PASS (test password account),
@@ -82,6 +87,45 @@ def notrun(ac, name, line):
 
 def reset():
     sql("DELETE FROM otp_challenges; DELETE FROM otp_rate_limits; DELETE FROM otp_cooldowns;")
+
+
+SWITCH_KEY = "system_otp_login_active"
+EXCLUSION_KEY = "system_otp_excluded_email_domains"
+STANDING_EXCLUSION = "excluded.test"
+
+
+def param_id(key):
+    """The catalog row of the key for the type of the Global Unit under test."""
+    return sql("SELECT p.id FROM parameters p JOIN global_units g ON g.global_unit_type_id = p.global_unit_type_id "
+               "WHERE g.id = %s AND p.`key` = '%s';" % (GU, key))[0][0]
+
+
+def set_unit_value(key, value):
+    """The unit's active custom_parameters row for the key, inserted when the unit has none (what the Super Admin
+    Specificities tab saves). The next request must follow it with no restart (DD-12)."""
+    pid = param_id(key)
+    if sql("SELECT COUNT(*) FROM custom_parameters WHERE parameter_id = %s AND global_unit_id = %s;" % (pid, GU))[0][0] == "0":
+        sql("INSERT INTO custom_parameters (parameter_id, value, is_active, global_unit_id) VALUES (%s, '%s', 1, %s);" % (pid, value, GU))
+    else:
+        sql("UPDATE custom_parameters SET value = '%s', is_active = 1 WHERE parameter_id = %s AND global_unit_id = %s;" % (value, pid, GU))
+
+
+def unit_value(key):
+    rows = sql("SELECT value FROM custom_parameters WHERE parameter_id = %s AND global_unit_id = %s AND is_active = 1;" % (param_id(key), GU))
+    return rows[0][0] if rows else None
+
+
+def standing_fixture():
+    set_unit_value(SWITCH_KEY, "true")
+    set_unit_value(EXCLUSION_KEY, STANDING_EXCLUSION)
+    print("  (standing fixture on unit %s: %s=%s, %s=%s)" % (GU, SWITCH_KEY, unit_value(SWITCH_KEY), EXCLUSION_KEY, unit_value(EXCLUSION_KEY)))
+
+
+def otp_flags(addr):
+    """The crpByEmail.do answer for an address: (isCgiarUser, {acronym: (cognitoEnabled, otpEnabled)})."""
+    page = http_("POST", "/crpByEmail.do", {"userEmail": addr})
+    user = page.json.get("user") or {}
+    return user.get("isCgiarUser"), {c.get("acronym"): (c.get("cognitoEnabled"), c.get("otpEnabled")) for c in page.json.get("crps", [])}
 
 
 class R:
@@ -238,7 +282,7 @@ def stage_enum():
     print("\n== enum: AC-4 / AC-3 / AC-13 / FN-006 / FN-003 / FN-016")
     reset()
     states = [("eligible", "probe.user@outlook.com"), ("unknown", "otp.unknown@outlook.com"), ("inactive", "otp.inactive@outlook.com"),
-              ("non-member", "otp.nonmember@outlook.com"), ("cgiar-refused (is_cgiar_user=1, Cognito-active unit)", "otp.cgiar@outlook.com"),
+              ("non-member", "otp.nonmember@outlook.com"),
               ("soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)", "otp.softdeleted@outlook.com")]
     base_mails = {a: len(mbox_for(a)) for _, a in states}
     res = {}
@@ -255,7 +299,7 @@ def stage_enum():
     ref = shapes["eligible"]
     for n, (a, r) in res.items():
         print("  %-52s HTTP %d  %s" % (n, r.status, r.body))
-    verdict("AC-4", "request-code answer, headers and cookie names identical across the 6 account states", all(s == ref for s in shapes.values()), "reference=%s" % (ref[1],))
+    verdict("AC-4", "request-code answer, headers and cookie names identical across the 5 account states", all(s == ref for s in shapes.values()), "reference=%s" % (ref[1],))
     time.sleep(2)
     mails = {n: len(mbox_for(a)) - base_mails[a] for n, (a, r) in res.items()}
     print("  (no recorded challenge can authenticate: T11 unit test OtpVerifyCodeActionTest, search aDecoyGuessed)")
@@ -292,7 +336,7 @@ def stage_enum():
         s = [verify("135790", ck).st, verify("135790", ck).st, request_code(a, ck).st, verify("135790", ck).st, verify(real, ck).st]
         seq[n] = s
         print("  %-52s %s" % (n, s))
-    verdict("AC-4", "later wrong codes, in-window resend, exhaustion and a further code answer identically for all 6 states", len({tuple(v) for v in seq.values()}) == 1 and seq["eligible"] == ["mismatch", "mismatch", "rateLimited", "exhausted", "exhausted"], seq["eligible"])
+    verdict("AC-4", "later wrong codes, in-window resend, exhaustion and a further code answer identically for all 5 states", len({tuple(v) for v in seq.values()}) == 1 and seq["eligible"] == ["mismatch", "mismatch", "rateLimited", "exhausted", "exhausted"], seq["eligible"])
     print("  -- real 31 s wait, then resend on every state")
     time.sleep(31)
     seq2 = {}
@@ -301,29 +345,81 @@ def stage_enum():
         rr = request_code(a, ck)
         seq2[n] = (rr.st, verify("135790", rr.cookie or ck).st)
     print("  %s" % seq2)
-    verdict("AC-4", "resend after 30 s and a wrong code answer identically for all 6 states", len(set(seq2.values())) == 1 and seq2["eligible"] == ("sent", "mismatch"), seq2["eligible"])
+    verdict("AC-4", "resend after 30 s and a wrong code answer identically for all 5 states", len(set(seq2.values())) == 1 and seq2["eligible"] == ("sent", "mismatch"), seq2["eligible"])
     time.sleep(2)
     mails2 = {n: len(mbox_for(a)) - base_mails[a] for n, (a, r) in res.items()}
     verdict("AC-4", "still only the eligible account was mailed after the resend (2 mails)", mails2["eligible"] == 2 and sum(v for k, v in mails2.items() if k != "eligible") == 0, mails2)
-    # AC-13 is the cgiar-refused row; FN-016
     ck = http_("GET", "/login.do").cookie
     fresh = verify("123456", ck).st
     verdict("FN-016", "verify with no challenge in the session answers like a wrong code", fresh == seq["eligible"][0], fresh)
-    verdict("AC-13", "is_cgiar_user=1 on a Cognito-active unit: neutral response, no email (the cgiar-refused row above)", shapes["cgiar-refused (is_cgiar_user=1, Cognito-active unit)"] == ref and mails["cgiar-refused (is_cgiar_user=1, Cognito-active unit)"] == 0)
-    # FN-006 / FN-003 end to end
+    stage_enum_cgiar()
+    # FN-006 / FN-003 end to end, with the standing exclusion (STANDING_EXCLUSION), no CGIAR rule and no allow-list (T21)
     reset()
+    base_unknown = {a: len(mbox_for(a)) for a in ("someone@gmail.com", "x@attackerexcluded.test", "x@excluded.test.evil.com", "x@sub.excluded.test")}
     outs = {}
-    for a in ("someone@gmail.com", "x@outlook.com.evil.com", "x@suboutlook.com", "x@sub.outlook.com", "x@attackeroutlook.com", "x@cgiar.org"):
+    # The padded upper-case form uses another local part: the same normalised address would hit the 30 s cooldown of the first one
+    for a in ("x@excluded.test", "  Y@EXCLUDED.TEST ", "x@attackerexcluded.test", "x@excluded.test.evil.com", "x@sub.excluded.test", "someone@gmail.com"):
         outs[a] = request_code(a).st
-    print("  not-allow-listed / lookalike domains: %s" % outs)
-    verdict("FN-006/FN-003", "every lookalike and other domain answers domainNotEnabled, no mail", set(outs.values()) == {"domainNotEnabled"})
+    print("  exclusion %s: %s" % (STANDING_EXCLUSION, outs))
+    verdict("FN-006/FN-003", "the excluded domain, as typed and in its normalised form, answers domainNotEnabled",
+            outs["x@excluded.test"] == "domainNotEnabled" and outs["  Y@EXCLUDED.TEST "] == "domainNotEnabled")
+    verdict("FN-003/AC-2", "lookalikes, a sub-domain that is not listed and an unrelated domain are not excluded: they get the neutral answer",
+            all(outs[a] == "sent" for a in ("x@attackerexcluded.test", "x@excluded.test.evil.com", "x@sub.excluded.test", "someone@gmail.com")), outs)
+    time.sleep(2)
+    verdict("FN-005", "no mail for any of them (none is a registered account), and a row only for the ones that went on",
+            all(len(mbox_for(a)) == n for a, n in base_unknown.items()) and int(sql("SELECT COUNT(*) FROM otp_challenges;")[0][0]) == 4)
     before = len(mbox_for("probe.user@outlook.com"))
     st = request_code("  Probe.User@OUTLOOK.COM ").st
     verdict("FN-003", "'  Probe.User@OUTLOOK.COM ' is accepted as the normalised address and mailed", st == "sent" and code_from("probe.user@outlook.com", before) is not None, st)
 
 
+def stage_enum_cgiar():
+    """AC-13 / SEC-009 (amended 2026-10-15, T21): is_cgiar_user plays no part. The unit is Cognito-active (the copy carries
+    cognito_auth_active = true for AICCRA), the switch is on."""
+    print("  -- AC-13: an is_cgiar_user=1 account on the Cognito-active unit")
+    accounts = [("otp.cgiar@outlook.com", "an outlook.com account"), ("otp.staff@cgiar.org", "a cgiar.org account")]
+    for addr, label in accounts:
+        flag, units = otp_flags(addr)
+        print("  crpByEmail for %s (%s): isCgiarUser=%s units(cognitoEnabled, otpEnabled)=%s" % (addr, label, flag, units))
+    cgiar_flag, cgiar_units = otp_flags("otp.staff@cgiar.org")
+    verdict("AC-13", "step 3 data for the cgiar.org account, empty exclusion of its domain: isCgiarUser, cognitoEnabled and otpEnabled are all true (the two methods are offered)",
+            cgiar_flag is True and any(c is True and o is True for c, o in cgiar_units.values()), (cgiar_flag, cgiar_units))
+    reset()
+    before = len(mbox_for("otp.cgiar@outlook.com")), len(mbox_for("otp.staff@cgiar.org"))
+    codes = {}
+    for addr, label in accounts:
+        ck, code = issue(addr)
+        codes[addr] = (ck, code)
+    after = len(mbox_for("otp.cgiar@outlook.com")), len(mbox_for("otp.staff@cgiar.org"))
+    verdict("AC-13/SEC-009", "both CGIAR accounts are mailed exactly one code each (is_cgiar_user plays no part)", after[0] - before[0] == 1 and after[1] - before[1] == 1, (before, after))
+    signed = {addr: verify(code, ck) for addr, (ck, code) in codes.items()}
+    print("  verify: %s" % {a: r.body for a, r in signed.items()})
+    verdict("AC-13/SEC-009", "each code signs its CGIAR account in", all(r.st == "ok" for r in signed.values()), {a: r.st for a, r in signed.items()})
+    if JDWP:
+        verdict("AC-13/SEC-005", "the signed-in sessions are authenticated (read from the JVM)", all(authed(r.cookie) is True for r in signed.values()), {a: authed(r.cookie) for a, r in signed.items()})
+    else:
+        notrun("AC-13/SEC-005", "the signed-in sessions are authenticated (read from the JVM)", "authenticated session: NOT RUN (needs PROBE_JDWP); the answer ok is the evidence")
+    # the same account once its domain is excluded: not-enabled on a direct call, and the page data shows only Cognito
+    set_unit_value(EXCLUSION_KEY, "cgiar.org")
+    try:
+        reset()
+        mails0 = len(mbox_for("otp.staff@cgiar.org"))
+        direct = request_code("otp.staff@cgiar.org")
+        flag2, units2 = otp_flags("otp.staff@cgiar.org")
+        flag3, units3 = otp_flags("otp.cgiar@outlook.com")
+        time.sleep(2)
+        print("  cgiar.org excluded: request-code -> %s ; staff %s ; outlook account %s" % (direct.st, units2, units3))
+        verdict("AC-13/FN-006", "with cgiar.org excluded a direct request-code call answers domainNotEnabled, no mail, no challenge",
+                direct.st == "domainNotEnabled" and len(mbox_for("otp.staff@cgiar.org")) == mails0 and sql("SELECT COUNT(*) FROM otp_challenges;")[0][0] == "0", direct.st)
+        verdict("AC-13/UI-006", "with cgiar.org excluded the page data keeps cognitoEnabled true and turns otpEnabled false (step 3 shows only Sign in with CGIAR); an outlook.com account is unaffected",
+                flag2 is True and all(c is True and o is False for c, o in units2.values()) and all(o is True for c, o in units3.values()), (units2, units3))
+    finally:
+        set_unit_value(EXCLUSION_KEY, STANDING_EXCLUSION)
+    reset()
+
+
 def stage_attempts():
-    print("\n== attempts: AC-6, verify limits (SEC-010), parameter allow-list (RJ-9)")
+    print("\n== attempts: AC-6, verify limits (SEC-010), request parameter allow-list (RJ-9)")
     reset()
     ck, code = issue("otp.p05@outlook.com")
     s = [verify(wrong_of(code), ck).st for _ in range(3)]
@@ -749,12 +845,13 @@ def stage_emaillog():
     el2 = email_log_max()
     mails0 = sink_total()
     cases = [("unknown", "otp.unknown@outlook.com", "sent"), ("inactive", "otp.inactive@outlook.com", "sent"), ("non-member", "otp.nonmember@outlook.com", "sent"),
-             ("cgiar-refused", "otp.cgiar@outlook.com", "sent"), ("soft-deleted", "otp.softdeleted@outlook.com", "sent"), ("domain not allow-listed", "someone@gmail.com", "domainNotEnabled")]
+             ("soft-deleted", "otp.softdeleted@outlook.com", "sent"), ("unregistered domain, not excluded", "someone@gmail.com", "sent"),
+             ("excluded domain", "x@" + STANDING_EXCLUSION, "domainNotEnabled")]
     answers = {name: request_code(a).st for name, a, want in cases}
     time.sleep(3)
     quiet = email_rows(el2)
     print("  requests that send nothing: %s ; email_logs rows written: %d ; mails at the sink: %d" % (answers, len(quiet), sink_total() - mails0))
-    verdict("AC-18", "an ineligible request (5 account states, 1 domain off the allow-list) leaves no email_logs row and no mail",
+    verdict("AC-18", "an ineligible request (4 account states, an unregistered address, 1 excluded domain) leaves no email_logs row and no mail",
             answers == {name: want for name, a, want in cases} and len(quiet) == 0 and sink_total() == mails0, "rows=%d" % len(quiet))
     # 4. System Admin -> Emails lists the failed row, and resending it, by id or in bulk, sends nothing
     sa_email, sa_pass = os.environ.get("PROBE_SA_EMAIL"), os.environ.get("PROBE_SA_PASS")
@@ -887,30 +984,56 @@ def stage_nonprodblank():
 
 
 def stage_live():
-    print("\n== live: FN-002 / FN-001 / AC-1 (allow-list emptied and restored with no restart)")
+    print("\n== live: FN-002 / FN-001 / AC-1 / AC-21 (the switch and the exclusion changed with no restart)")
     reset()
+    flags = lambda body: re.findall(r'"otpEnabled":(true|false)', body)
     before = request_code("probe.user@outlook.com").st
-    cp = sql("SELECT id, value FROM custom_parameters WHERE parameter_id=397 AND global_unit_id=%s;" % GU)
-    sql("UPDATE custom_parameters SET value='' WHERE parameter_id=397 AND global_unit_id=%s;" % GU)
+    on_state = (unit_value(SWITCH_KEY), unit_value(EXCLUSION_KEY))
+    # 1. the switch turned off
+    set_unit_value(SWITCH_KEY, "false")
     reset()
     mails0 = len(mbox_for("probe.user@outlook.com"))
     after = request_code("probe.user@outlook.com")
     page = http_("POST", "/crpByEmail.do", {"userEmail": "probe.user@outlook.com"})
-    print("  empty allow-list: request-code -> %s ; crpByEmail otpEnabled flags: %s" % (after.st, re.findall(r'"otpEnabled":(true|false)', page.body)))
+    print("  switch off: request-code -> %s ; crpByEmail otpEnabled flags: %s" % (after.st, flags(page.body)))
     time.sleep(2)
-    verdict("AC-1/FN-001", "empty allow-list: request-code refused (domainNotEnabled), no mail, no challenge", after.st == "domainNotEnabled" and len(mbox_for("probe.user@outlook.com")) == mails0 and sql("SELECT COUNT(*) FROM otp_challenges;")[0][0] == "0", after.st)
-    verdict("AC-1", "empty allow-list: crpByEmail offers no OTP for any unit", set(re.findall(r'"otpEnabled":(true|false)', page.body)) == {"false"})
+    verdict("AC-1/FN-001", "switch off: request-code refused (domainNotEnabled), no mail, no challenge", after.st == "domainNotEnabled" and len(mbox_for("probe.user@outlook.com")) == mails0 and sql("SELECT COUNT(*) FROM otp_challenges;")[0][0] == "0", after.st)
+    verdict("AC-1", "switch off: crpByEmail offers no OTP for any unit", set(flags(page.body)) == {"false"})
     pw = http_("POST", "/login.do", {"user.email": PASSWORD_USER[0], "user.password": PASSWORD_USER[1], "crp": "AICCRA"}, http_("GET", "/login.do").cookie)
     verdict("AC-1/FN-019", "password login unchanged with the feature off", pw.status == 302 and dict(pw.headers).get("Location", "").endswith("/AICCRA/crpDashboard.do"), dict(pw.headers).get("Location"))
     co = http_("GET", "/cognitoLogin.do?crp=AICCRA")
     print("  cognitoLogin.do?crp=AICCRA -> HTTP %d Location %s" % (co.status, (dict(co.headers).get("Location") or "")[:90]))
-    sql("UPDATE custom_parameters SET value='outlook.com' WHERE parameter_id=397 AND global_unit_id=%s;" % GU)
+    # 2. turned back on
+    set_unit_value(SWITCH_KEY, "true")
     reset()
     back = request_code("probe.user@outlook.com").st
     page2 = http_("POST", "/crpByEmail.do", {"userEmail": "probe.user@outlook.com"})
-    print("  restored: request-code -> %s ; otpEnabled flags: %s" % (back, re.findall(r'"otpEnabled":(true|false)', page2.body)))
-    verdict("FN-002", "restoring the allow-list takes effect on the next request with no restart", back == "sent" and "true" in re.findall(r'"otpEnabled":(true|false)', page2.body))
-    print("  (before the toggle: %s ; custom_parameters row: %s)" % (before, cp))
+    print("  switch on again: request-code -> %s ; otpEnabled flags: %s" % (back, flags(page2.body)))
+    verdict("FN-002/AC-21", "turning the switch on takes effect on the next request with no restart", back == "sent" and "true" in flags(page2.body))
+    # 3. a domain added to the exclusion
+    set_unit_value(EXCLUSION_KEY, STANDING_EXCLUSION + ", Outlook.COM")
+    reset()
+    mails1 = len(mbox_for("probe.user@outlook.com"))
+    added = request_code("probe.user@outlook.com")
+    page3 = http_("POST", "/crpByEmail.do", {"userEmail": "probe.user@outlook.com"})
+    time.sleep(2)
+    print("  outlook.com excluded: request-code -> %s ; otpEnabled flags: %s" % (added.st, flags(page3.body)))
+    verdict("FN-002/AC-21", "adding a domain to the exclusion takes effect on the next request: domainNotEnabled, no mail, otpEnabled false",
+            added.st == "domainNotEnabled" and len(mbox_for("probe.user@outlook.com")) == mails1 and set(flags(page3.body)) == {"false"}, added.st)
+    # 4. and removed again
+    set_unit_value(EXCLUSION_KEY, STANDING_EXCLUSION)
+    reset()
+    removed = request_code("probe.user@outlook.com").st
+    page4 = http_("POST", "/crpByEmail.do", {"userEmail": "probe.user@outlook.com"})
+    print("  outlook.com no longer excluded: request-code -> %s ; otpEnabled flags: %s" % (removed, flags(page4.body)))
+    verdict("FN-002/AC-21", "removing a domain from the exclusion takes effect on the next request", removed == "sent" and "true" in flags(page4.body))
+    # 5. an empty exclusion
+    set_unit_value(EXCLUSION_KEY, "")
+    reset()
+    empty = request_code("probe.user@outlook.com").st
+    verdict("FN-003", "an empty exclusion excludes nobody", empty == "sent", empty)
+    set_unit_value(EXCLUSION_KEY, STANDING_EXCLUSION)
+    print("  (before the toggles: %s ; the unit's values then: switch=%s exclusion=%s ; restored to the standing fixture)" % (before, on_state[0], on_state[1]))
 
 
 def stage_nosecret():
@@ -923,7 +1046,7 @@ def stage_nosecret():
     time.sleep(1.5)
     flags = re.findall(r'"otpEnabled":(true|false)', http_("POST", "/crpByEmail.do", {"userEmail": "probe.user@outlook.com"}).body)
     rows = sql("SELECT COUNT(*) FROM otp_challenges;")[0][0]
-    print("  allow-list is set for the unit; request-code -> %s ; otpEnabled flags %s ; challenge rows %s" % (r.st, flags, rows))
+    print("  the unit's switch is on; request-code -> %s ; otpEnabled flags %s ; challenge rows %s" % (r.st, flags, rows))
     verdict("AC-12", "request-code refused (domainNotEnabled), no challenge, no mail", r.st == "domainNotEnabled" and rows == "0" and len(mbox_for("probe.user@outlook.com")) == mails0)
     verdict("AC-12", "the option is hidden: otpEnabled false for every unit", set(flags) <= {"false"} and flags != [])
     v = verify("123456", http_("GET", "/login.do").cookie).st
@@ -1056,7 +1179,7 @@ def stage_tz():
 
 def stage_postlogin():
     print("\n== postlogin: a refusal AFTER Subject.login (finishLogin INPUT on a Global Unit type with no landing page)")
-    print("  fixture (throwaway copy only): global_unit_types 99, unit 9901 PROBEGU with the allow-list outlook.com, member otp.p20@outlook.com")
+    print("  fixture (throwaway copy only): global_unit_types 99, unit 9901 PROBEGU whose type has the switch on by catalog default, member otp.p20@outlook.com")
     reset()
     before = len(mbox_for("otp.p20@outlook.com"))
     r = request_code("otp.p20@outlook.com", globalUnitId="9901")
@@ -1071,6 +1194,8 @@ def stage_postlogin():
 STAGES = {"postlogin": stage_postlogin, "enum": stage_enum, "attempts": stage_attempts, "resend": stage_resend, "expiry": stage_expiry, "removed": stage_removed,
           "limits": stage_limits, "session": stage_session, "leak": stage_leak, "emaillog": stage_emaillog, "nonprod": stage_nonprod, "nonprodblank": stage_nonprodblank, "live": stage_live, "nosecret": stage_nosecret,
           "smtp": stage_smtp, "blackhole": stage_blackhole, "tz": stage_tz}
+print("== standing fixture")
+standing_fixture()
 for name in sys.argv[1:]:
     STAGES[name]()
 failed = [(a, n) for a, n, ok in verdicts if not ok]

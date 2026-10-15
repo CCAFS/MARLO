@@ -79,8 +79,8 @@ import org.slf4j.LoggerFactory;
  * <li>an unconfigured secret answers {@code domainNotEnabled}. It comes first because the limiter cannot count
  * without keys and would answer {@code unavailable} instead (SEC-008);</li>
  * <li>the limiter counts the email, the address and the 30-second cooldown, before any lookup (SEC-010, FN-008);</li>
- * <li>the shape of the email and the unit id, then the allow-list of the unit through the uncached read (FN-006),
- * then the terms: each refusal answers a status that names no account state;</li>
+ * <li>the shape of the email and the unit id, then the unit's switch and domain exclusion through the uncached read
+ * (FN-001, FN-006, DD-13), then the terms: each refusal answers a status that names no account state;</li>
  * <li>{@link OtpEligibility} decides eligibility. A failure of the predicate is not an answer of its own: whether it
  * throws can depend on the account, so it is treated as "not eligible" and the neutral {@code sent} is answered
  * (SEC-006);</li>
@@ -305,12 +305,12 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     return this.request == null ? this.ipResolver.resolve((String) null, null) : this.ipResolver.resolve(this.request);
   }
 
-  /** Design 5.1 step 4: whether the submitted email's domain is on the unit's allow-list, read uncached (DD-12). */
-  private boolean isDomainEnabled(Long unit) {
-    Map<Long, String> allowLists =
-      this.challengeManager.allowListFor(APConstants.OTP_ALLOWED_EMAIL_DOMAINS, Collections.singletonList(unit));
-    String raw = allowLists == null ? null : allowLists.get(unit);
-    return OtpDomainPolicy.isAllowed(this.email, OtpDomainPolicy.parseAllowList(raw));
+  /**
+   * Design 5.1 step 4: whether the unit's switch is on and the submitted email's domain is not on its exclusion list,
+   * both read uncached (DD-12, DD-13). It reads nothing about the account.
+   */
+  private boolean isCodeOffered(Long unit) {
+    return this.eligibility.isOffered(this.email, unit.longValue());
   }
 
   /**
@@ -373,8 +373,8 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     }
     this.unitId = unit;
 
-    // Step 4. An unknown unit has no allow-list, so it ends here too.
-    if (!this.isDomainEnabled(unit)) {
+    // Step 4. An unknown unit has no switch, so it ends here too.
+    if (!this.isCodeOffered(unit)) {
       return this.refuse(STATUS_DOMAIN_NOT_ENABLED, RequestOutcome.DENIED_DOMAIN);
     }
 

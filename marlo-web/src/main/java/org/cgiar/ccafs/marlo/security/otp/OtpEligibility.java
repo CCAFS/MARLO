@@ -18,16 +18,14 @@ package org.cgiar.ccafs.marlo.security.otp;
 
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
-import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpChallengeManager;
-import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
-import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,35 +36,35 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * The single eligibility predicate of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T06, FN-004, FN-005,
- * FN-015, SEC-009, FN-001, DD-4).
+ * The single eligibility predicate of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T06, FN-001, FN-003,
+ * FN-004, FN-005, FN-015, SEC-009, DD-4; amended by T21, DD-13).
  * <p>
  * <b>Full predicate</b> ({@link #isEligible(String, long)}), used when a code is requested (design 5.1 step 6) and
  * again after it is consumed (5.2 step 8, FN-015). It is true only when <b>all</b> of these hold:
  * <ol>
  * <li>the feature is configured ({@link OtpKeys#isConfigured()});</li>
- * <li>the email's domain equals an entry of the Global Unit's allow-list, read <b>uncached</b> through
- * {@link OtpChallengeManager#allowListFor} (DD-12), with {@code cgiar.org} ignored (SEC-009);</li>
+ * <li>the Global Unit's switch {@code system_otp_login_active} is on and the email's domain is not on its
+ * {@code system_otp_excluded_email_domains} list, both read <b>uncached</b> through
+ * {@link OtpChallengeManager#specificityValuesFor} (DD-12, {@link OtpDomainPolicy#isOffered});</li>
  * <li>the Global Unit exists;</li>
  * <li>the user exists, by the case-insensitive and trimmed lookup of {@link UserManager#getUserByEmail} (P-12);</li>
  * <li>the user is active;</li>
  * <li>the user is an <b>active</b> {@code crp_users} member of the Global Unit, through
  * {@link CrpUserManager#existActiveCrpUser(long, long)} (FN-005: a soft-deleted row, {@code is_active=0}, is not a
  * member). Password login ({@code LoginAction.finishLogin}) still uses the activity-blind {@code existCrpUser}; this
- * is a deliberate departure from that parity (requirements Decision Log, 2026-10-13);</li>
- * <li>it is <b>not</b> the case that the user is a CGIAR user ({@link User#isCgiarUser()}, the
- * {@code users.is_cgiar_user} column) <b>and</b> {@link CognitoAuthSpecificity#isActiveFor} holds for the unit
- * (SEC-009). A CGIAR user on a unit where Cognito is inactive is eligible (OQ-4).</li>
+ * is a deliberate departure from that parity (requirements Decision Log, 2026-10-13).</li>
  * </ol>
- * The checks run cheapest and least revealing first and stop at the first refusal, but the answer is a bare boolean:
- * the caller can never tell which fact refused.
+ * Nothing here reads {@code users.is_cgiar_user} or the Cognito specificity, and no domain is fixed in code
+ * (SEC-009, DD-13): a CGIAR account with access to the unit gets a code like any other account unless its domain is
+ * excluded. The checks run cheapest and least revealing first and stop at the first refusal, but the answer is a
+ * bare boolean: the caller can never tell which fact refused.
  * <p>
- * <b>Disclosure-safe variant</b> ({@link #otpEnabledFor}), used by {@code crpByEmail.do} to say whether a unit offers
- * the code button. It checks the configuration, the email's domain and SEC-009 only. It never reads the user's
- * active state or membership, so the response discloses nothing beyond today's {@code isCgiarUser} flag and unit list
- * (JI-11).
+ * <b>Disclosure-safe variants.</b> {@link #isOffered(String, long)} (request step 4) and
+ * {@link #otpEnabledFor(String, Collection)} ({@code crpByEmail.do}) check the switch and the exclusion only (the
+ * second also the configuration). They never read the user's active state or membership, so the response discloses
+ * nothing beyond today's {@code isCgiarUser} flag and unit list (JI-11).
  * <p>
- * <b>Call it only from an action's {@code execute()}.</b> The user, membership and allow-list reads go through
+ * <b>Call it only from an action's {@code execute()}.</b> The user, membership and specificity reads go through
  * transactional managers, and a transactional call made from {@code validate()} commits whatever {@code prepare()}
  * left half-edited. A store failure surfaces as the manager's runtime exception; the caller turns it into its own
  * {@code unavailable} or {@code internal_error} answer. The class is stateless and holds no session.
@@ -81,25 +79,40 @@ import javax.inject.Named;
 @Named
 public final class OtpEligibility {
 
+  /** The two specificities of FN-001 and FN-003, read together in one query (DD-12, DD-13). */
+  private static final List<String> SPECIFICITY_KEYS = Collections.unmodifiableList(
+    Arrays.asList(APConstants.OTP_LOGIN_ACTIVE, APConstants.OTP_EXCLUDED_EMAIL_DOMAINS));
+
   private final OtpKeys keys;
   private final UserManager userManager;
   private final GlobalUnitManager globalUnitManager;
   private final CrpUserManager crpUserManager;
   private final OtpChallengeManager otpChallengeManager;
-  private final CustomParameterManager customParameterManager;
-  private final ParameterManager parameterManager;
 
   @Inject
   public OtpEligibility(OtpKeys keys, UserManager userManager, GlobalUnitManager globalUnitManager,
-    CrpUserManager crpUserManager, OtpChallengeManager otpChallengeManager,
-    CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+    CrpUserManager crpUserManager, OtpChallengeManager otpChallengeManager) {
     this.keys = keys;
     this.userManager = userManager;
     this.globalUnitManager = globalUnitManager;
     this.crpUserManager = crpUserManager;
     this.otpChallengeManager = otpChallengeManager;
-    this.customParameterManager = customParameterManager;
-    this.parameterManager = parameterManager;
+  }
+
+  /**
+   * Design 5.1 step 4 on its own: the Global Unit's switch is on and the email's domain is not excluded. The secret
+   * is not checked here (the request action does it first), and nothing about the account is read.
+   *
+   * @param email the submitted email, raw; possibly {@code null}
+   * @param globalUnitId the selected Global Unit. One that does not exist has its switch off
+   * @return {@code true} only when the code is offered to this email on this Global Unit
+   */
+  public boolean isOffered(String email, long globalUnitId) {
+    if (OtpDomainPolicy.domainOf(email) == null) {
+      return false;
+    }
+    Long unitId = Long.valueOf(globalUnitId);
+    return this.isOffered(email, this.specificities(Collections.singletonList(unitId)).get(unitId));
   }
 
   /**
@@ -110,38 +123,29 @@ public final class OtpEligibility {
    * @return {@code true} only when every condition in the class description holds
    */
   public boolean isEligible(String email, long globalUnitId) {
-    if (!this.keys.isConfigured() || OtpDomainPolicy.domainOf(email) == null) {
+    if (!this.keys.isConfigured() || !this.isOffered(email, globalUnitId)) {
       return false;
     }
-    Long unitId = Long.valueOf(globalUnitId);
-    if (!this.isDomainAllowed(email, this.allowLists(Collections.singletonList(unitId)).get(unitId))) {
-      return false;
-    }
-    GlobalUnit globalUnit = this.globalUnitManager.getGlobalUnitById(globalUnitId);
-    if (globalUnit == null) {
+    if (this.globalUnitManager.getGlobalUnitById(globalUnitId) == null) {
       return false;
     }
     User user = this.userManager.getUserByEmail(OtpDomainPolicy.normaliseEmail(email));
     if (user == null || !user.isActive() || user.getId() == null) {
       return false;
     }
-    if (!this.crpUserManager.existActiveCrpUser(user.getId().longValue(), globalUnitId)) {
-      return false;
-    }
-    return !this.isRefusedBySec009(user.isCgiarUser(), globalUnit);
+    return this.crpUserManager.existActiveCrpUser(user.getId().longValue(), globalUnitId);
   }
 
   /**
-   * The variant for {@code crpByEmail.do}: configured, domain allowed for the unit, and not refused by SEC-009. It
-   * reads no account state beyond the {@code isCgiarUser} flag the caller already holds.
+   * The variant for {@code crpByEmail.do}: configured, the unit's switch on and the email's domain not excluded. It
+   * reads no account state.
    *
    * @param email the submitted email, raw; possibly {@code null}
-   * @param cgiarUser the {@code is_cgiar_user} flag of the user the caller found
    * @param units the Global Units to answer for; {@code null} entries are skipped
-   * @return one entry per listed unit id, in the order given. The allow-lists of all the units come from one
-   *         uncached query, made only when the feature is configured and the email has a domain
+   * @return one entry per listed unit id, in the order given. The switch and the exclusion of all the units come
+   *         from one uncached query, made only when the feature is configured and the email has a domain
    */
-  public Map<Long, Boolean> otpEnabledFor(String email, boolean cgiarUser, Collection<GlobalUnit> units) {
+  public Map<Long, Boolean> otpEnabledFor(String email, Collection<GlobalUnit> units) {
     Map<Long, Boolean> result = new LinkedHashMap<Long, Boolean>();
     List<Long> unitIds = new ArrayList<Long>();
     if (units != null) {
@@ -155,29 +159,22 @@ public final class OtpEligibility {
     if (unitIds.isEmpty() || !this.keys.isConfigured() || OtpDomainPolicy.domainOf(email) == null) {
       return result;
     }
-    Map<Long, String> allowLists = this.allowLists(unitIds);
-    for (GlobalUnit unit : units) {
-      if (unit != null && unit.getId() != null && this.isDomainAllowed(email, allowLists.get(unit.getId()))
-        && !this.isRefusedBySec009(cgiarUser, unit)) {
-        result.put(unit.getId(), Boolean.TRUE);
+    Map<Long, Map<String, String>> specificities = this.specificities(unitIds);
+    for (Long unitId : unitIds) {
+      if (this.isOffered(email, specificities.get(unitId))) {
+        result.put(unitId, Boolean.TRUE);
       }
     }
     return result;
   }
 
-  private Map<Long, String> allowLists(Collection<Long> unitIds) {
-    Map<Long, String> allowLists =
-      this.otpChallengeManager.allowListFor(APConstants.OTP_ALLOWED_EMAIL_DOMAINS, unitIds);
-    return allowLists == null ? Collections.<Long, String>emptyMap() : allowLists;
+  private boolean isOffered(String email, Map<String, String> values) {
+    return values != null && OtpDomainPolicy.isOffered(values.get(APConstants.OTP_LOGIN_ACTIVE),
+      values.get(APConstants.OTP_EXCLUDED_EMAIL_DOMAINS), email);
   }
 
-  private boolean isDomainAllowed(String email, String rawAllowList) {
-    return OtpDomainPolicy.isAllowed(email, OtpDomainPolicy.parseAllowList(rawAllowList));
-  }
-
-  /** SEC-009: a CGIAR user is refused on a unit where Cognito is active. */
-  private boolean isRefusedBySec009(boolean cgiarUser, GlobalUnit globalUnit) {
-    return cgiarUser
-      && CognitoAuthSpecificity.isActiveFor(globalUnit, this.customParameterManager, this.parameterManager);
+  private Map<Long, Map<String, String>> specificities(Collection<Long> unitIds) {
+    Map<Long, Map<String, String>> values = this.otpChallengeManager.specificityValuesFor(SPECIFICITY_KEYS, unitIds);
+    return values == null ? Collections.<Long, Map<String, String>>emptyMap() : values;
   }
 }

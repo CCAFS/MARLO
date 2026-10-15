@@ -40,7 +40,7 @@ What the spec adds to the guide for MARLO:
 
 | Term | Meaning |
 |---|---|
-| **Allow-list** | The set of email domains for which a Global Unit enables code sign-in. Empty means off |
+| **Exclusion list** | The email domains that never receive a code in a Global Unit (`system_otp_excluded_email_domains`). Empty excludes no one. Replaces the allow-list *(amended 2026-10-15, T21)* |
 | **Eligible user** | An account that is active, has an active `crp_users` membership in the selected Global Unit, and has an email domain the unit has not excluded, in a unit whose switch is on. Being a CGIAR account plays no part (amended 2026-10-15, T21) |
 | **Challenge** | One issued code, with its expiry, attempt count and consumed state |
 | **Request code** | The user action that may issue a challenge and an email |
@@ -153,7 +153,7 @@ Current behavior this spec builds on:
 - **CHG-OTP-LOGIN-001-FN-012** — A wrong code MUST increment the challenge's attempt count. The 3rd wrong code MUST exhaust the challenge and say so. An exhausted challenge MUST never authenticate, even with the correct code.
 - **CHG-OTP-LOGIN-001-FN-013** — A challenge MUST authenticate at most once. A second submission of the code, sequential or concurrent, MUST be refused.
 - **CHG-OTP-LOGIN-001-FN-014** — A challenge that is expired, superseded, consumed or exhausted MUST be refused, even when its stored row still exists.
-- **CHG-OTP-LOGIN-001-FN-015** — Eligibility MUST be re-checked after the code is consumed and before the session is issued. A user deactivated, removed from G, or newly refused by `SEC-009` since the request MUST be refused.
+- **CHG-OTP-LOGIN-001-FN-015** — Eligibility MUST be re-checked after the code is consumed and before the session is issued. A user deactivated, removed from G, or no longer offered the code by G (switch off or domain excluded, FN-001, FN-003) since the request MUST be refused. *(Amended 2026-10-15, T21.)*
 - **CHG-OTP-LOGIN-001-FN-016** — A verification with no challenge in the current session (none requested, or the session lost) MUST receive the same answer as a wrong code. A verification after a neutral-response request MUST answer exactly as it would for an eligible account's challenge (amended 2026-10-09, RJ-5).
 
 ##### Scenario: Successful sign-in matches a password sign-in
@@ -290,7 +290,7 @@ Current behavior this spec builds on:
 | Fixing `crpByEmail.do`'s pre-auth disclosure (C8) | Separate spec, proposal OQ-7 |
 | Ending live sessions on deactivation | Proposal OQ-6, tech-lead decision; no current path does it |
 | Cognito-native email OTP | Proposal Option C, rejected for A2-2631 |
-| An admin screen for the allow-list | Existing `custom_parameters` administration |
+| An admin screen for the switch and the exclusion list | Existing `custom_parameters` administration |
 | Choosing the pilot Global Units and domains | Configuration, proposal OQ-1 |
 | `/api/**` REST authentication | Hard rule 3; untouched |
 | Metrics dashboards and alerting | MARLO has no metrics stack; OPS-001 log lines are the signal |
@@ -301,9 +301,9 @@ Current behavior this spec builds on:
 
 | Persona | Effect |
 |---|---|
-| Partner staff (project leaders, coordinators, M&E focal points on allow-listed domains) | New passwordless sign-in. Their roles do not change |
+| Partner staff (project leaders, coordinators, M&E focal points on units with the switch on) | New passwordless sign-in. Their roles do not change |
 | MARLO Support / Super Admin | Enable and disable per Global Unit; triage "code not received" |
-| CGIAR staff on Cognito-enabled Global Units | No change; refused by `SEC-009` |
+| CGIAR staff on Cognito-enabled Global Units | May choose the code instead of Cognito, unless their domain is excluded (SEC-009 *(amended 2026-10-15, T21)*) |
 | Local password users | No change (`FN-019`) |
 
 ---
@@ -360,7 +360,7 @@ Current behavior this spec builds on:
 - [x] Phase replication: not applicable. No phased data is read or written.
 - [x] Save validation: not applicable to a save section. Request-code and verify-code validate input in their actions; no manager save chain on phased entities.
 - [x] Permissions: the new actions run before authentication. Their interceptor stack is declared in `design.md` and must match the existing pre-auth login actions.
-- [x] Specificity: the allow-list goes through `parameters` + `custom_parameters`, with constants in both `APConstants.java` files (DA-002).
+- [x] Specificity: the switch and the exclusion list go through `parameters` + `custom_parameters`, with constants in both `APConstants.java` files (DA-002).
 - [x] Migrations: Flyway with `V<…>_<YYYYMMDD>_<HHMM>__<Description>.sql`, timestamp from the real clock (DA-001).
 - [x] i18n: UI-005.
 - [x] License header: NF-002.

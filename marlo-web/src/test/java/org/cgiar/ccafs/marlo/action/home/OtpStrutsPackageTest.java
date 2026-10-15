@@ -220,9 +220,7 @@ public class OtpStrutsPackageTest extends XWorkJUnit4TestCase {
     OtpChallengeManager challenges = (OtpChallengeManager) unusable(OtpChallengeManager.class);
     GlobalUnitManager units = (GlobalUnitManager) unusable(GlobalUnitManager.class);
     OtpEligibility eligibility = new OtpEligibility(keys, (UserManager) unusable(UserManager.class), units,
-      (CrpUserManager) unusable(CrpUserManager.class), challenges,
-      (CustomParameterManager) unusable(CustomParameterManager.class),
-      (ParameterManager) unusable(ParameterManager.class));
+      (CrpUserManager) unusable(CrpUserManager.class), challenges);
     return new OtpRequestCodeAction(config, keys,
       new OtpRateLimiter(keys, (OtpRateLimitManager) unusable(OtpRateLimitManager.class)), new OtpCodes(keys),
       eligibility, challenges, units, (CustomParameterManager) unusable(CustomParameterManager.class),
@@ -242,7 +240,7 @@ public class OtpStrutsPackageTest extends XWorkJUnit4TestCase {
     ParameterManager parameters = (ParameterManager) unusable(ParameterManager.class);
     return new OtpVerifyCodeAction(config, users, units, crpUsers, customParameters, parameters,
       new OtpRateLimiter(keys, (OtpRateLimitManager) unusable(OtpRateLimitManager.class)), new OtpCodes(keys),
-      new OtpEligibility(keys, users, units, crpUsers, challenges, customParameters, parameters), challenges,
+      new OtpEligibility(keys, users, units, crpUsers, challenges), challenges,
       new ClientIpResolver(""), Clock.systemUTC());
   }
 

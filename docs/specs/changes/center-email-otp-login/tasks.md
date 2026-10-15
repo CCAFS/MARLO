@@ -690,7 +690,7 @@ Field conventions:
 
 ### CHG-OTP-LOGIN-001-T21 — Per-unit switch and domain exclusion instead of the allow-list (DD-13)
 
-- **Status:** pending [ ] — **definition written 2026-10-15; do not implement until the user approves it** · **Size:** M · **Depends on:** T20 · **Module:** marlo-data, marlo-web, plus `probes/` and the runbook
+- **Status:** done [x] — definition approved and implemented 2026-10-15; Reviewer PASS · **Size:** M · **Depends on:** T20 · **Module:** marlo-data, marlo-web, plus `probes/` and the runbook
 - **Requirements:**
   - **amended 2026-10-15:** FN-001, FN-002, FN-003, FN-005, FN-006, SEC-009, DA-002, UI-001, UI-006, AC-1, AC-2, AC-4, AC-13;
   - **new:** AC-21, OQ-9;
@@ -751,6 +751,37 @@ Field conventions:
   - editing an applied migration;
   - writes to `aiccradb_actsave` or `aiccradb1`–`4`.
 - **Review:** `full`. The change decides who can authenticate (SEC-009 reversal), and it adds a migration.
+- **Verification notes (Implementer, 2026-10-15; the Leader sets the status):**
+  - **Files:**
+    - Migration `V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql` (clock `20261015_1418`), DML only. It seeds both keys for the types among 1-4 that exist, with the DA-002 texts verbatim, then deletes the old key's `custom_parameters` and then its `parameters`. `V2_6_0_20261009_1025` is untouched.
+    - `APConstants` in both modules: `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` replace `OTP_ALLOWED_EMAIL_DOMAINS`.
+    - Data layer: `OtpChallengeDAO.findSpecificityValues(keys, ids)`, one native uncached statement for both keys and every listed unit, and `OtpChallengeManager.specificityValuesFor(keys, ids)`. The old `allowListFor` and `findAllowListValues` are gone.
+    - `OtpDomainPolicy`: `parseExclusionList`, `isExcluded`, `isSwitchOn` (only the text `true`, trimmed, any case) and `isOffered(switch, exclusion, email)`. The `cgiar.org` drop is removed.
+    - `OtpEligibility`: no longer takes `CustomParameterManager` or `ParameterManager`. New `isOffered(email, unit)` (request step 4); `isEligible` and `otpEnabledFor(email, units)` use it.
+    - `OtpRequestCodeAction` step 4 calls `eligibility.isOffered`. `CrpByUserEmailAction` passes no `cgiarUser`; its `cognitoEnabled` read is unchanged.
+    - UI: `login.js` (`mode == "COGNITO"` with `otpEnabled` opens the choice; `setChoiceAlternative`; the Cognito handler is shared) and `loginForm.ftl` (`#login-method-cgiar-button`, container ids, `#login-external-user-label`). No new i18n key (`login.cgiarSignIn`), no CSS change. Cache-buster `?20261014` to `?20261015` in `login.ftl` and `401.ftl`.
+    - Probes: `ac-probe.sh` (standing fixture, `enum`, `live`, `emaillog`, `postlogin` text), new `ac21-migration.sh`, six new outputs under `probes/output/`, `probes/README.md` (section 11, AC-1, AC-2, AC-4, AC-13, AC-17, AC-21).
+    - Runbook, code facts only (see Deviations).
+  - **Compile gate:** classes wiped, 2415 / 1064 / 78 files, BUILD SUCCESS (the last run on the final tree). **Checkstyle:** 10 main and 7 test Java files, HEAD 0, working tree 0, delta 0. **Hygiene:** all 17 files `ok`. **i18n gate:** no `.properties` change. **Cache-bust:** `login.js` bumped in both references; the other lines the script flags in `loginForm.ftl` are comments that name the file. `node --check` clean.
+  - **Tests:** targeted, 9 classes, 269 tests, 0 failures (`OtpDomainPolicyTest` 34, `OtpEligibilityTest` 32, `OtpChallengeManagerImplTest` 34, `CrpByUserEmailActionTest` 14, `OtpRequestCodeActionTest` 49, `OtpVerifyCodeActionTest` 48, `OtpStrutsPackageTest` 8, `OtpMailSenderTest` 42, `UnitTextProviderTest` 8). Full `mvn -o -pl marlo-web -am test`: **832 tests, 0 failures** (baseline 811, plus 21 net).
+  - **Migration gate (AC-21):** `ac21-migration.sh`, 17 checks, 0 failed (`output/ac21-migration.out`). Throwaway copy with a child row on the old key, applied twice; a database with no units 45 or 47, applied twice; one with no unit types, applied twice. Then Flyway applied it on a second fresh copy at application start (`schema_version` success 1).
+  - **Falsifiers, each red then restored by hash:**
+    - a CGIAR check kept in `isEligible`: 7 failures, including the CGIAR-gets-a-code tests and the static lock;
+    - the list read as an allow-list: 80 failures and 5 errors of 177, the exclusion tests among them;
+    - the specificity read remembered between calls: `everyCallReadsTheSwitchAndTheExclusionAgain...` red;
+    - `cgiar.org` dropped again in the parser: 9 failures;
+    - the DAO read through the Hibernate query cache (live stack): the `live` stage 3 of 7 red (`output/ac-probe.t21-live-FALSIFIER-red.out`).
+  - **Static lock:** `OtpEligibilityTest.theCodePathNeverReadsIsCgiarUserOrTheCognitoSpecificity` scans `OtpEligibility`, `OtpDomainPolicy`, `OtpRequestCodeAction`, `OtpVerifyCodeAction` and the `otpEnabledByUnit` method of `CrpByUserEmailAction`, with comments stripped, for `isCgiarUser`, `is_cgiar_user`, `CognitoAuthSpecificity`, the Cognito key and a literal `"cgiar.org"`; a second test checks that `OtpEligibility` holds no parameter manager. The action tests' fake `CustomParameterManager` answers only `crp_custom_file`, so a Cognito read would also fail at run time.
+  - **Live probes** (throwaway copy, sink on 2525, `ps eww` proof before any write): `enum` 18/0, `live` 7/0, `attempts removed limits nonprod postlogin emaillog` 30/0 with 1 NOT RUN (the resend half of AC-18 needs a super admin login), `session leak` 20/0.
+  - **Browser walkthrough** (`output/t21-walkthrough.out`): external with the code (choice, password panel, code panel, back, code sign-in); CGIAR on Cognito with the code (choice with "Sign in with CGIAR" next to "Email me a sign-in code", no password control in the form, terms gate on the Cognito control, code sign-in, Enter guard); `cgiar.org` excluded live, no restart (single "Sign in with CGIAR", unchanged); switch off (password only, unchanged). The Cognito redirect itself was not followed.
+  - **Deviations and assumptions:**
+    - **UI route.** The choice for a Cognito unit reuses `#login-step-password` (the choice and the code panel already live there) instead of `#login-step-cgiar`. The password input is still removed from the document on this branch, and "External user" is hidden. UI-006 says the choice is "Sign in with CGIAR" or the password; I read "choosing a method reveals only that method's panel" as: for Cognito, the control itself starts the redirect, with the terms gate, since there is no panel behind it.
+    - **Single read point.** Step 4 goes through `OtpEligibility.isOffered` rather than the action reading the manager itself. The read count of design section 12 is unchanged: one at step 4, one inside `isEligible`.
+    - **Stale spec text (Leader).** Design section 6 still says "`COGNITO` keeps priority" in the `login.js` mode row and "The Cognito branch and every single-method case never render the choice" in the T17 row; both contradict DD-13 and UI-006 as amended. The T17 note in `execution.md` says the same. I did not edit `design.md`, `requirements.md` or `execution.md`.
+    - **Runbook edits (code facts only):** Quick path rows, the `parseExclusionList` name, the A6 state table (the CGIAR row is gone, seven states, first four neutral, the not-enabled row and note, `denied_domain`), the A7 "Cognito cache lag" row (the re-check no longer reads the Cognito flag), the OQ-4 row (superseded). Part C is the 2026-10-13 walk record and is left as it was.
+    - **Not re-run:** `expiry`, `resend`, `smtp`, `blackhole`, `tz`, `nosecret`, `nonprodblank` and the concurrency probes (they restart the application or wait minutes, and no code they exercise changed; the concurrency probes need the standing fixture, which `ac-probe.sh` with no stage sets). `ac17-migration.sh` is unchanged and still describes the T01 file.
+    - **Probe harness.** One `enum` failure in the first run came from the probe's own request order (same normalised address, 30 s cooldown); fixed in the probe. The first falsifier attempt on the DAO failed for the wrong reason (a native cacheable query needs declared scalars) and was redone. Both are in `probes/README.md` section 11.
+  - **Environment after the task:** application and sink stopped, nothing on 8080 or 2525, `aiccradb_otp_probe` and both scratch databases dropped, scratch credentials, mbox and logs deleted. `marlo-dev.properties` SHA-256 `4b617eb7...06311` before and after. `aiccradb_actsave` unchanged (OTP tables 0/0/0, 1623 `custom_parameters`, no `system_otp_*` parameter); `aiccradb1`-`4` never written to.
 
 ---
 
@@ -770,7 +801,7 @@ T14 ── T17 step-3 method choice (added 2026-10-14)
 T09 + T10 ── T18 email_logs row for support (added 2026-10-14)
 T09 + T18 ── T19 non-production recipient rule (added 2026-10-15)
 T19 ── T20 branded email format (added 2026-10-15)
-T20 ── T21 per-unit switch and domain exclusion (added 2026-10-15; awaiting approval)
+T20 ── T21 per-unit switch and domain exclusion (added 2026-10-15)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.

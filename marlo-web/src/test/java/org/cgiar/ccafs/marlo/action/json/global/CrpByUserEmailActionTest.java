@@ -85,10 +85,11 @@ public class CrpByUserEmailActionTest {
   private static final String SECRET_32_BYTES = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";
   private static final String PARTNER_EMAIL = "ann@partner.org";
   private String otpSecret;
-  private final Map<Long, String> allowLists = new HashMap<Long, String>();
-  private final List<String> allowListReads = new ArrayList<String>();
+  private final Map<Long, String> switches = new HashMap<Long, String>();
+  private final Map<Long, String> exclusions = new HashMap<Long, String>();
+  private final List<String> specificityReads = new ArrayList<String>();
   private final Set<Long> memberUnitIds = new HashSet<Long>();
-  private boolean allowListThrows;
+  private boolean specificityReadThrows;
 
   /**
    * Global Unit ids and Global Unit TYPE ids are deliberately disjoint number ranges here. If they overlapped,
@@ -140,10 +141,11 @@ public class CrpByUserEmailActionTest {
     // baseline and keeps a Global Unit disabled unless something explicitly turns it on.
     this.parameterManager.catalogDefault = "false";
     this.otpSecret = null;
-    this.allowLists.clear();
-    this.allowListReads.clear();
+    this.switches.clear();
+    this.exclusions.clear();
+    this.specificityReads.clear();
     this.memberUnitIds.clear();
-    this.allowListThrows = false;
+    this.specificityReadThrows = false;
   }
 
   private CrpByUserEmailAction newAction() {
@@ -151,7 +153,7 @@ public class CrpByUserEmailActionTest {
       this.parameterManager, this.newEligibility());
   }
 
-  /** The real predicate over fakes: only the managers are doubles, so the real SEC-009 and domain rules run. */
+  /** The real predicate over fakes: only the managers are doubles, so the real switch and exclusion rules run. */
   private OtpEligibility newEligibility() {
     APConfig config = new APConfig() {
 
@@ -161,15 +163,18 @@ public class CrpByUserEmailActionTest {
       }
     };
     OtpChallengeManager challengeManager = fake(OtpChallengeManager.class, (method, args) -> {
-      if ("allowListFor".equals(method)) {
+      if ("specificityValuesFor".equals(method)) {
         Collection<?> ids = (Collection<?>) args[1];
-        this.allowListReads.add(args[0] + "|" + ids);
-        if (this.allowListThrows) {
-          throw new IllegalStateException("allow-list read failed");
+        this.specificityReads.add(args[0] + "|" + ids);
+        if (this.specificityReadThrows) {
+          throw new IllegalStateException("specificity read failed");
         }
-        Map<Long, String> answer = new HashMap<Long, String>();
+        Map<Long, Map<String, String>> answer = new HashMap<Long, Map<String, String>>();
         for (Object id : ids) {
-          answer.put((Long) id, this.allowLists.get(id));
+          Map<String, String> values = new HashMap<String, String>();
+          values.put("system_otp_login_active", this.switches.get(id));
+          values.put("system_otp_excluded_email_domains", this.exclusions.get(id));
+          answer.put((Long) id, values);
         }
         return answer;
       }
@@ -183,7 +188,7 @@ public class CrpByUserEmailActionTest {
       throw new UnsupportedOperationException("not needed by this suite: " + method);
     });
     return new OtpEligibility(new OtpKeys(config), this.userManager, this.crpManager, crpUserManager,
-      challengeManager, this.customParameterManager, this.parameterManager);
+      challengeManager);
   }
 
   private int crpUserChecks;
@@ -226,30 +231,47 @@ public class CrpByUserEmailActionTest {
 
   private void configureOtp() {
     this.otpSecret = SECRET_32_BYTES;
-    this.allowLists.put(Long.valueOf(1L), "partner.org");
-    this.allowLists.put(Long.valueOf(2L), "partner.org");
+    this.switches.put(Long.valueOf(1L), "true");
+    this.switches.put(Long.valueOf(2L), "true");
   }
 
-  /** The flag is true only when configured, the domain is allowed for the unit and SEC-009 passes. */
+  /** The flag is true only when configured, the unit's switch is on and the domain is not on its exclusion list. */
   @Test
-  public void otpEnabledIsTrueOnlyWhenConfiguredDomainAllowedAndSec009Passes() {
+  public void otpEnabledIsTrueOnlyWhenConfiguredSwitchOnAndDomainNotExcluded() {
     this.configureOtp();
-    this.allowLists.put(Long.valueOf(3L), "other.org");
-    this.allowLists.put(Long.valueOf(4L), "partner.org");
+    this.switches.put(Long.valueOf(3L), "true");
+    this.exclusions.put(Long.valueOf(3L), "other.org, Partner.org");
+    this.switches.put(Long.valueOf(4L), "true");
     this.customParameterManager.overridesByUnitId.put(Long.valueOf(4L), activeOverride("true"));
-    GlobalUnit allowed = globalUnit(1L, "AAA");
-    GlobalUnit notAllowed = globalUnit(3L, "CCC");
+    this.switches.put(Long.valueOf(5L), "false");
+    GlobalUnit open = globalUnit(1L, "AAA");
+    GlobalUnit excluded = globalUnit(3L, "CCC");
     GlobalUnit cognitoUnit = globalUnit(4L, "DDD");
+    GlobalUnit switchedOff = globalUnit(5L, "EEE");
 
-    Map<String, Object> asCgiar = this.otpFlags(partnerUser(true, true), allowed, notAllowed, cognitoUnit);
-    assertEquals(Boolean.TRUE, asCgiar.get("AAA"));
-    assertEquals("domain not on the unit's allow-list", Boolean.FALSE, asCgiar.get("CCC"));
-    assertEquals("SEC-009: a CGIAR user on a Cognito unit", Boolean.FALSE, asCgiar.get("DDD"));
-
-    Map<String, Object> asLocal = this.otpFlags(partnerUser(true, false), allowed, notAllowed, cognitoUnit);
+    Map<String, Object> asLocal = this.otpFlags(partnerUser(true, false), open, excluded, cognitoUnit, switchedOff);
     assertEquals(Boolean.TRUE, asLocal.get("AAA"));
-    assertEquals(Boolean.FALSE, asLocal.get("CCC"));
-    assertEquals("a non-CGIAR user passes SEC-009 on a Cognito unit", Boolean.TRUE, asLocal.get("DDD"));
+    assertEquals("the domain is on the unit's exclusion list", Boolean.FALSE, asLocal.get("CCC"));
+    assertEquals("a Cognito-active unit with the switch on", Boolean.TRUE, asLocal.get("DDD"));
+    assertEquals("the unit's switch is off", Boolean.FALSE, asLocal.get("EEE"));
+
+    Map<String, Object> asCgiar = this.otpFlags(partnerUser(true, true), open, excluded, cognitoUnit, switchedOff);
+    assertEquals("SEC-009 (T21): is_cgiar_user plays no part, on any unit", asLocal, asCgiar);
+  }
+
+  /** SEC-009 (T21): no domain is fixed in code, so a cgiar.org address is judged by the unit's list alone. */
+  @Test
+  public void aCgiarOrgAddressIsOfferedTheCodeUnlessTheUnitExcludesItsDomain() {
+    this.configureOtp();
+    this.exclusions.put(Long.valueOf(2L), "cgiar.org");
+    this.crpManager.units = Arrays.asList(globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
+    this.userManager.register(cgiarUser());
+    CrpByUserEmailAction action = this.newAction();
+    this.setUserEmail(action, CGIAR_EMAIL);
+    this.execute(action);
+
+    assertEquals("empty exclusion", Boolean.TRUE, this.byAcronym(action.getCrps(), "AAA").get("otpEnabled"));
+    assertEquals("cgiar.org excluded", Boolean.FALSE, this.byAcronym(action.getCrps(), "BBB").get("otpEnabled"));
   }
 
   /** JI-11: the flag does not depend on whether the account is active, nor on membership of the listed unit. */
@@ -278,29 +300,30 @@ public class CrpByUserEmailActionTest {
     assertEquals(0, this.crpManager.byIdCalls);
   }
 
-  /** One uncached allow-list query for all the listed units. */
+  /** One uncached query for all the listed units, and it carries both keys. */
   @Test
-  public void oneAllowListQueryIsMadePerCallWhateverTheNumberOfUnits() {
+  public void oneSpecificityQueryCoversBothKeysAndEveryListedUnit() {
     this.configureOtp();
     this.otpFlags(partnerUser(true, false), globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
-    assertEquals(1, this.allowListReads.size());
+    assertEquals(Arrays.asList("[system_otp_login_active, system_otp_excluded_email_domains]|[1, 2]"),
+      this.specificityReads);
   }
 
-  /** Off state: unconfigured means no allow-list query at all and every flag false. */
+  /** Off state: unconfigured means no specificity query at all and every flag false. */
   @Test
-  public void unconfiguredMakesNoAllowListQueryAndEveryFlagIsFalse() {
-    this.allowLists.put(Long.valueOf(1L), "partner.org");
+  public void unconfiguredMakesNoSpecificityQueryAndEveryFlagIsFalse() {
+    this.switches.put(Long.valueOf(1L), "true");
     this.otpSecret = null;
     Map<String, Object> flags =
       this.otpFlags(partnerUser(true, false), globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
-    assertEquals(0, this.allowListReads.size());
+    assertEquals(0, this.specificityReads.size());
     assertEquals(Boolean.FALSE, flags.get("AAA"));
     assertEquals(Boolean.FALSE, flags.get("BBB"));
   }
 
-  /** An email matching no account still discloses nothing, and asks no allow-list question. */
+  /** An email matching no account still discloses nothing, and asks no specificity question. */
   @Test
-  public void anUnknownEmailMakesNoAllowListQuery() {
+  public void anUnknownEmailMakesNoSpecificityQuery() {
     this.configureOtp();
     this.crpManager.units = Arrays.asList(globalUnit(1L, "AAA"));
     CrpByUserEmailAction action = this.newAction();
@@ -308,18 +331,18 @@ public class CrpByUserEmailActionTest {
     this.execute(action);
     assertNull(action.getUser());
     assertTrue(action.getCrps().isEmpty());
-    assertEquals(0, this.allowListReads.size());
+    assertEquals(0, this.specificityReads.size());
   }
 
-  /** Fail closed: a throwing allow-list read leaves every flag false and the normal response intact. */
+  /** Fail closed: a throwing specificity read leaves every flag false and the normal response intact. */
   @Test
-  public void aFailingAllowListReadFailsClosedAndLeavesTheLoginLookupUnchanged() {
+  public void aFailingSpecificityReadFailsClosedAndLeavesTheLoginLookupUnchanged() {
     this.configureOtp();
-    this.allowListThrows = true;
+    this.specificityReadThrows = true;
     GlobalUnit unitA = globalUnit(1L, "AAA");
     GlobalUnit unitB = globalUnit(2L, "BBB");
     Map<String, Object> flags = this.otpFlags(partnerUser(true, false), unitA, unitB);
-    assertEquals(1, this.allowListReads.size());
+    assertEquals(1, this.specificityReads.size());
     assertEquals(Boolean.FALSE, flags.get("AAA"));
     assertEquals(Boolean.FALSE, flags.get("BBB"));
 

@@ -24,20 +24,19 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * The pure email and allow-list rules of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T05, FN-003,
- * SEC-009).
+ * The pure email, switch and exclusion rules of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T05,
+ * FN-001, FN-003, SEC-009; amended by T21, DD-13).
  * <p>
- * Eligibility by domain is <b>exact equality</b> between the domain of the normalised email and an entry of the
- * parsed allow-list. There is no suffix, substring or sub-domain matching: {@code x@attackertrusted.org},
- * {@code x@trusted.org.evil.com} and {@code x@sub.trusted.org} do not match {@code trusted.org}, and a sub-domain
- * qualifies only when it is listed itself.
+ * A Global Unit offers the code to an email when its switch is on and the email's domain is <b>not excluded</b>. A
+ * domain is excluded by <b>exact equality</b> between the domain of the normalised email and an entry of the parsed
+ * exclusion list. There is no suffix, substring or sub-domain matching: {@code x@attackerexcluded.org},
+ * {@code x@excluded.org.evil.com} and {@code x@sub.excluded.org} do not match {@code excluded.org}, and a sub-domain
+ * is excluded only when it is listed itself. No domain is fixed in code: {@code cgiar.org} is excluded only by a unit
+ * that lists it, and whether the account is a CGIAR one plays no part (SEC-009).
  * <p>
  * The class is stateless and never throws on malformed input; a malformed email simply has no domain.
  */
 public final class OtpDomainPolicy {
-
-  /** SEC-009: an allow-list entry of this domain is always ignored. */
-  private static final String IGNORED_DOMAIN = "cgiar.org";
 
   private static final char AT = '@';
   private static final char FIRST_PRINTABLE = 0x21;
@@ -96,24 +95,48 @@ public final class OtpDomainPolicy {
 
   /**
    * @param email the raw email, possibly {@code null}
-   * @param allowList the entries returned by {@link #parseAllowList(String)}; may be {@code null}
-   * @return {@code true} only when the email has a domain and that domain equals an entry of the list exactly
+   * @param exclusionList the entries returned by {@link #parseExclusionList(String)}; may be {@code null}
+   * @return {@code true} only when the email has a domain and that domain equals an entry of the list exactly. An
+   *         email without a domain is not excluded here: it never gets a code for being malformed instead
    */
-  public static boolean isAllowed(String email, Collection<String> allowList) {
+  public static boolean isExcluded(String email, Collection<String> exclusionList) {
     String domain = domainOf(email);
-    return domain != null && allowList != null && allowList.contains(domain);
+    return domain != null && exclusionList != null && exclusionList.contains(domain);
   }
 
   /**
-   * Parses the comma-separated allow-list stored in {@code custom_parameters}. Each entry is trimmed, lower-cased
-   * and stripped of one leading {@code @}; it is dropped when it is then empty or still contains an {@code @}, and
-   * duplicates are removed. An entry with a character outside printable ASCII is dropped (FN-003). An entry of
-   * {@code cgiar.org} is dropped too (SEC-009).
+   * The rule of FN-001 and FN-003 in one place, so the request step, the full predicate and {@code crpByEmail.do}
+   * cannot read it differently.
+   *
+   * @param switchValue the raw effective value of {@code system_otp_login_active}, possibly {@code null}
+   * @param exclusionValue the raw effective value of {@code system_otp_excluded_email_domains}, possibly {@code null}
+   * @param email the raw email, possibly {@code null}
+   * @return {@code true} only when the switch is on, the email has a domain and that domain is not excluded
+   */
+  public static boolean isOffered(String switchValue, String exclusionValue, String email) {
+    return isSwitchOn(switchValue) && domainOf(email) != null
+      && !isExcluded(email, parseExclusionList(exclusionValue));
+  }
+
+  /**
+   * @param switchValue the raw effective value of {@code system_otp_login_active}, possibly {@code null}
+   * @return {@code true} only for the text {@code true}, in any case and with surrounding spaces. Anything else,
+   *         the empty value included, is off
+   */
+  public static boolean isSwitchOn(String switchValue) {
+    return switchValue != null && "true".equalsIgnoreCase(switchValue.trim());
+  }
+
+  /**
+   * Parses the comma-separated exclusion list stored in {@code custom_parameters}. Each entry is trimmed,
+   * lower-cased and stripped of one leading {@code @}; it is dropped when it is then empty or still contains an
+   * {@code @}, and duplicates are removed. An entry with a character outside printable ASCII is dropped (FN-003). No
+   * domain is dropped for being a particular one: {@code cgiar.org} is an entry like any other.
    *
    * @param raw the stored value, possibly {@code null}
    * @return the normalised domains in first-seen order. Never {@code null}
    */
-  public static List<String> parseAllowList(String raw) {
+  public static List<String> parseExclusionList(String raw) {
     if (raw == null) {
       return Collections.emptyList();
     }
@@ -130,7 +153,7 @@ public final class OtpDomainPolicy {
       if (entry.startsWith("@")) {
         entry = entry.substring(1);
       }
-      if (entry.isEmpty() || entry.indexOf(AT) >= 0 || IGNORED_DOMAIN.equals(entry)) {
+      if (entry.isEmpty() || entry.indexOf(AT) >= 0) {
         continue;
       }
       domains.add(entry);

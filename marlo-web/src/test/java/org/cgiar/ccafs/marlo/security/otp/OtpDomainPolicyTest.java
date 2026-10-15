@@ -27,66 +27,67 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * CHG-OTP-LOGIN-001-T05, FN-003 and SEC-009: the pure email and allow-list rules. Every expectation is a literal
- * taken from the FN-003 scenario or the task's test vectors; none is built with the normaliser under test.
+ * CHG-OTP-LOGIN-001-T05, T21, FN-001, FN-003 and SEC-009: the pure email, switch and exclusion rules. Every
+ * expectation is a literal taken from the FN-003 scenario or the task's test vectors; none is built with the
+ * normaliser under test.
  */
 public class OtpDomainPolicyTest {
 
-  private static final List<String> TRUSTED = Collections.singletonList("trusted.org");
+  private static final List<String> EXCLUDED = Collections.singletonList("excluded.org");
 
   // ---- FN-003 scenario: lookalikes are rejected ---------------------------------------------------------------
 
   @Test
-  public void suffixLookalikeIsNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed("x@attackertrusted.org", TRUSTED));
+  public void suffixLookalikeIsNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded("x@attackerexcluded.org", EXCLUDED));
   }
 
   @Test
-  public void allowListedNameAsLeftLabelOfAnotherDomainIsNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed("x@trusted.org.evil.com", TRUSTED));
+  public void excludedNameAsLeftLabelOfAnotherDomainIsNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded("x@excluded.org.evil.com", EXCLUDED));
   }
 
   @Test
-  public void unlistedSubdomainIsNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed("x@sub.trusted.org", TRUSTED));
+  public void unlistedSubdomainIsNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded("x@sub.excluded.org", EXCLUDED));
   }
 
   @Test
-  public void listedSubdomainIsAllowedWhenListedItself() {
-    assertTrue(OtpDomainPolicy.isAllowed("x@sub.trusted.org", Arrays.asList("trusted.org", "sub.trusted.org")));
+  public void listedSubdomainIsExcludedWhenListedItself() {
+    assertTrue(OtpDomainPolicy.isExcluded("x@sub.excluded.org", Arrays.asList("excluded.org", "sub.excluded.org")));
   }
 
   @Test
-  public void emailWithNoDomainIsNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed("a@", TRUSTED));
+  public void emailWithNoDomainIsNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded("a@", EXCLUDED));
   }
 
   @Test
-  public void emailWithNoLocalPartIsNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed("@trusted.org", TRUSTED));
+  public void emailWithNoLocalPartIsNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded("@excluded.org", EXCLUDED));
   }
 
   @Test
-  public void emailWithTwoAtSignsIsNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed("a@b@trusted.org", TRUSTED));
-    assertFalse(OtpDomainPolicy.isAllowed("a@trusted.org@evil.com", TRUSTED));
+  public void emailWithTwoAtSignsIsNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded("a@b@excluded.org", EXCLUDED));
+    assertFalse(OtpDomainPolicy.isExcluded("a@excluded.org@evil.com", EXCLUDED));
   }
 
   @Test
-  public void nullAndEmptyEmailAreNotAllowed() {
-    assertFalse(OtpDomainPolicy.isAllowed(null, TRUSTED));
-    assertFalse(OtpDomainPolicy.isAllowed("", TRUSTED));
+  public void nullAndEmptyEmailAreNotExcluded() {
+    assertFalse(OtpDomainPolicy.isExcluded(null, EXCLUDED));
+    assertFalse(OtpDomainPolicy.isExcluded("", EXCLUDED));
   }
 
   @Test
-  public void nullAllowListAllowsNothing() {
-    assertFalse(OtpDomainPolicy.isAllowed("x@trusted.org", null));
+  public void nullExclusionListExcludesNothing() {
+    assertFalse(OtpDomainPolicy.isExcluded("x@excluded.org", null));
   }
 
   @Test
-  public void paddedUpperCaseEmailIsAllowedAndNormalised() {
-    assertTrue(OtpDomainPolicy.isAllowed("  X@TRUSTED.ORG ", TRUSTED));
-    assertEquals("x@trusted.org", OtpDomainPolicy.normaliseEmail("  X@TRUSTED.ORG "));
+  public void paddedUpperCaseEmailIsExcludedAndNormalised() {
+    assertTrue(OtpDomainPolicy.isExcluded("  X@EXCLUDED.ORG ", EXCLUDED));
+    assertEquals("x@excluded.org", OtpDomainPolicy.normaliseEmail("  X@EXCLUDED.ORG "));
   }
 
   @Test
@@ -111,42 +112,97 @@ public class OtpDomainPolicyTest {
     assertNull(OtpDomainPolicy.domainOf(null));
   }
 
-  // ---- allow-list parsing --------------------------------------------------------------------------------------
+  // ---- exclusion-list parsing --------------------------------------------------------------------------------------
 
   @Test
-  public void allowListKeepsOnlyTheNormalisedTrustedOrgEntry() {
-    // Entries: leading @ and mixed case (kept), a duplicate, a full address (dropped), and cgiar.org (SEC-009).
-    List<String> parsed = OtpDomainPolicy.parseAllowList(" @Trusted.ORG , trusted.org, x@y.org, cgiar.org");
+  public void exclusionListKeepsTheNormalisedEntriesIncludingCgiarOrg() {
+    // Entries: leading @ and mixed case (kept), a duplicate, a full address (dropped), and cgiar.org, which is an
+    // entry like any other (SEC-009, DD-13): no domain is fixed in code.
+    List<String> parsed = OtpDomainPolicy.parseExclusionList(" @Excluded.ORG , excluded.org, x@y.org, cgiar.org");
 
-    assertEquals(Collections.singletonList("trusted.org"), parsed);
+    assertEquals(Arrays.asList("excluded.org", "cgiar.org"), parsed);
   }
 
   @Test
-  public void allowListKeepsFirstSeenOrderAndDropsDuplicates() {
-    assertEquals(Arrays.asList("b.org", "a.org"), OtpDomainPolicy.parseAllowList("B.org,a.org,@B.ORG"));
+  public void exclusionListKeepsFirstSeenOrderAndDropsDuplicates() {
+    assertEquals(Arrays.asList("b.org", "a.org"), OtpDomainPolicy.parseExclusionList("B.org,a.org,@B.ORG"));
   }
 
   @Test
-  public void allowListDropsEmptyEntriesAndEntriesThatStillContainAnAt() {
-    assertEquals(Collections.singletonList("ok.org"), OtpDomainPolicy.parseAllowList(",, ,@,@@bad.org,ok.org"));
+  public void exclusionListDropsEmptyEntriesAndEntriesThatStillContainAnAt() {
+    assertEquals(Collections.singletonList("ok.org"), OtpDomainPolicy.parseExclusionList(",, ,@,@@bad.org,ok.org"));
   }
 
   @Test
-  public void allowListDropsEveryCgiarOrgSpelling() {
-    assertTrue(OtpDomainPolicy.parseAllowList("cgiar.org, @CGIAR.org ,CgIaR.OrG").isEmpty());
+  public void everyCgiarOrgSpellingParsesToTheOneEntryAndExcludesItsAddresses() {
+    List<String> parsed = OtpDomainPolicy.parseExclusionList("cgiar.org, @CGIAR.org ,CgIaR.OrG");
+
+    assertEquals(Collections.singletonList("cgiar.org"), parsed);
+    assertTrue(OtpDomainPolicy.isExcluded("staff@cgiar.org", parsed));
+    assertFalse("the empty list excludes nobody, cgiar.org included",
+      OtpDomainPolicy.isExcluded("staff@cgiar.org", OtpDomainPolicy.parseExclusionList("")));
   }
 
   @Test
-  public void allowListDoesNotDropTheCgiarOrgSubdomainsOrLookalikes() {
+  public void exclusionListDoesNotDropTheCgiarOrgSubdomainsOrLookalikes() {
     assertEquals(Arrays.asList("ccafs.cgiar.org", "notcgiar.org"),
-      OtpDomainPolicy.parseAllowList("ccafs.cgiar.org, notcgiar.org"));
+      OtpDomainPolicy.parseExclusionList("ccafs.cgiar.org, notcgiar.org"));
   }
 
   @Test
-  public void nullOrBlankAllowListParsesToEmpty() {
-    assertTrue(OtpDomainPolicy.parseAllowList(null).isEmpty());
-    assertTrue(OtpDomainPolicy.parseAllowList("").isEmpty());
-    assertTrue(OtpDomainPolicy.parseAllowList("   ").isEmpty());
+  public void nullOrBlankExclusionListParsesToEmpty() {
+    assertTrue(OtpDomainPolicy.parseExclusionList(null).isEmpty());
+    assertTrue(OtpDomainPolicy.parseExclusionList("").isEmpty());
+    assertTrue(OtpDomainPolicy.parseExclusionList("   ").isEmpty());
+  }
+
+  // ---- the switch (FN-001) and the rule that joins it to the exclusion (FN-003, DD-13) --------------------------
+
+  @Test
+  public void onlyTheTextTrueSwitchesCodeSignInOn() {
+    for (String on : new String[] {"true", "TRUE", " True "}) {
+      assertTrue("on: <" + on + ">", OtpDomainPolicy.isSwitchOn(on));
+    }
+    for (String off : new String[] {"false", "", "   ", null, "yes", "1", "truee", "t"}) {
+      assertFalse("off: <" + off + ">", OtpDomainPolicy.isSwitchOn(off));
+    }
+  }
+
+  @Test
+  public void switchOnWithAnEmptyExclusionOffersTheCodeToEveryDomainCgiarOrgIncluded() {
+    for (String exclusion : new String[] {"", "   ", null}) {
+      assertTrue("exclusion <" + exclusion + ">", OtpDomainPolicy.isOffered("true", exclusion, "x@partner.org"));
+      assertTrue("exclusion <" + exclusion + ">", OtpDomainPolicy.isOffered("true", exclusion, "staff@cgiar.org"));
+    }
+  }
+
+  @Test
+  public void anExcludedDomainIsNotOfferedAndItsSubdomainAndLookalikesAre() {
+    String exclusion = "cgiar.org, example.org";
+
+    assertFalse(OtpDomainPolicy.isOffered("true", exclusion, "staff@cgiar.org"));
+    assertFalse(OtpDomainPolicy.isOffered("true", exclusion, "  STAFF@CGIAR.ORG "));
+    assertFalse(OtpDomainPolicy.isOffered("true", exclusion, "x@example.org"));
+    assertTrue(OtpDomainPolicy.isOffered("true", exclusion, "x@sub.cgiar.org"));
+    assertTrue(OtpDomainPolicy.isOffered("true", exclusion, "x@notcgiar.org"));
+    assertTrue(OtpDomainPolicy.isOffered("true", exclusion, "x@cgiar.org.evil.com"));
+    assertTrue(OtpDomainPolicy.isOffered("true", exclusion, "x@partner.org"));
+  }
+
+  @Test
+  public void aSwitchThatIsOffOffersNothingWhateverTheExclusion() {
+    for (String off : new String[] {"false", "", null, "no"}) {
+      assertFalse("switch <" + off + ">", OtpDomainPolicy.isOffered(off, "", "x@partner.org"));
+      assertFalse("switch <" + off + ">", OtpDomainPolicy.isOffered(off, "other.org", "x@partner.org"));
+    }
+  }
+
+  @Test
+  public void anEmailWithoutADomainIsNeverOffered() {
+    for (String email : new String[] {null, "", "no-at-sign", "a@b@partner.org", "@partner.org", "user@",
+      "x@\u212Aey.org"}) {
+      assertFalse("email <" + email + ">", OtpDomainPolicy.isOffered("true", "", email));
+    }
   }
 
   // ---- mask ----------------------------------------------------------------------------------------------------
@@ -181,7 +237,7 @@ public class OtpDomainPolicyTest {
     // U+212A KELVIN SIGN lower-cases to ASCII 'k', so "x@<K>ey.org" would otherwise become "x@key.org".
     String kelvin = "x@\u212Aey.org";
 
-    assertFalse(OtpDomainPolicy.isAllowed(kelvin, Collections.singletonList("key.org")));
+    assertFalse(OtpDomainPolicy.isExcluded(kelvin, Collections.singletonList("key.org")));
     assertNull(OtpDomainPolicy.domainOf(kelvin));
     assertEquals("", OtpDomainPolicy.normaliseEmail(kelvin));
     assertEquals("***", OtpDomainPolicy.mask(kelvin));
@@ -189,34 +245,34 @@ public class OtpDomainPolicyTest {
 
   @Test
   public void kelvinSignInTheLocalPartIsRejected() {
-    assertFalse(OtpDomainPolicy.isAllowed("\u212A@trusted.org", TRUSTED));
-    assertNull(OtpDomainPolicy.domainOf("\u212A@trusted.org"));
+    assertFalse(OtpDomainPolicy.isExcluded("\u212A@excluded.org", EXCLUDED));
+    assertNull(OtpDomainPolicy.domainOf("\u212A@excluded.org"));
   }
 
   @Test
   public void anyNonAsciiOrNonPrintableCharacterInAnEmailIsRejected() {
-    String[] rejected = {"x@tr\u00fcsted.org", "x@\uFF54rusted.org", "x@trusted.org\u00a0", "x@trusted\u200b.org",
-      "a b@trusted.org", "a\u0001@trusted.org", "x@trusted.org\u007f", "\u0130x@trusted.org"};
+    String[] rejected = {"x@ex\u00fccluded.org", "x@\uFF45xcluded.org", "x@excluded.org\u00a0", "x@excluded\u200b.org",
+      "a b@excluded.org", "a\u0001@excluded.org", "x@excluded.org\u007f", "\u0130x@excluded.org"};
     for (String email : rejected) {
-      assertFalse("allowed: " + email, OtpDomainPolicy.isAllowed(email, TRUSTED));
+      assertFalse("excluded: " + email, OtpDomainPolicy.isExcluded(email, EXCLUDED));
       assertNull("domain: " + email, OtpDomainPolicy.domainOf(email));
     }
   }
 
   @Test
   public void everyPrintableAsciiCharacterIsStillAccepted() {
-    assertEquals("trusted.org", OtpDomainPolicy.domainOf("!#$%&'*+/=?^_`{|}~-.x@trusted.org"));
+    assertEquals("excluded.org", OtpDomainPolicy.domainOf("!#$%&'*+/=?^_`{|}~-.x@excluded.org"));
   }
 
   @Test
-  public void allowListEntriesWithAKelvinSignOrAnyNonAsciiCharacterAreDropped() {
-    assertEquals(Collections.singletonList("ok.org"), OtpDomainPolicy.parseAllowList("\u212Aey.org, ok.org"));
+  public void exclusionListEntriesWithAKelvinSignOrAnyNonAsciiCharacterAreDropped() {
+    assertEquals(Collections.singletonList("ok.org"), OtpDomainPolicy.parseExclusionList("\u212Aey.org, ok.org"));
     assertEquals(Collections.singletonList("ok.org"),
-      OtpDomainPolicy.parseAllowList("m\u00fcnchen.org,@\u00e9.org, ok.org ,trusted.org\u00a0"));
+      OtpDomainPolicy.parseExclusionList("m\u00fcnchen.org,@\u00e9.org, ok.org ,excluded.org\u00a0"));
   }
 
   @Test
-  public void allowListEntryWithAnInternalSpaceIsDropped() {
-    assertEquals(Collections.singletonList("ok.org"), OtpDomainPolicy.parseAllowList("a b.org, ok.org"));
+  public void exclusionListEntryWithAnInternalSpaceIsDropped() {
+    assertEquals(Collections.singletonList("ok.org"), OtpDomainPolicy.parseExclusionList("a b.org, ok.org"));
   }
 }

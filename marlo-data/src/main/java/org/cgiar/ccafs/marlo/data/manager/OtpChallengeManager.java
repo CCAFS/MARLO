@@ -44,17 +44,6 @@ public interface OtpChallengeManager {
   }
 
   /**
-   * Resolves the allow-list of Global Units straight from the database, never from a cache (DD-12, FN-002).
-   *
-   * @param key the {@code parameters.key}, for example {@code APConstants.OTP_ALLOWED_EMAIL_DOMAINS}.
-   * @param globalUnitIds the Global Units to resolve.
-   * @return one entry for every requested id, never null. A value of {@code ""} means the list is off for that
-   *         Global Unit: a NULL, empty or blank value, no catalog row for its type, or a Global Unit that does not
-   *         exist. Any other value is returned as stored, for the caller to parse.
-   */
-  public Map<Long, String> allowListFor(String key, Collection<Long> globalUnitIds);
-
-  /**
    * Consumes the challenge: sets {@code consumed_at} only while it is open, has fewer than
    * {@link OtpChallenge#MAX_ATTEMPTS} attempts and has not expired (JS-1).
    *
@@ -102,4 +91,19 @@ public interface OtpChallengeManager {
    * </ul>
    */
   public MismatchOutcome registerMismatch(String nonce);
+
+  /**
+   * Resolves the value of each key for each Global Unit straight from the database, never from a cache (DD-12,
+   * FN-002), in one query.
+   *
+   * @param keys the {@code parameters.key} values, for example {@code APConstants.OTP_LOGIN_ACTIVE} and
+   *        {@code APConstants.OTP_EXCLUDED_EMAIL_DOMAINS}.
+   * @param globalUnitIds the Global Units to resolve.
+   * @return one entry for every requested id, each holding one entry for every requested key, never null. A value
+   *         of {@code ""} means the specificity is off or empty for that Global Unit: a NULL, empty or blank value,
+   *         no catalog row for its type, or a Global Unit that does not exist. Any other value is returned as
+   *         stored, for the caller to parse.
+   */
+  public Map<Long, Map<String, String>> specificityValuesFor(Collection<String> keys,
+    Collection<Long> globalUnitIds);
 }
