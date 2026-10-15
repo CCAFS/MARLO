@@ -25,28 +25,31 @@ obtained yet; none is claimed here.
 
 # Part A. Runbook
 
-## A1. Enable and disable per Global Unit (DD-12)
+## A1. Enable and disable per Global Unit (DD-12, DD-13)
 
-The switch is a **specificity**: `parameters.key = crp_otp_allowed_email_domains`, one `parameters` row per Global Unit
-type (1 to 4), value in `custom_parameters` per unit. It ships **empty, which means off**. Change it **only through the
-admin UI** (DD-12); SQL is for evidence and for the falsifier, not for operations.
+*Rewritten 2026-10-15 for T21. Until T21 ships, the build still uses the old allow-list `crp_otp_allowed_email_domains`.*
 
+The feature uses **two specificities per Global Unit**, both stored with the `system_` prefix. Values live in `custom_parameters`, one row per unit. Both ship **off**. Change them **only through the admin UI** (DD-12); SQL is for evidence and for the falsifier, not for operations.
+
+| Key | Type | Meaning |
+|---|---|---|
+| `system_otp_login_active` | Boolean | **On:** every account with access to the unit (active, active membership, terms accepted) can ask for a code, CGIAR or not. **Off:** nobody can |
+| `system_otp_excluded_email_domains` | Text | Domains that never get a code in this unit, for example `cgiar.org` to keep CGIAR staff on Cognito. Empty means no exclusion |
+
+To change them:
 1. Sign in as a super admin and open **System Admin > PTF Parameters** (`/superadmin/marloParameters.do`).
-2. Expand the unit, open the **Specificities** tab, type `otp` in the search box.
-3. The allow-list lives on the unit's own type parameter. The row is shown as **`system_otp_allowed_email_domains`**. The screen relabels the stored `crp_` prefix as `system_`;
-   the database key stays `crp_otp_allowed_email_domains`.
-4. **Enable:** type the allowed domains, comma separated, for example `partner.org,other.org`. **Disable:** clear the
-   field. Press **Save**.
-5. Check: `crpByEmail.do` for an eligible user reports `otpEnabled: true` (or `false`) for that unit, and the login
-   page shows (or hides) "Email me a sign-in code".
+2. Expand the unit, open the **Specificities** tab and type `otp` in the search box.
+3. **Enable:** turn `system_otp_login_active` on. Optionally fill in the exclusion. **Disable:** turn the switch off. Press **Save**.
+4. Check that `crpByEmail.do` for an account of that unit reports `otpEnabled: true` (or `false`), and that the login page shows (or hides) "Email me a sign-in code".
 
-| Rule | Detail (from `OtpDomainPolicy.parseAllowList`) |
+The exclusion list follows these rules (`OtpDomainPolicy.parseAllowList`, applied as an exclusion):
+
+| Rule | Detail |
 |---|---|
-| Matching | **Exact domain** after trimming and lower-casing. No wildcard, no subdomain. `partner.org` does not admit `mail.partner.org` |
-| Cleaning | One leading `@` is stripped. Empty entries, entries that still contain `@`, and entries with any character outside `0x21`-`0x7E` (non-ASCII, **or a space inside the entry**) are dropped. Duplicates are merged. **Separate entries with commas only**: `a.org b.org` is dropped whole, and `a.org;b.org` stays one entry that never matches |
-| `cgiar.org` | Always dropped (SEC-009). CGIAR identities belong to Cognito |
+| Matching | **Exact domain** after trimming and lower-casing. No wildcard and no subdomain: `partner.org` does not exclude `mail.partner.org` |
+| Cleaning | One leading `@` is stripped. Empty entries, entries that still contain `@`, and entries with any character outside `0x21`-`0x7E` (non-ASCII, **or a space inside the entry**) are dropped. Duplicates are merged. **Separate entries with commas only** |
+| `cgiar.org` | No special treatment in code. Exclude it explicitly when a unit wants Cognito to stay the only method for CGIAR staff (rollout stage 1, B5) |
 | Length | `custom_parameters.value` is `varchar(500)` |
-| Empty | Off for that unit |
 
 Behaviour of the screen, observed in the walk (Part C):
 
@@ -57,7 +60,7 @@ Behaviour of the screen, observed in the walk (Part C):
 
 **Rollback, cheapest first** (design section 14). Only the first is "next request":
 
-1. Empty the value in the admin UI: live, per unit.
+1. Turn `system_otp_login_active` off in the admin UI: live, per unit (T21; before T21, empty the allow-list).
 2. Unset `OTP_HMAC_SECRET`: the secret is read **once at start** (`OtpKeys`), so this needs a restart of every instance.
 3. Revert the deploy.
 4. Drop the three `otp_*` tables. This is destructive and the last resort.
@@ -267,8 +270,8 @@ test user in the copy has one role (`G`) and two permission rows in AICCRA. The 
 
 - [ ] On **staging and production**, run `SHOW CREATE TABLE otp_challenges, otp_cooldowns, otp_rate_limits` (one statement per table) and compare with the migration.
 - [ ] Check **by hand** that `V2_6_0_20261009_1025__AddEmailOtpLogin` is in `flyway_schema_history` with success = 1 (guide W16: do not assume the deploy applied it).
-- [ ] Querying `parameters` for the key `crp_otp_allowed_email_domains` returns one row per type 1 to 4 with an empty default.
-- [ ] No `custom_parameters` row for that key has a non-empty value before the pilot.
+- [ ] After T21: querying `parameters` for `system_otp_login_active` and `system_otp_excluded_email_domains` returns one row per type 1 to 4, off and empty, with the DA-002 descriptions. No `crp_otp_allowed_email_domains` row is left.
+- [ ] No unit has the switch on before the pilot (B5).
 
 ## B4. Per environment
 
@@ -282,10 +285,22 @@ test user in the copy has one role (`G`) and two permission rows in AICCRA. The 
 
 ## B5. Pilot and expansion (DD-12, design section 14)
 
-- [ ] Enable **one** unit and **one** domain through the admin UI only (A1). Never by SQL.
-- [ ] Walk the acceptance flow with a test mailbox: code arrives, sign-in works, wrong code three times, resend, expiry.
+Rollout after T21 (requirements Decision Log 2026-10-15). Both stages are configuration only (A1); never use SQL.
+
+**Stage 1: external users only.**
+- [ ] On AICCRA, set `system_otp_excluded_email_domains` to `cgiar.org`.
+- [ ] Turn `system_otp_login_active` on.
+- [ ] Walk the acceptance flow with a test mailbox: the code arrives, sign-in works, three wrong codes, resend, expiry.
+- [ ] Confirm that a CGIAR account still sees only "Sign in with CGIAR".
 - [ ] Watch `auth.otp.delivery outcome=email_failed` and `auth.otp.request outcome=rate_limited` for the first days.
-- [ ] Expand domain by domain. To stop, empty the value (A1).
+
+**Stage 2: CGIAR accounts may choose the code.**
+- [x] OQ-9 approved on 2026-10-15 (requirements Decision Log).
+- [ ] Re-run the CGIAR account count on production (the query in the OQ-9 Decision Log entry's terms: active members by `@cgiar.org` and `is_cgiar_user`).
+- [ ] Revisit the per-IP limit (20 requests per 15 min) with the P-6 answer, since CGIAR offices may share one egress IP.
+- [ ] Empty the exclusion list.
+
+**To stop:** turn the switch off. It applies on the next request.
 
 ---
 

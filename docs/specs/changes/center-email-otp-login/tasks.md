@@ -688,6 +688,70 @@ Field conventions:
   - Not re-run for T20: the other probe stages. `ac-probe.sh` needed no change: the checks that read the HTML part look for the code between tags or compare it with the row, and both still hold.
   - Cleanup as on 2026-10-15: the application, the sink and the page server stopped, the copy dropped, the scratch credentials, mbox and logs deleted. `marlo-dev.properties` had the same SHA-256 before and after. `aiccradb_actsave` and `aiccradb1`-`4` were never written to.
 
+### CHG-OTP-LOGIN-001-T21 — Per-unit switch and domain exclusion instead of the allow-list (DD-13)
+
+- **Status:** pending [ ] — **definition written 2026-10-15; do not implement until the user approves it** · **Size:** M · **Depends on:** T20 · **Module:** marlo-data, marlo-web, plus `probes/` and the runbook
+- **Requirements:**
+  - **amended 2026-10-15:** FN-001, FN-002, FN-003, FN-005, FN-006, SEC-009, DA-002, UI-001, UI-006, AC-1, AC-2, AC-4, AC-13;
+  - **new:** AC-21, OQ-9;
+  - **superseded:** OQ-4.
+- **Design:**
+  - DD-13 (new) and DD-12 (amended);
+  - §5.1 steps 4 and 6, §5.3 `OtpDomainPolicy`, §6 `crpByEmail.do`, §9;
+  - requirements Decision Log 2026-10-15 (T21).
+- **Files (expected):**
+  - **Migration:** a new `V2_6_0_<YYYYMMDD>_<HHMM>__ReplaceOtpAllowListWithSwitchAndExclusion.sql`, built with the `marlo-migration` skill, timestamp from the real clock.
+    - Seed `system_otp_login_active` (boolean format, default `false`) and `system_otp_excluded_email_domains` (string, default empty) for the existing types among 1–4, with the exact descriptions of DA-002. They must read clearly on the Super Admin Specificities tab.
+    - Delete the `crp_otp_allowed_email_domains` `custom_parameters` rows, then its `parameters` rows.
+    - Idempotent, no assumed Global Unit id, FK order respected.
+    - Do not edit `V2_6_0_20261009_1025`.
+  - **`APConstants.java` (both files):** `OTP_LOGIN_ACTIVE`, `OTP_EXCLUDED_EMAIL_DOMAINS`; remove `OTP_ALLOWED_EMAIL_DOMAINS`.
+  - **Uncached reads (DD-12):** the uncached read in `OtpChallengeMySQLDAO`/manager covers both keys, for one unit and for the `crpByEmail.do` batch.
+  - **`OtpEligibility`:** the switch and the exclusion; no `is_cgiar_user`, no `CognitoAuthSpecificity`.
+  - **`OtpDomainPolicy`:** exclusion semantics; no `cgiar.org` drop.
+  - **`OtpRequestCodeAction` step 4:** the switch and the exclusion.
+  - **`CrpByUserEmailAction` `otpEnabled`.**
+  - **`login.js`, `loginForm.ftl`:** UI-006 choice for the Cognito branch, "Sign in with CGIAR" against "Email me a sign-in code". Bump the cache-buster.
+  - **Tests.**
+  - **`probes/ac-probe.sh` fixtures:** set the switch and the exclusion instead of the allow-list; re-record the AC rows that change.
+- **Scope:** exactly the rule of DD-13. Everything else stays as T01–T20 left it:
+  - statuses and limits;
+  - neutral response;
+  - mail, `email_logs` and the non-production rule;
+  - branded format.
+- **Out of scope:**
+  - renaming other `crp_` keys;
+  - a "code only" mode;
+  - per-IP limit changes (rollout stage 2, B5);
+  - editing the archived Cognito spec (the change is approved through OQ-9 and recorded in this spec).
+- **Tests:**
+  - switch off answers `domainNotEnabled`, hides the option and writes no row;
+  - switch on with an empty exclusion: an `is_cgiar_user = 1` account on a Cognito-active unit gets a code and signs in;
+  - an excluded domain answers `domainNotEnabled`, and `otpEnabled` is false;
+  - the FN-003 lookalikes are not excluded and the normalised form is;
+  - no read of `is_cgiar_user` or `CognitoAuthSpecificity` on the code path (static lock);
+  - `crpByEmail.do` batch: one query for every listed unit;
+  - UI-006: a CGIAR account on a Cognito unit with the code on sees the choice; with its domain excluded it sees only "Sign in with CGIAR";
+  - the migration on a throwaway copy, twice, plus a database without units 45/47 (AC-21).
+- **Verification:**
+  - compile gate;
+  - Checkstyle delta;
+  - targeted tests and the full suite with `-am`;
+  - i18n gate if `.properties` change;
+  - migration gate on a throwaway copy;
+  - a browser walkthrough of the three step-3 branches (external, CGIAR on Cognito with the code, CGIAR with `cgiar.org` excluded);
+  - the `ac-probe.sh` stages touched by the fixtures;
+  - clean up afterwards.
+- **Falsifier:**
+  - keep a CGIAR check: the CGIAR-gets-a-code test goes red;
+  - treat the list as an allow-list: the exclusion tests go red;
+  - read the switch through the cached path: the live-change check goes red.
+- **Disqualifier:**
+  - a domain fixed in code;
+  - editing an applied migration;
+  - writes to `aiccradb_actsave` or `aiccradb1`–`4`.
+- **Review:** `full`. The change decides who can authenticate (SEC-009 reversal), and it adds a migration.
+
 ---
 
 ## 4. Dependency Graph
@@ -706,6 +770,7 @@ T14 ── T17 step-3 method choice (added 2026-10-14)
 T09 + T10 ── T18 email_logs row for support (added 2026-10-14)
 T09 + T18 ── T19 non-production recipient rule (added 2026-10-15)
 T19 ── T20 branded email format (added 2026-10-15)
+T20 ── T21 per-unit switch and domain exclusion (added 2026-10-15; awaiting approval)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.
@@ -797,7 +862,7 @@ Password and Cognito logins are unaffected at every level.
 
 ## 9. Definition of Done
 
-- [ ] T01–T20 done, each with its verification notes.
+- [ ] T01–T21 done, each with its verification notes.
 - [ ] Every AC in `requirements.md` §7 recorded `PASS` in `probes/README.md`. A `NOT VERIFIED` is allowed only for an accepted gap named in requirements §6.
 - [ ] Compile and Checkstyle gates green (zero new violations against HEAD); unit suite green with `-am`.
 - [ ] Every UNVERIFIED premise either settled, or listed as a go-live blocker in `runbook.md`.

@@ -237,13 +237,13 @@ identically for every account (JD-1).
    An atomic upsert per bucket makes concurrent requests safe (JI-12). Over any limit, or a rejected cooldown → `rateLimited`.
 2. **Shape.** The email must have valid syntax, at most 254 characters, and exactly one `@`; `globalUnitId` must be numeric. Otherwise → `domainNotEnabled`.
 3. **Configured?** If `OtpKeys` is unconfigured → `domainNotEnabled` (SEC-008). *Execution order amended 2026-10-13 (T10): this check runs **before** step 1. It reads no account state, so JD-1 and SEC-010 still hold. The limiter itself answers `unavailable` without keys, so running this check after it would contradict §4.*
-4. **Domain.** Read the Global Unit's allow-list through the uncached read (DD-12), then normalise and match exactly. `cgiar.org` is ignored. No match, or an unknown Global Unit → `domainNotEnabled`.
+4. **Domain.** Read the Global Unit's switch and exclusion list through the uncached read (DD-12). The switch off, an unknown Global Unit, or an email whose domain exactly matches an exclusion entry → `domainNotEnabled` (amended 2026-10-15, T21, DD-13; previously an allow-list with `cgiar.org` ignored).
 5. **Terms.** If `agree` is not `true` → `termsRequired`.
 6. **Eligibility** (`OtpEligibility`, the single predicate):
    - the user exists, by case-insensitive lookup (P-12);
    - `isActive()`;
    - `existActiveCrpUser(user, gu)`: an **active** membership (`crp_users.is_active = 1`). MARLO removes a member by soft delete (`CrpUserMySQLDAO.deleteCrpUser` sets `active=false`), so the activity-blind `existCrpUser` that `finishLogin` calls (P-2, P-13) would admit a removed member (FN-005, FN-015). This is a deliberate departure from password-login parity on this one point (DD-4; `requirements.md` §10, 2026-10-13);
-   - **not** (`isCgiarUser()` **and** `CognitoAuthSpecificity.isActiveFor(gu, customParameterManager, parameterManager)`) (SEC-009).
+   - ~~**not** (`isCgiarUser()` **and** `CognitoAuthSpecificity.isActiveFor(...)`)~~: removed 2026-10-15 (T21, DD-13). SEC-009 now forbids any dependence on `is_cgiar_user`.
 7. **Issue.** `OtpChallengeManager.issue(emailHmac, gu, nonce, codeHmac, expiresAt)` runs in **one transaction**: it supersedes the email's open rows, then inserts the new row. It runs for **both** outcomes. The code is a fresh CSPRNG code:
    - **eligible:** the code is handed to `OtpMailSender.sendAsync`;
    - **ineligible:** the code is discarded.
@@ -297,7 +297,7 @@ identically for every account (JD-1).
 |---|---|---|
 | `OtpKeys` | Reads `APConfig.getOtpHmacSecret()` once. The value must be **standard base64 that decodes to ≥ 32 bytes** (≥ 256 bits; generate it with `openssl rand -base64 48`). Anything else → **unconfigured**, logged once at WARN without the value. Derives `k_email`, `k_code` and `k_bucket` as `HMAC-SHA256(decoded, "<tag>\0")` with distinct tags (JI-3) | SEC-008 |
 | `OtpCodes` | `SecureRandom.nextInt(1_000_000)`, zero-padded to 6. 16-byte nonce. HMAC-SHA256 hex. Compares with `MessageDigest.isEqual` on decoded bytes; returns false on any shape error and never throws | FN-009, SEC-001/003 |
-| `OtpDomainPolicy` | Pure: `normaliseEmail`, `domainOf` (exactly one `@`), `parseAllowList` (guide §6.2 rules plus dropping `cgiar.org`), `isAllowed`, `mask`. Rejects any email or entry with a character outside printable ASCII (amended 2026-10-13) | FN-003, SEC-009 |
+| `OtpDomainPolicy` | Pure: `normaliseEmail`, `domainOf` (exactly one `@`), `parseAllowList` (guide §6.2 rules) and `isAllowed`, now applied to the **exclusion** list, plus `mask`. The `cgiar.org` drop is removed (amended 2026-10-15, T21). Rejects any email or entry with a character outside printable ASCII (amended 2026-10-13) | FN-003, SEC-009 |
 | `OtpEligibility` | The one predicate (§5.1 step 6), called at request and after consume | FN-004/005/015 |
 | `OtpRateLimiter` → `OtpRateLimitManager` | **Window buckets.** In its own `@Transactional` call, a bucket upserts `hits = hits + 1` for `(bucket, window_start)`, then reads `hits` back in the same transaction. Over the limit → limited.<br>**Cooldown.** The locking read-decide-write on `otp_cooldowns` (§5.1 step 1, amended 2026-10-13).<br>A store failure **fails closed** (`unavailable`). Windows older than 1 day and cooldown rows older than 1 h are purged opportunistically in a separate transaction | SEC-010, FN-008, DA-003 |
 | `ClientIpResolver` | Starts from `getRemoteAddr()`. If that address falls inside an entry of `otp.trusted.proxies` (comma-separated IPv4/IPv6 addresses **or CIDR ranges**), walks `X-Forwarded-For` from the right and takes the first hop not inside the list. A missing, empty or malformed header from a trusted peer → `getRemoteAddr()`. An address is parsed only from IP literals, never through a DNS lookup (amended 2026-10-13). Headers from untrusted peers are ignored (JI-5) | SEC-011 |
@@ -317,7 +317,7 @@ Authorization is untouched (SEC-007).
 
 | Piece | Design | Req |
 |---|---|---|
-| `crpByEmail.do` | Each Global Unit entry gains `otpEnabled`. It is `true` when the feature is configured, the user's domain is allowed for that unit, and SEC-009 does not refuse the user. It does **not** use `isActive()` or membership, so it discloses nothing beyond today's `isCgiarUser` and unit list (JI-11).<br>The allow-lists for all listed units come from **one** uncached query per call, and only when the feature is configured (RJ-6) | UI-001, SEC-006 |
+| `crpByEmail.do` | Each Global Unit entry gains `otpEnabled`. It is `true` when the feature is configured, the unit's switch is on, and the user's domain is not on its exclusion list. `is_cgiar_user` plays no part (amended 2026-10-15, T21). It does **not** use `isActive()` or membership, so it discloses nothing beyond today's `isCgiarUser` and unit list (JI-11).<br>The allow-lists for all listed units come from **one** uncached query per call, and only when the feature is configured (RJ-6) | UI-001, SEC-006 |
 | `login.js` mode | Extends the decision at `login.js:471`. `COGNITO` keeps priority. Otherwise the mode is `LOCAL`. When `otpEnabled` is false, LOCAL is unchanged: the password field and "Log in". When `otpEnabled` is true, LOCAL opens on the **method choice** below instead of the password field. The terms check runs first, as for the other buttons. *Amended 2026-10-14 (UI-006, T17): "the password field stays" now means it stays available behind the choice, not beside the code button* | UI-001, UI-006, FN-019 |
 | Method choice (T17) | Shown only on LOCAL with `otpEnabled`. Heading "How do you want to sign in?", a primary "Email me a sign-in code" and a secondary "Continue with your password".<br>**Code panel:** "We will email a one-time code to `<masked>`. No password needed." and "Send code", which runs the existing T14 request (terms check, `requestSeq`, locks). The mask is built in the browser from the typed email with the server's shape (first character, `***`, `@domain`).<br>**Password panel:** the existing `#login-password` input and "Log in", unchanged in markup and in submission.<br>Each panel has "Choose another way to sign in", which returns to the choice. Focus moves to the first control of what opens. While the choice or the code panel is open, Enter in the form never submits `login.do`.<br>Leaving step 3 ("Go back", "use a different email") resets the choice, so step 3 always reopens on it. The Cognito branch and every single-method case never render the choice | UI-006, UI-004 |
 | States | *Sending* (button disabled, "Sending…"), *code sent* (neutral text with the masked destination), *verifying* ("Verifying…"), one inline error per `status`, a resend countdown, and "use a different email" | UI-002 |
@@ -346,11 +346,11 @@ entity is saved.
 
 | Item | Value |
 |---|---|
-| Key | `crp_otp_allowed_email_domains` (comma-separated string) |
-| Constant | `OTP_ALLOWED_EMAIL_DOMAINS` in **both** `APConstants.java` files, equal to the key (Hard rule 4) |
+| Keys | `system_otp_login_active` (boolean switch, default `false`) and `system_otp_excluded_email_domains` (comma-separated string, default empty). Both replace `crp_otp_allowed_email_domains` (amended 2026-10-15, T21) |
+| Constants | `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` in **both** `APConstants.java` files, equal to the keys (Hard rule 4). `OTP_ALLOWED_EMAIL_DOMAINS` is removed |
 | Resolution | An active `custom_parameters` row for the Global Unit wins; otherwise the catalog `default_value` (empty). This is the shape of `CognitoAuthSpecificity.isActiveFor` (P-10) |
 | Read path | **A native, uncached select** in `OtpChallengeDAO` (DD-12), used by request-code, verify-code and `crpByEmail.do`'s `otpEnabled`. A change, or the rollback "empty the list", applies on the next request on every instance |
-| Off | Empty or absent value, **or** an unconfigured secret |
+| Off | The switch off or absent, **or** an unconfigured secret. An excluded domain is "not enabled" for that email only |
 
 ## 10. Integration Points
 
@@ -472,10 +472,29 @@ entity is saved.
 - **Decision:** move the method to `security/ReturnUrls`. Cognito delegates to it without changing behavior; OTP reuses it.
 - **Reversion challenge — "what does moving this break?":** only Cognito's mint-time validation, which `CognitoLoginActionTest` pins. That suite must stay green and unchanged.
 
-### DD-12 — Uncached allow-list read
+### DD-12 — Uncached specificity read (amended 2026-10-15, T21: the switch and the exclusion list)
 - **Decision:** a native select of the active `custom_parameters.value`, falling back to `parameters.default_value`, for the key and Global Unit.
 - **Rationale:** the Hibernate caches are per-JVM ehcache: the query cache has a 3600-s TTL, and the `Parameter` and `CustomParameter` entity caches 5000 s (P-10, RJ-6). Through them, the "empty the list" rollback could lag more than an hour on other instances.
 - **Scope:** the other specificities keep the cached path; only this key bypasses it.
+
+### DD-13 — Per-unit switch plus domain exclusion; no CGIAR rule (2026-10-15, T21)
+- **Decision:** the allow-list is replaced by two specificities, both read uncached (DD-12) by request-code, verify-code (the re-check) and `crpByEmail.do`:
+  - `system_otp_login_active`, the switch;
+  - `system_otp_excluded_email_domains`, the exclusion.
+- **Eligibility (DD-4) becomes:**
+  - configured;
+  - switch on;
+  - domain not excluded;
+  - terms;
+  - the user exists and is active;
+  - an active membership.
+- **`is_cgiar_user`:** no longer read by the code path. The `CognitoAuthSpecificity` read leaves `OtpEligibility`, and `crpByEmail.do`'s `otpEnabled` follows the same rule.
+- **`OtpDomainPolicy`:** keeps the normalisation and exact-match rules, but the list now excludes. The `cgiar.org` drop is removed.
+- **Status vocabulary:** unchanged. `domainNotEnabled` now covers "switch off" and "domain excluded", and its message already reads "not available for this email".
+- **Step 3 (UI-006):** the choice now also covers Cognito against the code.
+- **Migration (DA-002):** a new idempotent migration seeds both keys and removes the old rows. It never edits `V2_6_0_20261009_1025`, which `MarloFlywayConfiguration.repair()` would silently re-checksum.
+- **Rationale:** requirements Decision Log 2026-10-15 (T21).
+- **Trade-off:** an empty exclusion list includes CGIAR staff on Cognito units, and they can bypass Cognito. That is deliberate, staged and approved (OQ-9, resolved 2026-10-15).
 
 ### Reversion challenge summary
 No DD removes, disables or inverts shipped behavior. DD-11 only relocates code, and its challenge is recorded above.

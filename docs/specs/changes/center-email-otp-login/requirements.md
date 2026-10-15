@@ -20,7 +20,7 @@
 
 ## Executive Summary
 
-A **pre-registered** MARLO user whose email domain is allow-listed for the Global Unit they select
+A **pre-registered** MARLO user of a Global Unit that has switched code sign-in on, and whose email domain that unit has not excluded (amended 2026-10-15, T21),
 can sign in with a **6-digit code emailed to them**, with no password. The code is valid for 5
 minutes, allows 3 wrong attempts and works once. A verified code produces **exactly the session a
 password login produces**: same `finishLogin` tail (membership gate 4, roles, custom parameters and landing page). The OTP eligibility check before it is stricter on one point: it requires an *active* membership (Decision Log, 2026-10-13).
@@ -41,7 +41,7 @@ What the spec adds to the guide for MARLO:
 | Term | Meaning |
 |---|---|
 | **Allow-list** | The set of email domains for which a Global Unit enables code sign-in. Empty means off |
-| **Eligible user** | An account that is active, a `crp_users` member of the selected Global Unit, on an allow-listed domain, and not refused by the Cognito guard (`SEC-009`) |
+| **Eligible user** | An account that is active, has an active `crp_users` membership in the selected Global Unit, and has an email domain the unit has not excluded, in a unit whose switch is on. Being a CGIAR account plays no part (amended 2026-10-15, T21) |
 | **Challenge** | One issued code, with its expiry, attempt count and consumed state |
 | **Request code** | The user action that may issue a challenge and an email |
 | **Verify code** | The user action that submits a code against the current challenge |
@@ -89,12 +89,12 @@ Current behavior this spec builds on:
 
 #### Requirement: Per-Global-Unit enablement
 
-- **CHG-OTP-LOGIN-001-FN-001** — Code sign-in MUST be enabled per Global Unit by a configurable domain allow-list. An empty or absent list MUST disable it for that Global Unit, both in the UI and on the server.
-- **CHG-OTP-LOGIN-001-FN-002** — A change to a Global Unit's allow-list MUST take effect for new requests without a deploy or restart.
+- **CHG-OTP-LOGIN-001-FN-001** — Code sign-in MUST be enabled per Global Unit by the boolean specificity `system_otp_login_active`, off by default. Off or absent MUST disable it for that Global Unit, both in the UI and on the server. It replaces the domain allow-list `crp_otp_allowed_email_domains`. *(Amended 2026-10-15, T21.)*
+- **CHG-OTP-LOGIN-001-FN-002** — A change to a Global Unit's switch or exclusion list MUST take effect for new requests without a deploy or restart. *(Amended 2026-10-15, T21.)*
 
 ##### Scenario: Feature off
 
-- GIVEN Global Unit G has an empty allow-list
+- GIVEN Global Unit G has `system_otp_login_active` off
 - WHEN a user selects G on the login page
 - THEN no code sign-in option is shown
 - AND a request-code call addressed to G directly is refused, with no challenge and no email
@@ -102,32 +102,32 @@ Current behavior this spec builds on:
 
 ##### Scenario: Live change
 
-- GIVEN G's allow-list is changed from empty to `partner.org`
+- GIVEN G's switch is turned on, with an empty exclusion list
 - WHEN the next login page for G is loaded
-- THEN the option is offered to eligible `@partner.org` users, with no restart
+- THEN the option is offered to every eligible user of G, whatever the email domain, with no restart
 
-#### Requirement: Exact domain matching
+#### Requirement: Domain exclusion, exact matching
 
-- **CHG-OTP-LOGIN-001-FN-003** — The server MUST decide eligibility by **exact equality** between the domain of the normalised email (trimmed, lower-cased, the part after the single `@`) and a normalised allow-list entry. Normalising an entry trims it, lower-cases it, strips one leading `@`, drops it when empty or still containing `@`, and de-duplicates. Suffix, substring and sub-domain matches MUST NOT qualify unless that sub-domain is listed itself (guide §6.2–6.3). An email or allow-list entry containing any character outside printable ASCII MUST be rejected, before and after normalisation. *Amended 2026-10-13 (user decision, `execution.md` T05): Unicode case folding, such as the Kelvin sign U+212A folding to `k`, would otherwise let a lookalike address normalise onto another account's.*
+- **CHG-OTP-LOGIN-001-FN-003** — A Global Unit MAY exclude email domains from code sign-in through `system_otp_excluded_email_domains` (comma-separated, empty by default). An account MUST NOT get a code when the domain of its normalised email (trimmed, lower-cased, the part after the single `@`) **equals exactly** a normalised exclusion entry. Normalising an entry trims it, lower-cases it, strips one leading `@`, drops it when empty or still containing `@`, and de-duplicates. Suffix, substring and sub-domain matches MUST NOT count: a sub-domain is excluded only when listed itself. An email containing any character outside printable ASCII MUST be rejected, and such an entry dropped. No domain, `cgiar.org` included, is fixed in code. *(Amended 2026-10-15, T21.)* *Previously an allow-list with the same matching rules; the ASCII rule dates from 2026-10-13 (T05).*
 
 ##### Scenario: Lookalike rejected
 
-- GIVEN G's allow-list is `trusted.org`
-- WHEN codes are requested for `x@attackertrusted.org`, `x@trusted.org.evil.com` and `x@sub.trusted.org`
-- THEN each request is treated as a non-allow-listed domain
-- AND IT MUST accept `  X@TRUSTED.ORG ` as `x@trusted.org`
+- GIVEN G's switch is on and its exclusion list is `excluded.org`
+- WHEN codes are requested for `x@attackerexcluded.org`, `x@excluded.org.evil.com` and `x@sub.excluded.org`
+- THEN none of them is excluded
+- AND IT MUST exclude `  X@EXCLUDED.ORG ` as `x@excluded.org`
 
 #### Requirement: Request a code
 
 - **CHG-OTP-LOGIN-001-FN-004** — When an **eligible user** requests a code for Global Unit G, the system MUST create exactly one challenge bound to that email and G, and send exactly one email containing the code.
-- **CHG-OTP-LOGIN-001-FN-005** — When the domain is allow-listed but the account is not eligible (unknown, inactive, not a member of G, or refused by `SEC-009`), the system MUST return the **neutral response**. It MUST NOT send an email, and any challenge state it records MUST be unable to authenticate and MUST behave, on later requests and verifications, exactly as an eligible account's challenge does (amended 2026-10-09, Judgment Day JD-1/JD-2).
-- **CHG-OTP-LOGIN-001-FN-006** — When the domain is not on G's allow-list, the system MUST return an explicit "not enabled for this email" message that names no account state.
+- **CHG-OTP-LOGIN-001-FN-005** — When G's switch is on and the domain is not excluded, but the account is not eligible (unknown, inactive, or not a member of G; amended 2026-10-15, T21: the CGIAR refusal of SEC-009 is gone), the system MUST return the **neutral response**. It MUST NOT send an email, and any challenge state it records MUST be unable to authenticate and MUST behave, on later requests and verifications, exactly as an eligible account's challenge does (amended 2026-10-09, Judgment Day JD-1/JD-2).
+- **CHG-OTP-LOGIN-001-FN-006** — When G's switch is off, or the email's domain is on G's exclusion list, the system MUST return an explicit "not enabled for this email" message that names no account state. *(Amended 2026-10-15, T21.)*
 - **CHG-OTP-LOGIN-001-FN-007** — A new code request for the same email MUST **supersede** every earlier open challenge for that email, atomically with issuing the new one.
 - **CHG-OTP-LOGIN-001-FN-008** — Consecutive code requests for the same email MUST be at least 30 seconds apart, enforced by the server. An earlier request MUST receive the rate-limited response and change nothing.
 
 ##### Scenario: Eligible user receives a code
 
-- GIVEN `ana@partner.org` is active, a member of G, `is_cgiar_user = 0`, and `partner.org` is on G's allow-list
+- GIVEN `ana@partner.org` is active and a member of G, G's switch is on, and `partner.org` is not on G's exclusion list
 - WHEN she requests a code for G
 - THEN one challenge exists for her and G
 - AND one email with a 6-digit code reaches `ana@partner.org`
@@ -203,7 +203,7 @@ Current behavior this spec builds on:
 - **CHG-OTP-LOGIN-001-SEC-006** — Request-code and verify-code MUST add no new way to tell unknown, inactive, non-member and Cognito-routed accounts apart. The pre-existing `crpByEmail.do` exposure (C8) is out of scope and recorded as a risk.
 - **CHG-OTP-LOGIN-001-SEC-007** — Code sign-in MUST NOT create users, memberships or role assignments, and MUST NOT change them. Authorization after a code sign-in MUST be identical to authorization after a password sign-in.
 - **CHG-OTP-LOGIN-001-SEC-008** — The MAC keys MUST derive from a dedicated secret, at least 256 bits, delivered by the environment. When the secret is absent or too short, code sign-in MUST be unavailable for every Global Unit and MUST NOT fall back to a generated or default key.
-- **CHG-OTP-LOGIN-001-SEC-009** — An account with `is_cgiar_user = 1` MUST be ineligible for code sign-in on any Global Unit where Cognito is active. An allow-list entry of `cgiar.org` MUST be ignored. *(Default pending OQ-4.)*
+- **CHG-OTP-LOGIN-001-SEC-009** — Eligibility for code sign-in MUST NOT depend on `is_cgiar_user`. A CGIAR account with access to G gets a code like any other account, unless its domain is on G's exclusion list (FN-003). On a Cognito-active Global Unit, this makes Cognito one of the CGIAR user's choices, not the only one. *(Amended 2026-10-15, T21.)* *Reverses the 2026-10-08 rule that refused CGIAR accounts on Cognito-active units and ignored `cgiar.org` in the list (OQ-4). Rollout stage 2 (CGIAR accounts on Cognito units) was approved on 2026-10-15 (OQ-9). It still waits for the per-IP limit review.*
 - **CHG-OTP-LOGIN-001-SEC-010** — Request-code MUST be limited per normalised email (5 per 15 min) and per client IP (20 per 15 min). Verify-code MUST be limited per email (10 per 15 min) and per IP (50 per 15 min). The limits MUST hold across every application instance, MUST be counted before any account lookup, and MUST apply identically to every account state.
 - **CHG-OTP-LOGIN-001-SEC-011** — The client IP used for rate limiting MUST NOT be taken from a header an untrusted client can set (guide §17.2 item 6).
 
@@ -217,7 +217,7 @@ Current behavior this spec builds on:
 ##### Scenario: Missing secret fails closed
 
 - GIVEN the OTP secret is not set in the environment
-- WHEN any Global Unit with a non-empty allow-list loads the login page
+- WHEN any Global Unit with its switch on loads the login page
 - THEN no code sign-in option is shown, and request-code is refused
 - BUT it must NOT prevent the application from starting, or affect password and Cognito logins
 
@@ -239,12 +239,16 @@ Current behavior this spec builds on:
 ### 3.4 Data & Migration
 
 - **CHG-OTP-LOGIN-001-DA-001** — The challenge store MUST ship as a Flyway migration. It MUST be idempotent and MUST assume no Global Unit, user or role row exists.
-- **CHG-OTP-LOGIN-001-DA-002** — The allow-list specificity MUST be seeded **off** for each of the Global Unit types 1, 2, 3 and 4 that exists in the database at migration time (type 2 included because migration-only databases hold "Center" as id 2; RJ-4), with its constant declared in **both** `APConstants.java` files and equal to `parameters.key`.
+- **CHG-OTP-LOGIN-001-DA-002** — The switch `system_otp_login_active` (boolean, default `false`) and the exclusion `system_otp_excluded_email_domains` (string, default empty) MUST be seeded **off** for each of the Global Unit types 1, 2, 3 and 4 that exists in the database at migration time. Type 2 is included because migration-only databases hold "Center" as id 2 (RJ-4). Both keys MUST be stored with the `system_` prefix. Their `parameters.description`, shown on the Super Admin Specificities tab, MUST be exactly (A2-2524 shape: what it does, for whom, then the catch):
+  - `system_otp_login_active`: "Lets users of this program sign in on the login page with a one-time code sent to their email, as an alternative to their password or to Sign in with CGIAR. Only registered users who are active and members of this program receive a code. Turning it off removes the option on the next login. Users whose email domain is listed in system_otp_excluded_email_domains never receive a code."
+  - `system_otp_excluded_email_domains`: "Email domains that can never sign in with a one-time code in this program, even when system_otp_login_active is on. Write exact domains separated by commas, for example cgiar.org,example.org. A subdomain is only excluded if it is listed itself. Leave it empty to exclude no one."
+
+  Their constants MUST be declared in **both** `APConstants.java` files, equal to `parameters.key`. The same migration MUST remove the `crp_otp_allowed_email_domains` rows and their `custom_parameters` values. It MUST be idempotent and MUST assume no Global Unit id. *(Amended 2026-10-15, T21.)*
 - **CHG-OTP-LOGIN-001-DA-003** — Rate-limit state MUST be stored where every application instance reads the same values.
 
 ### 3.5 UI
 
-- **CHG-OTP-LOGIN-001-UI-001** — The authentication step for G MUST offer "Email me a sign-in code" only when G enables code sign-in and the entered email's domain is on G's allow-list.
+- **CHG-OTP-LOGIN-001-UI-001** — The authentication step for G MUST offer "Email me a sign-in code" only when the feature is configured, G's switch is on, and the entered email's domain is not on G's exclusion list. Whether the account is CGIAR plays no part. *(Amended 2026-10-15, T21.)*
 - **CHG-OTP-LOGIN-001-UI-002** — The code step MUST show these states:
   - sending;
   - code sent: neutral text with the masked destination;
@@ -261,12 +265,12 @@ Current behavior this spec builds on:
   Status and errors MUST be announced through an `aria-live` region, with `role="alert"` for errors.
 - **CHG-OTP-LOGIN-001-UI-004** — Buttons MUST be disabled while their request is in flight. A double click MUST send one request.
 - **CHG-OTP-LOGIN-001-UI-005** — All user-facing text, in the page and in the email, MUST come from i18n keys in `global.properties`. A Global Unit's custom file MAY override the email keys, as it does for every MARLO email (amended 2026-10-15, T20).
-- **CHG-OTP-LOGIN-001-UI-006** — When the authentication step for G offers both the code and the password, it MUST first ask how the user wants to sign in (added 2026-10-14, Decision Log):
-  - one control per method: "Email me a sign-in code" (primary) and "Continue with your password";
+- **CHG-OTP-LOGIN-001-UI-006** — When the authentication step for G offers the code and another method, it MUST first ask how the user wants to sign in. The other method is the password, or Cognito for a CGIAR account on a Cognito-active unit (added 2026-10-14, Decision Log; amended 2026-10-15, T21):
+  - one control per method: "Email me a sign-in code" (primary), and "Continue with your password" or "Sign in with CGIAR";
   - choosing a method reveals only that method's panel; each panel offers "Choose another way to sign in", which returns to the choice;
   - the code panel names the masked destination and sends nothing until "Send code" is activated;
   - focus moves to the first control of whatever opens (the choice, a panel);
-  - when a single method applies (the Cognito branch, a password-only unit or user), it is shown directly, with no choice;
+  - when a single method applies (Cognito or the password, with the code off or the domain excluded), it is shown directly, with no choice;
   - Enter never submits a method that is not open.
 
   The server rules are unchanged: the screen decides what to offer, never what to permit.
@@ -327,10 +331,10 @@ Current behavior this spec builds on:
 
 | AC | Requirement | Given / When / Then |
 |---|---|---|
-| AC-1 | FN-001, FN-019 | Given empty allow-lists everywhere, when the existing login tests run, then they pass unchanged and no OTP control renders |
-| AC-2 | FN-003 | Given `trusted.org`, then the five lookalike or normalisation inputs in the FN-003 scenario resolve as specified (unit test) |
+| AC-1 | FN-001, FN-019 | Given every switch off, when the existing login tests run, then they pass unchanged and no OTP control renders |
+| AC-2 | FN-003 | Given the exclusion `excluded.org`, the lookalike and normalisation inputs of the FN-003 scenario resolve as specified (unit test) (amended 2026-10-15, T21) |
 | AC-3 | FN-004, FN-009, FN-017 | Given an eligible user, when a code is requested, then one challenge row exists and one email arrives containing a 6-digit code and every FN-017 element |
-| AC-4 | FN-005, SEC-006 | Given each of unknown, inactive, non-member and CGIAR-refused, when a code is requested, then the result and page state equal the eligible one, no email is sent, and a later resend and verifications answer as for the eligible account; no recorded challenge can authenticate |
+| AC-4 | FN-005, SEC-006 | Given each of unknown, inactive and non-member (amended 2026-10-15, T21), when a code is requested, then the result and page state equal the eligible one, no email is sent, and a later resend and verifications answer as for the eligible account; no recorded challenge can authenticate |
 | AC-5 | FN-011, SEC-005, SEC-007 | Given a correct code, when verified, then the session ID differs from the pre-auth one, the session attributes match a password login for the same user and Global Unit, and the role rows are unchanged |
 | AC-6 | FN-012 | Given 3 wrong codes, then the 3rd says "too many attempts" and the correct code is refused afterwards |
 | AC-7 | FN-013 | Given 10 concurrent correct verifications on a database copy, then exactly 1 succeeds |
@@ -339,7 +343,7 @@ Current behavior this spec builds on:
 | AC-10 | FN-007, FN-008 | Given a resend after 30 s, then the old code is refused and the new one works. A resend within 30 s returns the rate-limited response |
 | AC-11 | SEC-001, SEC-002, OPS-001 | After a full flow, the code appears in neither `otp_challenges` nor the log, and in `email_logs` only in the `message` of the OPS-005 row (amended 2026-10-15). Outside production it also appears in exactly one `auth.otp.code` line per handed-off email, and in production in no log line, and the full email appears in neither `otp_challenges` nor the log, except outside production in the one `auth.otp.code` line (amended 2026-10-15) (the `email_logs` row of OPS-005 holds the recipient, as every MARLO email row does; amended 2026-10-14); exactly one `auth.otp.request` or `auth.otp.verify` line per call, plus one `auth.otp.delivery` line per handed-off email (amended 2026-10-09, RJ-7) |
 | AC-12 | SEC-008 | Given no secret, the option is hidden, request-code is refused, and the application starts |
-| AC-13 | SEC-009 | Given an `is_cgiar_user = 1` account on a Cognito-active Global Unit, then it gets the neutral response and no email |
+| AC-13 | SEC-009, FN-003, UI-006 | Given an `is_cgiar_user = 1` account on a Cognito-active G with the switch on: with an empty exclusion list, step 3 offers "Sign in with CGIAR" and "Email me a sign-in code", and the code signs the account in. With `cgiar.org` excluded, step 3 shows only "Sign in with CGIAR" and a direct request-code call answers not-enabled (amended 2026-10-15, T21) |
 | AC-14 | SEC-010 | Given 6 requests in 15 min for one email, then the 6th is rate-limited. The per-IP limit trips across different emails |
 | AC-15 | FN-018, OPS-002 | Given notifications are off for G, the code still arrives. Given SMTP is down, the response is neutral and `email_failed` is logged |
 | AC-16 | UI-001–UI-006 | Browser walkthrough of every state, with the attributes present and one request per double click; for UI-006, every step-3 branch (Cognito, password-only, choice → code, choice → password, back to the choice) |
@@ -347,6 +351,7 @@ Current behavior this spec builds on:
 | AC-18 | OPS-005 | After a delivered and a failed code email, each left one `email_logs` row with `source_action = /otpRequestCode`, the HTML body with its code in `message` (amended 2026-10-15), `succes_email` 1 and 0, and the code in no other column; an ineligible request left none; the failed row is listed by System Admin → Emails but resending it, by id or in bulk, sends nothing |
 | AC-19 | FN-018 | Given `marlo.production=false`, when an eligible user requests a code, then the sink receives exactly one email, addressed only to `email.notification`, with the `(TESTING ENVIRONMENT) ` subject prefix, a header naming the submitted address, and a code that signs the user in; the submitted address receives nothing. Its `email_logs` row holds the submitted address in `to_email`, the support mailbox in `bbc_email` and the subject without the prefix. With `email.notification` blank, nothing is sent and the delivery line says `email_failed` |
 | AC-20 | FN-017, UI-005 | Given AICCRA (whose custom file defines `email.layout`), when a code email is sent, then its HTML part is the AICCRA shell (MARLO logo, body card, band, footer) around a body with the code, resolved from AICCRA's custom keys. Its text part still carries the code and the expiry, and the images point at the instance's CDN or base URL. Given a unit without a shell, the HTML is the bare body as before |
+| AC-21 | DA-002, FN-001, FN-002 | The T21 migration applies twice cleanly on a throwaway copy and on a database without Global Units 45/47. It leaves both `system_otp_*` keys seeded off and no `crp_otp_allowed_email_domains` row. Turning the switch on, and adding or removing an excluded domain, take effect on the next request |
 
 ---
 
@@ -374,7 +379,8 @@ Current behavior this spec builds on:
 | OQ-1 | Pilot Global Units and domains | Rollout only | All seeded off |
 | OQ-2 | Baseline-role exposure audit for pilot users (`getPermissions`) | Go-live | — |
 | OQ-3 | Does the A2-2629 owner accept a non-Cognito path under the epic? | Go-live | Proceed per A2-2631 |
-| OQ-4 | `is_cgiar_user = 1`: refuse always, or only where Cognito is active? | SEC-009 | Only where Cognito is active; `cgiar.org` always ignored |
+| OQ-4 | `is_cgiar_user = 1`: refuse always, or only where Cognito is active? | SEC-009 | **Superseded 2026-10-15 (T21):** `is_cgiar_user` plays no part; exclusion is per domain, per unit |
+| OQ-9 | Does the owner of Cognito (A2-2629 owner or CGIAR IT) approve CGIAR accounts choosing the code on Cognito-active units? | Rollout stage 2 | **Resolved 2026-10-15:** approved by Kenji Tanaka (Decision Log). Stage 2 still waits for the per-IP limit review |
 | OQ-5 | Outside production, does the OTP email go to the real recipient or the support redirect? | FN-018, UAT | **Resolved 2026-10-15:** the support mailbox, as every MARLO email does outside production (Decision Log) |
 | OQ-6 | End live sessions on deactivation? | — | Out of scope |
 | OQ-7 | Open a spec for `crpByEmail.do` disclosure? | — | Out of scope |
@@ -432,4 +438,18 @@ Current behavior this spec builds on:
   - Before sign-in the session holds no Global Unit, so the request action's text provider resolves only `global.properties`, where the shell is `{0}`. The code email therefore resolves its texts with the selected unit's custom file. Every other MARLO email gets that file from the logged session.
   - The body keeps every FN-017 element; a unit's own keys may move the support contact and the do-not-reply notice to its shell, as the role emails do.
   - Unchanged: FN-018 (non-production recipient, prefix, header), OPS-005 (the row stores the HTML as sent to the user, now with the shell), and the text part. Task T20.
+- 2026-10-15 — Code sign-in is switched on per Global Unit for every account with access, with an optional per-unit domain exclusion (user decision while reviewing how the specificity was defined: "la idea es que puedan entrar usuarios externos con esto y no tendríamos todos los dominios posibles"). FN-001, FN-002, FN-003, FN-005, FN-006, SEC-009, DA-002, UI-001, UI-006, AC-1, AC-2, AC-4 and AC-13 are amended; AC-21 and OQ-9 are added; OQ-4 is superseded. Task T21.
+  - **Why the allow-list goes:** it needed every partner's domain in advance. It also protected little, because MARLO already mails a new external user their password, so mailbox control already means account access. A code is still only sent to a registered, active account with an active membership.
+  - **Why no CGIAR rule:** the rest of MARLO decides "CGIAR" by `is_cgiar_user`. In a local snapshot (`aiccradb_actsave`), 1672 active `@cgiar.org` accounts carry 0, so a rule on that flag would be unreliable. A rule on the domain would fix a domain in code. Each unit can instead exclude domains by configuration.
+  - **Keys:** both are stored with the `system_` prefix, ahead of the planned rename of every `crp_` key.
+  - **Consequence for Cognito:** on a Cognito-active unit, a CGIAR account may now choose the code instead of Cognito, skipping Azure AD's MFA and conditional access. Its mailbox is itself behind that MFA. This modifies SEC-005 of CHG-COGNITO-AUTH-001, which made Cognito exclusive for CGIAR users. That spec is archived and is not edited here; the change was approved through OQ-9 (next entry).
+  - **Rollout in two stages, by configuration only:**
+    1. AICCRA switch on, with `cgiar.org` excluded: external users only, which is what A2-2631 asks for.
+    2. Exclusion emptied after the per-IP limit review (OQ-9 approved).
+  - **Before stage 2:** revisit the per-IP limit (20 requests per 15 min) together with P-6, since CGIAR offices may share one egress IP.
+  - **Future option:** a unit could later use the code as its only method (Cognito off). Making it exclusive would need a server-side password block, a reliable relay and an emergency access path; out of scope.
+- 2026-10-15 — OQ-9 resolved: CGIAR accounts may choose the code on Cognito-active units (approved by Kenji Tanaka, who owns the Cognito rollout in MARLO: "yo doy el visto bueno").
+  - **What Cognito checks at sign-in:** the unit's `cognito_auth_active`, an existing account with the email Azure AD returns, `is_cgiar_user = 1`, an active account and an active membership. It never checks the email domain. The domain `cgiar.org` is fixed in code only at account creation (`CrpUsersAction`, `ManageUsersAction`), where it can set `is_cgiar_user = 1`; nothing rewrites the flag afterwards.
+  - **Measured exposure** (local snapshot `aiccradb_actsave`, active AICCRA members): 1 `@cgiar.org` account with `is_cgiar_user = 1`, 214 `@cgiar.org` accounts with 0, and 169 other accounts with 0. Only AICCRA has Cognito on. For the 214, the code replaces a local password, not Cognito; only the one Cognito-enabled account gains a path that skips Azure AD's MFA. That number grows as accounts move to `is_cgiar_user = 1`. Re-run the count on production before stage 2.
+  - **Still required before stage 2:** the per-IP limit review (runbook B5).
 
