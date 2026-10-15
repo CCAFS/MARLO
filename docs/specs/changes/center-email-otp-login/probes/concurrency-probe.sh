@@ -111,10 +111,26 @@ def mbox_messages():
     return re.split(rb"(?m)^From sink ", raw)[1:]
 
 
+def is_for(chunk, rcpt):
+    """Whether this sink message is the code email for rcpt. In production the envelope names the user; outside
+    production (T19, FN-018) every code email goes to the support mailbox and the plain body starts "To: <address>"."""
+    if ("-> <%s>" % rcpt).encode() in chunk.split(b"\n", 1)[0]:
+        return True
+    try:
+        body = email.message_from_bytes(chunk.split(b"\n", 1)[1])
+        for part in body.walk():
+            if part.get_content_type() == "text/plain":
+                m = re.match(r"To: (\S+)\r?\n", part.get_payload(decode=True).decode("utf8", "replace"))
+                return bool(m) and m.group(1) == rcpt
+    except Exception:
+        return False
+    return False
+
+
 def code_for(rcpt, after):
     """Waits for the delivered mail beyond the first `after` messages addressed to rcpt and returns its code."""
     for _ in range(80):
-        mine = [c for c in mbox_messages() if ("-> <%s>" % rcpt).encode() in c.split(b"\n", 1)[0]]
+        mine = [c for c in mbox_messages() if is_for(c, rcpt)]
         if len(mine) > after:
             body = email.message_from_bytes(mine[-1].split(b"\n", 1)[1])
             for p in body.walk():
@@ -126,7 +142,7 @@ def code_for(rcpt, after):
 
 
 def mails_for(rcpt):
-    return len([c for c in mbox_messages() if ("-> <%s>" % rcpt).encode() in c.split(b"\n", 1)[0]])
+    return len([c for c in mbox_messages() if is_for(c, rcpt)])
 
 
 def issue(rcpt):
