@@ -350,6 +350,13 @@
   box-sizing: border-box;
 }
 
+/* Hover. "Log in" is an <input type="submit"> and took this color from global.css's input[type="submit"]:hover;
+   the <button>s of step 3 ("Sign in with CGIAR", the method choice, "Send code", "Verify code") had no hover at all.
+   One rule for every login button, same color */
+.login-button-container .login-form-button:hover:not(:disabled):not(.is-loading) {
+  background: rgb(39, 147, 173);
+}
+
 .login-button-container .login-form-button:disabled {
   opacity: 0.5;
   cursor: default;
@@ -724,6 +731,11 @@
   background: #ffffff;
   border: 1px solid #0277a2;
   color: #0277a2;
+}
+
+/* The hover fill above would hide the secondary button's blue text; it gets a light tint of its own color */
+.login-button-container .login-form-button.login-form-button-secondary:hover:not(:disabled):not(.is-loading) {
+  background: rgba(2, 119, 162, 0.08);
 }
 
 .login-method-choice .login-form-button:focus,
