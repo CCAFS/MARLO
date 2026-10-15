@@ -78,6 +78,13 @@ import org.slf4j.LoggerFactory;
  * exception 2026-10-15). Writing the row after the send, off the request thread, adds no latency to the response
  * (SEC-006). A hand-off rejected before queueing writes no row. A failed save is logged by class name and swallowed.
  * <p>
+ * The HTML part is the body of the {@code login.otp.email.html} key put inside the shell of the selected Global Unit,
+ * {@link EmailLayout#wrap(TextProvider, String, String)} with the key {@code email.layout}, as every role and welcome
+ * email is since A2-2484 (FN-017, UI-005, T20). The shell wraps only the HTML part: the text part keeps its own key.
+ * A Global Unit without a shell has {@code email.layout={0}}, so its HTML part is the bare body. The non-production
+ * header goes before the wrapped HTML, as {@code SendMailS} puts it, and the {@code email_logs} row stores the
+ * wrapped HTML without it.
+ * <p>
  * Outside production only, the worker also writes one INFO line {@code auth.otp.code gu=<acronym> to=<submitted>
  * code=<code>} per handed-off email, after the delivery attempt, for delivered and failed sends alike (OPS-001,
  * accepted 2026-10-15). In production the line never exists and no log line carries the code or the address.
@@ -200,7 +207,10 @@ public final class OtpMailSender {
    * Callers must pass {@code pending.email}, the normalised address held in the session's {@code OtpPending}, and
    * never the raw request parameter.
    *
-   * @param texts the text provider that resolves the i18n keys, normally the action; read on the calling thread only
+   * @param texts the text provider that resolves the i18n keys, built for the selected Global Unit so its custom
+   *        file wins over {@code global.properties} ({@link UnitTextProvider}); read on the calling thread only
+   * @param assetsUrl the URL the images of the shell are served from, without the trailing slash: the CDN of the
+   *        instance, or its base URL when it has none
    * @param recipient the submitted address: the SMTP recipient in production, named in the body header outside
    *        production
    * @param code the clear code; it goes into the message and the {@code email_logs} row, and outside production into
@@ -208,13 +218,14 @@ public final class OtpMailSender {
    * @param guAcronym the Global Unit acronym, for the delivery line
    * @param globalUnitId the Global Unit id, for the {@code email_logs} row; may be {@code null}
    */
-  public void sendAsync(TextProvider texts, String recipient, String code, String guAcronym, Long globalUnitId) {
+  public void sendAsync(TextProvider texts, String assetsUrl, String recipient, String code, String guAcronym,
+    Long globalUnitId) {
     long started = System.nanoTime();
     String domain = "";
     try {
       InternetAddress to = singleAddress(recipient);
       domain = domainOf(to);
-      final Outgoing outgoing = this.build(texts, to, code);
+      final Outgoing outgoing = this.build(texts, assetsUrl, to, code);
       final String gu = guAcronym;
       final String logDomain = domain;
       final long handedOff = started;
@@ -242,7 +253,8 @@ public final class OtpMailSender {
     this.executor.shutdown();
   }
 
-  private Outgoing build(TextProvider texts, InternetAddress submitted, String code) throws MessagingException {
+  private Outgoing build(TextProvider texts, String assetsUrl, InternetAddress submitted, String code)
+    throws MessagingException {
     if (code == null || code.trim().isEmpty()) {
       throw new IllegalArgumentException("blank code");
     }
@@ -251,7 +263,9 @@ public final class OtpMailSender {
     String minutes = String.valueOf(CODE_VALIDITY_MINUTES);
     String subject = text(texts, KEY_SUBJECT, appName);
     String plain = text(texts, KEY_TEXT, appName, code, minutes, support);
-    String html = text(texts, KEY_HTML, escapeHtml(appName), escapeHtml(code), minutes, escapeHtml(support));
+    String htmlBody = text(texts, KEY_HTML, escapeHtml(appName), escapeHtml(code), minutes, escapeHtml(support));
+    // The shell is the Global Unit's own key; a unit without one has email.layout={0} and sends the body as it is.
+    String html = EmailLayout.wrap(texts, assetsUrl, htmlBody);
 
     // Read on every send, never cached: the flag decides who receives a sign-in code (FN-018).
     boolean production = this.config.isProduction();

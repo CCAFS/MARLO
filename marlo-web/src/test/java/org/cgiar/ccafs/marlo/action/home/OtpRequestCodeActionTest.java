@@ -35,6 +35,7 @@ import org.cgiar.ccafs.marlo.security.otp.OtpPending;
 import org.cgiar.ccafs.marlo.security.otp.OtpRateLimiter;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.OtpMailSender;
+import org.cgiar.ccafs.marlo.utils.UnitTextProvider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -89,6 +90,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -223,7 +225,8 @@ public class OtpRequestCodeActionTest {
     assertEquals(GU_ACRONYM, mail.guAcronym);
     assertEquals("the Global Unit id reaches the mailer for its email_logs row (OPS-005)", Long.valueOf(GU),
       mail.globalUnitId);
-    assertSame("the action is the text provider that renders the email", action, mail.texts);
+    assertNotSame("the email is not rendered with the request's own provider (T20)", action, mail.texts);
+    assertTrue("a provider built for the unit", mail.texts instanceof UnitTextProvider);
     assertTrue(mail.code, SIX_DIGITS.matcher(mail.code).matches());
     assertTrue("the mailed code is the code whose MAC was stored",
       world.codes().matches(issue.codeHmac, issue.nonce, mail.code));
@@ -841,7 +844,8 @@ public class OtpRequestCodeActionTest {
       injectable.size());
     assertTrue(Modifier.isPublic(injectable.get(0).getModifiers()));
     assertEquals(Arrays.<Class<?>>asList(APConfig.class, OtpKeys.class, OtpRateLimiter.class, OtpCodes.class,
-      OtpEligibility.class, OtpChallengeManager.class, GlobalUnitManager.class, OtpMailSender.class),
+      OtpEligibility.class, OtpChallengeManager.class, GlobalUnitManager.class, CustomParameterManager.class,
+      OtpMailSender.class),
       Arrays.asList(injectable.get(0).getParameterTypes()));
   }
 
@@ -929,6 +933,99 @@ public class OtpRequestCodeActionTest {
     }
   }
 
+  // ---- T20: the text provider of the unit's custom file ----------------------------------------------------
+
+  /** The shell argument: what the provider answers for email.layout, with a recognisable body and assets URL. */
+  private static String layoutOf(TextProvider texts) {
+    return texts.getText("email.layout", new String[] {"BODY", "ASSETS"});
+  }
+
+  @Test
+  public void theEmailIsRenderedWithTheCustomFileOfTheSelectedUnitAndTheInstanceAssetsUrl() {
+    World world = World.with(State.ELIGIBLE);
+    world.customFiles.put(Long.valueOf(GU), "aicrra");
+
+    world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+    assertEquals(1, world.mails.size());
+    Mail mail = world.mails.get(0);
+    String layout = layoutOf(mail.texts);
+    assertTrue("the AICCRA shell: " + layout, layout.contains("marlo-logo.png") && layout.contains("BODY"));
+    assertTrue("the subject is the unit's own", mail.texts.getText("login.otp.email.subject", new String[] {"MARLO"})
+      .startsWith("[AICCRA]"));
+    assertEquals("a key the unit does not define falls back to global", "MARLO",
+      mail.texts.getText("login.otp.email.appName"));
+    assertEquals("the images come from the instance's CDN or base URL", BASE_URL, mail.assetsUrl);
+  }
+
+  @Test
+  public void aUnitWithoutACustomFileGetsTheGlobalTextsAndTheBareShell() {
+    World world = World.with(State.ELIGIBLE);
+
+    world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+    assertEquals("the base shell is {0}: the body as it is", "BODY", layoutOf(world.mails.get(0).texts));
+  }
+
+  @Test
+  public void theCustomFileIsReadForEveryStateSoTheReadAddsWorkToNoOnePath() {
+    for (State state : State.values()) {
+      World world = World.with(state);
+      world.customFiles.put(Long.valueOf(GU), "aicrra");
+
+      world.call(state.submitted(), "7", "true");
+
+      assertEquals(state + ": one read, eligible or not: " + world.events, 1, world.count("custom-file"));
+      int read = world.events.indexOf("custom-file");
+      assertTrue(state + ": after the eligibility check: " + world.events, read > world.events.indexOf("allowList"));
+      assertTrue(state + ": before the challenge row: " + world.events, read < world.events.indexOf("issue"));
+      assertEquals(state + ": mailed only when eligible", state == State.ELIGIBLE ? 1 : 0, world.mails.size());
+    }
+  }
+
+  @Test
+  public void theCustomFileIsNotReadWhenTheRequestIsRefusedBeforeTheSendDecision() {
+    World world = World.with(State.ELIGIBLE);
+
+    world.call(State.ELIGIBLE.submitted(), "7", "false");
+
+    assertEquals("terms not agreed: refused before the send decision", 0, world.count("custom-file"));
+  }
+
+  @Test
+  public void aFailedCustomFileReadSendsTheEmailWithTheRequestsOwnProviderAndChangesNoAnswer() {
+    Map<String, Object> reference = World.with(State.ELIGIBLE).call(State.ELIGIBLE.submitted(), "7", "true")
+      .getResponse();
+    for (State state : new State[] {State.ELIGIBLE, State.UNKNOWN}) {
+      World world = World.with(state);
+      world.customFileFailure = new IllegalStateException("connection refused");
+
+      OtpRequestCodeAction action = world.call(state.submitted(), "7", "true");
+
+      assertEquals(state + ": the same answer", reference, action.getResponse());
+      assertEquals(state + ": one read", 1, world.count("custom-file"));
+      assertEquals(state + ": a challenge row for every state", 1, world.issues.size());
+      assertEquals(state + ": mailed only when eligible", state == State.ELIGIBLE ? 1 : 0, world.mails.size());
+      if (state == State.ELIGIBLE) {
+        assertSame("the fallback is the request's own provider", action, world.mails.get(0).texts);
+      }
+      assertTrue(state + ": the request line is sent", this.requestLines().get(this.requestLines().size() - 1)
+        .contains("outcome=" + (state == State.ELIGIBLE ? "sent" : "neutral")));
+    }
+  }
+
+  @Test
+  public void theSessionOfAPreSignInRequestHoldsNothingButThePendingChallenge() {
+    World world = World.with(State.ELIGIBLE);
+    world.customFiles.put(Long.valueOf(GU), "aicrra");
+
+    world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+    assertEquals("the custom file is never written to the session",
+      Collections.singleton(APConstants.OTP_PENDING_CHALLENGE),
+      new HashSet<Object>(SecurityUtils.getSubject().getSession().getAttributeKeys()));
+  }
+
   // ---- helpers ------------------------------------------------------------------------------------------
 
   private static OtpPending pending() {
@@ -967,13 +1064,15 @@ public class OtpRequestCodeActionTest {
   private static final class Mail {
 
     final TextProvider texts;
+    final String assetsUrl;
     final String recipient;
     final String code;
     final String guAcronym;
     final Long globalUnitId;
 
-    Mail(TextProvider texts, String recipient, String code, String guAcronym, Long globalUnitId) {
+    Mail(TextProvider texts, String assetsUrl, String recipient, String code, String guAcronym, Long globalUnitId) {
       this.texts = texts;
+      this.assetsUrl = assetsUrl;
       this.recipient = recipient;
       this.code = code;
       this.guAcronym = guAcronym;
@@ -1074,6 +1173,8 @@ public class OtpRequestCodeActionTest {
     /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
     final Set<String> softDeleted = new HashSet<String>();
     final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
+    /** The crp_custom_file value of each Global Unit; a unit with no entry has no such parameter. */
+    final Map<Long, String> customFiles = new HashMap<Long, String>();
 
     final List<String> events = new ArrayList<String>();
     final List<Issue> issues = new ArrayList<Issue>();
@@ -1088,6 +1189,7 @@ public class OtpRequestCodeActionTest {
     RuntimeException issueFailure;
     RuntimeException purgeFailure;
     RuntimeException userLookupFailure;
+    RuntimeException customFileFailure;
     Throwable mailFailure;
 
     String lastResult;
@@ -1176,7 +1278,7 @@ public class OtpRequestCodeActionTest {
         this.crpUserManager(), challengeManager, this.customParameterManager(), this.parameterManager());
       OtpRequestCodeAction action = new OtpRequestCodeAction(config, keys,
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
-        globalUnitManager, this.mailer(), new ClientIpResolver(this.proxies), CLOCK);
+        globalUnitManager, this.customParameterManager(), this.mailer(), new ClientIpResolver(this.proxies), CLOCK);
       if (!this.noServletRequest) {
         action.setServletRequest(new FakeRequest(this.remoteAddr, this.forwardedLines, this.referer).proxy());
       }
@@ -1184,9 +1286,9 @@ public class OtpRequestCodeActionTest {
     }
 
     OtpRequestCodeAction.CodeSender mailer() {
-      return (texts, recipient, code, guAcronym, globalUnitId) -> {
+      return (texts, assetsUrl, recipient, code, guAcronym, globalUnitId) -> {
         this.events.add("mail");
-        this.mails.add(new Mail(texts, recipient, code, guAcronym, globalUnitId));
+        this.mails.add(new Mail(texts, assetsUrl, recipient, code, guAcronym, globalUnitId));
         if (this.mailFailure instanceof Error) {
           throw (Error) this.mailFailure;
         }
@@ -1294,6 +1396,20 @@ public class OtpRequestCodeActionTest {
 
     CustomParameterManager customParameterManager() {
       return fake(CustomParameterManager.class, (method, args) -> {
+        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)
+          && APConstants.CRP_CUSTOM_FILE.equals(args[0])) {
+          this.events.add("custom-file");
+          if (this.customFileFailure != null) {
+            throw this.customFileFailure;
+          }
+          String file = this.customFiles.get(args[1]);
+          if (file == null) {
+            return null;
+          }
+          CustomParameter parameter = new CustomParameter();
+          parameter.setValue(file);
+          return parameter;
+        }
         if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)) {
           String value = this.cognitoOverrides.get(args[1]);
           if (value == null) {

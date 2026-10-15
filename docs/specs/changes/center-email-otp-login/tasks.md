@@ -628,6 +628,66 @@ Field conventions:
   - Live run on a fresh `aiccradb_otp_probe`: `nonprod leak emaillog` 43 checks, `enum` 11, `nonprodblank` 4, all passing. Output in `probes/output/ac-probe.t19-*.out`; `probes/README.md` section 10 and the AC-2, AC-3, AC-4, AC-11, AC-18 and AC-19 rows.
   - The production half (recipient, no prefix or header, null `bbc_email`, no code line) is covered by unit tests only: `marlo.production` stayed false.
 
+### CHG-OTP-LOGIN-001-T20 — Branded format for the code email (FN-017, UI-005, AC-20)
+
+- **Status:** done [x] · **Size:** S · **Depends on:** T19 · **Module:** marlo-web, plus `probes/`
+- **Requirements:** FN-017 and UI-005 (amended 2026-10-15), AC-20 (new), FN-018, OPS-005, SEC-001, SEC-006 (unchanged)
+- **Design:** DD-7 amendment "branded format, T20"; requirements Decision Log 2026-10-15 (branded format). Reference implementation: A2-2484, `utils/EmailLayout.java`, `utils/EmailPlainText.java`, `SendEmails` role emails, the `email.layout` and `email.role.*` keys of `custom/aicrra.properties`, and `reports/ai-context/role-assignment-email-catalog.md`.
+- **Files:**
+  - `utils/OtpMailSender.java`: wrap the HTML body with `EmailLayout.wrap(texts, assetsUrl, body)`.
+  - `action/home/OtpRequestCodeAction.java`, or a small helper: give the sender a text provider for the selected unit, plus the assets URL (`getBaseUrlCdn()`).
+  - `global.properties`, and `custom/aicrra.properties`, `custom/aiccra3.properties`, `custom/test.properties`: per-unit OTP email copy in the role-email style.
+  - The tests.
+  - `probes/ac-probe.sh` only if a check reads the HTML layout.
+- **Scope:**
+  - **Text provider for the selected unit:**
+    - Read the unit's `crp_custom_file` parameter, the same one `InternationalitazionFileInterceptor` uses.
+    - Resolve the email keys from `custom/<file>.properties` first, falling back to `global.properties`.
+    - Build the provider for this email only. Do not mutate the shared `LocalizedTextProvider`, the request's provider or the session: they are shared across requests and users.
+    - Resolve it before the hand-off, so the read adds no work to the eligible path that the ineligible path does not also do (SEC-006). The simplest way is to resolve it for every request that reaches the send decision, or after the response. If either is impossible, state the residual timing difference in the report.
+  - **Shell:** wrap only the HTML part, with `EmailLayout.wrap`. The text part keeps its own key.
+    - The non-production header (T19) goes before the wrapped HTML, as `SendMailS` does.
+    - The `email_logs` row stores the wrapped HTML as sent to the user, without the test header.
+  - **Copy for units with a shell:** override `login.otp.email.subject` and `login.otp.email.html` in `aicrra`, `aiccra3` and `test`, in the role-email style:
+    - subject with the unit's own role-email prefix: `[AICCRA] Your MARLO sign-in code` for `aicrra` and `aiccra3`, `[MARLO] …` for `test`;
+    - `<p>` paragraphs, the code prominent;
+    - no support line or do-not-reply text, which the shell's footer carries.
+
+    Keep `{0}`–`{3}` argument semantics. Keep every FN-017 element across body plus shell. Double every apostrophe (MessageFormat). Units without a shell keep the global copy unchanged.
+  - **Images:** `{1}` is the CDN or base URL, as `EmailLayout.wrap(BaseAction, …)` uses. No link carries the code.
+- **Out of scope:** `EmailLayout`, `EmailPlainText` and `SendMailS` themselves; the page copy; other emails.
+- **Tests:**
+  - AICCRA-like provider with a shell: the HTML part is the shell around the body with the code and has the `{1}` URL; the text part has the code.
+  - Global-only provider: the HTML part equals the bare body (shell `{0}`).
+  - The per-unit provider falls back to global for keys the unit does not define.
+  - The shared provider and the session are untouched.
+  - Non-production: the header precedes the wrapped HTML, and the row stores the wrapped HTML without the header.
+  - The existing T09, T18 and T19 assertions still pass.
+- **Verification:**
+  - compile gate;
+  - Checkstyle delta;
+  - targeted tests and the full suite with `-am`;
+  - i18n gate on every added `.properties` line;
+  - a local visual check: send one AICCRA code email to the local sink, render its HTML part in the browser, and record a screenshot (not committed) plus the structure in the report;
+  - afterwards, clean up the environment as on 2026-10-15.
+- **Falsifier:**
+  - skip the wrap: the shell test goes red;
+  - resolve with the global provider only: the AICCRA test goes red.
+- **Disqualifier:**
+  - mutating a shared text provider or the session;
+  - a live run against `aiccradb_actsave` or `aiccradb1`–`4`;
+  - mail to a real relay.
+- **Review:** `full`. Pre-auth i18n resolution, SEC-006 timing, the email the user receives.
+- **Verification notes (Implementer, 2026-10-15; the Leader sets the status):**
+  - Files: new `utils/UnitTextProvider.java` (a `TextProvider` over the unit's `custom/<crp_custom_file>` bundle, then `global`, formatted with `MessageFormat`; the file name must match `[A-Za-z0-9_-]{1,64}`); `OtpMailSender.sendAsync` takes the assets URL and wraps the HTML part with `EmailLayout.wrap`; `OtpRequestCodeAction` gets a `CustomParameterManager`, reads `crp_custom_file` and builds the provider; `login.otp.email.subject` and `login.otp.email.html` in `aicrra`, `aiccra3` and `test`. `test` uses the `[MARLO]` subject prefix, like its own role emails; the other two use `[AICCRA]`.
+  - Clean compile 2415 / 1064 / 78 files, BUILD SUCCESS. Checkstyle on the 8 changed Java files: HEAD 0, working tree 0. i18n gate: no FIX finding, no apostrophe in the added lines.
+  - Targeted `OtpMailSenderTest,OtpRequestCodeActionTest,UnitTextProviderTest,OtpStrutsPackageTest,OtpVerifyCodeActionTest,EmailLayoutTest`: 156 tests, 0 failures. Full `mvn -q -o -pl marlo-web -am test`: 811 tests, 0 failures (baseline 792, plus 19 new).
+  - Falsifiers, each red then restored: wrap skipped (4 failures); request provider handed over instead of the unit's (1 failure, 2 errors); custom file read on the eligible path only (2); row stores the header (2); custom file ignored (8). The new tests cannot run before the change (the signatures differ), so the falsifiers are the red evidence.
+  - SEC-006: the `crp_custom_file` read and the bundle load happen once for every request that reaches the eligibility check, eligible or not, before the challenge row, and a failure answers with the request's own provider without changing the answer. The one residual difference is the `MessageFormat` rendering of the body and the shell, which runs on the request thread for an eligible account only, like the body rendering that T09 already did there.
+  - Live run on a fresh `aiccradb_otp_probe` (AICCRA, `crp_custom_file = aicrra`, `marlo.production=false`, sink mailbox `support.probe@sink.test`): `nonprod` 8 checks, 0 failed. The sink's HTML part is the header, then the AICCRA shell: logo and lockup, grey card with the title, the code, the expiry, once, do not share and ignore lines, the hills band, the footer note with the automated-notification line, and the `mailto:` support link. The images load from the instance base URL. The `email_logs` row holds the wrapped HTML without the header. A screenshot was taken and not committed.
+  - Not re-run for T20: the other probe stages. `ac-probe.sh` needed no change: the checks that read the HTML part look for the code between tags or compare it with the row, and both still hold.
+  - Cleanup as on 2026-10-15: the application, the sink and the page server stopped, the copy dropped, the scratch credentials, mbox and logs deleted. `marlo-dev.properties` had the same SHA-256 before and after. `aiccradb_actsave` and `aiccradb1`-`4` were never written to.
+
 ---
 
 ## 4. Dependency Graph
@@ -645,6 +705,7 @@ T12 + T13 ── T14 UI ──────┴── T15 end-to-end ── T16 ru
 T14 ── T17 step-3 method choice (added 2026-10-14)
 T09 + T10 ── T18 email_logs row for support (added 2026-10-14)
 T09 + T18 ── T19 non-production recipient rule (added 2026-10-15)
+T19 ── T20 branded email format (added 2026-10-15)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.
@@ -671,7 +732,7 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 | FN-014 expired, superseded, consumed or exhausted refused even with the row present | T11 · T15 AC-8 |
 | FN-015 eligibility re-check after consume | T06 · T11 · T15 AC-9 |
 | FN-016 no pending → mismatch; after neutral request → same as eligible | T11 |
-| FN-017 email content, no code link | T09 |
+| FN-017 email content, no code link; branded shell per unit | T09 · T20 AC-20 |
 | FN-018 delivered with notifications off; outside production only to the support mailbox, prefixed, fail closed (OQ-5 resolved) | T09 · T15 AC-15 · T19 AC-19 |
 | FN-019 password and Cognito unchanged | T07 · T08 · T14 · T15 AC-1 |
 | SEC-001 scenario "Code never persisted" | T03 · T09 · T15 AC-11 · T19 AC-11 |
@@ -736,7 +797,7 @@ Password and Cognito logins are unaffected at every level.
 
 ## 9. Definition of Done
 
-- [ ] T01–T19 done, each with its verification notes.
+- [ ] T01–T20 done, each with its verification notes.
 - [ ] Every AC in `requirements.md` §7 recorded `PASS` in `probes/README.md`. A `NOT VERIFIED` is allowed only for an accepted gap named in requirements §6.
 - [ ] Compile and Checkstyle gates green (zero new violations against HEAD); unit suite green with `-am`.
 - [ ] Every UNVERIFIED premise either settled, or listed as a go-live blocker in `runbook.md`.

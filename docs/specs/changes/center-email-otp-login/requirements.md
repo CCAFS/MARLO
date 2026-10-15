@@ -181,7 +181,7 @@ Current behavior this spec builds on:
 
 #### Requirement: Email content
 
-- **CHG-OTP-LOGIN-001-FN-017** — The email MUST state the application name, the code, the 5-minute expiry, that it works once, that it must not be shared, that it can be ignored if not requested, and the support contact. It MUST NOT contain a link that carries the code (guide §19).
+- **CHG-OTP-LOGIN-001-FN-017** — The email MUST state the application name, the code, the 5-minute expiry, that it works once, that it must not be shared, that it can be ignored if not requested, and the support contact. It MUST NOT contain a link that carries the code (guide §19). **Format (amended 2026-10-15, T20):** the HTML part MUST be wrapped by `EmailLayout` in the selected Global Unit's `email.layout` shell, the format MARLO's role and welcome emails use since A2-2484. The texts MUST be resolved with that Global Unit's custom i18n file (`crp_custom_file`), although no Global Unit is in the session before sign-in. A Global Unit without a shell (base `email.layout={0}`) gets the body as it is. A unit whose shell carries the support contact and the automated-notification notice MAY drop them from its body through its own keys, as the role emails do; FN-017 holds over body plus shell.
 - **CHG-OTP-LOGIN-001-FN-018** — The code email MUST be delivered even when the Global Unit's email notifications are disabled. Outside production it MUST follow the same rule as every other MARLO email (OQ-5, resolved 2026-10-15):
   - "outside production" means `APConfig.isProduction()` is false, which includes an unset `marlo.production`;
   - the only recipient is the support mailbox `email.notification`, never the submitted address. If that mailbox is blank or not a single valid address, the email is not sent, counts as failed, and is never sent to the submitted address instead;
@@ -260,7 +260,7 @@ Current behavior this spec builds on:
 
   Status and errors MUST be announced through an `aria-live` region, with `role="alert"` for errors.
 - **CHG-OTP-LOGIN-001-UI-004** — Buttons MUST be disabled while their request is in flight. A double click MUST send one request.
-- **CHG-OTP-LOGIN-001-UI-005** — All user-facing text, in the page and in the email, MUST come from i18n keys in `global.properties`.
+- **CHG-OTP-LOGIN-001-UI-005** — All user-facing text, in the page and in the email, MUST come from i18n keys in `global.properties`. A Global Unit's custom file MAY override the email keys, as it does for every MARLO email (amended 2026-10-15, T20).
 - **CHG-OTP-LOGIN-001-UI-006** — When the authentication step for G offers both the code and the password, it MUST first ask how the user wants to sign in (added 2026-10-14, Decision Log):
   - one control per method: "Email me a sign-in code" (primary) and "Continue with your password";
   - choosing a method reveals only that method's panel; each panel offers "Choose another way to sign in", which returns to the choice;
@@ -346,6 +346,7 @@ Current behavior this spec builds on:
 | AC-17 | DA-001, DA-002 | The migration applies twice cleanly on a throwaway copy and on a database without Global Units 45/47 |
 | AC-18 | OPS-005 | After a delivered and a failed code email, each left one `email_logs` row with `source_action = /otpRequestCode`, the HTML body with its code in `message` (amended 2026-10-15), `succes_email` 1 and 0, and the code in no other column; an ineligible request left none; the failed row is listed by System Admin → Emails but resending it, by id or in bulk, sends nothing |
 | AC-19 | FN-018 | Given `marlo.production=false`, when an eligible user requests a code, then the sink receives exactly one email, addressed only to `email.notification`, with the `(TESTING ENVIRONMENT) ` subject prefix, a header naming the submitted address, and a code that signs the user in; the submitted address receives nothing. Its `email_logs` row holds the submitted address in `to_email`, the support mailbox in `bbc_email` and the subject without the prefix. With `email.notification` blank, nothing is sent and the delivery line says `email_failed` |
+| AC-20 | FN-017, UI-005 | Given AICCRA (whose custom file defines `email.layout`), when a code email is sent, then its HTML part is the AICCRA shell (MARLO logo, body card, band, footer) around a body with the code, resolved from AICCRA's custom keys. Its text part still carries the code and the expiry, and the images point at the instance's CDN or base URL. Given a unit without a shell, the HTML is the bare body as before |
 
 ---
 
@@ -427,3 +428,8 @@ Current behavior this spec builds on:
   - Rationale: testers and developers on test and local environments can read the code without access to the support mailbox, while production logs stay free of codes and addresses.
   - **This deviates from guide §3.11 ("Secrets never in logs", REQUIRED BEHAVIOR)**, outside production only. Accepted risk: anyone who reads a non-production log can sign in as that test user while the code is live (at most 5 minutes).
   - The check is the same `isProduction()` read that routes the email (FN-018), so a production instance with `marlo.production` unset would both redirect codes to support and log them. The rollout checklist requires `marlo.production=true` in production. Task T19.
+- 2026-10-15 — The code email uses MARLO's branded email format (user decision: "aplica ese formato a este correo"). FN-017 and UI-005 are amended and AC-20 is added. The format is the A2-2484 one: `EmailLayout.wrap` with the Global Unit's `email.layout` shell, and per-unit copy in the custom i18n file.
+  - Before sign-in the session holds no Global Unit, so the request action's text provider resolves only `global.properties`, where the shell is `{0}`. The code email therefore resolves its texts with the selected unit's custom file. Every other MARLO email gets that file from the logged session.
+  - The body keeps every FN-017 element; a unit's own keys may move the support contact and the do-not-reply notice to its shell, as the role emails do.
+  - Unchanged: FN-018 (non-production recipient, prefix, header), OPS-005 (the row stores the HTML as sent to the user, now with the shell), and the text part. Task T20.
+

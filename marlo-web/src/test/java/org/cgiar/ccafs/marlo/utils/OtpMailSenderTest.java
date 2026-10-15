@@ -46,6 +46,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 import java.util.function.IntSupplier;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -90,6 +91,7 @@ public class OtpMailSenderTest {
   private static final String PREFIX = "(TESTING ENVIRONMENT) ";
   private static final String SEPARATOR = "----------------------------------------------------";
   private static final String SUBJECT = "Your MARLO sign-in code";
+  private static final String ASSETS_URL = "https://cdn.test";
   private static final String SOURCE =
     "src/main/java/org/cgiar/ccafs/marlo/utils/OtpMailSender.java";
 
@@ -324,7 +326,7 @@ public class OtpMailSenderTest {
   }
 
   private void send(String recipient) {
-    this.sender.sendAsync(texts(global), recipient, CODE, "CCAFS", UNIT);
+    this.sender.sendAsync(texts(global), ASSETS_URL, recipient, CODE, "CCAFS", UNIT);
   }
 
   private List<EmailLog> awaitRows(int count) throws InterruptedException {
@@ -526,7 +528,8 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(override("footer.contactEmail", "a<b>&\"c''")), RECIPIENT, CODE, "CCAFS", UNIT);
+    this.sender.sendAsync(texts(override("footer.contactEmail", "a<b>&\"c''")), ASSETS_URL, RECIPIENT, CODE, "CCAFS",
+      UNIT);
 
     assertEquals(1, this.awaitDeliveryLines(1).size());
     String html = htmlOf(transport.delivered.get(0));
@@ -540,12 +543,12 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), RECIPIENT, CODE, "CCAFS",
-      UNIT);
+    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), ASSETS_URL, RECIPIENT, CODE,
+      "CCAFS", UNIT);
     Properties noKey = new Properties();
     noKey.putAll(global);
     noKey.remove("login.otp.email.subject");
-    this.sender.sendAsync(texts(noKey), RECIPIENT, CODE, "CCAFS", UNIT);
+    this.sender.sendAsync(texts(noKey), ASSETS_URL, RECIPIENT, CODE, "CCAFS", UNIT);
 
     List<ILoggingEvent> lines = this.awaitDeliveryLines(2);
     assertEquals(2, lines.size());
@@ -583,8 +586,8 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(global), RECIPIENT, null, "CCAFS", UNIT);
-    this.sender.sendAsync(texts(global), RECIPIENT, "  ", "CCAFS", UNIT);
+    this.sender.sendAsync(texts(global), ASSETS_URL, RECIPIENT, null, "CCAFS", UNIT);
+    this.sender.sendAsync(texts(global), ASSETS_URL, RECIPIENT, "  ", "CCAFS", UNIT);
 
     assertEquals(2, this.awaitDeliveryLines(2).size());
     assertEquals(0, transport.threads.size());
@@ -599,7 +602,7 @@ public class OtpMailSenderTest {
       StubTransport transport = new StubTransport();
       OtpMailSender local = new OtpMailSender(new TestConfig(c[0]), transport, this.logs.manager());
       try {
-        local.sendAsync(texts(global), RECIPIENT, CODE, "CCAFS", UNIT);
+        local.sendAsync(texts(global), ASSETS_URL, RECIPIENT, CODE, "CCAFS", UNIT);
         long deadline = System.currentTimeMillis() + 10000L;
         while (transport.delivered.isEmpty() && System.currentTimeMillis() < deadline) {
           Thread.sleep(20L);
@@ -837,9 +840,9 @@ public class OtpMailSenderTest {
 
     this.send("a@b.org,c@d.org");
     this.send(null);
-    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), RECIPIENT, CODE, "CCAFS",
-      UNIT);
-    this.sender.sendAsync(texts(global), RECIPIENT, " ", "CCAFS", UNIT);
+    this.sender.sendAsync(texts(override("login.otp.email.html", "<p>{0} {1} {9}</p>")), ASSETS_URL, RECIPIENT, CODE,
+      "CCAFS", UNIT);
+    this.sender.sendAsync(texts(global), ASSETS_URL, RECIPIENT, " ", "CCAFS", UNIT);
 
     assertEquals(4, this.awaitDeliveryLines(4).size());
     Thread.sleep(200L);
@@ -919,7 +922,7 @@ public class OtpMailSenderTest {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
 
-    this.sender.sendAsync(texts(global), RECIPIENT, CODE, "CCAFS", null);
+    this.sender.sendAsync(texts(global), ASSETS_URL, RECIPIENT, CODE, "CCAFS", null);
 
     List<EmailLog> rows = this.awaitRows(1);
     assertNull(rows.get(0).getGlobalUnitId());
@@ -1237,5 +1240,122 @@ public class OtpMailSenderTest {
     this.send(RECIPIENT);
     assertEquals(3, this.awaitRows(3).size());
     assertEquals(1, this.codeLines().size());
+  }
+
+  // ---- FN-017, UI-005, AC-20 (T20): the branded format ---------------------------------------------------
+
+  /** The key arguments of the body, as the sender passes them, for a unit whose support contact is the default. */
+  private static String bareBody() {
+    return texts(global).getText("login.otp.email.html",
+      new String[] {"MARLO", CODE, "5", "MARLOSupport@cgiar.org"});
+  }
+
+  private static final Pattern LINK_WITH_CODE = Pattern.compile("(href|src)=\"[^\"]*" + CODE);
+
+  @Test
+  public void aUnitWithAShellSendsTheHtmlPartInsideItAndTheTextPartWithoutIt() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+
+    this.sender.sendAsync(UnitTextProvider.forCustomFile("aicrra"), ASSETS_URL, RECIPIENT, CODE, "AICCRA", UNIT);
+
+    assertEquals(1, this.awaitDeliveryLines(1).size());
+    MimeMessage message = transport.delivered.get(0);
+    String html = htmlOf(message);
+    assertTrue(html, html.startsWith("<table role=\"presentation\""));
+    assertTrue("the logo comes from the assets URL", html.contains("src=\"" + ASSETS_URL
+      + "/global/images/email/marlo-logo.png\""));
+    assertTrue("the band comes from the assets URL", html.contains("src=\"" + ASSETS_URL
+      + "/global/images/email/email-band.png\""));
+    assertTrue("the body with the code sits inside the shell", html.contains("sign-in code</p>")
+      && html.contains(">" + CODE + "</p>"));
+    assertEquals("[AICCRA] Your MARLO sign-in code", message.getSubject());
+    String plain = textOf(message);
+    assertFalse("the text part is not wrapped", plain.contains("<"));
+    assertTrue(plain, plain.contains(CODE));
+    assertTrue(plain, plain.contains("expires in 5 minutes"));
+    assertFalse("no placeholder is left unfilled", html.contains("{") || html.contains("}"));
+  }
+
+  @Test
+  public void everyShellUnitStatesEveryRequiredElementAcrossBodyAndShell() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    String[] files = {"aicrra", "aiccra3", "test"};
+
+    for (String file : files) {
+      this.sender.sendAsync(UnitTextProvider.forCustomFile(file), ASSETS_URL, RECIPIENT, CODE, "UNIT", UNIT);
+    }
+
+    assertEquals(files.length, this.awaitDeliveryLines(files.length).size());
+    assertEquals(files.length, transport.delivered.size());
+    for (MimeMessage message : transport.delivered) {
+      String html = htmlOf(message);
+      for (String required : new String[] {"MARLO", CODE, "expires in 5 minutes", "used only once",
+        "Do not share this code with anyone.", "If you did not request this code, you can ignore this email.",
+        "MARLOSupport@cgiar.org", "automated notification"}) {
+        assertTrue("a shell unit is missing <" + required + ">: " + html, html.contains(required));
+      }
+      assertTrue("branded: " + html, html.startsWith("<table role=\"presentation\""));
+      assertFalse("no link carries the code", LINK_WITH_CODE.matcher(html).find());
+    }
+  }
+
+  @Test
+  public void aUnitWithoutAShellSendsTheBareBodyAsBefore() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    TextProvider[] providers = {texts(global), UnitTextProvider.forCustomFile(null),
+      UnitTextProvider.forCustomFile("noSuchFile")};
+
+    for (TextProvider provider : providers) {
+      this.sender.sendAsync(provider, ASSETS_URL, RECIPIENT, CODE, "CCAFS", UNIT);
+    }
+
+    assertEquals(providers.length, this.awaitDeliveryLines(providers.length).size());
+    for (MimeMessage message : transport.delivered) {
+      String html = htmlOf(message);
+      assertEquals("the HTML part is the bare body", bareBody(), html);
+      assertFalse(html.contains("<table"));
+    }
+  }
+
+  @Test
+  public void theShellWrapsExactlyTheBodyWithTheAssetsUrl() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+
+    this.sender.sendAsync(texts(override("email.layout", "[[{0}|{1}]]")), ASSETS_URL, RECIPIENT, CODE, "CCAFS", UNIT);
+
+    assertEquals(1, this.awaitDeliveryLines(1).size());
+    assertEquals("[[" + bareBody() + "|" + ASSETS_URL + "]]", htmlOf(transport.delivered.get(0)));
+    assertEquals("the text part is never wrapped", textOf(transport.delivered.get(0)).contains("[["), false);
+    List<EmailLog> rows = this.awaitRows(1);
+    assertEquals("the row stores the wrapped HTML as sent", "[[" + bareBody() + "|" + ASSETS_URL + "]]",
+      rows.get(0).getMessage());
+  }
+
+  @Test
+  public void outsideProductionTheHeaderPrecedesTheWrappedHtmlAndTheRowStoresItWithoutTheHeader() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    this.config.production = true;
+    this.sender.sendAsync(UnitTextProvider.forCustomFile("aicrra"), ASSETS_URL, RECIPIENT, CODE, "AICCRA", UNIT);
+    List<EmailLog> first = this.awaitRows(1);
+    String productionBody = first.get(0).getMessage();
+
+    this.config.production = false;
+    this.sender.sendAsync(UnitTextProvider.forCustomFile("aicrra"), ASSETS_URL, RECIPIENT, CODE, "AICCRA", UNIT);
+
+    List<EmailLog> rows = this.awaitRows(2);
+    String lead = header(RECIPIENT) + "<br>" + SEPARATOR + "<br><br>";
+    String sent = htmlOf(transport.delivered.get(1));
+    assertTrue(sent, sent.startsWith(lead + "<table role=\"presentation\""));
+    assertEquals("the sent HTML is the header plus the wrapped HTML", lead + productionBody, sent);
+    assertTrue(productionBody.startsWith("<table role=\"presentation\""));
+    assertEquals("the row holds the wrapped HTML, without the header", productionBody, rows.get(1).getMessage());
+    assertFalse(rows.get(1).getMessage().contains(SEPARATOR));
+    assertEquals(PREFIX + "[AICCRA] Your MARLO sign-in code", transport.delivered.get(1).getSubject());
+    assertEquals("[AICCRA] Your MARLO sign-in code", rows.get(1).getSubject());
   }
 }

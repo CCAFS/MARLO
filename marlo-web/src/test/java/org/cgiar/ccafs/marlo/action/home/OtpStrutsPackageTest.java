@@ -225,7 +225,8 @@ public class OtpStrutsPackageTest extends XWorkJUnit4TestCase {
       (ParameterManager) unusable(ParameterManager.class));
     return new OtpRequestCodeAction(config, keys,
       new OtpRateLimiter(keys, (OtpRateLimitManager) unusable(OtpRateLimitManager.class)), new OtpCodes(keys),
-      eligibility, challenges, units, (texts, recipient, code, acronym, unitId) -> {
+      eligibility, challenges, units, (CustomParameterManager) unusable(CustomParameterManager.class),
+      (texts, assetsUrl, recipient, code, acronym, unitId) -> {
         throw new AssertionError("an unconfigured request must not send mail");
       }, new ClientIpResolver(""), Clock.systemUTC());
   }
@@ -454,8 +455,8 @@ public class OtpStrutsPackageTest extends XWorkJUnit4TestCase {
     private static final long serialVersionUID = 1L;
 
     ConversionFailingRequestAction() {
-      super(unconfigured(), new OtpKeys(unconfigured()), null, null, null, null, null, null, new ClientIpResolver(""),
-        Clock.systemUTC());
+      super(unconfigured(), new OtpKeys(unconfigured()), null, null, null, null, null, null, null,
+        new ClientIpResolver(""), Clock.systemUTC());
     }
 
     @Override

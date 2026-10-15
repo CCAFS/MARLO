@@ -1422,3 +1422,25 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
 - **Attempt 2, Reviewer (T3):** **PASS**. Its two Javadoc advisories (the `recipient` parameter and the no-send list) were applied by the Leader, comment-only.
 - **Environment state after the task:** nothing running; `aiccradb_otp_probe` dropped; `aiccradb_actsave` read only; scratch credentials deleted.
 
+---
+
+## CHG-OTP-LOGIN-001-T20 — Branded format for the code email (2026-10-15)
+
+- **Origin:** the user asked to apply the email format implemented on `dev` to the code email. That format is A2-2484, already in this branch through the staging merge. It provides `EmailLayout.wrap` with the unit's `email.layout` shell, and per-unit copy.
+- **Leader finding:** before sign-in the session holds no Global Unit, so the request's provider resolves only `global.properties`, where the shell is `{0}`. Applied as-is, the format would have been a no-op.
+- **Leader spec edits:** FN-017 and UI-005 amended, AC-20 added, a Decision Log entry, a DD-7 amendment and the T20 block. After the Implementer's report, the `test` unit's subject prefix was set to its own `[MARLO]`.
+- **Implementer (T2), attempt 1:**
+  - **New `UnitTextProvider`:** the selected unit's `custom/<crp_custom_file>` over `global`, formatted with `MessageFormat`, with a validated file name. It touches no shared provider and no session.
+  - **`OtpRequestCodeAction`:** it reads the custom file for every request that reaches the send decision, before the issue (SEC-006). A failed read falls back to the request provider.
+  - **`OtpMailSender`:** it wraps only the HTML part, puts the non-production header before the wrap, and stores the wrapped HTML without the header in the row.
+  - **Copy:** per-unit copy in `aicrra`, `aiccra3` and `test`.
+- **Evidence:**
+  - **Implementer:** clean compile 2415/1064/78; Checkstyle delta 0; i18n gate clean; full suite 811 tests, 0 failures; five falsifiers red.
+  - **Visual check:** an AICCRA code email on a throwaway copy with the local sink, rendered and screenshotted (scratchpad, not committed); `ac-probe.sh nonprod` 8/8. Environment cleaned afterwards.
+  - **Leader re-run (non-author):** clean compile; 161 tests in seven classes green; private-data grep clean; screenshot viewed.
+- **Attempt 1, Reviewer (T3):** **PASS**. Advisories not applied:
+  - import order and the placement of a constant in `OtpMailSenderTest`;
+  - the shell's hard-coded support address against `footer.contactEmail`, identical today;
+  - no explicit test that the shared `LocalizedTextProvider` is untouched. It holds by construction, since the class has no reference to it.
+- **Environment state after the task:** nothing running; copy dropped; `aiccradb_actsave` not written.
+

@@ -17,8 +17,10 @@ package org.cgiar.ccafs.marlo.action.home;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpChallengeManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.security.ReturnUrls;
 import org.cgiar.ccafs.marlo.security.otp.ClientIpResolver;
@@ -33,6 +35,7 @@ import org.cgiar.ccafs.marlo.security.otp.OtpRateLimiter;
 import org.cgiar.ccafs.marlo.security.otp.OtpRateLimiter.Decision;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.OtpMailSender;
+import org.cgiar.ccafs.marlo.utils.UnitTextProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -81,6 +84,8 @@ import org.slf4j.LoggerFactory;
  * <li>{@link OtpEligibility} decides eligibility. A failure of the predicate is not an answer of its own: whether it
  * throws can depend on the account, so it is treated as "not eligible" and the neutral {@code sent} is answered
  * (SEC-006);</li>
+ * <li>the text provider of the unit's custom i18n file is built for <b>every</b> request that gets this far, eligible
+ * or not, so the read of {@code crp_custom_file} adds work to neither path alone (SEC-006, T20);</li>
  * <li>a challenge row is issued for <b>every</b> account that reaches this step, with a fresh random code, and
  * supersedes the email's open rows in the same transaction (FN-007, DD-5). Only an eligible account's code is
  * handed to the mailer, and only to the normalised email held in the {@link OtpPending}; an ineligible account's
@@ -101,7 +106,8 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   @FunctionalInterface
   interface CodeSender {
 
-    void send(TextProvider texts, String recipient, String code, String guAcronym, Long globalUnitId);
+    void send(TextProvider texts, String assetsUrl, String recipient, String code, String guAcronym,
+      Long globalUnitId);
   }
 
   private static final long serialVersionUID = 1L;
@@ -144,6 +150,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   private final OtpEligibility eligibility;
   private final OtpChallengeManager challengeManager;
   private final GlobalUnitManager globalUnitManager;
+  private final CustomParameterManager customParameterManager;
   private final CodeSender codeSender;
   private final ClientIpResolver ipResolver;
   private final Clock clock;
@@ -172,14 +179,14 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   @Inject
   public OtpRequestCodeAction(APConfig config, OtpKeys keys, OtpRateLimiter limiter, OtpCodes codes,
     OtpEligibility eligibility, OtpChallengeManager challengeManager, GlobalUnitManager globalUnitManager,
-    OtpMailSender mailSender) {
-    this(config, keys, limiter, codes, eligibility, challengeManager, globalUnitManager, mailSender::sendAsync,
-      new ClientIpResolver(config), Clock.systemUTC());
+    CustomParameterManager customParameterManager, OtpMailSender mailSender) {
+    this(config, keys, limiter, codes, eligibility, challengeManager, globalUnitManager, customParameterManager,
+      mailSender::sendAsync, new ClientIpResolver(config), Clock.systemUTC());
   }
 
   OtpRequestCodeAction(APConfig config, OtpKeys keys, OtpRateLimiter limiter, OtpCodes codes,
     OtpEligibility eligibility, OtpChallengeManager challengeManager, GlobalUnitManager globalUnitManager,
-    CodeSender codeSender, ClientIpResolver ipResolver, Clock clock) {
+    CustomParameterManager customParameterManager, CodeSender codeSender, ClientIpResolver ipResolver, Clock clock) {
     super(config);
     this.keys = keys;
     this.limiter = limiter;
@@ -187,6 +194,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     this.eligibility = eligibility;
     this.challengeManager = challengeManager;
     this.globalUnitManager = globalUnitManager;
+    this.customParameterManager = customParameterManager;
     this.codeSender = codeSender;
     this.ipResolver = ipResolver;
     this.clock = clock;
@@ -379,6 +387,8 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     // Step 6. The shape check above proved the email has a domain, so its normalised form is a real address.
     String normalisedEmail = OtpDomainPolicy.normaliseEmail(this.email);
     boolean eligible = this.isEligible(unit);
+    // Built for every request that gets here, so the read of the unit's custom file is not eligible-only (SEC-006).
+    TextProvider texts = this.unitTexts(unit);
 
     // Step 7. A row for every account; the code is real, and it is mailed only for an eligible one.
     String nonce = this.codes.newNonce();
@@ -395,7 +405,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
       return this.refuse(STATUS_UNAVAILABLE, RequestOutcome.INTERNAL_ERROR);
     }
     if (eligible) {
-      this.handOff(pending.getEmail(), code);
+      this.handOff(texts, pending.getEmail(), code);
     }
 
     // Step 8.
@@ -419,14 +429,33 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   }
 
   /**
+   * The text provider of the code email: the unit's custom i18n file over {@code global.properties}, built for this
+   * email only (FN-017, UI-005, T20). No Global Unit is in the session before sign-in, so the file is read from the
+   * unit's own {@code crp_custom_file} parameter, the value {@code InternationalitazionFileInterceptor} reads from the
+   * session after sign-in. The request's own provider, the shared Struts provider and the session are not touched.
+   * A failure is logged and answered with the request's own provider, which resolves {@code global.properties}: the
+   * email is then sent unbranded, and the answer and the timing do not change (SEC-006).
+   */
+  private TextProvider unitTexts(Long unit) {
+    try {
+      CustomParameter parameter = this.customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CUSTOM_FILE, unit.longValue());
+      return UnitTextProvider.forCustomFile(parameter == null ? null : parameter.getValue());
+    } catch (RuntimeException e) {
+      logFault("texts", e);
+      return this;
+    }
+  }
+
+  /**
    * Hands the code to the mailer. The recipient is the normalised email held in the pending challenge, never the raw
    * request parameter. {@code sendAsync} does not throw by contract, but an {@code Error} from it must not turn the
    * neutral answer into a server error, and a failure here reveals nothing: the answer was already {@code sent} for
    * every account.
    */
-  private void handOff(String recipient, String code) {
+  private void handOff(TextProvider texts, String recipient, String code) {
     try {
-      this.codeSender.send(this, recipient, code, this.acronymForLog(), this.unitId);
+      this.codeSender.send(texts, this.getBaseUrlCdn(), recipient, code, this.acronymForLog(), this.unitId);
     } catch (RuntimeException | Error e) {
       logFault("mail", e);
     }

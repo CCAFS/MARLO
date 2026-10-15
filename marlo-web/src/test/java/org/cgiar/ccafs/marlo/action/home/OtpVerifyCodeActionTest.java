@@ -1465,7 +1465,8 @@ public class OtpVerifyCodeActionTest {
         this.crpUserManager(), challengeManager, this.customParameterManager(), this.parameterManager());
       OtpRequestCodeAction action = new OtpRequestCodeAction(config, keys,
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
-        globalUnitManager, (texts, recipient, code, guAcronym, unitId) -> this.mails.add(new Mail(recipient, code)),
+        globalUnitManager, this.customParameterManager(),
+        (texts, assetsUrl, recipient, code, guAcronym, unitId) -> this.mails.add(new Mail(recipient, code)),
         new ClientIpResolver(""), CLOCK);
       action.setServletRequest(new FakeRequest(CLIENT_IP).proxy());
       action.setEmail(email);
