@@ -61,7 +61,7 @@ Behaviour of the screen, observed in the walk (Part C):
 **Rollback, cheapest first** (design section 14). Only the first is "next request":
 
 1. Turn `system_otp_login_active` off in the admin UI: live, per unit (T21).
-2. Unset `OTP_HMAC_SECRET`: the secret is read **once at start** (`OtpKeys`), so this needs a restart of every instance.
+2. Blank `otp.hmac.secret` (and unset `OTP_HMAC_SECRET` if the environment uses it): the secret is read **once at start** (`OtpKeys`), so this needs a restart of every instance.
 3. Revert the deploy.
 4. Drop the three `otp_*` tables. This is destructive and the last resort.
 
@@ -70,9 +70,9 @@ Behaviour of the screen, observed in the walk (Part C):
 | Item | Value |
 |---|---|
 | Generate | `openssl rand -base64 48` (standard base64 that decodes to at least 32 bytes; base64url or a shorter value is refused). Store it as **a single line, no trailing newline**: the decoder refuses whitespace and the feature stays off |
-| Where | Environment variable `OTP_HMAC_SECRET`, read through Spring's system-environment source into `otp.hmac.secret` (P-18, proven locally by the walk and by T15: environment-only, no file) |
+| Where | The property `otp.hmac.secret` in the per-environment `marlo-<profile>.properties` (gitignored), like the other credentials. The environment variable `OTP_HMAC_SECRET` also works and **takes precedence** (Spring reads system properties, then the environment, then the file). Use the same route the environment already uses for `cognito.client.secret` (amended 2026-10-16; P-18) |
 | Without it, or too short | The feature is **off**. `OtpKeys` logs **one WARN**, `auth.otp.keys outcome=unconfigured: ... <reason>`, **without the value, its length or its decoded length**. Startup is not affected. Every request-code call answers `domainNotEnabled` |
-| Storage | Never in a tracked file. Never in `marlo-test.properties`. Keep it in the secret store of the environment |
+| Storage | Never in a tracked file. The `marlo-test.properties` template carries the key **empty**. A missing key never stops the application: `${otp.hmac.secret:}` defaults to empty and the feature stays off |
 | Production | **Do not set the key in production before the release is deployed** (it is inert but must not be staged early) |
 | Rotation | Generate a new value, set it on **every** instance, restart them. It **invalidates every open code** (the MAC keys change), so users mid-sign-in must request a new one. A code issued before the change fails the check under the new key: the user sees `mismatch` ("Not correct"), each try uses up an attempt, and the third ends in `exhausted`. If the instance that held the session restarted, the pending challenge is gone and the user also sees `mismatch`. Either way the user must request a new code. Codes live 5 minutes, so rotate when traffic is low |
 | Per-environment check | After start, confirm there is **no** `auth.otp.keys outcome=unconfigured` line |
@@ -239,7 +239,7 @@ to the row, with its source. Nothing here has been settled by infra yet.
 | **P-4** | Production routes consecutive requests of a browser to the instance that holds its Shiro session. If false, verify finds no pending challenge (`mismatch` on a correct code) | Kenji, with infra | **Go-live** | Open. Code part confirmed in the spec (`ShiroSpringStartupListener.java:51`); the load-balancer stickiness is not. Cognito already relies on the same affinity |
 | **P-6** | A reverse proxy or load balancer fronts Tomcat in Production and test, and which hop supplies the client IP. If one exists and `OTP_TRUSTED_PROXIES` is unset, all users share one bucket | Kenji, with infra | **Go-live** | Open. Nothing in the repo; `docs/infrastructure.md` calls it "implied" |
 | **P-25** | Production RDS is MySQL 8.0 InnoDB (DD-3 locking assumptions) | Kenji, with infra | **Go-live** | Open. Local is 8.0.43, `REPEATABLE-READ` (P-15, T15) |
-| P-18 | `OTP_HMAC_SECRET` reaches the app through the environment | Kenji | Go-live, per environment | **Proven locally** (T15 and the walk). Per environment: confirm no `auth.otp.keys outcome=unconfigured` line after start |
+| P-18 | `otp.hmac.secret` reaches the app from `marlo-<profile>.properties` or the `OTP_HMAC_SECRET` environment variable (amended 2026-10-16) | Kenji | Go-live, per environment | **Proven locally** (T15 and the walk). Per environment: confirm no `auth.otp.keys outcome=unconfigured` line after start |
 | **OQ-1** | Pilot Global Units and domains | Product owner | **Go-live** (nothing is enabled without it) | Open. All units ship off |
 | **OQ-2** | Baseline-role exposure for the pilot users (below) | Kenji + PMU | **Go-live** | Open. Procedure in B2 |
 | **OQ-3** | Does the A2-2629 owner accept a non-Cognito path under the epic? | A2-2629 owner | **Go-live** | Open. Default: proceed per A2-2631 |
@@ -273,7 +273,7 @@ test user in the copy has one role (`G`) and two permission rows in AICCRA. The 
 
 ## B4. Per environment
 
-- [ ] `OTP_HMAC_SECRET` set (A2) and **no** `unconfigured` WARN after start. Not set in production before the release.
+- [ ] `otp.hmac.secret` set in the environment's properties or as `OTP_HMAC_SECRET` (A2), and **no** `unconfigured` WARN after start. Not set in production before the release.
 - [ ] `OTP_TRUSTED_PROXIES` set from the P-6 answer (A3), no `entries_ignored` WARN.
 - [ ] SMTP relay delivers to an external test mailbox (A4).
 - [ ] P-4, P-6, P-25 answers written next to B1.
@@ -361,4 +361,4 @@ They are recorded here and applied on `staging`.
 |---|---|---|
 | `docs/trd/trd.md` | **8.1 Authentication** | Add the Center email one-time-code route as a second non-CGIAR sign-in path beside Cognito. Pre-registered members only. Challenge handle in the Shiro session. `OtpAuthenticationToken` accepted by `APCustomRealm` with no I/O. The session sequence matches Cognito's. Eligibility requires an **active** membership and refuses CGIAR users where Cognito is active. Per-unit switch `crp_otp_allowed_email_domains`, read uncached (DD-12). Secret `OTP_HMAC_SECRET`. Known gap shared with Cognito route C (A7) |
 | `docs/trd/trd.md` | **9.5 Rate limiting** | Add a bullet for the OTP sign-in endpoints: they are limited in the database (`otp_rate_limits`, `otp_cooldowns`), shared by every instance: request 5 per email and 20 per IP per 15 minutes, 30 s cooldown; verify 10 per email and 50 per IP per 15 minutes; 3 attempts per code; 5-minute expiry. The REST statement is unchanged |
-| `docs/infrastructure.md` | **6 Local Environment** | Document `OTP_HMAC_SECRET` (`openssl rand -base64 48`, at least 32 decoded bytes, environment only, feature off without it) and `OTP_TRUSTED_PROXIES` (comma separated IPv4/IPv6 literals or CIDR, no link-local). Optional `otp.smtp.timeout.ms`. Add to the known local-versus-governed gaps that the local relay refuses non-CGIAR recipients and a local SMTP sink is needed to test. Mention the `MYSQL_DATABASE` and `EMAIL_*` environment overrides used to run against a throwaway copy |
+| `docs/infrastructure.md` | **6 Local Environment** | Document `otp.hmac.secret` (`openssl rand -base64 48`, at least 32 decoded bytes, in `marlo-<profile>.properties` or as `OTP_HMAC_SECRET`, which takes precedence; feature off without it) and `OTP_TRUSTED_PROXIES` (comma separated IPv4/IPv6 literals or CIDR, no link-local). Optional `otp.smtp.timeout.ms`. Add to the known local-versus-governed gaps that the local relay refuses non-CGIAR recipients and a local SMTP sink is needed to test. Mention the `MYSQL_DATABASE` and `EMAIL_*` environment overrides used to run against a throwaway copy |

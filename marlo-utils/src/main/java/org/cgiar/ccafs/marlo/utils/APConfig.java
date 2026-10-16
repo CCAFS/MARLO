@@ -206,7 +206,8 @@ public class APConfig {
    * CHG-OTP-LOGIN-001-T02 -- Center email one-time-code sign-in settings. Same ${key:} empty-default form
    * and for the same reason as the cognito.* fields above: an unresolvable placeholder would stop the
    * application from starting on every environment that never enables the feature (SEC-008).
-   * The secret is delivered by the environment (OTP_HMAC_SECRET), never by a committed property.
+   * The secret comes from the per-environment marlo-<profile>.properties (gitignored) or from the OTP_HMAC_SECRET
+   * environment variable, which takes precedence; never from a committed value.
    */
   @Value("${otp.hmac.secret:}")
   private String OTP_HMAC_SECRET;

@@ -399,7 +399,7 @@ entity is saved.
 ## 14. Backwards Compatibility & Rollout
 
 1. **Migration.** The feature ships off. Confirm by hand that Production actually applied it (guide W16).
-2. **Deploy.** Without a valid `OTP_HMAC_SECRET` the feature is inert.
+2. **Deploy.** Without a valid `otp.hmac.secret` (properties or `OTP_HMAC_SECRET`) the feature is inert.
 3. **Per environment:**
    - set the secret and `OTP_TRUSTED_PROXIES`;
    - settle P-4 (affinity), P-6 (proxy), P-18 (environment binding) and P-25 (RDS).

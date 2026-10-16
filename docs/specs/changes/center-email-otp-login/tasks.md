@@ -20,7 +20,7 @@
 | Unit tests | `mvn -q -o -pl marlo-web -am test`. Keep `-am` (memory: test suite needs `-am`) |
 | Local stack | `docs/infrastructure.md` §6. `scripts/run-marlo-java17.sh` is **never** run while a delegated agent is active (root `CLAUDE.md` *Concurrency*) |
 | Database | Probes and migration checks run on a **throwaway copy** of local `aiccradb1`, never on the original |
-| Environment | Export `OTP_HMAC_SECRET` (base64, ≥ 32 decoded bytes) for local runs. Unset it to test SEC-008 |
+| Environment | Set `otp.hmac.secret` (base64, ≥ 32 decoded bytes) in `marlo-dev.properties`, or export `OTP_HMAC_SECRET`, which takes precedence. Blank it to test SEC-008 (amended 2026-10-16) |
 
 ## 2. Pre-flight Checklist
 
@@ -878,14 +878,14 @@ Every clause has an owner. None is cleared by citing another requirement.
 | Step | When |
 |---|---|
 | Flyway applies the migration on startup; confirm in `flyway_schema_history` | Every environment, before enabling anything |
-| Set `OTP_HMAC_SECRET` and `OTP_TRUSTED_PROXIES` | Per environment, before the pilot |
+| Set `otp.hmac.secret` (properties or `OTP_HMAC_SECRET`) and `otp.trusted.proxies` | Per environment, before the pilot |
 | Enable a pilot unit through `custom_parameters` (admin UI) | After T16's rollout checklist |
 | `docs/trd/trd.md` §8.1/§9.5 and `docs/infrastructure.md` §6 updates | Pending items for `/akili-archive` on `staging` |
 
 ## 8. Rollback Plan
 
 1. Empty the Global Unit's `custom_parameters` value. This applies on the next request (DD-12).
-2. Unset `OTP_HMAC_SECRET` and restart every instance (the secret is read once at start). The feature becomes inert everywhere.
+2. Blank `otp.hmac.secret` (and unset `OTP_HMAC_SECRET` if set) and restart every instance (the secret is read once at start). The feature becomes inert everywhere.
 3. Revert the merge on `staging` and redeploy. The tables are harmless.
 4. Drop `otp_challenges`, `otp_rate_limits` and `otp_cooldowns`. Only in-flight codes are lost.
 
