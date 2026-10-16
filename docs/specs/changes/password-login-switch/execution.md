@@ -20,6 +20,7 @@
 | T01 | 1 / 8 | 1 / 10 | — |
 | T02 | 2 / 8 | 2 / 10 | — |
 | T03 | 3 / 8 | 4 / 10 | two parallel lens verdicts (security; reliability + test validity) |
+| T04 | 4 / 8 | 5 / 10 | — |
 
 ---
 
@@ -207,4 +208,56 @@ Leader adjudication: the first report owed one item (`via=password_off`) → con
 - **Decisions made:** continuation scope set by the Leader (owed §11 item). Parallel lens review chosen per the 4R table (effort `xhigh`, security surface). No execute-time spec edits.
 - **Issues encountered:** the user's own `run-marlo-java17.sh` / cargo server (since 09:50) runs in this checkout while builds wipe `target/classes` — reported to the user, not touched. VS Code language-server ECJ stubs and one `cannot access User` dirty-tree failure, both cleared by wiping classes.
 - **Final verification:** wiped compile + full suite 905/0, all falsifiers red, Checkstyle delta 0 — re-run VERIFIED.
+- **Continue gate:** user approved commit and continue to T04 (2026-10-16); committed `76f029feba`.
+
+### CHG-PWD-SWITCH-001-T04 — Pre-auth lookup reports both flags
+
+- **Final status:** PASS
+- **Date:** 2026-10-16
+- **Implementer attempts:** 1
+- **Effort:** `high` (task is S, but it shapes a pre-auth response with a fail-open path — SEC-005)
+- **Skills assigned:** `marlo-verify`, `api-design-principles` (response shape only) — as listed; no deviation
+- **Leader brief items tagged `[advisory-grade]`:** DB-loaded units only to `methodsFor`; action-level "no extra Cognito read" assertion; keep `otpEnabledFor` (cleanup proposal, not scope)
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailAction.java` — pass 1 builds entries + `cognitoEnabled` and records `cognitoEnabled && isCgiarUser` per unit; one `methodsFor(userEmail, listed, cognitoAccountByUnit)` on the loaded+listed units; pass 2 writes `otpEnabled` and `passwordEnabled`; `RuntimeException` → ERROR with the exception, `otpEnabled=false`, `passwordEnabled = !cognitoAccount`
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailActionTest.java` — 14 → 23 tests; the `:314` "no specificity query when unconfigured" lock replaced by "exactly one query" (counted at `OtpChallengeManager.specificityValuesFor`, key list and unit ids asserted in listed order)
+- **Implementer verification:**
+  - Red run (before the action change): 8 of 23 failed (`Cognito, password on, code off: passwordEnabled expected:<false> but was:<null>`; `expected:<[...|[1, 2]]> but was:<[]>`; `L1 and L4 only ... but was:<[]>`).
+  - Falsifier (a), executed as `methodsFor` with an empty Cognito map (= the pre-P-18 order, map not yet filled) → 3 red (`a Cognito account is not offered the last resort: passwordEnabled expected:<false> but was:<true>`; extra `gu=L3` last-resort line). Falsifier (b) `lastResortLogged.add(...) || true` → last-resort test saw L1/L4 five times → red. Both restored (`cmp`), suite green.
+  - Compile gate exit 0; full suite `mvn -o -pl marlo-web -am test` exit 0, 914 / 0; Checkstyle 8.18 HEAD 0 / tree 0 → delta 0; hygiene exit 0.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED** — classes wiped, `mvn -o -pl marlo-web -am test` → `MVN_EXIT=0`, `Tests run: 914, Failures: 0, Errors: 0, Skipped: 0`, `CrpByUserEmailActionTest` 23 / 0; `.claude/skills/marlo-verify/scripts/checkstyle.sh` on both files → working tree 0 violations (re-run after the Reviewer noted the brief omitted the Checkstyle evidence).
+- **Reviewer verdict:** **PASS** (lens checklist) — DD-6 two-pass shape; `methodsFor` once, only on `crpManager.crpUsers` units; fail-open matches the requirements Decision Log SEC-001 exception; empty-map falsifier is a faithful stand-in for "computed before the Cognito pass"; SEC-005/AC-11: `passwordEnabled` (and its failure value) is a function of unit settings, key state and `isCgiarUser && cognitoEnabled`, all already in the response (design §13 "Pre-auth disclosure"); NF-002: exactly one query for no key / username / several units, zero for zero units, counted at a boundary that maps 1:1 to the DAO native query (disqualifier not triggered); all three advisory-grade items met.
+- **runtime events:** none
+- **spawns:** implementer 27 calls, 146646 tokens, ended partial (`Not Done / Assumptions`, assumptions + cleanup proposal only); reviewer 15 calls, 83741 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer, verbatim)
+
+> - `OtpEligibility.otpEnabledFor` is now unused by the action and I left it in place. Cleanup proposal: delete it, or leave it deliberately.
+> - The action's `logger` is still `LoggerFactory.getLogger(FlaghshipsByCrpAction.class)`, so its ERROR lines carry the wrong class name. That predates this task and I did not change it. The tests read ERROR lines from the root logger so they do not depend on it.
+> - Design §4 has no row table, so I took "each §4 row" from the design §1 rule table plus the requirements scenarios.
+> - If a unit's entry fails in pass 1, it is left out of the response and is not passed to `methodsFor`.
+> - `login.js` (T06) is not touched.
+
+Leader adjudication: no blocker, no owed item; the "no new user field" test is covered by the existing exact key-set assertion (Reviewer confirmed). Task closable.
+
+#### ADVISORY (Reviewer, 4R — recorded, not acted on)
+
+- **Risk:** the Leader's Reviewer brief omitted the Checkstyle evidence — closed by the Leader re-run above (0 violations).
+- **Resilience:** the failure-path ERROR is written on every failing call and is unauthenticated-triggerable (OPS-002 limits only the last-resort line; today's behaviour) — may flood logs with stack traces during a DB outage; throttling is a possible later improvement.
+- **Readability:** `otpEnabledFor` and its Javadoc are now unused and still describe the `crpByEmail.do` variant.
+- **Readability:** pre-existing wrong logger class (`FlaghshipsByCrpAction.class`, `CrpByUserEmailAction.java:75`).
+
+#### Cleanup proposals (out of this spec's scope — for the user to decide)
+
+- Delete `OtpEligibility.otpEnabledFor` (unused after T04), or keep it deliberately.
+- Fix the `CrpByUserEmailAction` logger class name.
+- Optionally throttle the `crpByEmail.do` failure-path ERROR.
+
+- **Requirements covered:** FN-002, FN-006, FN-010 (data part); SEC-005; OPS-002 (decision in the lookup); NF-002; AC-7, AC-11 at the action level.
+- **Decisions made:** none beyond the task. No execute-time spec edits.
+- **Issues encountered:** none.
+- **Final verification:** wiped full suite 914/0, both falsifiers red, Checkstyle 0 — re-run VERIFIED.
 - **Continue gate:** pending user (gated mode).

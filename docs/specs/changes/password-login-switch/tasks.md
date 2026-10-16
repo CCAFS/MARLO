@@ -96,7 +96,7 @@
 
 ### CHG-PWD-SWITCH-001-T04 — Pre-auth lookup reports both flags (DD-6)
 
-- **Status:** pending [ ] · **Size:** S · **Depends on:** T03 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** T03 · **Module:** marlo-web
 - **Requirements:** FN-002, FN-006, FN-010 (data part); SEC-005; OPS-002; NF-002; AC-7, AC-11
 - **Design:** DD-6, §4, §11, §12, P-17, P-18
 - **Files:** `action/json/global/CrpByUserEmailAction.java`; `CrpByUserEmailActionTest`.
