@@ -47,7 +47,7 @@
 
 ### CHG-PWD-SWITCH-001-T02 — The method rule (design §1, DD-1, DD-2)
 
-- **Status:** pending [ ] · **Size:** S · **Depends on:** none · **Module:** marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** none · **Module:** marlo-web
 - **Requirements:** FN-003, FN-004, FN-005, FN-006, FN-007, FN-010 (rule part); SEC-003; AC-9
 - **Design:** §1, DD-1, DD-2
 - **Files:** new `security/otp/SignInMethodRule.java` (GPL header); its test.

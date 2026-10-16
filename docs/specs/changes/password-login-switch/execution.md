@@ -18,6 +18,7 @@
 | After task | Tasks done | Review rounds used | Notes |
 |---|---|---|---|
 | T01 | 1 / 8 | 1 / 10 | — |
+| T02 | 2 / 8 | 2 / 10 | — |
 
 ---
 
@@ -82,4 +83,51 @@ Leader adjudication: the field names no blocker and no owed item of T01 (the AC-
 - **Decisions made:** T01 and T02 run sequentially despite being independent — both need Maven builds on one `target/` tree (CLAUDE.md *Concurrency*). No execute-time spec edits.
 - **Issues encountered:** the Implementer's first probe run failed on its own fixture (FK checks during section (b) inserts); fixed inside the attempt, not a reported verification failure.
 - **Final verification:** compile gate green, Checkstyle delta 0, migration gate green, both falsifiers red — re-run VERIFIED.
+- **Continue gate:** user approved commit and continue to T02 (2026-10-16); committed `1550c6708c`.
+
+### CHG-PWD-SWITCH-001-T02 — The method rule
+
+- **Final status:** PASS
+- **Date:** 2026-10-16
+- **Implementer attempts:** 1
+- **Effort:** `xhigh` (the rule decides who can authenticate — security per the effort dial)
+- **Skills assigned:** `tdd`, `marlo-verify` (as listed in the task; no deviation)
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRule.java` (new, GPL header): `methodsFor(...)`, `Methods{cognito, code, password, needsEmail}`, `isPasswordSwitchOn(String)`
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRuleTest.java` (new, 21 tests)
+- **Implementer verification:**
+  - Oracle: 64 literal rows (K C S X P E) written by hand from design §1, plus raw-spelling and invariant tests (≥1 method or `needsEmail`; Cognito never password; at most two methods; no code for a username or without the key). AC-3…AC-7, FN-010, FN-003 named tests; `null`/`""` switch tests tagged AC-1 (resolver half) — T01 forward pointer closed.
+  - Red run (stub with T21 behaviour, no override): 7 of 21 failed on behavioural assertions; the enumeration named exactly the 8 override rows `1 0 S X 0 E` (e.g. `1 0 0 0 0 1 expected code but was password`). The stub's `isPasswordSwitchOn` was already correct, so those tests were seen red only through falsifier (b).
+  - Falsifier (a), override dropped: exit 1, 7 failures (`ac4…` `expected:<[cod]e> but was:<[non]e>`; table `1 0 0 0 0 1 expected code but was none`).
+  - Falsifier (b), `isPasswordSwitchOn` → `OtpDomainPolicy.isSwitchOn`: 5 failures (`ac1EmptyPasswordSwitchValueIsOn`, `ac1NullPasswordSwitchValueIsOn`, `ac1MissingPasswordSwitchReadsAsOn…`, `passwordSwitchValueThatIsNotExactlyFalseIsOn`, raw-spelling enumeration).
+  - Compile gate exit 0 (2415 / 1065 / 79); `SignInMethodRuleTest` 21 run, 0 failures; Checkstyle 8.18 delta 0; hygiene ok.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED** — classes wiped, `mvn -o -pl marlo-data,marlo-web -am test -Dtest=SignInMethodRuleTest -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false` → `MVN_EXIT=0`, compiled 2415 / 1065 / 79, `Tests run: 21, Failures: 0, Errors: 0, Skipped: 0`.
+- **Reviewer verdict:** **PASS** — rule is `cognito = C`, `password = !C && (P || !K)`, `code = (K && isOffered(S, X, id)) || (K && !P && !C && isEmail)`, `needsEmail = K && !P && !C && !isEmail`, matching design §1 rows and FN-010. Reviewer derived all 64 rows independently: all match, all literals. Reuse of `OtpDomainPolicy.isOffered` is faithful (code switch on + has domain + not excluded, nothing else). Cognito never gets password or override code (SEC-003, FN-005). `isPasswordSwitchOn` per DD-2 with every required spelling.
+- **runtime events:** none
+- **spawns:** implementer 31 calls, 156276 tokens, ended partial (`Not Done / Assumptions`, assumptions only); reviewer 11 calls, 67181 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer, verbatim)
+
+> - The VS Code Java language server (pid 2745) writes ECJ stub classes into `marlo-web/target/classes`. My first in-tree run of falsifier (b) read those stubs, "Unresolved compilation problems", so I discarded it. I reran (b) with `javac` and JUnitCore on a scratch copy in the scratchpad. The same harness gave `OK (21 tests)` on the real source. The in-tree source was never left mutated; it matches the verified copy.
+> - "Email" means `OtpDomainPolicy.domainOf(identifier) != null`. A `null` or empty identifier is treated as a username. `needsEmail` is true exactly when the password-off override applies (key configured, password off, no Cognito) and the identifier is not an email.
+
+Leader adjudication: no blocker, no owed item — assumptions only; the email definition was checked by the Reviewer against FN-010. Task closable.
+
+#### ADVISORY (Reviewer, 4R — recorded, not acted on)
+
+- **Readability:** class Javadoc uses `<table summary="the rule">`; `summary` is not valid HTML5 and may trip Java 17 doclint (build skips javadoc). Suggest `<caption>` or a list.
+- **Reliability:** a malformed identifier (`ana@`, `@x.org`) counts as a username and gets `needsEmail` under the override — safe, but the FN-010 message also covers a mistyped email; T05/T06 wording should keep that in mind.
+- **Risk (low):** `Methods` has no `toString`; consumers logging a decision (§11) will format it themselves.
+
+#### Forward pointers
+
+- **→ T06:** the FN-010 message also appears for a mistyped email (`ana@`), not only a username — consider when wording the i18n key (advisory).
+
+- **Requirements covered:** FN-003, FN-004, FN-005, FN-006, FN-007, FN-010 (rule part); SEC-003; AC-9; AC-1 (resolver half, closing T01's pointer); AC-3…AC-7 at rule level.
+- **Decisions made:** none beyond the task. No execute-time spec edits.
+- **Issues encountered:** the IDE Java language server writes ECJ stub classes into `marlo-web/target/classes`, which can make an in-tree Maven run read stubs; the clean-compile gate (wipe classes first) avoids it. Worth noting for T03–T05 briefs.
+- **Final verification:** compile gate green; 21/21 tests; both falsifiers red; Checkstyle delta 0 — re-run VERIFIED.
 - **Continue gate:** pending user (gated mode).
