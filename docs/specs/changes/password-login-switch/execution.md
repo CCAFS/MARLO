@@ -19,6 +19,7 @@
 |---|---|---|---|
 | T01 | 1 / 8 | 1 / 10 | — |
 | T02 | 2 / 8 | 2 / 10 | — |
+| T03 | 3 / 8 | 4 / 10 | two parallel lens verdicts (security; reliability + test validity) |
 
 ---
 
@@ -130,4 +131,80 @@ Leader adjudication: no blocker, no owed item — assumptions only; the email de
 - **Decisions made:** none beyond the task. No execute-time spec edits.
 - **Issues encountered:** the IDE Java language server writes ECJ stub classes into `marlo-web/target/classes`, which can make an in-tree Maven run read stubs; the clean-compile gate (wipe classes first) avoids it. Worth noting for T03–T05 briefs.
 - **Final verification:** compile gate green; 21/21 tests; both falsifiers red; Checkstyle delta 0 — re-run VERIFIED.
+- **Continue gate:** user approved commit and continue to T03 (2026-10-16); committed `db54da7ab9`.
+
+### CHG-PWD-SWITCH-001-T03 — Code endpoints follow the rule
+
+- **Final status:** PASS
+- **Date:** 2026-10-16
+- **Implementer attempts:** 1
+- **Effort:** `xhigh` (security path, partial reversion of T21)
+- **Skills assigned:** `tdd`, `marlo-verify`, `error-handling-patterns` (as listed in the task; no deviation)
+- **Leader narrowing in the brief:** `isPasswordRefused` left to T05; `CrpByUserEmailAction` switching to `methodsFor` left to T04; `LoginAction` / `ValidateUserAction` untouched.
+- **continuations:** 1 (design §11 `via=password_off` field on `auth.otp.request outcome=sent` — owed: §11 is in T03's Design list and the line belongs to the step-4 issue)
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java` — password key in `SPECIFICITY_KEYS`; `CustomParameterManager` + `ParameterManager` injected back (7-arg constructor); `isOffered` admits the override via `SignInMethodRule`; new `eligibilityBasis()` → `Basis { NONE, UNIT_SETTINGS, PASSWORD_SWITCH_OFF }` with `isEligible` delegating to it (Cognito flag via `CognitoAuthSpecificity.isActiveFor` only on password-off units, before `getUserByEmail`; Cognito refusal after `existActiveCrpUser`); new `methodsFor(identifier, units, cognitoAccountByUnit)` → `Map<Long, SignInMethodRule.Methods>`, query always run; once-per-unit ERROR set (`ConcurrentHashMap.newKeySet()`) writing `auth.password.last_resort gu=<acronym> reason=code_key_unconfigured`
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpLog.java` — `request(..., boolean viaPasswordOff)` overload; ` via=password_off` only on `SENT` (continuation)
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeAction.java` — step-4 Javadoc/comment; records the basis and passes it to `OtpLog` (continuation)
+  - Tests: `OtpEligibilityTest` (32 → 63), `OtpRequestCodeActionTest` (49 → 62), `OtpVerifyCodeActionTest` (48 → 53), `OtpStrutsPackageTest` (8, constructor), `CrpByUserEmailActionTest` (14, constructor + three-key query literal only), `OtpLogTest` (→ 17)
+- **Implementer verification:**
+  - Red run: 5 new override tests failed on today's `isOffered` (`expected:<{status=sent, destination=a***@partner.org}> but was:<{status=domainNotEnabled}>`; `expected:<[sent]> but was:<[domainNotEnabled]>`), the other 81 passed.
+  - Falsifiers (each applied, run, restored `cmp`-identical, re-run green): (a) Cognito flag read after the lookup → 3 red (`the flag is read before the lookup expected:<[custom:cognito_auth_active:7]> but was:<[]>`); (b) resolver on password-on units → 5 red (`zero Cognito reads expected:<[]> but was:<[custom:cognito_auth_active:7]>`); (c) early exit kept in `methodsFor` → 5 red (`the query runs without a key … but was:<[]>`); (d, extra) Cognito refusal before membership → 3 red; via dropped → red (`expected:<...ms=12[ via=password_off]> but was:<...ms=12[]>`); via on every eligible account → red.
+  - T21 locks replaced: `theCodePathNeverReadsIsCgiarUserOrTheCognitoSpecificity` + `thePredicateHoldsNoManagerThatCouldReadTheCognitoSpecificity` → `onAPasswordOnUnitTheCognitoFlagIsNeverResolvedAndIsCgiarUserIsNeverRead` (counting doubles + `CountingUser`), with request/verify counterparts; constructor lock → 7 parameters; Spring-scan test registers both managers. Family-wide grep: no other locks of this shape.
+  - Compile gate exit 0; full suite `mvn -q -o -pl marlo-web -am test` exit 0, 905 tests, 0 failures; Checkstyle 8.18 delta 0 on changed files; hygiene: no FIX (one REVIEW `LOG-NULL` on `unit.getAcronym()` — `unit` comes from the filtered non-null map).
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED** — classes wiped, `mvn -o -pl marlo-web -am test` → `MVN_EXIT=0`, `Tests run: 905, Failures: 0, Errors: 0, Skipped: 0`; surefire per class: `OtpEligibilityTest` 63, `OtpRequestCodeActionTest` 62, `OtpVerifyCodeActionTest` 53, `CrpByUserEmailActionTest` 14, `OtpStrutsPackageTest` 8, `OtpLogTest` 17 — all 0 failures.
+- **Reviewer verdicts (parallel lens mode — effort `xhigh` + security surface):**
+  - **Security lens: PASS** — DD-4 order holds (resolver never called and `isCgiarUser` never read on password-on units); SEC-004: on a password-off unit every account resolves the Cognito flag before the lookup, a Cognito member pays a member's queries then gets `Basis.NONE` → decoy + neutral `sent`; SEC-003/FN-005: override off for Cognito accounts, verify re-check refuses after a setting change; `via` server-log only, only on `SENT`; type-less unit throw depends only on the unit → not an oracle; OPS-002 memory is per-unit, sanitised acronym, ids from `GlobalUnit` objects; FN-002 uncached.
+  - **Reliability + test-validity lens: PASS** — every Tests item has a test that exercises it; counting doubles record arguments (type id vs unit id proven) with control tests; neutrality tests assert issued rows (disqualifier not triggered); `methodsFor` fits DD-6; `otpEnabledFor` unchanged for its current caller until T04; ERROR memory thread-safe; removed locks authorised by DD-4 item 1 / P-16.
+- **runtime events:** none
+- **spawns:** implementer 88 + 15 calls, 387006 + 424898 tokens (attempt + continuation; cumulative per host), ended complete; reviewer (security) 16 calls, 82976 tokens, ended complete; reviewer (reliability) 21 calls, 134814 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer, verbatim)
+
+First report:
+
+> - **`via=password_off` (design §11):** not delivered. It is not in T03's scope text and no task names it, so it needs an owner.
+> - **`CrpByUserEmailActionTest`:** I edited it only for the 7-argument constructor and the three-key query literal. `CrpByUserEmailAction` and `otpEnabledFor` are untouched, so the `:314` early-exit lock stays until T04.
+> - **Neutrality counts:** a Cognito account makes exactly a member's call list, and the Cognito reads are identical for all three accounts. An unknown account differs only by the membership call, which it cannot reach, as in T21.
+> - **Store failures:** `methodsFor` lets them propagate, so T04's action owns the DD-6 fail-open and its ERROR.
+> - **`isOffered` and the key:** it now checks `keys.isConfigured()` through the rule; before, the request action did it first.
+> - **Log format:** the last-resort line writes the acronym as stored (sanitised), not lower-cased like `auth.otp.*` lines. T05's INFO line should match whichever convention is chosen.
+> - **Type-less unit:** a password-off unit with no type and no own Cognito row makes the resolver throw. The action maps that to the neutral `sent`.
+> - **Surefire:** 2.12.4 rejects multiple `Class#method` patterns, so the red run used whole classes.
+> - **Environment:** a `run-marlo-java17.sh` / cargo server (pid 9154/11586, since 09:50) runs in this checkout, and the VS Code Java language server writes into `target/`. One unwiped run failed with `NoClassDefFoundError: OtpPending`; I discarded it and reran after wiping.
+
+Continuation report:
+
+> - Reading of §11/§13: `outcome=sent` is logged only when a real code is handed to the mailer. The neutral, decoy, Cognito and failed-predicate paths log `outcome=neutral` or `internal_error` and never carry `via`. The line is server-side only and the response is unchanged, so I added it on the real send only.
+> - A code mailed under the override whose later session write fails is logged as `internal_error`, without `via`.
+> - One build failed with `cannot access User` in the build tree, in files I did not touch. It passed unchanged after re-wiping.
+
+Leader adjudication: the first report owed one item (`via=password_off`) → continuation 1 delivered it. Everything else is assumptions; none names a blocker. Task closable.
+
+#### ADVISORY (Reviewers, 4R — recorded, not acted on)
+
+- **Security lens — Risk:** password-off unit with no type and no own Cognito row → resolver throws → nobody gets a code; with T05's gate that unit has no working sign-in. Confirm `global_units.global_unit_type_id` NOT NULL or treat a missing type as `false`.
+- **Security lens — Risk:** `methodsFor` is public; OPS-002's non-drivability depends on T04 passing only DB-loaded units, never request-built ids.
+- **Security lens — Risk:** `isOffered` now returns `false` without a key; response unchanged because the action rejects an unconfigured key first; documented in Javadoc.
+- **Security lens — Readability:** the 3-arg / 4-arg `isOffered` overloads (one forcing password `"true"`) are easy to swap; a name like `isOfferedWithPasswordOn` would help.
+- **Reliability lens — Reliability:** "same query count for known, unknown and Cognito accounts" is proven as the same Cognito reads for all three; an unknown account still skips `existActiveCrpUser`, exactly as under T21 and as design §13 reads ("every account that reaches the lookup"). **Leader reading recorded:** this matches §13; `/akili-validate` should read the task line through §13.
+- **Reliability lens — Resilience:** same type-less unit NPE (`CognitoAuthSpecificity.java:75`): both endpoints fail closed (neutral `sent` / `invalid`), but members of such a unit are silently locked out of the code with the password off.
+- **Reliability lens — Risk (T04 handoff):** the T21 text lock on `CrpByUserEmailAction.otpEnabledByUnit` is gone with no action-level behavioural replacement yet.
+- **Reliability lens — Readability:** `theBasisMakesExactlyTheCallsIsEligibleMakes…` cannot fail while `isEligible` delegates; it only guards future drift.
+- **Reliability lens — Readability:** `isOffered` Javadoc could say the query still runs without a key.
+
+#### Forward pointers
+
+- **→ T04:** pass only units loaded from the database to `methodsFor`, never ids built from the request (OPS-002 non-drivability) `[advisory-grade]`.
+- **→ T04:** the T21 lock on `CrpByUserEmailAction` text is gone — T04's tests should include an action-level zero-Cognito-read assertion on password-on units when it moves to `methodsFor` `[advisory-grade]`; T04's own scope already replaces the `CrpByUserEmailActionTest.java:314` lock. Whether `otpEnabledFor` becomes dead code after T04 is a cleanup proposal, not T04 scope.
+- **→ T05:** the INFO line `auth.password.refused gate=password_switch gu=<acronym>` should use the same acronym convention as T03's last-resort line (as stored, sanitised).
+- **→ T08:** type-less password-off unit locks code sign-in (resolver NPE) — candidate runbook prerequisite note `[advisory-grade]`.
+
+- **Requirements covered:** FN-002, FN-004, FN-005, FN-006; SEC-003, SEC-004; OPS-002 (memory + ERROR line); AC-4, AC-5, AC-6, AC-8 at endpoint level; design §11 `via=password_off`.
+- **Decisions made:** continuation scope set by the Leader (owed §11 item). Parallel lens review chosen per the 4R table (effort `xhigh`, security surface). No execute-time spec edits.
+- **Issues encountered:** the user's own `run-marlo-java17.sh` / cargo server (since 09:50) runs in this checkout while builds wipe `target/classes` — reported to the user, not touched. VS Code language-server ECJ stubs and one `cannot access User` dirty-tree failure, both cleared by wiping classes.
+- **Final verification:** wiped compile + full suite 905/0, all falsifiers red, Checkstyle delta 0 — re-run VERIFIED.
 - **Continue gate:** pending user (gated mode).

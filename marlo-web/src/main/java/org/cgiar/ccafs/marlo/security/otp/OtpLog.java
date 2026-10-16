@@ -32,6 +32,10 @@ import org.slf4j.LoggerFactory;
  * {@code null} outcome logs as {@code internal_error}. The methods take no code,
  * nonce, email or session id, so none of them can reach a line. A delivery failure is logged at WARN (OPS-002), every
  * other line at INFO.
+ * <p>
+ * A request line whose code was issued only because the unit's password switch is off ends with
+ * {@code via=password_off} (CHG-PWD-SWITCH-001 design 11). Only {@code outcome=sent} can carry it: a neutral, refused
+ * or failed request issued no real code, and the field must say nothing about an account that got none.
  */
 public final class OtpLog {
 
@@ -53,6 +57,9 @@ public final class OtpLog {
   private static final Logger LOG = LoggerFactory.getLogger(OtpLog.class);
 
   private static final String LINE = "auth.otp.{} outcome={} gu={} domain={} ms={}";
+
+  /** The same line for a code issued by the password-off override: one closed, fixed suffix. */
+  private static final String LINE_VIA_PASSWORD_OFF = LINE + " via=password_off";
 
   private OtpLog() {
     throw new AssertionError("utility class, never instantiated");
@@ -97,6 +104,25 @@ public final class OtpLog {
    */
   public static void request(RequestOutcome outcome, String gu, String domain, long ms) {
     LOG.info(LINE, "request", name(outcome), field(gu), field(domain), ms);
+  }
+
+  /**
+   * Writes the one {@code auth.otp.request} line of a request-code call, with {@code via=password_off} at its end when
+   * the code was issued only because the unit's password switch is off. The suffix is written for
+   * {@link RequestOutcome#SENT} only, whatever the caller passes: no other outcome issued a real code.
+   *
+   * @param outcome the outcome
+   * @param gu the Global Unit acronym, possibly {@code null}
+   * @param domain the email domain, possibly {@code null}
+   * @param ms the duration of the call in milliseconds
+   * @param viaPasswordOff {@code true} when the code was issued by the password-off override
+   */
+  public static void request(RequestOutcome outcome, String gu, String domain, long ms, boolean viaPasswordOff) {
+    if (viaPasswordOff && outcome == RequestOutcome.SENT) {
+      LOG.info(LINE_VIA_PASSWORD_OFF, "request", name(outcome), field(gu), field(domain), ms);
+    } else {
+      request(outcome, gu, domain, ms);
+    }
   }
 
   /**

@@ -72,6 +72,36 @@ public class OtpLogTest {
   }
 
   @Test
+  public void aSentLineOfACodeIssuedByThePasswordOffOverrideEndsWithViaPasswordOff() {
+    OtpLog.request(RequestOutcome.SENT, "CCAFS", "partner.org", 12L, true);
+
+    assertEquals("auth.otp.request outcome=sent gu=ccafs domain=partner.org ms=12 via=password_off", this.onlyLine());
+    assertEquals(Level.INFO, this.appender.list.get(0).getLevel());
+  }
+
+  @Test
+  public void aSentLineWithoutTheOverrideIsTheUnchangedLine() {
+    OtpLog.request(RequestOutcome.SENT, "CCAFS", "partner.org", 12L, false);
+
+    assertEquals("auth.otp.request outcome=sent gu=ccafs domain=partner.org ms=12", this.onlyLine());
+  }
+
+  @Test
+  public void noOutcomeButSentCanCarryViaWhateverTheCallerPasses() {
+    // The suffix says "a code was issued because the password is off": a neutral, refused or failed request issued no
+    // real code, so it must never carry it, even if a caller passes true.
+    String[] names = {"sent", "neutral", "denied_domain", "terms_required", "rate_limited", "unconfigured",
+      "internal_error"};
+    RequestOutcome[] outcomes = RequestOutcome.values();
+    assertEquals(names.length, outcomes.length);
+    for (int i = 1; i < outcomes.length; i++) {
+      this.appender.list.clear();
+      OtpLog.request(outcomes[i], "G", "d.org", 1L, true);
+      assertEquals(names[i], "auth.otp.request outcome=" + names[i] + " gu=g domain=d.org ms=1", this.onlyLine());
+    }
+  }
+
+  @Test
   public void verifyLineHasTheAgreedShapeAtInfo() {
     OtpLog.verify(VerifyOutcome.NOT_ELIGIBLE, "AICCRA", "partner.org", 7L);
 

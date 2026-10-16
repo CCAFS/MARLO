@@ -17,19 +17,21 @@
 package org.cgiar.ccafs.marlo.security.otp;
 
 import org.cgiar.ccafs.marlo.data.manager.CrpUserManager;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpChallengeManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility.Basis;
+import org.cgiar.ccafs.marlo.security.otp.SignInMethodRule.Methods;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,16 +42,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
- * CHG-OTP-LOGIN-001-T06, T21: {@link OtpEligibility} (FN-001, FN-003, FN-004, FN-005, FN-015, SEC-009, DD-13)
- * against hand-written fakes.
+ * CHG-OTP-LOGIN-001-T06, T21 and CHG-PWD-SWITCH-001-T03: {@link OtpEligibility} (FN-001, FN-003, FN-004, FN-005,
+ * FN-015, SEC-009, DD-13; password switch FN-004 to FN-006, SEC-003, SEC-004, OPS-002, DD-3, DD-4, DD-6) against
+ * hand-written fakes.
  * <p>
  * Every fake answers from data keyed by the arguments it receives, never with a constant, and records those
  * arguments. A fake that returned {@code true} whatever it was asked would pass every "eligible" case and prove
@@ -57,8 +67,16 @@ import static org.junit.Assert.assertTrue;
  * fact of an otherwise eligible world, so a refusal can only come from that fact.
  * <p>
  * The keys and ids asserted are literals from the spec ({@code system_otp_login_active},
- * {@code system_otp_excluded_email_domains}), not the production constants, and the submitted email is mixed-case
- * with padding while the lookup is asserted against its trimmed lower-case form (P-12).
+ * {@code system_otp_excluded_email_domains}, {@code system_password_login_active}, {@code cognito_auth_active}), not
+ * the production constants, and the submitted email is mixed-case with padding while the lookup is asserted against
+ * its trimmed lower-case form (P-12).
+ * <p>
+ * The Cognito resolver and {@code users.is_cgiar_user} are observed by counting doubles: the two managers the
+ * resolver reads record every call with its arguments, and the users are a subclass that counts reads of
+ * {@code isCgiarUser()}. They replace the two T21 static locks on the source text (design DD-4, P-16): what is proven
+ * is the behaviour, namely that a password-on unit makes zero Cognito reads and zero {@code is_cgiar_user} reads, and
+ * that a password-off unit reads the flag for every account before the lookup. The Global Unit ids (7, 8) and the type
+ * id (3) are disjoint, so a unit id passed where the type id belongs is visible.
  */
 public class OtpEligibilityTest {
 
@@ -69,14 +87,20 @@ public class OtpEligibilityTest {
   private static final String LOOKED_UP = "user@partner.org";
   private static final String SWITCH_KEY = "system_otp_login_active";
   private static final String EXCLUSION_KEY = "system_otp_excluded_email_domains";
-  private static final String BOTH_KEYS = "[" + SWITCH_KEY + ", " + EXCLUSION_KEY + "]";
+  private static final String PASSWORD_KEY = "system_password_login_active";
+  private static final String ALL_KEYS = "[" + SWITCH_KEY + ", " + EXCLUSION_KEY + ", " + PASSWORD_KEY + "]";
+  private static final String COGNITO_KEY = "cognito_auth_active";
 
   private static final long GU = 7L;
   private static final long OTHER_GU = 8L;
   private static final long USER_ID = 42L;
   private static final long GU_TYPE = 3L;
 
+  private static final String LAST_RESORT_LINE = "auth.password.last_resort ";
+
   private World world;
+  private Logger capturedLogger;
+  private ListAppender<ILoggingEvent> appender;
 
   @Before
   public void setUp() {
@@ -84,6 +108,15 @@ public class OtpEligibilityTest {
     this.world.addUnit(GU, "true", "");
     this.world.addUser(LOOKED_UP, USER_ID, true, false);
     this.world.members.add(USER_ID + ":" + GU);
+    this.capturedLogger = (Logger) LoggerFactory.getLogger(OtpEligibility.class);
+    this.appender = new ListAppender<ILoggingEvent>();
+    this.appender.start();
+    this.capturedLogger.addAppender(this.appender);
+  }
+
+  @After
+  public void tearDown() {
+    this.capturedLogger.detachAppender(this.appender);
   }
 
   // ---- the full predicate ------------------------------------------------------------------------------
@@ -94,7 +127,7 @@ public class OtpEligibilityTest {
 
     assertEquals(Arrays.asList(LOOKED_UP), this.world.userLookups);
     assertEquals(Arrays.asList(GU), this.world.unitLookups);
-    assertEquals("both keys in one read, for the one unit", Arrays.asList(BOTH_KEYS + "|[" + GU + "]"),
+    assertEquals("all three keys in one read, for the one unit", Arrays.asList(ALL_KEYS + "|[" + GU + "]"),
       this.world.specificityReads);
     assertEquals(Arrays.asList(USER_ID + ":" + GU), this.world.membershipChecks);
   }
@@ -152,7 +185,7 @@ public class OtpEligibilityTest {
     assertEquals(Arrays.asList(USER_ID + ":" + GU), this.world.membershipChecks);
   }
 
-  // ---- SEC-009 (amended 2026-10-15, T21): being a CGIAR account plays no part ---------------------------------
+  // ---- SEC-009 (amended 2026-10-15, T21): on a password-on unit being a CGIAR account plays no part ----------
 
   @Test
   public void cgiarAccountWithAnEmptyExclusionGetsACode() {
@@ -278,7 +311,7 @@ public class OtpEligibilityTest {
 
   @Test
   public void unknownGlobalUnitIsRefusedEvenWhenItsSwitchIsStoredOn() {
-    this.world.settings.put(999L, settingsOf("true", ""));
+    this.world.settings.put(999L, settingsOf("true", "", "true"));
 
     assertFalse(this.world.subject().isEligible(SUBMITTED, 999L));
     assertEquals(Arrays.asList(999L), this.world.unitLookups);
@@ -319,12 +352,12 @@ public class OtpEligibilityTest {
   // ---- the request step 4 variant ----------------------------------------------------------------------
 
   @Test
-  public void isOfferedReadsTheTwoSpecificitiesOnlyAndNothingAboutTheAccount() {
+  public void isOfferedReadsTheSpecificitiesOnlyAndNothingAboutTheAccount() {
     this.world.users.clear();
     this.world.members.clear();
 
     assertTrue(this.world.subject().isOffered(SUBMITTED, GU));
-    assertEquals(Arrays.asList(BOTH_KEYS + "|[" + GU + "]"), this.world.specificityReads);
+    assertEquals(Arrays.asList(ALL_KEYS + "|[" + GU + "]"), this.world.specificityReads);
     assertEquals(0, this.world.userLookups.size());
     assertEquals(0, this.world.unitLookups.size());
     assertEquals(0, this.world.membershipChecks.size());
@@ -345,6 +378,91 @@ public class OtpEligibilityTest {
     assertEquals("a malformed email is refused before the read", readsBefore, this.world.specificityReads.size());
   }
 
+  // ---- CHG-PWD-SWITCH-001-T03: step 4 admits the default-method override (rule 3d) ---------------------------
+
+  @Test
+  public void ac4WithThePasswordOffTheCodeIsOfferedWhileTheCodeSwitchIsOff() {
+    this.world.addUnit(GU, "false", "", "false");
+
+    assertTrue(this.world.subject().isOffered(SUBMITTED, GU));
+  }
+
+  @Test
+  public void ac5WithThePasswordOffTheCodeIsOfferedWhileTheDomainIsExcluded() {
+    this.world.addUnit(GU, "true", "other.org, PARTNER.org", "false");
+
+    assertTrue(this.world.subject().isOffered(SUBMITTED, GU));
+  }
+
+  @Test
+  public void theOverrideIsAccountBlindAndReadsNeitherTheAccountNorTheCognitoFlag() {
+    this.world.addUnit(GU, "false", "", "false");
+    this.world.users.clear();
+    this.world.members.clear();
+
+    assertTrue(this.world.subject().isOffered(SUBMITTED, GU));
+
+    assertEquals(Arrays.asList(ALL_KEYS + "|[" + GU + "]"), this.world.specificityReads);
+    assertEquals(0, this.world.userLookups.size());
+    assertEquals(0, this.world.unitLookups.size());
+    assertEquals(0, this.world.membershipChecks.size());
+    assertEquals("step 4 cannot tell a Cognito account: not even the flag is read", 0,
+      this.world.cognitoReads.size());
+  }
+
+  @Test
+  public void theOverrideNeedsAValidCodeKeyAndAWellFormedEmail() {
+    this.world.addUnit(GU, "false", "", "false");
+
+    this.world.secret = "";
+    assertFalse("FN-006: with no key the code is never offered, the password stays",
+      this.world.subject().isOffered(SUBMITTED, GU));
+
+    this.world.secret = SECRET_32_BYTES;
+    int readsBefore = this.world.specificityReads.size();
+    assertFalse(this.world.subject().isOffered("us\u212Aer@partner.org", GU));
+    assertFalse(this.world.subject().isOffered(null, GU));
+    assertFalse(this.world.subject().isOffered("no-at-sign", GU));
+    assertEquals("a malformed email is refused before the read", readsBefore, this.world.specificityReads.size());
+  }
+
+  @Test
+  public void onlyAPasswordSwitchThatIsExactlyFalseAdmitsTheOverride() {
+    // DD-2: any other value, a missing one included, is on, so the code switch decides as it does today (FN-003).
+    for (String raw : new String[] {"true", "TRUE", " true ", "", "   ", null, "yes", "1", "no", "off", "garbage"}) {
+      World on = new World();
+      on.addUnit(GU, "false", "", raw);
+      assertFalse("password <" + raw + "> reads as on, the code switch is off", on.subject().isOffered(SUBMITTED, GU));
+    }
+    for (String raw : new String[] {"false", "FALSE", " False ", "false\t"}) {
+      World off = new World();
+      off.addUnit(GU, "false", "", raw);
+      assertTrue("password <" + raw + "> reads as off", off.subject().isOffered(SUBMITTED, GU));
+    }
+  }
+
+  @Test
+  public void anUnknownUnitIsNotRescuedByTheOverride() {
+    this.world.addUnit(GU, "false", "", "false");
+
+    assertFalse("999 has no settings: its password reads as on and its code as off",
+      this.world.subject().isOffered(SUBMITTED, 999L));
+  }
+
+  @Test
+  public void ac8ThePasswordSwitchIsReadAgainOnEveryCallSoAChangeAppliesOnTheNextRequest() {
+    OtpEligibility subject = this.world.subject();
+
+    this.world.addUnit(GU, "false", "", "true");
+    assertFalse("password on, code off: today's rule", subject.isOffered(SUBMITTED, GU));
+    this.world.addUnit(GU, "false", "", "false");
+    assertTrue("password turned off", subject.isOffered(SUBMITTED, GU));
+    this.world.addUnit(GU, "false", "", "true");
+    assertFalse("password turned back on", subject.isOffered(SUBMITTED, GU));
+
+    assertEquals("one read per call, none remembered", 3, this.world.specificityReads.size());
+  }
+
   // ---- the crpByEmail.do variant -----------------------------------------------------------------------
 
   @Test
@@ -360,7 +478,7 @@ public class OtpEligibilityTest {
   }
 
   @Test
-  public void variantReadsEveryListedUnitAndBothKeysInOneUncachedQuery() {
+  public void variantReadsEveryListedUnitAndAllThreeKeysInOneUncachedQuery() {
     this.world.addUnit(OTHER_GU, "false", "");
 
     Map<Long, Boolean> result = this.world.subject().otpEnabledFor(SUBMITTED, this.world.units(GU, OTHER_GU));
@@ -368,7 +486,7 @@ public class OtpEligibilityTest {
     assertEquals(Boolean.TRUE, result.get(GU));
     assertEquals(Boolean.FALSE, result.get(OTHER_GU));
     assertEquals(2, result.size());
-    assertEquals("one query, both keys, every unit", Arrays.asList(BOTH_KEYS + "|[" + GU + ", " + OTHER_GU + "]"),
+    assertEquals("one query, all three keys, every unit", Arrays.asList(ALL_KEYS + "|[" + GU + ", " + OTHER_GU + "]"),
       this.world.specificityReads);
   }
 
@@ -415,56 +533,515 @@ public class OtpEligibilityTest {
     assertEquals(0, this.world.specificityReads.size());
   }
 
-  // ---- static lock: no is_cgiar_user and no Cognito specificity on the code path (SEC-009, DD-13) -------------
+  // ---- CHG-PWD-SWITCH-001-T03: the override at the full predicate (FN-004, FN-005, SEC-004) -------------------
+  // These replace the two T21 static locks on the source text (design DD-4, P-16). The password-on side, which the
+  // locks protected, is the counting test further down.
 
   @Test
-  public void theCodePathNeverReadsIsCgiarUserOrTheCognitoSpecificity() throws IOException {
-    // The request and verify actions, the predicate and the pure policy. CrpByUserEmailAction also answers the
-    // Cognito flag and the user's own isCgiarUser for the login wizard, so only its otpEnabled method is locked.
-    String[] files = {"security/otp/OtpEligibility.java", "security/otp/OtpDomainPolicy.java",
-      "action/home/OtpRequestCodeAction.java", "action/home/OtpVerifyCodeAction.java"};
-    for (String file : files) {
-      assertNoCgiarOrCognitoRule(file, withoutComments(source(file)));
-    }
-    String action = source("action/json/global/CrpByUserEmailAction.java");
-    int start = action.indexOf("private Map<Long, Boolean> otpEnabledByUnit(");
-    int end = action.indexOf("public List<Map<String, Object>> getCrps()");
-    assertTrue("otpEnabledByUnit found", start > 0 && end > start);
-    assertNoCgiarOrCognitoRule("CrpByUserEmailAction.otpEnabledByUnit", withoutComments(action.substring(start, end)));
+  public void ac4aWithThePasswordOffAMemberIsEligibleWhileTheCodeSwitchIsOff() {
+    this.world.addUnit(GU, "false", "", "false");
+
+    assertTrue(this.world.subject().isEligible(SUBMITTED, GU));
+    assertEquals(Arrays.asList(LOOKED_UP), this.world.userLookups);
+    assertEquals(Arrays.asList(USER_ID + ":" + GU), this.world.membershipChecks);
   }
 
   @Test
-  public void thePredicateHoldsNoManagerThatCouldReadTheCognitoSpecificity() throws IOException {
-    String code = withoutComments(source("security/otp/OtpEligibility.java"));
+  public void ac5aWithThePasswordOffAMemberIsEligibleWhileTheDomainIsExcluded() {
+    this.world.addUnit(GU, "true", "other.org, PARTNER.org", "false");
 
-    assertFalse(code.contains("CustomParameterManager"));
-    assertFalse(code.contains("ParameterManager"));
+    assertTrue(this.world.subject().isEligible(SUBMITTED, GU));
   }
 
-  private static String source(String relativePath) throws IOException {
-    return new String(Files.readAllBytes(Paths.get("src/main/java/org/cgiar/ccafs/marlo/" + relativePath)),
-      StandardCharsets.UTF_8);
-  }
+  @Test
+  public void theOverrideWidensOnlyTheSwitchAndTheExclusionNeverTheAccountChecks() {
+    // Unknown, inactive, non-member and soft-deleted accounts stay refused with the password off (FN-004 says "a
+    // member"): only the code switch and the exclusion are bypassed.
+    for (String fact : new String[] {"unknown", "inactive", "non-member", "soft-deleted"}) {
+      World w = new World();
+      w.addUnit(GU, "false", "", "false");
+      w.addUser(LOOKED_UP, USER_ID, true, false);
+      w.members.add(USER_ID + ":" + GU);
+      if ("unknown".equals(fact)) {
+        w.users.clear();
+      } else if ("inactive".equals(fact)) {
+        w.addUser(LOOKED_UP, USER_ID, false, false);
+      } else if ("non-member".equals(fact)) {
+        w.members.clear();
+      } else {
+        w.members.clear();
+        w.softDeleted.add(USER_ID + ":" + GU);
+      }
 
-  private static void assertNoCgiarOrCognitoRule(String label, String code) {
-    for (String forbidden : new String[] {"isCgiarUser", "CgiarUser", "is_cgiar_user", "CognitoAuthSpecificity",
-      "cognito_auth_active", "COGNITO_AUTH_ACTIVE", "\"cgiar.org\""}) {
-      assertFalse(label + " must not mention " + forbidden, code.contains(forbidden));
+      assertFalse(fact, w.subject().isEligible(SUBMITTED, GU));
     }
   }
 
-  /** Drops block comments and line comments, so prose that explains the removed rule is not read as code. */
-  private static String withoutComments(String source) {
-    return source.replaceAll("(?s)/\\*.*?\\*/", "").replaceAll("(?m)//.*$", "");
+  @Test
+  public void theOverrideNeverSendsACodeWithoutAKeyOrToAMalformedEmail() {
+    this.world.addUnit(GU, "false", "", "false");
+    this.world.secret = "";
+    assertFalse("FN-006: no key", this.world.subject().isEligible(SUBMITTED, GU));
+    assertEquals(0, this.world.specificityReads.size());
+
+    this.world.secret = SECRET_32_BYTES;
+    assertFalse(this.world.subject().isEligible("usKer@partner.org", GU));
+    assertFalse(this.world.subject().isEligible(null, GU));
+    assertEquals("a malformed email is refused before any read", 0, this.world.specificityReads.size());
+  }
+
+  // ---- eligibilityBasis: why the code is available (design 11, via=password_off) ----------------------------
+
+  @Test
+  public void theBasisSaysWhetherTheUnitOffersTheCodeOnItsOwnOrOnlyThePasswordOffOverrideDoes() {
+    // code switch, exclusion, password switch, is_cgiar_user, the unit's own cognito_auth_active row, the basis.
+    // Written by hand from design 1: the override is the cause exactly when the code would not be offered with the
+    // password on.
+    Object[][] rows = {
+      {"true", "", "true", false, null, Basis.UNIT_SETTINGS},
+      {"false", "", "true", false, null, Basis.NONE},
+      {"true", "partner.org", "true", false, null, Basis.NONE},
+      {"true", "", "false", false, null, Basis.UNIT_SETTINGS},
+      {"false", "", "false", false, null, Basis.PASSWORD_SWITCH_OFF},
+      {"true", "partner.org", "false", false, null, Basis.PASSWORD_SWITCH_OFF},
+      {"true", "", "", false, null, Basis.UNIT_SETTINGS},
+      {"false", "", "false", true, null, Basis.PASSWORD_SWITCH_OFF},
+      {"false", "", "false", true, "false", Basis.PASSWORD_SWITCH_OFF},
+      {"true", "", "false", true, "true", Basis.UNIT_SETTINGS},
+      {"false", "", "false", true, "true", Basis.NONE},
+      {"true", "partner.org", "false", true, "true", Basis.NONE}};
+    for (Object[] row : rows) {
+      World w = new World();
+      w.addUnit(GU, (String) row[0], (String) row[1], (String) row[2]);
+      if (row[4] != null) {
+        w.cognitoOverrides.put(Long.valueOf(GU), (String) row[4]);
+      }
+      w.addUser(LOOKED_UP, USER_ID, true, (Boolean) row[3]);
+      w.members.add(USER_ID + ":" + GU);
+      String label = "code " + row[0] + ", exclusion <" + row[1] + ">, password <" + row[2] + ">, cgiar " + row[3]
+        + ", cognito row " + row[4];
+
+      assertEquals(label, row[5], w.subject().eligibilityBasis(SUBMITTED, GU));
+      assertEquals(label + ": isEligible is the basis being anything but NONE", row[5] != Basis.NONE,
+        w.subject().isEligible(SUBMITTED, GU));
+    }
+  }
+
+  @Test
+  public void theBasisIsNoneForEveryRefusalWhateverTheOverrideSays() {
+    for (String fact : new String[] {"unknown", "inactive", "non-member", "no key", "malformed email"}) {
+      World w = new World();
+      w.addUnit(GU, "false", "", "false");
+      w.addUser(LOOKED_UP, USER_ID, true, false);
+      w.members.add(USER_ID + ":" + GU);
+      String email = SUBMITTED;
+      if ("unknown".equals(fact)) {
+        w.users.clear();
+      } else if ("inactive".equals(fact)) {
+        w.addUser(LOOKED_UP, USER_ID, false, false);
+      } else if ("non-member".equals(fact)) {
+        w.members.clear();
+      } else if ("no key".equals(fact)) {
+        w.secret = "";
+      } else {
+        email = "us\u212Aer@partner.org";
+      }
+
+      assertEquals(fact, Basis.NONE, w.subject().eligibilityBasis(email, GU));
+    }
+  }
+
+  @Test
+  public void theBasisMakesExactlyTheCallsIsEligibleMakesSoLoggingItAddsNoQueryAndNoTimingDifference() {
+    for (boolean accountExists : new boolean[] {true, false}) {
+      World forBasis = this.passwordOffWorld(accountExists, false);
+      World forPredicate = this.passwordOffWorld(accountExists, false);
+
+      forBasis.subject().eligibilityBasis(LOOKED_UP, GU);
+      forPredicate.subject().isEligible(LOOKED_UP, GU);
+
+      assertEquals("account exists: " + accountExists, forPredicate.calls, forBasis.calls);
+      assertEquals(forPredicate.cognitoReads, forBasis.cognitoReads);
+    }
+  }
+
+  @Test
+  public void ac6ACognitoAccountIsRefusedUnderTheOverrideAndOnlyAfterTheMembershipCheck() {
+    // Scenario "Cognito account unaffected": Cognito on, password off, code switch on, cgiar.org excluded.
+    World w = new World();
+    w.addUnit(GU, "true", "cgiar.org", "false");
+    w.cognitoOverrides.put(Long.valueOf(GU), "true");
+    w.addUser("staff@cgiar.org", 43L, true, true);
+    w.members.add(43L + ":" + GU);
+
+    assertFalse(w.subject().isEligible("staff@cgiar.org", GU));
+
+    assertEquals("the account was looked up: the refusal comes after it", Arrays.asList("staff@cgiar.org"),
+      w.userLookups);
+    assertEquals("and after the membership check", Arrays.asList("43:" + GU), w.membershipChecks);
+    assertEquals(Arrays.asList("custom:" + COGNITO_KEY + ":" + GU), w.cognitoReads);
+  }
+
+  @Test
+  public void aCognitoAccountKeepsTheCodeOnlyWhereTheUnitOffersItByItsOwnSettings() {
+    // FN-005: Cognito, plus the code only when the code switch is on and the domain is not excluded.
+    String[][] rows = {{"true", "", "true"}, {"true", "cgiar.org", "false"}, {"false", "", "false"},
+      {"false", "cgiar.org", "false"}};
+    for (String[] row : rows) {
+      World w = new World();
+      w.addUnit(GU, row[0], row[1], "false");
+      w.cognitoOverrides.put(Long.valueOf(GU), "true");
+      w.addUser("staff@cgiar.org", 43L, true, true);
+      w.members.add(43L + ":" + GU);
+
+      assertEquals("code switch " + row[0] + ", exclusion <" + row[1] + ">", Boolean.parseBoolean(row[2]),
+        w.subject().isEligible("staff@cgiar.org", GU));
+    }
+  }
+
+  @Test
+  public void anAccountIsACognitoAccountOnlyWhenItIsCgiarAndTheUnitHasCognito() {
+    // Password off, code switch off: only the Cognito account loses the code. Four literal rows, not a formula.
+    assertTrue("not CGIAR, no Cognito on the unit", this.eligibleUnderTheOverride(false, null));
+    assertTrue("CGIAR, no Cognito on the unit: the AD password is replaced by the code", this.eligibleUnderTheOverride(
+      true, null));
+    assertTrue("CGIAR, Cognito switched off by the unit's own row", this.eligibleUnderTheOverride(true, "false"));
+    assertTrue("not CGIAR, Cognito on the unit", this.eligibleUnderTheOverride(false, "true"));
+    assertFalse("CGIAR, Cognito on the unit", this.eligibleUnderTheOverride(true, "true"));
+  }
+
+  private boolean eligibleUnderTheOverride(boolean cgiar, String cognitoOverride) {
+    World w = new World();
+    w.addUnit(GU, "false", "", "false");
+    if (cognitoOverride != null) {
+      w.cognitoOverrides.put(Long.valueOf(GU), cognitoOverride);
+    }
+    w.addUser(LOOKED_UP, USER_ID, true, cgiar);
+    w.members.add(USER_ID + ":" + GU);
+    return w.subject().isEligible(SUBMITTED, GU);
+  }
+
+  @Test
+  public void theCognitoFlagIsResolvedForTheUnitThenItsTypeCatalogAndNothingElse() {
+    World noRow = this.passwordOffWorld(true, true);
+    noRow.cognitoOverrides.clear();
+    noRow.cognitoCatalogDefault = "true";
+
+    assertFalse("a catalog default of true makes the unit a Cognito one", noRow.subject().isEligible(LOOKED_UP, GU));
+    assertEquals("the unit's own row first, then the catalog of its TYPE (3), never the unit id",
+      Arrays.asList("custom:" + COGNITO_KEY + ":" + GU, "catalog:" + COGNITO_KEY + ":" + GU_TYPE),
+      noRow.cognitoReads);
+
+    World off = this.passwordOffWorld(true, true);
+    off.cognitoOverrides.clear();
+    off.cognitoCatalogDefault = "false";
+    assertTrue("a catalog default of false leaves the account a plain one", off.subject().isEligible(LOOKED_UP, GU));
+  }
+
+  @Test
+  public void sec004TheCognitoFlagIsReadForEveryAccountBeforeTheLookupAndACognitoAccountPaysAMembersQueries() {
+    World member = this.passwordOffWorld(true, false);
+    World cognito = this.passwordOffWorld(true, true);
+    World unknown = this.passwordOffWorld(false, false);
+
+    assertTrue("a member gets the code", member.subject().isEligible(LOOKED_UP, GU));
+    assertFalse("a Cognito account does not", cognito.subject().isEligible(LOOKED_UP, GU));
+    assertFalse("an unknown account does not", unknown.subject().isEligible(LOOKED_UP, GU));
+
+    List<String> oneRead = Arrays.asList("custom:" + COGNITO_KEY + ":" + GU);
+    assertEquals(oneRead, member.cognitoReads);
+    assertEquals("the Cognito account pays the same Cognito reads", oneRead, cognito.cognitoReads);
+    assertEquals("so does an unknown account: the flag is read before the lookup", oneRead, unknown.cognitoReads);
+
+    assertEquals("the order a member is served in", Arrays.asList("spec", "unit", "custom", "user", "member"),
+      member.calls);
+    assertEquals("a Cognito account makes exactly a member's calls, refusal included", member.calls, cognito.calls);
+    assertEquals("an unknown account stops where its lookup finds nobody, as in T21",
+      Arrays.asList("spec", "unit", "custom", "user"), unknown.calls);
+  }
+
+  /** A password-off unit with the code switch off and Cognito on, and an account of the given kind in it. */
+  private World passwordOffWorld(boolean accountExists, boolean cgiar) {
+    World w = new World();
+    w.addUnit(GU, "false", "", "false");
+    w.cognitoOverrides.put(Long.valueOf(GU), "true");
+    if (accountExists) {
+      w.addUser(LOOKED_UP, USER_ID, true, cgiar);
+      w.members.add(USER_ID + ":" + GU);
+    }
+    return w;
+  }
+
+  // ---- DD-4: on a password-on unit the predicate is T21's, with zero Cognito reads ---------------------------
+
+  @Test
+  public void onAPasswordOnUnitTheCognitoFlagIsNeverResolvedAndIsCgiarUserIsNeverRead() {
+    // Replaces the two T21 static locks: the behaviour they protected, proven with counting doubles. Cognito is on
+    // and the account is a CGIAR one, so a read would find something; "yes" and "garbage" are on too (DD-2).
+    for (String raw : new String[] {"true", "TRUE", " true ", "", "   ", null, "yes", "garbage"}) {
+      World w = new World();
+      w.addUnit(GU, "true", "", raw);
+      w.cognitoOverrides.put(Long.valueOf(GU), "true");
+      w.addUser(LOOKED_UP, USER_ID, true, true);
+      w.members.add(USER_ID + ":" + GU);
+      OtpEligibility subject = w.subject();
+
+      assertTrue("password <" + raw + ">: T21's rule, the CGIAR account gets its code",
+        subject.isEligible(SUBMITTED, GU));
+      assertTrue(subject.isOffered(SUBMITTED, GU));
+      subject.methodsFor(SUBMITTED, w.units(GU), Collections.<Long, Boolean>emptyMap());
+      subject.otpEnabledFor(SUBMITTED, w.units(GU));
+
+      assertEquals("password <" + raw + ">: zero Cognito reads", Collections.emptyList(), w.cognitoReads);
+      assertEquals("password <" + raw + ">: is_cgiar_user never read", 0, w.cgiarReads());
+    }
+  }
+
+  @Test
+  public void theCountingDoublesDoSeeTheReadsOfAPasswordOffUnit() {
+    World w = this.passwordOffWorld(true, true);
+
+    w.subject().isEligible(LOOKED_UP, GU);
+
+    assertEquals(Arrays.asList("custom:" + COGNITO_KEY + ":" + GU), w.cognitoReads);
+    assertTrue("a CGIAR account's flag is read on a Cognito unit", w.cgiarReads() > 0);
+  }
+
+  // ---- methodsFor: the pre-auth lookup's methods per unit (DD-6, FN-006, FN-007, FN-010) -----------------------
+
+  @Test
+  public void methodsForAnswersEveryCellOfTheRuleFromOneQueryWithAllThreeKeys() {
+    // unit: code switch, exclusion, password switch (raw, as the store answers). Expected values are written by
+    // hand from design 1, never derived from the settings.
+    this.world.addUnit(11L, "true", "", "true");
+    this.world.addUnit(12L, "false", "", "true");
+    this.world.addUnit(13L, "false", "", "false");
+    this.world.addUnit(14L, "true", "partner.org", "false");
+    this.world.addUnit(15L, "false", "", "false");
+    this.world.addUnit(16L, "true", "", "false");
+    this.world.addUnit(17L, "true", "", "true");
+    this.world.addUnit(18L, "false", "", "");
+    Map<Long, Boolean> cognito = new HashMap<>();
+    cognito.put(15L, Boolean.TRUE);
+    cognito.put(16L, Boolean.TRUE);
+    cognito.put(17L, Boolean.TRUE);
+
+    Map<Long, Methods> result =
+      this.world.subject().methodsFor(SUBMITTED, this.world.units(11, 12, 13, 14, 15, 16, 17, 18), cognito);
+
+    assertEquals("one query, all three keys, every unit",
+      Arrays.asList(ALL_KEYS + "|[11, 12, 13, 14, 15, 16, 17, 18]"), this.world.specificityReads);
+    assertEquals(Arrays.asList(11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L), new ArrayList<>(result.keySet()));
+    assertMethods("11 password on, code on", result.get(11L), false, true, true, false);
+    assertMethods("12 password on, code off", result.get(12L), false, false, true, false);
+    assertMethods("13 AC-4 password off, code switch off", result.get(13L), false, true, false, false);
+    assertMethods("14 AC-5 password off, domain excluded", result.get(14L), false, true, false, false);
+    assertMethods("15 AC-6 Cognito, password off, code off", result.get(15L), true, false, false, false);
+    assertMethods("16 Cognito, password off, code on", result.get(16L), true, true, false, false);
+    assertMethods("17 SEC-003 Cognito, password on", result.get(17L), true, true, false, false);
+    assertMethods("18 AC-1 a missing password value is on", result.get(18L), false, false, true, false);
+  }
+
+  private static void assertMethods(String label, Methods methods, boolean cognito, boolean code, boolean password,
+    boolean needsEmail) {
+    assertEquals(label + ": cognito", cognito, methods.isCognito());
+    assertEquals(label + ": code (otpEnabled)", code, methods.isCode());
+    assertEquals(label + ": password (passwordEnabled)", password, methods.isPassword());
+    assertEquals(label + ": needsEmail", needsEmail, methods.isNeedsEmail());
+  }
+
+  @Test
+  public void ac7MethodsForRunsItsOneQueryAlsoWithoutACodeKeyAndTheLastResortIsThePassword() {
+    this.world.secret = "";
+    this.world.addUnit(OTHER_GU, "true", "", "false");
+    Map<Long, Boolean> cognito = new HashMap<>();
+    cognito.put(OTHER_GU, Boolean.FALSE);
+
+    Map<Long, Methods> result =
+      this.world.subject().methodsFor(SUBMITTED, this.world.units(GU, OTHER_GU), cognito);
+
+    assertEquals("the query runs without a key: passwordEnabled needs the switch",
+      Arrays.asList(ALL_KEYS + "|[" + GU + ", " + OTHER_GU + "]"), this.world.specificityReads);
+    assertMethods("password on, no key", result.get(GU), false, false, true, false);
+    assertMethods("password off, no key: the last resort", result.get(OTHER_GU), false, false, true, false);
+  }
+
+  @Test
+  public void aCognitoAccountHasNoPasswordWithoutAKeyEither() {
+    this.world.secret = "";
+    this.world.addUnit(OTHER_GU, "true", "", "false");
+
+    Map<Long, Methods> result = this.world.subject().methodsFor(SUBMITTED, this.world.units(OTHER_GU),
+      Collections.singletonMap(OTHER_GU, Boolean.TRUE));
+
+    assertMethods("SEC-003: Cognito, no key", result.get(OTHER_GU), true, false, false, false);
+  }
+
+  @Test
+  public void ac15MethodsForAUsernameRunsOneQueryAndAPasswordOffUnitNeedsTheEmail() {
+    this.world.addUnit(OTHER_GU, "true", "", "false");
+
+    Map<Long, Methods> result = this.world.subject().methodsFor("ana.username", this.world.units(GU, OTHER_GU), null);
+
+    assertEquals("one query even for a username", Arrays.asList(ALL_KEYS + "|[" + GU + ", " + OTHER_GU + "]"),
+      this.world.specificityReads);
+    assertMethods("password on: a username signs in with the password", result.get(GU), false, false, true, false);
+    assertMethods("FN-010: password off, a username", result.get(OTHER_GU), false, false, false, true);
+  }
+
+  @Test
+  public void methodsForReadsNoAccountNoMembershipNoUnitAndNoCognitoFlag() {
+    this.world.subject().methodsFor(SUBMITTED, this.world.units(GU), Collections.singletonMap(GU, Boolean.TRUE));
+
+    assertEquals(0, this.world.userLookups.size());
+    assertEquals(0, this.world.unitLookups.size());
+    assertEquals(0, this.world.membershipChecks.size());
+    assertEquals("the caller passes the Cognito answer, the predicate reads none", 0, this.world.cognitoReads.size());
+    assertEquals(0, this.world.cgiarReads());
+  }
+
+  @Test
+  public void methodsForWithNoUsableUnitMakesNoQuery() {
+    OtpEligibility subject = this.world.subject();
+
+    assertTrue(subject.methodsFor(SUBMITTED, null, null).isEmpty());
+    assertTrue(subject.methodsFor(SUBMITTED, Collections.<GlobalUnit>emptyList(), null).isEmpty());
+    assertTrue(subject.methodsFor(SUBMITTED, Arrays.asList(null, new GlobalUnit()), null).isEmpty());
+    assertEquals("nothing to answer for, so nothing to read", 0, this.world.specificityReads.size());
+  }
+
+  @Test
+  public void methodsForKeepsTheOrderGivenAndAnswersEachUnitOnce() {
+    this.world.addUnit(OTHER_GU, "true", "", "true");
+
+    Map<Long, Methods> result =
+      this.world.subject().methodsFor(SUBMITTED, this.world.units(OTHER_GU, GU, OTHER_GU), null);
+
+    assertEquals(Arrays.asList(OTHER_GU, GU), new ArrayList<>(result.keySet()));
+    assertEquals(Arrays.asList(ALL_KEYS + "|[" + OTHER_GU + ", " + GU + "]"), this.world.specificityReads);
+  }
+
+  @Test
+  public void aMissingCognitoMapOrEntryReadsAsNotACognitoAccount() {
+    OtpEligibility subject = this.world.subject();
+
+    assertMethods("null map", subject.methodsFor(SUBMITTED, this.world.units(GU), null).get(GU), false, true, true,
+      false);
+    assertMethods("empty map", subject.methodsFor(SUBMITTED, this.world.units(GU),
+      Collections.<Long, Boolean>emptyMap()).get(GU), false, true, true, false);
+    assertMethods("an entry for another unit", subject.methodsFor(SUBMITTED, this.world.units(GU),
+      Collections.singletonMap(OTHER_GU, Boolean.TRUE)).get(GU), false, true, true, false);
+  }
+
+  @Test
+  public void aFailedSpecificityReadSurfacesToTheCallerWhichOwnsTheFailOpenAnswer() {
+    this.world.specificityFailure = new IllegalStateException("store down");
+
+    try {
+      this.world.subject().methodsFor(SUBMITTED, this.world.units(GU), null);
+      fail("the manager's exception must reach the caller");
+    } catch (IllegalStateException expected) {
+      assertEquals("store down", expected.getMessage());
+    }
+    assertEquals(0, this.lastResortLines().size());
+  }
+
+  // ---- OPS-002: the last-resort ERROR, once per unit ----------------------------------------------------------
+
+  @Test
+  public void ops002TheLastResortIsLoggedOnceAtErrorPerUnitAndNamesTheUnitOnly() {
+    this.world.secret = "";
+    this.world.addUnit(GU, "true", "", "false");
+    this.world.addUnit(OTHER_GU, "true", "", "false");
+    this.world.addUnit(9L, "true", "", "true");
+    OtpEligibility subject = this.world.subject();
+
+    subject.methodsFor(SUBMITTED, this.world.units(GU, 9L), null);
+    assertEquals("one line, for the password-off unit only", 1, this.lastResortLines().size());
+    assertEquals(Level.ERROR, this.lastResortLines().get(0).getLevel());
+    assertEquals("auth.password.last_resort gu=GU7 reason=code_key_unconfigured",
+      this.lastResortLines().get(0).getFormattedMessage());
+
+    // Repeats from "unauthenticated requests": other identifiers, a username, the same unit again.
+    subject.methodsFor(SUBMITTED, this.world.units(GU), null);
+    subject.methodsFor("someone.else@partner.org", this.world.units(GU), null);
+    subject.methodsFor("a-username", this.world.units(GU), null);
+    subject.methodsFor(null, this.world.units(GU, 9L), null);
+    assertEquals("never repeated for the same unit", 1, this.lastResortLines().size());
+
+    subject.methodsFor(SUBMITTED, this.world.units(OTHER_GU), null);
+    assertEquals("another unit gets its own line", 2, this.lastResortLines().size());
+    assertEquals("auth.password.last_resort gu=GU8 reason=code_key_unconfigured",
+      this.lastResortLines().get(1).getFormattedMessage());
+    for (ILoggingEvent line : this.lastResortLines()) {
+      assertFalse("no email in the line", line.getFormattedMessage().toLowerCase().contains("partner"));
+    }
+  }
+
+  @Test
+  public void ops002NothingIsLoggedWhenThePasswordIsNotOfferedOnlyBecauseOfTheMissingKey() {
+    // (a) the key is valid: the code is the method. (b) no key but the password switch is on: the password is
+    // offered anyway. (c) no key, password off, but a Cognito account: it is not offered the password.
+    World valid = new World();
+    valid.addUnit(GU, "true", "", "false");
+    valid.subject().methodsFor(SUBMITTED, valid.units(GU), null);
+
+    World switchOn = new World();
+    switchOn.secret = "";
+    switchOn.addUnit(GU, "true", "", "true");
+    switchOn.subject().methodsFor(SUBMITTED, switchOn.units(GU), null);
+
+    World cognito = new World();
+    cognito.secret = "";
+    cognito.addUnit(GU, "true", "", "false");
+    cognito.subject().methodsFor(SUBMITTED, cognito.units(GU), Collections.singletonMap(GU, Boolean.TRUE));
+
+    assertEquals(0, this.lastResortLines().size());
+  }
+
+  @Test
+  public void ops002TheMemoryBelongsToTheInstanceSoItStartsEmptyWithTheApplication() {
+    this.world.secret = "";
+    this.world.addUnit(GU, "true", "", "false");
+
+    this.world.subject().methodsFor(SUBMITTED, this.world.units(GU), null);
+    this.world.subject().methodsFor(SUBMITTED, this.world.units(GU), null);
+
+    assertEquals("a new instance is a new start", 2, this.lastResortLines().size());
+  }
+
+  private List<ILoggingEvent> lastResortLines() {
+    List<ILoggingEvent> lines = new ArrayList<>();
+    for (ILoggingEvent event : this.appender.list) {
+      if (event.getFormattedMessage().startsWith(LAST_RESORT_LINE)) {
+        lines.add(event);
+      }
+    }
+    return lines;
   }
 
   // ---- the world and its fakes -------------------------------------------------------------------------
 
-  private static Map<String, String> settingsOf(String switchValue, String exclusion) {
+  private static Map<String, String> settingsOf(String switchValue, String exclusion, String passwordValue) {
     Map<String, String> values = new HashMap<>();
     values.put(SWITCH_KEY, switchValue);
     values.put(EXCLUSION_KEY, exclusion);
+    values.put(PASSWORD_KEY, passwordValue);
     return values;
+  }
+
+  /** A user whose reads of {@code is_cgiar_user} are counted. */
+  private static final class CountingUser extends User {
+
+    private static final long serialVersionUID = 1L;
+
+    int cgiarReads;
+
+    @Override
+    public boolean isCgiarUser() {
+      this.cgiarReads++;
+      return super.isCgiarUser();
+    }
   }
 
   /** The state the fakes answer from, and the calls they recorded. */
@@ -478,14 +1055,23 @@ public class OtpEligibilityTest {
     final Set<String> members = new HashSet<>();
     /** crp_users rows with is_active=0 (soft delete): seen only by the activity-blind existCrpUser. */
     final Set<String> softDeleted = new HashSet<>();
+    /** The unit's own custom_parameters row for cognito_auth_active, by unit id; a unit with no entry has none. */
+    final Map<Long, String> cognitoOverrides = new HashMap<>();
+    /** The catalog default of cognito_auth_active for the type {@link #GU_TYPE}; {@code null} is no catalog row. */
+    String cognitoCatalogDefault;
+    RuntimeException specificityFailure;
 
     final List<String> userLookups = new ArrayList<>();
     final List<Long> unitLookups = new ArrayList<>();
     final List<String> specificityReads = new ArrayList<>();
     final List<String> membershipChecks = new ArrayList<>();
+    /** Every Cognito flag read with its arguments: {@code custom:<key>:<unit id>} and {@code catalog:<key>:<type>}. */
+    final List<String> cognitoReads = new ArrayList<>();
+    /** Every collaborator call in order, by name only, so the sequences of two accounts can be compared. */
+    final List<String> calls = new ArrayList<>();
 
     void addUser(String email, long id, boolean active, boolean cgiar) {
-      User user = new User();
+      User user = new CountingUser();
       user.setId(Long.valueOf(id));
       user.setEmail(email);
       user.setActive(active);
@@ -494,13 +1080,18 @@ public class OtpEligibilityTest {
     }
 
     void addUnit(long id, String switchValue, String exclusion) {
+      this.addUnit(id, switchValue, exclusion, "true");
+    }
+
+    void addUnit(long id, String switchValue, String exclusion, String passwordValue) {
       GlobalUnit unit = new GlobalUnit();
       unit.setId(Long.valueOf(id));
+      unit.setAcronym("GU" + id);
       GlobalUnitType type = new GlobalUnitType();
       type.setId(Long.valueOf(GU_TYPE));
       unit.setGlobalUnitType(type);
       this.unitsById.put(Long.valueOf(id), unit);
-      this.settings.put(Long.valueOf(id), settingsOf(switchValue, exclusion));
+      this.settings.put(Long.valueOf(id), settingsOf(switchValue, exclusion, passwordValue));
     }
 
     List<GlobalUnit> units(long... ids) {
@@ -511,9 +1102,19 @@ public class OtpEligibilityTest {
       return result;
     }
 
+    /** How many times any user of this world had {@code isCgiarUser()} read. */
+    int cgiarReads() {
+      int reads = 0;
+      for (User user : this.users.values()) {
+        reads += ((CountingUser) user).cgiarReads;
+      }
+      return reads;
+    }
+
     OtpEligibility subject() {
       UserManager userManager = fake(UserManager.class, (method, args) -> {
         if ("getUserByEmail".equals(method)) {
+          this.calls.add("user");
           this.userLookups.add((String) args[0]);
           return this.users.get(args[0]);
         }
@@ -521,6 +1122,7 @@ public class OtpEligibilityTest {
       });
       GlobalUnitManager globalUnitManager = fake(GlobalUnitManager.class, (method, args) -> {
         if ("getGlobalUnitById".equals(method)) {
+          this.calls.add("unit");
           this.unitLookups.add((Long) args[0]);
           return this.unitsById.get(args[0]);
         }
@@ -528,12 +1130,14 @@ public class OtpEligibilityTest {
       });
       CrpUserManager crpUserManager = fake(CrpUserManager.class, (method, args) -> {
         if ("existActiveCrpUser".equals(method) && args.length == 2) {
+          this.calls.add("member");
           String pair = args[0] + ":" + args[1];
           this.membershipChecks.add(pair);
           return this.members.contains(pair);
         }
         if ("existCrpUser".equals(method) && args.length == 2) {
           // The old, activity-blind gate answers true for the soft-deleted row, so a regression to it is visible.
+          this.calls.add("member-any-state");
           String pair = args[0] + ":" + args[1];
           this.membershipChecks.add("any-state " + pair);
           return this.members.contains(pair) || this.softDeleted.contains(pair);
@@ -544,7 +1148,11 @@ public class OtpEligibilityTest {
         if ("specificityValuesFor".equals(method)) {
           Collection<?> keys = (Collection<?>) args[0];
           Collection<?> ids = (Collection<?>) args[1];
+          this.calls.add("spec");
           this.specificityReads.add(keys + "|" + ids);
+          if (this.specificityFailure != null) {
+            throw this.specificityFailure;
+          }
           Map<Long, Map<String, String>> answer = new HashMap<>();
           for (Object id : ids) {
             Map<String, String> stored = this.settings.get(id);
@@ -559,8 +1167,38 @@ public class OtpEligibilityTest {
         }
         return unsupported(method);
       });
+      CustomParameterManager customParameterManager = fake(CustomParameterManager.class, (method, args) -> {
+        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)) {
+          this.calls.add("custom");
+          this.cognitoReads.add("custom:" + args[0] + ":" + args[1]);
+          String value = COGNITO_KEY.equals(args[0]) ? this.cognitoOverrides.get(args[1]) : null;
+          if (value == null) {
+            return null;
+          }
+          CustomParameter row = new CustomParameter();
+          row.setValue(value);
+          row.setActive(true);
+          return row;
+        }
+        return unsupported(method);
+      });
+      ParameterManager parameterManager = fake(ParameterManager.class, (method, args) -> {
+        if ("getParameterByKey".equals(method)) {
+          this.calls.add("catalog");
+          this.cognitoReads.add("catalog:" + args[0] + ":" + args[1]);
+          // Honoured, not ignored: the catalog is keyed by the unit TYPE, so a unit id passed here finds nothing.
+          if (!COGNITO_KEY.equals(args[0]) || !Long.valueOf(GU_TYPE).equals(args[1])
+            || this.cognitoCatalogDefault == null) {
+            return null;
+          }
+          Parameter row = new Parameter();
+          row.setDefaultValue(this.cognitoCatalogDefault);
+          return row;
+        }
+        return unsupported(method);
+      });
       return new OtpEligibility(new OtpKeys(this.secret), userManager, globalUnitManager, crpUserManager,
-        challengeManager);
+        challengeManager, customParameterManager, parameterManager);
     }
   }
 

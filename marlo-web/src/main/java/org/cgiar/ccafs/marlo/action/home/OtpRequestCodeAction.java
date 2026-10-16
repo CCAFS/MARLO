@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.security.otp.ClientIpResolver;
 import org.cgiar.ccafs.marlo.security.otp.OtpCodes;
 import org.cgiar.ccafs.marlo.security.otp.OtpDomainPolicy;
 import org.cgiar.ccafs.marlo.security.otp.OtpEligibility;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility.Basis;
 import org.cgiar.ccafs.marlo.security.otp.OtpKeys;
 import org.cgiar.ccafs.marlo.security.otp.OtpLog;
 import org.cgiar.ccafs.marlo.security.otp.OtpLog.RequestOutcome;
@@ -79,11 +80,14 @@ import org.slf4j.LoggerFactory;
  * <li>an unconfigured secret answers {@code domainNotEnabled}. It comes first because the limiter cannot count
  * without keys and would answer {@code unavailable} instead (SEC-008);</li>
  * <li>the limiter counts the email, the address and the 30-second cooldown, before any lookup (SEC-010, FN-008);</li>
- * <li>the shape of the email and the unit id, then the unit's switch and domain exclusion through the uncached read
- * (FN-001, FN-006, DD-13), then the terms: each refusal answers a status that names no account state;</li>
- * <li>{@link OtpEligibility} decides eligibility. A failure of the predicate is not an answer of its own: whether it
- * throws can depend on the account, so it is treated as "not eligible" and the neutral {@code sent} is answered
- * (SEC-006);</li>
+ * <li>the shape of the email and the unit id, then whether the code is offered on the unit through the uncached read:
+ * the unit's switch is on and the domain is not excluded (FN-001, FN-006, DD-13), or the unit's password switch is
+ * off, which offers the code to every account that is not a Cognito account whatever the code switch and the
+ * exclusion say (CHG-PWD-SWITCH-001 FN-004, SEC-004). The step is account-blind, so it cannot tell a Cognito account
+ * from another one. Then the terms: each refusal answers a status that names no account state;</li>
+ * <li>{@link OtpEligibility} decides eligibility, a Cognito account that the unit offers no code of its own included
+ * (FN-005, SEC-004). A failure of the predicate is not an answer of its own: whether it throws can depend on the
+ * account, so it is treated as "not eligible" and the neutral {@code sent} is answered (SEC-006);</li>
  * <li>the text provider of the unit's custom i18n file is built for <b>every</b> request that gets this far, eligible
  * or not, so the read of {@code crp_custom_file} adds work to neither path alone (SEC-006, T20);</li>
  * <li>a challenge row is issued for <b>every</b> account that reaches this step, with a fresh random code, and
@@ -171,6 +175,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   private String acronym = "";
   private boolean acronymResolved;
   private boolean eligibilityFailed;
+  private boolean viaPasswordOff;
 
   /**
    * The only constructor the container may use; the one below is the test seam. The mailer is a container singleton,
@@ -259,7 +264,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
       this.response = status(STATUS_UNAVAILABLE);
       outcome = RequestOutcome.INTERNAL_ERROR;
     }
-    OtpLog.request(outcome, this.acronymForLog(), this.domain, elapsedMs(started));
+    OtpLog.request(outcome, this.acronymForLog(), this.domain, elapsedMs(started), this.viaPasswordOff);
     return SUCCESS;
   }
 
@@ -306,8 +311,10 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
   }
 
   /**
-   * Design 5.1 step 4: whether the unit's switch is on and the submitted email's domain is not on its exclusion list,
-   * both read uncached (DD-12, DD-13). It reads nothing about the account.
+   * Design 5.1 step 4: whether the code is offered on the unit, read uncached (DD-12, DD-13): the unit's switch is on
+   * and the submitted email's domain is not on its exclusion list, or the unit's password switch is off
+   * (CHG-PWD-SWITCH-001 FN-004). It reads nothing about the account, so a Cognito account passes it too and is
+   * refused by {@link #isEligible(Long)} with the neutral answer.
    */
   private boolean isCodeOffered(Long unit) {
     return this.eligibility.isOffered(this.email, unit.longValue());
@@ -321,7 +328,11 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
    */
   private boolean isEligible(Long unit) {
     try {
-      return this.eligibility.isEligible(this.email, unit.longValue());
+      Basis basis = this.eligibility.eligibilityBasis(this.email, unit.longValue());
+      // Server log only (design 11): the line says the code was issued because the password is off. The answer to the
+      // caller is the same neutral map either way, and OtpLog writes the suffix for outcome=sent alone.
+      this.viaPasswordOff = basis == Basis.PASSWORD_SWITCH_OFF;
+      return basis != Basis.NONE;
     } catch (RuntimeException e) {
       logFault("eligibility", e);
       this.eligibilityFailed = true;
@@ -373,7 +384,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     }
     this.unitId = unit;
 
-    // Step 4. An unknown unit has no switch, so it ends here too.
+    // Step 4. An unknown unit has no switch, so its password reads as on, and it ends here too.
     if (!this.isCodeOffered(unit)) {
       return this.refuse(STATUS_DOMAIN_NOT_ENABLED, RequestOutcome.DENIED_DOMAIN);
     }

@@ -127,6 +127,7 @@ public class OtpVerifyCodeActionTest {
   private static final long GU = 7L;
   private static final long GU_TYPE = 1L;
   private static final String GU_ACRONYM = "TESTCRP";
+  private static final String COGNITO_KEY = "cognito_auth_active";
   private static final String BASE_URL = "https://marlo.example.org";
   private static final String CLIENT_IP = "203.0.113.7";
   private static final Instant NOW = Instant.parse("2026-10-13T12:00:00Z");
@@ -228,7 +229,8 @@ public class OtpVerifyCodeActionTest {
 
   @Test
   public void aCgiarAccountSignsInWithItsCodeLikeAnyOtherAccountWhenItsDomainIsNotExcluded() {
-    // SEC-009 (T21): is_cgiar_user plays no part, so the account the Cognito rule used to refuse now signs in.
+    // SEC-009 (T21): on a password-on unit is_cgiar_user plays no part, so the account the Cognito rule used to
+    // refuse now signs in.
     World world = this.with(State.ELIGIBLE);
     world.users.get("ana@partner.org").setCgiarUser(true);
     world.open(State.ELIGIBLE, NONCE_A, MAC_A);
@@ -239,6 +241,8 @@ public class OtpVerifyCodeActionTest {
     assertEquals(ok(BASE_URL + "/TESTCRP/crpDashboard.do"), action.getResponse());
     assertTrue(SecurityUtils.getSubject().isAuthenticated());
     assertEquals(1, world.count("realm:"));
+    assertEquals("password on: the Cognito flag is never resolved by the re-check (DD-4)", 0, world.count("cognito"));
+    assertEquals("password on: is_cgiar_user is never read", 0, world.cgiarReads());
   }
 
   @Test
@@ -638,6 +642,118 @@ public class OtpVerifyCodeActionTest {
       assertNull(lost + ": the pending challenge is removed",
         SecurityUtils.getSubject().getSession().getAttribute(APConstants.OTP_PENDING_CHALLENGE));
       assertTrue(lost + ": " + world.verifyLines(), world.verifyLines().get(0).contains("outcome=not_eligible "));
+    }
+  }
+
+  // ---- CHG-PWD-SWITCH-001-T03: the re-check follows the sign-in method rule -------------------------------------
+
+  @Test
+  public void ac4TheRecheckAcceptsAMemberUnderTheOverrideWhileTheCodeSwitchIsOffOrTheDomainIsExcluded() {
+    for (String ownCode : new String[] {"code switch off", "domain excluded"}) {
+      World world = this.with(State.ELIGIBLE);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      if ("code switch off".equals(ownCode)) {
+        world.switches.put(Long.valueOf(GU), "false");
+      } else {
+        world.exclusions.put(Long.valueOf(GU), "Partner.org");
+      }
+      world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+
+      OtpVerifyCodeAction action = world.call(CODE_A);
+
+      assertNoFault();
+      assertEquals(ownCode, ok(BASE_URL + "/TESTCRP/crpDashboard.do"), action.getResponse());
+      assertTrue(ownCode, SecurityUtils.getSubject().isAuthenticated());
+      assertEquals(ownCode + ": one token", 1, world.count("realm:"));
+    }
+  }
+
+  @Test
+  public void theRecheckReadsTheCognitoFlagForTheUnitAfterTheConsumeAndBeforeTheAccountLookup() {
+    World world = this.with(State.ELIGIBLE);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.switches.put(Long.valueOf(GU), "false");
+    world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+
+    world.call(CODE_A);
+
+    int consume = world.events.indexOf("consume");
+    int cognito = world.events.indexOf("cognito-custom:" + GU);
+    int lookup = world.events.indexOf("user:ana@partner.org");
+    assertTrue(world.events.toString(), consume >= 0 && cognito > consume && lookup > cognito);
+    assertEquals("one read for the unit's own row, as the resolver does: " + world.events, 1,
+      world.count("cognito-custom"));
+  }
+
+  @Test
+  public void aCodeIssuedUnderTheOverrideIsRefusedAtTheRecheckOnceTheAccountBecomesACognitoAccount() {
+    for (boolean cognitoTurnedOnLater : new boolean[] {false, true}) {
+      World world = this.with(State.ELIGIBLE);
+      world.users.get("ana@partner.org").setCgiarUser(true);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      world.switches.put(Long.valueOf(GU), "false");
+      // The unit has no Cognito when the code is requested: the member is mailed the code.
+      world.requestCode(State.ELIGIBLE.submitted());
+      assertEquals("issued legitimately: the account was not a Cognito account", 1, world.mails.size());
+      String mailed = world.mails.get(0).code;
+      Row row = world.store.onlyRow();
+      if (cognitoTurnedOnLater) {
+        world.cognitoOverrides.put(Long.valueOf(GU), "true");
+      }
+      int cognitoReadsBefore = world.count("cognito-custom");
+
+      OtpVerifyCodeAction action = world.call(mailed);
+
+      assertNoFault();
+      assertNotNull("the challenge is consumed either way", row.consumedAt);
+      assertEquals("one Cognito read by the re-check", cognitoReadsBefore + 1, world.count("cognito-custom"));
+      if (cognitoTurnedOnLater) {
+        assertEquals("FN-005, SEC-004: a Cognito account has no code of its own here", only("invalid"),
+          action.getResponse());
+        assertEquals("no token is built", 0, world.count("realm:"));
+        assertFalse(SecurityUtils.getSubject().isAuthenticated());
+        assertEquals(0, world.userWrites.size());
+        assertTrue(world.verifyLines().toString(), world.verifyLines().get(0).contains("outcome=not_eligible "));
+      } else {
+        assertEquals("control: the same code signs in while the setting has not changed",
+          ok(BASE_URL + "/TESTCRP/crpDashboard.do"), action.getResponse());
+        assertTrue(SecurityUtils.getSubject().isAuthenticated());
+        assertEquals(1, world.count("realm:"));
+      }
+    }
+  }
+
+  @Test
+  public void aCognitoAccountStillSignsInWithItsCodeWhereTheUnitOffersItByItsOwnSettings() {
+    // FN-005: the password being off changes nothing for a Cognito account, which keeps the code the unit offers.
+    World world = this.with(State.ELIGIBLE);
+    world.users.get("ana@partner.org").setCgiarUser(true);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.cognitoOverrides.put(Long.valueOf(GU), "true");
+    world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+
+    OtpVerifyCodeAction action = world.call(CODE_A);
+
+    assertNoFault();
+    assertEquals(ok(BASE_URL + "/TESTCRP/crpDashboard.do"), action.getResponse());
+    assertEquals("the flag was read, and the code switch of the unit decided", 1, world.count("cognito-custom"));
+  }
+
+  @Test
+  public void onAPasswordOnUnitTheRecheckNeverResolvesTheCognitoFlagForAnyAccountState() {
+    // Replaces the T21 locks (design DD-4, P-16) with counting doubles, for the re-check of every account state.
+    for (State state : State.values()) {
+      World world = this.with(state);
+      world.cognitoOverrides.put(Long.valueOf(GU), "true");
+      if (world.users.containsKey(state.email)) {
+        world.users.get(state.email).setCgiarUser(true);
+      }
+      world.open(state, NONCE_A, MAC_A);
+
+      world.call(CODE_A);
+
+      assertEquals(state + ": zero Cognito reads: " + world.events, 0, world.count("cognito"));
+      assertEquals(state + ": is_cgiar_user never read", 0, world.cgiarReads());
     }
   }
 
@@ -1271,6 +1387,20 @@ public class OtpVerifyCodeActionTest {
     }
   }
 
+  /** A user whose reads of {@code is_cgiar_user} are counted. */
+  private static final class CountingUser extends User {
+
+    private static final long serialVersionUID = 1L;
+
+    int cgiarReads;
+
+    @Override
+    public boolean isCgiarUser() {
+      this.cgiarReads++;
+      return super.isCgiarUser();
+    }
+  }
+
   /** Overrides only what needs a live Struts container; the tail, the session and the realm stay real. */
   private static final class TestableOtpVerifyCodeAction extends OtpVerifyCodeAction {
 
@@ -1308,6 +1438,10 @@ public class OtpVerifyCodeActionTest {
     /** The raw effective value of system_otp_login_active and of system_otp_excluded_email_domains, by unit. */
     final Map<Long, String> switches = new HashMap<Long, String>();
     final Map<Long, String> exclusions = new HashMap<Long, String>();
+    /** The raw effective value of system_password_login_active, by unit; an absent unit reads as "" like the store. */
+    final Map<Long, String> passwordSwitches = new HashMap<Long, String>();
+    /** The unit's own custom_parameters row for cognito_auth_active, by unit id; a unit with no entry has none. */
+    final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
     final Set<String> members = new HashSet<String>();
     /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
     final Set<String> softDeleted = new HashSet<String>();
@@ -1347,6 +1481,7 @@ public class OtpVerifyCodeActionTest {
       this.units.put(Long.valueOf(GU), unit);
       this.switches.put(Long.valueOf(GU), "true");
       this.exclusions.put(Long.valueOf(GU), "");
+      this.passwordSwitches.put(Long.valueOf(GU), "true");
       switch (state) {
         case ELIGIBLE:
           this.addUser(state, true, false);
@@ -1372,7 +1507,7 @@ public class OtpVerifyCodeActionTest {
     }
 
     private void addUser(State state, boolean active, boolean cgiar) {
-      User user = new User();
+      User user = new CountingUser();
       user.setId(Long.valueOf(state.userId));
       user.setEmail(state.email);
       user.setActive(active);
@@ -1405,6 +1540,15 @@ public class OtpVerifyCodeActionTest {
         }
       }
       return count;
+    }
+
+    /** How many times any user of this world had {@code isCgiarUser()} read. */
+    int cgiarReads() {
+      int reads = 0;
+      for (User user : this.users.values()) {
+        reads += ((CountingUser) user).cgiarReads;
+      }
+      return reads;
     }
 
     /** A code that is not the row's code: the first of 000000.. whose MAC differs, so a draw can never collide. */
@@ -1471,7 +1615,7 @@ public class OtpVerifyCodeActionTest {
       OtpChallengeManager challengeManager = this.store;
       GlobalUnitManager globalUnitManager = this.globalUnitManager();
       OtpEligibility eligibility = new OtpEligibility(keys, this.userManager(), globalUnitManager,
-        this.crpUserManager(), challengeManager);
+        this.crpUserManager(), challengeManager, this.customParameterManager(), this.parameterManager());
       OtpRequestCodeAction action = new OtpRequestCodeAction(config, keys,
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
         globalUnitManager, this.customParameterManager(),
@@ -1494,8 +1638,8 @@ public class OtpVerifyCodeActionTest {
       CrpUserManager crpUserManager = this.crpUserManager();
       CustomParameterManager customParameterManager = this.customParameterManager();
       ParameterManager parameterManager = this.parameterManager();
-      OtpEligibility eligibility =
-        new OtpEligibility(keys, userManager, globalUnitManager, crpUserManager, this.store);
+      OtpEligibility eligibility = new OtpEligibility(keys, userManager, globalUnitManager, crpUserManager,
+        this.store, customParameterManager, parameterManager);
       TestableOtpVerifyCodeAction action = new TestableOtpVerifyCodeAction(config, userManager, globalUnitManager,
         crpUserManager, customParameterManager, parameterManager, new OtpRateLimiter(keys, this.rateLimitManager()),
         new OtpCodes(keys), eligibility, this.store, new ClientIpResolver(""), this.actionClock);
@@ -1600,9 +1744,21 @@ public class OtpVerifyCodeActionTest {
       return fake(CustomParameterManager.class, (method, args) -> {
         if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)
           && APConstants.CRP_CUSTOM_FILE.equals(args[0])) {
-          // The real request action of the round trip reads the unit's custom i18n file (T20). Any other key, the
-          // Cognito flag included, is unsupported: a read of it would fail the test (SEC-009).
+          // The real request action of the round trip reads the unit's custom i18n file (T20).
           return null;
+        }
+        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method) && COGNITO_KEY.equals(args[0])) {
+          // Answered and counted: the predicate reads the Cognito flag only while the unit's password switch is off
+          // (CHG-PWD-SWITCH-001 DD-4), and a read on a password-on unit is a failure the tests look for.
+          this.events.add("cognito-custom:" + args[1]);
+          String value = this.cognitoOverrides.get(args[1]);
+          if (value == null) {
+            return null;
+          }
+          CustomParameter row = new CustomParameter();
+          row.setValue(value);
+          row.setActive(true);
+          return row;
         }
         if ("getAllCustomParametersByGlobalUnitId".equals(method)) {
           return this.customParameters;
@@ -1614,6 +1770,10 @@ public class OtpVerifyCodeActionTest {
     ParameterManager parameterManager() {
       return fake(ParameterManager.class, (method, args) -> {
         if ("getParameterByKey".equals(method)) {
+          if (COGNITO_KEY.equals(args[0])) {
+            // The catalog is keyed by the unit TYPE and holds no row for it here.
+            this.events.add("cognito-catalog:" + args[1]);
+          }
           return null;
         }
         return unsupported(method);
@@ -1660,6 +1820,8 @@ public class OtpVerifyCodeActionTest {
           Map<String, String> values = new HashMap<String, String>();
           values.put("system_otp_login_active", switchValue == null ? "" : switchValue);
           values.put("system_otp_excluded_email_domains", exclusion == null ? "" : exclusion);
+          String passwordValue = World.this.passwordSwitches.get(id);
+          values.put("system_password_login_active", passwordValue == null ? "" : passwordValue);
           answer.put(id, values);
         }
         return answer;

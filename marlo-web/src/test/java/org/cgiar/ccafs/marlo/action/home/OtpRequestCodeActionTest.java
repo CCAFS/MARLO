@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpChallengeManager;
 import org.cgiar.ccafs.marlo.data.manager.OtpRateLimitManager;
+import org.cgiar.ccafs.marlo.data.manager.ParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -57,6 +58,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -116,6 +118,7 @@ public class OtpRequestCodeActionTest {
   private static final long GU = 7L;
   private static final long GU_TYPE = 3L;
   private static final String GU_ACRONYM = "TESTCRP";
+  private static final String COGNITO_KEY = "cognito_auth_active";
   private static final String BASE_URL = "https://marlo.example.org";
   private static final String CLIENT_IP = "203.0.113.7";
   private static final Instant NOW = Instant.parse("2026-10-13T12:00:00Z");
@@ -137,6 +140,11 @@ public class OtpRequestCodeActionTest {
   private static final Pattern NONCE = Pattern.compile("[A-Za-z0-9_-]{22}");
   private static final Pattern HEX_64 = Pattern.compile("[0-9a-f]{64}");
   private static final Pattern SIX_DIGITS = Pattern.compile("[0-9]{6}");
+
+  /** Design 11: the line of a real send, and the same line of a code issued by the password-off override. */
+  private static final Pattern SENT_LINE =
+    Pattern.compile("auth\\.otp\\.request outcome=sent gu=testcrp domain=partner\\.org ms=[0-9]+");
+  private static final Pattern SENT_VIA_LINE = Pattern.compile(SENT_LINE.pattern() + " via=password_off");
 
   /** The account states of FN-005, each made from the eligible world by changing one fact. */
   private enum State {
@@ -495,12 +503,12 @@ public class OtpRequestCodeActionTest {
     Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "99", "true").getResponse();
     assertEquals("an unknown unit", Collections.singletonMap("status", "domainNotEnabled"), response);
     assertEquals(0, world.issues.size());
-    assertEquals("the unit id reached the uncached read, with both keys",
-      "specificity:[system_otp_login_active, system_otp_excluded_email_domains]|[99]",
+    assertEquals("the unit id reached the uncached read, with all three keys",
+      "specificity:[system_otp_login_active, system_otp_excluded_email_domains, system_password_login_active]|[99]",
       world.specificityReads.get(0));
   }
 
-  // ---- SEC-009 (amended 2026-10-15, T21): being a CGIAR account plays no part ---------------------------------
+  // ---- SEC-009 (amended 2026-10-15, T21): on a password-on unit being a CGIAR account plays no part ----------
 
   @Test
   public void aCgiarAccountIsMailedLikeAnyOtherWhenItsDomainIsNotExcluded() {
@@ -513,6 +521,8 @@ public class OtpRequestCodeActionTest {
     assertEquals("one challenge row", 1, world.issues.size());
     assertEquals("one email: the CGIAR flag decides nothing", 1, world.mails.size());
     assertEquals("ana@partner.org", world.mails.get(0).recipient);
+    assertEquals("password on: the Cognito flag is never resolved (DD-4)", 0, world.count("cognito"));
+    assertEquals("password on: is_cgiar_user is never read", 0, world.cgiarReads());
   }
 
   @Test
@@ -550,6 +560,314 @@ public class OtpRequestCodeActionTest {
 
     world.exclusions.put(GU, "");
     assertEquals("sent", world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
+  }
+
+  // ---- CHG-PWD-SWITCH-001-T03: the default method (rule 3d) --------------------------------------------------
+
+  @Test
+  public void ac4WithThePasswordOffACodeIsIssuedAndMailedWhileTheCodeSwitchIsOff() {
+    World world = World.with(State.ELIGIBLE);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.switches.put(Long.valueOf(GU), "false");
+
+    Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+    Map<String, Object> expected = new LinkedHashMap<String, Object>();
+    expected.put("status", "sent");
+    expected.put("destination", "a***@partner.org");
+    assertEquals(expected, response);
+    assertEquals("a challenge row is issued", 1, world.issues.size());
+    assertEquals("the member is mailed the code", 1, world.mails.size());
+    assertEquals("ana@partner.org", world.mails.get(0).recipient);
+    assertTrue("the mailed code is the code whose MAC was stored",
+      world.codes().matches(world.issues.get(0).codeHmac, world.issues.get(0).nonce, world.mails.get(0).code));
+  }
+
+  @Test
+  public void ac5WithThePasswordOffACodeIsIssuedAndMailedWhileTheDomainIsExcluded() {
+    World world = World.with(State.ELIGIBLE);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.exclusions.put(Long.valueOf(GU), "other.org, PARTNER.org");
+
+    Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+    assertEquals("sent", response.get("status"));
+    assertEquals("a challenge row is issued", 1, world.issues.size());
+    assertEquals("the member is mailed the code", 1, world.mails.size());
+    assertEquals("ana@partner.org", world.mails.get(0).recipient);
+  }
+
+  @Test
+  public void ac8TurningThePasswordBackOnAppliesToTheNextRequestOfTheSameWorld() {
+    World world = World.with(State.ELIGIBLE);
+    world.switches.put(Long.valueOf(GU), "false");
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    assertEquals("sent", world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
+    assertEquals("the override mailed a code", 1, world.mails.size());
+
+    world.passwordSwitches.put(Long.valueOf(GU), "true");
+    assertEquals("today's rule again: the code switch is off", Collections.singletonMap("status", "domainNotEnabled"),
+      world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse());
+    assertEquals("no second row, no second mail", 1, world.mails.size());
+
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    assertEquals("sent", world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse().get("status"));
+    assertEquals(2, world.mails.size());
+  }
+
+  @Test
+  public void theSentLineOfACodeIssuedByThePasswordOffOverrideEndsWithViaPasswordOff() {
+    // Design 11: both ways the override issues a code that the unit would not offer on its own.
+    for (String ownSettings : new String[] {"code switch off", "domain excluded"}) {
+      World world = World.with(State.ELIGIBLE);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      if ("code switch off".equals(ownSettings)) {
+        world.switches.put(Long.valueOf(GU), "false");
+      } else {
+        world.exclusions.put(Long.valueOf(GU), "partner.org");
+      }
+      this.appender.list.clear();
+
+      Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+      assertEquals(ownSettings + ": a real code was mailed", 1, world.mails.size());
+      assertEquals(ownSettings + ": one request line", 1, this.requestLines().size());
+      assertTrue(ownSettings + ": " + this.requestLines(), SENT_VIA_LINE.matcher(this.requestLines().get(0)).matches());
+      assertEquals(ownSettings + ": the caller is told nothing of it", new LinkedHashSet<String>(
+        Arrays.asList("status", "destination")), response.keySet());
+    }
+  }
+
+  @Test
+  public void theSentLineOfACodeTheUnitOffersOnItsOwnHasNoVia() {
+    World normal = World.with(State.ELIGIBLE);
+    World passwordOffButOffered = World.with(State.ELIGIBLE);
+    passwordOffButOffered.passwordSwitches.put(Long.valueOf(GU), "false");
+    World cognitoOffered = World.with(State.ELIGIBLE);
+    cognitoOffered.users.get(State.ELIGIBLE.email).setCgiarUser(true);
+    cognitoOffered.passwordSwitches.put(Long.valueOf(GU), "false");
+    cognitoOffered.cognitoOverrides.put(Long.valueOf(GU), "true");
+    String[] labels = {"password on", "password off, code switch on, domain not excluded",
+      "password off, a Cognito account the unit offers the code to"};
+    World[] worlds = {normal, passwordOffButOffered, cognitoOffered};
+
+    for (int i = 0; i < worlds.length; i++) {
+      this.appender.list.clear();
+
+      worlds[i].call(State.ELIGIBLE.submitted(), "7", "true");
+
+      assertEquals(labels[i] + ": a real code was mailed", 1, worlds[i].mails.size());
+      assertEquals(1, this.requestLines().size());
+      assertTrue(labels[i] + ": " + this.requestLines(), SENT_LINE.matcher(this.requestLines().get(0)).matches());
+    }
+  }
+
+  @Test
+  public void aRequestThatIssuedNoRealCodeNeverCarriesViaUnderTheOverride() {
+    // The neutral sent, the decoy row and the failed predicate are logged as today, with nothing about the override.
+    for (String kind : new String[] {"unknown", "inactive", "non-member", "soft-deleted", "Cognito account",
+      "failed predicate"}) {
+      State state = "unknown".equals(kind) ? State.UNKNOWN : "inactive".equals(kind) ? State.INACTIVE
+        : "non-member".equals(kind) ? State.NON_MEMBER : "soft-deleted".equals(kind) ? State.SOFT_DELETED
+        : State.ELIGIBLE;
+      World world = World.with(state);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      world.switches.put(Long.valueOf(GU), "false");
+      if ("Cognito account".equals(kind)) {
+        world.users.get(state.email).setCgiarUser(true);
+        world.cognitoOverrides.put(Long.valueOf(GU), "true");
+      }
+      if ("failed predicate".equals(kind)) {
+        world.userLookupFailure = new IllegalStateException("store down");
+      }
+      this.appender.list.clear();
+
+      world.call(state.submitted(), "7", "true");
+
+      assertEquals(kind + ": nothing was mailed", 0, world.mails.size());
+      assertEquals(kind + ": a decoy row was issued", 1, world.issues.size());
+      assertEquals(kind + ": one request line", 1, this.requestLines().size());
+      String line = this.requestLines().get(0);
+      assertTrue(kind + ": " + line, line.startsWith("auth.otp.request outcome="
+        + ("failed predicate".equals(kind) ? "internal_error" : "neutral") + " gu=testcrp domain=partner.org ms="));
+      assertFalse(kind + ": " + line, line.contains("via="));
+      ThreadContext.remove();
+      SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+    }
+  }
+
+  @Test
+  public void ac6ACognitoAccountIsRefusedUnderTheOverrideWithTheNeutralSentAndADecoyRow() {
+    // Scenario "Cognito account unaffected": Cognito on, password off, and the unit offers the account no code of its
+    // own, either because the code switch is off or because its domain is excluded. Both refusals are checked.
+    World reference = World.with(State.ELIGIBLE);
+    reference.passwordSwitches.put(Long.valueOf(GU), "false");
+    reference.switches.put(Long.valueOf(GU), "false");
+    reference.cognitoOverrides.put(Long.valueOf(GU), "true");
+    Map<String, Object> eligibleAnswer = reference.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+    assertEquals("a plain member of the same unit is mailed", 1, reference.mails.size());
+    ThreadContext.remove();
+    SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+
+    for (String ownCode : new String[] {"code switch off", "domain excluded"}) {
+      World world = World.with(State.ELIGIBLE);
+      world.users.get(State.ELIGIBLE.email).setCgiarUser(true);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      world.cognitoOverrides.put(Long.valueOf(GU), "true");
+      if ("code switch off".equals(ownCode)) {
+        world.switches.put(Long.valueOf(GU), "false");
+      } else {
+        world.exclusions.put(Long.valueOf(GU), "partner.org");
+      }
+
+      OtpRequestCodeAction action = world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+      assertEquals(ownCode + ": the same answer a member gets", eligibleAnswer, action.getResponse());
+      assertEquals(ownCode + ": a decoy row is issued, so later requests behave alike", 1, world.issues.size());
+      assertEquals(ownCode + ": the row is bound to the email and the unit", State.ELIGIBLE.emailHmac,
+        world.issues.get(0).emailHmac);
+      assertEquals(ownCode + ": nothing is mailed", 0, world.mails.size());
+      assertNotNull(ownCode + ": the pending challenge is in the session", pending());
+      assertEquals(ownCode, State.ELIGIBLE.email, pending().getEmail());
+      assertTrue(ownCode, this.requestLines().get(this.requestLines().size() - 1).contains("outcome=neutral"));
+      assertEquals(ownCode + ": the Cognito flag was read once, as for a member", 1, world.count("cognito"));
+      assertEquals(ownCode + ": the same calls a member makes up to the decoy row, the Cognito read included",
+        kinds(untilTheIssue(reference.events)), kinds(untilTheIssue(world.events)));
+      ThreadContext.remove();
+      SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+    }
+  }
+
+  @Test
+  public void sec004OnAPasswordOffUnitEveryAccountPaysTheCognitoReadBeforeTheLookup() {
+    World member = World.with(State.ELIGIBLE);
+    member.passwordSwitches.put(Long.valueOf(GU), "false");
+    member.cognitoOverrides.put(Long.valueOf(GU), "true");
+    member.call(State.ELIGIBLE.submitted(), "7", "true");
+    String[] expectedOrder = {"specificity", "specificity", "unit", "cognito-custom", "user", "member", "issue"};
+
+    for (State state : State.values()) {
+      World world = World.with(state);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      world.cognitoOverrides.put(Long.valueOf(GU), "true");
+
+      world.call(state.submitted(), "7", "true");
+
+      assertEquals(state + ": one Cognito read for the unit, known account or not: " + world.events, 1,
+        world.count("cognito"));
+      assertTrue(state + ": the flag is read for unit 7, never for the type: " + world.events,
+        world.events.contains("cognito-custom:" + GU));
+      assertTrue(state + ": before the lookup: " + world.events,
+        world.events.indexOf("cognito-custom:" + GU) < world.events.indexOf("user:" + state.email));
+      assertEquals(state + ": a row is issued in every state", 1, world.issues.size());
+    }
+    List<String> order = new ArrayList<String>();
+    for (String kind : kinds(untilTheIssue(member.events))) {
+      if (Arrays.asList(expectedOrder).contains(kind)) {
+        order.add(kind);
+      }
+    }
+    assertEquals("the order a member is served in", Arrays.asList(expectedOrder), order);
+  }
+
+  @Test
+  public void everyAccountStateGetsTheNeutralAnswerWithThePasswordOffAndTheCodeSwitchOff() {
+    World reference = World.with(State.ELIGIBLE);
+    reference.passwordSwitches.put(Long.valueOf(GU), "false");
+    reference.switches.put(Long.valueOf(GU), "false");
+    Map<String, Object> eligible = reference.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+    assertEquals("sent", eligible.get("status"));
+
+    for (State state : State.values()) {
+      World world = World.with(state);
+      world.passwordSwitches.put(Long.valueOf(GU), "false");
+      world.switches.put(Long.valueOf(GU), "false");
+
+      Map<String, Object> actual = world.call(state.submitted(), "7", "true").getResponse();
+
+      assertEquals(state + ": the same page state", eligible, actual);
+      assertEquals(state + ": a row in every state", 1, world.issues.size());
+      assertEquals(state + ": only an eligible account is mailed", state == State.ELIGIBLE ? 1 : 0,
+        world.mails.size());
+    }
+  }
+
+  @Test
+  public void onAPasswordOnUnitTheCognitoFlagIsNeverResolvedAndIsCgiarUserIsNeverRead() {
+    // Replaces the T21 locks (design DD-4, P-16): the behaviour, with counting doubles, for every account state.
+    for (State state : State.values()) {
+      World world = World.with(state);
+      world.cognitoOverrides.put(Long.valueOf(GU), "true");
+      if (world.users.containsKey(state.email)) {
+        world.users.get(state.email).setCgiarUser(true);
+      }
+
+      world.call(state.submitted(), "7", "true");
+
+      assertEquals(state + ": zero Cognito reads: " + world.events, 0, world.count("cognito"));
+      assertEquals(state + ": is_cgiar_user never read", 0, world.cgiarReads());
+      assertEquals(state + ": a row in every state", 1, world.issues.size());
+    }
+  }
+
+  @Test
+  public void theCountingDoublesDoSeeACognitoReadAndACgiarReadOnAPasswordOffUnit() {
+    World world = World.with(State.ELIGIBLE);
+    world.users.get(State.ELIGIBLE.email).setCgiarUser(true);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.cognitoOverrides.put(Long.valueOf(GU), "true");
+
+    world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+    assertEquals(1, world.count("cognito"));
+    assertTrue("a CGIAR account of a Cognito unit has its flag read", world.cgiarReads() > 0);
+  }
+
+  @Test
+  public void ac7WithoutAKeyTheOverrideSendsNothingAndReadsNothing() {
+    World world = World.with(State.ELIGIBLE);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.switches.put(Long.valueOf(GU), "false");
+    world.secret = "";
+
+    Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+    assertEquals("FN-006: the code is unavailable, the password is the way in",
+      Collections.singletonMap("status", "domainNotEnabled"), response);
+    assertEquals("nothing is read before the key check", Collections.emptyList(), world.events);
+    assertEquals(0, world.issues.size());
+    assertEquals(0, world.mails.size());
+  }
+
+  @Test
+  public void anUnknownUnitIsNotRescuedByTheOverrideOfAnotherUnit() {
+    World world = World.with(State.ELIGIBLE);
+    world.passwordSwitches.put(Long.valueOf(GU), "false");
+    world.switches.put(Long.valueOf(GU), "false");
+
+    Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "99", "true").getResponse();
+
+    assertEquals(Collections.singletonMap("status", "domainNotEnabled"), response);
+    assertEquals(0, world.issues.size());
+    assertEquals("the override of unit 7 is read for unit 99 only", 0, world.count("cognito"));
+  }
+
+  /**
+   * The events up to the challenge row: what the eligibility decision and its neighbours read. Past it the eligible
+   * account is mailed and the Global Unit acronym of the log line is read at a different moment, which T21 already
+   * did and which has nothing to do with the Cognito read.
+   */
+  private static List<String> untilTheIssue(List<String> events) {
+    return events.subList(0, events.indexOf("issue") + 1);
+  }
+
+  /** The kind of every event: what comes before the first colon, so two accounts' sequences can be compared. */
+  private static List<String> kinds(List<String> events) {
+    List<String> kinds = new ArrayList<String>();
+    for (String event : events) {
+      kinds.add(event.contains(":") ? event.substring(0, event.indexOf(':')) : event);
+    }
+    return kinds;
   }
 
   @Test
@@ -934,7 +1252,7 @@ public class OtpRequestCodeActionTest {
       {OtpRateLimiter.class, new Class<?>[] {OtpKeys.class, OtpRateLimitManager.class}},
       {OtpCodes.class, new Class<?>[] {OtpKeys.class}},
       {OtpEligibility.class, new Class<?>[] {OtpKeys.class, UserManager.class, GlobalUnitManager.class,
-        CrpUserManager.class, OtpChallengeManager.class}}};
+        CrpUserManager.class, OtpChallengeManager.class, CustomParameterManager.class, ParameterManager.class}}};
     for (Object[] row : expected) {
       Class<?> type = (Class<?>) row[0];
       assertTrue(type.getSimpleName() + " is found by the component scan", type.isAnnotationPresent(Named.class));
@@ -972,6 +1290,9 @@ public class OtpRequestCodeActionTest {
     context.getBeanFactory().registerSingleton("globalUnitManager", world.globalUnitManager());
     context.getBeanFactory().registerSingleton("crpUserManager", world.crpUserManager());
     context.getBeanFactory().registerSingleton("otpChallengeManager", world.challengeManager());
+    // The predicate gets the two Cognito managers back (CHG-PWD-SWITCH-001 DD-4): the scan must find both.
+    context.getBeanFactory().registerSingleton("customParameterManager", world.customParameterManager());
+    context.getBeanFactory().registerSingleton("parameterManager", world.parameterManager());
     context.refresh();
     try {
       for (Class<?> type : new Class<?>[] {OtpKeys.class, OtpRateLimiter.class, OtpCodes.class,
@@ -1231,11 +1552,15 @@ public class OtpRequestCodeActionTest {
     /** The raw effective value of system_otp_login_active and of system_otp_excluded_email_domains, by unit. */
     final Map<Long, String> switches = new HashMap<Long, String>();
     final Map<Long, String> exclusions = new HashMap<Long, String>();
+    /** The raw effective value of system_password_login_active, by unit; an absent unit reads as "" like the store. */
+    final Map<Long, String> passwordSwitches = new HashMap<Long, String>();
     final Set<String> members = new HashSet<String>();
     /** Rows with is_active=0: seen by the activity-blind existCrpUser, never by existActiveCrpUser. */
     final Set<String> softDeleted = new HashSet<String>();
     /** The crp_custom_file value of each Global Unit; a unit with no entry has no such parameter. */
     final Map<Long, String> customFiles = new HashMap<Long, String>();
+    /** The unit's own custom_parameters row for cognito_auth_active, by unit id; a unit with no entry has none. */
+    final Map<Long, String> cognitoOverrides = new HashMap<Long, String>();
 
     final List<String> events = new ArrayList<String>();
     final List<Issue> issues = new ArrayList<Issue>();
@@ -1266,6 +1591,7 @@ public class OtpRequestCodeActionTest {
       world.units.put(Long.valueOf(GU), unit);
       world.switches.put(Long.valueOf(GU), "true");
       world.exclusions.put(Long.valueOf(GU), "");
+      world.passwordSwitches.put(Long.valueOf(GU), "true");
       switch (state) {
         case ELIGIBLE:
           world.addUser(state, true, false);
@@ -1295,7 +1621,7 @@ public class OtpRequestCodeActionTest {
     }
 
     void addUser(String email, long id, boolean active, boolean cgiar) {
-      User user = new User();
+      User user = new CountingUser();
       user.setId(Long.valueOf(id));
       user.setEmail(email);
       user.setActive(active);
@@ -1311,6 +1637,15 @@ public class OtpRequestCodeActionTest {
         }
       }
       return count;
+    }
+
+    /** How many times any user of this world had {@code isCgiarUser()} read. */
+    int cgiarReads() {
+      int reads = 0;
+      for (User user : this.users.values()) {
+        reads += ((CountingUser) user).cgiarReads;
+      }
+      return reads;
     }
 
     OtpCodes codes() {
@@ -1336,7 +1671,7 @@ public class OtpRequestCodeActionTest {
       OtpChallengeManager challengeManager = this.challengeManager();
       GlobalUnitManager globalUnitManager = this.globalUnitManager();
       OtpEligibility eligibility = new OtpEligibility(keys, this.userManager(), globalUnitManager,
-        this.crpUserManager(), challengeManager);
+        this.crpUserManager(), challengeManager, this.customParameterManager(), this.parameterManager());
       OtpRequestCodeAction action = new OtpRequestCodeAction(config, keys,
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
         globalUnitManager, this.customParameterManager(), this.mailer(), new ClientIpResolver(this.proxies), CLOCK);
@@ -1395,6 +1730,8 @@ public class OtpRequestCodeActionTest {
             Map<String, String> values = new HashMap<String, String>();
             values.put("system_otp_login_active", switchValue == null ? "" : switchValue);
             values.put("system_otp_excluded_email_domains", exclusion == null ? "" : exclusion);
+            String passwordValue = this.passwordSwitches.get(id);
+            values.put("system_password_login_active", passwordValue == null ? "" : passwordValue);
             answer.put((Long) id, values);
           }
           return answer;
@@ -1475,9 +1812,48 @@ public class OtpRequestCodeActionTest {
           parameter.setValue(file);
           return parameter;
         }
-        // Any other key, the Cognito flag included, is unsupported: a read of it would fail the test (SEC-009).
+        if ("getCustomParameterByParameterKeyAndGlobalUnitId".equals(method)
+          && COGNITO_KEY.equals(args[0])) {
+          // Answered and counted: the predicate reads the Cognito flag only while the unit's password switch is off
+          // (CHG-PWD-SWITCH-001 DD-4), and a read on a password-on unit is a failure the tests look for.
+          this.events.add("cognito-custom:" + args[1]);
+          String value = this.cognitoOverrides.get(args[1]);
+          if (value == null) {
+            return null;
+          }
+          CustomParameter parameter = new CustomParameter();
+          parameter.setValue(value);
+          parameter.setActive(true);
+          return parameter;
+        }
+        // Any other key is unsupported: a read of it would fail the test.
         return unsupported(method);
       });
+    }
+
+    ParameterManager parameterManager() {
+      return fake(ParameterManager.class, (method, args) -> {
+        if ("getParameterByKey".equals(method) && COGNITO_KEY.equals(args[0])) {
+          // The catalog is keyed by the unit TYPE and holds no row for it here.
+          this.events.add("cognito-catalog:" + args[1]);
+          return null;
+        }
+        return unsupported(method);
+      });
+    }
+  }
+
+  /** A user whose reads of {@code is_cgiar_user} are counted. */
+  private static final class CountingUser extends User {
+
+    private static final long serialVersionUID = 1L;
+
+    int cgiarReads;
+
+    @Override
+    public boolean isCgiarUser() {
+      this.cgiarReads++;
+      return super.isCgiarUser();
     }
   }
 }

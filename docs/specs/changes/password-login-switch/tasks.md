@@ -69,7 +69,7 @@
 
 ### CHG-PWD-SWITCH-001-T03 — Code endpoints follow the rule (DD-3, DD-4)
 
-- **Status:** pending [ ] · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
 - **Requirements:** FN-002, FN-004, FN-005, FN-006; SEC-003, SEC-004; OPS-002 (ERROR memory); AC-4, AC-5, AC-6, AC-8
 - **Design:** §2 `OtpEligibility`, DD-3, DD-4 (reversion challenge), §11, §13 "Neutral override"
 - **Files:** `security/otp/OtpEligibility.java`; `action/home/OtpRequestCodeAction.java` (step 4 only);

@@ -188,7 +188,7 @@ public class CrpByUserEmailActionTest {
       throw new UnsupportedOperationException("not needed by this suite: " + method);
     });
     return new OtpEligibility(new OtpKeys(config), this.userManager, this.crpManager, crpUserManager,
-      challengeManager);
+      challengeManager, this.customParameterManager, this.parameterManager);
   }
 
   private int crpUserChecks;
@@ -300,12 +300,13 @@ public class CrpByUserEmailActionTest {
     assertEquals(0, this.crpManager.byIdCalls);
   }
 
-  /** One uncached query for all the listed units, and it carries both keys. */
+  /** One uncached query for all the listed units, and it carries all three keys (CHG-PWD-SWITCH-001-T03, DD-3). */
   @Test
   public void oneSpecificityQueryCoversBothKeysAndEveryListedUnit() {
     this.configureOtp();
     this.otpFlags(partnerUser(true, false), globalUnit(1L, "AAA"), globalUnit(2L, "BBB"));
-    assertEquals(Arrays.asList("[system_otp_login_active, system_otp_excluded_email_domains]|[1, 2]"),
+    assertEquals(Arrays.asList(
+      "[system_otp_login_active, system_otp_excluded_email_domains, system_password_login_active]|[1, 2]"),
       this.specificityReads);
   }
 
