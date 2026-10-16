@@ -4,7 +4,7 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20261006"
+  "${baseUrlMedia}/js/projects/projectActivities.js?20261016"
   ] 
 /]
 [#-- ,  
@@ -144,6 +144,9 @@
 
 [#-- Activity Template --]
 [@deliverablesMacro element={} name="project.projectActivities[-1].deliverables" index=-1 isTemplate=true /]
+
+[#-- Shown by projectActivities.js under a start or end date typed in a format the server cannot read --]
+<span id="activityDateInvalidMessage" class="hidden">[@s.text name="project.activities.dateInvalidFormat" /]</span>
 
 
 <!-- Confirm removeactivity Modal -->
