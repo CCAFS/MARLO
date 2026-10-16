@@ -22,7 +22,7 @@
 
 ### CHG-PWD-SWITCH-001-T01 — Constants and migration (DA-001, DA-002, DA-003, FN-001)
 
-- **Status:** pending [ ] · **Size:** S · **Depends on:** none · **Module:** marlo-data, marlo-web
+- **Status:** done [x] · **Size:** S · **Depends on:** none · **Module:** marlo-data, marlo-web
 - **Requirements:** FN-001, DA-001, DA-002, DA-003; AC-1, AC-14
 - **Design:** §3 (migration and fixed texts), §9
 - **Files:** both `config/APConstants.java` (`PASSWORD_LOGIN_ACTIVE`); new

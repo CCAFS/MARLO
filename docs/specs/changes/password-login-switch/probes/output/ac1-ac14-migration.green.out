@@ -1,0 +1,50 @@
+PASS  DA-002 text found in requirements.md (yes)
+PASS  DA-003 text of system_otp_login_active found in design.md (yes)
+PASS  DA-003 text of system_otp_excluded_email_domains found in design.md (yes)
+expected lengths (bytes): system_password_login_active=383 system_otp_login_active=595 system_otp_excluded_email_domains=392
+migration file: marlo-web/src/main/resources/database/migrations/V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql
+invocation per run: $PROBE_ADMIN_MYSQL <database> < $MIGRATION   (databases: pwd_probe_t01_a cloned from aiccradb_pwd_probe, pwd_probe_t01_b, pwd_probe_t01_c)
+
+== (a) pwd_probe_t01_a: the four touched tables cloned from aiccradb_pwd_probe (real data); apply twice
+PASS  (a) fixture: the copy already has the earlier OTP keys, none of the new key (4/4/0)
+unit types in the copy: 1,2,3,4,5
+run 1 exit 0
+run 2 exit 0
+PASS  (a) after run 1: new key / code switch / exclusion rows (types 1-4 only, type 5 not seeded) (4/4/4)
+PASS  (a) after run 2: no row duplicated (4/4/4)
+PASS  (a) whole parameters table identical after run 2 (idempotent) (640058315095)
+PASS  (a) new key: boolean, default true, category 2, types 1-4 (1/1/true/2 2/1/true/2 3/1/true/2 4/1/true/2)
+PASS  (a) no custom_parameters row for any of the three keys (every unit starts on) (0)
+PASS  (a) every other parameters row unchanged (checksum) (292:617056421997)
+PASS  (a) the two OTP keys: every column but description unchanged (checksum) (8:17416107196)
+PASS  (a) custom_parameters table unchanged (checksum) (1620:3513954243803)
+PASS  (a) system_password_login_active (DA-002): one distinct stored value (1)
+PASS  (a) system_password_login_active (DA-002): stored text equals the spec text byte for byte
+PASS  (a) system_otp_login_active (DA-003): one distinct stored value (1)
+PASS  (a) system_otp_login_active (DA-003): stored text equals the spec text byte for byte
+PASS  (a) system_otp_excluded_email_domains (DA-003): one distinct stored value (1)
+PASS  (a) system_otp_excluded_email_domains (DA-003): stored text equals the spec text byte for byte
+PASS  (a) applied migrations V2_6_0_20261009_1025 and V2_6_0_20261015_1418 are untouched ()
+
+== (b) pwd_probe_t01_b: no Global Unit 45 or 47 (only seeded units, ids < 29); apply twice
+PASS  (b) fixture: no unit 45 or 47 (0)
+PASS  (b) fixture: types 1-4 and the 8 OTP rows loaded (a vacuous run must not pass) (4/8/0)
+run 1 exit 0
+run 2 exit 0
+PASS  (b) after run 1: new / code switch / exclusion rows (4/4/4)
+PASS  (b) after run 2: the same, table identical (4/4/4/23620250454)
+PASS  (b) no custom_parameters row exists, so no unit id was assumed (0)
+PASS  (b) system_password_login_active: one distinct stored value (1)
+PASS  (b) system_password_login_active: stored text equals the spec text byte for byte
+PASS  (b) system_otp_login_active: one distinct stored value (1)
+PASS  (b) system_otp_login_active: stored text equals the spec text byte for byte
+PASS  (b) system_otp_excluded_email_domains: one distinct stored value (1)
+PASS  (b) system_otp_excluded_email_domains: stored text equals the spec text byte for byte
+
+== (c) pwd_probe_t01_c: no global_unit_types rows and no parameters at all; apply twice
+run 1 exit 0
+run 2 exit 0
+PASS  (c) parameters rows (nothing seeded, UPDATEs matched nothing, no failure) (0)
+
+scratch databases pwd_probe_t01_a, pwd_probe_t01_b, pwd_probe_t01_c dropped; aiccradb_pwd_probe is the caller's to drop
+RESULT: 0 failed

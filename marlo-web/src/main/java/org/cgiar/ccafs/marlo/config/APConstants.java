@@ -154,6 +154,9 @@ public final class APConstants {
   // CHG-OTP-LOGIN-001-T21: per-Global-Unit email domains excluded from that sign-in (comma-separated, empty = none).
   // Value MUST equal parameters.key
   public static final String OTP_EXCLUDED_EMAIL_DOMAINS = "system_otp_excluded_email_domains";
+  // CHG-PWD-SWITCH-001-FN-001: per-Global-Unit switch for password sign-in (boolean, default true). Value MUST equal
+  // parameters.key
+  public static final String PASSWORD_LOGIN_ACTIVE = "system_password_login_active";
   public static final String BUTTON_GUIDE_ACTIVE = "button_guide_active";
   public static final String HANDLE_WOS_SERVICE_ACTIVE = "handle_wos_service_active";
   public static final String JOURNAL_ARTICLES_INDICATOR_POPUP_ACTIVE = "journal_articles_indicator_popup_active";
