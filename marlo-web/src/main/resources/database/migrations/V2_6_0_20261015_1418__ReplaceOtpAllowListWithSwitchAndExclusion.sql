@@ -21,7 +21,7 @@
 
 INSERT INTO parameters (global_unit_type_id, `key`, `description`, `format`, default_value, category)
 SELECT gut.id, 'system_otp_login_active',
-  'Lets users of this program sign in on the login page with a one-time code sent to their email, as an alternative to their password or to Sign in with CGIAR. Only registered users who are active and members of this program receive a code. Turning it off removes the option on the next login. Users whose email domain is listed in system_otp_excluded_email_domains never receive a code.',
+  'Lets users of this Global Unit sign in on the login page with a one-time code sent to their email, as an alternative to their password or to Sign in with CGIAR. Only registered users who are active and members of this Global Unit receive a code. Turning it off removes the option on the next login. Users whose email domain is listed in system_otp_excluded_email_domains never receive a code.',
   1, 'false', 2
 FROM global_unit_types gut
 WHERE gut.id IN (1, 2, 3, 4)
@@ -33,7 +33,7 @@ AND NOT EXISTS (
 
 INSERT INTO parameters (global_unit_type_id, `key`, `description`, `format`, default_value, category)
 SELECT gut.id, 'system_otp_excluded_email_domains',
-  'Email domains that can never sign in with a one-time code in this program, even when system_otp_login_active is on. Write exact domains separated by commas, for example cgiar.org,example.org. A subdomain is only excluded if it is listed itself. Leave it empty to exclude no one.',
+  'Email domains that can never sign in with a one-time code in this Global Unit, even when system_otp_login_active is on. Write exact domains separated by commas, for example cgiar.org,example.org. A subdomain is only excluded if it is listed itself. Leave it empty to exclude no one.',
   4, '', 2
 FROM global_unit_types gut
 WHERE gut.id IN (1, 2, 3, 4)
