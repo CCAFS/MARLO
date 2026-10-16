@@ -156,7 +156,10 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
           }
         }
 
-        if (!phase.getEditable()) {
+        // A closed phase is read-only for everyone but Admin and Super Admin, and only in the
+        // Overall Performance Indicators section. BaseAction owns the rule because the save path
+        // has to ask the same question and cannot be allowed to drift from this one.
+        if (!phase.getEditable() && !baseAction.canEditClosedPhaseOutcomes()) {
           canEdit = false;
           baseAction.setCanEditPhase(false);
         }

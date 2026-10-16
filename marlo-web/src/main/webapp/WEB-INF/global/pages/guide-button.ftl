@@ -4,18 +4,20 @@
 [#assign actionPath = currentActionName?contains("/")?then(
   currentActionName?substring(currentActionName?index_of("/") + 1), currentActionName)]
 
+[#-- A real button, so the guide can be reached and opened from the keyboard and screen
+     readers hear whether it is open. marlo-redesign.css draws it as the round "?" action. --]
 [#if canEdit || actionPath == 'crpDashboard']
-<div id="guide-button" class="guide-button" >
-  <img src="${baseUrlCdn}/global/images/guideButton.png" />
-</div>
+<button type="button" id="guide-button" class="guide-button" aria-expanded="false" aria-controls="guide"
+  aria-label="[@s.text name="guide.button.open" /]" title="[@s.text name="guide.button.open" /]">
+  <img src="${baseUrlCdn}/global/images/guideButton.png" alt="" />
+</button>
 [/#if]
 
-  <div class="popup-guide animate__animated animate__bounce" id="guide">
-    <div class="button-exit close-modal-evidences">
-      <div class="x-close-modal" id="x-close-modal-guide" ></div>
-    </div>
+  <div class="popup-guide" id="guide" role="dialog" aria-modal="false" aria-labelledby="guideTitle" tabindex="-1">
+    <button type="button" class="guide-close" id="x-close-modal-guide" aria-label="[@s.text name="guide.button.close" /]"
+      title="[@s.text name="guide.button.close" /]">&#10005;</button>
 
-    <p class="title-modal-evidences">Guide to this section</p>
+    <p class="title-modal-evidences" id="guideTitle">[@s.text name="guide.button.title" /]</p>
     <div class="line-modal" ></div>
     <div class="text-modal-evidences">
     
@@ -226,19 +228,41 @@
 
 
   <script>
-    $('#guide-button').click(function() {
-      if ($('.popup-guide').is(':visible')) {
-        $('.popup-guide').slideUp();
-      } else {
-        
-        $('.popup-guide').slideDown();
-        
+    (function() {
+      var $trigger = $('#guide-button');
+      var $guide = $('#guide');
+
+      function openGuide() {
+        $trigger.attr('aria-expanded', 'true');
+        // Focus moves into the panel so its content is announced and Esc reaches it.
+        $guide.stop(true, true).slideDown(function() { $guide.trigger('focus'); });
       }
-    });
-    
-    $('#x-close-modal-guide').click(function() {     
-        $('.popup-guide').slideUp();
-    });
-    
-    
+
+      // returnFocus: hand focus back to the "?" when the panel was closed from inside it.
+      function closeGuide(returnFocus) {
+        $trigger.attr('aria-expanded', 'false');
+        $guide.stop(true, true).slideUp();
+        if (returnFocus && $trigger.length) {
+          $trigger.trigger('focus');
+        }
+      }
+
+      $trigger.on('click', function() {
+        if ($guide.is(':visible')) {
+          closeGuide(false);
+        } else {
+          openGuide();
+        }
+      });
+
+      $('#x-close-modal-guide').on('click', function() {
+        closeGuide(true);
+      });
+
+      $(document).on('keydown', function(e) {
+        if ((e.key === 'Escape' || e.keyCode === 27) && $guide.is(':visible')) {
+          closeGuide($.contains($guide[0], document.activeElement) || document.activeElement === $guide[0]);
+        }
+      });
+    })();
   </script>

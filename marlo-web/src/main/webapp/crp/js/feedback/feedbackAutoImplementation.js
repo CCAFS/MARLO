@@ -1662,7 +1662,8 @@ function deleteQAComment(commentID, name, htmlParent) {
 }
 
 function getNumberOfComments(name) {
-  var finalAjaxURL = `/getCommentStatus.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}&fieldDescription=${name}`;
+  // Field names carry list brackets (milestones[2].achievedValue), which Tomcat rejects unencoded with a 400.
+  var finalAjaxURL = `/getCommentStatus.do?sectionName=${sectionName}&parentID=${parentID}&phaseID=${phaseID}&fieldDescription=${encodeURIComponent(name)}`;
 
   $.ajax({
     url: baseURL + finalAjaxURL,

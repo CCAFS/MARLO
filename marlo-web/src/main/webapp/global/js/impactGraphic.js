@@ -6,6 +6,13 @@ $(function() { // on dom ready
   var crpProgram = $("input[name='crpProgramID']").val();
   var sec = $("input[name='actionName']").val();
 
+  // AICCRA does not render the mini-graph. cytoscape only runs headless when the container
+  // is undefined, and getElementById() hands it null instead, so its renderer threw
+  // "Cannot read properties of null (reading 'parentNode')" on every load of those pages.
+  if(!document.getElementById(graphicContent)) {
+    return;
+  }
+
   if(sec != "" && sec != null && crpProgram != "" && crpProgram != null) {
     var section = sec.split('/');
     data = {

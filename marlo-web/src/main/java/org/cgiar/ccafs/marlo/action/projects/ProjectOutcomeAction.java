@@ -62,6 +62,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
 import org.cgiar.ccafs.marlo.utils.FileManager;
+import org.cgiar.ccafs.marlo.utils.MilestoneComparators;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectOutcomeValidator;
 
 import java.io.BufferedReader;
@@ -126,7 +127,6 @@ public class ProjectOutcomeAction extends BaseAction {
   private Project project;
   private List<CrpMilestone> milestones;
   private List<CrpMilestone> milestonesProject;
-  private List<Integer> milestonesProjectYear;
   private List<Integer> milestonesYears;
   private List<SrfTargetUnit> targetUnits;
   private CrpProgramOutcome crpProgramOutcome;
@@ -734,21 +734,6 @@ public class ProjectOutcomeAction extends BaseAction {
   }
 
   /**
-   * Fill the milestone project year list for tabs information
-   **/
-  public void fillMilestonesProjectYearsList() {
-    if (milestonesProject != null && !milestonesProject.isEmpty()) {
-      milestonesProjectYear = new ArrayList<>();
-      for (CrpMilestone milestoneElement : milestonesProject) {
-        if (milestoneElement != null && milestoneElement.isActive() && milestoneElement.getYear() != null
-          && !milestoneElement.getYear().equals(0) && milestoneElement.getYear() <= this.getActualPhase().getYear()) {
-          milestonesProjectYear.add(milestoneElement.getYear());
-        }
-      }
-    }
-  }
-
-  /**
    * Fill the milestones years list for tabs information
    **/
   public void fillAllMilestonesYearsList() {
@@ -973,26 +958,6 @@ public class ProjectOutcomeAction extends BaseAction {
     return 0;
   }
 
-  /**
-   * Set index for each milestone year
-   * 
-   * @return
-   * @return year
-   **/
-  public int getIndexMilestone(int year) {
-    int i = 0;
-    if (milestonesProject != null && !milestonesProject.isEmpty()) {
-      for (CrpMilestone milestoneElement : milestonesProject) {
-        if (milestoneElement != null && milestoneElement.getYear() != null
-          && milestoneElement.getYear().intValue() == year) {
-          return i;
-        }
-        i++;
-      }
-    }
-    return -1;
-  }
-
   public int getIndexMilestone(long milestoneId, int year) {
 
     int i = 0;
@@ -1065,49 +1030,6 @@ public class ProjectOutcomeAction extends BaseAction {
   public List<CrpMilestone> getMilestonesProject() {
     return milestonesProject;
   }
-
-  public List<Integer> getMilestonesProjectYear() {
-    return milestonesProjectYear;
-  }
-
-  /**
-   * Get a milestones list
-   * 
-   * @returns list of CrpMilestones
-   **/
-  public List<CrpMilestone> getMilestonesYear() {
-    List<CrpMilestone> projectMilestonesElement = new ArrayList<>();
-    if (milestonesProject != null && !milestonesProject.isEmpty()) {
-      try {
-        projectMilestonesElement =
-          milestonesProject.stream().filter(m -> m != null && m.isActive()).collect(Collectors.toList());
-      } catch (Exception e) {
-        LOG.error(e + "error to get milestone by year");
-      }
-    }
-    return projectMilestonesElement;
-  }
-
-  /**
-   * Get a milestone from an specific year
-   * 
-   * @param year of milestone to get
-   * @returns year CrpMilestone
-   **/
-  public CrpMilestone getMilestoneYear(int year) {
-    CrpMilestone projectMilestoneElement = new CrpMilestone();
-    if (milestonesProject != null && !milestonesProject.isEmpty()) {
-      try {
-        projectMilestoneElement = milestonesProject.stream()
-          .filter(m -> m != null && m.isActive() && m.getYear() != null && m.getYear() == year)
-          .collect(Collectors.toList()).get(0);
-      } catch (Exception e) {
-        LOG.error(e + "error to get milestone by year");
-      }
-    }
-    return projectMilestoneElement;
-  }
-
 
   public ProjectOutcomeIndicator getPreIndicator(Long indicatorID) {
     if (projectOutcome.getIndicators() != null) {
@@ -1593,7 +1515,6 @@ public class ProjectOutcomeAction extends BaseAction {
     milestonesProject.sort(Comparator.comparing(CrpMilestone::getYear, Comparator.reverseOrder()));
     // Collections.sort(milestonesProject, (m1, m2) -> m1.getIndex().compareTo(m2.getIndex()));
 
-    this.fillMilestonesProjectYearsList();
     this.fillAllMilestonesYearsList();
 
     if (this.isReportingActive()) {
@@ -1643,7 +1564,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
       milestones = projectOutcome.getCrpProgramOutcome().getCrpMilestones().stream().filter(c -> c.isActive())
         .collect(Collectors.toList());
-      milestones.sort(Comparator.comparing(CrpMilestone::getYear));
+      milestones.sort(MilestoneComparators.renderOrder());
     }
 
     String traineesIndicatorLabel = this.getTraineesIndicatorDB();
@@ -1959,6 +1880,18 @@ public class ProjectOutcomeAction extends BaseAction {
     }
   }
 
+  /**
+   * Tells whether the current user may write the end-year target set by the PMC (the milestone's
+   * settedValue). The PMC target is the programme's own figure: every user reads it, and only a super
+   * administrator, a CRP administrator or the PMU edits it. projectContributionCrp.ftl opens the field
+   * on the same rule, so an edit made on the form is kept here instead of being dropped on save.
+   *
+   * @return true if the current user may edit the PMC target
+   */
+  private boolean canEditPmcTarget() {
+    return this.canAccessSuperAdmin() || this.canEditCrpAdmin() || this.isPMU();
+  }
+
   private void saveMilestones(ProjectOutcome projectOutcomeDB) {
 
     for (ProjectMilestone projectMilestone : projectOutcomeDB.getProjectMilestones().stream().filter(c -> c.isActive())
@@ -2011,7 +1944,7 @@ public class ProjectOutcomeAction extends BaseAction {
                   projectMilestoneDB.setExpectedUnit(projectMilestone.getExpectedUnit());
                   projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
                   projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
-                  if (this.canAccessSuperAdmin()) {
+                  if (this.canEditPmcTarget()) {
                     projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
                   }
                 }
@@ -2026,7 +1959,7 @@ public class ProjectOutcomeAction extends BaseAction {
             projectMilestoneDB.setCrpMilestone(projectMilestone.getCrpMilestone());
             projectMilestoneDB.setExpectedValue(projectMilestone.getExpectedValue());
             projectMilestoneDB.setAchievedValue(projectMilestone.getAchievedValue());
-            if (this.canAccessSuperAdmin()) {
+            if (this.canEditPmcTarget()) {
               projectMilestoneDB.setSettedValue(projectMilestone.getSettedValue());
             }
 
@@ -2208,10 +2141,6 @@ public class ProjectOutcomeAction extends BaseAction {
 
   public void setMilestonesProject(List<CrpMilestone> milestonesProject) {
     this.milestonesProject = milestonesProject;
-  }
-
-  public void setMilestonesProjectYear(List<Integer> milestonesProjectYear) {
-    this.milestonesProjectYear = milestonesProjectYear;
   }
 
   public void setProject(Project project) {

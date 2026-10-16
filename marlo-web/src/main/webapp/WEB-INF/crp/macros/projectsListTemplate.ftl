@@ -1,279 +1,132 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
-[#macro projectsList projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
-  <table class="projectsList" id="projects">
+[#--
+  Clusters / projects list table (redesign: "MARLO Clusters List" in the MARLO homepage redesign project).
+
+  One macro renders the three lists of the page: the active ones the user can edit, the active ones the user can only
+  read, and the archived ones. projectsList.js drives sorting, filtering and pagination through DataTables, so every
+  row carries the values the toolbar filters on as data attributes.
+    - archived: the list of completed and cancelled projects, which also offers the summary PDF.
+--]
+[#macro projectsList projects=[] tableId="projects" canEdit=false archived=false namespace="/" defaultAction="description" ariaLabel=""]
+  [#local showBudget = !archived && !reportingActive && !planningActive && !centerGlobalUnit /]
+  <table class="clustersTable" id="${tableId}" aria-label="${ariaLabel}">
     <thead>
-      <tr class="header">
-        <th colspan="5">General Information</th>
-        [#if !reportingActive && !planningActive && !centerGlobalUnit]
-          <th colspan="1">[@s.text name="projectsList.projectBudget"] [@s.param]${(crpSession?upper_case)!}[/@s.param] [/@s.text] ${currentCycleYear}</th>
-        [/#if]
-        <th colspan="3">Actions</th>
-      </tr>
-      <tr class="subHeader">
-        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-        <th id="projectType">[@s.text name="projectsList.projectLeaderPerson" /]
-        <th id="projectFlagships">
+      <tr>
+        <th class="cl-col-id">[@s.text name="projectsList.projectids" /]</th>
+        <th class="cl-col-title">[@s.text name="projectsList.projectShortTitles" /]</th>
+        <th class="cl-col-lead">[@s.text name="projectsList.projectLeader" /]</th>
+        <th class="cl-col-leader">[@s.text name="projectsList.projectLeaderPerson" /]</th>
+        <th class="cl-col-programs no-sort">
           [#if centerGlobalUnit]
             [@s.text name="projectsList.projectPrograms" /]
-          [#else]
-            [#if action.hasProgramnsRegions()]
-              [@s.text name="projectsList.projectFlagshipsRegions" /]
-            [#else]
-               [@s.text name="projectsList.projectFlagships" /]
-            [/#if]
-          [/#if]
-        </th>
-        [#if !reportingActive && !planningActive && !centerGlobalUnit]
-          <th id="projectBudget">[@s.text name="projectsList.W1W2projectBudget" /]</th>
-          [#-- <th id="projectBudget">[@s.text name="projectsList.W3projectBudget" /]</th>
-          <th id="projectBudget">[@s.text name="projectsList.BILATERALprojectBudget" /]</th> --]
-        [/#if]
-        <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
-        [#--  
-        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
-        --]
-        <th id="projectDelete">[@s.text name="projectsList.delete" /]</th>
-        [#if isPlanning]
-          <th id="projectBudget">[@s.text name="planning.projects.completion" /]</th>
-        [/#if]
-      </tr>
-    </thead>
-    <tbody>
-    [#if projects?has_content]
-      [#list projects as project]
-        [#assign isProjectNew = action.isProjectNew(project) /]
-        [#assign hasClusterType = action.hasClusterType(project) /]
-        [#assign isCrpProject = (action.isProjectCrpOrPlatformForList(project.id))!false ]
-        [#assign isCenterProject = (action.isProjectCenterForList(project.id))!false ]
-        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        <tr>
-        [#-- ID --]
-        <td class="text-center">
-        [#if action.isAiccra()]
-          <a href="${projectUrl}"> C${project.id}</a>
-        [#else]
-          <a href="${projectUrl}"> P${project.id}</a>
-        [/#if]
-          [#if centerGlobalUnit && isCrpProject ]
-            <span class="badge globalUnitTag"> ${(project.projectInfo.phase.crp.acronym)!} </span>
-          [/#if]
-        </td>
-          [#-- Project Title --]
-          <td class="left">
-            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
-            [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
-            [#if hasClusterType]
-              [#if (project.projectInfo.clusterType.id) == 1]<span class="label label-default">[@s.text name="project.countryProject" /]</span>[/#if]
-              [#if (project.projectInfo.clusterType.id) == 2]<span class="label label-warning">[@s.text name="project.themeProject" /]</span>[/#if]
-              [#if (project.projectInfo.clusterType.id) == 4]<span class="label label-success">[@s.text name="project.regionalProject" /]</span>[/#if]
-            [/#if]
-            [#if project.projectInfo.title?has_content]
-              <a href="${projectUrl}" title="${(project.projectInfo.title)!}">[@utilities.wordCutter string=(project.projectInfo.title)!'' maxPos=120 /]</a>
-            [#else]
-              <a href="${projectUrl}">
-                [@s.text name="projectsList.title.none" /]
-              </a>
-            [/#if]
-            [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.endDate??)!false) ]
-              [#local pYear = (project.projectInfo.endDate)?date?string('yyyy')?number ]
-              [#local validDate = (pYear >= actualPhase.year)!false ]
-              <p class="${(!validDate)?string('fieldError', '')}" title="${(!validDate)?string('Invalid End Date', '')}">
-                <small class="">(${(project.projectInfo.startDate)!} - ${(project.projectInfo.endDate)!})</small>
-              </p>
-            [/#if]
-          </td>
-          [#-- Project Leader --]
-          [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
-            [#assign pLeader =  (project.getLeader(project.projectInfo.phase))! ]
-            [#assign pLeaderPerson =  (project.getLeaderPersonDB(project.projectInfo.phase))! ]
-          [#else]
-            [#assign pLeader =  (project.getLeader(action.getActualPhase()))! ]
-            [#assign pLeaderPerson =  (project.getLeaderPersonDB(action.getActualPhase()))! ]
-          [/#if]
-          <td class="">
-            [#if pLeader?has_content]${(pLeader.institution.acronym)!pLeader.institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
-          </td>
-          <td class="">
-            [#if pLeaderPerson?has_content] ${(pLeaderPerson.user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
-          </td>
-          [#-- Flagship / Regions / Programs --]
-          <td>
-            [#assign tagsNumber = 0 /]
-            [#if project.projectInfo.administrative]
-              [#local li = (project.projectInfo.liaisonInstitution)!{} ]
-              <span class="programTag" style="border-color:#444">
-                [#if ((li.crpProgram??)!false) && (li.crpProgram.crp.id == actualPhase.crp.id )]
-                  ${(li.crpProgram.acronym)!(li.crpProgram.name)}
-                [#elseif (li.institution??)!false]
-                  ${(li.institution.acronym)!(li.institution.name)}
-                [#else]
-                  [@s.text name="global.pmu" /]
-                [/#if]
-              </span>
-              [#assign tagsNumber = tagsNumber+1 /]
-            [#else]
-              [#assign programs = ((project.flagships)![]) + ((project.regions)![])]
-              [#list (programs)![] as element]
-                [#if element.crp.id == actualPhase.crp.id ]
-                  <span class="programTag" style="border-color:${(element.color)!'#fff'}" title="${(element.composedName)}">${(element.acronym)!}</span>
-                  [#assign tagsNumber = tagsNumber+1 /]
-                [/#if]
-              [/#list]
-            [/#if]
-
-            [#if tagsNumber < 1]
-              [@s.text name="projectsList.none" /]
-            [/#if]
-          </td>
-          [#if !reportingActive && !planningActive && !centerGlobalUnit]
-          [#-- Budget W1/W2 --]
-          <td class="">
-            [#if project.getCoreBudget(currentCycleYear,action.getActualPhase())?has_content]
-               <nobr> US$ <span id="">${((project.coreBudget)!0)?string(",##0.00")}</span></nobr>
-            [#else]
-              [@s.text name="projectsList.none" /]
-            [/#if]
-          </td>
-          [#-- Budget W3/ Bilateral --]
-          [#-- <td class="budget">
-            [#if project.getW3Budget(currentCycleYear,action.getActualPhase())?has_content]
-              <nobr>US$ <span id="">${((project.w3Budget)!0)?string(",##0.00")}</span></nobr>
-            [#else]
-              [@s.text name="projectsList.none" /]
-            [/#if]
-          </td> --]
-          [#-- Budget Bilateral --]
-          [#-- <td class="budget">
-            [#if project.getBilateralBudget(currentCycleYear,action.getActualPhase())?has_content]
-              <nobr>US$ <span id="">${((project.bilateralBudget)!0)?string(",##0.00")}</span></nobr>
-            [#else]
-              [@s.text name="projectsList.none" /]
-            [/#if]
-          </td> --]
-          [/#if]
-          [#-- Project Action Status --]
-          <td>
-            [#assign currentCycleYear= currentCycleYear /]
-            [#assign submission = action.isProjectSubmitted(project) /]
-
-            [#-- CRP Project --]
-            [#if isCrpProject]
-              [#if !project.projectInfo.isProjectEditLeader()]
-                <p>Pre-setting</p>
-              [#else]
-                [#if !submission]
-                  [#if !reportingActive]<p title="Ready for project leader completion">Ready for CL</p>[/#if]
-                [#else]
-                  <strong title="Submitted">Submitted</strong>
-                [/#if]
-
-                [#-- Status --]
-                [#if reportingActive]
-                  <p>${(project.projectInfo.statusName)!}</p>
-                [/#if]
-              [/#if]
-            [/#if]
-
-          </td>
-
-          [#-- Summary PDF download --]
-          [#--  
-          <td>
-            [#if action.getActualPhase().crp.id != 29]
-              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
-              </a>
-            [/#if]
-          </td>
-          --]
-          [#-- Delete Project--]
-          <td>
-            [#if canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id=action.getActualPhase().id]
-              <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" />
-              </a>
-            [#else]
-              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
-            [/#if]
-          </td>
-        </tr>
-      [/#list]
-    [/#if]
-    </tbody>
-  </table>
-[/#macro]
-
-
-[#macro projectsListArchived projects={} owned=true canValidate=false canEdit=false isPlanning=false namespace="/" defaultAction="description"]
-  <table class="projectsList" id="projects">
-    <thead>
-      <tr class="subHeader">
-        <th id="ids">[@s.text name="projectsList.projectids" /]</th>
-        <th id="projectTitles" >[@s.text name="projectsList.projectTitles" /]</th>
-        <th id="projectLeader" >[@s.text name="projectsList.projectLeader" /]</th>
-          <th id="projectLeader" >[@s.text name="projectsList.projectLeaderPerson" /]</th>
-        [#--  <th id="projectType">[@s.text name="projectsList.projectType" /]</th>--]
-        <th id="projectFlagships">
-          [#if action.hasProgramnsRegions()]
+          [#elseif action.hasProgramnsRegions()]
             [@s.text name="projectsList.projectFlagshipsRegions" /]
           [#else]
-             [@s.text name="projectsList.projectFlagships" /]
+            [@s.text name="projectsList.projectFlagships" /]
           [/#if]
         </th>
-        <th id="projectActionStatus">[@s.text name="projectsList.projectActionStatus" /]</th>
-        <th id="projectDownload">[@s.text name="projectsList.download" /]</th>
-        <th id="projectDownload">[@s.text name="projectsList.delete" /]</th>
+        [#if showBudget]
+          <th class="cl-col-budget">[@s.text name="projectsList.W1W2projectBudget" /] ${currentCycleYear?c}</th>
+        [/#if]
+        <th class="cl-col-status">[@s.text name="projectsList.projectActionStatus" /]</th>
+        <th class="cl-col-actions no-sort"><span class="cl-actionsHead">[@s.text name="projectsList.actions" /]</span></th>
       </tr>
     </thead>
     <tbody>
-    [#if projects?has_content]
-      [#list projects as project]
-        [#assign isProjectNew = action.isProjectNew(project) /]
-        [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
-        <tr>
+    [#list projects as project]
+      [#local isProjectNew = action.isProjectNew(project) /]
+      [#local isCrpProject = (action.isProjectCrpOrPlatformForList(project.id))!false /]
+      [#local projectCode = action.isAiccra()?string('C', 'P') + project.id?c /]
+      [#local projectUrl][@s.url namespace=namespace action=defaultAction][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+      [#local projectTitle = (project.projectInfo.title)!'' /]
+
+      [#-- Type: Management for the administrative ones, otherwise the cluster type --]
+      [#local typeKey = "" /]
+      [#local typeLabel = "" /]
+      [#if (project.projectInfo.administrative)!false]
+        [#local typeKey = "management" /][#local typeLabel][@s.text name="project.management" /][/#local]
+      [#elseif action.hasClusterType(project)]
+        [#local clusterTypeId = (project.projectInfo.clusterType.id)!0 /]
+        [#if clusterTypeId == 1][#local typeKey = "country" /][#local typeLabel][@s.text name="project.countryProject" /][/#local][/#if]
+        [#if clusterTypeId == 2][#local typeKey = "theme" /][#local typeLabel][@s.text name="project.themeProject" /][/#local][/#if]
+        [#if clusterTypeId == 4][#local typeKey = "regional" /][#local typeLabel][@s.text name="project.regionalProject" /][/#local][/#if]
+      [/#if]
+
+      [#-- Leader --]
+      [#if centerGlobalUnit && ((!(project.projectInfo.phase.crp.centerType))!false)]
+        [#local pLeader = (project.getLeader(project.projectInfo.phase))! /]
+        [#local pLeaderPerson = (project.getLeaderPersonDB(project.projectInfo.phase))! /]
+      [#else]
+        [#local pLeader = (project.getLeader(action.getActualPhase()))! /]
+        [#local pLeaderPerson = (project.getLeaderPersonDB(action.getActualPhase()))! /]
+      [/#if]
+      [#local leadName = "" /]
+      [#if pLeader?has_content][#local leadName = (pLeader.institution.acronym)!(pLeader.institution.name)!"" /][/#if]
+      [#local leaderName = (pLeaderPerson.user.composedNameWithoutEmail)!'' /]
+      [#local leaderEmail = (pLeaderPerson.user.email)!'' /]
+
+      [#-- Status --]
+      [#local statusName = (project.projectInfo.statusName)!'' /]
+      [#local submitted = (!archived && isCrpProject && action.isProjectSubmitted(project))!false /]
+      [#local presetting = !archived && isCrpProject && !((project.projectInfo.isProjectEditLeader())!false) /]
+      [#local statusKey = statusName?lower_case?replace('[^a-z]', '', 'r') /]
+
+      [#-- Remove: only a project created in this very phase, by someone allowed to, while the phase is open --]
+      [#if archived]
+        [#local canRemove = canEdit && isProjectNew && action.deletePermission(project.id) /]
+      [#else]
+        [#local canRemove = canEdit && isProjectNew && action.deletePermission(project.id) && action.getActualPhase().editable && project.projectInfo.phase.id == action.getActualPhase().id /]
+      [/#if]
+
+      <tr class="cl-row" data-id="${project.id?c}" data-type="${typeKey}" data-type-label="${typeLabel}"
+        data-status="${statusName}" data-submitted="${submitted?c}"
+        data-search="${(projectCode + ' ' + projectTitle + ' ' + leadName + ' ' + leaderName + ' ' + leaderEmail)?lower_case}">
         [#-- ID --]
-        <td class="projectId">
-        [#if action.isAiccra()]
-          <a href="${projectUrl}"> C${project.id}</a>
-        [#else]
-          <a href="${projectUrl}"> P${project.id}</a>
-        [/#if]
+        <td class="cl-col-id" data-order="${project.id?c}">
+          <a class="cl-id" href="${projectUrl}">${projectCode}</a>
+          [#if centerGlobalUnit && isCrpProject]
+            <span class="cl-unitTag">${(project.projectInfo.phase.crp.acronym)!}</span>
+          [/#if]
         </td>
-          [#-- Project Title --]
-          <td class="left">
-            [#if isProjectNew]<span class="label label-info">[@s.text name="global.new" /]</span>[/#if]
-            [#if project.projectInfo.administrative]<span class="label label-primary">[@s.text name="project.management" /]</span>[/#if]
-            [#if project.projectInfo.title?has_content]
-              <a href="${projectUrl}" title="${project.projectInfo.title}">
-              [#if project.projectInfo.title?length < 120] ${project.projectInfo.title}</a> [#else] [@utilities.wordCutter string=project.projectInfo.title maxPos=120 /]...</a> [/#if]
-            [#else]
-              <a href="${projectUrl}">
-                [@s.text name="projectsList.title.none" /]
-              </a>
-            [/#if]
-          </td>
-          [#-- Project Leader --]
-          <td class="">
-            [#if project.getLeader(action.getActualPhase())?has_content]${(project.getLeader(action.getActualPhase()).institution.acronym)!project.getLeader(action.getActualPhase()).institution.name}[#else][@s.text name="projectsList.title.none" /][/#if]
-          </td>
-              <td class="">
-            [#if project.getLeaderPersonDB(action.getActualPhase())?has_content] ${(project.getLeaderPersonDB(action.getActualPhase()).user.composedName)!}[#else][@s.text name="projectsList.title.none" /][/#if]
-          </td>
-          [#-- Flagship / Regions --]
-          <td>
-          [#if !project.projectInfo.administrative]
-            [#if project.flagships?has_content || project.regions?has_content]
-              [#if project.flagships?has_content][#list project.flagships as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if][#if project.regions?has_content][#list project.regions as element]<span class="programTag" style="border-color:${(element.color)!'#fff'}">${element.acronym}</span>[/#list][/#if]
-            [#else]
-              [@s.text name="projectsList.none" /]
-            [/#if]
+        [#-- Title and dates --]
+        <td class="cl-col-title" data-order="${projectTitle}">
+          <span class="cl-titleLine">
+            [#if typeKey?has_content]<span class="cl-type cl-type--${typeKey}">${typeLabel}</span>[/#if]
+            [#if isProjectNew]<span class="cl-type cl-type--new">[@s.text name="global.new" /]</span>[/#if]
+            <a class="cl-title" href="${projectUrl}" title="${projectTitle}">
+              [#if projectTitle?has_content]${projectTitle}[#else][@s.text name="projectsList.title.none" /][/#if]
+            </a>
+          </span>
+          [#if ((project.projectInfo.startDate??)!false) && ((project.projectInfo.endDate??)!false)]
+            [#local validDate = ((project.projectInfo.endDate)?date?string('yyyy')?number >= actualPhase.year)!false /]
+            [#local invalidDateTitle][@s.text name="projectsList.invalidEndDate" /][/#local]
+            <span class="cl-dates[#if !validDate] cl-dates--invalid[/#if]"[#if !validDate] title="${invalidDateTitle}"[/#if]>
+              ${(project.projectInfo.startDate)?date?string('MMM d, yyyy')} &ndash; ${(project.projectInfo.endDate)?date?string('MMM d, yyyy')}
+            </span>
+          [/#if]
+        </td>
+        [#-- Institution lead --]
+        <td class="cl-col-lead">
+          [#if leadName?has_content]${leadName}[#else]<span class="cl-none">[@s.text name="projectsList.title.none" /]</span>[/#if]
+        </td>
+        [#-- Leader --]
+        <td class="cl-col-leader" data-order="${leaderName}">
+          [#if leaderName?has_content]
+            <span class="cl-leaderName">${leaderName}</span>
+            [#if leaderEmail?has_content]<a class="cl-leaderEmail" href="mailto:${leaderEmail}">${leaderEmail}</a>[/#if]
           [#else]
-            [#local li = (project.projectInfo.liaisonInstitution)!{} ]
-            <span class="programTag" style="border-color:#444">
-              [#if (li.crpProgram??)!false]
+            <span class="cl-none">[@s.text name="projectsList.title.none" /]</span>
+          [/#if]
+        </td>
+        [#-- Components / Regions / Programs --]
+        <td class="cl-col-programs">
+          <span class="cl-chips">
+          [#local tagsNumber = 0 /]
+          [#if (project.projectInfo.administrative)!false]
+            [#local li = (project.projectInfo.liaisonInstitution)!{} /]
+            <span class="cl-chip"><span class="cl-chipDot" style="background:#6b7280"></span>
+              [#if ((li.crpProgram??)!false) && ((li.crpProgram.crp.id == actualPhase.crp.id) || archived)]
                 ${(li.crpProgram.acronym)!(li.crpProgram.name)}
               [#elseif (li.institution??)!false]
                 ${(li.institution.acronym)!(li.institution.name)}
@@ -281,33 +134,77 @@
                 [@s.text name="global.pmu" /]
               [/#if]
             </span>
+            [#local tagsNumber = tagsNumber + 1 /]
+          [#else]
+            [#list ((project.flagships)![]) + ((project.regions)![]) as element]
+              [#if archived || element.crp.id == actualPhase.crp.id]
+                <span class="cl-chip" title="${(element.composedName)!}"><span class="cl-chipDot" style="background:${(element.color)!'#6b7280'}"></span>${(element.acronym)!}</span>
+                [#local tagsNumber = tagsNumber + 1 /]
+              [/#if]
+            [/#list]
           [/#if]
-          </td>
-          [#-- Project Action Status --]
-          <td>
-            <strong>${(project.projectInfo.statusName)!}</strong>
-          </td>
-          [#-- Summary PDF download --]
-          <td>
-            [#if action.getActualPhase().crp.id != 29]
-              <a href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]" target="__BLANK">
-                <img src="${baseUrlCdn}/global/images/pdf.png" height="25" title="[@s.text name="projectsList.downloadPDF" /]" />
-              </a>
-            [/#if]
-          </td>
-          [#-- Delete Project--]
-          <td>
-            [#if canEdit && isProjectNew && action.deletePermission(project.id) ]
-              <a id="removeProject-${project.id}" class="removeProject" href="#" title="">
-                <img src="${baseUrlCdn}/global/images/trash.png" title="[@s.text name="projectsList.deleteProject" /]" />
-              </a>
+          [#if tagsNumber < 1]<span class="cl-none">[@s.text name="projectsList.none" /]</span>[/#if]
+          </span>
+        </td>
+        [#-- Budget W1/W2 (getCoreBudget also fills project.coreBudget) --]
+        [#if showBudget]
+          [#local hasBudget = (project.getCoreBudget(currentCycleYear, action.getActualPhase()))?has_content /]
+          <td class="cl-col-budget" data-order="${((project.coreBudget)!0)?c}">
+            [#if hasBudget]
+              <span class="cl-budget">US$ ${((project.coreBudget)!0)?string(",##0.00")}</span>
             [#else]
-              <img src="${baseUrlCdn}/global/images/trash_disable.png" title="[@s.text name="projectsList.cantDeleteProject" /]" />
+              <span class="cl-none">[@s.text name="projectsList.none" /]</span>
             [/#if]
           </td>
-        </tr>
-      [/#list]
-    [/#if]
+        [/#if]
+        [#-- Status --]
+        <td class="cl-col-status" data-order="${statusName}">
+          [#if archived || isCrpProject]
+            [#if presetting]
+              <span class="cl-status cl-status--neutral"><span class="cl-statusDot"></span>[@s.text name="projectsList.status.presetting" /]</span>
+            [#else]
+              [#if statusName?has_content]
+                <span class="cl-status cl-status--${statusKey}"><span class="cl-statusDot"></span>${statusName}</span>
+              [/#if]
+              [#if submitted]
+                <span class="cl-submitted">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.4 6.6 11.4 12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  [@s.text name="projectsList.status.submitted" /]
+                </span>
+              [#elseif !archived && !reportingActive]
+                <span class="cl-pending" title="[@s.text name="projectsList.status.readyForLeader.help" /]">[@s.text name="projectsList.status.readyForLeader" /]</span>
+              [/#if]
+            [/#if]
+          [/#if]
+        </td>
+        [#-- Actions --]
+        <td class="cl-col-actions">
+          <span class="cl-actions">
+            <a class="cl-iconBtn" href="${projectUrl}" aria-label="[@s.text name="projectsList.open" /] ${projectCode}" title="[@s.text name="projectsList.open" /]">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </a>
+            [#if archived && action.getActualPhase().crp.id != 29]
+              <a class="cl-iconBtn" target="_blank" rel="noopener" title="[@s.text name="projectsList.downloadPDF" /]" aria-label="[@s.text name="projectsList.downloadPDF" /] ${projectCode}"
+                href="[@s.url namespace="/projects" action='${(crpSession)!}/reportingSummary'][@s.param name='projectID']${project.id?c}[/@s.param][@s.param name='cycle']${action.getCurrentCycle()}[/@s.param][@s.param name='year']${action.getCurrentCycleYear()}[/@s.param][/@s.url]">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5v7.5M4.8 7 8 10.2 11.2 7M3 13.5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </a>
+            [/#if]
+            [#if canRemove]
+              <button type="button" class="cl-iconBtn cl-iconBtn--danger removeProject" data-project-id="${project.id?c}"
+                aria-label="[@s.text name="projectsList.deleteProject" /] ${projectCode}" title="[@s.text name="projectsList.deleteProject" /]">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </button>
+            [/#if]
+          </span>
+          [#if canRemove]
+            <span class="cl-confirm" hidden>
+              <button type="button" class="cl-btn cl-btn--ghost cancelRemoveProject">[@s.text name="projectsList.cancel" /]</button>
+              <button type="button" class="cl-btn cl-btn--danger confirmRemoveProject" data-project-id="${project.id?c}">[@s.text name="projectsList.delete" /]</button>
+            </span>
+          [/#if]
+        </td>
+      </tr>
+    [/#list]
     </tbody>
   </table>
 [/#macro]
