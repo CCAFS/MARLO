@@ -21,6 +21,9 @@
 | T02 | 2 / 8 | 2 / 10 | — |
 | T03 | 3 / 8 | 4 / 10 | two parallel lens verdicts (security; reliability + test validity) |
 | T04 | 4 / 8 | 5 / 10 | — |
+| T05 (attempt 1) | 4 / 8 | 7 / 10 | two parallel lens verdicts: security FAIL, reliability PASS |
+| T05 (attempt 2) | 4 / 8 | 9 / 10 | security FAIL, reliability PASS → **budget tripwire** |
+| T05 (attempt 3) | 5 / 8 | 11 / 16 | ceiling raised to 16 by the user; both lenses PASS |
 
 ---
 
@@ -260,4 +263,259 @@ Leader adjudication: no blocker, no owed item; the "no new user field" test is c
 - **Decisions made:** none beyond the task. No execute-time spec edits.
 - **Issues encountered:** none.
 - **Final verification:** wiped full suite 914/0, both falsifiers red, Checkstyle 0 — re-run VERIFIED.
-- **Continue gate:** pending user (gated mode).
+- **Continue gate:** user approved commit and continue to T05 (2026-10-16); committed `c5c807aaa7`.
+
+### CHG-PWD-SWITCH-001-T05 — Password gate on the two endpoints
+
+- **Final status:** PASS on attempt 3 (attempts 1 and 2 FAIL, security lens, SEC-002)
+- **Date:** 2026-10-16
+- **Effort:** attempt 1 `xhigh`. The effort dial says `max` for an auth path, and "never max a cheaper tier — escalate the tier"; escalating the Implementer to `opus` would put it on the Reviewer's model and collapse author ≠ auditor, so the Leader kept `sonnet` at `xhigh`.
+- **Skills assigned:** `tdd`, `marlo-verify`, `error-handling-patterns` (as listed; no deviation)
+- **Leader scope note in the brief:** `OtpEligibility.isPasswordRefused` (design §2) is in scope, since T03 left it to this task.
+
+#### Attempt 1 — FAIL
+
+- **Files changed:**
+  - Main: `marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java` (new `isPasswordRefused(String identifier, Long selectedUnitId)`), `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/ValidateUserAction.java`, `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/LoginAction.java`, `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/CognitoCallbackAction.java` (constructors), `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeAction.java` (super call)
+  - Tests: `OtpEligibilityTest`, `ValidateUserActionGuardTest`, `LoginActionCgiarGuardTest`; constructor updates in `LoginActionFinishLoginTest`, `LoginActionLogoutTest`, `CognitoCallbackActionTest`, `CognitoLogHygieneTest`; new `marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/PasswordGateScopeTest.java`, `marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/UnconfiguredOtpEligibility.java`
+- **Implementer verification:**
+  - Red run (stub gate returning false): 27 of 113 failed on behaviour (`thePasswordSwitchRefusesAMemberOfAPasswordOffUnitAndMakesNoCredentialCall`: `expected:<[]> but was:<[jane.local@cgiar.org|whatever-password]>`; `aGlobalUnitIdTheAccountDoesNotBelongToCannotRoundThePasswordGate`; `aFailingSettingsQueryFailsOpenWithOneErrorLine`: `expected:<1> but was:<0>`).
+  - Falsifiers: (a) trusting the named unit → 10 red; (b) gate after `userManager.login` in both actions → 14 red. Extra mutants: memberships by typed identifier → 5 red, fail-closed → 3 red, key check removed → 11 red. All restored (`cmp`).
+  - Compile gate exit 0. Full suite exit 0, 951 / 0. Checkstyle `--baseline` delta 0. Hygiene: one FIX at `CognitoLogHygieneTest` L440, in an untouched Javadoc. `git diff --stat`: no CLARISA, Shiro, interceptor, struts, properties or FTL file.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED**.
+  - Command: classes wiped, then `mvn -o -pl marlo-web -am test` → `MVN_EXIT=0`, `Tests run: 951, Failures: 0`.
+  - Per class: `ValidateUserActionGuardTest` 18, `LoginActionCgiarGuardTest` 16, `LoginActionFinishLoginTest` 17, `LoginActionLogoutTest` 3, `CognitoLogHygieneTest` 17, `CognitoCallbackActionTest` 30, `CognitoLoginActionTest` 34, `OtpVerifyCodeActionTest` 53, `OtpEligibilityTest` 77, `PasswordGateScopeTest` 2. All have 0 failures.
+  - Checkstyle `--baseline`: HEAD 0 / tree 0 / delta 0.
+- **Reviewer verdicts (parallel lens mode: auth surface, effort `xhigh`):**
+  - **Reliability + test-validity lens: PASS.** Every Tests item is exercised. `RecordingUserManager.loginCalls` records `email|password`. Equality is checked against a real wrong-password run of the action. Fail-open catches only `RuntimeException` and writes one ERROR. Null, blank and unknown identifiers are handled. Account resolution matches the realm. The C-2 bypass is closed. `LoginActionFinishLoginTest` has 17 real tests (an 18th `@Test` is inside a Javadoc), so the design §17 count is stale. The constructor change is complete family-wide.
+  - **Security lens: FAIL** (verbatim):
+
+> ISSUES:
+> 1. **Discovered Issue:** The refusal always answers with `ADLoginMessages.ERROR_LOGON_FAILURE` ("Invalid CGIAR email or password, please try again"). That is the wrong-password answer only for LDAP accounts. The gate refuses accounts without Cognito, and most of those are local accounts (`is_cgiar_user = 0`). For them the realm calls `DBAuthenticator`, which sets no `LOGIN_MESSAGE` (`DBAuthenticator.java:48`, `APCustomRealm.java:187,195`). A real wrong password for a local account therefore gives:
+>    - `validateUser.do`: no `messageEror` key at all (`excludeNullProperties=true`, `struts-home.xml:19`). The refusal includes the key. `login.js:908` then increments the reCAPTCHA counter only for the refusal, so even client behaviour differs.
+>    - `login.do`: `login.error.userOrPass` = "Invalid email and/or password, please try again" (`LoginAction.java:388`). The refusal shows the CGIAR text.
+>    - Inactive accounts: today they get `USER_DISABLED`. A CGIAR account without a nickname gets `ERROR_NO_SUCH_USER`. The gate answers `LOGON_FAILURE` for both.
+>
+>    The SEC-002 test misses this: its double sets the LDAP message for `localAccount()` (`LoginActionCgiarGuardTest.java:928-933`), which is not what production does for that account kind.
+>    * **Violated Rule:** `requirements.md` §3.2 SEC-002 ("indistinguishable, in response and message, from a wrong password"); `design.md` §13 bullet 1. The Decision Log accepts timing only, not a different response.
+>    * **Remediation Suggestion:** On refusal, produce exactly what the credential check would have produced for the resolved account:
+>      - local: `messageEror` stays null in `validateUser.do`, and `login.error.userOrPass` in `login.do`;
+>      - CGIAR: `ERROR_LOGON_FAILURE`;
+>      - inactive: `USER_DISABLED`;
+>      - CGIAR without a nickname: `ERROR_NO_SUCH_USER`.
+>
+>      The cleanest way is to have the gate return the account kind, or the realm-equivalent message, instead of a boolean. Rebuild the SEC-002 tests so the wrong-password side uses each kind's real authenticator behaviour.
+>
+> **Adjudications:**
+> - **Item 4 (removed membership): Pivot candidate, not a T05 FAIL.** The gap is confirmed. `crpUsers` returns only active memberships (`GlobalUnitMySQLDAO.java:46`), but `finishLogin` grants the session with the activity-blind `existCrpUser` (`LoginAction.java:441`, `CrpUserMySQLDAO.java:67-68`). So a user whose membership in password-off unit X was removed, who names X and passes the credential check, gets a password session in X. That breaks SEC-001's outcome. However, DD-5 defines membership as "same narrowing … as the SEC-005 guard", which is active-only, so the code follows the spec. The root cause is older: removed members can already sign in with a password today. Closing it needs a spec decision: either make `finishLogin` use `existActiveCrpUser` (the shared tail, Cognito path included), or have the gate count any `crp_users` row. Neither fits inside T05's approved boundary.
+> - **Item 3 (padding in the SEC-005 guard): ADVISORY, older than this change.** T05 leaves the guard untouched. The new gate resolves the account through the trimming `UserDAO.getUser` and reads memberships by the stored email, so this change does not make the flaw worse.
+> - **Item 1 (signature): conforms in substance.** It resolves the account the same way the realm does (`@` means email, otherwise username; `APCustomRealm.java:167-172`), narrows by membership, and decides through `SignInMethodRule.methodsFor(..., cognitoAccountInG=false, ...)`. That is correct because the SEC-005 guard runs first. The design §2 signature text should be amended to match.
+
+- **Leader adjudication of the FAIL:** upheld and in scope. The Leader checked the factual claim at source:
+  - `DBAuthenticator.authenticate` puts only `LOGIN_STATUS` and never `LOGIN_MESSAGE`.
+  - `APCustomRealm` sets `USER_DISABLED` for inactive accounts and `ERROR_NO_SUCH_USER` for CGIAR accounts without a nickname.
+  - The test double `LoginActionCgiarGuardTest.java:928-933` injects `ERROR_LOGON_FAILURE` for every account.
+  
+  The two lenses disagree because the reliability lens compared against the double's wrong-password run, and the double does not reproduce the realm per account kind. This FAIL consumes attempt 1.
+- **runtime events:** none
+- **spawns:** implementer 96 calls, 384688 tokens, ended fail (Reviewer FAIL); reviewer (security) 29 calls, 109212 tokens, ended complete; reviewer (reliability) 26 calls, 137778 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer, verbatim)
+
+> 1. **Signature:** it is `isPasswordRefused(String identifier, Long selectedUnitId)`, not `(account, unitOrNull)`. It resolves the account itself, by email when the identifier contains `@`, otherwise by username.
+> 2. **Finding fixed in the gate:** the realm trims and lower-cases the identifier, but `crpUsers` compares it raw. The gate therefore reads memberships by the account's stored email; a padded `" jane@x.org"` would otherwise find no membership and skip the gate.
+> 3. **Same flaw in `ValidateUserAction`'s SEC-005 guard, not fixed (out of scope):** the guard still passes `this.userEmail` raw to `crpUsers`, so a leading-space identifier may skip it. Not run live.
+> 4. **Active-only memberships:** the gate counts only memberships `crpUsers` returns (active rows, same as the SEC-005 guard). `finishLogin` uses the activity-blind `existCrpUser`, so a user with a removed membership in a password-off unit can still reach the credential check for that unit.
+> 5. **ERROR wording:** the design gives none, so I chose `auth.password.gate outcome=settings_unavailable fail_open=true`.
+> 6. **Ordering:** the gate runs after the SEC-005 guard in both endpoints.
+> 7. **Spring wiring:** not exercised in a live container; I did not touch your server. The `LoginAction`, `ValidateUserAction` and `CognitoCallbackAction` constructors rely on the same implicit constructor autowiring as before. It needs a smoke test of `login.do` and `validateUser.do` on the running stack.
+
+#### ADVISORY (Reviewers, 4R — recorded, not acted on)
+
+- **Security, Risk:** the ERROR line attaches the exception `e`. A future DAO message that echoes bound values could leak the identifier.
+- **Security, Risk:** item 3 (the SEC-005 guard passes the raw `userEmail`) and item 4 (`finishLogin` ignores whether a membership is active) are candidates for a separate `bugfix/` spec. The OTP path already enforces `existActiveCrpUser`.
+- **Reliability:** the ERROR label `outcome=settings_unavailable` is also written when the account or membership read fails, and it writes a stack trace on every password POST during an outage.
+- **Test validity:** `PasswordGateScopeTest` greps only `userManager.login(`. The P-2 ledger also names `new UsernamePasswordToken`. The paths are relative to `marlo-web/`.
+- **Readability:** design §17 and the `tasks.md` Consumers field say `LoginActionFinishLoginTest (18)`; the real count is 17. This is a spec-doc correction.
+- **Resilience:** the Spring wiring of the new constructor parameter has not been run live; confirm it in the walkthrough.
+- **Reliability:** the refusal path skips `getLoginMessages()`, as the accepted SEC-005 precedent does.
+
+#### Pivot candidate (open — user decision required)
+
+A user whose membership in password-off unit X was **removed** can name X, pass the gate (only active memberships count, as DD-5 says), pass the credential check, and get a password session in X. `finishLogin` checks `existCrpUser`, which ignores whether the membership is active. The behaviour predates this change (removed members can already sign in with a password today), but it defeats SEC-001's outcome for that edge.
+
+**User decision (2026-10-16):** the removed-membership gap is **not a Pivot**. T05 stays within its approved scope, and the gap goes to a separate `docs/specs/bugfix/` spec together with the identifier-padding flaw in the SEC-005 guard (Implementer item 3). Attempt 2 fixes only SEC-002. Effort for attempt 2: `sonnet` at `xhigh`, chosen by the user so author ≠ auditor holds. The usual one-level effort bump is waived because the next level, `max`, would need a tier escalation.
+
+#### Attempt 2
+
+- **Feedback:** the security-lens FAIL above, verbatim.
+- **Attempt History:** attempt 1 answered every refusal with `ERROR_LOGON_FAILURE`, and its SEC-002 double injected the LDAP message for every account kind. Do not repeat that.
+
+- **Files changed (attempt 2, on top of attempt 1):**
+  - Main: `OtpEligibility.java` (`isPasswordRefused` → `passwordGate(identifier, unitId)` returning `PasswordGateDecision{isRefused(), leaveRealmMessage(Session)}`; `realmMessageFor`: inactive → `USER_DISABLED`, active CGIAR → `ERROR_LOGON_FAILURE`, active local → null), `LoginAction.java` and `ValidateUserAction.java` (on refusal: skip `userManager.login`, leave the realm message, then run the unchanged `getLoginMessages()` and failure path; `validateUser.do` skips its email-bearing failure log line on refusal)
+  - Tests: `OtpEligibilityTest`, `ValidateUserActionGuardTest`, `LoginActionCgiarGuardTest`, `PasswordGateScopeTest` (also checks `new UsernamePasswordToken`); new `marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/RealCredentialPath.java` (runs the real `UserManagerImp.login`, `APCustomRealm` and `DBAuthenticator`; only the DAO, credential store and LDAP bind are stubbed)
+- **Implementer verification:**
+  - Falsifier (old constant forced for every kind): 5 red.
+    - `ValidateUserActionGuardTest` local: `expected:<null> but was:<Invalid CGIAR email or password, please try again>`
+    - inactive: `expected:<[Your account is disabled, please contact the MARLO staff]>`
+    - `LoginActionCgiarGuardTest` local: `{loginMessage=[login.error.userOrPass]}` vs the CGIAR text
+    - `OtpEligibilityTest`: `active local: no message, and an earlier one is cleared expected null`
+  - Gate ignored: 17 red.
+  - Both falsifiers restored (`cmp`).
+  - Wiped compile exit 0; full suite 958 / 0; Checkstyle `--baseline` delta 0.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED**.
+  - Classes wiped, `mvn -o -pl marlo-web -am test` → `MVN_EXIT=0`, `Tests run: 958, Failures: 0`.
+  - Per class: `ValidateUserActionGuardTest` 20, `LoginActionCgiarGuardTest` 18, `LoginActionFinishLoginTest` 17, `OtpEligibilityTest` 79, `PasswordGateScopeTest` 3, `CognitoCallbackActionTest` 30, `OtpVerifyCodeActionTest` 53.
+  - Checkstyle HEAD 0 / tree 0 / delta 0.
+- **Reviewer verdicts (parallel lens mode):**
+  - **Reliability + test-validity lens: PASS.** The attempt-1 defect is fixed. Local and inactive comparisons now run through production code. `leaveRealmMessage` clears like `APCustomRealm.java:195`. No Tests item was removed.
+  - **Security lens: FAIL** (verbatim):
+
+> **Attempt-1 issue (SEC-002 message): fixed.** I read the realm and checked each account kind:
+> - **Local account:** the realm sets `LOGIN_MESSAGE` to null (`APCustomRealm.java:187,195`), and `leaveRealmMessage` does the same. In `validateUser.do`, `messageEror` gets the same value as a real failure (absent, or a leftover from an earlier attempt in both cases). In `login.do`, both show `login.error.userOrPass`.
+> - **Active CGIAR account:** both give `ERROR_LOGON_FAILURE`, mapped to the same text on both endpoints.
+> - **Inactive account:** both give `USER_DISABLED`.
+> - **Account lookup:** the gate finds the account the same way the realm does (`APCustomRealm.java:167-172`).
+>
+> **The residual case.** `getCgiarNickname` really is a directory call: `service.searchUserByEmail` at `APCustomRealm.java:338`. It also saves a missing username. AC-10 forbids "no LDAP call" before a refusal, so the realm's `ERROR_NO_SUCH_USER` text (unmapped, so the real failure shows no message) cannot be reproduced without breaking AC-10. The same applies to directory states that only a bind reveals: locked out, password expired, `ERROR_LDAP_CONNECTION` during an outage.
+> - **Who it affects:** active CGIAR accounts that have no directory entry (or whose directory account is locked or expired, or the directory is down), that belong to a unit with the password off and Cognito off.
+> - **Verdict:** this is a spec-level conflict between SEC-002 and AC-10, not a T05 FAIL. It **needs user acceptance**: a Decision Log entry next to the timing entry. What leaks is that the switch is off in G, which step 3 already shows publicly. I could not count the affected accounts because this role has no database access.
+>
+> ISSUES:
+> 1. **Discovered Issue:** A real failure goes through `Subject.login`. On failure, Shiro's `DefaultSecurityManager` calls `rememberMeFailedLogin`, then `CookieRememberMeManager.forgetIdentity`, which adds `Set-Cookie: rememberMe=deleteMe; Max-Age=0`.
+>    - `MarloShiroConfiguration.java:111-116` builds a plain `DefaultWebSecurityManager`, which installs a `CookieRememberMeManager` by default. No code overrides it.
+>    - `shiroFilter` covers `/*` ahead of struts2 (`web.xml:23`), so the subject is a web subject.
+>    - Wrong passwords and unknown accounts (`UnknownAccountException`) both send the header. A refusal never calls `login`, so it never does.
+>    - The result is a reliable header difference between "refused by the switch" and "wrong password or unknown account", on both endpoints.
+>    - `RealCredentialPath` cannot see this: it installs a non-web `DefaultSecurityManager` (`RealCredentialPath.java:124`) and compares only messages.
+>    - The existing SEC-005 guard has the same gap. Changing it is outside T05 (SEC-003), so it belongs in the bugfix spec.
+>    - **Violated Rule:** `requirements.md` §3.2 SEC-002 ("indistinguishable, in response and message, from a wrong password"). The Decision Log entry (`requirements.md:356`) accepts timing only.
+>    - **Remediation Suggestion:** Option (a), which fits inside T05: on refusal, call the configured security manager's `getRememberMeManager().onFailedLogin(subject, token, new IncorrectCredentialsException())`. This checks no credentials, so SEC-001 still holds. Then add a test on a `DefaultWebSecurityManager` with a mock response that compares `Set-Cookie` between a refusal and a real wrong password. Option (b): the user accepts the difference in the Decision Log, since it reveals the same public fact as the accepted timing difference.
+
+- **Leader adjudication:** FAIL upheld. Checked at source: `MarloShiroConfiguration.securityManager` builds `new DefaultWebSecurityManager()` and sets only the realm and the session manager; no `RememberMeManager` override exists in `marlo-data` or `marlo-web`, so Shiro's default `CookieRememberMeManager` applies. Attempt 2 consumed.
+- **runtime events:** none
+- **spawns:** implementer (attempt 2, resumed worker) 31 calls, 480991 tokens (cumulative per host), ended fail (Reviewer FAIL); reviewer (security) 25 calls, 100439 tokens, ended complete; reviewer (reliability) 23 calls, 136335 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer attempt 2, verbatim)
+
+> 1. **CGIAR account with no directory entry cannot be reproduced.** Telling it apart needs a directory search, and SEC-001/AC-10 forbid an LDAP call before a refusal. Such an account is answered like any other CGIAR account. Today the realm leaves the unmapped text `ADLoginMessages.ERROR_NO_SUCH_USER.getValue()` for it, so a real failure shows no message at all, the same as a local account. Please confirm this residual difference is accepted.
+> 2. Your items 3 and 4 are untouched.
+
+#### ADVISORY (attempt 2, 4R — recorded, not acted on)
+
+- **Reliability lens, test validity:** `RealCredentialPath.directoryBind` returns `ERROR_LOGON_FAILURE`, the same value the gate hardcodes. The real value comes from `ADConexion`'s `con.getAuthenticationMessage()` (`LDAPAuthenticator.java:74`), so the CGIAR comparison partly compares the fixture with itself. It cannot be unit-tested around; the live walkthrough should compare a wrong CGIAR password with a refusal.
+- **Reliability lens, resilience:** these CGIAR edges cannot be mirrored: AD answers that do not depend on the password (locked out, `ERROR_LDAP_CONNECTION`); a missing password parameter (`UserManagerImp.login:150` returns early, so there is no message today); an already-authenticated subject (`:173-176`). The SEC-005 guard shares all of them.
+- **Both lenses, spec drift owed:** design §13 bullet 1 and DD-5 still say "the existing `ERROR_LOGON_FAILURE` text"; the §2 signature is now `passwordGate(String, Long)` → `PasswordGateDecision`; the §17 and `tasks.md` count for `LoginActionFinishLoginTest` is 17, not 18.
+- **Reliability lens, test validity:** `nicknameFound=false` is never exercised; pin the residual with a test.
+- **Reliability lens, reliability:** `PasswordGateScopeTest` paths are relative to `marlo-web/`.
+- **Security lens, risk:** the LDAP stub's assumption about the wrong-AD-password message should be confirmed live.
+
+## Budget Tripwire: T05
+
+- **Delta:** 9 of 10 review rounds used with 4 of 8 tasks done. T05 attempt 3 needs at least 1 more round (2 in parallel lens mode), and T06, T07 and T08 need at least 3 more. Projection: **at least 13–15 rounds against a budget of 10**.
+- **Cause:** parallel lens review on the security tasks T03 and T05 (2 verdicts each), plus two SEC-002 FAILs on T05. Each FAIL was a real response difference that the spec did not foresee: the per-kind realm message, then Shiro's remember-me cookie.
+- **State:** T05 is `[~]` after 2 of 3 attempts, and the attempt-2 changes are uncommitted in the working tree. No HALT and no rollback: attempt 3 remains available.
+- **Decisions needed from the user:**
+  1. Whether to continue past the budget, and with what new ceiling.
+  2. The rememberMe cookie: fix it inside T05 (option a) or accept it in the Decision Log (option b).
+  3. Whether to accept the residual case (CGIAR account without a directory entry, or a directory state only a bind reveals) as a Decision Log entry, given the conflict between SEC-002 and AC-10.
+
+**User decisions on the tripwire (2026-10-16):**
+1. Continue past the budget. The review-round ceiling rises from **10 to 16**.
+2. The rememberMe cookie is fixed inside T05, as **attempt 3**.
+3. The CGIAR residual is accepted in the Decision Log and pinned with a `nicknameFound=false` test.
+
+**Execute-time spec edits (Leader, 2026-10-16, after user approval):**
+- `requirements.md` §10 Decision Log gains an entry "Execute-time decisions on T05" with three parts: the accepted SEC-002 residual, the remember-me cookie as part of SEC-002, and the bugfix-spec scope for `finishLogin` / the SEC-005 guard padding.
+- `design.md` changes:
+  - §2: the `isPasswordRefused(account, unitOrNull)` bullet becomes `passwordGate(identifier, unitIdOrNull)` → `PasswordGateDecision`.
+  - §13 bullet 1: the per-kind response, the remember-me cookie, and the accepted residual.
+  - DD-5: "the wrong-password response for the account's kind".
+  - §17: `LoginActionFinishLoginTest` (18 → 17).
+- `tasks.md` T05 Consumers: `LoginActionFinishLoginTest` (18 → 17).
+- **Sweep:**
+  - Forward: no other occurrence of `ERROR_LOGON_FAILURE` or `isPasswordRefused` in the spec folder outside `execution.md`.
+  - Backward: no other document cites the changed bullets. `CHG-OTP-LOGIN-001` does not cite DD-5 or §13; its amendment is T08's.
+  - The `git diff` of the two documents removes only the four intended lines.
+- These sections are named conformance checks in the attempt-3 Reviewer brief and in the next task's.
+
+#### Attempt 3
+
+- **Feedback:** the attempt-2 security-lens FAIL above, verbatim.
+- **Attempt History:**
+  - Attempt 1 hard-coded `ERROR_LOGON_FAILURE`.
+  - Attempt 2 fixed the per-kind message but skipped Shiro's failed-login handling, so no `rememberMe=deleteMe` cookie was sent. Do not repeat either.
+- **Effort:** `xhigh` (user decision, kept).
+- `design.md` §2 also names `leaveRememberMeFailure(...)` (execute-time edit during attempt 3, no change in meaning; Implementer assumption 1).
+
+- **Files changed (attempt 3, on top of attempt 2):**
+  - Main: `OtpEligibility.java` (`PasswordGateDecision.leaveRememberMeFailure(subject, securityManager, username, password)`: it finds the manager through `DefaultSecurityManager.getRememberMeManager()`, calls `onFailedLogin` with a `UsernamePasswordToken` and an `IncorrectCredentialsException` and checks no credential, clears the token in `finally`, does nothing when the manager is not a `DefaultSecurityManager` or is null, and contains a throwing manager with a WARN line), `LoginAction.java` and `ValidateUserAction.java` (each calls it right after `leaveRealmMessage`; the SEC-005 guard is untouched)
+  - Tests: `OtpEligibilityTest`, `ValidateUserActionGuardTest`, `LoginActionCgiarGuardTest`, `PasswordGateScopeTest`, `RealCredentialPath` (`installWeb`: a real `DefaultWebSecurityManager` with a `DefaultWebSessionManager` and a `WebSubject` over a mock request and response). The full `Set-Cookie` list of a refusal is compared with a real wrong password, for local and CGIAR accounts, on both endpoints. The residual is pinned with `nicknameFound=false` on both endpoints.
+- **Implementer verification:** removing `onFailedLogin` turns 4 tests red (`expected:<[JSESSIONID=<id>; ..., rememberMe=deleteMe; Path=/; Max-Age=0; ...]> but was:<[JSESSIONID=<id>; Path=/; HttpOnly; SameSite=lax]>`). The call was restored and `cmp` reports 0 differences. The wiped compile gate exits 0, the full suite runs 964 tests with 0 failures, and the Checkstyle delta is 0.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED**.
+  - Command: wipe the classes, then `mvn -o -pl marlo-web -am test`. Result: `MVN_EXIT=0`, `Tests run: 964, Failures: 0`.
+  - Per class: `ValidateUserActionGuardTest` 22, `LoginActionCgiarGuardTest` 20, `OtpEligibilityTest` 81, `PasswordGateScopeTest` 3.
+  - Checkstyle: HEAD 0, tree 0, delta 0.
+- **Reviewer verdicts (parallel lens mode):**
+  - **Security lens: PASS.**
+    - It traced what a failed `Subject.login` does in Shiro 1.13.0: it clears run-as identities (server-side only), notifies `AuthenticationListener`s (none exist in MARLO) and calls `RememberMeManager.onFailedLogin`, which the gate now makes. No custom `RememberMeManager` exists.
+    - The token never reaches a realm or an authenticator, so there is no credential check or LDAP call (SEC-001, AC-10).
+    - The WARN line carries no personal data.
+    - Everything verified at attempt 2 still holds, and the code conforms to the named execute-time edits.
+  - **Reliability + test-validity lens: PASS.**
+    - The wrong-password side of the cookie comparison runs through the real `UserManagerImp.login`, then `WebSubject.login`, then Shiro's own failure path. Only the `JSESSIONID` value is masked, and the `deleteMe` count is asserted separately.
+    - `ThreadContext`, the security manager and `ActionContext` are cleaned up after each test, and no scheduler thread starts.
+    - The residual test asserts what production code answers.
+    - No Tests item has been removed since attempt 2, and the named spec edits match the code.
+- **runtime events:** none
+- **spawns:** implementer (attempt 3, same worker resumed) 22 calls, 540151 tokens (cumulative for the host), ended complete; reviewer (security) 20 calls, 84889 tokens, ended complete; reviewer (reliability) 15 calls, 118870 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer attempt 3, verbatim)
+
+> 1. Design §2 names `isRefused()` and `leaveRealmMessage`. The code adds `leaveRememberMeFailure`, so §2 needs a one-line update.
+> 2. `OtpEligibility` now builds a `UsernamePasswordToken`. `PasswordGateScopeTest` lists it as a known builder and asserts the gate never calls `.login(`.
+> 3. The test setup keeps Shiro's session-validation scheduler off, so no thread starts.
+
+Leader adjudication: item 1 was applied as an execute-time edit (see above), and items 2 and 3 are assumptions only. No item names a blocker or an owed item, so the task can close.
+
+#### ADVISORY (attempt 3, 4R — recorded, not acted on)
+
+- **Security, risk (low): a request with no password parameter shows the refusal.**
+  - `UserManagerImp.login:150` skips `Subject.login` when the password is `null`, so an allowed account gets no cookie and no session message.
+  - A refused account always gets `deleteMe` and its kind's message.
+  - Only a hand-built request can see this difference, since a browser always sends `""`. The fact it reveals is the one the Decision Log already accepts as public.
+  - Cheap fix: skip the gate when the password is `null`. Candidate for the bugfix spec.
+- **Security and reliability, risk (low): an already authenticated subject gets a different answer.**
+  - `UserManagerImp.login:152-176` returns the current user without a check. The gate refuses first, so an authenticated session that posts the form for a password-off account gets a failure and `deleteMe` instead of "already logged in".
+  - It is visible only to someone already signed in, and nobody is locked out. Check it in the T08 walkthrough.
+- **Reliability:** the `JSESSIONID=[^;]*` mask would also hide a one-sided `JSESSIONID=deleteMe`.
+- **Resilience:** `PasswordGateScopeTest` resolves its paths from the working directory, so it fails when run from the repo root in an IDE.
+- **Readability:** the 10-line comment block is duplicated in both endpoints. A pointer to the `PasswordGateDecision` Javadoc would keep them from drifting.
+
+#### Forward pointers
+
+- **→ T08 (live walkthrough):** add these checks:
+  - a wrong CGIAR (AD) password against a refusal, expecting the same text (the `ADConexion` message is only stubbed in tests);
+  - a `Set-Cookie` comparison on the real stack;
+  - the Spring wiring of the new constructor parameter (`login.do` and `validateUser.do` start and answer);
+  - an already authenticated session posting the form;
+  - the accepted CGIAR residual. `[advisory-grade]`
+- **→ T08 (runbook):** a password-off unit whose `global_unit_type_id` is null cannot get a code (carried from T03). `[advisory-grade]`
+- **→ bugfix spec (user decision, out of this spec):**
+  - `finishLogin` checks `existCrpUser` and ignores whether the membership is active;
+  - the SEC-005 guard compares the raw identifier;
+  - the SEC-005 guard has the same remember-me cookie gap;
+  - the null-password oracle;
+  - the throttling of the `crpByEmail.do` failure ERROR (T04);
+  - the dead `otpEnabledFor` method (T04).
+
+- **Requirements covered:** SEC-001, SEC-002 (as amended; residual accepted), SEC-003, SEC-006, OPS-001; AC-10 and AC-12 at endpoint level. AC-10 and AC-12 are also checked live in T08.
+- **Decisions made:**
+  - The removed-membership gap was ruled not a Pivot and goes to the bugfix spec (user).
+  - Effort stayed at `xhigh` on `sonnet` (user).
+  - Budget tripwire: the ceiling went from 10 to 16 (user).
+  - The cookie was fixed in T05 (user), and the CGIAR residual was accepted (user).
+  - The execute-time spec edits are listed above: `requirements.md` §10; `design.md` §2, §13, DD-5 and §17; the `tasks.md` count.
+- **Issues encountered:** two SEC-002 FAILs, each a real difference in the response that the spec had not foreseen (the message for each account kind, then the remember-me cookie).
+- **Final verification:** wiped full suite 964/0, every falsifier red, Checkstyle delta 0. Re-run VERIFIED.
+- **Continue gate:** waiting for the user (gated mode).

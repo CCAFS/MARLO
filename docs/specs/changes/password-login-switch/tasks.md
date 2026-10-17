@@ -117,7 +117,7 @@
 
 ### CHG-PWD-SWITCH-001-T05 — Password gate on the two endpoints (DD-5)
 
-- **Status:** pending [ ] · **Size:** M · **Depends on:** T03 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** M · **Depends on:** T03 · **Module:** marlo-web
 - **Requirements:** SEC-001, SEC-002, SEC-003, SEC-006; OPS-001; AC-10, AC-12
 - **Design:** DD-5, §12, §13, P-2, P-13, P-15
 - **Files:** `action/json/global/ValidateUserAction.java`; `action/home/LoginAction.java` (constructor change reaches
@@ -133,7 +133,7 @@
   `userManager.login` → "no credential call" test red.
 - **Red run:** the refusal tests fail on today's endpoints (password accepted).
 - **Disqualifier:** a test that asserts the message only, without the "no credential call" double.
-- **Consumers:** `ValidateUserActionGuardTest` (7), `LoginActionCgiarGuardTest` (6), `LoginActionFinishLoginTest` (18),
+- **Consumers:** `ValidateUserActionGuardTest` (7), `LoginActionCgiarGuardTest` (6), `LoginActionFinishLoginTest` (17),
   `LoginActionLogoutTest` (3), `CognitoLogHygieneTest`, `CognitoCallbackActionTest`, `CognitoLoginActionTest`,
   `OtpVerifyCodeActionTest` — design §17.
 - **Review:** `full` — authentication gate.

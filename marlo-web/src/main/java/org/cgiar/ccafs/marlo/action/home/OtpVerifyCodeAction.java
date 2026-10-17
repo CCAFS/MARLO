@@ -157,7 +157,8 @@ public class OtpVerifyCodeAction extends LoginAction implements ParameterNameAwa
     CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager,
     OtpRateLimiter limiter, OtpCodes codes, OtpEligibility eligibility, OtpChallengeManager challengeManager,
     ClientIpResolver ipResolver, Clock clock) {
-    super(config, userManager, globalUnitManager, crpUserManager, customParameterManager, parameterManager);
+    super(config, userManager, globalUnitManager, crpUserManager, customParameterManager, parameterManager,
+      eligibility);
     this.limiter = limiter;
     this.codes = codes;
     this.eligibility = eligibility;

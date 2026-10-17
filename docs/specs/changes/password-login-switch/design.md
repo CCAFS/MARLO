@@ -69,7 +69,10 @@ always has Cognito; at most two methods at once.
   - `isEligible(email, G)` refuses a Cognito account under the override, after `existActiveCrpUser` (DD-4);
   - **new** `methodsFor(identifier, units, cognitoAccountByUnit)` → per unit `{otpEnabled, passwordEnabled}` for
     `crpByEmail.do` (replaces the call to `otpEnabledFor`, DD-6);
-  - **new** `isPasswordRefused(account, unitOrNull)` for the password gate (DD-5);
+  - **new** `passwordGate(identifier, unitIdOrNull)` → `PasswordGateDecision` for the password gate (DD-5): `isRefused()` plus
+    `leaveRealmMessage(session)`, which leaves the message the realm would leave for that account kind, plus
+    `leaveRememberMeFailure(...)`, which runs Shiro's failed-login remember-me handling without a credential check (amended at
+    execute time, T05);
   - **new** once-per-unit ERROR memory for the last resort (§11).
 - `action/home/OtpRequestCodeAction.java` — step 4 uses the widened `isOffered`; no other step moves.
 - `action/home/OtpVerifyCodeAction.java` — no logic change; inherits through `OtpEligibility.isEligible` (`:280`). Its
@@ -213,7 +216,10 @@ it. The code endpoints add one Cognito resolution per request, only while the pa
 ## 13. Security Considerations
 
 - **Server-side refusal before credentials (SEC-001).** The gate runs before `userManager.login` in both endpoints,
-  so no hash comparison and no LDAP bind happens. It returns the existing `ERROR_LOGON_FAILURE` text (SEC-002).
+  so no hash comparison and no LDAP bind happens. It answers exactly what a wrong password answers for the account's kind
+  (SEC-002, amended at execute time, T05): no message for a local account, `ERROR_LOGON_FAILURE` for a CGIAR account,
+  `USER_DISABLED` for an inactive one. It also sends the remember-me `deleteMe` cookie of a failed login. Accepted
+  residual: CGIAR states that only the directory reveals (requirements Decision Log, 2026-10-16 T05).
 - **Membership-scoped gate (DD-5).** The attempt's unit counts only when the account is a member of it; otherwise the
   gate sweeps every membership. A caller cannot name a foreign password-on unit to get a credential check (the defect
   the SEC-005 guard already fixed, `ValidateUserAction.java:246-266`).
@@ -284,7 +290,8 @@ it. The code endpoints add one Cognito resolution per request, only while the pa
   No remaining breakage found.
 
 ### DD-5 — The password gate is membership-scoped
-- **Decision:** both endpoints refuse a password, right before the credential call, with the wrong-password message and
+- **Decision:** both endpoints refuse a password, right before the credential call, with the wrong-password response for
+  the account's kind (§13; amended at execute time, T05) and
   one INFO line, when the code key is configured and the switch is off for **the unit of the attempt**.
 - **Unit of the attempt:** `validateUser.do` takes its `globalUnitId` parameter (`ValidateUserAction:59`) and
   `login.do` its `crp` acronym (`LoginAction:310`) — **only when the account is a member of that unit**. When the unit
@@ -382,7 +389,7 @@ it. The code endpoints add one Cognito resolution per request, only while the pa
 - `OtpEligibility` constructor and methods: `OtpEligibilityTest` (32), `OtpRequestCodeActionTest` (49),
   `OtpVerifyCodeActionTest` (48), `CrpByUserEmailActionTest` (14), `OtpStrutsPackageTest` (8).
 - Password endpoints and `LoginAction`'s constructor: `ValidateUserActionGuardTest` (7), `LoginActionCgiarGuardTest` (6),
-  `LoginActionFinishLoginTest` (18), `LoginActionLogoutTest` (3), `CognitoLogHygieneTest` (builds `ValidateUserAction`
+  `LoginActionFinishLoginTest` (17), `LoginActionLogoutTest` (3), `CognitoLogHygieneTest` (builds `ValidateUserAction`
   at `:861`, `:905`), `CognitoCallbackActionTest`, `CognitoLoginActionTest`, `OtpVerifyCodeActionTest`.
 - Static locks and scan: P-16.
 - Welcome email: the 7 senders' test classes, found by `grep -rln "CrpUsersAction\|CrpProgamRegionsAction\|CrpPpaPartnersAction\|CrpSiteIntegrationAction\|CrpAdminManagmentAction\|ProjectPartnerAction\|ClusterActivitiesAction" marlo-web/src/test/java` in the owning task.

@@ -46,6 +46,14 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.RememberMeManager;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SimpleSession;
+import org.apache.shiro.subject.Subject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -77,6 +86,11 @@ import static org.junit.Assert.fail;
  * is the behaviour, namely that a password-on unit makes zero Cognito reads and zero {@code is_cgiar_user} reads, and
  * that a password-off unit reads the flag for every account before the lookup. The Global Unit ids (7, 8) and the type
  * id (3) are disjoint, so a unit id passed where the type id belongs is visible.
+ * <p>
+ * The password gate (CHG-PWD-SWITCH-001-T05, DD-5, SEC-001, OPS-001) is covered by the tests whose names start with
+ * {@code theGate}. The membership double answers by the exact stored email, as the real equality does, and records what
+ * it was asked, so a gate that asked with what was typed instead of the stored email finds no membership and a test
+ * fails.
  */
 public class OtpEligibilityTest {
 
@@ -97,6 +111,8 @@ public class OtpEligibilityTest {
   private static final long GU_TYPE = 3L;
 
   private static final String LAST_RESORT_LINE = "auth.password.last_resort ";
+  private static final String REFUSED_LINE = "auth.password.refused ";
+  private static final String GATE_ERROR_LINE = "auth.password.gate ";
 
   private World world;
   private Logger capturedLogger;
@@ -1010,6 +1026,379 @@ public class OtpEligibilityTest {
     assertEquals("a new instance is a new start", 2, this.lastResortLines().size());
   }
 
+  // ---- the password gate (CHG-PWD-SWITCH-001-T05, DD-5) ---------------------------------------------------------
+
+  private void gateWorld(String passwordValue) {
+    this.world.addUnit(GU, "true", "", passwordValue);
+    this.world.addMemberships(LOOKED_UP, GU);
+  }
+
+  @Test
+  public void theGateRefusesAMemberOfAPasswordOffUnitAndLogsOneLineWithoutTheAccount() {
+    this.gateWorld("false");
+
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+
+    assertEquals("the account first, then its memberships, then the settings", Arrays.asList("user", "members", "spec"),
+      this.world.calls);
+    assertEquals(Arrays.asList(LOOKED_UP), this.world.userLookups);
+    assertEquals("memberships by the stored email", Arrays.asList(LOOKED_UP), this.world.membershipReads);
+    assertEquals("the three keys in one read, for the one unit of the attempt",
+      Arrays.asList(ALL_KEYS + "|[" + GU + "]"), this.world.specificityReads);
+    List<ILoggingEvent> lines = this.refusedLines();
+    assertEquals(1, lines.size());
+    assertEquals(Level.INFO, lines.get(0).getLevel());
+    assertEquals("auth.password.refused gate=password_switch gu=GU7", lines.get(0).getFormattedMessage());
+    assertFalse("no email in the line", lines.get(0).getFormattedMessage().contains("partner"));
+  }
+
+  @Test
+  public void theGateAllowsAMemberOfAPasswordOnUnitAndSaysNothing() {
+    this.gateWorld("true");
+
+    assertFalse(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+
+    assertEquals(0, this.refusedLines().size());
+    assertEquals(0, this.gateErrorLines().size());
+  }
+
+  /** The password switch is read like the rule reads it: on unless the trimmed value is {@code false}. */
+  @Test
+  public void theGateReadsThePasswordSwitchLikeTheRuleDoes() {
+    for (String on : new String[] {"", "true", "TRUE", " true ", "yes", "0", "garbage"}) {
+      World world = new World();
+      world.addUnit(GU, "true", "", on);
+      world.addUser(LOOKED_UP, USER_ID, true, false);
+      world.addMemberships(LOOKED_UP, GU);
+      assertFalse("'" + on + "' is on",
+        world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+    }
+    for (String off : new String[] {"false", "FALSE", " False ", "false\n"}) {
+      World world = new World();
+      world.addUnit(GU, "true", "", off);
+      world.addUser(LOOKED_UP, USER_ID, true, false);
+      world.addMemberships(LOOKED_UP, GU);
+      assertTrue("'" + off + "' is off",
+        world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+    }
+  }
+
+  /**
+   * <b>The foreign-unit bypass (Judgment Day C-2).</b> The account is a member of unit 7, where the password is off.
+   * The attempt names unit 8, where it is on and the account is no member, or a unit that does not exist. Only a
+   * membership narrows the decision; anything else falls through to the sweep, which still refuses. The named id
+   * never reaches the settings read.
+   */
+  @Test
+  public void theGateIgnoresAnAttemptUnitTheAccountDoesNotBelongTo() {
+    this.world.addUnit(GU, "true", "", "false");
+    this.world.addUnit(OTHER_GU, "true", "", "true");
+    this.world.addMemberships(LOOKED_UP, GU);
+
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(OTHER_GU)).isRefused());
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(99999L)).isRefused());
+
+    assertEquals("only the account's own unit is ever read",
+      Arrays.asList(ALL_KEYS + "|[" + GU + "]", ALL_KEYS + "|[" + GU + "]"), this.world.specificityReads);
+  }
+
+  @Test
+  public void theGateJudgesAMemberByTheUnitOfTheAttemptAlone() {
+    this.world.addUnit(GU, "true", "", "false");
+    this.world.addUnit(OTHER_GU, "true", "", "true");
+    this.world.addMemberships(LOOKED_UP, GU, OTHER_GU);
+
+    assertFalse("the member's password-on unit allows it", this.world.subject()
+      .passwordGate(LOOKED_UP, Long.valueOf(OTHER_GU)).isRefused());
+    assertEquals(Arrays.asList(ALL_KEYS + "|[" + OTHER_GU + "]"), this.world.specificityReads);
+    assertTrue("the member's password-off unit refuses it", this.world.subject()
+      .passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+  }
+
+  @Test
+  public void withNoUnitNamedTheGateSweepsEveryMembershipAndLogsTheFirstOffUnitOnce() {
+    this.world.addUnit(GU, "true", "", "true");
+    this.world.addUnit(OTHER_GU, "true", "", "false");
+    this.world.addUnit(9L, "true", "", "false");
+    this.world.addMemberships(LOOKED_UP, GU, OTHER_GU, 9L);
+
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, null).isRefused());
+
+    assertEquals("every membership in one read", Arrays.asList(ALL_KEYS + "|[" + GU + ", " + OTHER_GU + ", 9]"),
+      this.world.specificityReads);
+    assertEquals("one line for one refusal", 1, this.refusedLines().size());
+    assertEquals("auth.password.refused gate=password_switch gu=GU8", this.refusedLines().get(0).getFormattedMessage());
+
+    World allOn = new World();
+    allOn.addUnit(GU, "true", "", "true");
+    allOn.addUnit(OTHER_GU, "true", "", "true");
+    allOn.addUser(LOOKED_UP, USER_ID, true, false);
+    allOn.addMemberships(LOOKED_UP, GU, OTHER_GU);
+    assertFalse(allOn.subject().passwordGate(LOOKED_UP, null).isRefused());
+  }
+
+  @Test
+  public void theGateNeverRefusesAnUnknownAccountOrABlankIdentifier() {
+    this.world.addUnit(GU, "true", "", "false");
+    this.world.addMemberships("someone.else@partner.org", GU);
+
+    assertFalse("no account: the credential check fails as today",
+      this.world.subject().passwordGate("nobody@partner.org", Long.valueOf(GU)).isRefused());
+    assertEquals(Arrays.asList("user"), this.world.calls);
+
+    this.world.calls.clear();
+    for (String blank : new String[] {null, "", "   "}) {
+      assertFalse("'" + blank + "'", this.world.subject().passwordGate(blank, Long.valueOf(GU)).isRefused());
+    }
+    assertEquals("a blank identifier is never looked up", 0, this.world.calls.size());
+    assertEquals(0, this.refusedLines().size());
+  }
+
+  @Test
+  public void theGateNeverRefusesAnAccountWithNoMembershipAndReadsNoSettings() {
+    this.world.addUnit(GU, "true", "", "false");
+
+    assertFalse(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+
+    assertEquals(Arrays.asList("user", "members"), this.world.calls);
+    assertEquals(0, this.world.specificityReads.size());
+  }
+
+  /** Last resort (DD-5): without a valid key the password stays available; the gate makes no call, writes no line. */
+  @Test
+  public void withoutTheCodeKeyTheGateNeverRefusesMakesNoCallAndLogsNothing() {
+    this.world.secret = "";
+    this.gateWorld("false");
+
+    assertFalse(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+
+    assertEquals("no call at all", 0, this.world.calls.size());
+    assertEquals(0, this.refusedLines().size());
+    assertEquals("the ERROR of this case belongs to crpByEmail.do", 0, this.gateErrorLines().size());
+    assertEquals(0, this.lastResortLines().size());
+  }
+
+  /**
+   * Fail-open (requirements Decision Log, exception to SEC-001): a failing read of the account, the memberships or the
+   * settings means today's behavior, the password allowed, and one ERROR line. A database fault must not become a
+   * lock-out. The line carries neither the identifier nor a unit.
+   */
+  @Test
+  public void aFailingReadFailsOpenWithOneErrorLineForEachOfTheThreeReads() {
+    for (String failing : new String[] {"user", "members", "spec"}) {
+      this.appender.list.clear();
+      World world = new World();
+      world.addUnit(GU, "true", "", "false");
+      world.addUser(LOOKED_UP, USER_ID, true, false);
+      world.addMemberships(LOOKED_UP, GU);
+      RuntimeException failure = new IllegalStateException(failing + " read failed");
+      if ("user".equals(failing)) {
+        world.userFailure = failure;
+      } else if ("members".equals(failing)) {
+        world.membershipFailure = failure;
+      } else {
+        world.specificityFailure = failure;
+      }
+
+      assertFalse(failing, world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+
+      List<ILoggingEvent> errors = this.gateErrorLines();
+      assertEquals(failing, 1, errors.size());
+      assertEquals(Level.ERROR, errors.get(0).getLevel());
+      assertEquals(failing, "auth.password.gate outcome=settings_unavailable fail_open=true",
+        errors.get(0).getFormattedMessage());
+      assertFalse("no identifier in the line", errors.get(0).getFormattedMessage().contains("partner"));
+      assertEquals(failing, 0, this.refusedLines().size());
+    }
+  }
+
+  /** The memberships are read by the account's stored email, whatever the identifier was typed as. */
+  @Test
+  public void theGateAsksForMembershipsByTheStoredEmailNotByWhatWasTyped() {
+    this.world.normaliseUserLookups = true;
+    this.gateWorld("false");
+
+    assertTrue(this.world.subject().passwordGate(SUBMITTED, Long.valueOf(GU)).isRefused());
+
+    assertEquals("the identifier goes to the account lookup as typed, which normalises it", Arrays.asList(SUBMITTED),
+      this.world.userLookups);
+    assertEquals("the memberships by the stored email", Arrays.asList(LOOKED_UP), this.world.membershipReads);
+  }
+
+  @Test
+  public void theGateResolvesAnIdentifierWithoutAnAtSignAsAUsername() {
+    this.world.usernames.put("jane.local", LOOKED_UP);
+    this.gateWorld("false");
+
+    assertTrue(this.world.subject().passwordGate("jane.local", Long.valueOf(GU)).isRefused());
+
+    assertEquals(Arrays.asList("username:jane.local"), this.world.userLookups);
+    assertEquals(Arrays.asList(LOOKED_UP), this.world.membershipReads);
+  }
+
+  /** The gate asks about the password switch and nothing else: no Cognito flag read, no crp_users row read. */
+  @Test
+  public void theGateReadsNoCognitoStateAndNoCrpUsersRow() {
+    this.gateWorld("false");
+
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+
+    assertEquals(0, this.world.cognitoReads.size());
+    assertEquals(0, this.world.membershipChecks.size());
+  }
+
+  /**
+   * SEC-002: a refusal leaves in the Shiro session what {@code APCustomRealm} leaves when the credential check fails,
+   * which differs by kind of account: nothing for an active local account (the realm sets the attribute to {@code
+   * null}, which removes it, so a message left by an earlier attempt is cleared too), the failed-logon code for an
+   * active CGIAR account and the disabled code for an inactive one, local or CGIAR. The expected values are the raw
+   * codes of the spec and of the realm, written as literals.
+   */
+  @Test
+  public void aRefusalLeavesWhatTheRealmLeavesForEachKindOfAccount() {
+    assertNull("active local: no message, and an earlier one is cleared",
+      this.messageLeftFor(true, false, "USER_DISABLED"));
+    assertEquals("active CGIAR", "ERROR_LOGON_FAILURE", this.messageLeftFor(true, true, null));
+    assertEquals("inactive local", "USER_DISABLED", this.messageLeftFor(false, false, null));
+    assertEquals("inactive CGIAR: disabled wins, as in the realm", "USER_DISABLED",
+      this.messageLeftFor(false, true, null));
+  }
+
+  /**
+   * SEC-002, cookies: a refusal runs Shiro's failed-login handling for remember-me, which {@code Subject.login} runs on
+   * every failure. The remember-me manager receives the subject, a token built as {@code UserManagerImp.login} builds
+   * it (the typed account and password) and the exception the realm throws for a failed password. The recorder copies
+   * what it sees at the moment of the call, because the token is cleared afterwards.
+   */
+  @Test
+  public void aRefusalRunsTheRememberMeFailedLoginHandlingWithTheTokenALoginWouldHaveBuilt() {
+    List<String> seen = new ArrayList<>();
+    DefaultSecurityManager securityManager = new DefaultSecurityManager();
+    securityManager.setRememberMeManager(this.recordingRememberMe(seen, null));
+    Subject subject = new Subject.Builder(securityManager).buildSubject();
+
+    this.refusalOnAPasswordOffUnit().leaveRememberMeFailure(subject, securityManager, "jane@partner.org", "typed-pw");
+
+    assertEquals(Arrays.asList("jane@partner.org|typed-pw|IncorrectCredentialsException|" + subject.hashCode()), seen);
+  }
+
+  /** Nothing to run, nothing to fail: no remember-me manager, a security manager of another kind, or a throwing one. */
+  @Test
+  public void theRememberMeFailureHandlingNeverChangesTheAnswerOfARefusal() {
+    OtpEligibility.PasswordGateDecision refusal = this.refusalOnAPasswordOffUnit();
+
+    DefaultSecurityManager withoutManager = new DefaultSecurityManager();
+    withoutManager.setRememberMeManager(null);
+    refusal.leaveRememberMeFailure(new Subject.Builder(withoutManager).buildSubject(), withoutManager,
+      "jane@partner.org", "typed-pw");
+
+    org.apache.shiro.mgt.SecurityManager notDefault = fake(org.apache.shiro.mgt.SecurityManager.class,
+      (method, args) -> {
+        throw new AssertionError("a security manager of another kind must not be asked, but " + method + " was");
+      });
+    refusal.leaveRememberMeFailure(new Subject.Builder(withoutManager).buildSubject(), notDefault, "jane@partner.org",
+      "typed-pw");
+
+    this.appender.list.clear();
+    DefaultSecurityManager throwing = new DefaultSecurityManager();
+    throwing.setRememberMeManager(
+      this.recordingRememberMe(new ArrayList<String>(), new IllegalStateException("boom")));
+    refusal.leaveRememberMeFailure(new Subject.Builder(throwing).buildSubject(), throwing, "jane@partner.org",
+      "typed-pw");
+
+    List<ILoggingEvent> warnings = this.linesStartingWith("auth.password.gate outcome=remember_me_unavailable");
+    assertEquals("contained, and logged once", 1, warnings.size());
+    assertEquals(Level.WARN, warnings.get(0).getLevel());
+    assertFalse("the line does not name the account", warnings.get(0).getFormattedMessage().contains("jane"));
+  }
+
+  /** A remember-me manager that records what it is asked, and can throw. */
+  private RememberMeManager recordingRememberMe(List<String> seen, RuntimeException failure) {
+    return fake(RememberMeManager.class, (method, args) -> {
+      if ("getRememberedPrincipals".equals(method)) {
+        return null; // Shiro asks it when it builds a subject; nothing is remembered
+      }
+      if (!"onFailedLogin".equals(method)) {
+        throw new AssertionError("only the failed-login handling may be asked, but " + method + " was called");
+      }
+      AuthenticationToken token = (AuthenticationToken) args[1];
+      seen.add(token.getPrincipal() + "|" + new String(((UsernamePasswordToken) token).getPassword()) + "|"
+        + ((AuthenticationException) args[2]).getClass().getSimpleName() + "|" + args[0].hashCode());
+      if (failure != null) {
+        throw failure;
+      }
+      return null;
+    });
+  }
+
+  private OtpEligibility.PasswordGateDecision refusalOnAPasswordOffUnit() {
+    World world = new World();
+    world.addUnit(GU, "true", "", "false");
+    world.addUser(LOOKED_UP, USER_ID, true, false);
+    world.addMemberships(LOOKED_UP, GU);
+    OtpEligibility.PasswordGateDecision decision = world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU));
+    assertTrue(decision.isRefused());
+    return decision;
+  }
+
+  /** The gate allowing the password leaves nothing to leave; the endpoint never asks it to. */
+  @Test
+  public void anAllowedDecisionIsNotARefusal() {
+    this.gateWorld("true");
+
+    assertFalse(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+  }
+
+  /** Runs the gate on a password-off unit for one kind of account and returns what the refusal left in the session. */
+  private Object messageLeftFor(boolean active, boolean cgiar, String earlierMessage) {
+    World world = new World();
+    world.addUnit(GU, "true", "", "false");
+    world.addUser(LOOKED_UP, USER_ID, active, cgiar);
+    world.addMemberships(LOOKED_UP, GU);
+    OtpEligibility.PasswordGateDecision decision = world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU));
+    assertTrue(decision.isRefused());
+    Session session = new SimpleSession();
+    if (earlierMessage != null) {
+      session.setAttribute("loginMessage", earlierMessage);
+    }
+    decision.leaveRealmMessage(session);
+    return session.getAttribute("loginMessage");
+  }
+
+  /** The refusal line names the unit as stored, sanitised; a missing acronym or line breaks cannot break the line. */
+  @Test
+  public void theGateLogsTheUnitAcronymSanitisedAndSurvivesAMissingOne() {
+    this.gateWorld("false");
+    this.world.unitsById.get(Long.valueOf(GU)).setAcronym("A\nB\rC");
+
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+    assertEquals("auth.password.refused gate=password_switch gu=ABC", this.refusedLines().get(0).getFormattedMessage());
+
+    this.appender.list.clear();
+    this.world.unitsById.get(Long.valueOf(GU)).setAcronym(null);
+    assertTrue(this.world.subject().passwordGate(LOOKED_UP, Long.valueOf(GU)).isRefused());
+    assertEquals("auth.password.refused gate=password_switch gu=", this.refusedLines().get(0).getFormattedMessage());
+    assertEquals(0, this.gateErrorLines().size());
+  }
+
+  private List<ILoggingEvent> refusedLines() {
+    return this.linesStartingWith(REFUSED_LINE);
+  }
+
+  private List<ILoggingEvent> gateErrorLines() {
+    return this.linesStartingWith(GATE_ERROR_LINE);
+  }
+
+  private List<ILoggingEvent> linesStartingWith(String prefix) {
+    List<ILoggingEvent> lines = new ArrayList<>();
+    for (ILoggingEvent event : this.appender.list) {
+      if (event.getFormattedMessage().startsWith(prefix)) {
+        lines.add(event);
+      }
+    }
+    return lines;
+  }
+
   private List<ILoggingEvent> lastResortLines() {
     List<ILoggingEvent> lines = new ArrayList<>();
     for (ILoggingEvent event : this.appender.list) {
@@ -1060,8 +1449,18 @@ public class OtpEligibilityTest {
     /** The catalog default of cognito_auth_active for the type {@link #GU_TYPE}; {@code null} is no catalog row. */
     String cognitoCatalogDefault;
     RuntimeException specificityFailure;
+    RuntimeException userFailure;
+    RuntimeException membershipFailure;
+    /** Whether the user lookup trims and lower-cases what it is asked for, as the real DAO does. */
+    boolean normaliseUserLookups;
+    /** username to stored email, for the lookup by username. */
+    final Map<String, String> usernames = new HashMap<>();
+    /** The units each stored email is an active member of, as {@code crpUsers} answers by exact equality. */
+    final Map<String, List<GlobalUnit>> membershipsByStoredEmail = new HashMap<>();
 
     final List<String> userLookups = new ArrayList<>();
+    /** Every {@code crpUsers} argument: the email the memberships were asked for. */
+    final List<String> membershipReads = new ArrayList<>();
     final List<Long> unitLookups = new ArrayList<>();
     final List<String> specificityReads = new ArrayList<>();
     final List<String> membershipChecks = new ArrayList<>();
@@ -1094,6 +1493,11 @@ public class OtpEligibilityTest {
       this.settings.put(Long.valueOf(id), settingsOf(switchValue, exclusion, passwordValue));
     }
 
+    /** The units already added to this world that the stored email is an active member of. */
+    void addMemberships(String storedEmail, long... unitIds) {
+      this.membershipsByStoredEmail.put(storedEmail, this.units(unitIds));
+    }
+
     List<GlobalUnit> units(long... ids) {
       List<GlobalUnit> result = new ArrayList<>();
       for (long id : ids) {
@@ -1116,11 +1520,32 @@ public class OtpEligibilityTest {
         if ("getUserByEmail".equals(method)) {
           this.calls.add("user");
           this.userLookups.add((String) args[0]);
-          return this.users.get(args[0]);
+          if (this.userFailure != null) {
+            throw this.userFailure;
+          }
+          String key = (String) args[0];
+          return this.users.get(this.normaliseUserLookups ? key.trim().toLowerCase() : key);
+        }
+        if ("getUserByUsername".equals(method)) {
+          this.calls.add("user");
+          this.userLookups.add("username:" + args[0]);
+          if (this.userFailure != null) {
+            throw this.userFailure;
+          }
+          return this.users.get(this.usernames.get(args[0]));
         }
         return unsupported(method);
       });
       GlobalUnitManager globalUnitManager = fake(GlobalUnitManager.class, (method, args) -> {
+        if ("crpUsers".equals(method)) {
+          this.calls.add("members");
+          this.membershipReads.add((String) args[0]);
+          if (this.membershipFailure != null) {
+            throw this.membershipFailure;
+          }
+          List<GlobalUnit> stored = this.membershipsByStoredEmail.get(args[0]);
+          return stored == null ? new ArrayList<GlobalUnit>() : new ArrayList<GlobalUnit>(stored);
+        }
         if ("getGlobalUnitById".equals(method)) {
           this.calls.add("unit");
           this.unitLookups.add((Long) args[0]);

@@ -42,13 +42,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.RememberMeManager;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The single eligibility predicate of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T06, FN-001, FN-003,
  * FN-004, FN-005, FN-015, DD-4; amended by T21, DD-13, and by CHG-PWD-SWITCH-001-T03, FN-004 to FN-006, SEC-003,
- * SEC-004, OPS-002, DD-3, DD-4, DD-6).
+ * SEC-004, OPS-002, DD-3, DD-4, DD-6; and T05, SEC-001, SEC-002, OPS-001, DD-5, for {@link #passwordGate}).
  * <p>
  * <b>Full predicate</b> ({@link #isEligible(String, long)}), used when a code is requested (design 5.1 step 6) and
  * again after it is consumed (5.2 step 8, FN-015). It is true only when <b>all</b> of these hold:
@@ -85,7 +91,8 @@ import org.slf4j.LoggerFactory;
  * membership, so the response discloses nothing beyond today's {@code isCgiarUser} flag and unit list (JI-11).
  * {@code isOffered} is account-blind: it assumes an account without Cognito, so the override is admitted and the
  * Cognito refusal is left to {@code isEligible}. {@link #methodsFor(String, Collection, Map)} answers, per unit, the
- * methods the pre-auth lookup reports.
+ * methods the pre-auth lookup reports. {@link #passwordGate(String, Long)} is the gate of the two password endpoints:
+ * it reads the password switch of the account's units and nothing about Cognito.
  * <p>
  * <b>Call it only from an action's {@code execute()}.</b> The user, membership and specificity reads go through
  * transactional managers, and a transactional call made from {@code validate()} commits whatever {@code prepare()}
@@ -117,6 +124,91 @@ public final class OtpEligibility {
 
     /** Eligible only because the unit's password switch is off: the code would not be offered with it on. */
     PASSWORD_SWITCH_OFF
+  }
+
+  /**
+   * What the password gate decided for one attempt (CHG-PWD-SWITCH-001-T05, SEC-002). A refusal carries what the
+   * credential check would have left behind for this kind of account, so the endpoint can answer exactly as it answers
+   * a real wrong password and the answer reveals nothing about the account.
+   */
+  public static final class PasswordGateDecision {
+
+    private static final PasswordGateDecision ALLOWED = new PasswordGateDecision(false, null);
+
+    private final boolean refused;
+    private final String realmMessage;
+
+    private PasswordGateDecision(boolean refused, String realmMessage) {
+      this.refused = refused;
+      this.realmMessage = realmMessage;
+    }
+
+    /**
+     * @return {@code true} when the password must not reach the credential check
+     */
+    public boolean isRefused() {
+      return this.refused;
+    }
+
+    /**
+     * Leaves in the Shiro session what {@code APCustomRealm} leaves there when the credential check fails for this
+     * kind of account (SEC-002): {@link APConstants#USER_DISABLED} for an inactive account, which the realm answers
+     * before it compares any password; nothing for an active local account, because {@code DBAuthenticator} leaves no
+     * message (the realm sets the attribute to {@code null}, which removes it, and so does this); and
+     * {@link APConstants#ERROR_LOGON_FAILURE} for an active CGIAR account. That last one is a <b>choice</b>, not a
+     * reproduction: a real CGIAR failure leaves whatever the directory answers (the message comes from the directory
+     * library, which this code does not call), and {@code ERROR_LOGON_FAILURE} is the code {@code LDAPAuthenticator}
+     * itself uses when the directory returns no connection. A CGIAR account that a directory search or bind would
+     * reject before it checks the password (no directory entry, a locked or expired account, an outage) therefore gets
+     * a different answer from a real failure. That residual is accepted (requirements Decision Log, 2026-10-16,
+     * "Execute-time decisions on T05"): reproducing it takes a directory call before the refusal, which SEC-001
+     * forbids. The endpoint then reads the session as it does after a failed {@code userManager.login}.
+     *
+     * @param shiroSession the session {@code getLoginMessages()} reads
+     */
+    public void leaveRealmMessage(Session shiroSession) {
+      shiroSession.setAttribute(APConstants.LOGIN_MESSAGE, this.realmMessage);
+    }
+
+    /**
+     * Runs Shiro's failed-login handling for remember-me, which {@code Subject.login} runs on every failure and a
+     * refusal never reaches (SEC-002). {@code DefaultSecurityManager.login} calls the remember-me manager's
+     * {@code onFailedLogin}; the cookie manager that {@code DefaultWebSecurityManager} installs answers it with
+     * {@code Set-Cookie: rememberMe=deleteMe}, for a wrong password and for an unknown account alike. Without this call
+     * a refusal would be the one failure that does not send it.
+     * <p>
+     * No credential is checked: {@code onFailedLogin} only forgets the remembered identity. The token is built as
+     * {@code UserManagerImp.login} builds it, and the exception is the one the realm throws for every failed
+     * password. Nothing here can change the answer: a security manager that is not a {@code DefaultSecurityManager},
+     * one without a remember-me manager and a subject that is not a web subject (the cookie manager then has no
+     * response to write to) are all no-ops, and a failure of the remember-me manager is logged, as Shiro logs it, and
+     * contained.
+     *
+     * @param subject the subject the endpoint is serving, as {@code SecurityUtils.getSubject()} returns it
+     * @param securityManager the configured security manager, as {@code SecurityUtils.getSecurityManager()} returns it
+     * @param username the identifier as typed, which {@code userManager.login} would have put in the token
+     * @param password the password as typed, never read here
+     */
+    public void leaveRememberMeFailure(Subject subject, org.apache.shiro.mgt.SecurityManager securityManager,
+      String username, String password) {
+      if (!(securityManager instanceof DefaultSecurityManager)) {
+        return;
+      }
+      RememberMeManager rememberMe = ((DefaultSecurityManager) securityManager).getRememberMeManager();
+      if (rememberMe == null) {
+        return;
+      }
+      UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+      try {
+        rememberMe.onFailedLogin(subject, token, new IncorrectCredentialsException());
+      } catch (RuntimeException e) {
+        // Shiro's own DefaultSecurityManager logs and contains the same failure; the token is not logged (it names
+        // the account).
+        LOG.warn("auth.password.gate outcome=remember_me_unavailable: remember-me handling threw on a refusal", e);
+      } finally {
+        token.clear();
+      }
+    }
   }
 
   /** The password switch as the rule reads it when it is on: what the code switch and the exclusion offer alone. */
@@ -155,6 +247,21 @@ public final class OtpEligibility {
     this.otpChallengeManager = otpChallengeManager;
     this.customParameterManager = customParameterManager;
     this.parameterManager = parameterManager;
+  }
+
+  /**
+   * The units that decide the gate: the unit of the attempt when the account is a member of it, otherwise every
+   * membership (the sweep). The attempt's unit is a request, not an authority: only a membership can narrow.
+   */
+  private static List<GlobalUnit> decidingUnits(List<GlobalUnit> memberships, Long selectedUnitId) {
+    if (selectedUnitId != null) {
+      for (GlobalUnit membership : memberships) {
+        if (selectedUnitId.equals(membership.getId())) {
+          return Collections.singletonList(membership);
+        }
+      }
+    }
+    return memberships;
   }
 
   private static String valueOf(Map<String, String> values, String key) {
@@ -291,6 +398,86 @@ public final class OtpEligibility {
   }
 
   /**
+   * The password gate of the two login-page endpoints, {@code validateUser.do} and {@code login.do}
+   * (CHG-PWD-SWITCH-001-T05, DD-5; SEC-001, SEC-002, OPS-001). The endpoint asks it <b>before</b> the credential check:
+   * once {@code userManager.login} runs, the password has been compared or has already left MARLO for the realm's LDAP
+   * branch. When the decision is a refusal the endpoint skips the credential check and answers as it answers a failed
+   * one, after {@link PasswordGateDecision#leaveRealmMessage(Session)} has left what the realm would have left.
+   * <p>
+   * The password is refused when the code key is configured and the password switch is off for the Global Unit of the
+   * attempt. The decision is the rule's ({@link SignInMethodRule}, an account without Cognito); the Cognito accounts
+   * are refused earlier by the SEC-005 guard of each endpoint, which this does not replace.
+   * <ul>
+   * <li><b>The account</b> is resolved as the credential check resolves it: by email when the identifier holds an
+   * {@code @}, otherwise by username. Its memberships are then read by its <b>stored</b> email, never by what was
+   * typed: the realm trims and lower-cases what it is given, the membership read compares it as it is, and a
+   * membership read made with padding or case would find none and let the password through.</li>
+   * <li><b>The unit of the attempt</b> counts only when the account is a member of it. When it is missing, unknown or
+   * not a membership, every membership is swept and the first one with the password off refuses. A caller-supplied unit
+   * may narrow the decision to a unit the account holds; it may never escape one (the defect the SEC-005 guard already
+   * fixed, Judgment Day C-2). The settings read lists only the account's own units.</li>
+   * <li><b>An unknown account</b> has no membership: the gate does not refuse and the credential check fails as it
+   * does today.</li>
+   * <li><b>Without a valid code key</b> the password is the last resort: the gate never refuses, reads nothing and
+   * writes nothing. The ERROR that tells the administrator is decided in {@code crpByEmail.do}
+   * ({@link #methodsFor(String, Collection, Map)}, OPS-002).</li>
+   * <li><b>A failing read</b> (account, memberships or settings) fails <b>open</b>: the gate allows the password and
+   * writes one ERROR line. This is the deliberate exception to SEC-001 of the requirements Decision Log, unlike the
+   * fail-closed sweep of the SEC-005 guard: a database fault already fails the login itself, and the switch must not
+   * turn it into a lock-out.</li>
+   * </ul>
+   * <b>What a refusal leaves behind (SEC-002).</b> The endpoints follow the road of a failed login, so the decision
+   * leaves what a failed {@code Subject.login} leaves: the realm's message for the kind of account
+   * ({@link PasswordGateDecision#leaveRealmMessage(Session)}, which says what is reproduced and what is chosen) and
+   * Shiro's remember-me failure handling ({@link PasswordGateDecision#leaveRememberMeFailure}). A CGIAR account that
+   * the directory would reject before its password is checked is the accepted residual of the requirements Decision
+   * Log, 2026-10-16, "Execute-time decisions on T05".
+   * <p>
+   * A refusal writes one INFO line, {@code auth.password.refused gate=password_switch gu=<acronym>}, with the acronym
+   * as stored and sanitised, as the last-resort line writes it. It carries neither the identifier nor the password.
+   * <p>
+   * Call it only from the action method that handles the request, never from {@code validate()}: the three reads go
+   * through managers that may be transactional.
+   *
+   * @param identifier what the user typed as the account, an email or a username, raw; possibly {@code null}
+   * @param selectedUnitId the id of the Global Unit the attempt names; {@code null} when it names none or none resolved
+   * @return the decision. Never {@code null}
+   */
+  public PasswordGateDecision passwordGate(String identifier, Long selectedUnitId) {
+    if (!this.keys.isConfigured() || identifier == null || identifier.trim().isEmpty()) {
+      return PasswordGateDecision.ALLOWED;
+    }
+    try {
+      User account = identifier.contains("@") ? this.userManager.getUserByEmail(identifier)
+        : this.userManager.getUserByUsername(identifier);
+      if (account == null || account.getEmail() == null) {
+        return PasswordGateDecision.ALLOWED;
+      }
+      List<GlobalUnit> deciding = decidingUnits(this.globalUnitManager.crpUsers(account.getEmail()), selectedUnitId);
+      if (deciding.isEmpty()) {
+        return PasswordGateDecision.ALLOWED;
+      }
+      List<Long> unitIds = new ArrayList<Long>();
+      for (GlobalUnit unit : deciding) {
+        unitIds.add(unit.getId());
+      }
+      Map<Long, Map<String, String>> specificities = this.specificities(unitIds);
+      for (GlobalUnit unit : deciding) {
+        if (!this.isPasswordAllowed(specificities.get(unit.getId()))) {
+          PasswordGateDecision refusal = new PasswordGateDecision(true, realmMessageFor(account));
+          String acronym = LogSanitizer.sanitizeForLog(unit.getAcronym());
+          LOG.info("auth.password.refused gate=password_switch gu={}", acronym);
+          return refusal;
+        }
+      }
+      return PasswordGateDecision.ALLOWED;
+    } catch (RuntimeException e) {
+      LOG.error("auth.password.gate outcome=settings_unavailable fail_open=true", e);
+      return PasswordGateDecision.ALLOWED;
+    }
+  }
+
+  /**
    * The variant for {@code crpByEmail.do}: configured, the unit's switch on and the email's domain not excluded. It
    * reads no account state. It does not know the password switch; {@link #methodsFor(String, Collection, Map)}
    * replaces it for the pre-auth lookup (CHG-PWD-SWITCH-001-T04).
@@ -333,6 +520,35 @@ public final class OtpEligibility {
     return SignInMethodRule.methodsFor(this.keys.isConfigured(), cognitoAccountInG, passwordSwitchValue,
       valueOf(values, APConstants.OTP_LOGIN_ACTIVE), valueOf(values, APConstants.OTP_EXCLUDED_EMAIL_DOMAINS),
       email).isCode();
+  }
+
+  /**
+   * The message a refusal leaves for this account (SEC-002), following the branches of
+   * {@code APCustomRealm.doGetAuthenticationInfo} in its order:
+   * <ul>
+   * <li>an inactive account: {@link APConstants#USER_DISABLED}, which the realm sets before any password is
+   * compared;</li>
+   * <li>an active CGIAR account: {@link APConstants#ERROR_LOGON_FAILURE}. The realm would leave what the directory
+   * answers, which this code cannot know without a directory call; this is the accepted residual described at
+   * {@link PasswordGateDecision#leaveRealmMessage(Session)};</li>
+   * <li>an active local account: {@code null}, because {@code DBAuthenticator} leaves no message.</li>
+   * </ul>
+   */
+  private static String realmMessageFor(User account) {
+    if (!account.isActive()) {
+      return APConstants.USER_DISABLED;
+    }
+    return account.isCgiarUser() ? APConstants.ERROR_LOGON_FAILURE : null;
+  }
+
+  /**
+   * The rule's answer on the password for an account without Cognito, from the unit's settings (the key is
+   * configured, or the gate would not be here). The code switch and the exclusion do not change it.
+   */
+  private boolean isPasswordAllowed(Map<String, String> values) {
+    String passwordSwitchValue = valueOf(values, APConstants.PASSWORD_LOGIN_ACTIVE);
+    return SignInMethodRule.methodsFor(this.keys.isConfigured(), false, passwordSwitchValue, null, null, null)
+      .isPassword();
   }
 
   /** T21's own rule, without the override: the code switch is on and the domain is not excluded. */
