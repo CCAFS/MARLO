@@ -1,0 +1,17 @@
+# akili-test Suite 2 (non-author re-run) 2026-10-18 11:17 -0500, HEAD a76807b4f9; invocation: docs/specs/changes/center-email-otp-login/probes/ac-probe.sh nonprodblank
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== nonprodblank: AC-19, blank email.notification (the application was started with EMAIL_NOTIFICATION= empty)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+   [WARN ] [MARLO] [dev] [OtpMailSender] environment=DEV request_id=39aab1ffd1e3c57f controller_affected=/marlo-web/otpRequestCode.do: auth.otp.mail outcome=send_failed cause=AddressException
+   [WARN ] [MARLO] [dev] [OtpLog] environment=DEV request_id=39aab1ffd1e3c57f controller_affected=/marlo-web/otpRequestCode.do: auth.otp.delivery outcome=email_failed gu=aiccra domain=outlook.com ms=1
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=39aab1ffd1e3c57f controller_affected=/marlo-web/otpRequestCode.do: auth.otp.request outcome=sent gu=aiccra domain=outlook.com ms=119
+  response {"status":"sent","destination":"p***@outlook.com"} ; messages at the sink: 0 ; email_logs rows: 0
+  => PASS [AC-19] with email.notification blank the response is still the neutral sent   ({"status":"sent","destination":"p***@outlook.com"})
+  => PASS [AC-19] with email.notification blank nothing is sent: no message at the sink, none for the submitted address   (0 message(s))
+  => PASS [AC-19] with email.notification blank no email_logs row is written   (0 row(s))
+  => PASS [AC-19] the delivery line says email_failed, at WARN, and no auth.otp.code line is written   (1 delivery line(s))
+
+SUMMARY: 4 checks, 0 failed
+# exit 0
