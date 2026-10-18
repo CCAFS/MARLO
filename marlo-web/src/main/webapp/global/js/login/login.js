@@ -1152,6 +1152,10 @@ function otpCopy(key) {
 
 // Show exactly one OTP message: inside the code step once it is open, otherwise under the password step
 function otpShowError(key) {
+  // T22: on a unit whose password is switched off "use your password" would point at a method that is refused there
+  if(key === "unavailable" && passwordEnabled === false) {
+    key = "unavailablePasswordOff";
+  }
   cleanWrongData();
   var $target = (currentStep == "otp") ? $('#login-otp-error') : $('.loginForm p.invalidField.otpRequestError');
   $target.text(otpCopy(key)).removeClass("hidden");

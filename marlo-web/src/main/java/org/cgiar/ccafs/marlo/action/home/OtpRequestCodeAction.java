@@ -77,6 +77,8 @@ import org.slf4j.LoggerFactory;
  * <b>Order.</b> No step before the eligibility check reads account state, so the steps before it answer identically
  * for every account (JD-1):
  * <ol>
+ * <li>step 0: only a POST is served (T22). Any other method, or no request at all, answers {@code unavailable}
+ * and logs {@code bad_method}, before the limiter, the session or any store is touched;</li>
  * <li>an unconfigured secret answers {@code domainNotEnabled}. It comes first because the limiter cannot count
  * without keys and would answer {@code unavailable} instead (SEC-008);</li>
  * <li>the limiter counts the email, the address and the 30-second cooldown, before any lookup (SEC-010, FN-008);</li>
@@ -257,8 +259,10 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     long started = System.nanoTime();
     RequestOutcome outcome;
     try {
-      outcome = this.process();
-    } catch (RuntimeException e) {
+      // Step 0 (design 5.1, T22): only a POST is served, and a refusal changes nothing, so the code and the email
+      // can never travel in a URL that an access log records.
+      outcome = this.isPostRequest() ? this.process() : this.refuse(STATUS_UNAVAILABLE, RequestOutcome.BAD_METHOD);
+    } catch (RuntimeException | Error e) {
       // Last line of defence: whatever failed, the caller gets a well-formed answer and never a 500.
       logFault("request", e);
       this.response = status(STATUS_UNAVAILABLE);
@@ -305,6 +309,15 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
     return this.acronym;
   }
 
+  /**
+   * Design 5.1 step 0: whether the call is a POST. A missing request is not one, and the method is compared ignoring
+   * case, the way {@code ValidateUserAction} does. It reads nothing but the request line, so it answers identically for
+   * every account.
+   */
+  private boolean isPostRequest() {
+    return this.request != null && "POST".equalsIgnoreCase(this.request.getMethod());
+  }
+
   /** Design 5.1 step 1: the resolved client address, never {@code null} (an unknown peer shares one bucket). */
   private String clientIp() {
     return this.request == null ? this.ipResolver.resolve((String) null, null) : this.ipResolver.resolve(this.request);
@@ -333,7 +346,7 @@ public class OtpRequestCodeAction extends BaseAction implements ParameterNameAwa
       // caller is the same neutral map either way, and OtpLog writes the suffix for outcome=sent alone.
       this.viaPasswordOff = basis == Basis.PASSWORD_SWITCH_OFF;
       return basis != Basis.NONE;
-    } catch (RuntimeException e) {
+    } catch (RuntimeException | Error e) {
       logFault("eligibility", e);
       this.eligibilityFailed = true;
       return false;

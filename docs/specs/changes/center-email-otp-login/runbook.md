@@ -128,6 +128,7 @@ succeeded; `request` and `verify` are INFO.
 | `outcome=unconfigured` | The secret is missing or too short | A2. Look for the startup WARN `auth.otp.keys` |
 | `outcome=rate_limited` (note `gu=` is empty, the limit runs before any lookup) | 5 requests per email or 20 per IP per 15 minutes, or the 30 s cooldown | Ask the user to wait. If many users hit it, suspect a shared IP bucket (A3) |
 | `outcome=terms_required` | The terms box was not ticked. The cooldown still started | Ask the user to tick it |
+| `outcome=bad_method` (note `gu=` and `domain=` are empty: nothing about the call was read) *(Added 2026-10-18, T22)* | The call was not a POST, or had no servlet request. It changed nothing: no limiter hit, no row, no mail, no session write. The caller got `unavailable` | A browser address bar, a link, a crawler or a scanner calling `otpRequestCode.do` with GET (or HEAD, PUT), or a proxy rewriting the method. The page's own `login.js` always POSTs, so a user who sees "unavailable" with this line points to a proxy or redirect that turns the POST into a GET (a 301/302 on `otpRequestCode.do`). Check the proxy rules. Nothing to fix in the account |
 | `outcome=internal_error` | Fault, usually with an `auth.otp.fault` line | Developer. Usually the user saw "unavailable"; with an `auth.otp.fault stage=eligibility` line the user saw "code sent" (deliberate: the answer must not depend on the account) |
 
 **Step 2. For `sent`, search `auth.otp.delivery` a few seconds later.**
@@ -164,6 +165,7 @@ mailbox; the row shows that mailbox in **BCC**.
 | `not_eligible` | `invalid` | Log-only variant of the same |
 | `rate_limited` | "Too many" | 10 per email or 50 per IP per 15 minutes |
 | `failed` | Generic sign-in error | The code was accepted but the shared sign-in tail refused. See the post-login gap in A7 |
+| `bad_method` *(Added 2026-10-18, T22)* | "Unavailable" | The verify call was not a POST. No attempt was counted, nothing was consumed and the session is unchanged, so the user can submit the code again. Same causes as the `request` row of step 1 |
 | `internal_error` | Usually "Unavailable"; with `stage=eligibility` on the `auth.otp.fault` line, "Invalid or expired" | Fault. Do not tell the user |
 
 ## A6. Support note: ineligible accounts

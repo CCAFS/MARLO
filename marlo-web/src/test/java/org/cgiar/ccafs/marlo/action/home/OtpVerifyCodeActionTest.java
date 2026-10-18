@@ -427,6 +427,76 @@ public class OtpVerifyCodeActionTest {
     assertNotNull(world.store.onlyRow().consumedAt);
   }
 
+  // ---- T22 (V-1): the method check, design 5.2 step 0 ---------------------------------------------------------
+
+  @Test
+  public void aRequestThatIsNotAPostIsRefusedAndChangesNothingAndALaterPostWithTheSameCodeSignsIn() {
+    // A null servlet request is the last case: it can never be shown to be a POST.
+    for (String method : new String[] {"GET", "HEAD", "PUT", "DELETE", "", null}) {
+      World world = this.with(State.ELIGIBLE);
+      Row row = world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+      Serializable sessionBefore = SecurityUtils.getSubject().getSession().getId();
+      Object pendingBefore = SecurityUtils.getSubject().getSession().getAttribute(APConstants.OTP_PENDING_CHALLENGE);
+      world.events.clear();
+      world.requestMethod = method;
+      world.noServletRequest = method == null;
+      String label = String.valueOf(method);
+
+      OtpVerifyCodeAction refused = world.call(CODE_A);
+
+      assertEquals(label, only("unavailable"), refused.getResponse());
+      assertEquals(label, Action.SUCCESS, world.lastResult);
+      assertEquals(label + ": no limiter hit, no store, no user read, no realm", Collections.emptyList(),
+        world.events);
+      assertEquals(label + ": no attempt counted", 0, row.attempts);
+      assertNull(label + ": the challenge is not consumed", row.consumedAt);
+      assertFalse(label, SecurityUtils.getSubject().isAuthenticated());
+      assertEquals(label + ": the session id is unchanged", sessionBefore,
+        SecurityUtils.getSubject().getSession().getId());
+      assertSame(label + ": the session still holds the pending challenge", pendingBefore,
+        SecurityUtils.getSubject().getSession().getAttribute(APConstants.OTP_PENDING_CHALLENGE));
+      assertEquals(label, Collections.singletonList("bad_method"), world.verifyOutcomes());
+
+      world.requestMethod = "POST";
+      world.noServletRequest = false;
+      OtpVerifyCodeAction accepted = world.call(CODE_A);
+
+      assertNoFault();
+      assertEquals(label + ": the same code, sent as a POST, signs in", ok(BASE_URL + "/TESTCRP/crpDashboard.do"),
+        accepted.getResponse());
+      assertNotNull(label, row.consumedAt);
+      assertTrue(label, SecurityUtils.getSubject().isAuthenticated());
+    }
+  }
+
+  @Test
+  public void aPostIsAcceptedWhateverTheCaseOfItsMethodName() {
+    for (String method : new String[] {"post", "Post"}) {
+      World world = this.with(State.ELIGIBLE);
+      world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+      world.requestMethod = method;
+
+      OtpVerifyCodeAction action = world.call(CODE_A);
+
+      assertNoFault();
+      assertEquals(method, ok(BASE_URL + "/TESTCRP/crpDashboard.do"), action.getResponse());
+    }
+  }
+
+  @Test
+  public void theBadMethodLineCarriesNeitherTheCodeNorTheNonceNorTheEmailNorTheSessionId() {
+    World world = this.with(State.ELIGIBLE);
+    world.open(State.ELIGIBLE, NONCE_A, MAC_A);
+    world.requestMethod = "GET";
+    Serializable sessionId = SecurityUtils.getSubject().getSession().getId();
+
+    world.call(CODE_A);
+
+    assertEquals(Collections.singletonList("bad_method"), world.verifyOutcomes());
+    assertEquals(1, world.verifyLines().size());
+    world.assertNoLeak(CODE_A, "000001", NONCE_A, "ana@partner.org", String.valueOf(sessionId), MAC_A);
+  }
+
   // ---- FN-012: attempts -----------------------------------------------------------------------------------
 
   @Test
@@ -1276,9 +1346,15 @@ public class OtpVerifyCodeActionTest {
   private static final class FakeRequest implements InvocationHandler {
 
     private final String remoteAddr;
+    private final String method;
 
     FakeRequest(String remoteAddr) {
+      this(remoteAddr, "POST");
+    }
+
+    FakeRequest(String remoteAddr, String method) {
       this.remoteAddr = remoteAddr;
+      this.method = method;
     }
 
     HttpServletRequest proxy() {
@@ -1288,6 +1364,9 @@ public class OtpVerifyCodeActionTest {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
+      if ("getMethod".equals(method.getName())) {
+        return this.method;
+      }
       if ("getRemoteAddr".equals(method.getName())) {
         return this.remoteAddr;
       }
@@ -1465,6 +1544,9 @@ public class OtpVerifyCodeActionTest {
     private int unitReads;
 
     String lastResult;
+    /** The HTTP method of the request double. The default is the only one the action serves (T22). */
+    String requestMethod = "POST";
+    boolean noServletRequest;
 
     World() {
       ThreadContext.remove();
@@ -1644,7 +1726,9 @@ public class OtpVerifyCodeActionTest {
         crpUserManager, customParameterManager, parameterManager, new OtpRateLimiter(keys, this.rateLimitManager()),
         new OtpCodes(keys), eligibility, this.store, new ClientIpResolver(""), this.actionClock);
       action.setSession(this.sessionView);
-      action.setServletRequest(new FakeRequest(CLIENT_IP).proxy());
+      if (!this.noServletRequest) {
+        action.setServletRequest(new FakeRequest(CLIENT_IP, this.requestMethod).proxy());
+      }
       return action;
     }
 

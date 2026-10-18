@@ -213,6 +213,7 @@
           <span data-otp-copy="invalid">[@s.text name="login.otp.error.invalid"/]</span>
           <span data-otp-copy="rateLimited">[@s.text name="login.otp.error.rateLimited"/]</span>
           <span data-otp-copy="unavailable">[@s.text name="login.otp.error.unavailable"/]</span>
+          <span data-otp-copy="unavailablePasswordOff">[@s.text name="login.otp.error.unavailablePasswordOff"/]</span>
           <span data-otp-copy="domainNotEnabled">[@s.text name="login.otp.error.domainNotEnabled"/]</span>
         </div>
 

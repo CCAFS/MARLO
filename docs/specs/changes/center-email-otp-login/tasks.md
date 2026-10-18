@@ -783,6 +783,87 @@ Field conventions:
     - **Probe harness.** One `enum` failure in the first run came from the probe's own request order (same normalised address, 30 s cooldown); fixed in the probe. The first falsifier attempt on the DAO failed for the wrong reason (a native cacheable query needs declared scalars) and was redone. Both are in `probes/README.md` section 11.
   - **Environment after the task:** application and sink stopped, nothing on 8080 or 2525, `aiccradb_otp_probe` and both scratch databases dropped, scratch credentials, mbox and logs deleted. `marlo-dev.properties` SHA-256 `4b617eb7...06311` before and after. `aiccradb_actsave` unchanged (OTP tables 0/0/0, 1623 `custom_parameters`, no `system_otp_*` parameter); `aiccradb1`-`4` never written to.
 
+### CHG-OTP-LOGIN-001-T22 — Require POST on the code endpoints; catch `Error` in request; password-off copy (validation V-1, V-4, V-2)
+
+- **Status:** done [x]. Definition proposed 2026-10-18 by the Leader, from `validation-report.md`, and approved by the user the same day. Implemented 2026-10-18; Reviewer PASS on attempt 1 (see `execution.md`).
+- **Size and placement:** S · **Depends on:** T21 · **Module:** marlo-web (actions, `login.js`, `loginForm.ftl`, `global.properties`)
+- **Origin:** `/akili-validate` 2026-10-18. Three findings:
+  - **V-1 (FAIL):** design §4 routes both endpoints as POST, but neither action checks the method.
+  - **V-4 (WARN):** `OtpRequestCodeAction` catches only `RuntimeException`.
+  - **V-2 (WARN):** the copy for `unavailable` says "use your password" on password-off units, where the password is refused.
+- **Requirements:** SEC-001 ("the code never reaches any log": a GET puts `?code=` in access logs), SEC-004, SEC-006, OPS-001, UI-002, UI-005. **Amended:** OPS-001's closed outcome sets each gain one value (see the Decision Log entry this task writes).
+- **Design:** §4 routes "(POST)", which this task enforces. §5.1 and §5.2 gain a step 0. §11 log lines.
+- **Files (expected):**
+  - **`OtpRequestCodeAction.execute()`.** Step 0, before `process()`: when `ServletActionContext.getRequest()` is null, or its method is not `POST` (compared ignoring case), answer `{status: unavailable}`. Do nothing else: no limiter hit, no session read or write, no entity read, no challenge row, no mail. Log one `auth.otp.request outcome=bad_method` line. Follow the precedent in `ValidateUserAction.java:94-101`. Also widen the `catch` in `execute()` (`:261`) and in `isEligible` (`:336`) to `RuntimeException | Error`, as `handOff` already does.
+  - **`OtpVerifyCodeAction.execute()`.** The same step 0: answer `{status: unavailable}` with no attempt counted, no challenge consumed, no session change and no limiter hit. Log one `auth.otp.verify outcome=bad_method` line.
+  - **`OtpLog`.** Add `BAD_METHOD` to `RequestOutcome` and to `VerifyOutcome`. Rendered as `bad_method`, the way the existing values are.
+  - **`global.properties`.** New key `login.otp.error.unavailablePasswordOff=Code sign-in is temporarily unavailable. Please try again in a few minutes.` (no apostrophe, no brace). Add it to a `custom/*.properties` file only if that file already overrides `login.otp.error.unavailable`.
+  - **`loginForm.ftl`.** One more `<span data-otp-copy="unavailablePasswordOff">` in `#login-otp-copy`.
+  - **`login.js`.** In `otpShowError`, map `unavailable` to `unavailablePasswordOff` when `passwordEnabled === false`. Change nothing else. Bump the cache-buster in `login.ftl` and `401.ftl` to `?20261018`.
+  - **Spec text, in the same change:**
+    - design §4: add a note that a non-POST request is refused, with no state change;
+    - design §5.1 and §5.2: add step 0;
+    - design §11: add `bad_method`;
+    - requirements: add a Decision Log entry for 2026-10-18 amending OPS-001's outcome sets, and add the key to UI-002;
+    - runbook triage: add a row for `bad_method`.
+- **Scope:** exactly the three findings. Statuses, limits, the neutral response, the mail and the UI flow all stay as T21 and `CHG-PWD-SWITCH-001` left them.
+- **Out of scope:**
+  - the other validation findings: V-3 and V-5 to V-11 are a separate documentation commit;
+  - CSRF tokens on these endpoints (the P-9 residual stays accepted);
+  - a Struts `httpMethod` interceptor for the whole package;
+  - changing `domainNotEnabled` copy (it is never reached on password-off units, by design).
+- **Tests (each seen red):**
+  - `OtpRequestCodeActionTest`. Each of GET, HEAD, PUT and a null request answers exactly `{status: unavailable}`, with zero calls to the limiter, the managers, the session and the mailer, and one `bad_method` line. POST keeps today's path (an existing test stays green unchanged). An `Error` thrown by the eligibility predicate answers the neutral `sent` for an eligible-shaped request, writes `internal_error`, and does not propagate.
+  - `OtpVerifyCodeActionTest`. GET with a correct pending code answers `{status: unavailable}`. The challenge stays unconsumed, attempts are unchanged, the session id is unchanged and the session still holds the pending challenge. A following POST with the same code signs in.
+  - `OtpStrutsPackageTest` stays green, or is extended only if the action wiring changes.
+  - The existing log-hygiene tests stay green. The `bad_method` line carries no code, nonce, MAC or full email.
+- **Verification:**
+  - clean compile gate;
+  - Checkstyle delta 0 on the changed files;
+  - targeted classes, then the full `mvn -o -pl marlo-web -am test`;
+  - i18n gate (`''` rule);
+  - cache-bust gate;
+  - `node --check` on `login.js`;
+  - a hygiene check.
+  - No live stack is needed: the method check runs before any store or session access. The unit tests prove that through counting doubles.
+- **Falsifier:**
+  - remove the method check: the GET tests go red;
+  - move the check after `process()`: the "zero limiter or session calls" assertions go red;
+  - narrow the catch back to `RuntimeException`: the `Error` test goes red;
+  - drop the `passwordEnabled` branch: a static check of `login.js` goes red, or a manual check is recorded.
+- **Disqualifier:**
+  - a GET that changes any state;
+  - a distinct answer to GET that reveals the account state;
+  - `ServletActionContext.getRequest()` dereferenced without a null check;
+  - `getText` copy with a single apostrophe.
+- **Review:** `full`. It changes the input surface of an authentication endpoint.
+- **Verification notes (2026-10-18; the Leader sets the status):**
+  - **Files:**
+    - `OtpRequestCodeAction` and `OtpVerifyCodeAction`: step 0 in `execute()`. A null `this.request` (the `ServletRequestAware` field, filled by `servletConfig` in `defaultStack`) or a method other than POST is passed to `refuse()`, which only sets `{status: unavailable}`. The request action's two catches now take `RuntimeException | Error`.
+    - `OtpLog`: `BAD_METHOD` in both enums.
+    - `global.properties`: `login.otp.error.unavailablePasswordOff`.
+    - `loginForm.ftl`: one copy span.
+    - `login.js` `otpShowError`: the password-off mapping.
+    - Cache-buster set to `?20261018` in `login.ftl` and `401.ftl`.
+    - Spec text in design §4, §5.1, §5.2 and §11; requirements UI-002, OPS-001 and the Decision Log entry of 2026-10-18; a runbook triage row.
+  - **Tests (red, then green):**
+    - Request: every non-POST method (GET, HEAD, PUT, DELETE, OPTIONS, `""`, null) and a null servlet request answer `unavailable` with no limiter, store, user or realm event. Before the fix the answer was `{status=sent, destination=a***@partner.org}`.
+    - Request: the `bad_method` line carries no secret.
+    - Request: an `Error` from the eligibility predicate answers exactly as an ineligible account does (red: `NoClassDefFoundError` propagated). An `Error` that escapes the whole call is contained (red: `AssertionError: boom`).
+    - Verify: GET with the correct pending code leaves the challenge unconsumed, 0 attempts counted, the same session id and the same pending object, and the following POST signs in. Red: `{status=ok, redirect=…}`.
+    - `OtpLogTest` closed sets updated (red: `expected:<7> but was:<8>`).
+    - Mutations: with the check moved after `process()`, the event-list assertions go red (`consume` ran). With the catches narrowed, both `Error` tests go red.
+    - `login.js` falsifier: recorded manually. The real `otpShowError` was run under node with stubs: it returns `unavailable` at HEAD and `unavailablePasswordOff` now when `passwordEnabled === false`, and `unavailable` both times when it is true.
+  - **Gates:**
+    - The Implementer ran them in a scratch mirror, because test-compile failed in the checkout at that moment.
+    - The Leader re-ran them in the real checkout as a non-author: clean recompile 2415 / 1066 / 89 BUILD SUCCESS; full `mvn -o -pl marlo-web -am test` 994 / 0 / 0 (986 before); Checkstyle delta 0 on all 6 changed Java files; i18n no FIX.
+    - Implementer: hygiene ok, `node --check` ok, cache-bust ok. The other lines the cache-bust script flags in `loginForm.ftl` are comments that name the file.
+  - **Deviations accepted by the Reviewer:**
+    - `this.request` is used instead of `ServletActionContext.getRequest()`, so there is no NPE when no context is bound.
+    - The old test `aRequestWithNoServletRequestAtAllIsCountedInTheUnknownBucket` was replaced by its refusal counterpart.
+    - `FakeRequest` now has `getMethod`, defaulting to POST.
+    - The extra OPS-001 and step-11 spec text keeps the closed sets consistent.
+
 ---
 
 ## 4. Dependency Graph

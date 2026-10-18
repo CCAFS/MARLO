@@ -1472,3 +1472,24 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - `ac21-migration.sh` prints "run N exit 0" under `set -e`, so those lines cannot show a failure; the script's final exit and row checks are the evidence. Not changed;
   - the fixture `otp.staff@cgiar.org` is safe only with a `probe` database and the local sink. Kept as is.
 - **Environment state after the task:** nothing running; copies dropped.
+
+## CHG-OTP-LOGIN-001-T22 — Require POST on the code endpoints; catch `Error` in request; password-off copy (2026-10-18)
+
+- **Origin:** `/akili-validate` of 2026-10-18 (`validation-report.md`):
+  - V-1 (FAIL): both endpoints accepted any HTTP method;
+  - V-4: `OtpRequestCodeAction` caught only `RuntimeException`;
+  - V-2: the `unavailable` copy says "use your password" on password-off units.
+  The Leader wrote the definition into `tasks.md`; the user approved it ("si, apruebo").
+- **Implementer (T2, `sonnet`), attempt 1:** implemented as defined; detailed notes in `tasks.md` T22.
+  - **Environment note:** test-compile failed in the checkout during the run (`cannot find symbol OtpLog`, `cannot access User`), with or without the change. The Implementer therefore ran the Maven gates in a scratch mirror. That is the known dirty-`target/` symptom.
+  - **Leader re-run in the real checkout, after the Implementer stopped:** `generated-sources` and the classes were wiped and the clean recompile ran: 2415 / 1066 / 89, BUILD SUCCESS. So the failure was environmental, not caused by the code.
+- **Leader re-run (non-author):**
+  - full `mvn -o -pl marlo-web -am test`: 994 / 0 / 0 (986 before);
+  - Checkstyle delta 0 on the 6 changed Java files;
+  - `i18n-check.sh`: no FIX.
+- **Manual falsifier recorded (`login.js`):** the real `otpShowError` was run under node with stubs. With `passwordEnabled === false` it returns `unavailable` at HEAD and `unavailablePasswordOff` after the change. With `passwordEnabled === true` it returns `unavailable` both times. There is no JS test runner in the repo (an open TRD question).
+- **Attempt 1, Reviewer (T3, `opus`, read-only):** **PASS**. All four declared deviations accepted (`this.request`, the replaced null-request test, extra OPS-001 / step-11 text, the node falsifier). Advisories, deferred to the documentation commit:
+  - design §5.1 step 1 still says the rate limits run "before anything else", and the `OtpRequestCodeAction` class Javadoc says the unconfigured check "comes first". Both should read "first after step 0";
+  - the `i18nFile` interceptor still runs before step 0 for every method. That is pre-existing and the same for every account; it means the design §4 claim "no session read" holds for the action, not for the whole stack.
+- **Validation findings closed by this task:** V-1, V-4 and V-2. Still open, for the documentation commit: V-3 and V-5 to V-11.
+- **Environment state after the task:** nothing running; no database touched.

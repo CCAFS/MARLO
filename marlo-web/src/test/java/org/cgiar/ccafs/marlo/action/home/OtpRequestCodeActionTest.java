@@ -144,6 +144,9 @@ public class OtpRequestCodeActionTest {
   /** Design 11: the line of a real send, and the same line of a code issued by the password-off override. */
   private static final Pattern SENT_LINE =
     Pattern.compile("auth\\.otp\\.request outcome=sent gu=testcrp domain=partner\\.org ms=[0-9]+");
+  /** Design 11 (T22): the line of a refused method, written before anything about the call is known. */
+  private static final Pattern BAD_METHOD_LINE =
+    Pattern.compile("auth\\.otp\\.request outcome=bad_method gu= domain= ms=[0-9]+");
   private static final Pattern SENT_VIA_LINE = Pattern.compile(SENT_LINE.pattern() + " via=password_off");
 
   /** The account states of FN-005, each made from the eligible world by changing one fact. */
@@ -437,15 +440,113 @@ public class OtpRequestCodeActionTest {
     assertEquals("hit:" + BUCKET_IP_UNKNOWN, world.events.get(1));
   }
 
+  // ---- T22 (V-1): the method check, design 5.1 step 0 ---------------------------------------------------------
+
   @Test
-  public void aRequestWithNoServletRequestAtAllIsCountedInTheUnknownBucket() {
+  public void aRequestThatIsNotAPostIsRefusedBeforeAnyStoreSessionLimiterOrMailerIsTouched() {
+    // A null servlet request is the fourth case: it can never be shown to be a POST.
+    for (String method : new String[] {"GET", "HEAD", "PUT", "DELETE", "OPTIONS", "", null}) {
+      World world = World.with(State.ELIGIBLE);
+      world.requestMethod = method;
+      this.appender.list.clear();
+
+      OtpRequestCodeAction action = world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+      String label = String.valueOf(method);
+      assertEquals(label, Collections.singletonMap("status", "unavailable"), action.getResponse());
+      assertEquals(label, Action.SUCCESS, world.lastResult);
+      assertEquals(label + ": no limiter hit, no manager read, no mail, no purge", Collections.emptyList(),
+        world.events);
+      assertEquals(label, 0, world.issues.size());
+      assertEquals(label, 0, world.mails.size());
+      assertEquals(label, 0, world.purges.size());
+      assertNull(label + ": no pending challenge written", pending());
+      assertEquals(label + ": the session was not even written", Collections.emptySet(),
+        new HashSet<Object>(SecurityUtils.getSubject().getSession().getAttributeKeys()));
+      assertEquals(label + ": exactly one line", 1, this.requestLines().size());
+      assertTrue(label + ": " + this.requestLines(),
+        BAD_METHOD_LINE.matcher(this.requestLines().get(0)).matches());
+      ThreadContext.remove();
+      SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+    }
+  }
+
+  @Test
+  public void aRequestWithNoServletRequestAtAllIsRefusedAsBadMethod() {
     World world = World.with(State.ELIGIBLE);
     world.noServletRequest = true;
 
     Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
 
-    assertEquals("sent", response.get("status"));
-    assertEquals("hit:" + BUCKET_IP_UNKNOWN, world.events.get(1));
+    assertEquals(Collections.singletonMap("status", "unavailable"), response);
+    assertEquals(Collections.emptyList(), world.events);
+    assertEquals(1, this.requestLines().size());
+    assertTrue(this.requestLines().get(0), this.requestLines().get(0).contains("outcome=bad_method"));
+  }
+
+  @Test
+  public void aPostIsAcceptedWhateverTheCaseOfItsMethodName() {
+    for (String method : new String[] {"POST", "post", "Post"}) {
+      World world = World.with(State.ELIGIBLE);
+      world.requestMethod = method;
+
+      Map<String, Object> response = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+      assertEquals(method, "sent", response.get("status"));
+      assertEquals(method, 1, world.issues.size());
+      ThreadContext.remove();
+      SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+    }
+  }
+
+  @Test
+  public void theBadMethodLineCarriesNeitherTheEmailNorTheCodeNorAnyIdentity() {
+    World world = World.with(State.ELIGIBLE);
+    world.requestMethod = "GET";
+
+    world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+    assertEquals(1, this.requestLines().size());
+    assertTrue(this.requestLines().get(0), BAD_METHOD_LINE.matcher(this.requestLines().get(0)).matches());
+    for (ILoggingEvent event : this.appender.list) {
+      String line = event.getFormattedMessage();
+      assertFalse(line, line.toLowerCase(Locale.ROOT).contains("ana@partner.org"));
+      assertFalse(line, line.contains("partner.org"));
+      assertFalse(line, line.contains(EMAIL_HMAC_ANA));
+      assertNull(line, event.getThrowableProxy());
+    }
+  }
+
+  @Test
+  public void anErrorThrownByTheEligibilityPredicateAnswersTheNeutralSentAndDoesNotPropagate() {
+    World reference = World.with(State.UNKNOWN);
+    Map<String, Object> neutral = reference.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+    this.appender.list.clear();
+    ThreadContext.remove();
+    SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+
+    World world = World.with(State.ELIGIBLE);
+    world.userLookupError = new NoClassDefFoundError("depends on the account");
+    Map<String, Object> actual = world.call(State.ELIGIBLE.submitted(), "7", "true").getResponse();
+
+    assertEquals("the same answer as any ineligible account (SEC-006)", neutral, actual);
+    assertEquals("sent", actual.get("status"));
+    assertEquals("a decoy row is written, so later requests behave alike", 1, world.issues.size());
+    assertEquals("nothing is mailed after a failed predicate", 0, world.mails.size());
+    assertEquals(1, this.requestLines().size());
+    assertTrue(this.requestLines().get(0), this.requestLines().get(0).contains("outcome=internal_error"));
+  }
+
+  @Test
+  public void anErrorThatEscapesTheWholeCallStillAnswersUnavailableAndIsLoggedInternalError() {
+    World world = World.with(State.ELIGIBLE);
+    world.issueError = new AssertionError("boom");
+
+    OtpRequestCodeAction action = world.call(State.ELIGIBLE.submitted(), "7", "true");
+
+    assertEquals(Collections.singletonMap("status", "unavailable"), action.getResponse());
+    assertEquals(1, this.requestLines().size());
+    assertTrue(this.requestLines().get(0), this.requestLines().get(0).contains("outcome=internal_error"));
   }
 
   // ---- rejections ---------------------------------------------------------------------------------------
@@ -1487,17 +1588,19 @@ public class OtpRequestCodeActionTest {
     }
   }
 
-  /** A hand-written servlet request double: only the three members the action may read. */
+  /** A hand-written servlet request double: only the four members the action may read. */
   private static final class FakeRequest implements InvocationHandler {
 
     private final String remoteAddr;
     private final List<String> forwardedLines;
     private final String referer;
+    private final String method;
 
-    FakeRequest(String remoteAddr, List<String> forwardedLines, String referer) {
+    FakeRequest(String remoteAddr, List<String> forwardedLines, String referer, String method) {
       this.remoteAddr = remoteAddr;
       this.forwardedLines = forwardedLines;
       this.referer = referer;
+      this.method = method;
     }
 
     HttpServletRequest proxy() {
@@ -1507,6 +1610,9 @@ public class OtpRequestCodeActionTest {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
+      if ("getMethod".equals(method.getName())) {
+        return this.method;
+      }
       if ("getRemoteAddr".equals(method.getName())) {
         return this.remoteAddr;
       }
@@ -1546,6 +1652,8 @@ public class OtpRequestCodeActionTest {
     List<String> forwardedLines = Collections.emptyList();
     String referer;
     boolean noServletRequest;
+    /** The HTTP method of the request double. The default is the only one the action serves (T22). */
+    String requestMethod = "POST";
 
     final Map<String, User> users = new HashMap<String, User>();
     final Map<Long, GlobalUnit> units = new HashMap<Long, GlobalUnit>();
@@ -1573,6 +1681,8 @@ public class OtpRequestCodeActionTest {
     RuntimeException rateStoreFailure;
     RuntimeException specificityFailure;
     RuntimeException issueFailure;
+    Error issueError;
+    Error userLookupError;
     RuntimeException purgeFailure;
     RuntimeException userLookupFailure;
     RuntimeException customFileFailure;
@@ -1676,7 +1786,8 @@ public class OtpRequestCodeActionTest {
         new OtpRateLimiter(keys, this.rateLimitManager()), new OtpCodes(keys), eligibility, challengeManager,
         globalUnitManager, this.customParameterManager(), this.mailer(), new ClientIpResolver(this.proxies), CLOCK);
       if (!this.noServletRequest) {
-        action.setServletRequest(new FakeRequest(this.remoteAddr, this.forwardedLines, this.referer).proxy());
+        action.setServletRequest(
+          new FakeRequest(this.remoteAddr, this.forwardedLines, this.referer, this.requestMethod).proxy());
       }
       return action;
     }
@@ -1738,6 +1849,9 @@ public class OtpRequestCodeActionTest {
         }
         if ("issue".equals(method)) {
           this.events.add("issue");
+          if (this.issueError != null) {
+            throw this.issueError;
+          }
           if (this.issueFailure != null) {
             throw this.issueFailure;
           }
@@ -1761,6 +1875,9 @@ public class OtpRequestCodeActionTest {
       return fake(UserManager.class, (method, args) -> {
         if ("getUserByEmail".equals(method)) {
           this.events.add("user:" + args[0]);
+          if (this.userLookupError != null) {
+            throw this.userLookupError;
+          }
           if (this.userLookupFailure != null) {
             throw this.userLookupFailure;
           }

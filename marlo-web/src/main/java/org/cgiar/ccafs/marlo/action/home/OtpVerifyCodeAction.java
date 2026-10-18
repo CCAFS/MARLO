@@ -75,6 +75,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <b>Order</b> (design 5.2):
  * <ol>
+ * <li>step 0: only a POST is served (T22). Any other method, or no request at all, answers {@code unavailable}
+ * and logs {@code bad_method}: no attempt is counted, nothing is consumed, the session is unchanged and the limiter is
+ * not hit;</li>
  * <li>the limiter counts the pending email and the address, before any lookup (SEC-010, JD-3);</li>
  * <li>the code must be exactly six ASCII digits, else {@code mismatch}, spending no attempt;</li>
  * <li>no {@link OtpPending} in the Shiro session answers {@code mismatch} (FN-016);</li>
@@ -183,6 +186,14 @@ public class OtpVerifyCodeAction extends LoginAction implements ParameterNameAwa
     return answer;
   }
 
+  /**
+   * Design 5.2 step 0: whether the call is a POST. A missing request is not one, and the method is compared ignoring
+   * case, the way {@code ValidateUserAction} does.
+   */
+  private boolean isPostRequest() {
+    return this.request != null && "POST".equalsIgnoreCase(this.request.getMethod());
+  }
+
   /** Design 5.2 step 1: the resolved client address, never {@code null} (an unknown peer shares one bucket). */
   private String clientIp() {
     return this.request == null ? this.ipResolver.resolve((String) null, null) : this.ipResolver.resolve(this.request);
@@ -202,7 +213,10 @@ public class OtpVerifyCodeAction extends LoginAction implements ParameterNameAwa
     long started = System.nanoTime();
     VerifyOutcome outcome;
     try {
-      outcome = this.process();
+      // Step 0 (design 5.2, T22): only a POST is served. A refusal counts no attempt, consumes nothing, leaves the
+      // session as it is and never reaches the limiter, so a GET carrying ?code= can neither guess nor sign in.
+      outcome = this.isPostRequest() ? this.process() : this.refuse(OtpRequestCodeAction.STATUS_UNAVAILABLE,
+        VerifyOutcome.BAD_METHOD);
     } catch (RuntimeException e) {
       // Last line of defence: whatever failed, the caller gets a well-formed answer and never a 500.
       logFault("verify", e);

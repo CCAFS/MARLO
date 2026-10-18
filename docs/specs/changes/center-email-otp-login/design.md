@@ -191,6 +191,8 @@ Not applicable.
 | `/otpRequestCode.do` (POST) | `OtpRequestCodeAction` | `email`, `globalUnitId`, `agree` | `{status, destination?}` |
 | `/otpVerifyCode.do` (POST) | `OtpVerifyCodeAction` | `code` | `{status, redirect?}` |
 
+**Method (amended 2026-10-18, T22, validation V-1).** Both routes serve **POST only**. Any other method, or a call with no servlet request, is refused with `{status: unavailable}` and **no state change** (step 0 of §5.1 and §5.2): no limiter hit, no session read or write, no store read, no challenge row, no mail, no attempt counted and nothing consumed. A GET would put `?code=` and `?email=` in access logs, which SEC-001 forbids. The answer is the same for every account, so it adds no oracle (SEC-006). It follows `ValidateUserAction`'s check (`ValidateUserAction.java:94-101`). A Struts `httpMethod` interceptor for the whole package and CSRF tokens are out of scope (the P-9 residual stays accepted).
+
 `status` is a closed vocabulary, shared by the server, `login.js` and i18n.
 
 | `status` | Route | Meaning | i18n key |
@@ -199,7 +201,7 @@ Not applicable.
 | `domainNotEnabled` | request | Domain not on the Global Unit's list, unknown Global Unit, or feature unconfigured (FN-006, SEC-008) | `login.otp.error.domain` *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has password sign-in off and the code key is valid, step 4 no longer answers it for the unit's switch or exclusion (DD-4))* |
 | `termsRequired` | request | `agree` is not `true` (parity with Cognito's refusal of `agree=false`; independent of account state) | existing terms message key |
 | `rateLimited` | both | Any limit, including the 30-s cooldown (FN-008, SEC-010) | `login.otp.error.rateLimited` |
-| `unavailable` | both | Internal failure; fail closed | `login.otp.error.unavailable` |
+| `unavailable` | both | Internal failure, or a method other than POST; fail closed | `login.otp.error.unavailable`, or `login.otp.error.unavailablePasswordOff` when the selected unit has password sign-in off (amended 2026-10-18, T22, validation V-2: "use your password" points at a method that is refused there). `login.js` picks the key; the status is the same |
 | `mismatch` | verify | Wrong code with attempts left, or no pending challenge (FN-016) | `login.otp.error.mismatch` |
 | `exhausted` | verify | The wrong code that reached 3, or an exhausted challenge (FN-012) | `login.otp.error.exhausted` |
 | `invalid` | verify | Expired, consumed, superseded, or not eligible after consume (FN-014/015) | `login.otp.error.invalid` |
@@ -222,6 +224,7 @@ Not applicable.
 Steps run in this fixed order. **No step before step 6 reads account state**, so steps 1–5 answer
 identically for every account (JD-1).
 
+0. **Method** (amended 2026-10-18, T22, validation V-1). Before anything else, `execute()` checks that the servlet request exists and that its method is `POST`, compared ignoring case. If not, it answers `{status: unavailable}` and logs `auth.otp.request outcome=bad_method`. It touches **no** limiter, session, entity, challenge row or mailer. The `catch` around the whole call, and the one around the eligibility predicate, take `RuntimeException | Error`, as the mail hand-off already did (V-4): an `Error` from the predicate is the neutral `sent` with a decoy row and `internal_error` in the log, and an `Error` anywhere else is `unavailable`.
 1. **Rate limits**, before anything else (SEC-010). The limiter counts three buckets:
    - `request|email|<normalised>`, limit 5 per 15 min;
    - `request|ip|<resolved IP>`, limit 20 per 15 min;
@@ -252,10 +255,11 @@ identically for every account (JD-1).
 8. **Purge** rows expired more than 1 h ago, in a **separate** transaction after the issue commits. A failure is caught and logged, and never affects the response (OPS-003, JI-7).
 9. **Session.** Store a fresh `OtpPending` (nonce, normalised email, `globalUnitId`, `returnUrl = ReturnUrls.sameOriginOrNull(Referer)`, `agree`). It **replaces** any previous value.
 10. **Respond** `sent`, with the masked submitted email.
-11. **Log** one `request` line (OPS-001). Outcomes: `sent`, `neutral`, `denied_domain`, `terms_required`, `rate_limited`, `unconfigured`, `internal_error`.
+11. **Log** one `request` line (OPS-001). Outcomes: `sent`, `neutral`, `denied_domain`, `terms_required`, `rate_limited`, `unconfigured`, `internal_error`, `bad_method` (added 2026-10-18, T22).
 
 ### 5.2 Verify code — `OtpVerifyCodeAction`
 
+0. **Method** (amended 2026-10-18, T22, validation V-1). The same check as step 0 of §5.1, before anything else. A request that is not a POST answers `{status: unavailable}` and logs `auth.otp.verify outcome=bad_method`. No attempt is counted, no challenge is consumed, the session id and the pending challenge are unchanged and the limiter is not hit, so a GET carrying a correct `?code=` signs nobody in and a later POST with the same code still does.
 1. **Rate limits:** `verify|email|<pending.email>` (10 per 15 min) and `verify|ip|<IP>` (50 per 15 min). With no pending, only the IP bucket is counted. The email key comes from the session, so **no lookup precedes counting** (JD-3).
 2. **Shape.** `code` must be exactly 6 digits. Otherwise → `mismatch`.
 3. **No `OtpPending`** → `mismatch` (FN-016).
@@ -289,7 +293,7 @@ identically for every account (JD-1).
     - `SUCCESS` → `redirect = <baseUrl>/<crpSession>/crpDashboard.do`, the target of the `login` and `cognitoCallback` `success` results (`struts-home.xml:74-76, 86-88`). Types 1, 3, 4 and 5 return `SUCCESS` (`LoginAction.java:497-511`).
     - `LOGIN` → `redirect = url`. For type 2, `finishLogin` sets this to `centerDashboard.do`; for a `.do` return URL, it is that URL.
     - `INPUT` → `failed`, with `redirect = /login.do?authError=cognitoFailed`, which is `LoginAction.AUTH_ERROR_FAILED` (Cognito V-7 parity). *Clarified 2026-10-13 (T11): the literal "failed" was shorthand. `loginForm.ftl` renders only `cognitoFailed`, and `CognitoCallbackAction:552` uses the constant.*.
-11. **Log** one `verify` line. Outcomes: `ok`, `mismatch`, `exhausted`, `invalid`, `not_eligible`, `rate_limited`, `failed`, `internal_error`.
+11. **Log** one `verify` line. Outcomes: `ok`, `mismatch`, `exhausted`, `invalid`, `not_eligible`, `rate_limited`, `failed`, `internal_error`, `bad_method` (added 2026-10-18, T22).
 
 ### 5.3 Supporting components
 
@@ -363,6 +367,7 @@ entity is saved.
 ## 11. Observability
 
 - The `auth.otp.request`, `auth.otp.verify` and `auth.otp.delivery` lines (§5.3).
+- **`outcome=bad_method` (added 2026-10-18, T22).** One line, on `request` or `verify`, when the call was not a POST or had no servlet request. It carries `gu=` and `domain=` empty (nothing about the call was read) and no code, nonce, MAC, email or session id. It is server-side only: the caller gets `unavailable`.
 - **Code-not-received triage (runbook):**
   - a `delivery outcome=email_failed` line means the send failed;
   - a `request outcome=neutral` line means the account was ineligible (server-side only);

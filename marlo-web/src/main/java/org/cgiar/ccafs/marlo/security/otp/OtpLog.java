@@ -41,12 +41,12 @@ public final class OtpLog {
 
   /** The closed set of {@code auth.otp.request} outcomes. */
   public enum RequestOutcome {
-    SENT, NEUTRAL, DENIED_DOMAIN, TERMS_REQUIRED, RATE_LIMITED, UNCONFIGURED, INTERNAL_ERROR
+    SENT, NEUTRAL, DENIED_DOMAIN, TERMS_REQUIRED, RATE_LIMITED, UNCONFIGURED, INTERNAL_ERROR, BAD_METHOD
   }
 
   /** The closed set of {@code auth.otp.verify} outcomes. */
   public enum VerifyOutcome {
-    OK, MISMATCH, EXHAUSTED, INVALID, NOT_ELIGIBLE, RATE_LIMITED, FAILED, INTERNAL_ERROR
+    OK, MISMATCH, EXHAUSTED, INVALID, NOT_ELIGIBLE, RATE_LIMITED, FAILED, INTERNAL_ERROR, BAD_METHOD
   }
 
   /** The closed set of {@code auth.otp.delivery} outcomes. */
