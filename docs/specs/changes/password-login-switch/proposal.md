@@ -166,7 +166,8 @@ Turning the switch back ON restores the password on the next login. Stored passw
 
 - CHG-OTP-LOGIN-001 FN-001, FN-003, FN-005, FN-006, FN-015 and SEC-009: while password sign-in is OFF in a Global Unit,
   the code switch and the exclusion apply only to Cognito accounts, step 4 no longer answers `domainNotEnabled`, and a
-  Cognito account is refused under the override.
+  Cognito account is not admitted by the override (the code switch and the exclusion still apply to it as written;
+  reworded 2026-10-18, validation WARN-2).
 - CHG-OTP-LOGIN-001 DA-002: both descriptions say so.
 - Step 3 (CHG-OTP-LOGIN-001 UI-006): a single available method is shown directly; the choice appears only with two.
 

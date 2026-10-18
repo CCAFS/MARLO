@@ -2,7 +2,7 @@
 
 **Spec ID:** `CHG-PWD-SWITCH-001`
 **Status:** Approved — Kenji Tanaka, 2026-10-16
-**Last Updated:** 2026-10-16
+**Last Updated:** 2026-10-18
 **Requirements:** [`requirements.md`](./requirements.md) · **Design:** [`design.md`](./design.md) (Judgment Day APPROVED, [`judgment.md`](./judgment.md))
 **Branch:** `A2-2631-Implement-Center-Email-OTP-Authentication`
 **Depends on:** `CHG-OTP-LOGIN-001` T21 (done, `fcce4e7ebd`)
@@ -256,8 +256,10 @@ sequential under one Leader unless separate worktrees are used.
 
 ## Definition of Done
 
-- [ ] T01–T08 done with a Reviewer PASS (or a recorded `REVIEW_SKIPPED` / `REVIEW_WAIVED`).
-- [ ] Compile gate, Checkstyle delta 0, full suite with `-am`, i18n gate, migration gate.
-- [ ] Live evidence of T06 and T08 recorded under `probes/output/`; environment cleaned.
-- [ ] `CHG-OTP-LOGIN-001` amended with forward and backward sweeps.
-- [ ] Switch **on** everywhere after deploy; turning it off in production stays an operational decision (OPS-003).
+Checked 2026-10-18 by [`validation-report.md`](./validation-report.md) (PASS, no FAIL).
+
+- [x] T01–T08 done with a Reviewer PASS (or a recorded `REVIEW_SKIPPED` / `REVIEW_WAIVED`).
+- [x] Compile gate, Checkstyle delta 0, full suite with `-am`, i18n gate, migration gate.
+- [x] Live evidence of T06 and T08 recorded under `probes/output/`; environment cleaned.
+- [x] `CHG-OTP-LOGIN-001` amended with forward and backward sweeps.
+- [x] Switch **on** everywhere after deploy; turning it off in production stays an operational decision (OPS-003).

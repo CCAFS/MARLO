@@ -3,7 +3,7 @@
 **Spec ID:** `CHG-PWD-SWITCH-001`
 **Status:** Approved — Kenji Tanaka, 2026-10-16 (Judgment Day APPROVED after two correction rounds)
 **Owner:** IBD Team (Kenji Tanaka)
-**Last Updated:** 2026-10-16
+**Last Updated:** 2026-10-18
 **Depth:** Full
 **Requirements:** [`requirements.md`](./requirements.md)
 **Baseline commit:** `160ec7dc4a` (every `file:line` below was read there)
@@ -235,7 +235,8 @@ it. The code endpoints add one Cognito resolution per request, only while the pa
   `isCgiarUser && cognitoEnabled`, all already in the response or public (`CrpByUserEmailAction:116`, `:131-132`).
 - **Outside the login page (SEC-006).** `ClarisaPublicAccesFilter.java:79-82` and `/api/**` HTTP Basic
   (`MarloShiroConfiguration.java:140`) are not touched. A stored password keeps working on `/api/**` while the switch
-  is off — accepted risk (Judgment Day C-1), to be reviewed in a separate issue.
+  is off — accepted risk (Judgment Day C-1). *(Amended 2026-10-18: `/api/**` Basic is not used in MARLO today, so no
+  separate issue is needed; requirements Decision Log.)*
 - **Session switch (SEC-007).** `ValidSessionCrpInterceptor` is not touched (accepted risk).
 
 ---
@@ -339,8 +340,9 @@ it. The code endpoints add one Cognito resolution per request, only while the pa
 ### DD-8 — `CHG-OTP-LOGIN-001` is amended, not forked
 - **Decision:** its FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 and UI-006 get an amendment note pointing
   here: under a password-off unit, step 4 admits the override instead of answering `domainNotEnabled`; the code switch
-  and exclusion apply only to Cognito accounts; a Cognito account is refused under the override; a single method is
-  shown directly. Its stale Executive Summary ("enabled by listing domains") is corrected in the same task.
+  and exclusion apply only to Cognito accounts; a Cognito account is not admitted by the override (the code switch and the exclusion still apply to it as written); a single method is
+  shown directly. *(Reworded 2026-10-18, validation WARN-2: it read "a Cognito account is refused under the
+  override", which was misread as an unconditional refusal.)* Its stale Executive Summary ("enabled by listing domains") is corrected in the same task.
 
 ---
 
@@ -352,7 +354,7 @@ it. The code endpoints add one Cognito resolution per request, only while the pa
 | Five custom files get the unstyled global text | Accepted (DD-7); copy can be added later per unit |
 | Session switch reaches a password-off unit | Accepted (SEC-007) |
 | `login.js` has no automated test | Browser walkthrough of every §5 row, reviewed at the HITL pause |
-| A stored password still works on `/api/**` HTTP Basic | Accepted (SEC-006, Judgment Day C-1); separate issue to review API authentication |
+| A stored password still works on `/api/**` HTTP Basic | Accepted (SEC-006, Judgment Day C-1). N/A since 2026-10-18: `/api/**` Basic is not used in MARLO today |
 
 ---
 

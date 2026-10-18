@@ -4,7 +4,7 @@
 **Status:** Approved — Kenji Tanaka, 2026-10-16 (Phases 1–3 of `/akili-specify`; Judgment Day APPROVED)
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT (Kenji Tanaka)
 **Reviewers:** Tech lead, QA lead, PMU lead
-**Last Updated:** 2026-10-16
+**Last Updated:** 2026-10-18
 **Depth:** Full — changes who can authenticate with which credential, adds a migration, and edits the security rules of another spec
 **Approval Mode:** `gated` (inherited from `proposal.md`)
 **Jira:** none yet (proposal OQ-1)
@@ -188,7 +188,8 @@ Ledger.
 - **CHG-PWD-SWITCH-001-SEC-006** — Authentication that does not go through the login page MUST keep working unchanged:
   the CLARISA technical account (`ClarisaPublicAccesFilter.java:79`) and HTTP Basic authentication on `/api/**`
   (`MarloShiroConfiguration.java:140`). The switch governs the login page only. *(Amended 2026-10-16, Judgment Day
-  C-1: `/api/**` Basic is out of scope as an accepted risk; a stored password keeps working there.)*
+  C-1: `/api/**` Basic is out of scope as an accepted risk; a stored password keeps working there. Amended 2026-10-18:
+  `/api/**` Basic is not used in MARLO today, so its part of AC-12 is N/A.)*
 - **CHG-PWD-SWITCH-001-SEC-007** — Switching Global Unit inside an authenticated session MUST stay as it is today.
   This is an accepted risk (Decision Log), not an oversight.
 
@@ -300,7 +301,7 @@ Ledger.
 | AC-15 | FN-010, UI-005 | Scenario "Username typed, code only" |
 | AC-10 | SEC-001, SEC-002, OPS-001 | A password POST to each password endpoint for G with the switch off returns the wrong-password response, makes no credential check and no LDAP call, and logs one INFO line |
 | AC-11 | SEC-005 | The pre-auth lookup's response for an account differs from today's only by the new per-unit field, and that field is the same for every account of the same kind in G |
-| AC-12 | SEC-006 | The CLARISA technical login and an `/api/**` Basic request still authenticate with the switch off |
+| AC-12 | SEC-006 | The CLARISA technical login and an `/api/**` Basic request still authenticate with the switch off. *(Amended 2026-10-18: the `/api/**` part is N/A, because HTTP Basic on `/api/**` is not used in MARLO today; user decision, Decision Log)* |
 | AC-13 | FN-008, FN-009, UI-003 | Scenario "Welcome email", for each of the 7 senders |
 | AC-14 | DA-002, DA-003 | The three descriptions in `parameters` equal the fixed texts byte for byte |
 
@@ -343,7 +344,7 @@ OQ-2 and OQ-4 of the proposal and OQ-5 are resolved (Decision Log).
 - 2026-10-16 — Switching Global Unit inside a session stays as today (user decision: "no hay problema con el global unit luego de que tenga acceso"). Accepted risk: a member who signs in where the password is allowed can move to a Global Unit where it is not. The same already holds for Cognito.
 - 2026-10-16 — The welcome email gets an alternative sign-in block when the password is not available; a random password is still stored (user decision after reviewing the rendered AICCRA email).
 - 2026-10-16 — The spec lives on `A2-2631-Implement-Center-Email-OTP-Authentication` (user decision, proposal OQ-2). Rationale: the code depends on `CHG-OTP-LOGIN-001` T21.
-- 2026-10-16 — Cross-spec amendment: `CHG-OTP-LOGIN-001` FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 and UI-006 are amended: while password sign-in is off, the code switch and the exclusion apply only to Cognito accounts, step 4 no longer answers `domainNotEnabled` for that unit, a Cognito account is refused under the override, and a single method is shown directly; DA-002's two descriptions are reworded (DA-003). Recorded in that spec's Decision Log by the task that ships it.
+- 2026-10-16 — Cross-spec amendment: `CHG-OTP-LOGIN-001` FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 and UI-006 are amended: while password sign-in is off, the code switch and the exclusion apply only to Cognito accounts, step 4 no longer answers `domainNotEnabled` for that unit, a Cognito account is not admitted by the override (the code switch and the exclusion still apply to it as written), and a single method is shown directly; DA-002's two descriptions are reworded (DA-003). Recorded in that spec's Decision Log by the task that ships it.
 - 2026-10-16 — OQ-5: a Cognito account in G keeps today's methods whatever the password switch says (user decision, on the recommendation that rule 3d solves a missing-password problem those accounts do not have, and that a `cgiar.org` exclusion must keep CGIAR users on Cognito). Consequence: while the password is off, the code endpoints check after the account lookup whether the account is a Cognito account in G, with the same neutral answer.
 - 2026-10-16 — Judgment Day round 1 (two blind judges, `judgment.md`): four confirmed severe findings, corrected on the user's choice ("aplica la corrección con las tres recomendaciones"):
   - **C-1** `/api/**` HTTP Basic accepts a password outside the login page. Out of scope, accepted risk: the switch governs the login page; a separate issue reviews API authentication. SEC-006 amended.
@@ -358,3 +359,7 @@ OQ-2 and OQ-4 of the proposal and OQ-5 are resolved (Decision Log).
   - **SEC-002 residual, accepted:** an active CGIAR account that a directory search or bind would reject before checking its password gets the CGIAR wrong-password message on refusal. That covers an account with no directory entry, a locked or expired directory account, and a directory outage. A real failure would show the directory's own answer instead. Reproducing that answer needs an LDAP call before the refusal, which SEC-001 and AC-10 forbid. What leaks is that the switch is off in the unit, which step 3 already shows. The case is pinned by a test and checked in the T08 walkthrough.
   - **SEC-002 includes the remember-me cookie:** a refusal must send the same `Set-Cookie: rememberMe=deleteMe` that Shiro sends after a failed `Subject.login`. Shiro's failed-login handling is invoked without a credential check, so SEC-001 still holds.
   - **Out of scope, separate bugfix spec:** `finishLogin` grants a session through the activity-blind `existCrpUser`, so a removed member of a password-off unit can still sign in with a password there. Also, the SEC-005 guard compares the raw, unnormalised identifier. Both predate this change.
+- 2026-10-18 — `/api/**` HTTP Basic is not used in MARLO today (user decision during `/akili-test`). The `/api/**` part
+  of AC-12 and of SEC-006 is N/A, not a gap; the separate issue foreseen by Judgment Day C-1 is not needed. Its local
+  401 (`HibernateException` in `APCustomRealm` → `getUserByEmail`) is not chased. If `/api/**` comes back into use,
+  re-check it with `probes/ac-live.sh ac12`.
