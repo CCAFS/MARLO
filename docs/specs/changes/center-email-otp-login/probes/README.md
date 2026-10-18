@@ -6,6 +6,8 @@ during and after (the falsifier ran against a scratch copy of the DAO through `P
 Attempt 1 ran on `d743181e58`; the one output file kept from it unchanged is `output/concurrency-probe-http.FALSIFIER-red.out`
 (section 4).
 
+> **Amended 2026-10-17 (`CHG-PWD-SWITCH-001`).** Every verdict and run below was taken with the password switch `system_password_login_active` absent or on, the only state that existed. Where a verdict says the code option is hidden, the password is accepted or `domainNotEnabled` is answered, it describes a unit with that switch on. The re-run of the stages with the switch on everywhere, the ac21 re-run after the DA-002 reword, and the switch-off evidence are in section 12.
+
 ## 1. What is here
 
 | File | What it is |
@@ -309,3 +311,13 @@ Cleanup: the application and the sink were stopped, the scratch credentials, the
 (both `ac21` scratch databases were dropped by the script). `aiccradb_actsave` after the run: `otp_challenges`/`otp_cooldowns`/`otp_rate_limits` 0/0/0,
 `custom_parameters` 1623, no `system_otp_*` parameter, no `global_unit_types` 99, 619 tables, `users.last_login` of 3862 unchanged at
 `2026-10-13 12:56:27`. `aiccradb1`-`4` were never written to.
+
+
+## 12. Re-run for CHG-PWD-SWITCH-001 (2026-10-17)
+
+**Moved.** The record of this run, with the stage list, results and output names, lives in `docs/specs/changes/password-login-switch/probes/README.md` section 2. The one script of this folder that was re-run here is `ac21-migration.sh`:
+
+| Script | Result | Output |
+|---|---|---|
+| `ac21-migration.sh` after DA-002 was reworded by `CHG-PWD-SWITCH-001` DA-003 | 17 checks, 0 failed | `output/ac21-migration.pwd-switch-rerun.out` |
+| the same, first run, with a `custom_parameters` row for `system_otp_login_active` left in the copy by the earlier probes | 1 FAIL: check "no custom_parameters row seeded for either key" saw the fixture row, not a migration row; the two description checks passed. The row was deleted and the run repeated | `output/ac21-migration.pwd-switch-rerun-1-fixture-row-red.out` |

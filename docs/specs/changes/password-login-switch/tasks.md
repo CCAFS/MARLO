@@ -189,7 +189,7 @@
 
 ### CHG-PWD-SWITCH-001-T08 — Cross-spec amendments, runbook, end-to-end evidence (DD-8, OPS-003)
 
-- **Status:** pending [ ] · **Size:** M · **Depends on:** T01–T07 · **Module:** docs, probes
+- **Status:** done [x] · **Size:** M · **Depends on:** T01–T07 · **Module:** docs, probes
 - **Requirements:** OPS-001, OPS-002, OPS-003; FN-002, FN-006, SEC-006, SEC-007; AC-2, AC-7, AC-8, AC-10, AC-12
 - **Design:** DD-8, §11, §14, §16
 - **Files:** `docs/specs/changes/center-email-otp-login/requirements.md` (amendment notes on FN-001, FN-003, FN-005,

@@ -29,6 +29,9 @@
 | T07 (attempt 1) | 6 / 8 | 14 / 16 | Reviewer FAIL (copy not compared with the approved mockup) |
 | T07 (attempt 2) | 6 / 8 | 15 / 16 | Reviewer PASS; closure waits for the user's read of the copy |
 | T07 (attempt 3, reopened) | 7 / 8 | 16 / 18 | ceiling raised to 18 by the user; Reviewer PASS |
+| T08 (attempt 1) | 7 / 8 | 17 / 18 | Reviewer FAIL (Cognito refusal stated without the override qualifier) |
+| T08 (attempt 2) | 7 / 8 | 18 / 18 | Reviewer FAIL (2 surviving siblings) → **budget tripwire**; ceiling raised to 19 by the user |
+| T08 (attempt 3) | 8 / 8 | 19 / 19 | Reviewer PASS |
 
 ---
 
@@ -755,3 +758,179 @@ Leader adjudication: item 1 was applied as an execute-time edit (see above), and
 - **Scratch data:** users 3865–3870 on `aiccradb_otp_probe`
 - **Final status (T07):** PASS on attempt 3. The copy is aligned with the user's approved mockup.
 - **Continue gate:** waiting for the user (gated mode).
+- **Continue gate outcome:** the user approved continuing to T08 (2026-10-17); T07 committed as `9b2448578d`.
+
+---
+
+### CHG-PWD-SWITCH-001-T08 — Cross-spec amendments, runbook, end-to-end evidence
+
+- **Status:** in progress `[~]`. Attempt 1 reported `Not Done / Assumptions` with a blocker, so the task is escalated to the user (gated mode).
+- **Date:** 2026-10-17
+- **Effort:** attempt 1 `high` (cross-spec security text plus live probes)
+- **Skills:** `marlo-verify` and `cognitive-doc-design`, as the task lists them
+- **Lens mode:** the plan is one Reviewer, not parallel lenses. T08 changes no production code, and 16 of 18 review rounds are already used. Leader decision, recorded here.
+
+#### Attempt 1
+
+- **Files changed:**
+  - `center-email-otp-login/requirements.md`:
+    - Amendment notes on FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 and UI-006.
+    - The backward sweep also put notes on FN-019, UI-001, the "Eligible user" glossary entry, the "Local password users" persona row and AC-1.
+    - DA-002 carries the DA-003 texts.
+    - The Executive Summary is corrected.
+    - New Decision Log entry for 2026-10-17, with the sweeps.
+  - `center-email-otp-login/design.md`, `runbook.md` and `probes/README.md`: notes on the sentences that stated the old rule.
+  - `center-email-otp-login/probes/output/`: `ac21-migration.pwd-switch-rerun*.out`.
+  - New files in this folder: `runbook.md`, `probes/README.md`, `probes/ac-live.sh`, `probes/fixtures.sh`, `probes/sweeps.sh`, `probes/tools/` and 18 files under `probes/output/`.
+  - `git diff -- marlo-data marlo-web marlo-utils` is empty. The Leader checked it.
+- **Implementer verification** (all on `aiccradb_otp_probe`):
+
+  | Check | Result |
+  |---|---|
+  | AC-2 `ac-probe.sh`, 10 stages, switch on | 68/70. The re-run of the 2 failed checks against a sink that writes the envelope in the format the probe reads gave 26/26 |
+  | `ac21-migration.sh` re-run (T01 forward pointer) | 0 failed |
+  | AC-10 | 23/23 |
+  | AC-8 | 8/8 |
+  | AC-7 | 11/11, with one ERROR per unit |
+  | Override (AC-3 to AC-6) | 10/10 |
+  | Runbook SQL | 5/5 |
+  | AC-12 | CLARISA PASS. `/api/**` answers the same with the switch on and off. That `/api/**` authenticates is **NOT VERIFIED** |
+
+- **Falsifier:** `probes/ac-live.sh ac8` with `setCacheable(true)` in `OtpChallengeMySQLDAO.findSpecificityValues` gave `8 checks, 5 failed` (`ac8.FALSIFIER-red.out`). After the revert and a clean rebuild it gave 8/8. A first falsifier through `CustomParameterManager` stayed green, because the cached query holds only entity ids. That output is recorded and is not counted as the red run.
+- **Not Done / Assumptions (Implementer attempt 1, verbatim):**
+  1. `/api/**` Basic authenticating (AC-12) is NOT VERIFIED. On this stack the correct password gets 401 with the switch on or off. The realm path fails with `HibernateException: Could not obtain transaction-synchronized Session`, in code this spec did not touch. It needs one check on an environment where `/api/**` authenticates.
+  2. New risk, not decided: the code's per-email rate limit can now lock a user of a password-off unit out completely, where the password used to be a fallback. It is recorded in both runbooks and in two rows of the OTP `design.md`.
+  3. Advisory items. Done: Set-Cookie comparison, Spring wiring of the new constructor (both endpoints answered), an authenticated session posting the form, and the null `global_unit_type_id` NPE (cannot occur, the column is NOT NULL). Not reachable: a wrong CGIAR password against a real Active Directory refusal. AD does not answer offline, but the accepted residual shows as expected.
+  4. Not run: `ac-probe.sh emaillog`, `postlogin`, `smtp`, `blackhole`, `tz` and `nosecret`. They need extra fixtures or restarts and cover code this spec did not touch.
+  5. Surviving siblings outside T08's files, not edited: `OtpDomainPolicy.java` lines 28 and 35 say CGIAR "plays no part (SEC-009)"; some historical `login.js` comments cite T14, T17 and T21.
+  6. `marlo-dev.properties` hash: `51a818…` before the first build and after the last run. It differs from the Leader's earlier `dev.props.sha` (`955fa7…`); the run script rewrote it at some point before the Implementer started.
+  7. One flaky build: the first clean build failed with `cannot access APConfig` in marlo-web test-compile and passed unchanged on retry.
+  8. Sink swap: the Implementer replaced the Leader's SMTP sink with `tools/sink.py` mid-run.
+- **Evidence re-run (Leader-inline, non-author):**
+  - `probes/sweeps.sh` exits 0. Its output equals the recorded `sweeps.out` except for 10 backward-sweep lines that match `sweeps.out` itself, because the file now holds the clause ids. These are self-references, not new hits.
+  - The probe summaries were read from `probes/output/`.
+  - The live probes **could not be re-run**: the brief put cleanup (drop of `aiccradb_otp_probe`, app and sink stopped) inside the Implementer's attempt, before the re-run. That ordering is a Leader brief error; any re-brief keeps the environment until the re-run is done.
+  - Result: VERIFIED for the deterministic sweep. The live probes rest on their recorded outputs only.
+- **Reviewer:** not spawned yet. The task waits on the user's decision about the blocker.
+- **runtime events:** none
+- **spawns:** implementer: 173 calls, 449566 tokens, ended partial.
+- **Environment after attempt 1:** app and sink stopped, `aiccradb_otp_probe` dropped, scratch credentials deleted.
+- **User decisions (2026-10-17, on the blocker):**
+  - **AC-12:** accepted as recorded. The CLARISA filter passes, and `/api/**` answers the same with the switch on and off. Whether `/api/**` authenticates is not verifiable on the local stack, because of a realm/session `HibernateException` this spec did not cause; it goes to a separate issue, alongside the API-authentication review already listed in design §16.
+  - **Rate-limit lock-out risk:** record only. It stays documented in both runbooks and in the OTP `design.md`, and no spec edit is made. Whether it earns a proposal is decided later.
+  - With both decisions the `Not Done` field holds no owed item and no blocker, so the task goes to the Reviewer.
+- **Reviewer verdict (attempt 1):** **FAIL**, review round 17 of 18.
+  - Every other check passed:
+    - The eight DD-8 notes are present.
+    - The DA-002 texts are byte-equal to DA-003 and to the shipped migration.
+    - The Executive Summary is corrected, and the Decision Log records both sweeps.
+    - The runbook covers OPS-003 and quotes the §11 lines exactly.
+    - Every probe output names `aiccradb_otp_probe` or `pwd_probe_t01_*`, and each supports its AC claim.
+    - The diff holds no production code.
+  - **Issue 1 (verbatim summary):** several notes drop the "under the override" qualifier. They say that while password sign-in is off, a Cognito account in G is refused the code, with no condition. The places are FN-005, SEC-009, FN-015, the "Eligible user" glossary entry, the last Executive Summary bullet, and the design.md step 6 and step 8 notes.
+  - **Violated rule:** design §1, "The rule": a Cognito account keeps the code when the code switch is on and its domain is not excluded. FN-005 says the same, and so does DD-8 ("refused under the override"). `OtpEligibility.java` lines 76–77 and 341 agree with the rule.
+  - **Remediation:** a text-only fix in the seven places. Split FN-015, and reword the SEC-009 "every other account is eligible" clause.
+- **ADVISORY (Reviewer, 4R; recorded, not acted on):**
+  - The UI-006 note's "the single method is the code" is true only for an account without Cognito.
+  - The center runbook's "Support may say … its domain is enabled" is left over from the allow-list.
+  - Runbook §5 is missing the DD-6 `crpByEmail.do` settings ERROR and `welcome.email outcome=settings_unavailable`.
+  - The siblings in `OtpDomainPolicy.java` lines 28 and 35 and in `login.js` need an owner in a follow-up task that may change source.
+
+#### Attempt 2
+
+- **Effort:** `xhigh`, one level up after the FAIL.
+- **Files changed (attempt 2, text only):**
+  - `center-email-otp-login/requirements.md`:
+    - Executive Summary, the "Eligible user" glossary entry, FN-005, FN-015 (split in two), SEC-009, the OQ-4 note and the UI-006 note (advisory).
+    - A correction line in the 2026-10-17 Decision Log entry.
+  - `center-email-otp-login/design.md`: the step 4, struck-through Cognito check and step 8 notes, plus the `is_cgiar_user` bullet, which the family grep found.
+  - `center-email-otp-login/runbook.md`: the A5 row, the pending TRD 8.1 text, and the support-sentence note (advisory).
+  - `password-login-switch/runbook.md` §5: the `welcome.email outcome=settings_unavailable` ERROR row (advisory).
+- **Implementer verification:**
+  - `CODE_DIFF_EMPTY`.
+  - A family grep (KZ-directory-abstraction-1) was run before and after the edit. The six lines that still match are each judged qualified, a note, or unrelated.
+  - The DD-6 `crpByEmail.do` settings ERROR was not added. `CrpByUserEmailAction` has no LOG call, so the design wording is probably imprecise. This advisory was not done, and the spec was not edited.
+- **Evidence re-run (Leader-inline):** **VERIFIED**.
+  - `CODE_DIFF_EMPTY`.
+  - The same family grep returns the same six lines.
+  - `sweeps.sh` exits 0, and the `[CHECK]` lines are identical apart from line numbers (21 before, 21 after).
+  - The recorded `sweeps.out` keeps its attempt-1 line numbers.
+- **Reviewer verdict (attempt 2):** **FAIL**, review round 18 of 18.
+  - The seven places from attempt 1 are now correct, and the six remaining grep hits are fine.
+  - The FN-001, FN-003 and UI-001 notes, the runbook and the TRD 8.1 text agree with each other.
+  - The new §5 line matches `WelcomeSignInText.java:115` character for character, and the diff has no production code.
+  - **Issue 1:** two added lines that the family grep's wording missed still state the refusal outright:
+    - the opening sentence of the 2026-10-17 Decision Log entry in `center-email-otp-login/requirements.md` ("…an account that uses Sign in with CGIAR in that unit is refused the code.");
+    - the support row in `password-login-switch/runbook.md` §6 ("cannot use the code" → "Correct: such accounts keep Sign in with CGIAR"), which also contradicts §1 row 2 of the same runbook.
+  - **Violated rule:** design §1, the "Code" row, and `.agents/reviewer.md` §3, "Correction-note sweep".
+  - **Remediation:** reword both lines, then widen the sweep to `Sign in with CGIAR.{0,60}refused` and `cannot use the code`.
+- **ADVISORY (Reviewer):** DD-8 of this spec's `design.md` reads "a Cognito account is refused under the override". That wording is the source of this defect class. It is outside T08's diff and does not gate the task; record it as a pending note.
+- **Budget tripwire:** with 18 of 18 review rounds used and one rework attempt left, attempt 3 would need round 19. Execution stops and escalates to the user, per Step 2.4.
+- **User decision (2026-10-17, tripwire):** raise the review-round ceiling from 18 to 19 and run attempt 3. If it fails, the task HALTs.
+
+#### Attempt 3
+
+- **Effort:** `xhigh` on the T2 Implementer. The bump would be `max`, but the dial rule "never `max` a cheaper tier" caps it at `xhigh`. The added work is a sweep over every added line, driven by the diff rather than by a grep pattern.
+- **Files changed (attempt 3, text only):**
+  - `center-email-otp-login/requirements.md`:
+    - The opening sentence of the 2026-10-17 Decision Log entry.
+    - The correction line now carries the widened patterns and the read-every-line method.
+  - `password-login-switch/runbook.md`:
+    - The §6 support row (cause and answer).
+    - The §2 production-count line, which was ambiguous and was found by the line review.
+  - New: `probes/output/t08-cognito-line-review.out`, with 66 lines reviewed (63 ok, 3 fixed).
+- **Implementer verification:**
+  - `CODE_DIFF_EMPTY`.
+  - Every added line mentioning Cognito, CGIAR or "Sign in with" was read against design §1.
+  - The widened regex gave 7 hits, all judged.
+- **Evidence re-run (Leader-inline):** **VERIFIED**.
+  - `CODE_DIFF_EMPTY`.
+  - The line counts match: 45 added lines in `center-email-otp-login` and 21 in this folder's runbook and README, 66 in total.
+  - The widened regex over the same files returns 10 lines, against the Implementer's 7. The extra hits are `center-email-otp-login/probes/README.md:84` (T21 history), FN-005 at `requirements.md:123` (the qualified text from attempt 2) and `requirements.md:464` (the Decision Log). All three are benign, and all three are in the review file's line set.
+- **Reviewer verdict (attempt 3):** **PASS**, review round 19 of 19.
+  - Both attempt-2 lines now match the design §1 "Code" row, and the extra §2 fix is correct.
+  - The Reviewer re-read every added Cognito/CGIAR sentence by meaning. None refuses the code outright, and none lets the override admit a Cognito account.
+  - The 3 extra regex hits are historical or quoted text.
+  - No contradiction was introduced, and no production code changed.
+- **ADVISORY (Reviewer; recorded, not acted on):**
+  - Readability: `password-login-switch/runbook.md` §1 row 2 ("Cognito, plus the code under the code switch") leaves out "and the exclusion".
+  - Readability: the 2026-10-17 note on the `crpByEmail.do` row in the center `design.md` could add "for an account without Cognito".
+- **runtime events:** none on any attempt
+- **spawns:**
+  - implementer attempt 1: 173 calls, 449566 tokens, ended partial
+  - reviewer attempt 1: 19 calls, 118229 tokens, ended complete
+  - implementer attempt 2: 19 calls, 93651 tokens, ended complete
+  - reviewer attempt 2: 6 calls, 73126 tokens, ended complete
+  - implementer attempt 3: 11 calls, 94507 tokens, ended complete
+  - reviewer attempt 3: 11 calls, 75713 tokens, ended complete
+- **Requirements covered:**
+  - OPS-003 (runbook).
+  - OPS-001 and OPS-002 (live log lines).
+  - FN-002 and AC-8 (live change, with the falsifier red then green).
+  - FN-006 and AC-7 (last resort, one ERROR per unit).
+  - AC-2 (`ac-probe.sh` with the switch on) and AC-10 (both endpoints refuse with the wrong-password text).
+  - SEC-006 and AC-12: CLARISA passes, and `/api/**` answers the same with the switch on and off. Whether it authenticates is not verifiable locally (accepted by the user).
+  - SEC-007: recorded, no code.
+  - DD-8 amendments with forward and backward sweeps.
+- **Decisions made:**
+  - The user settled AC-12 and the rate-limit risk.
+  - The user raised the ceiling to 19.
+  - The Leader chose one Reviewer instead of parallel lenses.
+  - The Leader capped effort at `xhigh` on attempt 3.
+  - No execute-time spec edits.
+- **Pending items (outside T08, no owner in this spec):**
+  - DD-8 wording in this spec's `design.md` ("a Cognito account is refused under the override") is the source of the defect class. It could say "not admitted by the override; keeps the code switch and the exclusion as written".
+  - The surviving source siblings: `OtpDomainPolicy.java` lines 28 and 35 ("plays no part (SEC-009)") and historical `login.js` comments.
+  - `/api/**` Basic returns 401 locally because of `HibernateException` in `APCustomRealm` → `getUserByEmail`; this needs a separate issue.
+  - Rate-limit lock-out with the password off: record only.
+  - The "DD-6 crpByEmail.do settings ERROR" in the design has no matching log call in `CrpByUserEmailAction`; the design wording is probably imprecise.
+- **Issues encountered:**
+  - The Leader brief placed environment cleanup inside attempt 1, so the live probes could not be re-run by a non-author. They rest on their recorded outputs.
+  - Two Reviewer FAILs came from one defect class: the override qualifier was dropped. A regex sweep missed siblings that only a read by meaning found.
+- **Final verification:**
+  - Sweeps were recorded (`probes/output/sweeps.out`, `t08-cognito-line-review.out`).
+  - The live probes are green and recorded under `probes/output/`; `ac21-migration.sh` re-ran green.
+  - The environment is cleaned.
+  - `CODE_DIFF_EMPTY`.
+- **Final status (T08):** PASS on attempt 3.
+- **Continue gate:** waiting for the user (gated mode). This is the last task of the spec.

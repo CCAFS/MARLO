@@ -1,0 +1,173 @@
+# CHG-PWD-SWITCH-001-T08 AC-2: the CHG-OTP-LOGIN-001 ac-probe.sh stages with the password switch ON everywhere
+# date 2026-10-18T02:17Z; HEAD 9b2448578d; database aiccradb_otp_probe (throwaway copy); app built clean from the working tree (2415 / 1066 files, BUILD SUCCESS), key valid, JDWP agent on
+# commands: probes/ac-live.sh all-on ; ../../center-email-otp-login/probes/ac-probe.sh enum live attempts resend removed limits nonprod session leak expiry
+
+== all-on: the password switch is on in the units under test (AC-2 precondition)
+  (crpByEmail passwordEnabled per unit: {'AICCRA': True, 'AICCRA_III': True})
+  => PASS [AC-2] no custom_parameters row for the password key: every unit reads on (FN-001, AC-1)   (['AICCRA', 'AICCRA_III'])
+  => PASS [AC-2] password sign-in works in the unit with the default
+
+SUMMARY: 2 checks, 0 failed
+
+# ---- ac-probe.sh
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== enum: AC-4 / AC-3 / AC-13 / FN-006 / FN-003 / FN-016
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  eligible                                             HTTP 200  {"status":"sent","destination":"p***@outlook.com"}
+  unknown                                              HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  inactive                                             HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  non-member                                           HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  soft-deleted (crp_users.is_active=0, what deleteCrpUser writes) HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  => PASS [AC-4] request-code answer, headers and cookie names identical across the 5 account states   (reference={"destination": "X***@outlook.com", "status": "sent"})
+  (no recorded challenge can authenticate: T11 unit test OtpVerifyCodeActionTest, search aDecoyGuessed)
+  => PASS [AC-4] no email for any ineligible state; exactly 1 for the eligible one   ({'eligible': 1, 'unknown': 0, 'inactive': 0, 'non-member': 0, 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': 0})
+  otp_challenges columns: ['id', 'nonce', 'email_hmac', 'global_unit_id', 'code_hmac', 'expires_at', 'attempts', 'consumed_at', 'created_at']
+  rows (len nonce, len email_hmac, len code_hmac, attempts, open, ttl s): [['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300']]
+  => PASS [AC-4] one challenge row per request, all the same shape, no column marks a decoy   (rows=5 distinct shapes=1)
+  FN-017 elements: {'application name': True, '6-digit code': True, '5-minute expiry': True, 'works once': True, 'do not share': True, 'ignore if not requested': True, 'support contact': True, 'no link carrying the code': True, 'not addressed to the typed address (non-production: the support mailbox only, the typed address in the body header)': False}
+  => FAIL [AC-3] challenge row + one email with a 6-digit code and every FN-017 element
+  -- the same sequence on every state: wrong, wrong, resend inside 30 s, wrong, correct-or-random
+  eligible                                             ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  unknown                                              ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  inactive                                             ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  non-member                                           ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  soft-deleted (crp_users.is_active=0, what deleteCrpUser writes) ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  => PASS [AC-4] later wrong codes, in-window resend, exhaustion and a further code answer identically for all 5 states   (['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted'])
+  -- real 31 s wait, then resend on every state
+  {'eligible': ('sent', 'mismatch'), 'unknown': ('sent', 'mismatch'), 'inactive': ('sent', 'mismatch'), 'non-member': ('sent', 'mismatch'), 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': ('sent', 'mismatch')}
+  => PASS [AC-4] resend after 30 s and a wrong code answer identically for all 5 states   (('sent', 'mismatch'))
+  => PASS [AC-4] still only the eligible account was mailed after the resend (2 mails)   ({'eligible': 2, 'unknown': 0, 'inactive': 0, 'non-member': 0, 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': 0})
+  => PASS [FN-016] verify with no challenge in the session answers like a wrong code   (mismatch)
+  -- AC-13: an is_cgiar_user=1 account on the Cognito-active unit
+  crpByEmail for otp.cgiar@outlook.com (an outlook.com account): isCgiarUser=True units(cognitoEnabled, otpEnabled)={'AICCRA': (True, True)}
+  crpByEmail for otp.staff@cgiar.org (a cgiar.org account): isCgiarUser=True units(cognitoEnabled, otpEnabled)={'AICCRA': (True, True)}
+  => PASS [AC-13] step 3 data for the cgiar.org account, empty exclusion of its domain: isCgiarUser, cognitoEnabled and otpEnabled are all true (the two methods are offered)   ((True, {'AICCRA': (True, True)}))
+  => PASS [AC-13/SEC-009] both CGIAR accounts are mailed exactly one code each (is_cgiar_user plays no part)   (((0, 0), (1, 1)))
+  verify: {'otp.cgiar@outlook.com': '{"status":"ok","redirect":"http:\\/\\/localhost:8080\\/marlo-web\\/AICCRA\\/crpDashboard.do"}', 'otp.staff@cgiar.org': '{"status":"ok","redirect":"http:\\/\\/localhost:8080\\/marlo-web\\/AICCRA\\/crpDashboard.do"}'}
+  => PASS [AC-13/SEC-009] each code signs its CGIAR account in   ({'otp.cgiar@outlook.com': 'ok', 'otp.staff@cgiar.org': 'ok'})
+  => PASS [AC-13/SEC-005] the signed-in sessions are authenticated (read from the JVM)   ({'otp.cgiar@outlook.com': True, 'otp.staff@cgiar.org': True})
+  cgiar.org excluded: request-code -> domainNotEnabled ; staff {'AICCRA': (True, False)} ; outlook account {'AICCRA': (True, True)}
+  => PASS [AC-13/FN-006] with cgiar.org excluded a direct request-code call answers domainNotEnabled, no mail, no challenge   (domainNotEnabled)
+  => PASS [AC-13/UI-006] with cgiar.org excluded the page data keeps cognitoEnabled true and turns otpEnabled false (step 3 shows only Sign in with CGIAR); an outlook.com account is unaffected   (({'AICCRA': (True, False)}, {'AICCRA': (True, True)}))
+  exclusion excluded.test: {'x@excluded.test': 'domainNotEnabled', '  Y@EXCLUDED.TEST ': 'domainNotEnabled', 'x@attackerexcluded.test': 'sent', 'x@excluded.test.evil.com': 'sent', 'x@sub.excluded.test': 'sent', 'someone@gmail.com': 'sent'}
+  => PASS [FN-006/FN-003] the excluded domain, as typed and in its normalised form, answers domainNotEnabled
+  => PASS [FN-003/AC-2] lookalikes, a sub-domain that is not listed and an unrelated domain are not excluded: they get the neutral answer   ({'x@excluded.test': 'domainNotEnabled', '  Y@EXCLUDED.TEST ': 'domainNotEnabled', 'x@attackerexcluded.test': 'sent', 'x@excluded.test.evil.com': 'sent', 'x@sub.excluded.test': 'sent', 'someone@gmail.com': 'sent'})
+  => PASS [FN-005] no mail for any of them (none is a registered account), and a row only for the ones that went on
+  => PASS [FN-003] '  Probe.User@OUTLOOK.COM ' is accepted as the normalised address and mailed   (sent)
+
+== live: FN-002 / FN-001 / AC-1 / AC-21 (the switch and the exclusion changed with no restart)
+  switch off: request-code -> domainNotEnabled ; crpByEmail otpEnabled flags: ['false', 'false']
+  => PASS [AC-1/FN-001] switch off: request-code refused (domainNotEnabled), no mail, no challenge   (domainNotEnabled)
+  => PASS [AC-1] switch off: crpByEmail offers no OTP for any unit
+  => PASS [AC-1/FN-019] password login unchanged with the feature off   (/marlo-web/AICCRA/crpDashboard.do)
+  cognitoLogin.do?crp=AICCRA -> HTTP 200 Location 
+  switch on again: request-code -> sent ; otpEnabled flags: ['true', 'false']
+  => PASS [FN-002/AC-21] turning the switch on takes effect on the next request with no restart
+  outlook.com excluded: request-code -> domainNotEnabled ; otpEnabled flags: ['false', 'false']
+  => PASS [FN-002/AC-21] adding a domain to the exclusion takes effect on the next request: domainNotEnabled, no mail, otpEnabled false   (domainNotEnabled)
+  outlook.com no longer excluded: request-code -> sent ; otpEnabled flags: ['true', 'false']
+  => PASS [FN-002/AC-21] removing a domain from the exclusion takes effect on the next request
+  => PASS [FN-003] an empty exclusion excludes nobody   (sent)
+  (before the toggles: sent ; the unit's values then: switch=true exclusion=excluded.test ; restored to the standing fixture)
+
+== attempts: AC-6, verify limits (SEC-010), request parameter allow-list (RJ-9)
+  3 wrong then the correct code: ['mismatch', 'mismatch', 'exhausted'] then exhausted
+  => PASS [AC-6] 3rd wrong code says exhausted; the correct code is refused afterwards
+  11 verifies for one email: ['mismatch', 'mismatch', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'rateLimited']
+  => PASS [AC-14] per-email verify limit: the 11th verify in 15 min is rateLimited
+  52 verifies from one IP with no challenge: {'mismatch': 50, 'rateLimited': 2}
+  => PASS [AC-14] per-IP verify limit (50): the answers beyond 50 are rateLimited   ({'mismatch': 50, 'rateLimited': 2})
+  -- RJ-9: extra request parameters are not bound
+  verify with url/crp/user.email/globalUnit extra: {"status":"ok","redirect":"http:\/\/localhost:8080\/marlo-web\/AICCRA\/crpDashboard.do"}
+  => PASS [RJ-9/T12] email, globalUnitId, agree and code bind through the real package; extra url/crp/user parameters are ignored   ({"status":"ok","redirect":"http:\/\/localhost:8080\/marlo-web\/AICCRA\/crpDashboard.do"})
+
+== resend: AC-10, AC-8 (superseded and expired), FN-007/008 (real 31 s wait)
+  resend inside 30 s: rateLimited   same-session resend after 31 s: sent   old code: mismatch   new code: ok
+  other session after 31 s: old code from session 1: invalid   new code from session 2: ok
+  => PASS [AC-10] a resend within 30 s returns rateLimited and changes nothing   (rows 1 -> 1, open rows 1 -> 1)
+  => PASS [AC-10] resend after 30 s: the old code is refused and the new one works   (old=mismatch new=ok)
+  => PASS [AC-8] a superseded challenge (another session, store level) is refused even though its row exists   (old=invalid new=ok)
+  => PASS [AC-8] a challenge whose age is 5 min 1 s (row aged in the copy) is refused with the correct code   (invalid)
+  => PASS [AC-8] the same challenge 25 s before expiry is accepted (no early false refusal)   (ok)
+
+== removed: AC-9 (the removal MARLO performs is a soft delete: CrpUserMySQLDAO.deleteCrpUser sets is_active = 0)
+  crp_users 5367 set to is_active=0 (soft delete) after the code was issued
+  verify after soft delete: invalid   challenge row (attempts, consumed): [['0', '1']]   dashboard with that session: HTTP 200
+  => PASS [AC-9] soft delete after the request: the correct code answers invalid and the challenge is consumed   (answer=invalid consumed=1)
+  => PASS [AC-9] soft delete after the request: no authenticated session was issued   (pre-auth session authenticated=False)
+  code request for the soft-deleted member: {"status":"sent","destination":"o***@outlook.com"}   (an active member answers {"status":"sent","destination":"o***@outlook.com"})   mails delivered: 0
+  => PASS [AC-9] soft-deleted member: a code request answers the neutral response and no mail is sent   (answer=sent mails=0)
+  (supporting) hard delete of the crp_users row: verify invalid   consumed 1   authenticated False
+  => PASS [AC-9] (supporting) hard delete of the membership row: invalid, consumed, no authenticated session   (answer=invalid consumed=1 auth=False)
+  => PASS [AC-9] (control) the same member, active again, signs in with a new code   (ok)
+
+== limits: AC-14
+  6 requests for one email (cooldown cleared between): ['sent', 'sent', 'sent', 'sent', 'sent', 'rateLimited']   buckets' hits: [['6'], ['5']]
+  => PASS [AC-14] the 6th request in 15 min for one email is rateLimited, the first 5 are sent   (['sent', 'sent', 'sent', 'sent', 'sent', 'rateLimited'])
+  22 requests, 22 different emails, one IP: Counter({'sent': 20, 'rateLimited': 2})
+  => PASS [AC-14] the per-IP limit trips across different emails (21st request)   (first limited at request 21)
+  (control) per-IP bucket is spent: request for a new email -> rateLimited
+
+== nonprod: AC-19 / FN-018 (marlo.production=false: the support mailbox only, the prefix, the header; the row keeps the submitted address)
+  => PASS [AC-19] an eligible request leaves exactly one email at the sink   (1 new message(s))
+  envelope recipients: [] ; To header: ['support.probe@sink.test'] ; Cc: None ; Bcc: None ; subject: '(TESTING ENVIRONMENT) [AICCRA] Your MARLO sign-in code'
+  => FAIL [AC-19] the only recipient (envelope and To header, no Cc or Bcc) is the support mailbox email.notification
+  => PASS [AC-19] the subject starts with '(TESTING ENVIRONMENT) '   ((TESTING ENVIRONMENT) [AICCRA] Your MARLO sign-in code)
+  => PASS [AC-19] the plain and the HTML part start with a header naming the submitted address   (plain starts 'To: probe.user@outlook.com\n---------------------------------' ; html starts 'To: probe.user@outlook.com<br>------------------------------')
+  => PASS [AC-19] the submitted address received nothing: it is no SMTP recipient and in no To header of any message at the sink   (0 message(s) at the sink, recipients seen: [])
+  => PASS [AC-19] the code from the redirected email signs the user in   (ok)
+  email_logs row: {'id': '18346', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': '[AICCRA] Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-17 21:18:42', 'error_email': 'NULL', 'succes_email': '1', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<3833 chars>'}
+  => PASS [AC-19] its email_logs row holds the submitted address in to_email, the support mailbox in bbc_email and the subject without the prefix
+  => PASS [AC-19] its message is the HTML as built for production (the code, no test header)
+
+== session: AC-5 (password login vs code login, same user and Global Unit)
+  pre-auth session attributes: ['nonce', 'otpPendingChallenge']
+  pre-auth session id 8065a9bb-2dc2-4520-89d7-65302ab3b8d1 ; authenticated session id c1a8121e-640f-4595-aeee-5d6a720627bf ; verify answer {"status":"ok","redirect":"http:\/\/localhost:8080\/marlo-web\/AICCRA\/crpDashboard.do"}
+  => PASS [AC-5] session ID differs from the pre-auth one (SEC-005)
+  dashboard: pre-auth cookie HTTP 200 (Location None) | code-login cookie HTTP 200 | password-login cookie HTTP 200
+  => PASS [AC-5] the pre-auth session id is not authenticated; the new one is, like the password one   (pre=False code-login=True password-login=True)
+  attributes: password 104, code 104 (nonce excluded)   only in password: []   only in code: []   differing values: {}
+  => PASS [AC-5] same session attribute names and values as a password login for the same user and unit (every custom_parameters key included)   (104 attributes compared)
+  landing: password Location=/marlo-web/AICCRA/crpDashboard.do ; code redirect=http://localhost:8080/marlo-web/AICCRA/crpDashboard.do
+  => PASS [AC-5] same landing page
+  role/membership checksum before ['86d480e173145002a80ac4272f6048e2', '1', '2'] after ['86d480e173145002a80ac4272f6048e2', '1', '2'] ; last_login 2026-10-17 21:18:47 -> 2026-10-17 21:18:50
+  => PASS [AC-5/SEC-007] user_roles and crp_users rows unchanged by a code sign-in
+  => PASS [FN-011] last_login updated by the code sign-in   (2026-10-17 21:18:47 -> 2026-10-17 21:18:50)
+  pre-auth session after the login (should be gone/stopped):
+   
+
+== leak: AC-11 (SEC-001, SEC-002, OPS-001)
+  flow: request -> sent ; wrong -> mismatch ; correct -> ok
+  needles: code=504447 nonce=Oo5IWINqUqbd9QAyKtC_Kg email=probe.user@outlook.com pre-auth sid=50965ab1-74d4-4164-ae8c-3c8a7ffc6900 auth sid=ea5d3f4b-110f-407d-a10a-b31b9815748d
+  => PASS [AC-11] the nonce was captured from the session for the log search
+  (the nonce is the lookup key and is stored by design; only the code and the email are forbidden columns)
+  => PASS [AC-11] otp_challenges holds no code   (1 rows scanned)
+  => PASS [AC-11] otp_challenges holds no full email   (1 rows scanned)
+  => PASS [AC-11] otp_challenges holds no local part   (1 rows scanned)
+  email_logs: 1 row(s) written since the flow began (id > 18347); source_action ['/otpRequestCode']; succes_email ['1']; global_unit_id ['45']
+  => PASS [AC-11] email_logs (the real table name): the code is only in the message of the one row written for this flow, in no other column   (tables=['email_logs'] code matches per column={'message': 1})
+  => PASS [AC-11] email_logs: exactly one new row for the flow, with source_action /otpRequestCode (OPS-005)   (rows=1)
+  => PASS [AC-11] email_logs: the full email and the local part are in no column but to_email, which holds the recipient   (matches outside to_email={'full email': {}, 'local part': {}} to_email=['probe.user@outlook.com'])
+  log /private/tmp/claude-502/-Users-ktanaka-Documents-MARLO-PROJECT-GitHub-MARLO/59386b88-5c5a-4550-b3ed-33d3f50e462b/scratchpad/app-a.log: 78 new lines since the flow began
+  => PASS [AC-11] log app-a.log: the code is only in the one auth.otp.code line (non-production), in no other line   (78 lines searched, 1 code line)
+  => PASS [AC-11] log app-a.log: the full email is only in the one auth.otp.code line (non-production), in no other line   (78 lines searched, 1 code line)
+  => PASS [AC-11] log app-a.log has no line with the nonce   (78 lines searched)
+  => PASS [AC-11] log app-a.log has no line with the pre-auth session id   (78 lines searched)
+  => PASS [AC-11] log app-a.log has no line with the authenticated session id   (78 lines searched)
+  => PASS [AC-11/OPS-001] log app-a.log: the auth.otp.code line is INFO, names the unit, the submitted address and the code of the email   ([INFO ] [MARLO] [dev] [OtpMailSender] environment=DEV: auth.otp.code gu=AICCRA to=probe.user@outlook.com code=<code>)
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=ced2784c4fed688c controller_affected=/marlo-web/otpRequestCode.do: auth.otp.request outcome=sent gu=aiccra domain=outlook.com ms=52
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=delivered gu=aiccra domain=outlook.com ms=32
+   [INFO ] [MARLO] [dev] [OtpMailSender] environment=DEV: auth.otp.code gu=AICCRA to=probe.user@outlook.com code=<code>
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=b893d46ab528e71e controller_affected=/marlo-web/otpVerifyCode.do: auth.otp.verify outcome=mismatch gu=aiccra domain=outlook.com ms=5
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=47decc838fcaa36a controller_affected=/marlo-web/otpVerifyCode.do: auth.otp.verify outcome=ok gu=aiccra domain=outlook.com ms=24
+  => PASS [AC-11/OPS-001] exactly one auth.otp.request per request call, one auth.otp.verify per verify call, one auth.otp.delivery per mail, and (non-production) one auth.otp.code per mail   ({'request': 1, 'delivery': 1, 'code': 1, 'verify': 2})
+  structured fields present: True
+
+== expiry: a real 5 min 1 s old challenge (AC-8)
+  age at verify 301.1 s -> invalid
+  => PASS [AC-8] correct code submitted 5 min 1 s after issue is refused (real clock)   (invalid at 301.1 s)
+
+SUMMARY: 70 checks, 2 failed: [AC-3] challenge row + one email with a 6-digit code and every FN-017 element; [AC-19] the only recipient (envelope and To header, no Cc or Bcc) is the support mailbox email.notification
+# exit 1

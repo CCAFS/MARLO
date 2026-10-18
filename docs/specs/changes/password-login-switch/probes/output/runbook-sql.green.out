@@ -1,0 +1,14 @@
+# CHG-PWD-SWITCH-001-T08 runbook-sql
+# date 2026-10-18T02:30Z; HEAD 9b2448578d; database aiccradb_otp_probe (throwaway copy); application built clean from the working tree, code key valid, JDWP agent on; command: probes/ac-live.sh runbook-sql
+
+== runbook-sql: the statements of runbook.md, as written (OPS-003)
+  => PASS [OPS-003] the runbook holds both statements
+  count for unit 45: active_members, local_accounts, cgiar_accounts = ['454', '451', '3']
+  => PASS [OPS-003] the count statement runs and returns three numbers   ([['454', '451', '3']])
+  before: passwordEnabled=False; after the UPDATE of the runbook: value=[['true']], passwordEnabled=True
+  => PASS [OPS-003] the turn-on statement affects exactly one row (ROW_COUNT)   ([['1']])
+  => PASS [OPS-003] the turn-on statement, as written, flips the unit to on on the next lookup, with no restart
+  => PASS [OPS-003] and the password is accepted again
+
+SUMMARY: 5 checks, 0 failed
+# exit 0

@@ -1,0 +1,16 @@
+# CHG-PWD-SWITCH-001-T08 ac8 FALSIFIER (red run, attempt 2): the switches are read through the Hibernate query cache: OtpChallengeMySQLDAO.findSpecificityValues gets setCacheable(true) (ac8.FALSIFIER.patch); never committed, reverted afterwards
+# date 2026-10-18T02:48Z; HEAD 9b2448578d plus ac8.FALSIFIER.patch; application built clean (2415 / 1066 files, BUILD SUCCESS); database aiccradb_otp_probe; command: probes/ac-live.sh ac8
+
+== ac8: FN-002 / AC-8 (a change of the switch is live: raw SQL, no restart)
+  (JVM pid 56164; unit 45: password switch false, code switch true, no exclusion)
+  => FAIL [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false)   ((False, True))
+  => FAIL [AC-8] off: validateUser.do refuses the correct password
+  => FAIL [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both)   ((False, True))
+  => PASS [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password
+  => PASS [AC-8] UPDATE ... 'true': the next login.do signs in   (/marlo-web/AICCRA/crpDashboard.do)
+  => FAIL [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again   ((False, True))
+  => FAIL [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+  => PASS [AC-8] no restart: the JVM pid is the same before and after   (56164 -> 56164)
+
+SUMMARY: 8 checks, 5 failed: [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false); [AC-8] off: validateUser.do refuses the correct password; [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both); [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again; [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+# exit 1

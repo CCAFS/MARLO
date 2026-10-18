@@ -28,7 +28,7 @@ decided only after a successful consume.
 - The HMAC secret comes from the environment.
 - The code email goes through a **new asynchronous mailer** with timeouts. Its outcome is logged, and its `email_logs` row stores the full body (amended 2026-10-15).
 
-Password and Cognito paths do not change behavior.
+Password and Cognito paths do not change behavior. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: true while the Global Unit has password sign-in on, the default. A unit that turns `system_password_login_active` off refuses the password on `validateUser.do` and `login.do`, and offers the code as the default method; Cognito paths do not change)*
 
 ---
 
@@ -36,7 +36,7 @@ Password and Cognito paths do not change behavior.
 
 ```text
 loginForm.ftl / login.js  (step 1 email → crpByEmail.do → step 2 Global Unit → step 3 auth)
-        │  crpByEmail.do also returns  otpEnabled  per Global Unit (configured + domain + SEC-009 only)
+        │  crpByEmail.do also returns  otpEnabled  per Global Unit (configured + domain + SEC-009 only) (amended 2026-10-17, CHG-PWD-SWITCH-001: otpEnabled follows SignInMethodRule, and a passwordEnabled flag is returned beside it)
         │
         ├── password ──► login.do (unchanged)
         ├── Cognito  ──► cognitoLogin.do / cognitoCallback.do (unchanged)
@@ -196,7 +196,7 @@ Not applicable.
 | `status` | Route | Meaning | i18n key |
 |---|---|---|---|
 | `sent` | request | **Neutral response**, for eligible *and* ineligible accounts. `destination` is the masked submitted email, always present (FN-004/005) | `login.otp.sent` |
-| `domainNotEnabled` | request | Domain not on the Global Unit's list, unknown Global Unit, or feature unconfigured (FN-006, SEC-008) | `login.otp.error.domain` |
+| `domainNotEnabled` | request | Domain not on the Global Unit's list, unknown Global Unit, or feature unconfigured (FN-006, SEC-008) | `login.otp.error.domain` *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has password sign-in off and the code key is valid, step 4 no longer answers it for the unit's switch or exclusion (DD-4))* |
 | `termsRequired` | request | `agree` is not `true` (parity with Cognito's refusal of `agree=false`; independent of account state) | existing terms message key |
 | `rateLimited` | both | Any limit, including the 30-s cooldown (FN-008, SEC-010) | `login.otp.error.rateLimited` |
 | `unavailable` | both | Internal failure; fail closed | `login.otp.error.unavailable` |
@@ -237,13 +237,13 @@ identically for every account (JD-1).
    An atomic upsert per bucket makes concurrent requests safe (JI-12). Over any limit, or a rejected cooldown → `rateLimited`.
 2. **Shape.** The email must have valid syntax, at most 254 characters, and exactly one `@`; `globalUnitId` must be numeric. Otherwise → `domainNotEnabled`.
 3. **Configured?** If `OtpKeys` is unconfigured → `domainNotEnabled` (SEC-008). *Execution order amended 2026-10-13 (T10): this check runs **before** step 1. It reads no account state, so JD-1 and SEC-010 still hold. The limiter itself answers `unavailable` without keys, so running this check after it would contradict §4.*
-4. **Domain.** Read the Global Unit's switch and exclusion list through the uncached read (DD-12). The switch off, an unknown Global Unit, or an email whose domain exactly matches an exclusion entry → `domainNotEnabled` (amended 2026-10-15, T21, DD-13; previously an allow-list with `cgiar.org` ignored).
+4. **Domain.** Read the Global Unit's switch and exclusion list through the uncached read (DD-12). The switch off, an unknown Global Unit, or an email whose domain exactly matches an exclusion entry → `domainNotEnabled` (amended 2026-10-15, T21, DD-13; previously an allow-list with `cgiar.org` ignored). *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: with password sign-in of the unit off and the code key valid, this step admits the request instead of answering `domainNotEnabled`; a Cognito account is not admitted this way: its switch and exclusion are applied as written after `existActiveCrpUser` in step 6, and it gets the neutral answer when they refuse it (DD-4))*
 5. **Terms.** If `agree` is not `true` → `termsRequired`.
 6. **Eligibility** (`OtpEligibility`, the single predicate):
    - the user exists, by case-insensitive lookup (P-12);
    - `isActive()`;
    - `existActiveCrpUser(user, gu)`: an **active** membership (`crp_users.is_active = 1`). MARLO removes a member by soft delete (`CrpUserMySQLDAO.deleteCrpUser` sets `active=false`), so the activity-blind `existCrpUser` that `finishLogin` calls (P-2, P-13) would admit a removed member (FN-005, FN-015). This is a deliberate departure from password-login parity on this one point (DD-4; `requirements.md` §10, 2026-10-13);
-   - ~~**not** (`isCgiarUser()` **and** `CognitoAuthSpecificity.isActiveFor(...)`)~~: removed 2026-10-15 (T21, DD-13). SEC-009 now forbids any dependence on `is_cgiar_user`.
+   - ~~**not** (`isCgiarUser()` **and** `CognitoAuthSpecificity.isActiveFor(...)`)~~: removed 2026-10-15 (T21, DD-13). SEC-009 now forbids any dependence on `is_cgiar_user`. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: the Cognito check is back for units with password sign-in off: `isEligible` does not admit a Cognito account by the override there: it keeps the code switch and the exclusion as written, checked after `existActiveCrpUser`, and never calls the resolver on a password-on unit (DD-4))*
 7. **Issue.** `OtpChallengeManager.issue(emailHmac, gu, nonce, codeHmac, expiresAt)` runs in **one transaction**: it supersedes the email's open rows, then inserts the new row. It runs for **both** outcomes. The code is a fresh CSPRNG code:
    - **eligible:** the code is handed to `OtpMailSender.sendAsync`;
    - **ineligible:** the code is discarded.
@@ -275,7 +275,7 @@ identically for every account (JD-1).
 
    Decoys run through this same path, because they are real rows (DD-5).
 7. **Match** → `OtpChallengeManager.consume(nonce)`. This is a conditional update that sets `consumed_at` only while `consumed_at` is null **and** `attempts < 3` **and** `expires_at > now` (JS-1). If affected ≠ 1 → `invalid` (FN-013).
-8. **Remove `OtpPending`.** Re-run `OtpEligibility` for `pending.email` and Global Unit, **including the uncached switch and exclusion** (amended 2026-10-15, T21). Not eligible → `invalid` (FN-015). A decoy that guessed its 1-in-10⁶ random code also ends here, and its answer is the same `invalid` an expired code gets.
+8. **Remove `OtpPending`.** Re-run `OtpEligibility` for `pending.email` and Global Unit, **including the uncached switch and exclusion** (amended 2026-10-15, T21). Not eligible → `invalid` (FN-015). A decoy that guessed its 1-in-10⁶ random code also ends here, and its answer is the same `invalid` an expired code gets. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: the re-check inherits the same rule through `OtpEligibility.isEligible`, so a Cognito account is not admitted by the override while the unit has password sign-in off: it passes only when its code switch is on and its domain is not excluded)*
 9. **Session sequence.** This is the **complete** Cognito order (`CognitoCallbackAction.java:476-529`, JD-4):
    1. Load the user entity, `loggedUser`. If it is null (deleted since the eligibility check) → `failed`, matching Cognito's guard at `CognitoCallbackAction.java:477-482` (RJ-2).
    2. If `pending.agree`, call `setAgreeTerms(TRUE)` (record, never revoke, as at `ValidateUserAction.java:143-146`).
@@ -317,9 +317,9 @@ Authorization is untouched (SEC-007).
 
 | Piece | Design | Req |
 |---|---|---|
-| `crpByEmail.do` | Each Global Unit entry gains `otpEnabled`. It is `true` when the feature is configured, the unit's switch is on, and the user's domain is not on its exclusion list. `is_cgiar_user` plays no part (amended 2026-10-15, T21). It does **not** use `isActive()` or membership, so it discloses nothing beyond today's `isCgiarUser` and unit list (JI-11).<br>Both keys for all listed units come from **one** uncached query per call, and only when the feature is configured (RJ-6) | UI-001, SEC-006 |
-| `login.js` mode | Extends the decision at `login.js:471`. `COGNITO` keeps priority. Otherwise the mode is `LOCAL`. When `otpEnabled` is false, LOCAL is unchanged: the password field and "Log in". When `otpEnabled` is true, LOCAL opens on the **method choice** below instead of the password field. The terms check runs first, as for the other buttons. *Amended 2026-10-14 (UI-006, T17): "the password field stays" now means it stays available behind the choice, not beside the code button*. *Amended 2026-10-15 (DD-13, T21): `COGNITO` with `otpEnabled` also opens on the method choice, offering "Sign in with CGIAR" and "Email me a sign-in code"; `COGNITO` without `otpEnabled` is unchanged* | UI-001, UI-006, FN-019 |
-| Method choice (T17) | Shown only on LOCAL with `otpEnabled`. Heading "How do you want to sign in?", a primary "Email me a sign-in code" and a secondary "Continue with your password".<br>**Code panel:** "We will email a one-time code to `<masked>`. No password needed." and "Send code", which runs the existing T14 request (terms check, `requestSeq`, locks). The mask is built in the browser from the typed email with the server's shape (first character, `***`, `@domain`).<br>**Password panel:** the existing `#login-password` input and "Log in", unchanged in markup and in submission.<br>Each panel has "Choose another way to sign in", which returns to the choice. Focus moves to the first control of what opens. While the choice or the code panel is open, Enter in the form never submits `login.do`.<br>Leaving step 3 ("Go back", "use a different email") resets the choice, so step 3 always reopens on it. Every single-method case never renders the choice. *Amended 2026-10-15 (T21): on the Cognito branch with `otpEnabled`, the choice offers "Sign in with CGIAR" (which starts the Cognito redirect after the terms check) in place of "Continue with your password"; the password input is not rendered* | UI-006, UI-004 |
+| `crpByEmail.do` | Each Global Unit entry gains `otpEnabled`. It is `true` when the feature is configured, the unit's switch is on, and the user's domain is not on its exclusion list. `is_cgiar_user` plays no part (amended 2026-10-15, T21). It does **not** use `isActive()` or membership, so it discloses nothing beyond today's `isCgiarUser` and unit list (JI-11).<br>Both keys for all listed units come from **one** uncached query per call, and only when the feature is configured (RJ-6) | UI-001, SEC-006 *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: `otpEnabled` is `true` also under the password-off override, with the code switch off or the domain excluded, and `false` for a username identifier; each entry gains `passwordEnabled`; the unit settings are read by one uncached query that now always runs (NF-002 and DD-6 of that spec))* |
+| `login.js` mode | Extends the decision at `login.js:471`. `COGNITO` keeps priority. Otherwise the mode is `LOCAL`. When `otpEnabled` is false, LOCAL is unchanged: the password field and "Log in". When `otpEnabled` is true, LOCAL opens on the **method choice** below instead of the password field. The terms check runs first, as for the other buttons. *Amended 2026-10-14 (UI-006, T17): "the password field stays" now means it stays available behind the choice, not beside the code button*. *Amended 2026-10-15 (DD-13, T21): `COGNITO` with `otpEnabled` also opens on the method choice, offering "Sign in with CGIAR" and "Email me a sign-in code"; `COGNITO` without `otpEnabled` is unchanged* | UI-001, UI-006, FN-019 *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: a LOCAL account with `otpEnabled` true and `passwordEnabled` false opens directly on the code panel, with no choice; with both false (a username) it shows the FN-010 message)* |
+| Method choice (T17) | Shown only on LOCAL with `otpEnabled`. Heading "How do you want to sign in?", a primary "Email me a sign-in code" and a secondary "Continue with your password".<br>**Code panel:** "We will email a one-time code to `<masked>`. No password needed." and "Send code", which runs the existing T14 request (terms check, `requestSeq`, locks). The mask is built in the browser from the typed email with the server's shape (first character, `***`, `@domain`).<br>**Password panel:** the existing `#login-password` input and "Log in", unchanged in markup and in submission.<br>Each panel has "Choose another way to sign in", which returns to the choice. Focus moves to the first control of what opens. While the choice or the code panel is open, Enter in the form never submits `login.do`.<br>Leaving step 3 ("Go back", "use a different email") resets the choice, so step 3 always reopens on it. Every single-method case never renders the choice. *Amended 2026-10-15 (T21): on the Cognito branch with `otpEnabled`, the choice offers "Sign in with CGIAR" (which starts the Cognito redirect after the terms check) in place of "Continue with your password"; the password input is not rendered* | UI-006, UI-004 *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: the choice is not shown when the password is off for the unit: the code panel opens directly and its "Choose another way to sign in" link is hidden)* |
 | States | *Sending* (button disabled, "Sending…"), *code sent* (neutral text with the masked destination), *verifying* ("Verifying…"), one inline error per `status`, a resend countdown, and "use a different email" | UI-002 |
 | `#login-step-otp` (FTL) | Status text in an `aria-live="polite"` region with `role="status"`; errors with `role="alert"`. A labelled code input: `inputmode="numeric"`, `autocomplete="one-time-code"`, `maxlength="6"`, digits stripped on input. **Focus moves to the input when the step opens** (JI-6). A Verify button, and a Resend button showing "Resend in N s" for 30 s. This is the first timer code in `login.js` (P-24). A "use a different email" link | UI-002, UI-003 |
 | Request sequencing | `requestSeq` is incremented on every call and on "use a different email". Stale responses are dropped. Buttons are disabled while their request is in flight, and Enter submits | UI-004 |
@@ -373,7 +373,7 @@ entity is saved.
 
 | Topic | Design |
 |---|---|
-| Load | A request-code call costs:<br>• 2 window upserts, and the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update (amended 2026-10-13);<br>• 2 uncached specificity reads, each covering both keys (step 4, then again inside `OtpEligibility`; amended 2026-10-13, T10);<br>• 1 user lookup;<br>• 1 transaction (supersede + insert).<br>The mail send runs off the request thread (NF-001). `crpByEmail.do`, which is pre-auth and unthrottled as it is today, gains **one** uncached query per call, and only when the feature is configured (RJ-6) |
+| Load | A request-code call costs:<br>• 2 window upserts, and the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update (amended 2026-10-13);<br>• 2 uncached specificity reads, each covering both keys (step 4, then again inside `OtpEligibility`; amended 2026-10-13, T10);<br>• 1 user lookup;<br>• 1 transaction (supersede + insert).<br>The mail send runs off the request thread (NF-001). `crpByEmail.do`, which is pre-auth and unthrottled as it is today, gains **one** uncached query per call, and only when the feature is configured (RJ-6) *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: each specificity read covers three keys, adding `system_password_login_active`; and `crpByEmail.do` now runs its one uncached query also when the feature is not configured or the identifier is a username (NF-002 and DD-6 of that spec))* |
 | Volume | Expected in the tens per day. Decoy rows are bounded by the rate limits and purged after 1 h |
 | Concurrency probe | A script under `probes/` runs against a **throwaway copy** of the local MySQL. It runs four cases: 10 parallel correct verifies (exactly 1 consume); 10 parallel wrong codes (`attempts` ends at 3); a mixed burst of 3 wrong + 1 correct after exhaustion (0 consumes); and concurrent requests for one email (at most 1 open row). Output is recorded at the execute HITL pause (requirements §6) |
 
@@ -391,7 +391,7 @@ entity is saved.
 | T11 session theft | Session rotated on login (SEC-005) |
 | T15 lookalikes | Exact match |
 | T16 log leakage | `OtpLog` lines carry no code. In production the code never reaches the log; outside production it appears only in the one `auth.otp.code` line per handed-off email (accepted 2026-10-15). It is in `email_logs` only in the body of the OPS-005 row (accepted 2026-10-15: readable by super admins and anyone with database or backup access while the code is live, at most 5 minutes) |
-| Victim lockout | A third party can spend a user's per-email buckets and block code sign-in for 15 min. **Accepted**: password and Cognito logins are unaffected |
+| Victim lockout | A third party can spend a user's per-email buckets and block code sign-in for 15 min. **Accepted**: password and Cognito logins are unaffected *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: in a Global Unit that has password sign-in off the code is the only method of an account without Cognito, so a locked bucket leaves that user with **no way in** for the lockout window. Not decided by that spec; it is recorded in its runbook, section 7, for the product owner)* |
 | Victim code supersede | A third party can request for a victim's email once every 30 s, superseding the victim's open code (RJ-11). The victim then needs a new code. The per-email bucket caps this at 5 per 15 min. **Accepted** for the same reason |
 | Residual timing | An eligible request does more database work than an ineligible one: the membership read, the SEC-009 reads and the mail hand-off. The gap is a few indexed reads, and the send is async. It is not measured. **Accepted**, and recorded as residual for SEC-006 (RJ-10); the pre-existing `crpByEmail.do` disclosure dominates it |
 | Login CSRF | **Residual, parity:** no login form has a CSRF token (P-9) |
@@ -488,10 +488,10 @@ entity is saved.
   - terms;
   - the user exists and is active;
   - an active membership.
-- **`is_cgiar_user`:** no longer read by the code path. The `CognitoAuthSpecificity` read leaves `OtpEligibility`, and `crpByEmail.do`'s `otpEnabled` follows the same rule.
+- **`is_cgiar_user`:** no longer read by the code path. The `CognitoAuthSpecificity` read leaves `OtpEligibility`, and `crpByEmail.do`'s `otpEnabled` follows the same rule. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: read again while the unit has password sign-in off, to keep a Cognito account under the code switch and the exclusion as written; never read on a password-on unit)*
 - **`OtpDomainPolicy`:** keeps the normalisation and exact-match rules, but the list now excludes. The `cgiar.org` drop is removed.
-- **Status vocabulary:** unchanged. `domainNotEnabled` now covers "switch off" and "domain excluded", and its message already reads "not available for this email".
-- **Step 3 (UI-006):** the choice now also covers Cognito against the code.
+- **Status vocabulary:** unchanged. `domainNotEnabled` now covers "switch off" and "domain excluded", and its message already reads "not available for this email". *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: under the password-off override a unit's switch and exclusion no longer produce it)*
+- **Step 3 (UI-006):** the choice now also covers Cognito against the code. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: with password sign-in off, a single method is shown directly)*
 - **Migration (DA-002):** a new idempotent migration seeds both keys and removes the old rows. It never edits `V2_6_0_20261009_1025`, which `MarloFlywayConfiguration.repair()` would silently re-checksum.
 - **Rationale:** requirements Decision Log 2026-10-15 (T21).
 - **Trade-off:** an empty exclusion list includes CGIAR staff on Cognito units, and they can bypass Cognito. That is deliberate, staged and approved (OQ-9, resolved 2026-10-15).
@@ -508,7 +508,7 @@ No DD removes, disables or inverts shipped behavior. DD-11 only relocates code, 
 | `crpByEmail.do` discloses account existence (C8) | Separate spec (OQ-7) |
 | Login CSRF parity (P-9) | Accepted; candidate follow-up spec |
 | Affinity (P-4), proxy (P-6), environment binding (P-18) unconfirmed | Go-live checklist; T-rollout task |
-| Victim lockout through per-email buckets | Accepted; other logins unaffected |
+| Victim lockout through per-email buckets | Accepted; other logins unaffected *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: in a Global Unit that has password sign-in off the code is the only method of an account without Cognito, so a locked bucket leaves that user with **no way in** for the lockout window. Not decided by that spec; it is recorded in its runbook, section 7, for the product owner)* |
 | Deliverability to partner domains | Pilot mailbox; partner IT allow-lists the sender |
 | Shared files with `directory-retirement` | Sequence the work |
 

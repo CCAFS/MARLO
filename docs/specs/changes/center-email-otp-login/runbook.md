@@ -11,12 +11,14 @@ Part C records the walk of this runbook on the local stack. Part D lists the sha
 infrastructure, the product owner or PMU is still open and **blocks go-live, not merge**. No infra answer has been
 obtained yet; none is claimed here.
 
+> **Amended 2026-10-17 (`CHG-PWD-SWITCH-001`).** A Global Unit can turn password sign-in off with `system_password_login_active`. While it is off and the code key is valid, the code is the way to sign in for every account that does not use Sign in with CGIAR, and the rules below about the code switch and the exclusion list apply only to Sign in with CGIAR accounts of that unit. The operating procedure for that switch (prerequisites, turn off, turn back on, log lines) is [`docs/specs/changes/password-login-switch/runbook.md`](../password-login-switch/runbook.md). Each affected row below carries its own note.
+
 ## Quick path
 
 | I want to | Do this |
 |---|---|
-| Enable code sign-in for a unit | Set the secret (A2), then turn the unit's `system_otp_login_active` on in the admin UI, with an optional `system_otp_excluded_email_domains` (A1) |
-| Disable it for a unit | Turn the unit's `system_otp_login_active` off in the admin UI. It applies on the next request, with no restart (A1, proved in C) |
+| Enable code sign-in for a unit | Set the secret (A2), then turn the unit's `system_otp_login_active` on in the admin UI, with an optional `system_otp_excluded_email_domains` (A1) *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: or turn password sign-in off for the unit, which makes the code the default method; see the runbook of that spec)* |
+| Disable it for a unit | Turn the unit's `system_otp_login_active` off in the admin UI. It applies on the next request, with no restart (A1, proved in C) *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: this does not remove the code from a unit that has password sign-in off; turn that switch back on first)* |
 | Disable it everywhere, fastest | Turn every unit's switch off. Unsetting the secret also works but needs a restart (A2) |
 | Find out why a code did not arrive | A5. Search `auth.otp.` in the application log |
 | Answer a user who says "no code" | A6. One neutral answer for every ineligible account |
@@ -33,8 +35,8 @@ The feature uses **two specificities per Global Unit**, both stored with the `sy
 
 | Key | Type | Meaning |
 |---|---|---|
-| `system_otp_login_active` | Boolean | **On:** every account with access to the unit (active, active membership, terms accepted) can ask for a code, CGIAR or not. **Off:** nobody can |
-| `system_otp_excluded_email_domains` | Text | Domains that never get a code in this unit, for example `cgiar.org` to keep CGIAR staff on Cognito. Empty means no exclusion |
+| `system_otp_login_active` | Boolean | **On:** every account with access to the unit (active, active membership, terms accepted) can ask for a code, CGIAR or not. **Off:** nobody can *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has `system_password_login_active` off and the code key is valid, accounts without Cognito get the code whatever this says; only a Cognito account follows it)* |
+| `system_otp_excluded_email_domains` | Text | Domains that never get a code in this unit, for example `cgiar.org` to keep CGIAR staff on Cognito. Empty means no exclusion *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has password sign-in off, it excludes only accounts that use Sign in with CGIAR)* |
 
 To change them:
 1. Sign in as a super admin and open **System Admin > PTF Parameters** (`/superadmin/marloParameters.do`).
@@ -60,7 +62,7 @@ Behaviour of the screen, observed in the walk (Part C):
 
 **Rollback, cheapest first** (design section 14). Only the first is "next request":
 
-1. Turn `system_otp_login_active` off in the admin UI: live, per unit (T21).
+1. Turn `system_otp_login_active` off in the admin UI: live, per unit (T21). *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: it does not switch the code off in a unit that has password sign-in off)*
 2. Blank `otp.hmac.secret` (and unset `OTP_HMAC_SECRET` if the environment uses it): the secret is read **once at start** (`OtpKeys`), so this needs a restart of every instance.
 3. Revert the deploy.
 4. Drop the three `otp_*` tables. This is destructive and the last resort.
@@ -71,7 +73,7 @@ Behaviour of the screen, observed in the walk (Part C):
 |---|---|
 | Generate | `openssl rand -base64 48` (standard base64 that decodes to at least 32 bytes; base64url or a shorter value is refused). Store it as **a single line, no trailing newline**: the decoder refuses whitespace and the feature stays off |
 | Where | The property `otp.hmac.secret` in the per-environment `marlo-<profile>.properties` (gitignored), like the other credentials. The environment variable `OTP_HMAC_SECRET` also works and **takes precedence** (Spring reads system properties, then the environment, then the file). Use the same route the environment already uses for `cognito.client.secret` (amended 2026-10-16; P-18) |
-| Without it, or too short | The feature is **off**. `OtpKeys` logs **one WARN**, `auth.otp.keys outcome=unconfigured: ... <reason>`, **without the value, its length or its decoded length**. Startup is not affected. Every request-code call answers `domainNotEnabled` |
+| Without it, or too short | The feature is **off**. `OtpKeys` logs **one WARN**, `auth.otp.keys outcome=unconfigured: ... <reason>`, **without the value, its length or its decoded length**. Startup is not affected. Every request-code call answers `domainNotEnabled` *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: the password stays available in **every** unit that has the code key missing, whatever `system_password_login_active` says (last resort), and one ERROR `auth.password.last_resort` per unit is logged at the first lookup; see the runbook of that spec, section 5)* |
 | Storage | Never in a tracked file. The `marlo-test.properties` template carries the key **empty**. A missing key never stops the application: `${otp.hmac.secret:}` defaults to empty and the feature stays off |
 | Production | **Do not set the key in production before the release is deployed** (it is inert but must not be staged early) |
 | Rotation | Generate a new value, set it on **every** instance, restart them. It **invalidates every open code** (the MAC keys change), so users mid-sign-in must request a new one. A code issued before the change fails the check under the new key: the user sees `mismatch` ("Not correct"), each try uses up an attempt, and the third ends in `exhausted`. If the instance that held the session restarted, the pending challenge is gone and the user also sees `mismatch`. Either way the user must request a new code. Codes live 5 minutes, so rotate when traffic is low |
@@ -122,7 +124,7 @@ succeeded; `request` and `verify` are INFO.
 | **No line** | The request never reached the app | Browser or network problem, a proxy dropping the POST, or a JavaScript error. Check the proxy log and `otpRequestCode.do` |
 | `outcome=sent` | Account eligible, code issued, mail handed to the sender | Step 2 |
 | `outcome=neutral` | The account was **ineligible** (see A6). Server-side only; the user saw "code sent" | Fix the account if it is meant to be eligible. Say nothing about why to the user |
-| `outcome=denied_domain` | The switch is off, the domain is on the unit's exclusion list, the unit is unknown, or the shape was bad. The user saw the "not enabled" message | Check A1 for that unit |
+| `outcome=denied_domain` | The switch is off, the domain is on the unit's exclusion list, the unit is unknown, or the shape was bad. The user saw the "not enabled" message | Check A1 for that unit *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: not produced for the switch or the exclusion while the unit has password sign-in off and the code key is valid)* |
 | `outcome=unconfigured` | The secret is missing or too short | A2. Look for the startup WARN `auth.otp.keys` |
 | `outcome=rate_limited` (note `gu=` is empty, the limit runs before any lookup) | 5 requests per email or 20 per IP per 15 minutes, or the 30 s cooldown | Ask the user to wait. If many users hit it, suspect a shared IP bucket (A3) |
 | `outcome=terms_required` | The terms box was not ticked. The cooldown still started | Ask the user to tick it |
@@ -175,16 +177,16 @@ and nothing in the response, the timing or the page tells them apart (anti-enume
 | Inactive user (`users.is_active = 0`) | "Code sent" | No |
 | Not a member of that Global Unit | "Code sent" | No |
 | **Soft-deleted member** (`crp_users.is_active = 0`, how MARLO removes a member; refused) | "Code sent" | No |
-| **Switch off, or the domain is on the unit's exclusion list** | **"Not enabled for this project"** (a different message, by design, FN-006) | No |
+| **Switch off, or the domain is on the unit's exclusion list** | **"Not enabled for this project"** (a different message, by design, FN-006) | No *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has password sign-in off these two do not apply to an account without Cognito; a Cognito account in that unit keeps them as written: it gets the neutral "Code sent" with no mail only when its switch is off or its domain is excluded)* |
 | Eligible account | "Code sent" | Yes |
 | Eligible when asked, ineligible when the code is entered | "Invalid or expired" | n/a |
 
-> The domain case is deliberately not neutral: design section 4 and FN-006 answer it with `domainNotEnabled`. The login
+> The domain case is deliberately not neutral: design section 4 and FN-006 answer it with `domainNotEnabled`. The login *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has password sign-in off and the code key is valid, this case does not arise for an account without Cognito: the switch and the exclusion do not apply to it, and step 4 admits the request)*
 > page only offers the option when the switch is on and the domain is not excluded, so a user normally cannot reach it.
 
 **Support may say:** "If that address is registered for this project and its domain is enabled, a code arrives within a few
 minutes. Check spam. You can ask again after 30 seconds, up to 5 times in 15 minutes. A code lasts 5 minutes and allows
-3 attempts." They may also tell the user to use the password or CGIAR sign-in they used before.
+3 attempts." They may also tell the user to use the password or CGIAR sign-in they used before. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: only when the unit has password sign-in on; with it off the password is refused, and the answer is to use the code. Also, "its domain is enabled" is the allow-list wording that T21 removed: since 2026-10-15 the unit has a switch and an exclusion list, and with password sign-in off an account without Cognito gets the code whatever they say)*
 
 **Support must not say:** whether the address exists, is active, belongs to the unit, is a CGIAR account, or why nothing
 arrived; and must not read out a `neutral` log line. To fix an account (add a membership, reactivate) support acts in the admin
@@ -203,7 +205,7 @@ screens and tells the user only that it was done, **replying only to the registe
 | **Code in `email_logs`** | The code email's row stores the full body, code included, like every MARLO email. Anyone who can read `email_logs` (super admins, database, replica or backup access) can sign in as that user while the code is live: at most 5 minutes, until it is used or replaced, and within the attempt limits. A deviation from guide §3.2, accepted by the product owner | Requirements Decision Log 2026-10-15 |
 | **Code in non-production logs** | Outside production every code email also writes `auth.otp.code gu=<acronym> to=<address> code=<code>` at INFO. Anyone reading a test or local log can sign in as that test user while the code is live (5 minutes). A deviation from guide §3.11 for non-production only; in production the line never exists | Requirements Decision Log 2026-10-15 |
 | **Window edge** | A fixed window can admit up to 2x a limit across its edge | Requirements Decision Log |
-| **Victim lockout** | Per-email buckets let someone exhaust another person's 5 requests; other sign-in routes are unaffected | Design section 16 |
+| **Victim lockout** | Per-email buckets let someone exhaust another person's 5 requests; other sign-in routes are unaffected | Design section 16 *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: in a Global Unit that has password sign-in off the code is the only method of an account without Cognito, so a locked bucket leaves that user with **no way in** for the lockout window. Not decided by that spec; it is recorded in its runbook, section 7, for the product owner)* |
 | **Deliverability** | Unproven until the pilot | Design section 16 |
 | `internal_error` on delivery lines | Lies outside the closed outcome set; tell log dashboards | T05 |
 
@@ -243,7 +245,7 @@ to the row, with its source. Nothing here has been settled by infra yet.
 | **OQ-1** | Pilot Global Units and domains | Product owner | **Go-live** (nothing is enabled without it) | Open. All units ship off |
 | **OQ-2** | Baseline-role exposure for the pilot users (below) | Kenji + PMU | **Go-live** | Open. Procedure in B2 |
 | **OQ-3** | Does the A2-2629 owner accept a non-Cognito path under the epic? | A2-2629 owner | **Go-live** | Open. Default: proceed per A2-2631 |
-| OQ-4 | `is_cgiar_user = 1`: refuse always or only where Cognito is active | Kenji | Not blocking | **Superseded 2026-10-15 (T21):** `is_cgiar_user` plays no part; each unit's exclusion list decides |
+| OQ-4 | `is_cgiar_user = 1`: refuse always or only where Cognito is active | Kenji | Not blocking | **Superseded 2026-10-15 (T21):** `is_cgiar_user` plays no part; each unit's exclusion list decides *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: `is_cgiar_user` is read again, only while the unit has password sign-in off, to keep a Cognito account under the code switch and the exclusion as written)* |
 | OQ-5 | Outside production, does the code go to the real recipient or the support redirect? | Kenji + QA | Resolved | **Resolved 2026-10-15:** outside production the code goes only to the support mailbox, as every MARLO email does (T19). UAT testers read their code there |
 | Relay | The production relay delivers to **external** domains (A4) | Kenji, with infra | **Go-live** | Open. The local gateway refuses them |
 | Sender | SPF, DKIM, DMARC aligned for the sender; partner IT allow-listing | Kenji, with infra | Pilot | Open |
@@ -298,7 +300,7 @@ Rollout after T21 (requirements Decision Log 2026-10-15). Both stages are config
 - [ ] Revisit the per-IP limit (20 requests per 15 min) with the P-6 answer, since CGIAR offices may share one egress IP.
 - [ ] Empty the exclusion list.
 
-**To stop:** turn the switch off. It applies on the next request.
+**To stop:** turn the switch off. It applies on the next request. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: this stops code sign-in only in a unit that has password sign-in on)*
 
 ---
 
@@ -359,6 +361,6 @@ They are recorded here and applied on `staging`.
 
 | File | Section | Change to apply |
 |---|---|---|
-| `docs/trd/trd.md` | **8.1 Authentication** | Add the Center email one-time-code route as a second non-CGIAR sign-in path beside Cognito. Pre-registered members only. Challenge handle in the Shiro session. `OtpAuthenticationToken` accepted by `APCustomRealm` with no I/O. The session sequence matches Cognito's. Eligibility requires an **active** membership and refuses CGIAR users where Cognito is active. Per-unit switch `crp_otp_allowed_email_domains`, read uncached (DD-12). Secret `OTP_HMAC_SECRET`. Known gap shared with Cognito route C (A7) |
+| `docs/trd/trd.md` | **8.1 Authentication** | Add the Center email one-time-code route as a second non-CGIAR sign-in path beside Cognito. Pre-registered members only. Challenge handle in the Shiro session. `OtpAuthenticationToken` accepted by `APCustomRealm` with no I/O. The session sequence matches Cognito's. Eligibility requires an **active** membership and refuses CGIAR users where Cognito is active. Per-unit switch `crp_otp_allowed_email_domains`, read uncached (DD-12). Secret `OTP_HMAC_SECRET`. Known gap shared with Cognito route C (A7) *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`, which also corrects drift since T21: apply this text with the current rule, not the one above. Eligibility requires an active membership. Per-unit specificities `system_otp_login_active` and `system_otp_excluded_email_domains`, read uncached; the old `crp_otp_allowed_email_domains` is gone. A CGIAR account may choose the code unless its domain is excluded. While a unit has `system_password_login_active` off and the code key is valid, the code is the default method for every account without Cognito, whatever the switch and the exclusion say, and an account that uses Sign in with CGIAR is not admitted by that override: it gets the code only when the switch is on and its domain is not excluded.)* |
 | `docs/trd/trd.md` | **9.5 Rate limiting** | Add a bullet for the OTP sign-in endpoints: they are limited in the database (`otp_rate_limits`, `otp_cooldowns`), shared by every instance: request 5 per email and 20 per IP per 15 minutes, 30 s cooldown; verify 10 per email and 50 per IP per 15 minutes; 3 attempts per code; 5-minute expiry. The REST statement is unchanged |
 | `docs/infrastructure.md` | **6 Local Environment** | Document `otp.hmac.secret` (`openssl rand -base64 48`, at least 32 decoded bytes, in `marlo-<profile>.properties` or as `OTP_HMAC_SECRET`, which takes precedence; feature off without it) and `OTP_TRUSTED_PROXIES` (comma separated IPv4/IPv6 literals or CIDR, no link-local). Optional `otp.smtp.timeout.ms`. Add to the known local-versus-governed gaps that the local relay refuses non-CGIAR recipients and a local SMTP sink is needed to test. Mention the `MYSQL_DATABASE` and `EMAIL_*` environment overrides used to run against a throwaway copy |
