@@ -127,6 +127,15 @@
               <button type="button" id="login-method-code-back" class="loginBack">[@s.text name="login.otp.method.back"/]</button>
             </div>
           </div>
+          [#-- CHG-PWD-SWITCH-001-T06 / FN-010: the code is the only method but the identifier typed in step 1 cannot
+               receive one. Hidden and inert unless login.js opens it. Before #login-password-label on purpose, so
+               #login-password stays this step's last child --]
+          <div class="login-method-username hidden" id="login-method-username">
+            <p class="login-method-info" id="login-method-username-info" role="status">[@s.text name="login.otp.usernameOnly"/]</p>
+            <div class="text-center">
+              <button type="button" id="login-method-username-different" class="btn btn-link" aria-describedby="login-method-username-info">[@s.text name="login.otp.differentEmail"/]</button>
+            </div>
+          </div>
           <p class="login-field-label" id="login-password-label">[@s.text name="login.password"/]:</p>
           <div class="login-input-container" id="login-password">
             <span class="glyphicon glyphicon-eye-close icon-show-password"></span>

@@ -24,6 +24,8 @@
 | T05 (attempt 1) | 4 / 8 | 7 / 10 | two parallel lens verdicts: security FAIL, reliability PASS |
 | T05 (attempt 2) | 4 / 8 | 9 / 10 | security FAIL, reliability PASS → **budget tripwire** |
 | T05 (attempt 3) | 5 / 8 | 11 / 16 | ceiling raised to 16 by the user; both lenses PASS |
+| T06 (attempt 1) | 5 / 8 | 12 / 16 | Reviewer FAIL (falsifier evidence) |
+| T06 (attempt 2) | 6 / 8 | 13 / 16 | Reviewer PASS |
 
 ---
 
@@ -518,4 +520,96 @@ Leader adjudication: item 1 was applied as an execute-time edit (see above), and
   - The execute-time spec edits are listed above: `requirements.md` §10; `design.md` §2, §13, DD-5 and §17; the `tasks.md` count.
 - **Issues encountered:** two SEC-002 FAILs, each a real difference in the response that the spec had not foreseen (the message for each account kind, then the remember-me cookie).
 - **Final verification:** wiped full suite 964/0, every falsifier red, Checkstyle delta 0. Re-run VERIFIED.
-- **Continue gate:** waiting for the user (gated mode).
+- **Continue gate:** user approved commit and continue to T06 (2026-10-16); committed `03d7e602af`.
+
+### CHG-PWD-SWITCH-001-T06 — Step 3 views
+
+- **Final status:** PASS on attempt 2 (attempt 1 FAIL: falsifier evidence)
+- **Date:** 2026-10-17
+- **Effort:** attempt 1 `medium`; attempt 2 `high` (one-level bump after a FAIL)
+- **Skills:** `marlo-verify` and `frontend-design` from the task list, plus `claude-in-chrome` added by the Leader for the walkthrough
+- **Environment:** the user authorised stopping their server. The stack runs on `aiccradb_otp_probe` (app pid 99447 on :8080, SMTP sink pid 53716 on :2525, `EMAIL_NOTIFICATION=support.probe@sink.test`, env in `scratchpad/env.sh`). It is left running for T07 and T08; T08 owns cleanup.
+
+#### Attempt 1 — FAIL
+
+- **Files changed:**
+  - `marlo-web/src/main/webapp/global/js/login/login.js`
+  - `marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl` (FN-010 block)
+  - `marlo-web/src/main/webapp/WEB-INF/global/views/login/login.ftl:4` and `marlo-web/src/main/webapp/WEB-INF/global/pages/error/401.ftl:4` (`?20261017`)
+  - `marlo-web/src/main/resources/global.properties` (`login.otp.usernameOnly`)
+  - `docs/specs/changes/password-login-switch/probes/output/t06-walkthrough.md`
+- **runtime events:** provider/network death (`ENOTFOUND`) ×1. The Leader probed the tree (partial edits present, app and sink up) and recovered at **rung 3** (resume by message). No attempt was consumed.
+- **continuations:** 1. The two design §5 COGNITO rows had been left unrun on the claim "no Cognito account". The Leader judged that claim cheap to test, and the rows were then walked with scratch `is_cgiar_user=1` on the copy, reverted afterwards.
+- **Implementer verification:**
+  - Walkthrough rows 1–16 PASS, with real clicks; rows 13–16 cover COGNITO with otp off and on, password on and off.
+  - Red run: the HEAD `login.js` still showed the password on a password-off unit.
+  - Falsifier: the `:523-524` read was declared unreachable, so a click-site falsifier at `:97` was substituted. It went red and was restored.
+  - `cache-bust-check.sh` ok; `i18n-check.sh` no finding on the new line.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED**.
+  - `login.ftl:4` and `401.ftl:4` are at `?20261017`. The two STALE hits in `loginForm.ftl` (:287, :312) are comment text.
+  - The i18n FIX at `global.properties:6824` predates this change; the new line has no `'` and no `{`.
+  - The served `target/cargo/.../login.js` is `cmp`-identical to `src`.
+  - Live `crpByEmail.do` for user 3862 returns AICCRA `otpEnabled=true, passwordEnabled=false, cognitoEnabled=true` and AICCRA_III `otpEnabled=false, passwordEnabled=true`.
+- **Reviewer verdict:** **FAIL** (verbatim):
+
+> 1. **Discovered Issue:** `t06-walkthrough.md` §Falsifier says the `:523-524` read "is not reachable from the UI" because "`loadAvailableItems` / `secondForm` always click the card first". That is not true. In `loadAvailableItems`, the AICCRA auto-click (`login.js:751-752`) runs before the `$.each` that writes the card's `data-*` attributes (`:777-783`). On the first lookup in a fresh page, the click handler finds no attributes, so `selectedGlobalUnitId` stays `null` while the AICCRA card is still `.active` and visible. The reachable path: a user with more than one unit, AICCRA first in `data.crps`, and no `CRP` cookie (so the click at `:800` does not repeat after the attributes are written). That user presses "Log in" on the project step without clicking a card. `showPasswordStep()` then runs the `:523` branch, and that read is the only thing that picks up `passwordEnabled=false`. If it is removed, a password-off AICCRA unit shows the password. This is the main production unit, for a first-time user with two units. The Leader accepted the substituted falsifier on the strength of the unreachability claim, so the design-mandated second capture site has no behavioural evidence. The code at `:529` is correct as written.
+>    * **Violated Rule:** `design.md` §5 ("read at **both** capture sites (`:96-97`, `:523-524`)"). The task's Falsifier line in `tasks.md` CHG-PWD-SWITCH-001-T06. The reviewer contract says a requirement resting on evidence that cannot evaluate it is a FAIL or a gap recorded with a correct reason, never a pass.
+>    * **Remediation Suggestion:** No code change. Run the falsifier on the reachable path:
+>      1. Use a fresh browser profile, or clear the `CRP` cookie.
+>      2. Use fixture 3862 (or another member of 45 and 47). Confirm from `crpByEmail.do` that AICCRA comes first in `crps`; if it does not, pick a fixture where it does.
+>      3. Type the email, then press "Log in" on the project step without clicking a card.
+>      4. Serve the copy with `:529` removed and expect red (password shown on unit 45 with password off).
+>      5. Restore it, confirm with `cmp`, and expect green (code only).
+>
+>      Record both runs. Replace the "cannot fail" paragraph in the walkthrough with this path. The click-site run at `:101` can stay as a second falsifier, but it does not replace this one.
+
+- **Leader adjudication:** FAIL upheld. The Leader had accepted the substitution on the Implementer's unreachability claim without testing it, which is the same error the *Deferring a check* rule names. The code needs no change; the evidence must be redone. The live response confirms AICCRA comes first in `crps` for user 3862.
+- **spawns:** implementer 115 + 150 calls, 234490 + 247360 tokens (attempt, continuation; cumulative for the host), ended died, then complete; reviewer 15 calls, 75879 tokens, ended complete
+
+#### ADVISORY (Reviewer, 4R — recorded, not acted on)
+
+- **Reliability:** because the auto-click at `:752` runs before the attribute loop at `:777`, a repeat lookup in the same page reads the previous lookup's stale `data-*`. This predates T06. It is a ticket candidate: move the auto-select click after the loop.
+- **Readability:** the FN-010 arm's comment says "a username, or an email that is not one", while design §5 says "only possible for a username identifier". Align the two.
+- **Accessibility:** `role="status"` sits on static text that is revealed by a class change, so screen readers may not announce it. Add `aria-describedby="login-method-username-info"` to the "Use a different email" button. Advisory only (`docs/ux-ui/design.md` §436-438).
+- **Leader advisory-grade item met:** an email-shaped typo stops at step 1 with `emailNotFound`, so only a real username reaches the FN-010 view.
+- **Old-page fallback:** simulated by removing the attribute from the DOM. Acceptable and disclosed.
+
+#### Attempt 2
+
+- **Feedback:** the FAIL above, verbatim.
+- **Attempt History:** attempt 1 substituted the click-site falsifier on an untested claim that `:523-524` was unreachable. Do not repeat that.
+- **Files changed (attempt 2):** `loginForm.ftl` gains `aria-describedby="login-method-username-info"` on the FN-010 "Use a different email" button, an advisory-grade item. The walkthrough Falsifier section is rewritten.
+- **Implementer verification:** this ran on the reachable path: a member of units 45 and 47, AICCRA first in `crps`, no `CRP` cookie, a fresh page, and "Log in" pressed without a card click. Every step used real clicks.
+  - F1 — `:529` removed: step 3 shows `gu 45`, `pwVar true`, `pwField 1`, and a choice menu with "Continue with your password" on a password-off unit. **RED.**
+  - F2 — `:529` restored (`cmp` matches src): same path, now `pwVar false`, `pwField 0`, code only, `back false`. **GREEN.** This is also the positive row.
+  - F3 — click-site `:101`, carried over from attempt 1: **RED.** It is kept as a second falsifier.
+  - Gates: `cache-bust-check.sh` ok; `i18n-check.sh` reports no findings; the served `login.js` and `loginForm.ftl` match src under `cmp`.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED.**
+  - Served `login.js` and `loginForm.ftl` are `cmp`-equal to src.
+  - `login.ftl:4` and `401.ftl:4` carry `?20261017`.
+  - The `loginForm.ftl` STALE hits are all comment lines that mention `login.js`: 14 at HEAD, 15 now, the extra one from the FN-010 block.
+- **Reviewer verdict:** **PASS.**
+  - The path matches the source: the `:751-752` auto-click runs before the `:777-783` loop, and `:800` is the only re-capture.
+  - F1 and F2 read correctly against the control flow (`passwordEnabled` defaults to `true` at `:45` and resets at `:377`).
+  - Clearing the cookie through `document.cookie` is test setup, so the disqualifier does not apply.
+  - The false claim is withdrawn in the walkthrough.
+  - The `aria-describedby` target id is unique.
+  - Nothing from attempt 1 regressed.
+- **runtime events:** none
+- **spawns:** implementer 29 calls, 263018 tokens (cumulative per host), ended complete; reviewer 4 calls, 46397 tokens, ended complete
+
+- **Requirements covered:** UI-001, UI-002, UI-004, UI-005, FN-010 (view); AC-3 and AC-15 in the live walkthrough (`probes/output/t06-walkthrough.md`, rows 1–16 plus F1–F3).
+- **Decisions made:**
+  - The Leader accepted the attempt-1 falsifier substitution without testing it. That was wrong, and attempt 2 reverses it.
+  - `claude-in-chrome` was added as a skill.
+  - No execute-time spec edits.
+- **Issues encountered:**
+  - The first `-am` build generated a bad `FundingSourceSummaryMapperImpl`. Wiping and rebuilding `marlo-data`, then `marlo-web`, fixed it. This is unrelated to T06.
+  - The old-page fallback was simulated by removing the attribute from the DOM.
+- **Scratch state on the probe copy (for T08 cleanup):**
+  - user 3862 `username='probe.t06'`
+  - `crp_users` row 5349 (user 3862, unit 47)
+  - unit 45 `custom_parameters` for `system_otp_login_active=true` and `system_password_login_active=false`
+  - `is_cgiar_user` restored to 0
+- **Final verification:** walkthrough recorded, falsifiers red/green, cache-buster bumped, i18n gate clean. Re-run VERIFIED.
+- **Continue gate:** waiting for the user (gated mode). The task's Review field calls for a visual check of the views at this HITL pause.

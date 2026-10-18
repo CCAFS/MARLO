@@ -142,7 +142,7 @@
 
 ### CHG-PWD-SWITCH-001-T06 — Step 3 views (§5, UI-001, UI-002, UI-004, UI-005, FN-010)
 
-- **Status:** pending [ ] · **Size:** S · **Depends on:** T04 · **Module:** marlo-web (webapp)
+- **Status:** done [x] · **Size:** S · **Depends on:** T04 · **Module:** marlo-web (webapp)
 - **Requirements:** UI-001, UI-002, UI-004, UI-005, FN-010; AC-3, AC-15
 - **Design:** §5, P-1, P-12
 - **Files:** `global/js/login/login.js`; `WEB-INF/global/pages/loginForm.ftl` (FN-010 block);

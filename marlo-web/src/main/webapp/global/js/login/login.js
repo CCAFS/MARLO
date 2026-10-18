@@ -40,6 +40,9 @@ var passwordFieldTemplate;
 // card currently selected. False unless the server said exactly true, so every flow below behaves as it did
 // before this feature whenever the specificity is off
 var otpEnabled = false;
+// CHG-PWD-SWITCH-001-T06 / UI-001: whether the selected unit offers the password. Anything but the server saying
+// exactly false reads as true, so a cached page against an older server (no attribute) keeps showing the password
+var passwordEnabled = true;
 // Incremented on every OTP request/verify call and on "use a different email". A response whose number is no
 // longer the latest belongs to an attempt the user has left and is dropped untouched (UI-004)
 var otpRequestSeq = 0;
@@ -95,6 +98,7 @@ function init() {
     selectedGlobalUnitId = $(this).attr('data-global-unit-id') || null;
     cognitoEnabled = $(this).attr('data-cognito-enabled') === 'true';
     otpEnabled = $(this).attr('data-otp-enabled') === 'true';
+    passwordEnabled = $(this).attr('data-password-enabled') !== 'false';
 
     // Mirror the selected project card (image/acronym) into the step 3 full-width card(s) -
     // .selected-project-card matches the mirror in both the password step and the cgiar step
@@ -308,7 +312,8 @@ function init() {
   $('#login-otp-verify').on('click', function() {
     verifyOtpCode();
   });
-  $('#login-otp-different').on('click', function() {
+  // CHG-PWD-SWITCH-001-T06 / FN-010: the way back to step 1 from the "use your email address" view
+  $('#login-otp-different, #login-method-username-different').on('click', function() {
     // A verified code is already redirecting: leaving now would strand the user on the email step
     if(otpRedirecting) {
       return;
@@ -340,9 +345,7 @@ function init() {
     }
   });
   $('#login-method-code-button').on('click', function() {
-    $('#login-method-info').text(otpCopy("methodInfo").replace("__DEST__", function() {
-      return otpMaskedEmail(username.val());
-    }));
+    fillMethodInfo();
     showMethodView("code");
   });
   $('#login-method-password-button').on('click', function() {
@@ -371,6 +374,7 @@ function showEmailStep() {
   userDisplayName = "";
   isCgiarUser = false;
   cognitoEnabled = false;
+  passwordEnabled = true;
   selectedGlobalUnitId = null;
   resetOtpState();
   resetMethodView();
@@ -522,6 +526,7 @@ function showPasswordStep() {
       selectedGlobalUnitId = $activeCard.attr('data-global-unit-id') || null;
       cognitoEnabled = $activeCard.attr('data-cognito-enabled') === 'true';
       otpEnabled = $activeCard.attr('data-otp-enabled') === 'true';
+      passwordEnabled = $activeCard.attr('data-password-enabled') !== 'false';
     }
   }
 
@@ -630,7 +635,19 @@ function showPasswordStep() {
 
     // CHG-OTP-LOGIN-001-T17 / UI-006: with the code enabled, step 3 always opens on the method choice (and
     // moves the focus into it). Otherwise it is today's password field, shown directly
-    if(otpEnabled === true) {
+    if(passwordEnabled === false && otpEnabled === true) {
+      // CHG-PWD-SWITCH-001-T06 / UI-001, UI-002: the password is off for this unit, so the code is the only method
+      // and is shown directly. The password input leaves the document exactly as on the COGNITO arms (FN-001), and
+      // there is no other way to choose, so the "Choose another way to sign in" link goes too
+      $("#login-password").remove();
+      fillMethodInfo();
+      showMethodView("code");
+      $("#login-method-code-back").addClass("hidden");
+    } else if(passwordEnabled === false) {
+      // CHG-PWD-SWITCH-001-T06 / FN-010: the code is the only method but this identifier cannot receive one (a
+      // username, or an email that is not one). No password field and no dead end: say what to type and offer step 1
+      showUsernameOnlyView();
+    } else if(otpEnabled === true) {
       showMethodView("choice");
     } else {
       resetMethodView();
@@ -760,7 +777,9 @@ function loadAvailableItems(email) {
                 $('.selection-bar-options ul #crp-' + data.crps[i].acronym).attr({
                   'data-global-unit-id': data.crps[i].id,
                   'data-cognito-enabled': data.crps[i].cognitoEnabled ? 'true' : 'false',
-                  'data-otp-enabled': data.crps[i].otpEnabled === true ? 'true' : 'false'
+                  'data-otp-enabled': data.crps[i].otpEnabled === true ? 'true' : 'false',
+                  // CHG-PWD-SWITCH-001-T06: absent from an older server's answer, which means "on"
+                  'data-password-enabled': data.crps[i].passwordEnabled === false ? 'false' : 'true'
                 });
 
                 // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
@@ -1203,7 +1222,25 @@ function resetOtpState() {
 // CHG-OTP-LOGIN-001-T17 / UI-006: true while step 3 shows the method choice or the code panel, the two views in
 // which no password is being entered and Enter must not submit anything
 function methodNotPassword() {
-  return currentStep == "password" && (methodView == "choice" || methodView == "code");
+  return currentStep == "password" && (methodView == "choice" || methodView == "code" || methodView == "username");
+}
+
+// Fills the code panel's sentence with the masked destination. Used by the choice click and by the code-only view
+function fillMethodInfo() {
+  $('#login-method-info').text(otpCopy("methodInfo").replace("__DEST__", function() {
+    return otpMaskedEmail(username.val());
+  }));
+}
+
+// CHG-PWD-SWITCH-001-T06 / FN-010: step 3 for an identifier the code cannot be sent to when the password is off.
+// Leaves only the message and the "use a different email" action; no password input, no "Log in", no terms
+function showUsernameOnlyView() {
+  methodView = "username";
+  $("#login-password").remove();
+  $("#login-method-choice, #login-method-code, #login-method-password-back").addClass("hidden");
+  $("#login-password-label, input#login_next, #login-otp-request-container, .terms-container").addClass("hidden");
+  $("#login-method-username").removeClass("hidden");
+  $("#login-method-username-different").focus();
 }
 
 // Browser-side twin of OtpDomainPolicy.mask(): first character, "***", then the domain, from the typed email.
@@ -1230,8 +1267,10 @@ function setChoiceAlternative(cognito) {
 function resetMethodView() {
   methodView = "direct";
   setChoiceAlternative(false);
-  $("#login-method-choice, #login-method-code, #login-method-password-back").addClass("hidden");
+  $("#login-method-choice, #login-method-code, #login-method-password-back, #login-method-username")
+      .addClass("hidden");
   $("#login-password-label, #login-password").removeClass("hidden");
+  $("#login-method-code-back").removeClass("hidden");
 }
 
 // Opens one view of step 3 when the code is enabled: "choice", "code" or "password". Only the opened view's
@@ -1239,6 +1278,9 @@ function resetMethodView() {
 function showMethodView(view) {
   methodView = view;
   var passwordOpen = (view == "password");
+  $("#login-method-username").addClass("hidden");
+  // The code-only view hides the way back to the choice after opening; every other opening shows it again
+  $("#login-method-code-back").removeClass("hidden");
   $("#login-method-choice").toggleClass("hidden", view != "choice");
   $("#login-method-code").toggleClass("hidden", view != "code");
   $("#login-password-label, #login-password").toggleClass("hidden", !passwordOpen);
