@@ -1,6 +1,11 @@
 # Validation Report — Center Email OTP Login
 
-**Verdict: FAIL, 1 finding. Not archive-ready until V-1 is fixed.** The fix is small.
+> **Re-validation 2026-10-18 (§13): PASS. The spec is archive-ready once it is merged to `staging`.**
+> - T22 (`e3636559b2`) closed V-1, the FAIL, together with V-4 and V-2.
+> - The documentation pass closed V-3 and V-5 to V-11.
+> - The original verdict below is kept as the record of the first run.
+
+**Original verdict (first run): FAIL, 1 finding. Not archive-ready until V-1 is fixed.** The fix is small.
 
 | Finding | Result | What it is |
 |---|---|---|
@@ -263,3 +268,50 @@ Recommended route:
 2. Apply the documentation corrections (V-3, V-5 to V-11), with the correction-closure sweep.
 3. Re-run `/akili-validate changes/center-email-otp-login`. Only §5, §7.2 and §8 need re-checking.
 4. Then run `/akili-archive changes/center-email-otp-login`, after the merge to `staging` and with the three pending items of §10.
+
+## 13. Re-validation (2026-10-18)
+
+**Verdict: PASS.** Ready to archive after the merge to `staging`.
+
+Scope: as §12 planned, only §5 (build), §7.2 (security findings) and §8 (design conformance and documentation drift) were re-checked. Nothing else changed.
+
+### 13.1 Findings
+
+| Finding | Closed by | Evidence |
+|---|---|---|
+| **V-1** (FAIL) | T22, `e3636559b2` | Both actions answer `{status: unavailable}` to a non-POST request, or to a call with no servlet request, before any state is touched. They log `outcome=bad_method`. Tests cover GET, HEAD, PUT, DELETE, OPTIONS, `""` and null, each seen red. The verify test with a GET leaves the challenge unconsumed, attempts unchanged and the session unchanged, and the following POST signs in. Reviewer PASS. `this.request` is set in production, because `otpUnloggedStack` includes `defaultStack`, which runs `servletConfig` |
+| V-4 | T22 | The request action's two catches take `RuntimeException \| Error`. Both narrowing mutations go red |
+| V-2 | T22 | `login.otp.error.unavailablePasswordOff` is used by `otpShowError` when `passwordEnabled === false`. Checked by a recorded node falsifier. `login.js?20261018` |
+| V-3 | Documentation pass | Runbook A7 "Cognito cache lag" row restored |
+| V-5 | Documentation pass | Every site in the V-5 table is rewritten or marked "Superseded by T21". The rollback in `tasks.md` §8 and `design.md` §14 now turns `system_otp_login_active` off and names the password-off limit. The runbook Part D text for TRD §8.1 is one current text |
+| V-6, V-7 | Documentation pass | Requirements §6 has a SEC-003 row (`MessageDigest.isEqual` at `OtpCodes.java:118`, confirmed). The SEC-008 scenario reads "absent or invalid in both `OTP_HMAC_SECRET` and `otp.hmac.secret`", with a Decision Log entry |
+| V-8 | Documentation pass | `test-report.md` now gives 139 plus `ac21` 17/0, cites the `33fa702aad` re-walk and the T22 node check, and names HEAD `6560149089` |
+| V-9, V-10 | Documentation pass | `execution.md` Leader note on files traced outside the task list. Design §2 now lists those files. `tasks.md` §5 coverage rows are updated and rows added for UI-006, AC-21 and T22. The removed static lock is replaced by the counting-double tests. Headers updated. The review-round tripwire overrun (about 38 rounds against a budget of 28) is recorded honestly |
+| V-11 | Documentation pass | No reference to `docs/specs/changes/password-login-switch/` remains in the spec folder, apart from this report's finding text and raw probe outputs |
+| T22 Reviewer advisories | Documentation pass | Design §5.1 step 1 and the `OtpRequestCodeAction` Javadoc now read "first after step 0" (a comment-only Java change) |
+
+### 13.2 Gates on the final tree
+
+- **Clean recompile:** 2415 / 1066 / 89, BUILD SUCCESS. Run twice: after T22, and after the documentation pass.
+- **Full test suite:** `mvn -o -pl marlo-web -am test` gives 994 / 0 / 0. This was run after T22; the documentation pass changed only a comment.
+- **Checkstyle:** delta 0 on every changed Java file.
+- **i18n:** no FIX findings.
+
+### 13.3 Correction closure
+
+The superseded values were grepped across the spec folder: `crp_otp_allowed_email_domains`, `OTP_ALLOWED_EMAIL_DOMAINS`, the "empty the list" wording, the `cgiar.org` refusal wording, `changes/password-login-switch` and `178`. Every remaining hit is one of four kinds:
+- historical text, marked as superseded or amended;
+- current T21 text;
+- an append-only execution entry, now covered by the Leader note;
+- raw probe output.
+
+`proposal.md` and `judgment.md` are historical and are not edited.
+
+### 13.4 Still open
+
+These do not block the archive:
+- **Advisories:** the §7.3 advisories, plus the T22 note that the `i18nFile` interceptor runs before step 0.
+- **Accepted gaps:** the ones listed in `test-report.md` §9.
+- **Pending for `/akili-archive` on `staging`:** the three items of §10. Copy TRD §8.1 from the rewritten runbook Part D text.
+
+**Next:** merge to `staging` (Definition of Done item, A2-2631 status per `marlo-commit`), then `/akili-archive changes/center-email-otp-login`.

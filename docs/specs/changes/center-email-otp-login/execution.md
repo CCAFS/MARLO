@@ -11,7 +11,7 @@
 | Leader | Claude Code, `opus` (T1) |
 | Implementer / Reviewer | `akili-implementer` (`sonnet`, T2) / `akili-reviewer` (`opus`, T3) |
 | Started | 2026-10-09 |
-| Budget (design §18) | 16 tasks · ~2,300 LOC · 23 review rounds |
+| Budget (design §18) | 22 tasks executed (16 budgeted; T17–T22 were added later) · ~2,300 LOC budgeted · 23 review rounds budgeted, extended to 28 at T11 (see the Leader note of 2026-10-18 at the end) |
 
 ---
 
@@ -1493,3 +1493,22 @@ The user asked to confirm, before T12, that the feature is a specificity and tha
   - the `i18nFile` interceptor still runs before step 0 for every method. That is pre-existing and the same for every account; it means the design §4 claim "no session read" holds for the action, not for the whole stack.
 - **Validation findings closed by this task:** V-1, V-4 and V-2. Still open, for the documentation commit: V-3 and V-5 to V-11.
 - **Environment state after the task:** nothing running; no database touched.
+
+---
+
+## Leader note — documentation remediation after `/akili-validate` (2026-10-18)
+
+Closes validation findings V-3, V-5 to V-11 (`validation-report.md`), with the two T22 Reviewer advisories. No product behaviour changed. The only Java edit is the Javadoc comment of `OtpRequestCodeAction` ("comes first" now reads "first after step 0", as design §5.1 step 1 does).
+
+**Files traced outside this spec's task list (V-9).** Each was read during validation. None is a defect, and each has an owner:
+
+| Item | Owner | Where it is recorded |
+|---|---|---|
+| `CrpAdminManagmentAction`, `CrpPpaPartnersAction`, `CrpProgamRegionsAction`, `CrpSiteIntegrationAction`, `CrpUsersAction`, `ClusterActivitiesAction`, `ProjectPartnerAction`, `ValidateUserAction`, `LoginAction`, `SignInMethodRule`, `WelcomeSignInText`, `V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql`, and the password-off changes in `OtpEligibility`, `OtpRequestCodeAction`, `OtpVerifyCodeAction`, `CrpByUserEmailAction` | `CHG-PWD-SWITCH-001` (archived at `docs/specs/archive/2026-10-18-changes--password-login-switch/`) | Design §2, "Files outside the original footprint" |
+| `marlo-web/src/main/resources/config/marlo-test.properties` (the three `otp.*` keys, empty) | Requirements Decision Log 2026-10-16 (commit `160ec7dc4a`); no task owns it | Design §2 |
+| Commit `89ac516f89` (hover rule in `customLogin.css`, `global.css`, `header.ftl`): no `[SPEC:]` prefix and no entry here | Not part of this spec | Design §2 |
+| `utils/UnitTextProvider.java` | T20 | Design §2 |
+
+**Historical citations that this log leaves as written.** Entries of T01 to T21 name the allow-list, `OTP_ALLOWED_EMAIL_DOMAINS`, `crp_otp_allowed_email_domains` and the `is_cgiar_user`-free rule. They were true when written. T21 superseded the allow-list. `CHG-PWD-SWITCH-001` T03 later restored a Cognito read on password-off units and replaced the T21 static lock `theCodePathNeverReadsIsCgiarUserOrTheCognitoSpecificity` with counting-double tests (the T21 entry above says "no longer reads `is_cgiar_user` or `CognitoAuthSpecificity`"; that holds for password-on units only). `tasks.md` T21 carries the same notes.
+
+**Review-round tripwire (V-10).** The budget was 23 rounds, extended to 28 by the user at the T11 gate (entry above), and the tally stopped at "23 of 28" after T14. Counting the Reviewer verdict lines recorded after it (T15 to T22), there are 15: T15 attempt 1 (FAIL); T06 rework attempts 1 and 2; T15 continued attempt 2; T16 attempts 1 and 2; T17; T18 attempts 1, 2 and 3; T19 attempts 1 and 2; T20; T21; T22. That makes about 38 recorded rounds, so the 28th round was reached at T16 attempt 1 and the tripwire was passed during T15 to T21 **without a recorded stop or a second extension**. This is a count of verdict lines, not a measured figure, and a task that ran a second lens in one round would be counted once. The cause is the same as at T11: amendments the user chose (T17 to T22) and real FAILs (T15, T16, T18, T19). Nothing is retroactively approved by this note.

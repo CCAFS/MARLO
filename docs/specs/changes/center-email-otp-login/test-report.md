@@ -1,8 +1,8 @@
 # Center Email OTP Login — Test Report
 
 **Overall status: PASS with accepted gaps.** No product bug found. The full unit suite (986 tests, 3 of them new)
-passes. An independent, non-author re-run of every live probe passes on a fresh throwaway copy: 178 `ac-probe` and
-concurrency checks, `ac21` 17/0 and all three `ac17` database shapes, all with 0 failures in the recorded runs.
+passes. An independent, non-author re-run of every live probe passes on a fresh throwaway copy: 139 `ac-probe` and
+concurrency checks (the sum of the `SUMMARY` lines of the recorded `akili-test-*.out` files), `ac21` 17/0 and all three `ac17` database shapes, all with 0 failures in the recorded runs. *(Corrected 2026-10-18, validation V-8: this said 178.)*
 Every AC from AC-1 to AC-21 has passing evidence for each clause that can be tested on this machine. The gaps that
 remain are the ones `requirements.md` §6 already accepts, plus two small ones recorded in §9.
 
@@ -12,7 +12,7 @@ remain are the ones `requirements.md` §6 already accepts, plus two small ones r
 |---|---|
 | Spec ID | `CHG-OTP-LOGIN-001` |
 | Spec path | `docs/specs/changes/center-email-otp-login` |
-| Branch / HEAD under test | `A2-2631-Implement-Center-Email-OTP-Authentication` / `a76807b4f9`, plus 1 uncommitted test file from Suite 1 |
+| Branch / HEAD under test | `A2-2631-Implement-Center-Email-OTP-Authentication` / `a76807b4f9` at the time of the run, plus 1 uncommitted test file from Suite 1. The test report itself was committed at `6560149089` *(corrected 2026-10-18, validation V-8)* |
 | Date | 2026-10-18 |
 | Leader | Claude Code session, `opus` (T1) |
 | Testers | `akili-tester` wrapper (`opus`). The Implementers were `sonnet`, so author ≠ tester holds |
@@ -169,7 +169,7 @@ Not re-run. Cited:
   live, switch off);
 - the archived `CHG-PWD-SWITCH-001` T06 walkthrough (password switch off).
 
-None of the UI files has changed since those walkthroughs. The server-side flags those views read (`crpByEmail`
+*(Corrected 2026-10-18, validation V-8: this said "None of the UI files has changed since those walkthroughs", which was wrong.)* `login.js` and `loginForm.ftl` changed after the T17 and T21 walkthroughs, in commit `33fa702aad` (2026-10-17, `CHG-PWD-SWITCH-001` T06: the code-only and use-your-email views). The archived password-switch walkthrough `docs/specs/archive/2026-10-18-changes--password-login-switch/probes/output/t06-walkthrough.md` re-walked them. T22 (2026-10-18) then changed `login.js` in `otpShowError` only (the password-off "unavailable" text); that is covered by the recorded node check of `execution.md` T22, not by a browser walkthrough. The server-side flags those views read (`crpByEmail`
 `otpEnabled`) were re-checked live in this run: all `false` with the switch off (`live`), and the AC-13 cases in `enum`.
 
 ## 7. Coverage & Traceability
@@ -227,7 +227,7 @@ Two follow-ups, neither of which blocks this phase:
 
 1. **Rollback text is stale.** `tasks.md` §8 step 1 still says to empty the unit's `custom_parameters` value, which is
    the allow-list procedure. Since T21 the rollback is to set `system_otp_login_active` off. This is documentation
-   drift for `/akili-validate`, not a test failure.
+   drift for `/akili-validate`, not a test failure. *(Fixed 2026-10-18: `tasks.md` §8 step 1 and design §14 now describe turning the switch off.)*
 2. **Unset secret not runnable locally.** To run the literal unset-variable AC-12 case on this machine, either blank
    `otp.hmac.secret` in the local `marlo-dev.properties` for that run, or accept the empty-variable run as equivalent.
    The fallback the app took is the documented precedence, so the behaviour is correct either way.

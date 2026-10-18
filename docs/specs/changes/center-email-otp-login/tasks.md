@@ -1,9 +1,9 @@
 # Center Email OTP Login — Tasks
 
 **Spec ID:** `CHG-OTP-LOGIN-001`
-**Status:** Ready (2026-10-09)
+**Status:** Implemented (T01–T22), in validation (2026-10-18)
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT (Kenji Tanaka)
-**Last Updated:** 2026-10-09
+**Last Updated:** 2026-10-18
 **Implements design:** `docs/specs/changes/center-email-otp-login/design.md`. Judgment Day: `APPROVED` (`judgment.md`)
 **Branching:** `A2-2631-Implement-Center-Email-OTP-Authentication`, branched from `staging`
 **Target merge:** `staging`, then promoted to `main` through the release process
@@ -55,7 +55,7 @@ Field conventions:
 - **Tests:** apply the migration **twice** on a throwaway copy of `aiccradb1`, then once on the clean database.
 - **Verification:**
   - `SHOW CREATE TABLE` for all three tables.
-  - `SELECT global_unit_type_id FROM parameters WHERE \`key\`='crp_otp_allowed_email_domains'` returns exactly the existing types.
+  - `SELECT global_unit_type_id FROM parameters WHERE \`key\`='crp_otp_allowed_email_domains'` returns exactly the existing types. *(Superseded by T21, 2026-10-15: the T21 migration removes this key; the check is now `system_otp_login_active` and `system_otp_excluded_email_domains`, one row per existing type.)*
   - `custom_parameters` count for the key = 0.
   - Second run: no error and no duplicate rows.
 - **Falsifier:** a fixed-id insert for type 4 against the clean database must fail its FK. Prove the `INSERT … SELECT` form does not fail, on the same database.
@@ -78,7 +78,7 @@ Field conventions:
 - **Design:** §2, §5.3 `OtpKeys`, DD-10; Premise Ledger P-18
 - **Files:**
   - `APConfig.java`: add `otp.hmac.secret`, `otp.trusted.proxies` and `otp.smtp.timeout.ms`, each as `${key:}`.
-  - Both `APConstants.java`: add `OTP_ALLOWED_EMAIL_DOMAINS = "crp_otp_allowed_email_domains"`.
+  - Both `APConstants.java`: add `OTP_ALLOWED_EMAIL_DOMAINS = "crp_otp_allowed_email_domains"`. *(Superseded by T21, 2026-10-15: removed; `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` replace it.)*
   - `marlo-web` `APConstants.java` only: add `OTP_PENDING_CHALLENGE`.
   - `security/otp/OtpKeys.java` (new).
   - `OtpKeysTest.java` (new).
@@ -135,7 +135,7 @@ Field conventions:
 - **Done when:**
   - The statement counts are recorded.
   - No method writes without `@Transactional`.
-  - The allow-list read bypasses Hibernate entirely: native SQL with no `setCacheable` (P-10).
+  - The allow-list read bypasses Hibernate entirely: native SQL with no `setCacheable` (P-10). *(Superseded by T21, 2026-10-15: the same uncached read now returns the switch and the exclusion.)*
 - **Skills:** `marlo-verify`, `error-handling-patterns`
 
 ### CHG-OTP-LOGIN-001-T04 — Rate limiting and cooldown persistence
@@ -173,14 +173,14 @@ Field conventions:
 ### CHG-OTP-LOGIN-001-T05 — Pure OTP helpers
 
 - **Status:** done [x] · **Size:** M · **Depends on:** T02 · **Module:** marlo-web
-- **Requirements:** FN-003, FN-009, SEC-001, SEC-003, SEC-009 (`cgiar.org` dropped), SEC-011, OPS-001 (line shape), SEC-004 (`OtpPending` content)
+- **Requirements:** FN-003, FN-009, SEC-001, SEC-003, SEC-009 (`cgiar.org` dropped *(Superseded by T21, 2026-10-15: no `cgiar.org` rule)*), SEC-011, OPS-001 (line shape), SEC-004 (`OtpPending` content)
 - **Design:** §5.3 (`OtpCodes`, `OtpDomainPolicy`, `ClientIpResolver`, `OtpPending`, `OtpLog`), DD-9
 - **Files (new):**
   - `OtpCodes`, `OtpDomainPolicy`, `ClientIpResolver`, `OtpPending`, `OtpLog`
   - tests for each
 - **Tests:**
   - **FN-003 scenario.** These are rejected: `x@attackertrusted.org`, `x@trusted.org.evil.com`, `x@sub.trusted.org`, `a@`, `@trusted.org`, two `@`. `  X@TRUSTED.ORG ` becomes `x@trusted.org`.
-  - **Allow-list parsing.** `" @Trusted.ORG , trusted.org, x@y.org, cgiar.org"` parses to `[trusted.org]`.
+  - **Allow-list parsing.** `" @Trusted.ORG , trusted.org, x@y.org, cgiar.org"` parses to `[trusted.org]`. *(Superseded by T21, 2026-10-15: `parseExclusionList` keeps `cgiar.org`.)*
   - **Code format.** A generator stub returning 4219 yields `"004219"`. 10⁵ codes are all 6 digits.
   - **MAC compare.** A malformed stored MAC returns false without throwing.
   - **Mask.** `ana@partner.org` → `a***@partner.org`.
@@ -213,10 +213,10 @@ Field conventions:
 - **Design:** §5.1 step 6, DD-4, §6 (the `otpEnabled` variant); Premise Ledger P-12, P-13
 - **Files:** `security/otp/OtpEligibility.java` and `OtpEligibilityTest.java` (both new)
 - **Scope:**
-  - Full predicate: allow-list match, user exists, user active, `existActiveCrpUser` (an **active** membership, `crp_users.is_active = 1`; requirements Decision Log 2026-10-13), not (CGIAR user **and** `CognitoAuthSpecificity.isActiveFor(...)`).
+  - *(Superseded by T21, 2026-10-15: the predicate is now: the unit's switch on and the domain not excluded, then the rest; there is no CGIAR check on a password-on unit. The text below is the original.)* Full predicate: allow-list match, user exists, user active, `existActiveCrpUser` (an **active** membership, `crp_users.is_active = 1`; requirements Decision Log 2026-10-13), not (CGIAR user **and** `CognitoAuthSpecificity.isActiveFor(...)`).
   - Disclosure-safe variant for `crpByEmail`: configured, domain match and SEC-009 only.
 - **Tests:**
-  - Each refusal reason alone returns false: unknown, inactive, non-member, soft-deleted member (`is_active = 0`), CGIAR on a Cognito-active unit, domain not allowed, unconfigured.
+  - Each refusal reason alone returns false: unknown, inactive, non-member, soft-deleted member (`is_active = 0`), CGIAR on a Cognito-active unit *(Superseded by T21, 2026-10-15: no longer a refusal on a password-on unit)*, domain not allowed *(now: switch off or domain excluded)*, unconfigured.
   - A CGIAR user on a unit where Cognito is **inactive** is eligible (OQ-4 default).
   - The variant ignores active state and membership.
 - **Verification:** `-Dtest=OtpEligibilityTest`
@@ -314,7 +314,7 @@ Field conventions:
   - **Order:** the rate-limit buckets are counted before any user lookup (the lookup fake records the call order).
   - **Neutrality:** for unknown, inactive, non-member and CGIAR-refused accounts, `response` equals the eligible case except for the masked email. A row is issued in every state. The mailer is called **only** when eligible.
   - **Rejections:**
-    - domain not allowed → `domainNotEnabled`, with no issue;
+    - domain not allowed → `domainNotEnabled`, with no issue *(Superseded by T21, 2026-10-15: switch off or domain excluded)*;
     - unconfigured → `domainNotEnabled`;
     - `agree=false` → `termsRequired`;
     - cooldown or limit hit → `rateLimited`;
@@ -402,9 +402,9 @@ Field conventions:
   - `CrpByUserEmailAction.java`: add the `otpEnabled` key per unit, using one uncached query per call, and only when configured.
   - `CrpByUserEmailActionTest.java`: extended.
 - **Tests:**
-  - The flag is true only when configured, the domain is allowed and SEC-009 passes.
+  - The flag is true only when configured, the domain is allowed and SEC-009 passes. *(Superseded by T21, 2026-10-15: configured, switch on and domain not excluded; SEC-009 no longer gates it on a password-on unit.)*
   - The flag is identical for an active and an inactive user, and for a member and a non-member listed unit (JI-11).
-  - Unconfigured → no allow-list query (a fake counts the calls) and every flag false.
+  - Unconfigured → no allow-list query (a fake counts the calls) and every flag false. *(Superseded by T21, 2026-10-15: it is the switch and exclusion query that is not run.)*
   - Every existing key in the response is unchanged.
 - **Verification:**
   - `-Dtest=CrpByUserEmailActionTest`.
@@ -707,7 +707,7 @@ Field conventions:
     - Do not edit `V2_6_0_20261009_1025`.
   - **`APConstants.java` (both files):** `OTP_LOGIN_ACTIVE`, `OTP_EXCLUDED_EMAIL_DOMAINS`; remove `OTP_ALLOWED_EMAIL_DOMAINS`.
   - **Uncached reads (DD-12):** the uncached read in `OtpChallengeMySQLDAO`/manager covers both keys, for one unit and for the `crpByEmail.do` batch.
-  - **`OtpEligibility`:** the switch and the exclusion; no `is_cgiar_user`, no `CognitoAuthSpecificity`.
+  - **`OtpEligibility`:** the switch and the exclusion; no `is_cgiar_user`, no `CognitoAuthSpecificity`. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001` T03: both are read again, on password-off units only.)*
   - **`OtpDomainPolicy`:** exclusion semantics; no `cgiar.org` drop.
   - **`OtpRequestCodeAction` step 4:** the switch and the exclusion.
   - **`CrpByUserEmailAction` `otpEnabled`.**
@@ -729,7 +729,7 @@ Field conventions:
   - switch on with an empty exclusion: an `is_cgiar_user = 1` account on a Cognito-active unit gets a code and signs in;
   - an excluded domain answers `domainNotEnabled`, and `otpEnabled` is false;
   - the FN-003 lookalikes are not excluded and the normalised form is;
-  - no read of `is_cgiar_user` or `CognitoAuthSpecificity` on the code path (static lock);
+  - no read of `is_cgiar_user` or `CognitoAuthSpecificity` on the code path (static lock) *(Superseded by `CHG-PWD-SWITCH-001` T03: see the note under "Static lock" below)*;
   - `crpByEmail.do` batch: one query for every listed unit;
   - UI-006: a CGIAR account on a Cognito unit with the code on sees the choice; with its domain excluded it sees only "Sign in with CGIAR";
   - the migration on a throwaway copy, twice, plus a database without units 45/47 (AC-21).
@@ -772,6 +772,7 @@ Field conventions:
     - `cgiar.org` dropped again in the parser: 9 failures;
     - the DAO read through the Hibernate query cache (live stack): the `live` stage 3 of 7 red (`output/ac-probe.t21-live-FALSIFIER-red.out`).
   - **Static lock:** `OtpEligibilityTest.theCodePathNeverReadsIsCgiarUserOrTheCognitoSpecificity` scans `OtpEligibility`, `OtpDomainPolicy`, `OtpRequestCodeAction`, `OtpVerifyCodeAction` and the `otpEnabledByUnit` method of `CrpByUserEmailAction`, with comments stripped, for `isCgiarUser`, `is_cgiar_user`, `CognitoAuthSpecificity`, the Cognito key and a literal `"cgiar.org"`; a second test checks that `OtpEligibility` holds no parameter manager. The action tests' fake `CustomParameterManager` answers only `crp_custom_file`, so a Cognito read would also fail at run time.
+    *(Superseded by `CHG-PWD-SWITCH-001` T03, 2026-10-16: the static lock and its second test were removed. Counting-double tests now prove that on a password-on unit the Cognito flag is never resolved and `is_cgiar_user` is never read: `OtpEligibilityTest#onAPasswordOnUnitTheCognitoFlagIsNeverResolvedAndIsCgiarUserIsNeverRead` (line 794), `OtpRequestCodeActionTest#onAPasswordOnUnitTheCognitoFlagIsNeverResolvedAndIsCgiarUserIsNeverRead` (line 897) and `OtpVerifyCodeActionTest#onAPasswordOnUnitTheRecheckNeverResolvesTheCognitoFlagForAnyAccountState` (line 813). The counting doubles are shown to see a read on a password-off unit by `OtpRequestCodeActionTest#theCountingDoublesDoSeeACognitoReadAndACgiarReadOnAPasswordOffUnit`.)*
   - **Live probes** (throwaway copy, sink on 2525, `ps eww` proof before any write): `enum` 18/0, `live` 7/0, `attempts removed limits nonprod postlogin emaillog` 30/0 with 1 NOT RUN (the resend half of AC-18 needs a super admin login), `session leak` 20/0.
   - **Browser walkthrough** (`output/t21-walkthrough.out`): external with the code (choice, password panel, code panel, back, code sign-in); CGIAR on Cognito with the code (choice with "Sign in with CGIAR" next to "Email me a sign-in code", no password control in the form, terms gate on the Cognito control, code sign-in, Enter guard); `cgiar.org` excluded live, no restart (single "Sign in with CGIAR", unchanged); switch off (password only, unchanged). The Cognito redirect itself was not followed.
   - **Deviations and assumptions:**
@@ -893,9 +894,9 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 
 | Requirement clause | Owning task(s) |
 |---|---|
-| FN-001 scenario "Feature off": option hidden · direct call refused, no row or email · BUT password/Cognito step unchanged | T13 + T14 (hidden) · T10 (`domainNotEnabled`, no issue) · T14 + T15 AC-1 |
-| FN-002 scenario "Live change", no restart | T03 (uncached read) · T16 (raw-SQL falsifier) |
-| FN-003 scenario: three lookalikes rejected · AND IT MUST accept trimmed upper case | T05 |
+| FN-001 scenario "Feature off": option hidden · direct call refused, no row or email · BUT password/Cognito step unchanged | T13 + T14 (hidden) · T10 (`domainNotEnabled`, no issue) · T14 + T15 AC-1 · T21 (switch) |
+| FN-002 scenario "Live change", no restart | T03 (uncached read) · T16 (raw-SQL falsifier) · T21 (switch and exclusion on the uncached read) |
+| FN-003 scenario: three lookalikes rejected · AND IT MUST accept trimmed upper case · exclusion semantics | T05 · T21 |
 | FN-004 eligible: one row and one email · masked destination | T10 · T15 AC-3 |
 | FN-005 scenario: same page state · BUT no email, no authenticating record · AND IT MUST answer resend and verify identically · AND IT MUST NOT log a client-visible cause | T10 (neutrality, row in every state) · T11 (decoy → `invalid` / same statuses) · T05 + T10 (`OtpLog`; `neutral` is server-side only) · T15 AC-4 |
 | FN-006 explicit domain message | T10 |
@@ -912,7 +913,7 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 | FN-017 email content, no code link; branded shell per unit | T09 · T20 AC-20 |
 | FN-018 delivered with notifications off; outside production only to the support mailbox, prefixed, fail closed (OQ-5 resolved) | T09 · T15 AC-15 · T19 AC-19 |
 | FN-019 password and Cognito unchanged | T07 · T08 · T14 · T15 AC-1 |
-| SEC-001 scenario "Code never persisted" | T03 · T09 · T15 AC-11 · T19 AC-11 |
+| SEC-001 scenario "Code never persisted" (T22: GET no longer carries a code to access logs) | T03 · T09 · T15 AC-11 · T19 AC-11 · T22 |
 | SEC-002 no clear email in the challenge store | T03 · T15 AC-11 |
 | SEC-003 constant time, no throw | T05 |
 | SEC-004 bound to session, email and unit; nothing client-side accepted as a session | T05 (`OtpPending`) · T11 · T12 (only `response`) |
@@ -920,24 +921,28 @@ There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08};
 | SEC-006 no new oracle | T10 · T11 · T13 · T15 AC-4 |
 | SEC-007 no role or membership writes; identical authorization | T07 · T11 |
 | SEC-008 scenario "Missing secret fails closed" · BUT app starts and other logins work | T02 · T10 · T13 · T15 AC-12 |
-| SEC-009 Cognito guard · `cgiar.org` ignored | T05 · T06 · T15 AC-13 |
+| SEC-009 no dependence on `is_cgiar_user`: the code switch and the exclusion decide; the Cognito read exists only on password-off units *(T05, T06 and T15 AC-13 originally owned the superseded "Cognito guard · `cgiar.org` ignored" rule)* | T21 · T15 AC-13 (re-run at T21) · `CHG-PWD-SWITCH-001` T03 |
 | SEC-010 limits shared, counted before lookup, state-independent | T04 · T10 · T11 · T15 AC-14 |
 | SEC-011 untrusted headers ignored | T05 |
-| OPS-001 one request/verify line per call, one delivery line per email; the non-production `auth.otp.code` line | T05 · T09 · T10 · T11 · T15 AC-11 · T19 AC-11 |
+| OPS-001 one request/verify line per call, one delivery line per email; the non-production `auth.otp.code` line; `bad_method` outcome | T05 · T09 · T10 · T11 · T15 AC-11 · T19 AC-11 · T22 |
 | OPS-002 delivery failure logged, response neutral | T09 · T15 AC-15 |
 | OPS-003 purge, failure non-blocking | T03 · T10 |
 | OPS-004 runbook | T16 |
 | OPS-005 `email_logs` row (full body since 2026-10-15; the code in no other column), not resendable | T18 AC-18 · T19 AC-18 |
 | DA-001 migration safe and idempotent | T01 |
-| DA-002 seed off, existing types 1–4, constants in both files | T01 · T02 |
+| DA-002 seed off, existing types 1–4, constants in both files | T01 · T02 · T21 (switch and exclusion keys replace the allow-list; AC-21) |
 | DA-003 shared rate-limit store | T01 · T04 |
 | UI-001 option only when enabled | T13 · T14 |
-| UI-002 every state | T14 |
+| UI-002 every state (T22: password-off copy for "unavailable") | T14 · T22 |
 | UI-003 field attributes, focus, aria | T14 |
 | UI-004 no double submit | T14 |
-| UI-005 i18n | T09 · T14 |
+| UI-005 i18n | T09 · T14 · T20 (branded email) |
+| UI-006 step-3 method choice | T17 · T21 |
+| AC-21 the T21 migration applies twice, keys seeded off, allow-list gone | T21 |
 | NF-001 bounded latency | T09 (async, timeouts) · T10 |
 | NF-002 compile, Checkstyle, GPL header | every Java task, via `marlo-verify` |
+
+*(Rows brought up to date 2026-10-18, validation V-10: T17–T22 and the T21 amendments.)*
 
 Every clause has an owner. None is cleared by citing another requirement.
 
@@ -965,7 +970,7 @@ Every clause has an owner. None is cleared by citing another requirement.
 
 ## 8. Rollback Plan
 
-1. Empty the Global Unit's `custom_parameters` value. This applies on the next request (DD-12).
+1. Turn `system_otp_login_active` off for the unit in the admin UI. This applies on the next request (DD-12, DD-13). It does not switch the code off in a unit whose `system_password_login_active` is off; turn that back on first *(rewritten 2026-10-18, validation V-5; the original step said to empty the allow-list value, which T21 removed)*.
 2. Blank `otp.hmac.secret` (and unset `OTP_HMAC_SECRET` if set) and restart every instance (the secret is read once at start). The feature becomes inert everywhere.
 3. Revert the merge on `staging` and redeploy. The tables are harmless.
 4. Drop `otp_challenges`, `otp_rate_limits` and `otp_cooldowns`. Only in-flight codes are lost.
@@ -974,7 +979,7 @@ Password and Cognito logins are unaffected at every level.
 
 ## 9. Definition of Done
 
-- [ ] T01–T21 done, each with its verification notes.
+- [ ] T01–T22 done, each with its verification notes.
 - [ ] Every AC in `requirements.md` §7 recorded `PASS` in `probes/README.md`. A `NOT VERIFIED` is allowed only for an accepted gap named in requirements §6.
 - [ ] Compile and Checkstyle gates green (zero new violations against HEAD); unit suite green with `-am`.
 - [ ] Every UNVERIFIED premise either settled, or listed as a go-live blocker in `runbook.md`.
@@ -990,6 +995,8 @@ The estimate is about 2,300 LOC, so the work ships as three chained PRs into `st
 |---|---|---|---|
 | 1 — Data and security core | T01–T09 | T03 consume/mismatch SQL, T07 realm branch | Actions, UI |
 | 2 — Actions and routing | T10–T13 | T11 session sequence, T12 JSON root and parameter filter | UI |
-| 3 — UI and verification | T14–T16 | T15 probe output, T14 walkthrough | — |
+| 3 — UI and verification | T14–T22 | T15 probe output, T14 walkthrough; then T21 (switch and exclusion) and T22 (POST only) | — |
+
+*(Updated 2026-10-18, validation V-10: T17–T22 were added after this plan. T17–T22 are counted in PR 3, whose scope grew accordingly; if the branch is split differently at merge time, that choice supersedes this table.)*
 
 Each PR description links its predecessor and successor, following the `cognitive-doc-design` review-empathy rules.

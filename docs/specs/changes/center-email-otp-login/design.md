@@ -3,7 +3,7 @@
 **Spec ID:** `CHG-OTP-LOGIN-001`
 **Status:** Approved (2026-10-09). Judgment Day `APPROVED`; round 1 and Adjust fixes applied (see [`judgment.md`](./judgment.md))
 **Owner:** IBD Team — Alliance of Bioversity International and CIAT (Kenji Tanaka)
-**Last Updated:** 2026-10-09
+**Last Updated:** 2026-10-18
 **Implements requirements:** FN-001–FN-019, SEC-001–SEC-011, OPS-001–OPS-004, DA-001–DA-003, UI-001–UI-005, NF-001–NF-002 (all of `requirements.md` §3)
 **Touches modules:** `marlo-utils` (`APConfig`), `marlo-data`, `marlo-web`
 **Exploration:** scout pass at commit `398d7b4058`; its citations are carried into §17 *Premise Ledger*. Judgment Day round 1 re-ran them (`judgment.md`)
@@ -72,7 +72,7 @@ loginForm.ftl / login.js  (step 1 email → crpByEmail.do → step 2 Global Unit
 - Both managers carry `@Transactional` on every method that writes (JI-8).
 - New: `security/OtpAuthenticationToken.java`.
 - Modified: `security/APCustomRealm.java`. `supports()` accepts the new token, and a no-I/O branch sits next to the Cognito one.
-- Modified: `config/APConstants.java`. Adds `OTP_ALLOWED_EMAIL_DOMAINS`.
+- Modified: `config/APConstants.java`. Adds `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` *(amended T21, 2026-10-15; the first draft added `OTP_ALLOWED_EMAIL_DOMAINS`, now removed)*, and `PASSWORD_LOGIN_ACTIVE` *(added by `CHG-PWD-SWITCH-001`, 2026-10-16)*.
 
 ### marlo-web
 - New, package `security/otp/`:
@@ -89,7 +89,7 @@ loginForm.ftl / login.js  (step 1 email → crpByEmail.do → step 2 Global Unit
 - New: `action/home/OtpRequestCodeAction.java` and `action/home/OtpVerifyCodeAction.java`. `OtpVerifyCodeAction` extends `LoginAction` to reach `finishLogin`. `OtpRequestCodeAction` needs no login state and extends `BaseAction`, like `CognitoLoginAction` (amended 2026-10-13, T10).
 - Modified: `action/json/global/CrpByUserEmailAction.java`. Adds the `otpEnabled` key per Global Unit.
 - Modified: `resources/struts-home.xml`. New package `homeOtp` (DD-1).
-- Modified: `config/APConstants.java`. Adds `OTP_ALLOWED_EMAIL_DOMAINS` and `OTP_PENDING_CHALLENGE`.
+- Modified: `config/APConstants.java`. Adds `OTP_LOGIN_ACTIVE`, `OTP_EXCLUDED_EMAIL_DOMAINS` *(amended T21, 2026-10-15; replaces the removed `OTP_ALLOWED_EMAIL_DOMAINS`)*, `PASSWORD_LOGIN_ACTIVE` *(`CHG-PWD-SWITCH-001`)* and `OTP_PENDING_CHALLENGE`.
 - Modified: `webapp/WEB-INF/global/pages/loginForm.ftl`. New `#login-step-otp` block.
 - Modified: `webapp/global/js/login/login.js`. OTP mode, code step, countdown, request sequencing.
 - Modified: `resources/global.properties`. Page and email copy.
@@ -108,6 +108,16 @@ loginForm.ftl / login.js  (step 1 email → crpByEmail.do → step 2 Global Unit
   - extended: `APCustomRealmDispatchTest`, `CrpByUserEmailActionTest`, and the stack coverage tests (P-21)
 - New: `docs/specs/changes/center-email-otp-login/runbook.md` (OPS-004).
 - New: `docs/specs/changes/center-email-otp-login/probes/` (§12 concurrency probe script and its recorded output).
+
+### Files outside the original footprint *(added 2026-10-18, validation V-9)*
+
+Traced during validation. None was in the first design; each has an owner.
+
+- **Added by T20 (2026-10-15):** `utils/UnitTextProvider.java` and its test, a `TextProvider` over the unit's `custom/<crp_custom_file>` bundle for the branded code email.
+- **Added by T21 (2026-10-15):** `resources/database/migrations/V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql`, the two new constants above, and `probes/ac21-migration.sh`.
+- **Added by `CHG-PWD-SWITCH-001` (archived at `docs/specs/archive/2026-10-18-changes--password-login-switch/`):** `V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql`; `PASSWORD_LOGIN_ACTIVE`; `SignInMethodRule`, `WelcomeSignInText`; and the password-off gates in `LoginAction`, `ValidateUserAction`, `CrpAdminManagmentAction`, `CrpPpaPartnersAction`, `CrpProgamRegionsAction`, `CrpSiteIntegrationAction`, `CrpUsersAction`, `ClusterActivitiesAction` and `ProjectPartnerAction`. They also changed `OtpEligibility`, `OtpRequestCodeAction`, `OtpVerifyCodeAction` and `CrpByUserEmailAction` (cached Cognito read on password-off units only, DD-4 of that spec).
+- **Config, named only in the requirements Decision Log of 2026-10-16:** `config/marlo-test.properties` (the tracked template keeps `otp.hmac.secret` empty).
+- **Commit `89ac516f89` (no `[SPEC:]` prefix):** the hover rule in `customLogin.css`, `global.css` and `header.ftl`. It is not part of this spec.
 
 ### Shared-file note
 `LoginAction`, `APCustomRealm`, `loginForm.ftl`, `login.js` and both `APConstants` are also targets of
@@ -160,7 +170,7 @@ Index `idx_otp_rate_limits_window_start (window_start)`: the purge deletes by `w
 Index `idx_otp_cooldowns_last_request_at (last_request_at)`: serves the purge of cooldown rows older than 1 h. *Added at execute time, 2026-10-09 (user decision; `execution.md` T01).*
 
 **Catalog seed.** The rows are inserted **from `global_unit_types`**, by selecting the ids among 1, 2, 3 and 4 that exist. A database missing a type gets no row and no FK failure (P-23, JI-10). Type 2 is included because migration-only databases hold "Center" as id 2 (RJ-4). Each row has:
-- key `crp_otp_allowed_email_domains`;
+- key `crp_otp_allowed_email_domains` *(Superseded by T21, 2026-10-15: the migration `V2_6_0_20261015_1418` removes this key, with its `custom_parameters` rows first, and seeds `system_otp_login_active` and `system_otp_excluded_email_domains` instead. §9 is the current text)*;
 - format 4 (string);
 - category 2;
 - `default_value` empty.
@@ -225,7 +235,7 @@ Steps run in this fixed order. **No step before step 6 reads account state**, so
 identically for every account (JD-1).
 
 0. **Method** (amended 2026-10-18, T22, validation V-1). Before anything else, `execute()` checks that the servlet request exists and that its method is `POST`, compared ignoring case. If not, it answers `{status: unavailable}` and logs `auth.otp.request outcome=bad_method`. It touches **no** limiter, session, entity, challenge row or mailer. The `catch` around the whole call, and the one around the eligibility predicate, take `RuntimeException | Error`, as the mail hand-off already did (V-4): an `Error` from the predicate is the neutral `sent` with a decoy row and `internal_error` in the log, and an `Error` anywhere else is `unavailable`.
-1. **Rate limits**, before anything else (SEC-010). The limiter counts three buckets:
+1. **Rate limits**, first after step 0 (SEC-010). The limiter counts three buckets:
    - `request|email|<normalised>`, limit 5 per 15 min;
    - `request|ip|<resolved IP>`, limit 20 per 15 min;
    - the cooldown in `otp_cooldowns` (FN-008, RJ-1).
@@ -353,7 +363,7 @@ entity is saved.
 | Keys | `system_otp_login_active` (boolean switch, default `false`) and `system_otp_excluded_email_domains` (comma-separated string, default empty). Both replace `crp_otp_allowed_email_domains` (amended 2026-10-15, T21) |
 | Constants | `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` in **both** `APConstants.java` files, equal to the keys (Hard rule 4). `OTP_ALLOWED_EMAIL_DOMAINS` is removed |
 | Resolution | An active `custom_parameters` row for the Global Unit wins; otherwise the catalog `default_value` (empty). This is the shape of `CognitoAuthSpecificity.isActiveFor` (P-10) |
-| Read path | **A native, uncached select** in `OtpChallengeDAO` (DD-12), used by request-code, verify-code and `crpByEmail.do`'s `otpEnabled`. A change, or the rollback "empty the list", applies on the next request on every instance |
+| Read path | **A native, uncached select** in `OtpChallengeDAO` (DD-12), used by request-code, verify-code and `crpByEmail.do`'s `otpEnabled`. A change, or the rollback "switch off" (T21; before it, "empty the list"), applies on the next request on every instance |
 | Off | The switch off or absent, **or** an unconfigured secret. An excluded domain is "not enabled" for that email only |
 
 ## 10. Integration Points
@@ -362,7 +372,7 @@ entity is saved.
 |---|---|
 | SMTP (existing `APConfig` settings) | One message per eligible issue, via `OtpMailSender` |
 | Shiro | New token type; existing session manager |
-| Cognito | Read-only: `CognitoAuthSpecificity` for SEC-009 |
+| Cognito | Read-only: `CognitoAuthSpecificity`, read only on password-off units (`CHG-PWD-SWITCH-001` DD-4). On a password-on unit the code path never reads it |
 
 ## 11. Observability
 
@@ -408,11 +418,11 @@ entity is saved.
 3. **Per environment:**
    - set the secret and `OTP_TRUSTED_PROXIES`;
    - settle P-4 (affinity), P-6 (proxy), P-18 (environment binding) and P-25 (RDS).
-4. **Pilot:** enable one Global Unit and one domain (OQ-1) with a test mailbox, then run the AC walkthrough. On a non-production environment the code arrives in the support mailbox `email.notification`, not in the test user's mailbox (FN-018).
-5. **Expand** domain by domain.
+4. **Pilot:** enable one Global Unit with the switch `system_otp_login_active` on and the exclusion set to `cgiar.org` (T21; OQ-1), with a test mailbox, then run the AC walkthrough. On a non-production environment the code arrives in the support mailbox `email.notification`, not in the test user's mailbox (FN-018).
+5. **Expand** unit by unit. Stage 2 empties the exclusion so CGIAR accounts may choose the code (`runbook.md` B5).
 
 **Rollback**, cheapest first. Only the first applies on the next request (DD-12); the secret is read once at start by `OtpKeys` (corrected in T16, see `runbook.md` A1):
-- empty the value (next request, every instance);
+- turn `system_otp_login_active` off (next request, every instance). It does not switch the code off in a unit whose `system_password_login_active` is off; turn that back on first (`CHG-PWD-SWITCH-001`);
 - unset the secret (restart of every instance);
 - revert the deploy;
 - drop the tables.
@@ -479,7 +489,7 @@ entity is saved.
 
 ### DD-12 — Uncached specificity read (amended 2026-10-15, T21: the switch and the exclusion list)
 - **Decision:** a native select of the active `custom_parameters.value`, falling back to `parameters.default_value`, for the key and Global Unit.
-- **Rationale:** the Hibernate caches are per-JVM ehcache: the query cache has a 3600-s TTL, and the `Parameter` and `CustomParameter` entity caches 5000 s (P-10, RJ-6). Through them, the "empty the list" rollback could lag more than an hour on other instances.
+- **Rationale:** the Hibernate caches are per-JVM ehcache: the query cache has a 3600-s TTL, and the `Parameter` and `CustomParameter` entity caches 5000 s (P-10, RJ-6). Through them, the rollback (originally "empty the list"; since T21 "turn the switch off") could lag more than an hour on other instances.
 - **Scope:** the other specificities keep the cached path; only `system_otp_login_active` and `system_otp_excluded_email_domains` bypass it *(amended 2026-10-15, T21)*.
 
 ### DD-13 — Per-unit switch plus domain exclusion; no CGIAR rule (2026-10-15, T21)
@@ -565,7 +575,7 @@ No DD removes, disables or inverts shipped behavior. DD-11 only relocates code, 
 
 | Measure | Expected |
 |---|---|
-| Tasks | 16. The concurrency probe and the uncached read add work over the round-1 draft, and Phase 3 split the runbook and rollout out of the verification task |
+| Tasks | 16 *(22 were executed: T17–T22 were added after approval; see `execution.md`)*. The concurrency probe and the uncached read add work over the round-1 draft, and Phase 3 split the runbook and rollout out of the verification task |
 | LOC (production + tests + FTL/JS/properties/SQL) | ~2,300 (≈1,300 production, ≈1,000 tests) |
 | Review rounds | 23 (one per task, plus 7 of margin for the realm, the two actions, the managers and `login.js`) |
 

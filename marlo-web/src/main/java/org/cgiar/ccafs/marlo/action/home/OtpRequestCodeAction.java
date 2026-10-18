@@ -79,8 +79,8 @@ import org.slf4j.LoggerFactory;
  * <ol>
  * <li>step 0: only a POST is served (T22). Any other method, or no request at all, answers {@code unavailable}
  * and logs {@code bad_method}, before the limiter, the session or any store is touched;</li>
- * <li>an unconfigured secret answers {@code domainNotEnabled}. It comes first because the limiter cannot count
- * without keys and would answer {@code unavailable} instead (SEC-008);</li>
+ * <li>an unconfigured secret answers {@code domainNotEnabled}. It comes first after step 0 because the limiter
+ * cannot count without keys and would answer {@code unavailable} instead (SEC-008);</li>
  * <li>the limiter counts the email, the address and the 30-second cooldown, before any lookup (SEC-010, FN-008);</li>
  * <li>the shape of the email and the unit id, then whether the code is offered on the unit through the uncached read:
  * the unit's switch is on and the domain is not excluded (FN-001, FN-006, DD-13), or the unit's password switch is
