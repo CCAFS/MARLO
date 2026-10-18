@@ -768,6 +768,31 @@ public class CrpByUserEmailActionTest {
     assertEquals(0, this.lastResortLines().size());
   }
 
+  /**
+   * AC-11, SEC-005 (added by the /akili-test Suite 1 tester): on a password-off unit {@code otpEnabled} and
+   * {@code passwordEnabled} are the unit's answer for a kind of account, never the account's own state. An active and
+   * an inactive account without Cognito, on a unit they belong to and on one they do not, read the same two flags, so
+   * the lookup still tells an anonymous caller nothing about whether the account is active or a member.
+   */
+  @Test
+  public void ac11OnAPasswordOffUnitBothFlagsAreTheSameForEveryAccountStateOfTheSameKind() {
+    this.otpSecret = SECRET_32_BYTES;
+    this.memberUnitIds.add(Long.valueOf(61L));
+    GlobalUnit member = this.rowUnit(61L, "P1", "false", "false");
+    GlobalUnit nonMember = this.rowUnit(62L, "P2", "false", "false");
+
+    CrpByUserEmailAction active = this.runFor(partnerUser(true, false), member, nonMember);
+    CrpByUserEmailAction inactive = this.runFor(partnerUser(false, false), member, nonMember);
+
+    this.assertFlags("active, member unit", active, "P1", true, false);
+    this.assertFlags("active, non-member unit", active, "P2", true, false);
+    this.assertFlags("inactive, member unit", inactive, "P1", true, false);
+    this.assertFlags("inactive, non-member unit", inactive, "P2", true, false);
+    assertEquals("an inactive account gets the very entries an active one gets", active.getCrps(),
+      inactive.getCrps());
+    assertEquals("the flags ask no membership question", 0, this.crpUserChecks);
+  }
+
 
   private Map<String, Object> byAcronym(List<Map<String, Object>> crps, String acronym) {
     for (Map<String, Object> entry : crps) {
