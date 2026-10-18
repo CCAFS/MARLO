@@ -26,6 +26,8 @@
 | T05 (attempt 3) | 5 / 8 | 11 / 16 | ceiling raised to 16 by the user; both lenses PASS |
 | T06 (attempt 1) | 5 / 8 | 12 / 16 | Reviewer FAIL (falsifier evidence) |
 | T06 (attempt 2) | 6 / 8 | 13 / 16 | Reviewer PASS |
+| T07 (attempt 1) | 6 / 8 | 14 / 16 | Reviewer FAIL (copy not compared with the approved mockup) |
+| T07 (attempt 2) | 6 / 8 | 15 / 16 | Reviewer PASS; closure waits for the user's read of the copy |
 
 ---
 
@@ -613,3 +615,104 @@ Leader adjudication: item 1 was applied as an execute-time edit (see above), and
   - `is_cgiar_user` restored to 0
 - **Final verification:** walkthrough recorded, falsifiers red/green, cache-buster bumped, i18n gate clean. Re-run VERIFIED.
 - **Continue gate:** waiting for the user (gated mode). The task's Review field calls for a visual check of the views at this HITL pause.
+- **Continue gate outcome:** the user approved the commit and continuing to T07 (2026-10-17); committed as `33fa702aad`.
+
+### CHG-PWD-SWITCH-001-T07 — Welcome email
+
+- **Final status:** PASS on attempt 2 (attempt 1 FAIL: copy not compared with the mockup)
+- **Date:** 2026-10-17
+- **Effort:** attempt 1 `medium`, attempt 2 `high` (one level up after the FAIL)
+- **Skills:** `marlo-verify` (as listed; no deviation)
+- **Consumers (the task's grep, run by the Leader at the brief):** `CognitoCredentialLiteralScanTest` (3), `APCustomRealmDispatchTest` (8), `LoginActionFinishLoginTest` (17), `CenterManageUsersActionDirectoryTest` (5), `CrpUsersActionDirectoryTest` (9), `ManageUsersActionDirectoryTest` (5), `GuestUsersValidatorDirectoryTest` (4). All green.
+
+#### Attempt 1 — FAIL
+
+- **Files changed:**
+  - new `marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/WelcomeSignInText.java`
+  - the 7 senders (`CrpUsersAction`, `CrpProgamRegionsAction`, `CrpPpaPartnersAction`, `CrpSiteIntegrationAction`, `CrpAdminManagmentAction`, `ProjectPartnerAction`, `ClusterActivitiesAction`)
+  - `global.properties`, `custom/aicrra.properties`, `custom/aiccra3.properties`, `custom/test.properties`
+  - tests: new `WelcomeSignInTextTest` (9), new `CrpUsersActionWelcomeMailTest` (1), `CrpUsersActionDirectoryTest` (constructor)
+  - renders: `probes/output/t07-welcome-aiccra.html`, `probes/output/t07-welcome-aiccra-password-on-control.html`
+- **Implementer verification:**
+  - Red run: test-compile exited 1 (`cannot find symbol class WelcomeSignInText`).
+  - Falsifier 1: `ClusterActivitiesAction` back on the direct `getText` → grep finds 1 → restored to 0.
+  - Falsifier 2: `CrpUsersAction` passes its local `globalUnit` instead of the `loggedCrp` parameter → `expected same:<CREATED> was not:<SELECTED>` → restored.
+  - Full suite 974/0; Checkstyle 25/25, delta 0; i18n clean.
+  - Render (sink): password off → no password row and a code-sign-in paragraph; password on → control. A password is still stored (FN-009).
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED**
+  - Wiped full suite: `MVN_EXIT=0`, 974/0. `WelcomeSignInTextTest` 9, `CrpUsersActionWelcomeMailTest` 1, `CrpUsersActionDirectoryTest` 9.
+  - Grep gate: `direct=0 helper=1` in all 7 files.
+  - Checkstyle: HEAD 25, tree 25, delta 0.
+  - Placeholders: `part1.codeSignIn` matches `part1` in every file (global and test `{0}`–`{4}`; aicrra and aiccra3 `{0}`–`{3}`).
+  - i18n: no FIX on the new lines.
+- **Reviewer verdict:** **FAIL** (verbatim):
+
+> 1. **Discovered Issue:** The task requires the AICCRA body "rendered once in the sink and compared with the approved mockup". The Implementer compared it only with the FN-008/UI-003 wording and wrote the copy themselves. The one committed record of the approved wording, `proposal.md:99`, says the block reads *"How to sign in: no password is needed…"*. The shipped copy in all four files says *"There is no password to remember. {3} signs you in with a one-time code…"*. The task's comparison was never done, and the only available evidence contradicts the copy.
+>    - **Violated Rule:** `tasks.md` T07 Tests ("compared with the approved mockup", `tasks.md:180`); `proposal.md` §5 (`:99`); `requirements.md` §10 Decision Log 2026-10-16 (the welcome-email block is a user decision made after reviewing the rendered AICCRA email).
+>    - **Remediation Suggestion:** Choose one:
+>      - (a) Align the code-sign-in paragraph in `global`, `aicrra`, `aiccra3` and `test` with the proposal §5 lead-in ("How to sign in: no password is needed…"), re-render `t07-welcome-aiccra.html` from the sink, and keep the apostrophe and placeholder checks.
+>      - (b) Have the Leader get the user's read of the current render against their local mockup and record that approval in `execution.md`.
+>
+>      Either way, T07 does not close until the user has read it.
+
+- **Leader adjudication:** FAIL upheld. **User decision (2026-10-17): option (a)**, align with the mockup. The rest conforms: the unit per sender matches DD-7; the Cognito flag is read through the same `CognitoAuthSpecificity` resolver, which is not a fourth reader; the failure path falls back to today's text, which matches FN-008, DD-5 and DD-6.
+- **runtime events:** none
+- **spawns:** implementer 111 calls, 228263 tokens, ended fail (Reviewer FAIL); reviewer 21 calls, 98079 tokens, ended complete
+
+#### Not Done / Assumptions (Implementer attempt 1, verbatim)
+
+> - The approved mockup is not committed (proposal §8), so I compared against the FN-008 and UI-003 wording only. I wrote the code-sign-in copy myself, and it needs your read.
+> - Only `CrpUsersAction` has a per-sender test. The other six are covered by the grep gate, which the task allowed.
+> - The helper reads the Cognito flag through `CognitoAuthSpecificity` with `CustomParameterManager` and `ParameterManager`, because `OtpEligibility` has no public method for it. It does not use `OtpKeys` as DD-7 listed, since `methodsFor` already checks the key.
+> - A fixed 6-digit numeric password is still generated and stored.
+> - Mail goes to the support mailbox, so the sink's `To` header says `support.probe@sink.test`, not the new account.
+
+- **Security note:** the Implementer echoed the local login credentials (`~/.marlo-local-credentials`) once in its own tool output. They do not appear in any report or artifact, but they remain in that subagent's local transcript. Reported to the user.
+
+#### ADVISORY (Reviewer, 4R — recorded, not acted on)
+
+- **Readability:** in `sendMailNewUser` the correct unit is the `loggedCrp` parameter, while a local `globalUnit` (`:996-998`) is the wrong one. A comment at `:1037` would prevent a future swap.
+- **Reliability (falsifier):** the falsifier swapped in the local `globalUnit`, not the session unit the task names. `assertSame(created, …)` still rejects any other unit, so it stands as a sibling falsifier.
+- **Reliability:** a unit with neither acronym nor name makes `{3}` print "null".
+- **Risk (low):** the acronym is inserted unescaped, as the other arguments already are (super-admin data).
+- **Readability:** the text comes from the session unit's custom bundle while the decision uses the unit passed in. This predates T07.
+- **Spec drift:** DD-7 lists `OtpKeys`; the helper uses `CustomParameterManager` and `ParameterManager` instead.
+
+#### Attempt 2
+
+- **Feedback:** the FAIL above, verbatim, plus the user's choice of option (a).
+- **Attempt History:** attempt 1 wrote its own copy without comparing it with the proposal §5 mockup lead-in. Do not repeat that.
+- **Files changed (attempt 2):**
+  - `global.properties`, `custom/aicrra.properties`, `custom/aiccra3.properties` and `custom/test.properties`: the code-sign-in paragraph now reads `<b>How to sign in</b>: no password is needed. Enter your email address at the link above and {3} will email you a one-time code each time you sign in.` The `global` and `test` files say "…there and…" instead of "at the link above".
+  - `WelcomeSignInText.java`: `{3}` falls back from the acronym to the name, then to an empty string. This was an advisory-grade item.
+  - `CrpUsersAction.java`: a comment at the `loggedCrp` use (advisory-grade).
+  - `WelcomeSignInTextTest`: new test `aUnitWithNeitherAcronymNorNameNeverPrintsNull`.
+  - Both `probes/output/t07-*.html` files were re-rendered from the sink.
+- **Wording source:**
+  - `proposal.md:99` is the only committed record, and it holds the lead-in only.
+  - `requirements.md` (UI-003 and the Decision Log), `judgment.md`, `design.md` and `git log -p` were searched and hold nothing fuller.
+  - So the continuation after the lead-in was written by the Implementer.
+- **Implementer verification:** wiped full suite exit 0 with 975/0. `i18n-check.sh` exit 0. Checkstyle 25/25 (delta 0). Hygiene 0 FIX. Grep gate 0.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED.**
+  - Wiped `mvn -o -pl marlo-web -am test`: `MVN_EXIT=0`, `Tests run: 975, Failures: 0`.
+  - Grep gate: `direct=0 helper=1` in all 7 senders.
+  - Placeholders of `part1.codeSignIn` match `part1` in every file.
+  - Checkstyle delta 0.
+  - The text extracted from the sent HTML reads "How to sign in: no password is needed. Enter your email address at the link above and AICCRA will email you a one-time code each time you sign in."
+- **Reviewer verdict:** **PASS.**
+  - The lead-in matches `proposal.md:99` word for word, and the old wording is gone from `marlo-web/src`.
+  - The render is the email as captured at the sink.
+  - Apostrophes and placeholders are correct.
+  - The `unitLabel` fallback cannot throw, and the comment is accurate.
+  - Nothing regressed.
+- **ADVISORY:** reliability (low). A unit with neither acronym nor name renders "…and  will email you…". A neutral fallback word such as "MARLO" could replace `""` later.
+- **runtime events:** none
+- **spawns:** implementer: 122 calls, 240268 tokens (cumulative per host), ended complete. Reviewer: 8 calls, 71890 tokens, ended complete.
+- **Environment:** app pid 37656 on :8080, sink pid 53716 on :2525, unit 45 with otp true and password false.
+- **Scratch data for T08 cleanup:** users 3865–3868 on `aiccradb_otp_probe`, with their `crp_users` and guest `user_roles` rows. The sink mbox holds 9 messages. The temporary CRP-Admin role for `marlosadmin` has been removed.
+- **Requirements covered:** FN-008, FN-009 and UI-003. AC-13 is covered by the sink render.
+- **Decisions made:**
+  - The user chose option (a), aligning the copy with the mockup.
+  - The helper reads the Cognito flag through `CognitoAuthSpecificity` and does not use `OtpKeys`, which deviates from DD-7's dependency list. The Reviewer accepted this.
+- **Closure:** pending the user's read of the copy. The attempt-1 FAIL requires it, so `tasks.md` stays `[~]` until the user approves.
+- **User read (2026-10-17):** the user approved the code-sign-in copy as rendered ("si") and approved the commit. T07 is closed.

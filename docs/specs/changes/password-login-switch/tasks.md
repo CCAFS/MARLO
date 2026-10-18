@@ -165,7 +165,7 @@
 
 ### CHG-PWD-SWITCH-001-T07 — Welcome email (DD-7, FN-008, FN-009, UI-003)
 
-- **Status:** pending [ ] · **Size:** M · **Depends on:** T03 · **Module:** marlo-web
+- **Status:** done [x] · **Size:** M · **Depends on:** T03 · **Module:** marlo-web
 - **Requirements:** FN-008, FN-009, UI-003; AC-13
 - **Design:** DD-7, P-9, P-10, P-11
 - **Files:** new `utils/WelcomeSignInText.java` (`@Named`, GPL header); the 7 senders (`CrpUsersAction`,
