@@ -28,6 +28,7 @@
 | T06 (attempt 2) | 6 / 8 | 13 / 16 | Reviewer PASS |
 | T07 (attempt 1) | 6 / 8 | 14 / 16 | Reviewer FAIL (copy not compared with the approved mockup) |
 | T07 (attempt 2) | 6 / 8 | 15 / 16 | Reviewer PASS; closure waits for the user's read of the copy |
+| T07 (attempt 3, reopened) | 7 / 8 | 16 / 18 | ceiling raised to 18 by the user; Reviewer PASS |
 
 ---
 
@@ -716,3 +717,41 @@ Leader adjudication: item 1 was applied as an execute-time edit (see above), and
   - The helper reads the Cognito flag through `CognitoAuthSpecificity` and does not use `OtpKeys`, which deviates from DD-7's dependency list. The Reviewer accepted this.
 - **Closure:** pending the user's read of the copy. The attempt-1 FAIL requires it, so `tasks.md` stays `[~]` until the user approves.
 - **User read (2026-10-17):** the user approved the code-sign-in copy as rendered ("si") and approved the commit. T07 is closed.
+
+#### T07 reopened (2026-10-17, user decision)
+
+- **Cause:** the user compared the shipped copy with the approved mockup they keep locally (`~/Downloads/marlo-welcome-email-proposal.png`, proposal §8, not committed). It differs in two ways.
+  - **Wording.** The mockup reads: "**How to sign in**: no password is needed. Enter your email, choose AICCRA and select **Email me a sign-in code**. We will send a one-time code to this address; it is valid for 5 minutes." The shipped copy uses different wording.
+  - **Placement.** In the mockup the line sits inside the *Sign in at* / *Email* block. The shipped copy puts it in a separate paragraph.
+- **User decisions:**
+  - Align the copy verbatim with the mockup.
+  - Lock "5 minutes" to `OtpRequestCodeAction.CODE_VALIDITY` with a test.
+  - Raise the review-round ceiling from **16 to 18**.
+- **Status:** `tasks.md` T07 goes back to `[~]`; attempt 3 follows. This is a user-requested change, not a Reviewer FAIL, so effort stays `high`.
+
+#### Attempt 3
+
+- **Files changed:**
+  - `email.newUser.part1.codeSignIn` in all four files now follows the mockup verbatim. In `aicrra` and `aiccra3` the "How to sign in" line sits in the same `<p>` as Sign in at / Email, after a `<br>`. In `global` and `test` it sits one `<br>` below the Email line. `{3}` = acronym and **Email me a sign-in code** is bold.
+  - New `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/WelcomeEmailCodeValidityTest.java` checks that "valid for N minutes" in all four files equals `OtpRequestCodeAction.CODE_VALIDITY.toMinutes()`.
+  - Both `probes/output/t07-*.html` files were re-rendered from the sink.
+- **Implementer verification:**
+  - Falsifier: with `CODE_VALIDITY` set to 6, the test fails with `AssertionError: /global.properties: the welcome copy and the real expiry cannot drift expected:<6> but was:<5>`. The value was restored afterwards.
+  - Wiped full suite exits 0, with 976 tests and 0 failures. `i18n-check.sh` exits 0. Checkstyle delta 0. Grep gate 0.
+- **Evidence re-run (Leader-inline, non-author):** **VERIFIED**.
+  - Wiped `mvn -o -pl marlo-web -am test` gives `MVN_EXIT=0`, 976 tests and 0 failures. `WelcomeEmailCodeValidityTest` runs 1 test with 0 failures.
+  - Placeholders match `part1` in each file.
+  - Text extracted from the sent HTML: "Sign in at: … | Email: … | How to sign in: no password is needed. Enter your email, choose AICCRA and select Email me a sign-in code. We will send a one-time code to this address; it is valid for 5 minutes."
+  - Checkstyle `--baseline` on the new test gives delta 0. The Leader ran it after the Reviewer pointed out that the brief had left it out.
+- **Reviewer verdict:** **PASS**. The copy matches the mockup word for word, including the bold spans and the placement. The button label equals `login.otp.button` / `login.otp.method.code`. The lock test reads the shipped classpath files (there is no `src/test/resources` that could shadow them) and checks them against the constant that sets the expiry (`OtpRequestCodeAction.java:412`). Attempts 1–2 did not regress.
+- **ADVISORY:**
+  - Reliability: a missing resource produces a bare NPE in the lock test; an `assertNotNull` would name the file.
+  - Readability: `:` vs `\:` differs between the files, but each file is consistent with its own lines.
+- **runtime events:** none
+- **spawns:** implementer: 131 calls, 255483 tokens (cumulative per host), ended complete. Reviewer: 10 calls, 62644 tokens, ended complete.
+- **Environment:**
+  - app pid 12735 on :8080; sink pid 53716 on :2525 (13 messages)
+  - unit 45: otp true, password false
+- **Scratch data:** users 3865–3870 on `aiccradb_otp_probe`
+- **Final status (T07):** PASS on attempt 3. The copy is aligned with the user's approved mockup.
+- **Continue gate:** waiting for the user (gated mode).
