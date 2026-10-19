@@ -16,7 +16,7 @@
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019-10"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019-11"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
@@ -210,7 +210,10 @@
             [@s.text name="project.deliverable.redesign.back"][@s.param]${sectionNoun}[/@s.param][/@s.text]
           </a>
 
-          [#-- Deliverable and cluster chips, with the feedback status legend --]
+          [#-- Is deliverable complete: the last saved validation of the section, drawn as the header chip --]
+          [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
+
+          [#-- Deliverable and cluster chips, the required fields state, and the feedback status legend --]
           <div class="dlf-chips">
             <span class="dlf-chip dlf-chip--id" title="${(deliverable.deliverableInfo.title)!}">D${deliverable.id?c}</span>
             <a class="dlf-chip dlf-chip--owner" href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
@@ -218,6 +221,10 @@
               <span class="dlf-chip__avatar" aria-hidden="true">${sectionNoun?cap_first?substring(0, 1)}</span>
               [#if !action.isAiccra()]P${project.id?c}[#elseif (project.acronym)?has_content]${project.acronym}[#else]C${project.id?c}[/#if]
             </a>
+            <span class="dlf-chip dlf-chip--fields ${isDeliverableComplete?string('is-ok', 'is-warn')}">
+              <span class="dlf-chip__dot" aria-hidden="true"></span>
+              [#if isDeliverableComplete][@s.text name="project.deliverable.redesign.fields.complete" /][#else][@s.text name="project.deliverable.redesign.fields.missing" /][/#if]
+            </span>
             [#if action.hasSpecificities('feedback_active')]
               <span class="dlf-feedbackLegend" role="note">
                 <span class="dlf-feedbackLegend__title">[@s.text name="project.deliverable.redesign.feedbackStatus" /]</span>
@@ -259,9 +266,6 @@
               <p class="dlf-note__text">[@s.text name="project.deliverable.duplicatedHelp" /]</p>
             </div>
           [/#if]
-
-          [#-- Is deliverable complete --]
-          [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
 
           [#-- Is deliverable new --]
           [#assign isDeliverableNew = action.isDeliverableNew(deliverable.id) /]

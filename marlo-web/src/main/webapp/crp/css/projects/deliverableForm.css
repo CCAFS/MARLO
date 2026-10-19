@@ -109,10 +109,6 @@
 .dlf .dlf-hint { margin: 0; font: 400 12.5px/1.45 Figtree, sans-serif; color: var(--dlf-muted); }
 .dlf .dlf-hint a { color: var(--dlf-brand); }
 
-.dlf .dlf-fields { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px Figtree, sans-serif; }
-.dlf .dlf-fields--ok { color: var(--dlf-ok); }
-.dlf .dlf-fields--warn { color: var(--dlf-warn); }
-.dlf .dlf-fields--warn .dlf-icon { color: var(--dlf-warn-dot); }
 
 /* ---------- Header ---------- */
 
@@ -143,6 +139,13 @@
 }
 .dlf .dlf-chip--id { padding: 0 8px; border-radius: 6px; background: var(--dlf-chip); font-weight: 700; font-variant-numeric: tabular-nums; }
 .dlf .dlf-chip--owner { padding: 0 9px 0 3px; border: 1px solid var(--dlf-line); border-radius: 999px; background: #fff; }
+/* Required fields state of the section (the design's req chip): green when complete, amber when not. */
+.dlf .dlf-chip--fields { padding: 0 9px; border: 1px solid; border-radius: 999px; }
+.dlf .dlf-chip--fields.is-ok { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-chip--fields.is-warn { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); color: var(--dlf-warn); }
+.dlf .dlf-chip__dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.dlf .dlf-chip--fields.is-warn .dlf-chip__dot { background: var(--dlf-warn-dot); }
+.dlf .dlf-field--status .dlf-hint { margin-top: 6px; }
 .dlf .dlf-chip--owner:hover,
 .dlf .dlf-chip--owner:focus { border-color: var(--dlf-line-strong); color: var(--dlf-ink); text-decoration: none; }
 .dlf .dlf-chip__avatar {
@@ -617,7 +620,6 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 
 /* ---------- Status ---------- */
 
-.dlf .dlf-statusNotes { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-top: -4px; }
 
 /* ---------- Geographic scope ---------- */
 

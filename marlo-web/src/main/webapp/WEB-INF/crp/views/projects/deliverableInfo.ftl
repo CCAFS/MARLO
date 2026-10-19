@@ -98,6 +98,10 @@
       [#-- Deliverable Status --]
       <div class="dlf-field dlf-field--status">
         [@customForm.select name="deliverable.deliverableInfo.status" label=""   i18nkey="project.deliverable.generalInformation.status" listName="status"  multiple=false required=true header=false className="status isNew-${isDeliverableNew?string}" editable=editable || editStatus/]
+        [#-- A new deliverable at reporting is reported as complete --]
+        [#if isDeliverableNew && editable && (reportingActive)]
+          <p class="dlf-hint">[@s.text name="project.deliverable.redesign.newShouldBeComplete" /]</p>
+        [/#if]
       </div>
 
       [#-- Deliverable Year --]
@@ -153,18 +157,6 @@
         </div>
       </div>
     [/#if]
-
-    [#-- Completeness of the required fields, and the note for a new deliverable at reporting --]
-    <div class="dlf-statusNotes">
-      [#if isDeliverableComplete]
-        <span class="dlf-fields dlf-fields--ok">[@dlfIcon "ok" /][@s.text name="project.deliverable.redesign.fields.complete" /]</span>
-      [#else]
-        <span class="dlf-fields dlf-fields--warn">[@dlfIcon "warn" /][@s.text name="project.deliverable.redesign.fields.missing" /]</span>
-      [/#if]
-      [#if isDeliverableNew && editable && (reportingActive)]
-        <span class="dlf-hint">[@s.text name="project.deliverable.redesign.newShouldBeComplete" /]</span>
-      [/#if]
-    </div>
 
     [#if action.hasSpecificities('shfrm_contribution_active') ]
       [#-- SHRFM contribution --]
