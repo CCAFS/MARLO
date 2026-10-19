@@ -357,11 +357,37 @@ function activeByNoDOIProvidedCheckbox() {
 
 }
 
+// The deliverable types table as a modal that fits the window: it does not move or resize, takes 85% of the
+// window height (never closer than 16px to its edges), scrolls inside, and keeps the page behind it still.
 function openDialog() {
+  var margin = 16;
+  var dialogHeight = function () {
+    return Math.min($(window).height() - margin * 2, Math.round($(window).height() * 0.85));
+  };
+  var fitDialog = function () {
+    $("#dialog").dialog("option", {
+      width: Math.min(980, $(window).width() - margin * 2),
+      height: dialogHeight(),
+      position: { my: "center", at: "center", of: window }
+    });
+  };
   $("#dialog").dialog({
-    width: '980',
+    width: Math.min(980, $(window).width() - margin * 2),
+    height: dialogHeight(),
     modal: true,
-    closeText: ""
+    draggable: false,
+    resizable: false,
+    closeText: "",
+    dialogClass: "deliverableTypesDialog",
+    position: { my: "center", at: "center", of: window },
+    open: function () {
+      $("html").addClass("deliverableTypesDialog-open");
+      $(window).on("resize.deliverableTypesDialog", fitDialog);
+    },
+    close: function () {
+      $("html").removeClass("deliverableTypesDialog-open");
+      $(window).off("resize.deliverableTypesDialog");
+    }
   });
 }
 

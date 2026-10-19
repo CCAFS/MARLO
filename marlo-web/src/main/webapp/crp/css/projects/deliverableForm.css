@@ -379,6 +379,17 @@
 /* A hidden sub-action control would still take the 8px flex gap under the last row. */
 .dlf .dlf-shfrm .subSectionsSelector > .subActionsSelector:has(.dlf-isExhausted) { display: none; }
 
+/* Deliverable types modal (deliverableInfo.js openDialog). jQuery UI appends it to <body>, outside .dlf; its
+   size comes from the dialog options, the table scrolls inside the content and the page behind stays still. */
+html.deliverableTypesDialog-open,
+html.deliverableTypesDialog-open body { overflow: hidden; }
+/* Above the page chrome: the fixed phase badge (span.reporting) sits at z-index 1000, over jQuery UI's 100. */
+html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; }
+.ui-dialog.deliverableTypesDialog { z-index: 1002 !important; max-width: calc(100vw - 32px); padding: 0; }
+.ui-dialog.deliverableTypesDialog .ui-dialog-titlebar { cursor: default; }
+.ui-dialog.deliverableTypesDialog .ui-dialog-content { overflow: auto !important; padding: 0 16px 16px; }
+.ui-dialog.deliverableTypesDialog #deliverableTypes { width: 100%; }
+
 /* select2 single selects as the design's native-looking selects. */
 .dlf .dlf-card .selectList { position: relative; }
 .dlf .dlf-card .select2-container--default .select2-selection--single,

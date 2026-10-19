@@ -60,7 +60,7 @@
     [#-- Deliverable table with categories and sub categories (opened by deliverableInfo.js through .helpMessage3) --]
     <div class="deliverableTypeMessage">
       <div id="dialog" title="Deliverable types" style="display: none">
-        <table id="deliverableTypes" style="height:700px; width:950px;">
+        <table id="deliverableTypes">
           <th> [@s.text name="project.deliverables.dialogMessage.part1" /] </th>
           <th> [@s.text name="project.deliverables.dialogMessage.part2" /] / [@s.text name="project.deliverables.dialogMessage.part3" /] </th>
           [#if deliverableTypeParent?has_content]
