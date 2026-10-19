@@ -1,4 +1,7 @@
 var $statuses, $statusDescription, $detoneChange;
+// Funding source labels by id, kept before the chosen ones are taken out of the select so a removed source
+// comes back with its own label.
+var fundingSourceNames = {};
 
 $(document).ready(init);
 function hideOrShowCheckBoxIsOtherUrl(value) {
@@ -151,6 +154,12 @@ function init() {
   });
 
   /** Funding source * */
+
+  $(".fundingSource option").each(function (i, e) {
+    if ($(e).val() != "-1") {
+      fundingSourceNames[$(e).val()] = $(e).text();
+    }
+  });
 
   $(".fundingSource").on("change", function () {
     var option = $(this).find("option:selected");
@@ -458,8 +467,8 @@ function removeFundingSource() {
   var $list = $(this).parents('.list');
   var $item = $(this).parents('.fundingSources');
   var value = $item.find(".fId").val();
-  var name = $item.find(".name").attr("title");
-  console.log(name + "-" + value);
+  // The row has no title to read the label from (it was always undefined); use the label the option had.
+  var name = fundingSourceNames[value] || $.trim($("#fundingSource-" + value).text()) || value;
   var $select = $(".fundingSource");
   $item.hide(500, function () {
     $item.remove();
