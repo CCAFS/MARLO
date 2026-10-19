@@ -368,6 +368,11 @@
 .dlf .dlf-card .numberOfCommentsBubble { top: -9px; right: -9px; left: auto; z-index: 1; margin: 0; transform: none; }
 .dlf .dlf-card .numberOfCommentsBubble p { min-width: 20px; padding: 1px 5px; font-size: 9.5px; line-height: 14px; }
 
+/* The open dropdown is appended to <body>, outside .dlf, so it is reached through select2's own classes; this
+   stylesheet only loads on the deliverable form. global.css gives every search field width 100% plus a 14% right
+   margin, which overflows the dropdown and scrolls it sideways. */
+.select2-container .select2-dropdown .select2-search--dropdown .select2-search__field { margin-right: 0; }
+
 /* select2 single selects as the design's native-looking selects. */
 .dlf .dlf-card .selectList { position: relative; }
 .dlf .dlf-card .select2-container--default .select2-selection--single,
