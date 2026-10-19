@@ -200,7 +200,9 @@
       [#if value=="-NULL"]
         [#assign customValue][@s.property value="${name}" /][/#assign]
       [#else]
-        [#assign customValue]${value}[/#assign]
+        [#-- A plain assign, not a capture: under Struts 6 auto-escaping a capture turned an OGNL string literal
+             such as 'cgspace' into &#39;cgspace&#39;, and s.select then preselected nothing. --]
+        [#assign customValue = value]
       [/#if]
       [#-- Help text --]
       [#if help!=""][#assign helpText][@s.text name="${help}" /][/#assign][#else][#assign helpText][/#assign][/#if]

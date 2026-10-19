@@ -552,6 +552,12 @@
 .dlf .dlf-card .onoffswitch .yes-button-label.radio-checked { background: var(--dlf-brand); color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(2, 119, 162, .3); }
 .dlf .dlf-card .onoffswitch .no-button-label.radio-checked { background: var(--dlf-ink-soft); color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .3); }
 .dlf .dlf-card .onoffswitch .no-button-label-disabled { opacity: .45; cursor: not-allowed; }
+/* The neutral switch (trainees) gets a pale blue from global.css with !important; it reads like the others here. */
+.dlf .dlf-card .onoffswitch .button-label.neutral:hover { background: transparent !important; color: var(--dlf-ink) !important; }
+.dlf .dlf-card .onoffswitch .yes-button-label.neutral.radio-checked { background: var(--dlf-brand) !important; color: #fff !important; }
+.dlf .dlf-card .onoffswitch .no-button-label.neutral.radio-checked { background: var(--dlf-ink-soft) !important; color: #fff !important; }
+/* The DOI bridge carries a placeholder help text in the shared macro; the design has none there. */
+.dlf #disseminationUrl .doi-bridge .input > img { display: none; }
 
 /* The answer block a Yes opens. */
 .dlf .dlf-card .block-yesNo,
@@ -648,6 +654,341 @@
 .dlf #dlf-partners .deliverableUserItem label { margin: 0; font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); }
 .dlf #dlf-partners .otherDeliverablePartners .emptyText { margin: 0 0 8px; }
 .dlf #dlf-partners .partnerListMsj { margin-top: 4px; }
+
+/* ---------- Dissemination & Metadata tab ---------- */
+
+/* Help icons (customForm helpLabel) follow their label on the same line instead of taking one of their own. */
+.dlf .dlf-card .input > label,
+.dlf .dlf-card .textArea > label { display: inline-block; }
+.dlf .dlf-card .input > img,
+.dlf .dlf-card .textArea > img {
+  width: 14px;
+  height: 14px;
+  margin: 0 0 6px 4px;
+  vertical-align: -1px;
+  opacity: .65;
+  cursor: help;
+}
+.dlf .dlf-card .input > .hint { display: none !important; }
+.dlf .dlf-card .input > input.form-control,
+.dlf .dlf-card .textArea > textarea.form-control { display: block; }
+
+/* Every answer block a yes/no question opens: findable, not findable, trainees. */
+.dlf .dlf-question > .simpleBox > [class*="block-"] {
+  padding: 16px 14px 14px;
+  border-top: 1px solid var(--dlf-line);
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+}
+.dlf .dlf-question > .simpleBox > [class*="block-"] > hr,
+.dlf .dlf-question > .simpleBox > [class*="block-"] > br { display: none; }
+.dlf .dlf-card .form-group { margin-bottom: 16px; }
+.dlf .dlf-card .form-group:last-child { margin-bottom: 0; }
+.dlf .dlf-card .row { margin-left: 0; margin-right: 0; }
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row,
+.dlf #dlf-metadata .form-group.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row::before,
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row::after,
+.dlf #dlf-metadata .form-group.row::before,
+.dlf #dlf-metadata .form-group.row::after { display: none; }
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [class*="col-"],
+.dlf #dlf-metadata .form-group.row > [class*="col-"] { float: none; width: auto; min-width: 0; padding: 0; }
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [style*="display: none"],
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [style*="display:none"] { display: none; }
+
+/* Channel + URL format example. */
+.dlf .disseminationChannelBlock .form-group.row { align-items: end; }
+.dlf .exampleUrl-block label { margin-bottom: 3px; font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .exampleUrl-block .exampleUrl,
+.dlf .exampleUrl-block p { margin: 0; padding-bottom: 10px; }
+.dlf .exampleUrl-block small { font: 500 12.5px ui-monospace, Menlo, Consolas, monospace; color: var(--dlf-ink-soft); word-break: break-all; }
+.dlf .exampleUrl-block strong { font-weight: 700; color: var(--dlf-brand-dark); }
+
+/* URL field with the sync buttons beside it. */
+.dlf #disseminationUrl > .form-group { display: flex; align-items: flex-end; gap: 8px; }
+.dlf #disseminationUrl .url-field { flex: 1; min-width: 0; float: none; width: auto; }
+.dlf #disseminationUrl .buttons-field { flex: none; float: none; width: auto; padding-bottom: 0; }
+.dlf #disseminationUrl .buttons-field:empty { display: none; }
+.dlf #fillMetadata .unSyncBlock { gap: 8px; }
+.dlf #fillMetadata .unSyncBlock[style*="block"] { display: flex !important; }
+.dlf #disseminationUrl .checkButton,
+.dlf #disseminationUrl .updateButton,
+.dlf #disseminationUrl .uncheckButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  float: none;
+  width: auto;
+  height: 40px;
+  margin: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-brand);
+  box-shadow: none;
+  font: 600 13px Figtree, sans-serif;
+  color: #fff;
+  text-shadow: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dlf #disseminationUrl .checkButton:hover { background: var(--dlf-brand-dark); }
+.dlf #disseminationUrl .updateButton { border: 1px solid var(--dlf-brand); background: #fff; color: var(--dlf-brand); }
+.dlf #disseminationUrl .updateButton:hover { background: var(--dlf-info-bg); }
+.dlf #disseminationUrl .uncheckButton { border: 1px solid #EBD3CE; background: #fff; color: var(--dlf-danger); }
+.dlf #disseminationUrl .uncheckButton:hover { background: var(--dlf-danger-bg); }
+.dlf #disseminationUrl #WOSSyncBtn { background: #fff; border: 1px solid var(--dlf-line-strong); color: var(--dlf-ink-soft); }
+
+/* Handle and DOI: their validity notes sit under the field instead of floating over the next row. */
+.dlf #disseminationUrl .form-group.row.ifIsReadOnly {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 0 !important;
+}
+.dlf #disseminationUrl .ifIsReadOnly > .conditionalRequire { display: block; width: auto; }
+.dlf #disseminationUrl .doi-bridge .invalidDOI,
+.dlf #disseminationUrl .doi-bridge .validDOI { position: static !important; margin: 5px 0 0 !important; font: 600 11.5px/1.4 Figtree, sans-serif !important; }
+.dlf #disseminationUrl > br,
+.dlf #disseminationUrl > hr { display: none; }
+.dlf #disseminationUrl .isOtherUrl .inputsFlat,
+.dlf #disseminationUrl .isOtherUrl label { margin: 0; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf #disseminationUrl .isOtherUrl > br { display: none; }
+
+/* What the sync found: the design's green source chips. */
+.dlf .block-findable #metadata-container { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.dlf .block-findable .metadata-text-container { display: flex; flex-wrap: wrap; gap: 8px; }
+.dlf .block-findable .metadata-output-persistent:not(:empty) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin: 0;
+  padding: 3px 12px;
+  border: 1px solid var(--dlf-ok-border);
+  border-radius: 999px;
+  background: var(--dlf-ok-bg);
+  font: 600 12.5px Figtree, sans-serif;
+  font-style: normal;
+  color: var(--dlf-ok);
+}
+.dlf .block-findable .metadata-output-persistent * { font: inherit; color: inherit; margin: 0; }
+.dlf .block-findable #WOSModalBtn.note {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.dlf .block-findable #WOSModalBtn a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+}
+.dlf .block-findable #WOSModalBtn a:hover { background: var(--dlf-info-bg); }
+.dlf .block-findable #WOSModalBtn p { margin: 0; }
+.dlf .block-findable .loading-WOS-container p { font: 600 13px Figtree, sans-serif !important; color: var(--dlf-brand) !important; }
+
+/* Not disseminated: confidential question and its answer. */
+/* Radio questions (confidential, ISI, training period): the label on its own line, the options in one row. */
+.dlf .block-notFindable > .form-group:has(> .radioFlat),
+.dlf #dlf-metadata .isIsiJournal,
+.dlf .block-involveParticipants .block-periodTime { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
+.dlf .block-notFindable > .form-group:has(> .radioFlat) > label,
+.dlf #dlf-metadata .isIsiJournal > label,
+.dlf #dlf-metadata .isIsiJournal > p,
+.dlf #dlf-metadata .isIsiJournal > .WOS_tag,
+.dlf .block-involveParticipants .block-periodTime > label { flex-basis: 100%; }
+.dlf .block-notFindable > .form-group:has(> .radioFlat) > br,
+.dlf #dlf-metadata .isIsiJournal > br,
+.dlf .block-involveParticipants .block-periodTime > br { display: none; }
+.dlf .block-notFindable .radioFlat,
+.dlf #dlf-metadata .isIsiJournal .radioFlat,
+.dlf .block-involveParticipants .block-periodTime .radioFlat { display: inline-flex; align-items: center; width: auto !important; flex: none; margin: 0; }
+.dlf .block-notFindable .feedback-flex-items:empty,
+.dlf #dlf-metadata .isIsiJournal .feedback-flex-items:empty,
+.dlf .block-involveParticipants .block-periodTime .feedback-flex-items:empty { display: none; }
+.dlf .block-notFindable .note,
+.dlf .dlf-card .note--2 {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .note--2 p { margin: 0; }
+
+/* Open Access: what Web of Science says, as the design's hint chip. */
+.dlf .dlf-card .WOS_tag { margin-top: 8px; }
+.dlf .dlf-card .WOS_tag p {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 7px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .dlf-card .WOS_tag p::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+
+/* Participants/Trainees: the numbers sit in the design's metric cards. */
+.dlf .block-involveParticipants .form-group.row > [class*="col-"]:has(.numericInput) {
+  padding: 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .block-involveParticipants .numericInput.form-control { font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
+.dlf .block-involveParticipants [class*="col-"] > br { display: none; }
+.dlf .block-involveParticipants .dottedBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px solid var(--dlf-line);
+  background: none;
+}
+.dlf .block-involveParticipants .inputsFlat { margin: 0; }
+.dlf .block-involveParticipants .checkbox-label { margin: 0; font: 400 12.5px Figtree, sans-serif !important; font-style: normal !important; color: var(--dlf-ink-soft); }
+.dlf .block-involveParticipants > .note.left {
+  float: none;
+  margin: -6px 0 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.dlf .block-involveParticipants > .note.left a { font: 600 12.5px Figtree, sans-serif; color: var(--dlf-brand); cursor: pointer; }
+
+/* Split across shared clusters: one bordered table, five columns. */
+.dlf .sharedClustersList { margin-top: 4px; padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .sharedClustersList > br { display: none; }
+.dlf .sharedClustersList .yesNoLabel { margin-bottom: 2px; font: 600 11px Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .sharedClustersList small { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .sharedClustersList > .simpleBox { margin: 12px 0 0; padding: 0; border: 1px solid var(--dlf-line); border-radius: 10px; background: #fff; overflow: hidden; }
+.dlf .sharedClustersList > .simpleBox > .note--2 { margin: 12px; }
+.dlf .sharedClustersList .block-involveParticipants { padding: 0; border: 0; background: none; }
+.dlf .sharedClustersList .listClusterDM.container { width: auto !important; max-width: none; padding: 0; }
+.dlf .sharedClustersList .form-group.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: center;
+  margin: 0;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--dlf-line-soft);
+}
+.dlf .sharedClustersList .form-group.row::before,
+.dlf .sharedClustersList .form-group.row::after { display: none; }
+.dlf .sharedClustersList .form-group.row > [class*="col-"] { float: none; width: auto; min-width: 0; padding: 0; }
+.dlf .sharedClustersList .form-group.row > [class*="col-"] > br { display: none; }
+.dlf .sharedClustersList .block-involveParticipants > .form-group.row:first-child { background: #F7F9FB; font: 600 12px/1.3 Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .sharedClustersList .block-involveParticipants > .form-group.row:first-child b { font-weight: 600; }
+.dlf .sharedClustersList .block-involveParticipants > hr { display: none; }
+.dlf .sharedClustersList .block-involveParticipants > .form-group.row:not(:first-child) { background: var(--dlf-surface-alt); }
+.dlf .sharedClustersList input.form-control { height: 34px; border-radius: 7px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* ---------- Deliverable metadata ---------- */
+
+.dlf #dlf-metadata .metadataElement { margin: 0 0 16px; }
+/* global.css makes these containers flex rows; the feedback wrapper inside them takes the whole row. */
+.dlf .dlf-card .metadataElement > .feedback-flex-items,
+.dlf .dlf-card .text-area-container > .feedback-flex-items { flex: 1 1 auto; min-width: 0; }
+.dlf #dlf-metadata .metadataElement input.form-control,
+.dlf #dlf-metadata .metadataElement textarea.form-control { width: 100%; }
+.dlf #dlf-metadata .metadataElement-publicationDate input.form-control { max-width: 260px; }
+.dlf #dlf-metadata .metadataElement input[readonly].form-control,
+.dlf #dlf-metadata .metadataElement textarea[readonly].form-control { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-ink-soft); }
+.dlf #dlf-metadata h3,
+.dlf #dlf-metadata h4,
+.dlf #dlf-metadata .headTitle {
+  margin: 4px 0 12px;
+  padding: 16px 0 0;
+  border: 0;
+  border-top: 1px solid var(--dlf-line-soft);
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf #dlf-metadata .headTitle::after { display: none; }
+.dlf #dlf-metadata .simpleBox { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf #dlf-metadata .simpleBox.author { padding: 0 12px 0 12px; }
+
+/* Creator / Authors as the design's chips. */
+.dlf #dlf-metadata .authorsList { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
+.dlf #dlf-metadata .authorsList::before,
+.dlf #dlf-metadata .authorsList::after { display: none; }
+.dlf #dlf-metadata .authorsList .author {
+  position: relative;
+  float: none;
+  width: auto;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  margin: 0;
+  padding: 4px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 999px;
+  background: var(--dlf-surface-alt);
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf #dlf-metadata .authorsList .author > br { display: none; }
+.dlf #dlf-metadata .authorsList .author small { font: 400 11.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf #dlf-metadata .authorsList .author .removeLink { position: static; float: none; margin-left: 4px; }
+
+/* Publication metadata (journal articles). */
+.dlf #dlf-metadata .publicationMetadataBlock > .note,
+.dlf #dlf-metadata .publicationMetadataBlock .note {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-info-bg);
+  font: 400 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf #dlf-metadata .flagshipList .flagships,
+.dlf #dlf-metadata .flagshipList li {
+  position: relative;
+  margin: 0 0 6px;
+  padding: 9px 40px 9px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 500 13.5px Figtree, sans-serif;
+  list-style: none;
+}
+.dlf #dlf-metadata .flagshipList .removeFlagship {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf #dlf-metadata .flagshipList .removeFlagship:hover { background-color: var(--dlf-danger-bg); }
 
 /* ---------- Save bar ----------
  * The bar of the other redesigned sections: it follows the scroll 12px off the viewport

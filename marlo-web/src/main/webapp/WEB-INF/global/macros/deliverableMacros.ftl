@@ -889,7 +889,13 @@
 [#macro channelExampleMacro name="" url="" ]
   <div class="exampleUrl-block channel-${name}" style="display:[#if (deliverable.dissemination.disseminationChannel==name)!false]block[#else]none[/#if];">
     <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
-    <p><small>${url}</small></p>
+    [#-- repository_channel.url_example marks the identifier with <b></b>; auto-escaping printed the tags, so the
+         marked part is drawn bold here and every part stays escaped. --]
+    [#if url?contains("<b>") && url?contains("</b>")]
+      <p class="exampleUrl"><small>${url?keep_before("<b>")}<strong>${url?keep_after("<b>")?keep_before("</b>")}</strong>${url?keep_after("</b>")}</small></p>
+    [#else]
+      <p class="exampleUrl"><small>${url}</small></p>
+    [/#if]
   </div>
 [/#macro]
 

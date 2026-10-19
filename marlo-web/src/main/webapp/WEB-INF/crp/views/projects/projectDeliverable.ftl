@@ -16,7 +16,7 @@
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019-1"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
@@ -297,24 +297,39 @@
               [#if showDisseminationTabs]
               [#-- Deliverable disseminationMetadata --]
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
-                [#-- Is this deliverable already disseminated? --]
-                [@deliverableMacros.alreadyDisseminatedMacro /]
+                <div class="dlf-sections">
+                  [#-- ─── Dissemination ─── --]
+                  <section class="dlf-card" id="dlf-dissemination">
+                    <h2 class="dlf-card__title">[@s.text name="project.deliverable.redesign.section.dissemination" /]</h2>
 
-                [#-- Is this deliverable Open Access? --]
-                [@deliverableMacros.isOpenaccessMacro /]
+                    [#-- Is this deliverable already disseminated? --]
+                    <div class="dlf-question dlf-question--dissemination">
+                      [@deliverableMacros.alreadyDisseminatedMacro /]
+                    </div>
 
-                [#-- Have you adopted a license?  --]
-                [@deliverableMacros.deliverableLicenseMacro /]
+                    [#-- Is this deliverable Open Access? --]
+                    <div class="dlf-question">
+                      [@deliverableMacros.isOpenaccessMacro /]
+                    </div>
 
-                [#--  Does this deliverable involve Participants and Trainees? (General information in the AICCRA III layout) --]
-                [#if !participantsInGeneralInfo]
-                  [@deliverableMacros.deliverableParticipantsMacro /]
-                [/#if]
+                    [#-- Have you adopted a license?  --]
+                    <div class="dlf-question">
+                      [@deliverableMacros.deliverableLicenseMacro /]
+                    </div>
 
-                [#-- Metadata (included publications) --]
-                <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
-                <div class="simpleBox">
-                  [@deliverableMacros.deliverableMetadataMacro validateIsProgressWithStatus=validateIsProgressWithStatus/]
+                    [#--  Does this deliverable involve Participants and Trainees? (General information in the AICCRA III layout) --]
+                    [#if !participantsInGeneralInfo]
+                      <div class="dlf-question dlf-question--trainees">
+                        [@deliverableMacros.deliverableParticipantsMacro /]
+                      </div>
+                    [/#if]
+                  </section>
+
+                  [#-- ─── Metadata (included publications) ─── --]
+                  <section class="dlf-card" id="dlf-metadata">
+                    <h2 class="dlf-card__title">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h2>
+                    [@deliverableMacros.deliverableMetadataMacro validateIsProgressWithStatus=validateIsProgressWithStatus/]
+                  </section>
                 </div>
               </div>
               [#-- Deliverable qualityCheck --]
