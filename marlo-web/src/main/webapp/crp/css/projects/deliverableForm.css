@@ -888,36 +888,124 @@
   border-color: var(--dlf-brand);
   background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
 }
-/* Region: chips and the add control inside one field box. */
-.dlf .regionalBlock .elementsListComponent .panel-body {
+/* Region and countries: one field box per list, the chips and an inline "+ Add ..." prompt inside it. */
+.dlf #dlf-geographicScope .regionalBlock .panel.tertiary,
+.dlf #dlf-geographicScope .nationalBlock .select { margin: 0; padding: 0; border: 0; background: none; }
+.dlf #dlf-geographicScope .regionalBlock .panel.tertiary > .panel-head { margin: 0 0 8px; padding: 0; background: none; text-align: left; }
+.dlf #dlf-geographicScope .nationalBlock .select > label { margin: 0 0 8px; }
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
   min-height: 40px;
+  margin: 0;
   padding: 6px !important;
   border: 1px solid var(--dlf-line-strong) !important;
   border-radius: var(--dlf-radius-sm);
   background: #fff !important;
+  box-shadow: none;
 }
-.dlf .regionalBlock .elementsListComponent ul.list { display: contents; }
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body:focus-within { border-color: var(--dlf-brand) !important; box-shadow: var(--dlf-focus-ring); }
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body > ul.list { display: contents; }
 .dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement {
   display: inline-flex !important;
   align-items: center;
   gap: 7px;
   height: 28px;
+  margin: 0;
   padding: 0 4px 0 10px;
   border: 0 !important;
   border-radius: 6px;
   background: var(--dlf-chip);
   font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
 }
 .dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .elementName { font: inherit; }
-.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement { width: 20px; height: 20px; border-radius: 4px; }
-.dlf .regionalBlock .elementsListComponent .panel-body > .select,
-.dlf .regionalBlock .elementsListComponent .panel-body > .feedback-flex-items { flex: 1; min-width: 150px; }
-.dlf .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single { min-height: 28px; border: 0; background: transparent; }
-.dlf .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered { font: 500 12.5px/28px Figtree, sans-serif; color: var(--dlf-brand); }
+/* The chips' cross: the design's grey x, 20px, on a hover tint (region rows and country choices alike). */
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement,
+.dlf .dlf-card .nationalBlock .select2-selection__choice__remove {
+  order: 2;
+  position: static;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border-radius: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%234B5563' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  font-size: 0;
+  cursor: pointer;
+}
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement:hover,
+.dlf .dlf-card .nationalBlock .select2-selection__choice__remove:hover { background-color: #DDE5EC; }
+/* The add select sits after the chips on the same line instead of under them; select2 writes width:100%. */
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body > .select2-container { flex: 1 1 150px; width: auto !important; min-width: 150px; }
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single {
+  min-height: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  box-shadow: none;
+}
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default.select2-container--open .select2-selection--single { background: var(--dlf-info-bg); }
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 30px 0 6px;
+  font: 500 12.5px/28px Figtree, sans-serif;
+  color: var(--dlf-brand);
+}
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__arrow {
+  top: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%230277A2' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-selection__arrow b { display: none; }
+
+.dlf .dlf-card .nationalBlock .select2-container--default .select2-selection--multiple { min-height: 40px; padding: 6px; cursor: text; }
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-selection__rendered {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+.dlf .dlf-card .nationalBlock .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin: 0;
+  padding: 0 4px 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .nationalBlock .select2-selection__choice > span:not(.select2-selection__choice__remove) { display: inline-flex; align-items: center; gap: 7px; }
+.dlf .dlf-card .nationalBlock .select2-selection__choice .flag-icon {
+  flex: none;
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  background-size: cover;
+  background-position: center;
+  background-color: #E3E8EE;
+  box-shadow: 0 0 0 1px rgba(31, 42, 55, .12);
+}
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-search--inline { flex: 1 1 150px; min-width: 150px; }
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-search__field {
+  width: 100% !important;
+  height: 28px;
+  margin: 0;
+  padding: 0 6px;
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-search__field::placeholder { color: var(--dlf-brand); opacity: 1; }
 
 /* Cross-cutting: label, then the levels as numbered segments; the select underneath keeps the posted value. */
 .dlf #dlf-crossCutting .dlf-crossField {

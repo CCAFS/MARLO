@@ -328,7 +328,11 @@ $(document).ready(function() {
     $scopeComponent.addClass('dlf-scope');
     $scopeComponent.find('.panel-head label').append(
         $('<span class="dlf-scope__hint"></span>').text(text('select-all')));
-    $scopeSelect.find('option').each(function() {
+    // The select lists the scopes alphabetically; the chips follow their ids, broadest first as in the design
+    // (Global, Regional, Multi-national, National, Sub-national, then "yet to be determined").
+    $scopeSelect.find('option').sort(function(a, b) {
+      return (parseInt(a.value, 10) || 0) - (parseInt(b.value, 10) || 0);
+    }).each(function() {
       if(this.value === '-1' || this.value === '') {
         return;
       }
@@ -366,6 +370,18 @@ $(document).ready(function() {
     });
   }
   setAddLabel($root.find('.regionalBlock select'), text('add-region'));
+
+  // The countries multi-select reads as the region field: its search box is the "+ Add country..." prompt after
+  // the chips. select2 clears the placeholder whenever a country is chosen and redraws the choices on every
+  // change, so the prompt is set again after each redraw.
+  var addCountry = text('add-country');
+  watch($root.find('.nationalBlock .selectList'), function() {
+    $root.find('.nationalBlock .select2-selection--multiple .select2-search__field').each(function() {
+      if(this.getAttribute('placeholder') !== addCountry) {
+        this.setAttribute('placeholder', addCountry);
+      }
+    });
+  });
 
   // ---- Cross-cutting dimensions: the focus levels as a segmented control ----
   // Each marker keeps its select (the posted repIndGenderYouthFocusLevel.id); the buttons set it.
