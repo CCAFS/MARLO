@@ -96,6 +96,9 @@
   white-space: nowrap;
 }
 .dlf .dlf-btn--soft { border: 1px solid var(--dlf-info-border); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .dlf-btn--ghost { border: 1px solid var(--dlf-line-strong); background: #fff; color: var(--dlf-ink); }
+.dlf .dlf-btn--ghost:hover,
+.dlf .dlf-btn--ghost:focus { border-color: var(--dlf-subtle); background: #fff; color: var(--dlf-ink); }
 .dlf .dlf-btn--soft:hover { background: var(--dlf-info-hover); }
 .dlf .dlf-btn--sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: 7px; }
 
@@ -989,6 +992,200 @@
   cursor: pointer;
 }
 .dlf #dlf-metadata .flagshipList .removeFlagship:hover { background-color: var(--dlf-danger-bg); }
+
+/* ---------- Quality check tab ---------- */
+
+/* FAIR compliant card. */
+.dlf .dlf-fairCard { gap: 14px; }
+.dlf .dlf-fairCard__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dlf .dlf-fairCard__summary {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 999px;
+  background: var(--dlf-info-bg);
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
+.dlf .dlf-fairCard__summary:empty { display: none; }
+.dlf .dlf-fairCard__summary.is-complete { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-fairCard__note { margin-left: auto; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-fairCard__rows { display: flex; flex-direction: column; gap: 8px; }
+
+/* A principle row; projectDeliverable.css still styles .fairCompliant, so every property it sets is restated. */
+.dlf .dlf-fairRow.fairCompliant {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .dlf-fairRow.fairCompliant.achieved { border-color: var(--dlf-ok-border); background: #FAFDFA; }
+.dlf .dlf-fairRow .dlf-fairRow__badge.sign {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+  background: #E3E8EE;
+  font: 700 22px Figtree, sans-serif;
+  color: var(--dlf-subtle);
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-fairRow.achieved .dlf-fairRow__badge.sign { background: var(--dlf-ok); color: #fff; }
+.dlf .dlf-fairRow__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.dlf .dlf-fairRow__title { display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-fairRow__name { font: 600 14.5px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__name { color: var(--dlf-ink); }
+.dlf .dlf-fairRow__pill { padding: 1px 7px; border-radius: 5px; font: 600 11.5px Figtree, sans-serif; }
+.dlf .dlf-fairRow__pill--on { display: none; background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-fairRow__pill--off { background: var(--dlf-chip); color: var(--dlf-muted); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__pill--on { display: inline-block; }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__pill--off { display: none; }
+.dlf .dlf-fairRow__items { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.dlf .dlf-fairRow__items li {
+  position: relative;
+  padding-left: 24px;
+  font: 400 13.5px/1.45 Figtree, sans-serif;
+  color: var(--dlf-muted);
+  opacity: 1;
+}
+.dlf .dlf-fairRow__items li::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 50%;
+  background: #fff;
+}
+.dlf .dlf-fairRow.achieved .dlf-fairRow__items li { color: var(--dlf-ink); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__items li::before {
+  border-color: var(--dlf-ok);
+  background: var(--dlf-ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .dlf-fairRow__fix { align-self: flex-start; margin-top: 2px; color: var(--dlf-brand); }
+.dlf .dlf-fairRow__fix:hover { background: var(--dlf-info-bg); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__fix { display: none; }
+
+/* Compliance check (data deliverables): the macro's own heading gives way to the card's. */
+.dlf .dlf-compliance > .headTitle { display: none; }
+.dlf .dlf-compliance > .simpleBox { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child { display: flex; align-items: center; gap: 16px; margin: 0; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child::before,
+.dlf .dlf-compliance > .simpleBox > .row:first-child::after { display: none; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child > [class*="col-"] { float: none; width: auto; padding: 0; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child > .col-md-10 { flex: 1; min-width: 0; }
+.dlf .dlf-compliance .note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+/* Gold data meter: the three lights in a row, the lit one at full colour. */
+.dlf .dlf-compliance #box-out {
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 999px;
+  background: #fff;
+}
+.dlf .dlf-compliance #box-inside {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  filter: none;
+}
+.dlf .dlf-compliance #red,
+.dlf .dlf-compliance #yellow,
+.dlf .dlf-compliance #green {
+  position: static;
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  filter: none;
+  opacity: .22;
+}
+.dlf .dlf-compliance #red { background: var(--dlf-danger); }
+.dlf .dlf-compliance #yellow { background: var(--dlf-warn-dot); }
+.dlf .dlf-compliance #green { background: var(--dlf-ok); }
+.dlf .dlf-compliance #red.highlightRed,
+.dlf .dlf-compliance #yellow.highlightYellow,
+.dlf .dlf-compliance #green.highlightGreen { opacity: 1 !important; box-shadow: 0 0 0 3px rgba(31, 42, 55, .08); }
+
+/* Each question: the statement, the answers in a row, and the file-or-link proof a Yes asks for. */
+.dlf .dlf-compliance .question {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .dlf-compliance .question > h5 { margin: 0; font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-compliance .question > hr,
+.dlf .dlf-compliance .question > .clearfix { display: none; }
+.dlf .dlf-compliance .question > [class*="col-"] { float: none; width: auto; padding: 0; }
+.dlf .dlf-compliance .question > .col-md-4 { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.dlf .dlf-compliance .radio-block { margin: 0; padding: 0; }
+.dlf .dlf-compliance .radio-block label { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink); }
+/* Bootstrap's .radio pushes the label right and pins the input over its first letters. */
+.dlf .dlf-compliance .radio-block label { padding-left: 0; }
+.dlf .dlf-compliance .radio-block input[type="radio"] { position: static; flex: none; margin: 0; accent-color: var(--dlf-brand); }
+/* jQuery's show() empties the style attribute, so the grid keys on "not hidden" rather than on "block". */
+.dlf .dlf-compliance .fileOptions:not([style*="none"]) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: end;
+  padding: 12px;
+  border-top: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: #fff;
+}
+.dlf .dlf-compliance .fileOptions > [class*="col-"] { float: none; width: auto; padding: 0; margin: 0; }
+.dlf .dlf-compliance .fileOptions > [class*="col-"] > br { display: none; }
+.dlf .dlf-compliance .fileOptions > .col-md-1 { padding-bottom: 10px; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-compliance .fileOptions > .col-md-1 > br { display: none; }
+.dlf .dlf-compliance .fileUploaded.textMessage {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--dlf-ok-border);
+  border-radius: 7px;
+  background: var(--dlf-ok-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-ok);
+}
+.dlf .dlf-compliance .fileUploaded.textMessage[style*="none"] { display: none; }
 
 /* ---------- Save bar ----------
  * The bar of the other redesigned sections: it follows the scroll 12px off the viewport

@@ -11,12 +11,12 @@
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261019"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261019-1"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019-1"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019-2"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
@@ -334,14 +334,29 @@
               </div>
               [#-- Deliverable qualityCheck --]
               <div id="deliverable-qualityCheck" role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]">
-                [#--  Database/Dataset/Data documentation -- Maps/Geospatial data --]
-                <div id="complianceCheck" style="display:${deliverableMacros.displayDeliverableRule(deliverable, deliverableComplianceCheck)!};">
-                  [#-- Compliance check (Data products only) --]
-                  [@deliverableMacros.complianceCheck /]
-                </div>
-                <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">
-                  [#-- Fair Compliant --]
-                  [@deliverableMacros.fairCompliant /]
+                <div class="dlf-sections">
+                  [#--  Database/Dataset/Data documentation -- Maps/Geospatial data: deliverableInfo.js toggles #complianceCheck by sub-category --]
+                  <section class="dlf-card dlf-compliance" id="complianceCheck" style="display:${deliverableMacros.displayDeliverableRule(deliverable, deliverableComplianceCheck)!};">
+                    <h2 class="dlf-card__title">[@s.text name="project.deliverable.quality.compliance" /]</h2>
+                    [#-- Compliance check (Data products only) --]
+                    [@deliverableMacros.complianceCheck /]
+                  </section>
+
+                  [#-- FAIR compliant: deliverableQualityCheck.js keeps each .fairCompliant row's achieved / not-achieved class current --]
+                  <section class="dlf-card dlf-fairCard fairComplian-block" id="dlf-fair" style="display:${deliverable.deliverableInfo.requeriedFair()?string('flex','none')}">
+                    <div class="dlf-fairCard__head">
+                      <h2 class="dlf-card__title">[@s.text name="project.deliverable.quality.fairTitle" /]</h2>
+                      <span class="dlf-fairCard__summary" data-dlf-fair-summary data-label="[@s.text name="project.deliverable.redesign.fair.summary" /]"></span>
+                      <span class="dlf-fairCard__note">[@s.text name="project.deliverable.redesign.fair.calculated" /]</span>
+                    </div>
+                    <div class="dlf-fairCard__rows">
+                      [@dlfFairRow key="findable" letter="F" points=["Fpoint1", "Fpoint2", "Fpoint3"] fix="project.deliverable.redesign.fair.fix.findable" target=".type-findable" /]
+                      [@dlfFairRow key="accessible" letter="A" points=["Apoint1", "Apoint2", "Apoint3"] fix="project.deliverable.redesign.fair.fix.accessible" target=".type-accessible" /]
+                      [@dlfFairRow key="interoperable" letter="I" points=["Ipoint1", "Ipoint2", "Ipoint3"] /]
+                      [#-- Reusable lists the same two points the legacy block showed --]
+                      [@dlfFairRow key="reusable" letter="R" points=["Ipoint1", "Ipoint2"] fix="project.deliverable.redesign.fair.fix.reusable" target=".type-license" /]
+                    </div>
+                  </section>
                 </div>
               </div>
               [#-- Deliverable dataSharing
@@ -406,6 +421,37 @@
       63 -> Journal Article (peer reviewed) --]
 [@setDeliverableRule element=deliverable ruleName=(deliverableJournalArticles)!'' /]
 
+
+[#-- One FAIR principle of the Quality check card. The state comes from action.isF/isA/isI/isR on load and from
+     deliverableQualityCheck.js afterwards; the pill text and the fix button follow the class through the CSS. --]
+[#macro dlfFairRow key letter points fix="" target=""]
+  [#local state = "" /]
+  [#attempt]
+    [#if key == "findable"][#local value = action.isF(deliverable.id)!""][/#if]
+    [#if key == "accessible"][#local value = action.isA(deliverable.id)!""][/#if]
+    [#if key == "interoperable"][#local value = action.isI(deliverable.id)!""][/#if]
+    [#if key == "reusable"][#local value = action.isR(deliverable.id)!""][/#if]
+    [#if value?is_boolean][#local state = value?then("achieved", "not-achieved") /][/#if]
+  [#recover]
+    [#local state = "" /]
+  [/#attempt]
+  <div class="dlf-fairRow fairCompliant ${key} ${state}">
+    <span class="dlf-fairRow__badge sign" aria-hidden="true">${letter}</span>
+    <div class="dlf-fairRow__body">
+      <span class="dlf-fairRow__title">
+        <span class="dlf-fairRow__name">[@s.text name="project.deliverable.quality.${letter}Label" /]</span>
+        <span class="dlf-fairRow__pill dlf-fairRow__pill--on">[@s.text name="project.deliverableList.fairExplanation.achieved" /]</span>
+        <span class="dlf-fairRow__pill dlf-fairRow__pill--off">[@s.text name="project.deliverableList.fairExplanation.notAchieved" /]</span>
+      </span>
+      <ul class="dlf-fairRow__items">
+        [#list points as point]<li>[@s.text name="project.deliverable.quality.${point}" /]</li>[/#list]
+      </ul>
+      [#if fix?has_content]
+        <button type="button" class="dlf-btn dlf-btn--ghost dlf-btn--sm dlf-fairRow__fix" data-dlf-fair-fix="${target}">[@s.text name=fix /]</button>
+      [/#if]
+    </div>
+  </div>
+[/#macro]
 
 [#macro setDeliverableRule element ruleName]
   [#attempt]

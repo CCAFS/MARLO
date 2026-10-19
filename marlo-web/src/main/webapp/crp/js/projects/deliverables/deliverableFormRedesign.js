@@ -70,6 +70,45 @@ $(document).ready(function() {
   }
   dropLabelColons($root);
 
+  // ---- Quality check: FAIR summary and fix buttons ----
+  // deliverableQualityCheck.js recomputes each principle by swapping the achieved / not-achieved classes on the
+  // .fairCompliant rows; the summary counts the achieved rows whenever one of those classes changes.
+  var $fairRows = $root.find('.dlf-fairRow');
+  var $fairSummary = $root.find('[data-dlf-fair-summary]');
+
+  function refreshFairSummary() {
+    var achieved = $fairRows.filter('.achieved').length;
+    $fairSummary.text(String($fairSummary.attr('data-label') || '').replace('{0}', achieved))
+      .toggleClass('is-complete', achieved === $fairRows.length);
+  }
+
+  if($fairRows.length && $fairSummary.length) {
+    refreshFairSummary();
+    if(window.MutationObserver) {
+      var fairObserver = new MutationObserver(refreshFairSummary);
+      $fairRows.each(function() {
+        fairObserver.observe(this, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+      });
+    }
+  }
+
+  // A principle that is not achieved links to the question that decides it, on the Dissemination tab.
+  $root.on('click', '[data-dlf-fair-fix]', function() {
+    var target = $(this).attr('data-dlf-fair-fix');
+    $root.find('a[href="#deliverable-disseminationMetadata"]').tab('show');
+    setTimeout(function() {
+      var $question = $root.find('#deliverable-disseminationMetadata ' + target).closest('.dlf-question');
+      if($question.length) {
+        $('html, body').animate({
+          scrollTop: $question.offset().top - 90
+        }, 250);
+      }
+    }, 200);
+  });
+
   // ---- Word counters ----
   // applyWordCounter() (utils.js) prints "(20 words remaining of 20)"; the design drops the brackets. Only the
   // outer text changes, so the count it keeps updating is untouched.
