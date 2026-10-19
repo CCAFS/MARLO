@@ -10,15 +10,25 @@
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
-  "${baseUrlCdn}/global/js/fieldsValidation.js?20180529"
+  "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261019"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
-  "${baseUrlCdn}/global/css/404.css?20240523"
+  "${baseUrlCdn}/global/css/404.css?20240523",
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261019"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
+[#-- The deliverable and cluster chips are drawn in the form header instead of the shared top quote --]
+[#assign hideTopQuote = true /]
+[#-- "project" / "cluster" / "team", per global unit --]
+[#assign sectionNoun = (action.getText("projects.menu.status.noun"))!"project" /]
+[#-- Dissemination and Quality check only exist in reporting or upkeep, and only with dissemination on --]
+[#assign showDisseminationTabs = ((reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination"))!false /]
+[#-- AICCRA III layout: Participants/Trainees is a General information section, not a Dissemination question --]
+[#assign participantsInGeneralInfo = action.hasSpecificities("deliverable_participants_general_info_active") /]
 
 [#if !action.isAiccra()]
   [#assign currentSection = "projects" /]
@@ -55,21 +65,6 @@
   <div style="display:none" class="viewMore closed"></div>
 </div>
 -->
-
-<div class="animated flipInX container  viewMore-block containerAlertMargin">
-  <div class=" containerAlert  alert-leftovers alertColorBackgroundInfo"  id="containerAlert">
-    <div class="containerLine alertColorInfo"></div>
-    <div class="containerIcon">
-      <div class="containerIcon alertColorInfo">
-        <img src="${baseUrlCdn}/global/images/icon-question.png" />      
-      </div>
-    </div>
-    <div class="containerText col-md-12">
-      <p class="alertText">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
-    </div>
-    <div  class="viewMoreCollapse closed"></div>
-  </div>
-</div>
 
 [#if action.hasSpecificities('deliverable_completed_in_previous_phases_active') && completeInPreviousPhase]
   <div class="animated flipInX container  viewMore-block containerAlertMargin">
@@ -207,61 +202,64 @@
 
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]       
         
-        [#if action.hasSpecificities('duplicated_deliverables_functionality_active') && duplicated]
-          <div class="animated flipInX container viewMore-block containerAlertMargin">
-            <div class=" containerAlert  alert-leftovers alertColorBackgroundWarning"  id="containerAlert">
-              <div class="containerLine alertColorWarning"></div>
-              <div class="containerIcon">
-                <div class="containerIcon alertColorWarning">
-                  <img src="${baseUrlCdn}/global/images/icon-alert.png" />      
-                </div>
+        <div class="dlf">
+
+          [#-- Back to the list --]
+          <a class="dlf-back" href="[@s.url action='${crpSession}/deliverableList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M8 2.5 4.5 6 8 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            [@s.text name="project.deliverable.redesign.back"][@s.param]${sectionNoun}[/@s.param][/@s.text]
+          </a>
+
+          [#-- Deliverable and cluster chips, with the feedback status legend --]
+          <div class="dlf-chips">
+            <span class="dlf-chip dlf-chip--id" title="${(deliverable.deliverableInfo.title)!}">D${deliverable.id?c}</span>
+            <a class="dlf-chip dlf-chip--owner" href="[@s.url namespace="/projects" action='${crpSession}/description'][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"
+              title="[#if action.isAiccra()]C${project.id?c} - [/#if]${(project.projectInfo.title)!}">
+              <span class="dlf-chip__avatar" aria-hidden="true">${sectionNoun?cap_first?substring(0, 1)}</span>
+              [#if !action.isAiccra()]P${project.id?c}[#elseif (project.acronym)?has_content]${project.acronym}[#else]C${project.id?c}[/#if]
+            </a>
+            [#if action.hasSpecificities('feedback_active')]
+              <span class="dlf-feedbackLegend" role="note">
+                <span class="dlf-feedbackLegend__title">[@s.text name="project.deliverable.redesign.feedbackStatus" /]</span>
+                <span class="dlf-feedbackLegend__item"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus" alt="" />[@s.text name="feedbackStatus.blue" /]</span>
+                <span class="dlf-feedbackLegend__item"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus" alt="" />[@s.text name="feedbackStatus.yellow" /]</span>
+                <span class="dlf-feedbackLegend__item"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus" alt="" />[@s.text name="feedbackStatus.green" /]</span>
+              </span>
+            [/#if]
+          </div>
+
+          [#-- Title, with the FAIR status of the deliverable --]
+          <div class="dlf-head">
+            <h1 class="dlf-head__title">[#if (deliverable.deliverableInfo.title)?has_content]${deliverable.deliverableInfo.title}[#else][@s.text name="project.deliverable.redesign.untitled" /][/#if]</h1>
+            [#-- FAIR Compliant Mini: deliverableQualityCheck.js keeps the achieved / not-achieved classes current --]
+            <div class="dlf-head__fair fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('flex','none')}">
+              <span class="dlf-head__fairLabel">[@s.text name="project.deliverable.redesign.fairStatus" /]</span>
+              <div class="dlf-head__fairBoxes">
+                [#-- Findable --]
+                <div class="fairCompliant mini findable [#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]" title="[@s.text name="project.deliverable.quality.FLabel" /]"><div class="sign">F</div></div>
+                [#-- Accessible --]
+                <div class="fairCompliant mini accessible [#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]" title="[@s.text name="project.deliverable.quality.ALabel" /]"><div class="sign">A</div></div>
+                [#-- Interoperable --]
+                <div class="fairCompliant mini interoperable [#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]" title="[@s.text name="project.deliverable.quality.ILabel" /]"><div class="sign">I</div></div>
+                [#-- Reusable --]
+                <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]" title="[@s.text name="project.deliverable.quality.RLabel" /]"><div class="sign">R</div></div>
               </div>
-              <div class="containerText col-md-12">
-                <p class="alertText"> 
-                  [@s.text name="project.deliverable.duplicatedHelp" /] 
-                </p>
-              </div>
-              [#--  <div class="viewMoreCollapse closed"></div>--]
             </div>
           </div>
-        [/#if]
 
-          <div class="form-group">
-            <br />
-            [#-- Back --]
-            <small>
-              <a href="[@s.url action='${crpSession}/deliverableList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-                <span class="glyphicon glyphicon-circle-arrow-left"></span> Back to the cluster deliverables
-              </a>
-            </small>
+          [#-- Instructions --]
+          <div class="dlf-note" role="note">
+            <span class="dlf-note__icon" aria-hidden="true">i</span>
+            <p class="dlf-note__text">[#if reportingActive][@s.text name="project.deliverable.help2" /][#else][@s.text name="project.deliverable.help1" /][/#if]</p>
+          </div>
 
-          [#--  Feedback Status --]
-          [#if action.hasSpecificities('feedback_active') ]
-            <div class="form-group col-md-12 legendContent-global">
-              <div class="colors-global">
-                <div class="col-md-12 form-group "><b>Feedback status:</b></div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.blue" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_yellow.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.yellow" /]</div>
-                <div class="color col-md-4"><img src="${baseUrlCdn}/global/images/comment_green.png" class="qaCommentStatus feedbackStatus">[@s.text name="feedbackStatus.green" /]</div>
-              </div>
+          [#if action.hasSpecificities('duplicated_deliverables_functionality_active') && duplicated]
+            <div class="dlf-note dlf-note--warn" role="note">
+              <span class="dlf-note__icon" aria-hidden="true">!</span>
+              <p class="dlf-note__text">[@s.text name="project.deliverable.duplicatedHelp" /]</p>
             </div>
           [/#if]
 
-            [#-- FAIR Compliant Mini --]
-            <div class="fairComplian-block" style="display:${deliverable.deliverableInfo.requeriedFair()?string('block','none')}">
-              <div class="pull-right">
-                [#-- Findable --]
-                <div class="fairCompliant mini findable [#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">F</div></div>
-                [#-- Accessible --]
-                <div class="fairCompliant mini accessible [#attempt][#if action.isA(deliverable.id)??][#if action.isA(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">A</div></div>
-                [#-- Interoperable --]
-                <div class="fairCompliant mini interoperable [#attempt][#if action.isI(deliverable.id)??][#if action.isI(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">I</div></div>
-                [#-- Reusable --]
-                <div class="fairCompliant mini reusable [#attempt][#if action.isR(deliverable.id)??][#if action.isR(deliverable.id)] achieved [#else] not-achieved [/#if][/#if][#recover][/#attempt]"><div class="sign">R</div></div>
-              </div>
-            </div>
-
-          </div>
           [#-- Is deliverable complete --]
           [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
 
@@ -272,16 +270,16 @@
           [#assign validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
 
           <input id="indexTab" name="indexTab" type="hidden" value="${(indexTab)!0}">
-          <div class="deliverableTabs">
+          <div class="deliverableTabs dlf-tabs">
             [#--  Deliverable Menu  --]
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs" role="tablist" aria-label="[@s.text name="project.deliverable.redesign.tabs.label" /]">
                 <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
 
-                [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
-                <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
+                [#if showDisseminationTabs]
+                <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">[@s.text name="project.deliverable.redesign.tab.dissemination" /]</a></li>
 
                 [#assign isRequiredQuality = deliverable.deliverableInfo.requeriedFair() || ((action.hasDeliverableRule(deliverable.deliverableInfo, deliverableComplianceCheck))!false) /]
-                <li role="presentation" class="[#if indexTab==3]active[/#if]" style="display:${isRequiredQuality?string('block','none')};"><a index="3" href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>
+                <li role="presentation" class="[#if indexTab==3]active[/#if]" style="display:${isRequiredQuality?string('block','none')};"><a index="3" href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">[@s.text name="project.deliverable.redesign.tab.quality" /]</a></li>
 
                 [#--
                 [#assign isRequiredDataSharing = (deliverable.dissemination.alreadyDisseminated)!false /]
@@ -296,7 +294,7 @@
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
                 [#include "/WEB-INF/crp/views/projects/deliverableInfo.ftl" /]
               </div>
-              [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
+              [#if showDisseminationTabs]
               [#-- Deliverable disseminationMetadata --]
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
                 [#-- Is this deliverable already disseminated? --]
@@ -308,8 +306,10 @@
                 [#-- Have you adopted a license?  --]
                 [@deliverableMacros.deliverableLicenseMacro /]
 
-                [#--  Does this deliverable involve Participants and Trainees? --]
-                [@deliverableMacros.deliverableParticipantsMacro /]
+                [#--  Does this deliverable involve Participants and Trainees? (General information in the AICCRA III layout) --]
+                [#if !participantsInGeneralInfo]
+                  [@deliverableMacros.deliverableParticipantsMacro /]
+                [/#if]
 
                 [#-- Metadata (included publications) --]
                 <h3 class="headTitle">[@s.text name="project.deliverable.dissemination.metadataSubtitle" /]</h3>
@@ -337,8 +337,26 @@
               [/#if]
             </div>
            </div>
-          [#-- Section Buttons & hidden inputs--]
-          [#include "/WEB-INF/crp/views/projects/buttons-deliverables.ftl" /]
+          [#-- Save bar: save state and the shared last-edit message on the left, the buttons on the right.
+               deliverableFormRedesign.js moves the message out of the buttons include and tracks unsaved changes. --]
+          <div class="dlf-saveBar">
+            <div class="dlf-saveBar__info">
+              [#if editable || editStatus]
+                <span class="dlf-saveBar__state" role="status" aria-live="polite">
+                  <span class="dlf-saveBar__dot" aria-hidden="true"></span>
+                  <span data-dlf-save-state
+                    data-saved="[@s.text name="project.deliverable.redesign.saveBar.saved" /]"
+                    data-unsaved="[@s.text name="project.deliverable.redesign.saveBar.unsaved" /]">[@s.text name="project.deliverable.redesign.saveBar.saved" /]</span>
+                </span>
+              [/#if]
+            </div>
+            <div class="dlf-saveBar__actions">
+              [#-- Section Buttons & hidden inputs--]
+              [#include "/WEB-INF/crp/views/projects/buttons-deliverables.ftl" /]
+            </div>
+          </div>
+
+        </div>
 
           [/@s.form]
       </div>

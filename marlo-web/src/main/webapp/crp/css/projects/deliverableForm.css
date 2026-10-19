@@ -1,0 +1,764 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster deliverable form (A2-2607 redesign).
+ *
+ * Scoped under .dlf (projectDeliverable.ftl) so nothing here reaches the sidebar or any
+ * other page. The fields keep the markup customForm (forms.ftl) and deliverableMacros.ftl
+ * emit, because the deliverable scripts, the feedback module and fieldsValidation.js read
+ * it; only its presentation is restated here, at a weight that beats global.css and the
+ * legacy projectDeliverable.css loaded before this file.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.dlf,
+.dlf p, .dlf a, .dlf span, .dlf small, .dlf strong, .dlf label, .dlf li,
+.dlf h1, .dlf h2, .dlf h3, .dlf h4, .dlf h5,
+.dlf input, .dlf textarea, .dlf select, .dlf button {
+  font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.dlf .glyphicon { font-family: 'Glyphicons Halflings'; }
+
+.dlf {
+  --dlf-brand: #0277A2;
+  --dlf-brand-dark: #015C7D;
+  --dlf-ink: #1F2A37;
+  --dlf-ink-soft: #4B5563;
+  --dlf-muted: #6B7280;
+  --dlf-subtle: #9AA4B0;
+  --dlf-line: #E5E9EF;
+  --dlf-line-soft: #EEF2F5;
+  --dlf-line-strong: #CBD5DE;
+  --dlf-surface: #FFFFFF;
+  --dlf-surface-alt: #FAFBFC;
+  --dlf-chip: #EEF2F5;
+  --dlf-info-bg: #F2F9FC;
+  --dlf-info-hover: #E8F4F9;
+  --dlf-info-border: #BEDFEC;
+  --dlf-ok: #2E6B2F;
+  --dlf-ok-bg: #EDF7ED;
+  --dlf-ok-border: #BEE0BE;
+  --dlf-warn: #8A5A00;
+  --dlf-warn-bg: #FDF3E4;
+  --dlf-warn-border: #F3DCAE;
+  --dlf-warn-dot: #C08A2E;
+  --dlf-danger: #B03028;
+  --dlf-danger-bg: #FCF3F1;
+  --dlf-required: #C7401C;
+  --dlf-focus-ring: 0 0 0 3px rgba(2, 119, 162, .12);
+  --dlf-radius: 12px;
+  --dlf-radius-sm: 8px;
+  --dlf-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 6px;
+  color: var(--dlf-ink);
+}
+.dlf *, .dlf *::before, .dlf *::after { box-sizing: border-box; }
+.dlf strong, .dlf b { font-weight: 600; }
+.dlf .dlf-icon { flex: none; display: block; }
+
+.dlf button:focus-visible,
+.dlf a:focus-visible { outline: 2px solid var(--dlf-brand); outline-offset: 2px; }
+
+/* ---------- Shared bits ---------- */
+
+.dlf-link,
+.dlf .dlf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  margin: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+  cursor: pointer;
+}
+.dlf .dlf-link:hover,
+.dlf .dlf-link:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); text-decoration: none; }
+.dlf .dlf-link--end { align-self: flex-end; margin-left: auto; }
+
+.dlf .dlf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--dlf-radius-sm);
+  font: 600 13px Figtree, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dlf .dlf-btn--soft { border: 1px solid var(--dlf-info-border); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .dlf-btn--soft:hover { background: var(--dlf-info-hover); }
+.dlf .dlf-btn--sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: 7px; }
+
+.dlf .dlf-hint { margin: 0; font: 400 12.5px/1.45 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-hint a { color: var(--dlf-brand); }
+
+.dlf .dlf-fields { display: inline-flex; align-items: center; gap: 6px; font: 600 12.5px Figtree, sans-serif; }
+.dlf .dlf-fields--ok { color: var(--dlf-ok); }
+.dlf .dlf-fields--warn { color: var(--dlf-warn); }
+.dlf .dlf-fields--warn .dlf-icon { color: var(--dlf-warn-dot); }
+
+/* ---------- Header ---------- */
+
+.dlf .dlf-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px 0 4px;
+  border-radius: 7px;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+}
+.dlf .dlf-back:hover,
+.dlf .dlf-back:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); text-decoration: none; }
+
+.dlf .dlf-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: -6px; }
+.dlf .dlf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-decoration: none;
+}
+.dlf .dlf-chip--id { padding: 0 8px; border-radius: 6px; background: var(--dlf-chip); font-weight: 700; font-variant-numeric: tabular-nums; }
+.dlf .dlf-chip--owner { padding: 0 9px 0 3px; border: 1px solid var(--dlf-line); border-radius: 999px; background: #fff; }
+.dlf .dlf-chip--owner:hover,
+.dlf .dlf-chip--owner:focus { border-color: var(--dlf-line-strong); color: var(--dlf-ink); text-decoration: none; }
+.dlf .dlf-chip__avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #C7401C;
+  color: #fff;
+  font: 700 10px Figtree, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-feedbackLegend { margin-left: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.dlf .dlf-feedbackLegend__title { font: 600 11px Figtree, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #5B6472; }
+.dlf .dlf-feedbackLegend__item { display: inline-flex; align-items: center; gap: 7px; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-feedbackLegend__item img { width: 16px; height: auto; margin: 0; }
+
+.dlf .dlf-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-top: 15px; }
+.dlf .dlf-head__title { flex: 1; min-width: 0; margin: 0; font: 600 22px/1.3 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .dlf-head__fair { flex: none; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 2px; }
+.dlf .dlf-head__fairLabel { font: 600 11px Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .dlf-head__fairBoxes { display: flex; gap: 4px; }
+/* The mini FAIR boxes of projectDeliverable.css, drawn as the design's status squares. */
+.dlf .dlf-head .fairCompliant.mini {
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  border: 1px solid #E0E5EB;
+  border-radius: 6px;
+  background: #F1F3F6;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-head .fairCompliant.mini .sign {
+  float: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 700 12.5px Figtree, sans-serif;
+  line-height: 1;
+  color: var(--dlf-subtle);
+}
+.dlf .dlf-head .fairCompliant.mini.achieved { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); }
+.dlf .dlf-head .fairCompliant.mini.achieved .sign { color: var(--dlf-ok); }
+.dlf .dlf-head .fairCompliant.mini.not-achieved { border-color: #EBD3CE; background: var(--dlf-danger-bg); }
+.dlf .dlf-head .fairCompliant.mini.not-achieved .sign { color: var(--dlf-danger); }
+
+.dlf .dlf-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius);
+  background: var(--dlf-info-bg);
+}
+.dlf .dlf-note__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--dlf-brand);
+  color: #fff;
+  font: 700 12px Figtree, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-note__text { flex: 1; min-width: 0; margin: 0; font: 400 13.5px/1.55 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .dlf-note--warn { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); }
+.dlf .dlf-note--warn .dlf-note__icon { background: var(--dlf-warn-dot); }
+
+/* ---------- Tabs ---------- */
+
+.dlf .dlf-tabs { display: flex; flex-direction: column; gap: 14px; }
+.dlf .dlf-tabs > .nav-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin: 0;
+  border-bottom: 1px solid #DDE3EA;
+}
+.dlf .dlf-tabs > .nav-tabs::before,
+.dlf .dlf-tabs > .nav-tabs::after { display: none; }
+.dlf .dlf-tabs > .nav-tabs > li { float: none; margin: 0 0 -1px; }
+.dlf .dlf-tabs > .nav-tabs > li > a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  font: 500 14px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .dlf-tabs > .nav-tabs > li > a:hover,
+.dlf .dlf-tabs > .nav-tabs > li > a:focus { border: 0; border-bottom: 2px solid transparent; background: none; color: var(--dlf-brand-dark); }
+.dlf .dlf-tabs > .nav-tabs > li.active > a,
+.dlf .dlf-tabs > .nav-tabs > li.active > a:hover,
+.dlf .dlf-tabs > .nav-tabs > li.active > a:focus {
+  border: 0;
+  border-bottom: 2px solid var(--dlf-brand);
+  background: none;
+  font-weight: 600;
+  color: var(--dlf-brand-dark);
+}
+/* fieldsValidation.js marks the tab of a field the validator rejected. */
+.dlf .dlf-tabs > .nav-tabs > li > a.fieldError { color: var(--dlf-required); }
+.dlf .dlf-tabs > .nav-tabs > li > a.fieldError::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dlf-required);
+}
+.dlf .dlf-tabs > .tab-content { padding: 0; border: 0; background: none; }
+/* projectDeliverable.css frames the active pane; the cards inside carry their own frame. */
+.dlf .dlf-tabs > .tab-content > .tab-pane { margin: 0; padding: 0; border: 0; background: none; }
+
+/* ---------- Section cards ---------- */
+
+.dlf .dlf-sections { display: flex; flex-direction: column; gap: 14px; }
+.dlf .dlf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 20px 20px;
+  background: var(--dlf-surface);
+  border: 1px solid var(--dlf-line);
+  border-radius: var(--dlf-radius);
+  box-shadow: var(--dlf-shadow);
+}
+.dlf .dlf-card__title { margin: 0; font: 600 16px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-card__subtitle { margin: 0 0 6px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-divided { padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }
+
+.dlf .dlf-grid { display: grid; gap: 16px; align-items: start; }
+.dlf .dlf-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dlf .dlf-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* ---------- Fields (customForm markup) ---------- */
+
+/* flow-root keeps the floats of a field (word counter, feedback bubble) inside it. */
+.dlf .dlf-field { display: flow-root; position: relative; min-width: 0; margin: 0; }
+.dlf .dlf-field .form-group { margin-bottom: 0; }
+.dlf .feedback-flex-items { align-items: flex-start; gap: 8px; }
+.dlf .feedback-flex-items > .fieldReference { flex: 1; min-width: 0; }
+
+.dlf .dlf-card label,
+.dlf .dlf-card .yesNoLabel {
+  display: block;
+  margin: 0 0 6px;
+  font: 600 13px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card label .requiredTag,
+.dlf .dlf-card .requiredTag { margin-left: 4px; font-weight: 700; color: var(--dlf-required); }
+.dlf .dlf-card label.readOnly { color: var(--dlf-muted); }
+.dlf .dlf-card .helpLabel { display: block; margin-top: 2px; font: 400 12.5px/1.45 Figtree, sans-serif; font-style: normal; color: var(--dlf-muted) !important; }
+.dlf .dlf-card label br { display: none; }
+
+.dlf .dlf-card input.form-control,
+.dlf .dlf-card textarea.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  box-shadow: none;
+  font: 400 14px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card textarea.form-control { height: auto; min-height: 96px; padding: 10px 12px; line-height: 1.6; resize: vertical; }
+.dlf .dlf-card input.form-control:focus,
+.dlf .dlf-card textarea.form-control:focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); outline: none; }
+.dlf .dlf-card input.form-control[readonly] { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-ink-soft); }
+.dlf .dlf-card .fieldError,
+.dlf .dlf-card input.form-control.fieldError,
+.dlf .dlf-card textarea.form-control.fieldError { border-color: #D48A6A; }
+
+/* customForm prints a committed answer as a <p>; global.css justifies it with break-all. */
+.dlf .dlf-card .input > p,
+.dlf .dlf-card .textArea > p,
+.dlf .dlf-card .select > p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--dlf-ink);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Word counters (applyWordCounter, utils.js): a quiet caption under the control's right edge. */
+.dlf .dlf-card .charCount {
+  float: none;
+  display: block;
+  width: auto;
+  margin: 5px 0 0;
+  font-size: 11.5px !important;
+  line-height: 1.4;
+  color: var(--dlf-muted);
+  text-align: right !important;
+}
+.dlf .dlf-card .charCount.fieldError { color: var(--dlf-required); }
+
+/* The feedback bubble beside the control, level with its first line. */
+.dlf .dlf-card .commentNumberContainer { position: relative; flex: none; margin-top: 26px; }
+.dlf .dlf-card label .commentNumberContainer { display: none; }
+.dlf .dlf-card img.qaComment { width: 22px; margin-left: 0; }
+.dlf .dlf-card .numberOfCommentsBubble { top: -9px; right: -9px; left: auto; z-index: 1; margin: 0; transform: none; }
+.dlf .dlf-card .numberOfCommentsBubble p { min-width: 20px; padding: 1px 5px; font-size: 9.5px; line-height: 14px; }
+
+/* select2 single selects as the design's native-looking selects. */
+.dlf .dlf-card .selectList { position: relative; }
+.dlf .dlf-card .select2-container--default .select2-selection--single,
+.dlf .dlf-card .select2-container--default .select2-selection--multiple {
+  min-height: 40px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+}
+.dlf .dlf-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 32px 0 12px;
+  font: 500 14px/38px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .select2-container--default .select2-selection--single .select2-selection__arrow { top: 7px; right: 8px; height: 24px; }
+.dlf .dlf-card .select2-container--default.select2-container--focus .select2-selection--single,
+.dlf .dlf-card .select2-container--default.select2-container--open .select2-selection--single,
+.dlf .dlf-card .select2-container--default.select2-container--focus .select2-selection--multiple { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .dlf-card .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  margin: 5px 6px 0 0;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .select2-container--default .select2-selection--multiple .select2-selection__choice__remove { margin-right: 5px; color: var(--dlf-ink-soft); }
+
+/* The overlays deliverableInfo.js shows over the year selects to lock them. */
+.dlf #deliverableYear,
+.dlf #newExpectedYear { position: relative; }
+.dlf #deliverableYear .overlay,
+.dlf #newExpectedYear .overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: rgba(247, 249, 251, .55);
+  border-radius: var(--dlf-radius-sm);
+  cursor: not-allowed;
+}
+
+/* ---------- Lists (elementsListComponent, activities, funding sources) ---------- */
+
+.dlf .dlf-card .elementsListComponent.panel,
+.dlf .dlf-card .panel.tertiary {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.dlf .dlf-card .elementsListComponent .panel-head,
+.dlf .dlf-card .elementsListComponent .panel-body { padding: 0; border: 0; background: none; min-height: 0 !important; }
+.dlf .dlf-card .elementsListComponent ul.list,
+.dlf .dlf-card .dlf-list ul.list { display: flex; flex-direction: column; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
+.dlf .dlf-card .elementsListComponent ul.list:empty { margin: 0; }
+.dlf .dlf-card .elementsListComponent li.relationElement,
+.dlf .dlf-card .dlf-list li.activities,
+.dlf .dlf-card .dlf-list li.fundingSources {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 9px 40px 9px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 500 13.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .elementsListComponent li.relationElement .elementName { display: block; text-wrap: pretty; }
+.dlf .dlf-card .dlf-list li .name { display: block; }
+.dlf .dlf-card .dlf-list li .name br:last-child { display: none; }
+.dlf .dlf-card .dlf-list li .description { font-weight: 400; font-size: 12.5px; color: var(--dlf-muted); }
+/* The remove buttons, as the design's small red cross. */
+.dlf .dlf-card .elementsListComponent .removeElement,
+.dlf .dlf-card .removeActivity,
+.dlf .dlf-card .removeFundingSource {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .dlf-card .elementsListComponent .removeElement:hover,
+.dlf .dlf-card .removeActivity:hover,
+.dlf .dlf-card .removeFundingSource:hover { background-color: var(--dlf-danger-bg); }
+.dlf .dlf-card p.emptyText {
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  text-align: left;
+}
+/* The "add" select of a list reads as the design's dashed "+ Add" control. */
+.dlf .dlf-card .elementsListComponent .select2-container--default .select2-selection--single,
+.dlf .dlf-card .dlf-list .select2-container--default .select2-selection--single {
+  min-height: 38px;
+  border: 1px dashed #9ACBE0;
+  background: #F7FBFD;
+}
+.dlf .dlf-card .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered,
+.dlf .dlf-card .dlf-list .select2-container--default .select2-selection--single .select2-selection__rendered {
+  font: 600 13px/36px Figtree, sans-serif;
+  color: var(--dlf-brand);
+}
+.dlf .dlf-card .dlf-list__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.dlf .dlf-card .dlf-list__head label { margin: 0; }
+.dlf .dlf-card .dlf-list .note,
+.dlf .dlf-card .elementsListComponent .note { margin: 6px 0 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+
+/* ---------- Questions (yes/no rows of deliverableMacros) ---------- */
+
+.dlf .dlf-question > .simpleBox,
+.dlf .dlf-question .simpleBox.form-group {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+  box-shadow: none;
+}
+.dlf .dlf-question + br,
+.dlf .dlf-question > br { display: none; }
+.dlf .dlf-card .yesNoInputDeliverable.row,
+.dlf .dlf-card .yesNoInputMeliaStudy.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 0;
+  padding: 12px 14px;
+}
+.dlf .dlf-card .yesNoInputDeliverable.row::before,
+.dlf .dlf-card .yesNoInputDeliverable.row::after,
+.dlf .dlf-card .yesNoInputMeliaStudy.row::before,
+.dlf .dlf-card .yesNoInputMeliaStudy.row::after { display: none; }
+.dlf .dlf-card .yesNoInputDeliverable.row > [class*="col-md-"],
+.dlf .dlf-card .yesNoInputMeliaStudy.row > [class*="col-md-"] { float: none; width: auto; padding: 0; }
+.dlf .dlf-card .yesNoInputDeliverable.row > .col-md-9,
+.dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-9 { flex: 1; min-width: 0; padding-top: 6px; }
+.dlf .dlf-card .yesNoInputDeliverable.row > .col-md-3,
+.dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-3 { flex: none; display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-card .yesNoInputDeliverable .yesNoLabel,
+.dlf .dlf-card .yesNoInputMeliaStudy .yesNoLabel { margin: 0; font-size: 13.5px; line-height: 1.45; text-wrap: pretty; }
+.dlf .dlf-card .yesNoInputDeliverable small { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-card .yesNoInputDeliverable p { margin: 3px 0 0; }
+.dlf .dlf-card .yesNoInputDeliverable .feedback-flex-items { display: flex; align-items: center; }
+.dlf .dlf-card .yesNoInputDeliverable .commentNumberContainer,
+.dlf .dlf-card .yesNoInputMeliaStudy .commentNumberContainer { margin-top: 0; }
+
+/* The yes/no switch (forms.ftl yesNoInputDeliverable) as a segmented control. */
+.dlf .dlf-card .onoffswitch { margin: 0; text-align: left; }
+.dlf .dlf-card .onoffswitch .button-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--dlf-chip);
+}
+.dlf .dlf-card .onoffswitch .button-wrap .radio-input { position: absolute; opacity: 0; pointer-events: none; }
+.dlf .dlf-card .onoffswitch .button-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 30px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+  transition: background-color .12s ease, color .12s ease;
+}
+.dlf .dlf-card .onoffswitch .button-label:hover { color: var(--dlf-ink); }
+.dlf .dlf-card .onoffswitch .yes-button-label.radio-checked { background: var(--dlf-brand); color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(2, 119, 162, .3); }
+.dlf .dlf-card .onoffswitch .no-button-label.radio-checked { background: var(--dlf-ink-soft); color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .3); }
+.dlf .dlf-card .onoffswitch .no-button-label-disabled { opacity: .45; cursor: not-allowed; }
+
+/* The answer block a Yes opens. */
+.dlf .dlf-card .block-yesNo,
+.dlf .dlf-card .block-yesNoInputMeliaStudy {
+  padding: 16px 14px 14px;
+  border-top: 1px solid var(--dlf-line);
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+}
+.dlf .dlf-card .block-yesNo > hr,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > hr,
+.dlf .dlf-card .block-yesNo > br,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > br { display: none; }
+.dlf .dlf-card .block-yesNo > .form-group,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > .form-group { margin: 0 0 16px; }
+.dlf .dlf-card .block-yesNo > .form-group:last-child,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > .form-group:last-child { margin-bottom: 0; }
+
+/* SHFRM priority actions (projectPartnerMacro blocks). */
+.dlf .dlf-card #projectPartnersBlock.simpleBox { margin: 0; padding: 0; border: 0; background: none; }
+.dlf .dlf-card #projectPartnersBlock .projectPartner {
+  margin: 0 0 8px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .dlf-card #projectPartnersBlock .blockTitle { padding: 10px 12px; font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ---------- Status ---------- */
+
+.dlf .dlf-statusNotes { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-top: -4px; }
+
+/* ---------- Geographic scope ---------- */
+
+.dlf #dlf-geographicScope .geographicScopeBlock > .form-group { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+.dlf #dlf-geographicScope .geographicScopeBlock .row { margin: 0; }
+.dlf #dlf-geographicScope .geographicScopeBlock .row > .col-md-6 { float: none; width: 100%; padding: 0; }
+.dlf #dlf-geographicScope .regionalBlock,
+.dlf #dlf-geographicScope .nationalBlock { margin: 0; }
+
+/* ---------- Cross-cutting dimensions ---------- */
+
+.dlf #dlf-crossCutting > .form-group { margin: 0; }
+.dlf #dlf-crossCutting .labelheader { margin: -8px 0 12px; font: 400 13px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf #dlf-crossCutting .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.dlf #dlf-crossCutting .row::before,
+.dlf #dlf-crossCutting .row::after { display: none; }
+.dlf #dlf-crossCutting .row > [class*="col-md-"] {
+  float: none;
+  width: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+
+/* ---------- Partners ---------- */
+
+.dlf #dlf-partners #deliverable-partnerships-new { display: flex; flex-direction: column; gap: 18px; margin: 0; padding: 0; border: 0; background: none; }
+.dlf #dlf-partners .deliverablePartnerItem.simpleBox {
+  position: relative;
+  margin: 0 0 8px;
+  padding: 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+/* Room for the remove control, wherever the macro renders one. */
+.dlf #dlf-partners .deliverablePartnerItem.simpleBox:has(> .removePartnerItem) { padding-right: 44px; }
+.dlf #dlf-partners .deliverablePartnerItem .removePartnerItem {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf #dlf-partners .deliverablePartnerItem .removePartnerItem:hover { background-color: var(--dlf-danger-bg); }
+.dlf #dlf-partners .usersBlock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 10px 0 0; }
+.dlf #dlf-partners .usersBlock:empty { display: none; }
+.dlf #dlf-partners .usersBlock::before,
+.dlf #dlf-partners .usersBlock::after { display: none; }
+.dlf #dlf-partners .deliverableUserItem {
+  float: none;
+  width: auto;
+  padding: 7px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: #fff;
+}
+.dlf #dlf-partners .deliverableUserItem:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf #dlf-partners .deliverableUserItem label { margin: 0; font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf #dlf-partners .otherDeliverablePartners .emptyText { margin: 0 0 8px; }
+.dlf #dlf-partners .partnerListMsj { margin-top: 4px; }
+
+/* ---------- Save bar ----------
+ * The bar of the other redesigned sections: it follows the scroll 12px off the viewport
+ * bottom and settles at the end of the form. */
+.dlf .dlf-saveBar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin-top: 4px;
+  padding: 10px 12px 10px 18px;
+  background: var(--dlf-surface);
+  border: 1px solid var(--dlf-line);
+  border-radius: var(--dlf-radius);
+  box-shadow: 0 6px 18px rgba(31, 42, 55, .12);
+}
+.dlf .dlf-saveBar__info { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
+.dlf .dlf-saveBar__state { display: flex; align-items: center; gap: 8px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ok); }
+.dlf .dlf-saveBar__dot { flex: none; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--dlf-ok); }
+.dlf .dlf-saveBar.is-dirty .dlf-saveBar__state { color: var(--dlf-warn); }
+.dlf .dlf-saveBar.is-dirty .dlf-saveBar__dot { background: var(--dlf-warn-dot); }
+.dlf .dlf-saveBar__actions { flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.dlf .dlf-saveBar .clearfix { display: none; }
+.dlf .dlf-saveBar .buttons,
+.dlf .dlf-saveBar .buttons-content {
+  float: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+/* global.js pins .buttons-content to the viewport on scroll; inside the sticky bar it stays put. */
+.dlf .dlf-saveBar .buttons-content.positionFixedBot { position: static; bottom: auto; right: auto !important; }
+.dlf .dlf-saveBar .buttons-content.animated { animation: none; }
+.dlf .dlf-saveBar .button-save,
+.dlf .dlf-saveBar .button-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-brand);
+  color: #fff;
+  font: 600 14px Figtree, sans-serif;
+  text-decoration: none;
+}
+.dlf .dlf-saveBar .button-save:hover,
+.dlf .dlf-saveBar .button-save:focus,
+.dlf .dlf-saveBar .button-save:active,
+.dlf .dlf-saveBar .button-edit:hover,
+.dlf .dlf-saveBar .button-edit:focus,
+.dlf .dlf-saveBar .button-edit:active { border: 0; background: var(--dlf-brand-dark); color: #fff; }
+.dlf .dlf-saveBar .button-cancel,
+.dlf .dlf-saveBar .button-history,
+.dlf .dlf-saveBar .form-button:not(.button-save):not(.button-edit) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  color: var(--dlf-ink-soft);
+  font: 600 13px Figtree, sans-serif;
+  text-decoration: none;
+}
+.dlf .dlf-saveBar #lastUpdateMessage {
+  display: block;
+  float: none !important;
+  width: auto;
+  margin: 0;
+  font: 400 12.5px Figtree, sans-serif;
+  font-style: normal;
+  color: var(--dlf-muted);
+  text-align: left;
+}
+/* Until the script moves it next to the state it claims no room among the buttons. */
+.dlf .dlf-saveBar .dlf-saveBar__actions #lastUpdateMessage { display: none; }
+.dlf .dlf-saveBar.is-dirty #lastUpdateMessage { display: none; }
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 991px) {
+  .dlf .dlf-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .dlf .dlf-head { flex-direction: column; }
+  .dlf .dlf-head__fair { align-items: flex-start; }
+  .dlf .dlf-grid--2,
+  .dlf .dlf-grid--3,
+  .dlf #dlf-crossCutting .row,
+  .dlf #dlf-partners .usersBlock { grid-template-columns: minmax(0, 1fr); }
+  .dlf .dlf-card .yesNoInputDeliverable.row,
+  .dlf .dlf-card .yesNoInputMeliaStudy.row { flex-direction: column; }
+  .dlf .dlf-saveBar { flex-wrap: wrap; }
+  .dlf .dlf-saveBar__info { flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dlf .dlf-card .onoffswitch .button-label { transition: none; }
+}
