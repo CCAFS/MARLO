@@ -1,4 +1,6 @@
 [#ftl]
+[#-- A section that draws the ID chip in its own header sets hideTopQuote before the include. --]
+[#if !(hideTopQuote!false)]
 <div id="top-quote">
   [#-- A section can put its own chips ahead of the ID chip by defining this macro. --]
   [#if topQuoteExtras??][@topQuoteExtras /][/#if]
@@ -26,3 +28,4 @@
   
 </div>
 <div class="clearfix"></div>
+[/#if]
