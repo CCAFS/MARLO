@@ -181,6 +181,43 @@ $(document).ready(function() {
     applyAddLabels();
   }
 
+  // An add control with nothing left to add is hidden: every option is taken (global.js and deliverableShfrm.js
+  // disable the chosen ones) or the list reached its maxLimit-N. Each of those changes comes with a list row
+  // added or removed, or a select2 re-init, so the same observer re-checks it.
+  function hasNothingToAdd($select) {
+    var free = $select.find('option').filter(function() {
+      return this.value !== '' && this.value !== '-1' && !this.disabled;
+    }).length;
+    var max = parseInt((($select.attr('class') || '').match(/\bmaxLimit-(\d+)/) || [])[1], 10) || 0;
+    var count = $select.closest('.elementsListComponent').find('ul.list > li.relationElement').length;
+    return free === 0 || (max > 0 && count >= max);
+  }
+
+  function hideExhaustedAdds() {
+    $root.find('select[data-dlf-add-label]').each(function() {
+      var $container = $(this).next('.select2');
+      var exhausted = hasNothingToAdd($(this));
+      if($container.hasClass('dlf-isExhausted') !== exhausted) {
+        $container.toggleClass('dlf-isExhausted', exhausted);
+      }
+    });
+    // Countries: the inline "+ Add country..." prompt goes once select2's limit (one country for a national
+    // scope) is reached or every country is chosen.
+    $root.find('.nationalBlock select.countriesSelect').each(function() {
+      var select2 = $(this).data('select2');
+      var limit = select2 ? parseInt(select2.options.get('maximumSelectionLength'), 10) || 0 : 0;
+      var chosen = ($(this).val() || []).length;
+      var free = $(this).find('option').filter(function() {
+        return this.value !== '' && !this.selected && !this.disabled;
+      }).length;
+      var exhausted = (limit > 0 && chosen >= limit) || free === 0;
+      var $search = $(this).next('.select2').find('.select2-search--inline');
+      if($search.hasClass('dlf-isExhausted') !== exhausted) {
+        $search.toggleClass('dlf-isExhausted', exhausted);
+      }
+    });
+  }
+
   if(window.MutationObserver) {
     var labelsBusy = false;
     new MutationObserver(function() {
@@ -189,6 +226,7 @@ $(document).ready(function() {
       }
       labelsBusy = true;
       applyAddLabels();
+      hideExhaustedAdds();
       labelsBusy = false;
     }).observe($root[0], {
         childList: true,
@@ -452,6 +490,8 @@ $(document).ready(function() {
       $item.addClass('dlf-shared-item').find('.elementName').after($card);
     });
   });
+
+  hideExhaustedAdds();
 
   // ---- Word counters ----
   // applyWordCounter() (utils.js) prints "(20 words remaining of 20)"; the design drops the brackets. Only the

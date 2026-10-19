@@ -373,6 +373,12 @@
    margin, which overflows the dropdown and scrolls it sideways. */
 .select2-container .select2-dropdown .select2-search--dropdown .select2-search__field { margin-right: 0; }
 
+/* An add control with nothing left to add (deliverableFormRedesign.js hideExhaustedAdds). */
+.dlf .select2-container.dlf-isExhausted,
+.dlf .select2-search--inline.dlf-isExhausted { display: none !important; }
+/* A hidden sub-action control would still take the 8px flex gap under the last row. */
+.dlf .dlf-shfrm .subSectionsSelector > .subActionsSelector:has(.dlf-isExhausted) { display: none; }
+
 /* select2 single selects as the design's native-looking selects. */
 .dlf .dlf-card .selectList { position: relative; }
 .dlf .dlf-card .select2-container--default .select2-selection--single,
@@ -813,17 +819,21 @@
 .dlf .dlf-shfrm #projectPartnersBlock .blockContent { display: block !important; padding: 12px; }
 .dlf .dlf-shfrm #projectPartnersBlock .blockContent > hr { display: none; }
 .dlf .dlf-shfrm #projectPartnersBlock .contactsPerson.panel { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+/* The card body is the design's 12px box with 8px between rows; the legacy blocks stack 15px of padding and
+   16px + 5px of margins under the last row, which would stay behind when the add control is hidden. */
+.dlf .dlf-shfrm #projectPartnersBlock .fullPartBlock { padding: 0; }
 .dlf .dlf-shfrm .subSectionsSelector { display: flex; flex-direction: column; gap: 8px; }
 .dlf .dlf-shfrm .dlf-sub__head { order: 0; display: flex; align-items: center; gap: 4px; font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink-soft); }
 .dlf .dlf-shfrm .dlf-sub__head .requiredTag { margin-left: 3px; color: var(--dlf-required); }
-.dlf .dlf-shfrm .deliverableWrapper { order: 1; display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.dlf .dlf-shfrm .subSectionsSelector > .deliverableWrapper.form-group { order: 1; display: flex; flex-direction: column; gap: 8px; margin: 0; }
 .dlf .dlf-shfrm .deliverableWrapper:empty { display: none; }
-.dlf .dlf-shfrm .subActionsSelector { order: 2; margin: 0; }
+.dlf .dlf-shfrm .subSectionsSelector > .subActionsSelector.form-group { order: 2; margin: 0; }
 .dlf .dlf-shfrm .subActionsSelector label { display: none; }
 .dlf .dlf-shfrm .deliverableActivity {
   display: flex !important;
   align-items: flex-start;
   gap: 10px;
+  margin: 0;
   padding: 7px 6px 7px 10px;
   border: 1px solid var(--dlf-line);
   border-radius: 8px;
