@@ -1063,44 +1063,74 @@
 .dlf .dlf-level.is-on { background: #fff; color: var(--dlf-ink); font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
 .dlf .dlf-level.is-on .dlf-level__n { background: var(--dlf-brand); color: #fff; }
 
-/* Partner people: radio ring, initials avatar, name and email (macro data-dlf-* attributes). */
-/* radioFlat-flex (global.css) makes the card a flex row; the email has to sit under the name. */
+/* Partner people: the design's card, a grid of ring | initials | name over email (macro data-dlf-* attributes).
+   radioFlat-flex (global.css) makes the card a flex row and its feedback holder an inline-flex line, which pushed
+   the name down; the grid places every part on its own cell instead. The whole card toggles the person
+   (deliverableFormRedesign.js). */
 .dlf #dlf-partners .usersBlock .deliverableUserItem {
-  display: block;
+  display: grid;
+  grid-template-columns: 16px 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  align-items: center;
+  column-gap: 10px;
   position: relative;
   min-height: 46px;
-  padding: 7px 10px 7px 64px;
+  margin: 0;
+  padding: 7px 10px;
+  cursor: pointer;
 }
+.dlf #dlf-partners .deliverableUserItem:hover { border-color: var(--dlf-subtle); }
+.dlf #dlf-partners .deliverableUserItem:has(input:checked):hover { border-color: var(--dlf-brand); }
 .dlf #dlf-partners .deliverableUserItem::before {
   content: attr(data-dlf-initials);
-  position: absolute;
-  top: 50%;
-  left: 32px;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 28px;
   height: 28px;
-  margin-top: -14px;
   border-radius: 50%;
   background: #E3E8EE;
   font: 700 10.5px Figtree, sans-serif;
   color: var(--dlf-ink-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .dlf #dlf-partners .deliverableUserItem::after {
   content: attr(data-dlf-email);
-  display: block;
+  grid-column: 3;
+  grid-row: 2;
   overflow: hidden;
-  font: 400 12px Figtree, sans-serif;
+  font: 400 12px/1.4 Figtree, sans-serif;
   color: var(--dlf-muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.dlf #dlf-partners .deliverableUserItem .feedback-flex-items:empty { display: none; }
-.dlf #dlf-partners .deliverableUserItem .radioFlat,
-.dlf #dlf-partners .deliverableUserItem .inputsFlat { position: static; margin: 0; padding: 0; }
-.dlf #dlf-partners .deliverableUserItem label { margin: 0; font: 600 13.5px/1.35 Figtree, sans-serif; color: var(--dlf-ink); }
-/* The ring (or check box) sits at the left edge of the card, the avatar after it. */
+.dlf #dlf-partners .deliverableUserItem .fieldReference,
+.dlf #dlf-partners .deliverableUserItem .inputsFlat {
+  grid-column: 3;
+  grid-row: 1;
+  position: static;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+/* The feedback holder (QA comments) floats in the corner instead of taking a line above the name. */
+.dlf #dlf-partners .deliverableUserItem > .feedback-flex-items { position: absolute; top: 4px; right: 6px; margin: 0; }
+.dlf #dlf-partners .deliverableUserItem .radio-input,
+.dlf #dlf-partners .deliverableUserItem input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+.dlf #dlf-partners .deliverableUserItem label {
+  display: block;
+  position: static;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font: 600 13.5px/1.35 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+/* The ring (or check box) is the first column, centred on the card. */
 .dlf #dlf-partners .deliverableUserItem .radio-label::before,
 .dlf #dlf-partners .deliverableUserItem .checkbox-label::before {
   position: absolute;
@@ -1110,11 +1140,22 @@
   height: 16px;
   margin: -8px 0 0;
 }
-.dlf #dlf-partners .deliverableUserItem .radio-label::before { border: 1.5px solid var(--dlf-line-strong); background: #fff; }
+.dlf #dlf-partners .deliverableUserItem .radio-label::before { border: 1.5px solid var(--dlf-subtle); border-radius: 50%; background: #fff; }
 .dlf #dlf-partners .deliverableUserItem input[type="radio"]:checked + .radio-label::before {
   border-color: var(--dlf-brand);
   background: var(--dlf-brand);
   box-shadow: inset 0 0 0 3px #fff;
+}
+/* The check box of the other contacts is the scope chips' box: legacy draws it #3197EE without a mark. */
+.dlf #dlf-partners .deliverableUserItem .checkbox-label::before {
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf #dlf-partners .deliverableUserItem input[type="checkbox"]:checked + .checkbox-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
 }
 
 /* Shared clusters: two columns of cards with flag, country, code and lead. */

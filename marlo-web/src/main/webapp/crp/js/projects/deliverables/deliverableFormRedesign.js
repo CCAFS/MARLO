@@ -455,6 +455,21 @@ $(document).ready(function() {
     });
   });
 
+  // ---- Partner people: the whole card selects or clears the person ----
+  // Delegated, because changePartnerInstitution() (deliverableInfo.js) redraws the cards when the partner changes.
+  // The click is taken over from the label so a chosen responsible person (a radio) can be cleared as well.
+  $root.on('click', '#dlf-partners .deliverableUserItem', function(e) {
+    if($(e.target).closest('.feedback-flex-items, .commentNumberContainer, a, button').length) {
+      return;
+    }
+    var $input = $(this).find('input[type="radio"], input[type="checkbox"]').first();
+    if(!$input.length || $input.prop('disabled') || e.target === $input[0]) {
+      return;
+    }
+    e.preventDefault();
+    $input.prop('checked', !$input.prop('checked')).trigger('change');
+  });
+
   // ---- Shared clusters: the design's cards (flag, country, code, lead) ----
   var isoByCountry = {};
   $root.find('select.countriesSelect option').each(function() {
