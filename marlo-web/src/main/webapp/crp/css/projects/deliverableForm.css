@@ -508,7 +508,7 @@
 .dlf .dlf-card .yesNoInputDeliverable.row,
 .dlf .dlf-card .yesNoInputMeliaStudy.row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   margin: 0;
   padding: 12px 14px;
@@ -520,7 +520,7 @@
 .dlf .dlf-card .yesNoInputDeliverable.row > [class*="col-md-"],
 .dlf .dlf-card .yesNoInputMeliaStudy.row > [class*="col-md-"] { float: none; width: auto; padding: 0; }
 .dlf .dlf-card .yesNoInputDeliverable.row > .col-md-9,
-.dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-9 { flex: 1; min-width: 0; padding-top: 6px; }
+.dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-9 { flex: 1; min-width: 0; }
 .dlf .dlf-card .yesNoInputDeliverable.row > .col-md-3,
 .dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-3 { flex: none; display: flex; align-items: center; gap: 8px; }
 .dlf .dlf-card .yesNoInputDeliverable .yesNoLabel,
@@ -1685,7 +1685,7 @@
   .dlf #dlf-crossCutting .row,
   .dlf #dlf-partners .usersBlock { grid-template-columns: minmax(0, 1fr); }
   .dlf .dlf-card .yesNoInputDeliverable.row,
-  .dlf .dlf-card .yesNoInputMeliaStudy.row { flex-direction: column; }
+  .dlf .dlf-card .yesNoInputMeliaStudy.row { flex-direction: column; align-items: flex-start; }
   .dlf .dlf-saveBar { flex-wrap: wrap; }
   .dlf .dlf-saveBar__info { flex: 1 1 100%; }
 }
