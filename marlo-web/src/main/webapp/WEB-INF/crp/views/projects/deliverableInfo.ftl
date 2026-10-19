@@ -17,6 +17,21 @@
 <input type="hidden" id="clusterLeaderRole" name="clusterLeaderRole" value="${((action.isProjectLeader(projectID))!'false')?c}"/>
 
 <div class="dlf-sections">
+  [#-- Texts deliverableFormRedesign.js writes into the list controls --]
+  <span hidden data-dlf-strings
+    data-add-indicator="[@s.text name="project.deliverable.redesign.add.indicator" /]"
+    data-add-priority-action="[@s.text name="project.deliverable.redesign.add.priorityAction" /]"
+    data-add-sub-action="[@s.text name="project.deliverable.redesign.add.subAction" /]"
+    data-add-activity="[@s.text name="project.deliverable.redesign.add.activity" /]"
+    data-add-funding-source="[@s.text name="project.deliverable.redesign.add.fundingSource" /]"
+    data-add-shared="[@s.text name="project.deliverable.redesign.add.shared"][@s.param]${sectionNoun}[/@s.param][/@s.text]"
+    data-add-region="[@s.text name="project.deliverable.redesign.add.region" /]"
+    data-add-country="[@s.text name="project.deliverable.redesign.add.country" /]"
+    data-sub-actions="[@s.text name="project.deliverable.redesign.subActions" /]"
+    data-this-section="[@s.text name="project.deliverable.redesign.thisSection"][@s.param]${sectionNoun}[/@s.param][/@s.text]"
+    data-select-all="[@s.text name="project.deliverable.redesign.geo.selectAll" /]"
+    data-remove="[@s.text name="project.deliverable.redesign.remove" /]"
+    data-project-code="C${project.id?c}"></span>
 
   [#-- ─── Basic information ─────────────────────────────────────────────── --]
   <section class="dlf-card" id="dlf-basics">
@@ -170,11 +185,11 @@
 
     [#-- Performance indicators. The help asks for an SHFRM indicator, so it only shows where SHFRM is asked. --]
     [#if !project.projectInfo.administrative && !phaseOne && !isCenterProject ]
-      [#assign indicatorsHelp = action.hasSpecificities('shfrm_contribution_active')?then("project.deliverable.generalInformation.keyOutput.help", "") /]
+      [#assign indicatorsHelp = action.hasSpecificities('shfrm_contribution_active')?then("project.deliverable.redesign.indicators.help", "project.deliverable.redesign.indicators.helpNoShfrm") /]
       <div class="dlf-field listindicators">
         [@customForm.elementsListComponent name="deliverable.crpOutcomes" elementType="crpProgramOutcome" elementList=(deliverable.crpOutcomes)![] label="project.deliverable.generalInformation.keyOutput" listName="programOutcomes" keyFieldName="id" help=indicatorsHelp helpIcon=false paramText=soilIndicatorsText displayFieldName="composedName" required=true maxLimit=3/]
         <a class="dlf-link dlf-link--end" href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${project.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-          [@s.text name="project.deliverable.generalInformation.keyOutputNotice" /]
+          [@s.text name="project.deliverable.redesign.indicators.notListed"][@s.param]${sectionNoun}[/@s.param][/@s.text]
         </a>
       </div>
     [/#if]

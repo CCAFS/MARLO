@@ -56,8 +56,12 @@
 .dlf strong, .dlf b { font-weight: 600; }
 .dlf .dlf-icon { flex: none; display: block; }
 
+/* The design draws no outline (Chrome's #005FCC/#025FCC ring); fields show a border and a soft ring, controls the ring. */
+.dlf *:focus,
+.dlf *:focus-visible { outline: none !important; }
 .dlf button:focus-visible,
-.dlf a:focus-visible { outline: 2px solid var(--dlf-brand); outline-offset: 2px; }
+.dlf a:focus-visible,
+.dlf .button-label:focus-visible { box-shadow: var(--dlf-focus-ring); }
 
 /* ---------- Shared bits ---------- */
 
@@ -604,8 +608,15 @@
 /* ---------- Cross-cutting dimensions ---------- */
 
 .dlf #dlf-crossCutting > .form-group { margin: 0; }
-.dlf #dlf-crossCutting .labelheader { margin: -8px 0 12px; font: 400 13px Figtree, sans-serif; color: var(--dlf-ink-soft); }
-.dlf #dlf-crossCutting .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.dlf #dlf-crossCutting .labelheader {
+  margin: -8px 0 12px;
+  padding: 0;
+  border: 0;
+  font: 400 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf #dlf-crossCutting .labelheader::after { display: none; }
+.dlf #dlf-crossCutting .row { display: flex; flex-direction: column; gap: 10px; margin: 0; }
 .dlf #dlf-crossCutting .row::before,
 .dlf #dlf-crossCutting .row::after { display: none; }
 .dlf #dlf-crossCutting .row > [class*="col-md-"] {
@@ -657,6 +668,383 @@
 .dlf #dlf-partners .deliverableUserItem label { margin: 0; font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); }
 .dlf #dlf-partners .otherDeliverablePartners .emptyText { margin: 0 0 8px; }
 .dlf #dlf-partners .partnerListMsj { margin-top: 4px; }
+
+/* ---------- General information: design components over the shared list markup ---------- */
+
+/* Code pills (IPI 1.1, Priority action 10, Sub-action 2). */
+.dlf .dlf-code {
+  flex: none;
+  margin-top: 1px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: #DCEEF6;
+  font: 700 11.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+  white-space: nowrap;
+}
+.dlf .dlf-code--sub { background: var(--dlf-chip); color: var(--dlf-ink-soft); }
+.dlf .dlf-count { margin-left: 6px; font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-count:empty { display: none; }
+
+/* Performance indicators: pill + label rows, and no add control once the three are chosen. */
+/* global.css draws every list row (.panel.tertiary .panel-body > ul.list > li: grey fill, hard shadow, 2px corners);
+   the design's row is restated at a weight that beats it. Region chips and shared cluster cards refine it below. */
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 8px 9px 12px;
+  border: 1px solid #E5E9EF !important; /* global.css forces #E0E0E0 with !important */
+  border-radius: 9px;
+  background: #FAFBFC;
+  box-shadow: none;
+  font: 500 13.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .elementName {
+  order: 1;
+  flex: 1;
+  min-width: 0;
+  font: 500 13.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-wrap: pretty;
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .dlf-code {
+  order: 0;
+  flex: none;
+  margin-top: 2px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: #DCEEF6;
+  font: 700 11px/1.5 Figtree, sans-serif;
+  color: #015C7D;
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement {
+  order: 2;
+  position: static;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  border-radius: 6px;
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .sortElement { display: none !important; }
+.dlf .listindicators .elementsListComponent.is-full .panel-body > .select,
+.dlf .listindicators .elementsListComponent.is-full .panel-body > .feedback-flex-items + .select,
+.dlf .listindicators .elementsListComponent.is-full .select2-container { display: none !important; }
+
+/* Funding sources: the design's money icon on the left of each source. */
+.dlf .dlf-card .dlf-list li.fundingSources { display: flex; align-items: center; gap: 10px; padding-left: 8px; }
+.dlf .dlf-card .dlf-list li.fundingSources::before {
+  content: "";
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--dlf-ok-border);
+  border-radius: 7px;
+  background: var(--dlf-ok-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Crect x='1.8' y='4' width='12.4' height='8.4' rx='1.6' stroke='%232E6B2F' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8.2' r='1.8' stroke='%232E6B2F' stroke-width='1.3'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .dlf-card .dlf-list li.fundingSources > .clearfix { display: none; }
+.dlf .dlf-card .dlf-list li.fundingSources strong { font-weight: 600; }
+
+/* SHFRM: the answer block is a flex column so the priority action cards sit between the question and its add control. */
+.dlf .dlf-shfrm { display: flex; flex-direction: column; gap: 18px; }
+.dlf .dlf-shfrm > hr,
+.dlf .dlf-shfrm > br { display: none; }
+.dlf .dlf-shfrm > .form-group { margin: 0; }
+.dlf .dlf-shfrm .dlf-shfrm__pa,
+.dlf .dlf-shfrm .dlf-shfrm__pa #actionsListReference,
+.dlf .dlf-shfrm .dlf-shfrm__pa .feedback-flex-items,
+.dlf .dlf-shfrm .dlf-shfrm__pa .elementsListComponent { display: contents; }
+.dlf .dlf-shfrm .dlf-shfrm__pa .panel-head { order: 1; margin-bottom: -8px; }
+.dlf .dlf-shfrm #projectPartnersBlock { order: 2; }
+.dlf .dlf-shfrm .dlf-shfrm__pa .panel-body { order: 3; }
+.dlf .dlf-shfrm .dlf-shfrm__pa .commentNumberContainer { order: 1; align-self: flex-end; margin-top: -40px; }
+/* The list of priority actions keeps the posted ids; the cards show them. */
+.dlf .dlf-shfrm .dlf-shfrm__pa .panel-body > ul.list { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock { display: flex; flex-direction: column; gap: 10px; }
+.dlf .dlf-shfrm #projectPartnersBlock:not(:has(.projectPartner)) { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock .projectPartner {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf .dlf-shfrm #projectPartnersBlock .projectPartner .blockTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 10px 10px 12px;
+  border-bottom: 1px solid var(--dlf-line-soft);
+  background: none;
+  font: 600 13.5px/1.45 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: default;
+}
+.dlf .dlf-shfrm #projectPartnersBlock .blockTitle::before,
+.dlf .dlf-shfrm #projectPartnersBlock .blockTitle::after { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock .blockTitle > span:not(.dlf-code) { flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: 10px; }
+.dlf .dlf-shfrm #projectPartnersBlock .priorityActionTitle { text-wrap: pretty; }
+.dlf .dlf-pa__remove,
+.dlf .dlf-shfrm .removeDeliverable {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .dlf-pa__remove:hover,
+.dlf .dlf-shfrm .removeDeliverable:hover { background-color: var(--dlf-danger-bg); }
+/* The cards are always open: the accordion of the legacy blocks is not part of the design. */
+.dlf .dlf-shfrm #projectPartnersBlock .blockContent { display: block !important; padding: 12px; }
+.dlf .dlf-shfrm #projectPartnersBlock .blockContent > hr { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock .contactsPerson.panel { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-shfrm .subSectionsSelector { display: flex; flex-direction: column; gap: 8px; }
+.dlf .dlf-shfrm .dlf-sub__head { order: 0; display: flex; align-items: center; gap: 4px; font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .dlf-shfrm .dlf-sub__head .requiredTag { margin-left: 3px; color: var(--dlf-required); }
+.dlf .dlf-shfrm .deliverableWrapper { order: 1; display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.dlf .dlf-shfrm .deliverableWrapper:empty { display: none; }
+.dlf .dlf-shfrm .subActionsSelector { order: 2; margin: 0; }
+.dlf .dlf-shfrm .subActionsSelector label { display: none; }
+.dlf .dlf-shfrm .deliverableActivity {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 6px 7px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .dlf-shfrm .deliverableActivity[style*="none"] { display: none !important; }
+.dlf .dlf-shfrm .deliverableActivity > span.name { flex: 1; min-width: 0; order: 1; font: 500 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-shfrm .deliverableActivity > .dlf-code { order: 0; }
+.dlf .dlf-shfrm .deliverableActivity > .removeDeliverable { order: 2; float: none; position: static; }
+.dlf .dlf-shfrm .deliverableActivity > .clearfix { display: none; }
+/* Both add controls are the design's dashed "+ Add ..." selects. */
+.dlf .dlf-shfrm .select2-container--default .select2-selection--single {
+  min-height: 38px;
+  border: 1px dashed #9ACBE0;
+  background: #F7FBFD;
+}
+.dlf .dlf-shfrm .select2-container--default .select2-selection--single .select2-selection__rendered { font: 600 13px/36px Figtree, sans-serif; color: var(--dlf-brand); }
+
+/* MELIA: the help under "Description of activity / study" is a plain caption, as the design writes it. */
+.dlf .dlf-card label .note--2 {
+  display: block;
+  float: none;
+  width: auto;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 400 12.5px/1.45 Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+.dlf .dlf-card label .note--2 p { margin: 0; font: inherit; color: inherit; }
+.dlf .dlf-card label .note--2::before { display: none; }
+
+/* Geographic scope: the scopes as toggle chips; the list underneath keeps the posted ids. */
+.dlf .dlf-scope > .panel-body { display: none; }
+.dlf .dlf-scope__hint { margin-left: 8px; font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-scopeChips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.dlf .dlf-scopeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .dlf-scopeChip:hover { border-color: var(--dlf-subtle); }
+.dlf .dlf-scopeChip__box {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .dlf-scopeChip.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .dlf-scopeChip.is-on .dlf-scopeChip__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Region: chips and the add control inside one field box. */
+.dlf .regionalBlock .elementsListComponent .panel-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px !important;
+  border: 1px solid var(--dlf-line-strong) !important;
+  border-radius: var(--dlf-radius-sm);
+  background: #fff !important;
+}
+.dlf .regionalBlock .elementsListComponent ul.list { display: contents; }
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 4px 0 10px;
+  border: 0 !important;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+}
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .elementName { font: inherit; }
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement { width: 20px; height: 20px; border-radius: 4px; }
+.dlf .regionalBlock .elementsListComponent .panel-body > .select,
+.dlf .regionalBlock .elementsListComponent .panel-body > .feedback-flex-items { flex: 1; min-width: 150px; }
+.dlf .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single { min-height: 28px; border: 0; background: transparent; }
+.dlf .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered { font: 500 12.5px/28px Figtree, sans-serif; color: var(--dlf-brand); }
+
+/* Cross-cutting: label, then the levels as numbered segments; the select underneath keeps the posted value. */
+.dlf #dlf-crossCutting .dlf-crossField {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf #dlf-crossCutting .dlf-crossField .feedback-flex-items { flex: none; align-items: center; }
+.dlf #dlf-crossCutting .dlf-crossField .select { display: flex; align-items: center; width: 110px; }
+.dlf #dlf-crossCutting .dlf-crossField .select > label { margin: 0; }
+.dlf #dlf-crossCutting .dlf-crossField .selectList { display: none; }
+.dlf #dlf-crossCutting .dlf-crossField .commentNumberContainer { margin: 0 0 0 auto; order: 3; }
+.dlf .dlf-levels { display: inline-flex; align-items: center; gap: 2px; padding: 4px; border-radius: 10px; background: var(--dlf-chip); }
+.dlf .dlf-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .dlf-level__n {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #DDE3EA;
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-level.is-on { background: #fff; color: var(--dlf-ink); font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+.dlf .dlf-level.is-on .dlf-level__n { background: var(--dlf-brand); color: #fff; }
+
+/* Partner people: radio ring, initials avatar, name and email (macro data-dlf-* attributes). */
+/* radioFlat-flex (global.css) makes the card a flex row; the email has to sit under the name. */
+.dlf #dlf-partners .usersBlock .deliverableUserItem {
+  display: block;
+  position: relative;
+  min-height: 46px;
+  padding: 7px 10px 7px 64px;
+}
+.dlf #dlf-partners .deliverableUserItem::before {
+  content: attr(data-dlf-initials);
+  position: absolute;
+  top: 50%;
+  left: 32px;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  border-radius: 50%;
+  background: #E3E8EE;
+  font: 700 10.5px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf #dlf-partners .deliverableUserItem::after {
+  content: attr(data-dlf-email);
+  display: block;
+  overflow: hidden;
+  font: 400 12px Figtree, sans-serif;
+  color: var(--dlf-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dlf #dlf-partners .deliverableUserItem .feedback-flex-items:empty { display: none; }
+.dlf #dlf-partners .deliverableUserItem .radioFlat,
+.dlf #dlf-partners .deliverableUserItem .inputsFlat { position: static; margin: 0; padding: 0; }
+.dlf #dlf-partners .deliverableUserItem label { margin: 0; font: 600 13.5px/1.35 Figtree, sans-serif; color: var(--dlf-ink); }
+/* The ring (or check box) sits at the left edge of the card, the avatar after it. */
+.dlf #dlf-partners .deliverableUserItem .radio-label::before,
+.dlf #dlf-partners .deliverableUserItem .checkbox-label::before {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0;
+}
+.dlf #dlf-partners .deliverableUserItem .radio-label::before { border: 1.5px solid var(--dlf-line-strong); background: #fff; }
+.dlf #dlf-partners .deliverableUserItem input[type="radio"]:checked + .radio-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand);
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* Shared clusters: two columns of cards with flag, country, code and lead. */
+.dlf .listClusters .elementsListComponent ul.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item { align-items: center; padding: 8px 8px 8px 10px; }
+.dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item > .elementName { display: none; }
+.dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item > .dlf-shared { order: 1; }
+.dlf .dlf-card .listClusters .panel-head label { font-weight: 400; color: var(--dlf-ink-soft); }
+.dlf .dlf-shared { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+.dlf .dlf-shared__flag {
+  flex: none;
+  width: 24px;
+  height: 17px;
+  border-radius: 3px;
+  background-color: #E3E8EE;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(31, 42, 55, .12);
+}
+.dlf .dlf-shared__flag.flag-icon { line-height: 17px; }
+.dlf .dlf-shared__flag.flag-icon::before { content: none; }
+.dlf .dlf-shared__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dlf .dlf-shared__name { font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-shared__code { font-weight: 500; color: var(--dlf-muted); }
+.dlf .dlf-shared__lead { font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-shared__this {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: #DCEEF6;
+  font: 600 11px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
 
 /* ---------- Dissemination & Metadata tab ---------- */
 

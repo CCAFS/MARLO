@@ -1406,7 +1406,12 @@
     [#if (dpp.user.id == user.id)!false][#local deliverableUser = dpp ][#break][/#if]
   [/#list]
   
-  <div class="deliverableUserItem col-md-6 ${isResponsable?then('radioFlat-flex','')}">
+  [#-- The redesigned deliverable form draws the person's initials and email from these two attributes --]
+  [#local personName = ((user.composedCompleteName)!"")?trim /]
+  [#local personWords = personName?split(" ")?filter(w -> w?has_content) /]
+  [#local personInitials = ""]
+  [#if personWords?has_content][#local personInitials = (personWords?first?substring(0, 1) + ((personWords?size > 1)?then(personWords?last?substring(0, 1), "")))?upper_case /][/#if]
+  <div class="deliverableUserItem col-md-6 ${isResponsable?then('radioFlat-flex','')}" data-dlf-initials="${personInitials}" data-dlf-email="${(user.email)!}">
     [#-- Deliverable User ID --]
     [#if (!isResponsable) || (deliverableUser.id??)!false]
       <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
@@ -1631,7 +1636,7 @@
 
       [#-- Commissioning Study --]
       <div class="form-group">
-        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" help="deliverable.melia.commissioning.help" helpIcon=false i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-15" required=true editable=editable isWidthFull=true/]
+        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" i18nkey="deliverable.melia.commissioning"  placeholder="deliverable.melia.commissioning.help" className="limitWords-15" required=true editable=editable isWidthFull=true/]
       </div>
       
       [#-- Activity Description --]
