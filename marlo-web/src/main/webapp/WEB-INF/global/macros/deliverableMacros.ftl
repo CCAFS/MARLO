@@ -243,14 +243,32 @@
           <a href="#modal-typeOfActivity" data-toggle="modal"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.redesign.typeOfActivity.help" /]</a>
         </div>
       </div>
-      [#-- Formal training: Academic Degree --]
-      [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
-      <div class="col-md-6 block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
-        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=validateIsProgressWithStatus!true editable=editable /]
-      </div>
       [#-- Type of Participant(s): --]
       <div class="col-md-6 block-typeParticipant">
         [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
+      </div>
+    </div>
+
+    [#-- Formal training details, under the two types: the academic degree (formal training: academic degree only)
+         and the training period (every formal training). deliverableDissemination.js shows and hides each one;
+         the panel shows with the training period. --]
+    <div class="block-formalTraining">
+      [#-- Formal training: Academic Degree --]
+      [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
+      <div class="block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
+        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" placeholder="involveParticipants.academicDegree.help" className="" required=validateIsProgressWithStatus!true editable=editable /]
+      </div>
+      [#-- Training period of time: (Only if formal training) --]
+      [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
+      <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
+        <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=(editable!false && validateIsProgressWithStatus!true)  /]
+          [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
+        </label><br />
+        [#list (repIndTrainingTerms)![] as item]
+          [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+        [#else]
+          LIST NOT FOUND
+        [/#list]
       </div>
     </div>
 
@@ -314,19 +332,6 @@
       </div>
     </div>
 
-    [#-- Training period of time: (Only if formal training) --]
-    [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
-    <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
-      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=(editable!false && validateIsProgressWithStatus!true)  /]
-        [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
-      </label><br />
-      [#list (repIndTrainingTerms)![] as item]
-        [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
-      [#else]
-        LIST NOT FOUND
-      [/#list]
-    </div> 
-    
     [#-- Focus --]
     <div class="form-group text-area-container">
       [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" placeholder="project.deliverable.redesign.placeholder.focus" className="" required=editable editable=editable /]
