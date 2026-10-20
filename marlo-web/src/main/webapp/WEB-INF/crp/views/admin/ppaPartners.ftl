@@ -102,11 +102,13 @@
     [#-- Hidden inputs --]
     <input class="institutionId" type="hidden" name="${customName}.institution.id" value="${(ppaPartner.institution.id)!'null'}"/>
     <input class="id" type="hidden" name="${customName}.id" value="${(ppaPartner.id)!}"/>
-    [#-- Remove --]
-    [#if (ppaPartner?hasContent && action.canBeDeleted(ppaPartner.id,ppaPartner.class.name)) || !ppaPartner?hasContent ]
-      <div class="removeLink"><div class="delete removeElement sm removeLink" title="Remove"></div></div>
-    [#else]
-      <div class="removeLink"><div class="removeElement sm removeLink disable" title="Cannot be removed"></div></div>
+    [#-- Remove: only in edit mode, like every other control of this screen --]
+    [#if editable]
+      [#if (ppaPartner?hasContent && action.canBeDeleted(ppaPartner.id,ppaPartner.class.name)) || !ppaPartner?hasContent ]
+        <div class="removeLink"><div class="delete removeElement sm removeLink" title="Remove"></div></div>
+      [#else]
+        <div class="removeLink"><div class="removeElement sm removeLink disable" title="Cannot be removed"></div></div>
+      [/#if]
     [/#if]
      [#if !isTemplate]
       <div class="pull-right">

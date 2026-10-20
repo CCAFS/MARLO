@@ -22,14 +22,16 @@ import org.cgiar.ccafs.marlo.data.dao.PhaseDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectDAO;
 import org.cgiar.ccafs.marlo.data.dao.ProjectPartnerPersonDAO;
 import org.cgiar.ccafs.marlo.data.manager.ActivityManager;
-import org.cgiar.ccafs.marlo.data.manager.DeliverableActivityManager;
 import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -48,20 +50,17 @@ public class ActivityManagerImpl implements ActivityManager {
   private PhaseDAO phaseDAO;
   private ProjectDAO projectDAO;
   private DeliverableActivityDAO deliverableActivityDAO;
-  private DeliverableActivityManager deliverableActivityManager;
   private ProjectPartnerPersonDAO projectPartnerPersonDAO;
 
 
   @Inject
   public ActivityManagerImpl(ActivityDAO activityDAO, PhaseDAO phaseDAO, ProjectDAO projectDAO,
-    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO,
-    DeliverableActivityManager deliverableActivityManager) {
+    DeliverableActivityDAO deliverableActivityDAO, ProjectPartnerPersonDAO projectPartnerPersonDAO) {
     this.activityDAO = activityDAO;
     this.phaseDAO = phaseDAO;
     this.projectDAO = projectDAO;
     this.deliverableActivityDAO = deliverableActivityDAO;
     this.projectPartnerPersonDAO = projectPartnerPersonDAO;
-    this.deliverableActivityManager = deliverableActivityManager;
   }
 
   /**
@@ -280,6 +279,9 @@ public class ActivityManagerImpl implements ActivityManager {
     if (activities == null || activities.isEmpty()) {
       Activity activityAdd = new Activity();
       this.cloneActivity(activityAdd, activity, phase);
+      if (!this.carriesProgress(activity)) {
+        activityAdd.setActivityProgress(null);
+      }
 
       activityDAO.save(activityAdd);
 
@@ -295,7 +297,11 @@ public class ActivityManagerImpl implements ActivityManager {
       // Update activity
 
       Activity activityAdd = activities.get(0);
+      String storedProgress = activityAdd.getActivityProgress();
       this.cloneActivity(activityAdd, activity, phase);
+      if (!this.carriesProgress(activity)) {
+        activityAdd.setActivityProgress(storedProgress);
+      }
 
       activityDAO.save(activityAdd);
       this.saveCurrentPhaseDeliverables(activityAdd, activity.getDeliverables(), phase);
@@ -310,50 +316,72 @@ public class ActivityManagerImpl implements ActivityManager {
   }
 
   /**
-   * Save/Delete activityDeliverable of the current phase
+   * Only the Reporting form has the progress field. A Planning row (AWPB, Progress) holds no progress, or one left
+   * there by an older replication, so copying it from a Planning save erased what was reported in the open Reporting
+   * phase. The other fields are replicated as usual.
+   */
+  private boolean carriesProgress(Activity activity) {
+    return activity.getPhase() != null && APConstants.REPORTING.equals(activity.getPhase().getDescription());
+  }
+
+  private boolean isInPhase(DeliverableActivity deliverableActivity, Phase phase) {
+    return deliverableActivity.getPhase() != null && deliverableActivity.getPhase().getId() != null && phase != null
+      && deliverableActivity.getPhase().getId().equals(phase.getId());
+  }
+
+  /**
+   * Save/Delete activityDeliverable of the current phase.
+   * Links are written through the DAO, one row each. saveActivity and saveActvityPhase already visit every later
+   * phase and give each copy its own links; DeliverableActivityManager would replicate every link once more into
+   * those phases, attached to the activity of the phase being saved.
    */
   private void saveCurrentPhaseDeliverables(Activity activityUI, List<DeliverableActivity> deliverableActivitiesUI,
     Phase currentPhase) {
-    List<DeliverableActivity> deliverableActivitiesDB =
-      activityUI.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList());
+    // Oldest first, so the link kept among duplicates is always the same one
+    List<DeliverableActivity> deliverableActivitiesDB = activityUI.getDeliverableActivities().stream()
+      .filter(da -> da.isActive())
+      .sorted(Comparator.comparing(DeliverableActivity::getId, Comparator.nullsLast(Comparator.naturalOrder())))
+      .collect(Collectors.toList());
     if (deliverableActivitiesUI != null) {
+      // Links are matched by deliverable. The ones bound from the request carry no id, so matching them by entity
+      // deactivated every stored link and created it again on each save, in this phase and every later one.
+      Set<Long> deliverableIdsUI = deliverableActivitiesUI.stream()
+        .filter(da -> da != null && da.getDeliverable() != null && da.getDeliverable().getId() != null)
+        .map(da -> da.getDeliverable().getId()).collect(Collectors.toSet());
+      Set<Long> deliverableIdsInPhase = new HashSet<>();
 
-      // Delete deliverableActivities distinct from DB
       for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
-        if (!deliverableActivitiesUI.contains(deliverableActivity)) {
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+        Long deliverableId =
+          deliverableActivity.getDeliverable() != null ? deliverableActivity.getDeliverable().getId() : null;
+        if (deliverableId == null || !deliverableIdsUI.contains(deliverableId)) {
+          // The deliverable is no longer listed
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
+        } else if (this.isInPhase(deliverableActivity, currentPhase)
+          && !deliverableIdsInPhase.add(deliverableId)) {
+          // A repeated link to the same deliverable in this phase adds nothing and inflated the form past the
+          // server's request parameter limit. Links of other phases are left alone: a past phase is never written.
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 
-      // Add deliverableActivity if not exist
+      // Add a link for each listed deliverable that has none in this phase yet
       for (DeliverableActivity deliverableActivity : deliverableActivitiesUI) {
-
-        if (deliverableActivity.getId() == null || deliverableActivity.getId() == -1) {
-          // New DeliverableActivity
-          DeliverableActivity deliverableActivityNew = new DeliverableActivity();
-          this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
-          deliverableActivityManager.saveDeliverableActivity(deliverableActivityNew);
-          // This is to add DeliverableActivity to generate correct auditlog.
-          activityUI.getDeliverableActivities().add(deliverableActivityNew);
-        } else {
-          // Check if already exists in DB, then save
-          List<DeliverableActivity> deliverableActivities =
-            deliverableActivityManager.getDeliverableActivitiesByDeliverableIDActivityAndPhase(
-              deliverableActivity.getDeliverable().getId(), activityUI.getId(), currentPhase.getId());
-
-          if (deliverableActivities == null || deliverableActivities.isEmpty()) {
-            DeliverableActivity deliverableActivityAdd = new DeliverableActivity();
-            this.cloneDeliverableActivity(deliverableActivityAdd, deliverableActivity, activityUI, currentPhase);
-            deliverableActivityDAO.save(deliverableActivityAdd);
-          }
+        if (deliverableActivity == null || deliverableActivity.getDeliverable() == null
+          || deliverableActivity.getDeliverable().getId() == null
+          || !deliverableIdsInPhase.add(deliverableActivity.getDeliverable().getId())) {
+          continue;
         }
-
+        DeliverableActivity deliverableActivityNew = new DeliverableActivity();
+        this.cloneDeliverableActivity(deliverableActivityNew, deliverableActivity, activityUI, currentPhase);
+        deliverableActivityDAO.save(deliverableActivityNew);
+        // This is to add DeliverableActivity to generate correct auditlog.
+        activityUI.getDeliverableActivities().add(deliverableActivityNew);
       }
     } else {
       // delete all from db
       if (deliverableActivitiesDB != null && !deliverableActivitiesDB.isEmpty()) {
         for (DeliverableActivity deliverableActivity : deliverableActivitiesDB) {
-          deliverableActivityManager.deleteDeliverableActivity(deliverableActivity.getId());
+          deliverableActivityDAO.deleteDeliverableActivity(deliverableActivity.getId());
         }
       }
 

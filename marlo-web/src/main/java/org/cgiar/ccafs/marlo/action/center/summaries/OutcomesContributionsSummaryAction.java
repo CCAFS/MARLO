@@ -95,6 +95,12 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   @Override
   public String execute() throws Exception {
+    // A missing or unknown programID left the program null and the report failed with a NullPointerException
+    if (researchProgram == null) {
+      LOG.warn("No research program for {}, answered as not found",
+        this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID));
+      return NOT_FOUND;
+    }
 
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     try {
@@ -297,7 +303,9 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     String imageUrl = this.getBaseUrl() + "/global/images/centers/CIAT.png";
 
     String center = null;
-    center = researchProgram.getResearchArea().getResearchCenter().getName();
+    if (researchProgram.getResearchArea() != null && researchProgram.getResearchArea().getResearchCenter() != null) {
+      center = researchProgram.getResearchArea().getResearchCenter().getName();
+    }
 
     String researchProgramTitle = null;
     if (researchProgram.getName() != null && !researchProgram.getName().trim().isEmpty()) {
