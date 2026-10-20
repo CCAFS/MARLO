@@ -353,15 +353,21 @@ else{
 }
 
 function searchIndicator(){
-  
-
-  var text = $('.elementName').text();
-  // Makes the trainee question mandatory
-  var traineesIndicator = document.getElementById('traineesIndicator').value;
-  console.log("Trainees indicator: " + traineesIndicator);
-  if (text.indexOf(traineesIndicator) !== -1) {
+  // Only the chosen indicators: every other list on the page also has .elementName rows.
+  var text = $('.listindicators ul.list .elementName').text();
+  // Makes the trainee question mandatory. A program without a trainees indicator gets an empty value, which
+  // indexOf() finds in any text, so it must not count as chosen.
+  var traineesIndicator = ($('#traineesIndicator').val() || '').trim();
+  if (traineesIndicator !== '' && text.indexOf(traineesIndicator) !== -1) {
     $('.yesNoTrainees .yes-button-label').addClass('radio-checked');
-    $('.yesNoTrainees .yes-button-label').click();
+    // Clicking the label focuses its radio, which scrolls the page to the trainees block; click only to change
+    // the answer, and keep the reader where they were.
+    if (!$('.yesNoTrainees input.yesInput').is(':checked')) {
+      var scrollX = window.scrollX;
+      var scrollY = window.scrollY;
+      $('.yesNoTrainees .yes-button-label').click();
+      window.scrollTo(scrollX, scrollY);
+    }
     $('.yesNoTrainees .no-button-label').css("background-color", "#d6d6d6");
     $('.yesNoTrainees .no-button-label').removeClass("no-button-label").addClass("no-button-label-disabled");
   } 
