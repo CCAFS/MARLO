@@ -508,6 +508,51 @@ $(document).ready(function() {
 
   hideExhaustedAdds();
 
+  // ---- Participants/Trainees: a note under each number, as the design ----
+  // The total reads "All participants/trainees"; the others give their share of the total, or say a value is higher
+  // than the total, or that the number of females is marked as not known. Notes only: the save is not blocked.
+  $root.find('.block-participantNumbers').each(function() {
+    var $numbers = $(this);
+    var $total = $numbers.find('input[name$=".participants"]');
+    var $dontKnow = $numbers.find('#dontKnowFemale');
+    var number = function($input) {
+      var value = String($input.val() || '').trim();
+      return value === '' || isNaN(value) ? null : parseFloat(value);
+    };
+    $numbers.children('[class*="col-"]').each(function() {
+      if(!$(this).children('.dlf-numberNote').length) {
+        $('<p class="dlf-numberNote" aria-live="polite"></p>').insertAfter($(this).children('.text-area-container'));
+      }
+    });
+    var refresh = function() {
+      var total = number($total);
+      $numbers.children('[class*="col-"]').each(function() {
+        var $card = $(this);
+        var $input = $card.find('input.numericInput');
+        var $note = $card.children('.dlf-numberNote');
+        var value = number($input);
+        var over = false;
+        var note;
+        if($input.is($total)) {
+          note = text('trainees-total');
+        } else if($dontKnow.length && $card.find($dontKnow).length && $dontKnow.is(':checked')) {
+          note = text('trainees-not-known');
+        } else if(value !== null && total !== null && value > total) {
+          over = true;
+          note = text('trainees-over').replace('{0}', total);
+        } else if(value !== null && total) {
+          note = text('trainees-percent').replace('{0}', Math.round(value / total * 100));
+        } else {
+          note = '—';
+        }
+        $card.toggleClass('is-overTotal', over);
+        $note.text(note);
+      });
+    };
+    $numbers.on('input change', 'input', refresh);
+    refresh();
+  });
+
   // ---- Word counters ----
   // applyWordCounter() (utils.js) prints "(20 words remaining of 20)"; the design drops the brackets. Only the
   // outer text changes, so the count it keeps updating is untouched.

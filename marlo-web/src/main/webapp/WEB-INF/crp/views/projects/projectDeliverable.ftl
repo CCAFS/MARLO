@@ -11,18 +11,21 @@
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261019-5"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261020"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261020-2"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261020-3"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
 [#assign hideJustification = true /]
 [#-- The deliverable and cluster chips are drawn in the form header instead of the shared top quote --]
 [#assign hideTopQuote = true /]
+[#-- Read by deliverableMacros.ftl: parts drawn only in the redesigned form (the publication form shares the macros).
+     A global, as the macros are an imported library and do not see this template's assigns. --]
+[#global deliverableFormRedesign = true /]
 [#-- "project" / "cluster" / "team", per global unit --]
 [#assign sectionNoun = (action.getText("projects.menu.status.noun"))!"project" /]
 [#-- Dissemination and Quality check only exist in reporting or upkeep, and only with dissemination on --]

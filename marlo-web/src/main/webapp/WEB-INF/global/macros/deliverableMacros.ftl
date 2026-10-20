@@ -229,6 +229,8 @@
     [/#if]
   >
     <hr />
+    [#-- Section subtitles of the redesigned deliverable form (projectDeliverable.ftl sets deliverableFormRedesign) --]
+    [#if (deliverableFormRedesign)!false]<p class="dlf-subhead">[@s.text name="project.deliverable.redesign.trainees.event" /]</p>[/#if]
     [#-- Title Event/Activity --]
     <div class="form-group text-area-container">
       [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" placeholder="project.deliverable.redesign.placeholder.eventName" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
@@ -291,6 +293,7 @@
       </div>
     </div>
     
+    [#if (deliverableFormRedesign)!false]<p class="dlf-subhead">[@s.text name="project.deliverable.redesign.trainees.numbers" /]</p>[/#if]
     [#-- Total, females, African-based and youth: one row of four --]
     <div class="form-group row block-participantNumbers">
       <div class="col-md-3">
@@ -332,6 +335,7 @@
       </div>
     </div>
 
+    [#if (deliverableFormRedesign)!false]<p class="dlf-subhead">[@s.text name="project.deliverable.redesign.trainees.focus" /]</p>[/#if]
     [#-- Focus --]
     <div class="form-group text-area-container">
       [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" placeholder="project.deliverable.redesign.placeholder.focus" className="" required=editable editable=editable /]

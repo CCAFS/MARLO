@@ -31,6 +31,10 @@
     data-this-section="[@s.text name="project.deliverable.redesign.thisSection"][@s.param]${sectionNoun}[/@s.param][/@s.text]"
     data-select-all="[@s.text name="project.deliverable.redesign.geo.selectAll" /]"
     data-remove="[@s.text name="project.deliverable.redesign.remove" /]"
+    data-trainees-total="[@s.text name="project.deliverable.redesign.trainees.note.total" /]"
+    data-trainees-percent="[@s.text name="project.deliverable.redesign.trainees.note.percent" /]"
+    data-trainees-over="[@s.text name="project.deliverable.redesign.trainees.note.overTotal" /]"
+    data-trainees-not-known="[@s.text name="project.deliverable.redesign.trainees.note.notKnown" /]"
     data-project-code="C${project.id?c}"></span>
 
   [#-- ─── Basic information ─────────────────────────────────────────────── --]
