@@ -273,9 +273,9 @@
       </div>
     </div>
     
-    [#-- Total number of Participants: --]
-    <div class="form-group row">
-      <div class="col-md-6">
+    [#-- Total, females, African-based and youth: one row of four --]
+    <div class="form-group row block-participantNumbers">
+      <div class="col-md-3">
         <div class="text-area-container">
          [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
@@ -284,18 +284,36 @@
           [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
-      <div class="col-md-6 femaleNumbers">
+      <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
           [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
         </div>
         <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
-          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-area-container">
+          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+        </div>
+        <br>
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
+        </div>
+      </div>
+      <div class="col-md-3 femaleNumbers">
+        <div class="text-area-container">
+          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
+        </div>
+        <br>
+        <div class="dottedBox">
+          [@customForm.checkBoxFlat id="estimateYouth" name="${customName}.estimateYouth" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateYouth)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
     </div>
-    
+
     [#-- Training period of time: (Only if formal training) --]
     [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
     <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
@@ -308,28 +326,6 @@
         LIST NOT FOUND
       [/#list]
     </div> 
-    
-    [#-- African - Youth: --]
-    <div class="form-group row">
-      <div class="col-md-6">
-        <div class="text-area-container">
-          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
-        </div>
-        <br>
-        <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
-        </div>
-      </div>
-      <div class="col-md-6 femaleNumbers">
-        <div class="text-area-container">
-          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
-        </div>
-        <br>
-        <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateYouth" name="${customName}.estimateYouth" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateYouth)!false) cssClass="" cssClassLabel="font-italic" /]
-        </div>
-      </div>
-    </div>
     
     [#-- Focus --]
     <div class="form-group text-area-container">
