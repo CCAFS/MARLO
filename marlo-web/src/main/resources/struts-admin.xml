@@ -30,23 +30,6 @@
 			</result>
 		</action>
 
-		<action name="{crp}/guestUser"
-			class="org.cgiar.ccafs.marlo.action.crp.admin.GuestUsersAction">
-			<interceptor-ref name="crpAdminStack" />
-			<result name="input">/WEB-INF/crp/views/admin/marloUsers.ftl
-			</result>
-			<result name="success" type="redirectAction">
-				<param name="actionName">${crpSession}/guestUser</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-			</result>
-			<result name="redirect" type="redirectAction">
-				<param name="actionName">${crpSession}/guestUser</param>
-				<param name="edit">true</param>
-				<param name="phaseID">${phaseID}</param>
-			</result>
-		</action>
-
 
 		<action name="{crp}/regionalMapping"
 			class="org.cgiar.ccafs.marlo.action.crp.admin.CrpProgamRegionsAction">
