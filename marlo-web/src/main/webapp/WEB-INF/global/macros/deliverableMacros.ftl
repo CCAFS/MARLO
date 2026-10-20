@@ -231,7 +231,7 @@
     <hr />
     [#-- Title Event/Activity --]
     <div class="form-group text-area-container">
-      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" placeholder="project.deliverable.redesign.placeholder.eventName" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
     [#-- Type of activity, then the academic degree (formal training: academic degree only), then the type of
@@ -277,7 +277,7 @@
     <div class="form-group row block-participantNumbers">
       <div class="col-md-3">
         <div class="text-area-container">
-         [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+         [@customForm.input name="${customName}.participants" i18nkey="project.deliverable.redesign.participants.total" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -286,7 +286,7 @@
       </div>
       <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
         </div>
         <br>
         <div class="dottedBox">
@@ -296,7 +296,7 @@
       </div>
       <div class="col-md-3">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+          [@customForm.input name="${customName}.african" i18nkey="project.deliverable.redesign.participants.african" help="involveParticipants.african.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -305,7 +305,7 @@
       </div>
       <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
+          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -329,11 +329,11 @@
     
     [#-- Focus --]
     <div class="form-group text-area-container">
-      [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" className="" required=editable editable=editable /]
+      [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" placeholder="project.deliverable.redesign.placeholder.focus" className="" required=editable editable=editable /]
     </div>
     [#-- Likely Outcomes --]
     <div class="form-group text-area-container">
-      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" placeholder="project.deliverable.redesign.placeholder.outcomes" className="" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
     [@deliverableMacros.deliverableClusterParticipantsMacro /]
@@ -420,25 +420,25 @@
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal femaleNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].females" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal africanNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].african" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal youthNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].youth" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
@@ -639,7 +639,7 @@
   <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
     <div class="form-group" > 
       <div class="url-field text-area-container">
-        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=validateIsProgressWithStatus!true readOnly=isSynced editable=editable /]
+        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="project.deliverable.redesign.placeholder.disseminationUrl" className="deliverableDisseminationUrl" required=validateIsProgressWithStatus!true readOnly=isSynced editable=editable /]
       </div>
       <div class="buttons-field">
         [#if editable]
@@ -664,10 +664,10 @@
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
       <div class="col-md-6 conditionalRequire handle-bridge text-area-container">
-        [@customForm.input name="handle-bridge" required=(require!false && validateIsProgressWithStatus!true)value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable id="handleField"/]
+        [@customForm.input name="handle-bridge" required=(require!false && validateIsProgressWithStatus!true)value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" placeholder="project.deliverable.redesign.placeholder.handle" readOnly=mElementHide editable=editable id="handleField"/]
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
-        [@customForm.input name="doi-bridge" required=(require!false && validateIsProgressWithStatus!true) value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
+        [@customForm.input name="doi-bridge" required=(require!false && validateIsProgressWithStatus!true) value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" placeholder="project.deliverable.redesign.placeholder.doi" readOnly=mElementHide editable=editable id="doiField"/]
         <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none; bottom: -32px; margin: 12px 2px 0 12px;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none; bottom: -18px; margin: 12px 2px 0 12px;">Valid DOI identifier</p>
       </div>

@@ -209,13 +209,14 @@ function reviewSharedclusters(){
 //Updates the values of the total fields in real time
 function initialTotals(){
   const initialValueParticipants  = $('#deliverable\\.deliverableParticipant\\.participants').val();
-  $('.totalTrainees').text(initialValueParticipants);
+  // An empty total reads as 0 in the split table, as the remaining sums count it.
+  $('.totalTrainees').text(initialValueParticipants || 0);
   const initialValueFemales = $('#deliverable\\.deliverableParticipant\\.females').val();
-  $('.totalFemales').text(initialValueFemales);
+  $('.totalFemales').text(initialValueFemales || 0);
   const initialValueAfrican = $('#deliverable\\.deliverableParticipant\\.african').val();
-  $('.totalAfrican').text(initialValueAfrican);
+  $('.totalAfrican').text(initialValueAfrican || 0);
   const initialValuYouth = $('#deliverable\\.deliverableParticipant\\.youth').val();
-  $('.totalYouth').text(initialValuYouth);
+  $('.totalYouth').text(initialValuYouth || 0);
 
   const inputsParticipants = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".participants"]');
   const inputsFemales = document.querySelectorAll('.listClusterDM input[name^="deliverable.clusterParticipant"][name*=".females"]');
@@ -229,22 +230,22 @@ const divElement = document.querySelector('.listClusterDM');
   
   $('#deliverable\\.deliverableParticipant\\.participants').on('input', function() {
     const newValue = $(this).val();
-    $('.totalTrainees').text(newValue);
+    $('.totalTrainees').text(newValue || 0);
     initialRemaining()
   });
   $('#deliverable\\.deliverableParticipant\\.females').on('input', function() {
     const newValue = $(this).val();
-    $('.totalFemales').text(newValue);
+    $('.totalFemales').text(newValue || 0);
     initialRemaining()
   });
   $('#deliverable\\.deliverableParticipant\\.african').on('input', function() {
     const newValue = $(this).val();
-    $('.totalAfrican').text(newValue);
+    $('.totalAfrican').text(newValue || 0);
     initialRemaining()
   });
   $('#deliverable\\.deliverableParticipant\\.youth').on('input', function() {
     const newValue = $(this).val();
-    $('.totalYouth').text(newValue);
+    $('.totalYouth').text(newValue || 0);
     initialRemaining()
   });
   
@@ -429,7 +430,7 @@ function addcluster(infoCluster){
     value: '0',
     class: 'form-control input-sm numericInput optional',
     oninput: "validateInput(event)",
-    placeholder: 'Number'
+    placeholder: '0'
   });
   textArea2.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input2));
   col2.append(textArea2);
@@ -443,7 +444,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].females',
     value: '0',
     class: 'form-control input-sm numericInput optional',
-    placeholder: 'Number'
+    placeholder: '0'
   });
   textArea3.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input3));
   col3.append(textArea3);
@@ -457,7 +458,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].african',
     value: '0',
     class: 'form-control input-sm numericInput optional',
-    placeholder: 'Number'
+    placeholder: '0'
   });
   textArea4.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input4));
   col4.append(textArea4);
@@ -471,7 +472,7 @@ function addcluster(infoCluster){
     name: 'deliverable.clusterParticipant['+lastValueId+'].youth',
     value: '0',
     class: 'form-control input-sm numericInput optional',
-    placeholder: 'Number'
+    placeholder: '0'
   });
   textArea5.append($('<div>').addClass('input fieldReference').css('display', 'block').append(input5));
   col5.append(textArea5);
@@ -1237,8 +1238,13 @@ function addDisseminationEvents() {
     }
   });
 
-  // Setting Numeric Inputs
+  // Setting Numeric Inputs. numericInput() (utils.js) writes 0 into every empty field; the deliverable's own
+  // participant numbers stay empty until someone enters them, so no 0 is reported or saved by default.
+  var $emptyParticipantNumbers = $('form input.numericInput[name^="deliverable.deliverableParticipant."]').filter(function () {
+    return this.value === '';
+  });
   $('form input.numericInput').numericInput();
+  $emptyParticipantNumbers.val('');
 
   // Set countries flag
   $('.nationalBlock').find("select").select2({
