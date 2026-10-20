@@ -899,6 +899,12 @@ function ptnRefreshSaveState() {
       'unsavedOther', [
         count
       ])));
+
+  // While a new partner is being added, the section Save waits for "Add to cluster" or Cancel:
+  // saving midway would drop or half-submit the draft.
+  var drafting = ptnCards().filter('.is-draft').exists();
+  $('.ptn-saveBar button[name="save"]').prop('disabled', drafting).toggleClass('is-locked', drafting).attr('title',
+      drafting ? ptnText.saveLockedDraft : null);
 }
 
 function ptnShowToast(text,undo) {
@@ -1235,6 +1241,7 @@ function ptnStartDraft() {
   ptnRefreshCard($newElement);
   ptnRefreshSummary();
   ptnApplyFilters();
+  ptnRefreshSaveState();
 
   $('html, body').animate({
     scrollTop: $newElement.offset().top - 90
