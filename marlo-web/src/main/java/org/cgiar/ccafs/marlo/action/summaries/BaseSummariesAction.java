@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import com.ibm.icu.util.Calendar;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.apache.struts2.interceptor.ValidationWorkflowAware;
 import org.pentaho.reporting.engine.classic.core.Band;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author AVALENCIA
  */
-public class BaseSummariesAction extends BaseAction {
+public class BaseSummariesAction extends BaseAction implements ValidationWorkflowAware {
 
 
   private static final long serialVersionUID = 2837063045483756677L;
@@ -74,6 +75,19 @@ public class BaseSummariesAction extends BaseAction {
   private PhaseManager phaseManager;
 
   protected ProjectManager projectManager;
+
+  /**
+   * The result the workflow interceptor uses when the request has errors. A report has no input result, so a parameter
+   * Struts could not convert (projectID=abc) failed the request with "No result defined ... input" (Error 500) and an
+   * exception e-mail. Such a request names nothing that exists: it is logged and answered as not found.
+   *
+   * @return {@link #NOT_FOUND}
+   */
+  @Override
+  public String getInputResultName() {
+    LOG.warn("Invalid request parameters {}, answered as not found", this.getFieldErrors().keySet());
+    return NOT_FOUND;
+  }
 
   public BaseSummariesAction(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager) {
@@ -293,6 +307,9 @@ public class BaseSummariesAction extends BaseAction {
           Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
         this.setSelectedYear(selectedPhase.getYear());
         this.setSelectedCycle(this.selectedPhase.getDescription());
+      } catch (NumberFormatException e) {
+        // A value that is not a number is a bad request, not a failure: the report answers it as not found
+        LOG.warn("The {} parameter is not a number: {}", APConstants.PHASE_ID, e.getMessage());
       } catch (Exception e) {
         LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
       }
@@ -348,6 +365,9 @@ public class BaseSummariesAction extends BaseAction {
           Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
         this.setSelectedYear(selectedPhase.getYear());
         this.setSelectedCycle(this.selectedPhase.getDescription());
+      } catch (NumberFormatException e) {
+        // A value that is not a number is a bad request, not a failure: the report answers it as not found
+        LOG.warn("The {} parameter is not a number: {}", APConstants.PHASE_ID, e.getMessage());
       } catch (Exception e) {
         LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
       }
