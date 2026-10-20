@@ -1420,13 +1420,15 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   border-top: 1px solid var(--dlf-line);
   background: none;
 }
-/* The four numbers sit in one row of cards, as the design. Each card spans three rows of the row's grid (label,
-   input, check boxes), so the inputs and the boxes line up across cards whatever the label length. */
+/* The four numbers sit in one row of cards, as the design, when the row is 870px or wider: the longest title
+   ("Total participants/trainees *", 176px) then fits on one line with the card padding. Narrower, the cards go two by two instead of squeezing the titles onto two or three lines (never
+   three and one). The clamp picks the track: a quarter of the row from 870px, half of it below. Each card spans
+   three rows of the row's grid (label, input, check boxes), so the inputs and the boxes line up across cards. */
 .dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-participantNumbers {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(clamp(calc(25% - 9px), (870px - 100%) * 999, calc(50% - 6px)), 1fr));
   grid-auto-rows: auto;
   column-gap: 12px;
-  row-gap: 0;
+  row-gap: 12px;
 }
 .dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-participantNumbers > [class*="col-"] {
   display: grid;
@@ -1879,7 +1881,6 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 /* ---------- Narrow screens ---------- */
 
 @media (max-width: 991px) {
-  .dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-participantNumbers { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 12px; }
   .dlf .dlf-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 767px) {
