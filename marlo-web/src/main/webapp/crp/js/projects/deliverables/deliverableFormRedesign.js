@@ -553,6 +553,127 @@ $(document).ready(function() {
     refresh();
   });
 
+  // ---- Participants/Trainees: the split across shared clusters as the design's table ----
+  // deliverableDissemination.js keeps adding the rows (addcluster), the totals and the remaining values; this draws
+  // each row's team cell (flag, code, "this cluster" and "submitted" badges, country), the sum row, the colour of
+  // the remaining values and the status line.
+  $root.find('.sharedClustersList').each(function() {
+    var $split = $(this);
+    var $status = $split.find('.dlf-splitStatus');
+    if(!$status.length) {
+      return;
+    }
+    var keys = ['participants', 'females', 'african', 'youth'];
+    var remainingClass = {
+        participants: 'remainingTrainees',
+        females: 'remainingFemales',
+        african: 'remainingAfrican',
+        youth: 'remainingYouth'
+    };
+    var ownId = String($strings.attr('data-project-code') || '').replace(/^C/, '');
+    // "C102076 - Senegal: Activities led by ILRI", by project id: the shared list, its select and the header chip.
+    var labels = {};
+    $root.find('.listClusters select option').each(function() {
+      if(this.value && this.value !== '-1') {
+        labels[this.value] = $(this).text();
+      }
+    });
+    $root.find('.listClusters ul.list > li.relationElement').each(function() {
+      labels[$(this).find('.elementRelationID').val()] = $(this).find('.elementName').text();
+    });
+    if(ownId) {
+      labels[ownId] = labels[ownId] || $root.find('.dlf-chip--owner').attr('title') || '';
+    }
+    var countryOf = function(id) {
+      var match = String(labels[id] || '').trim().match(/^(\S+)\s*-\s*([^:]+):?/);
+      return match ? match[2].trim() : '';
+    };
+    var number = function(value) {
+      var n = parseInt(String(value || '').trim(), 10);
+      return isNaN(n) ? 0 : n;
+    };
+
+    var decorateRows = function() {
+      $split.find('.listClusterDM > .form-group.row').each(function() {
+        var $row = $(this);
+        if($row.children('.dlf-team').length) {
+          return;
+        }
+        var id = String($row.attr('clusteridparticipant') || '');
+        var country = countryOf(id);
+        var iso = isoByCountry[country.toLowerCase()];
+        var submitted = $row.find('.clusterSubmitted').attr('isSubmit') === 'true';
+        var $code = $('<span class="dlf-team__code"></span>').append($('<b></b>').text('C' + id));
+        if(id === ownId) {
+          $code.append($('<span class="dlf-team__badge"></span>').text($status.attr('data-this-team')));
+        }
+        if(submitted) {
+          $row.addClass('is-submitted');
+          $code.append($('<span class="dlf-team__badge dlf-team__badge--lock"></span>')
+            .attr('title', $status.attr('data-submitted-help')).text($status.attr('data-submitted')));
+        }
+        $('<div class="dlf-team"></div>')
+          .append($('<span class="dlf-team__flag" aria-hidden="true"></span>')
+            .addClass(iso ? 'flag-icon flag-icon-' + iso : 'is-empty'))
+          .append($('<span class="dlf-team__text"></span>').append($code)
+            .append(country ? $('<span class="dlf-team__country"></span>').text(country) : null))
+          .prependTo($row);
+      });
+    };
+
+    var refresh = function() {
+      decorateRows();
+      var pending = 0;
+      var over = false;
+      var allZero = true;
+      $.each(keys, function(i, key) {
+        var sum = 0;
+        $split.find('.listClusterDM input[name$=".' + key + '"]').each(function() {
+          sum += number(this.value);
+        });
+        $split.find('[data-dlf-sum="' + key + '"]').text(sum);
+        var $remaining = $split.find('.' + remainingClass[key]);
+        var remaining = number($remaining.text());
+        $remaining.toggleClass('is-over', remaining < 0).toggleClass('is-pending', remaining > 0);
+        if(remaining < 0) {
+          over = true;
+        }
+        if(remaining !== 0) {
+          allZero = false;
+        }
+        if(key === 'participants' && remaining > 0) {
+          pending = remaining;
+        }
+      });
+      var state = allZero ? 'ok' : (over ? 'over' : 'pending');
+      var message = state === 'ok' ? $status.attr('data-ok') : state === 'over' ? $status.attr('data-over')
+        : (pending > 0 ? $status.attr('data-pending').replace('{0}', pending) : $status.attr('data-pending-some'));
+      $status.attr('data-state', state).find('.dlf-splitStatus__text').text(message);
+    };
+
+    // Values typed here or in the totals, rows added by addcluster and the remaining values it writes.
+    $split.on('input change', 'input', refresh);
+    $root.on('input change', '.block-participantNumbers input', function() {
+      setTimeout(refresh, 0);
+    });
+    watch($split.find('.listClusterDM, .remaining-container'), refresh);
+
+    // "Manage shared clusters": the shared list sits in General information.
+    $split.on('click', '[data-dlf-manage-shared]', function() {
+      var $target = $root.find('.listClusters').first();
+      var $pane = $target.closest('.tab-pane');
+      if($pane.length && !$pane.hasClass('active')) {
+        $root.find('[role="tab"][href="#' + $pane.attr('id') + '"]').tab('show');
+      }
+      setTimeout(function() {
+        $target[0].scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+      }, 200);
+    });
+  });
+
   // ---- Word counters ----
   // applyWordCounter() (utils.js) prints "(20 words remaining of 20)"; the design drops the brackets. Only the
   // outer text changes, so the count it keeps updating is untouched.

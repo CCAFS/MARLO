@@ -1574,33 +1574,110 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 .dlf .block-involveParticipants .block-typeActivity > .note.left a { display: inline-flex; align-items: center; gap: 5px; font: 600 12px Figtree, sans-serif; color: var(--dlf-brand); cursor: pointer; }
 .dlf .block-involveParticipants .block-typeActivity > .note.left .glyphicon { font-size: 12px; top: 0; }
 
-/* Split across shared clusters: one bordered table, five columns. */
-.dlf .sharedClustersList { margin-top: 4px; padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }
-.dlf .sharedClustersList > br { display: none; }
-.dlf .sharedClustersList .yesNoLabel { margin-bottom: 2px; font: 600 11px Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
-.dlf .sharedClustersList small { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
-.dlf .sharedClustersList > .simpleBox { margin: 12px 0 0; padding: 0; border: 1px solid var(--dlf-line); border-radius: 10px; background: #fff; overflow: hidden; }
-.dlf .sharedClustersList > .simpleBox > .note--2 { margin: 12px; }
-.dlf .sharedClustersList .block-involveParticipants { padding: 0; border: 0; background: none; }
-.dlf .sharedClustersList .listClusterDM.container { width: auto !important; max-width: none; padding: 0; }
-.dlf .sharedClustersList .form-group.row {
+/* Split across shared clusters: the design's table (Team | Total | Females | African-based | Youth), then the sum,
+   reported and remaining rows, the status line and the footnote. The rows are the legacy Bootstrap rows of
+   deliverableClusterParticipantsMacro and of addcluster() (deliverableDissemination.js), laid out on one grid;
+   deliverableFormRedesign.js adds the team cell, the sums and the status. The selectors outweigh the two-column grid
+   and the number cards of the trainees block. */
+.dlf .dlf-question .sharedClustersList { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .dlf-question .sharedClustersList > br { display: none; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 0 0 12px; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead .yesNoLabel { margin: 0; font: 600 11px/1.3 Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead p { margin: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead small { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-splitManage {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .dlf-question .sharedClustersList .dlf-splitManage:hover { background: var(--dlf-info-bg); }
+.dlf .dlf-question .sharedClustersList > .simpleBox { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants { margin: 0; padding: 0; overflow-x: auto; border: 1px solid var(--dlf-line); border-radius: 10px; background: #fff; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > hr { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM.container { width: auto !important; max-width: none; margin: 0; padding: 0; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) repeat(4, minmax(0, 1fr));
   gap: 10px;
   align-items: center;
+  min-width: 560px;
   margin: 0;
   padding: 9px 14px;
   border-bottom: 1px solid var(--dlf-line-soft);
+  background: #fff;
 }
-.dlf .sharedClustersList .form-group.row::before,
-.dlf .sharedClustersList .form-group.row::after { display: none; }
-.dlf .sharedClustersList .form-group.row > [class*="col-"] { float: none; width: auto; min-width: 0; padding: 0; }
-.dlf .sharedClustersList .form-group.row > [class*="col-"] > br { display: none; }
-.dlf .sharedClustersList .block-involveParticipants > .form-group.row:first-child { background: #F7F9FB; font: 600 12px/1.3 Figtree, sans-serif; color: var(--dlf-ink-soft); }
-.dlf .sharedClustersList .block-involveParticipants > .form-group.row:first-child b { font-weight: 600; }
-.dlf .sharedClustersList .block-involveParticipants > hr { display: none; }
-.dlf .sharedClustersList .block-involveParticipants > .form-group.row:not(:first-child) { background: var(--dlf-surface-alt); }
-.dlf .sharedClustersList input.form-control { height: 34px; border-radius: 7px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row::before,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row::after { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row > [class*="col-"] { float: none; width: auto; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row > [class*="col-"] > br { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row .text-area-container { margin: 0; }
+/* Column heads. */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row:first-child { background: #F7F9FB; border-bottom-color: var(--dlf-line); font: 600 12px/1.3 Figtree, sans-serif; color: var(--dlf-ink-soft); }
+/* Team rows: the drawn team cell replaces the acronym cell; clearing a row is done from the shared list. */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM > .form-group.row > .col-xs-first,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM > .form-group.row > .col-xs-last { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM > .form-group.row.is-submitted { background: var(--dlf-surface-alt); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM input.form-control { height: 34px; padding: 0 10px; border-radius: 7px; font: 500 14px Figtree, sans-serif; font-variant-numeric: tabular-nums; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM input.form-control:disabled { border-color: var(--dlf-line); background: #F1F3F6; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-team { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-team__flag {
+  flex: none;
+  width: 22px;
+  height: 16px;
+  margin: 0;
+  border-radius: 3px;
+  background-color: var(--dlf-chip);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(31, 42, 55, .1);
+  opacity: 1;
+}
+.dlf .dlf-question .sharedClustersList .dlf-team__flag.flag-icon::before { content: none; }
+.dlf .dlf-question .sharedClustersList .dlf-team__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-team__code { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.dlf .dlf-question .sharedClustersList .dlf-team__code > b { font: 600 13px Figtree, sans-serif; font-variant-numeric: tabular-nums; color: var(--dlf-ink); }
+.dlf .dlf-question .sharedClustersList .dlf-team__country { font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-team__badge { padding: 1px 6px; border: 1px solid #BEDFEC; border-radius: 5px; background: var(--dlf-info-bg); font: 600 11px Figtree, sans-serif; color: var(--dlf-brand-dark); }
+.dlf .dlf-question .sharedClustersList .dlf-team__badge--lock { display: inline-flex; align-items: center; gap: 4px; border-color: transparent; background: var(--dlf-chip); color: var(--dlf-ink-soft); cursor: help; }
+.dlf .dlf-question .sharedClustersList .dlf-team__badge--lock::before {
+  content: "";
+  width: 9px;
+  height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='10' viewBox='0 0 9 10' fill='none'%3E%3Crect x='1' y='4.3' width='7' height='5' rx='1.2' stroke='%234B5563' stroke-width='1.2'/%3E%3Cpath d='M2.6 4.3V3a1.9 1.9 0 0 1 3.8 0v1.3' stroke='%234B5563' stroke-width='1.2'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Sum, reported and remaining rows. */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.dlf-splitSum,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.dlf-splitReported,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.remaining-container { padding: 8px 14px; background: var(--dlf-surface-alt); font: 500 13px Figtree, sans-serif; color: var(--dlf-ink-soft) !important; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.remaining-container { border-bottom: 0; border-top: 1px solid var(--dlf-line); font-weight: 600; color: var(--dlf-ink) !important; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.remaining-container > [class*="col-"]:first-child .text-area-container { font-weight: 600 !important; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .dlf-splitSum__value,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants [class^="total"],
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants [class^="remaining"] { padding-left: 11px; font: 500 14px Figtree, sans-serif; font-variant-numeric: tabular-nums; color: var(--dlf-ink); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .remaining-container [class^="remaining"] { font-weight: 600; color: var(--dlf-ok); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .remaining-container [class^="remaining"].is-pending { color: var(--dlf-warn); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .remaining-container [class^="remaining"].is-over { color: var(--dlf-required); }
+/* The legacy alert and done notes give way to the status line (deliverableDissemination.js still drives them). */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .alertParticipant,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .doneParticipant { display: none !important; }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus { display: flex; align-items: flex-start; gap: 9px; padding: 10px 12px; border: 1px solid; border-radius: 8px; font: 500 13px/1.5 Figtree, sans-serif; }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: currentColor; }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="ok"] { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="pending"] { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); color: var(--dlf-warn); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="pending"]::before { background: var(--dlf-warn-dot); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="over"] { border-color: #EBD3CE; background: var(--dlf-danger-bg); color: var(--dlf-danger); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="over"]::before { background: var(--dlf-required); }
+.dlf .dlf-question .sharedClustersList .dlf-splitFoot { margin: 0; font: 400 12px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
 
 /* ---------- Deliverable metadata ---------- */
 

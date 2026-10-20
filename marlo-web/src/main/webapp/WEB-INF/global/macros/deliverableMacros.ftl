@@ -358,15 +358,25 @@
 [#local customName = "deliverable.clusterParticipant" /]
 [#if action.hasSpecificities("deliverable_shared_clusters_trainees_active")]
 [#-- [#if list?has_content] --]
+[#-- The redesigned deliverable form (projectDeliverable.ftl) draws this as the design's split table; the publication
+     form keeps its texts. deliverableFormRedesign.js draws the team cells, the sum row and the status. --]
+[#local redesign = (deliverableFormRedesign)!false /]
+[#local sectionNoun = (action.getText("projects.menu.status.noun"))!"project" /]
+[#local anySubmitted = false /]
 <div class="sharedClustersList">
   <br>
-  <span class="">
-    <label class="yesNoLabel" for="">[@s.text name="involveParticipants.sharedClusters" /] </label>
-    <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
-  </span>
+  <div class="dlf-splitHead">
+    <span class="dlf-splitHead__text">
+      <label class="yesNoLabel" for="">[#if redesign][@s.text name="project.deliverable.redesign.split.title" /][#else][@s.text name="involveParticipants.sharedClusters" /][/#if] </label>
+      <p><small>[#if redesign][@s.text name="project.deliverable.redesign.split.help" /][#else][@s.text name="involveParticipants.sharedClusters.help" /][/#if] </small></p>
+    </span>
+    [#if redesign && editable]
+      <button type="button" class="dlf-splitManage" data-dlf-manage-shared>[@s.text name="project.deliverable.redesign.split.manage" /]<svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+    [/#if]
+  </div>
   <div class="simpleBox">
   
-  [#if actualPhase.name != 'Progress']
+  [#if actualPhase.name != 'Progress' && !redesign]
     <div class="note--2 text-center">
       <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
     </div>
@@ -377,31 +387,31 @@
           <div class="form-group row">
             <div class="col-md-2 col-sm-2 hidden-xs">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.project" /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.team" /][#else][@customForm.text name="involveParticipants.sharedClusters.project" /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.total" /][#else][@customForm.text name="involveParticipants.sharedClusters.participants" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.females" /][#else][@customForm.text name="involveParticipants.sharedClusters.females" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.african" /][#else][@customForm.text name="involveParticipants.sharedClusters.africans" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.youth" /][#else][@customForm.text name="involveParticipants.sharedClusters.youth" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
@@ -411,6 +421,7 @@
         [#list list as cluster]
 
           [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (actualPhase.name != 'Progress') /]
+          [#if isSharedCluster][#local anySubmitted = true /][/#if]
 
           <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
@@ -464,10 +475,19 @@
         [/#list]
           </div>
         <hr />
-                <div class="form-group row">
+    [#if redesign]
+    <div class="form-group row dlf-splitSum">
+      <div class="col-md-2 col-sm-2 col-xs-12"><div class="text-area-container">[@s.text name="project.deliverable.redesign.split.sum" /]</div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="participants">0</div></div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="females">0</div></div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="african">0</div></div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="youth">0</div></div></div>
+    </div>
+    [/#if]
+                <div class="form-group row dlf-splitReported">
     <div class="col-md-2 col-sm-2 col-xs-12">
       <div class="text-area-container">
-        Total report</div>
+        [#if redesign][@s.text name="project.deliverable.redesign.split.reported" /][#else]Total report[/#if]</div>
       <br>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
@@ -508,7 +528,7 @@
   ">
     <div class="col-md-2 col-sm-2 col-xs-12">
       <div class="text-area-container " style="font-weight: 600;">
-        Remaining </div>
+        [#if redesign][@s.text name="project.deliverable.redesign.split.remaining" /][#else]Remaining[/#if] </div>
       <br>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
@@ -553,6 +573,18 @@
         <div class="textNote" style="color: #333;">  The sum of the Participants/Trainees are equal to the total reported</div>
       </div>
     </div>
+    [#if redesign]
+      [#-- The design's status line and footnote; deliverableFormRedesign.js keeps the status current --]
+      <div class="dlf-splitStatus" role="status" aria-live="polite"
+        data-ok="[@s.text name="project.deliverable.redesign.split.statusOk" /]"
+        data-over="[@s.text name="project.deliverable.redesign.split.statusOver" /]"
+        data-pending="[@s.text name="project.deliverable.redesign.split.statusPending" /]"
+        data-pending-some="[@s.text name="project.deliverable.redesign.split.statusPendingSome" /]"
+        data-submitted="[@s.text name="project.deliverable.redesign.split.submitted" /]"
+        data-submitted-help="[@s.text name="project.deliverable.redesign.split.submittedHelp" /]"
+        data-this-team="[@s.text name="project.deliverable.redesign.thisSection"][@s.param]${sectionNoun}[/@s.param][/@s.text]"><span class="dlf-splitStatus__text"></span></div>
+      <p class="dlf-splitFoot" [#if !anySubmitted]hidden[/#if]>[@s.text name="project.deliverable.redesign.split.footnote" /]</p>
+    [/#if]
   </div>
 </div>
 [/#if]
