@@ -1422,14 +1422,30 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 }
 .dlf .block-involveParticipants .inputsFlat { margin: 0; }
 .dlf .block-involveParticipants .checkbox-label { margin: 0; font: 400 12.5px Figtree, sans-serif !important; font-style: normal !important; color: var(--dlf-ink-soft); }
-.dlf .block-involveParticipants > .note.left {
+/* Type of activity, academic degree (only for an academic degree) and type of participant(s) flow through the
+   design's two columns in that order: the hidden academic degree takes no cell, so the participant type sits next to
+   the activity type, or under it when the academic degree shows. */
+.dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-activityTypes { align-items: start; }
+/* The label and "What do these mean?" share the label line (the select box takes no box of its own); the link wraps
+   under the label, before the select, when the column is too narrow for both. */
+.dlf .block-involveParticipants .block-typeActivity { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; }
+.dlf .block-involveParticipants .block-typeActivity > .select { display: contents; }
+.dlf .block-involveParticipants .block-typeActivity > .select > label { order: 1; }
+.dlf .block-involveParticipants .block-typeActivity > .feedback-flex-items { order: 2; }
+.dlf .block-involveParticipants .block-typeActivity > .note.left {
+  order: 3;
+  flex: none;
+  width: auto;
   float: none;
-  margin: -6px 0 16px;
+  margin: 0 0 0 auto;
   padding: 0;
   border: 0;
   background: none;
+  line-height: 24px;
 }
-.dlf .block-involveParticipants > .note.left a { font: 600 12.5px Figtree, sans-serif; color: var(--dlf-brand); cursor: pointer; }
+.dlf .block-involveParticipants .block-typeActivity > .select > .selectList { order: 4; flex-basis: 100%; }
+.dlf .block-involveParticipants .block-typeActivity > .note.left a { display: inline-flex; align-items: center; gap: 5px; font: 600 12px Figtree, sans-serif; color: var(--dlf-brand); cursor: pointer; }
+.dlf .block-involveParticipants .block-typeActivity > .note.left .glyphicon { font-size: 12px; top: 0; }
 
 /* Split across shared clusters: one bordered table, five columns. */
 .dlf .sharedClustersList { margin-top: 4px; padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }

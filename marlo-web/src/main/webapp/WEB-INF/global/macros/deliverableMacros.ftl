@@ -234,21 +234,25 @@
       [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
-    [#-- Type of activity --]
-    <div class="form-group row">
-      <div class="col-md-6">
+    [#-- Type of activity, then the academic degree (formal training: academic degree only), then the type of
+         participant(s): one row --]
+    <div class="form-group row block-activityTypes">
+      <div class="col-md-6 block-typeActivity">
         [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
+        <div class="note left">
+          <a href="#modal-typeOfActivity" data-toggle="modal"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.redesign.typeOfActivity.help" /]</a>
+        </div>
       </div>
       [#-- Formal training: Academic Degree --]
       [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
       <div class="col-md-6 block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
         [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
+      [#-- Type of Participant(s): --]
+      <div class="col-md-6 block-typeParticipant">
+        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
+      </div>
     </div>
-     <div class="note left">
-      <a href="#modal-typeOfActivity" data-toggle="modal"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="deliverable.typeOfActivity.help" /]</a>
-     </div>
-     <br />
 
     
     [#-- Modal --]
@@ -289,13 +293,6 @@
           [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
           [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
-      </div>
-    </div>
-    
-    [#-- Type of Participant(s): --]
-    <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
       </div>
     </div>
     
