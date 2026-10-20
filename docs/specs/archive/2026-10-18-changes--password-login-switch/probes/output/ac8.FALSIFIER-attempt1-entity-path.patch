@@ -1,0 +1,24 @@
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java
+index 03798e8d5d..c76e5ed858 100644
+--- a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java
+@@ -570,6 +570,18 @@ public final class OtpEligibility {
+ 
+   private Map<Long, Map<String, String>> specificities(Collection<Long> unitIds) {
+     Map<Long, Map<String, String>> values = this.otpChallengeManager.specificityValuesFor(SPECIFICITY_KEYS, unitIds);
+-    return values == null ? Collections.<Long, Map<String, String>>emptyMap() : values;
++    // FALSIFIER (CHG-PWD-SWITCH-001-T08, never committed): the password switch is read through the cached parameter path
++    // (the Hibernate query cache behind CustomParameterManager) instead of the uncached query.
++    Map<Long, Map<String, String>> cached = new LinkedHashMap<Long, Map<String, String>>();
++    if (values != null) {
++      for (Map.Entry<Long, Map<String, String>> unit : values.entrySet()) {
++        Map<String, String> copy = new LinkedHashMap<String, String>(unit.getValue());
++        org.cgiar.ccafs.marlo.data.model.CustomParameter row = this.customParameterManager
++          .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.PASSWORD_LOGIN_ACTIVE, unit.getKey());
++        copy.put(APConstants.PASSWORD_LOGIN_ACTIVE, row == null ? "" : row.getValue());
++        cached.put(unit.getKey(), copy);
++      }
++    }
++    return cached;
+   }
+ }

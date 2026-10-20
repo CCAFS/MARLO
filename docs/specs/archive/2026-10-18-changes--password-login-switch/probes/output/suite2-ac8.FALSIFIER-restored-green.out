@@ -1,0 +1,17 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) -- AC-8 after reverting both falsifiers: git diff -- marlo-*/src/main empty (0 lines), clean rebuild 2415/1066 BUILD SUCCESS,
+# javap: no setCacheable / FALSIFIER_MEMO in OtpChallengeMySQLDAO; 2026-10-18 09:37 -05, JVM pid 96819
+$ probes/ac-live.sh ac8
+
+== ac8: FN-002 / AC-8 (a change of the switch is live: raw SQL, no restart)
+  (JVM pid 96819; unit 45: password switch false, code switch true, no exclusion)
+  => PASS [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false)   ((True, False))
+  => PASS [AC-8] off: validateUser.do refuses the correct password
+  => PASS [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both)   ((True, True))
+  => PASS [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password
+  => PASS [AC-8] UPDATE ... 'true': the next login.do signs in   (/marlo-web/AICCRA/crpDashboard.do)
+  => PASS [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again   ((True, False))
+  => PASS [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+  => PASS [AC-8] no restart: the JVM pid is the same before and after   (96819 -> 96819)
+
+SUMMARY: 8 checks, 0 failed
+EXIT=0

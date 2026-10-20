@@ -20,6 +20,7 @@ import org.cgiar.ccafs.marlo.data.manager.EmailLogManager;
 import org.cgiar.ccafs.marlo.data.model.EmailLog;
 import org.cgiar.ccafs.marlo.data.model.EmailLogSearch;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.OtpMailSender;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.ArrayList;
@@ -119,7 +120,8 @@ public class SendFailEmailAction extends BaseAction {
   /**
    * The emails not sent that the request asks for: the one given by "id", or every one matching the filters of
    * System Admin -> Emails, which are all of them when no filter is set. A row whose outcome was never recorded
-   * counts as not sent; the previous filter threw a NullPointerException on it.
+   * counts as not sent; the previous filter threw a NullPointerException on it. The sign-in code emails are never
+   * selected, by id or in bulk: a resent one would carry no code or an expired one (CHG-OTP-LOGIN-001-OPS-005).
    */
   private List<EmailLog> selectedEmailLogs() {
     Map<String, Parameter> parameters = this.getParameters();
@@ -127,14 +129,27 @@ public class SendFailEmailAction extends BaseAction {
     if (id != null) {
       EmailLog emailLog = emailLogManager.getEmailLogById(id);
       List<EmailLog> single = new ArrayList<>();
-      if (emailLog != null && !Boolean.TRUE.equals(emailLog.getSucces())) {
+      if (emailLog != null && !Boolean.TRUE.equals(emailLog.getSucces()) && !isCodeEmail(emailLog)) {
         single.add(emailLog);
       }
       return single;
     }
     EmailLogSearch search = EmailLogsAction.read(parameters);
     search.setSent(false);
-    return emailLogManager.search(search);
+    List<EmailLog> found = emailLogManager.search(search);
+    List<EmailLog> resendable = new ArrayList<>();
+    if (found != null) {
+      for (EmailLog emailLog : found) {
+        if (!isCodeEmail(emailLog)) {
+          resendable.add(emailLog);
+        }
+      }
+    }
+    return resendable;
+  }
+
+  private static boolean isCodeEmail(EmailLog emailLog) {
+    return OtpMailSender.SOURCE_ACTION.equals(emailLog.getSourceAction());
   }
 
   public ArrayList<EmailLog> getEmails() {

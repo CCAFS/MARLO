@@ -1,0 +1,20 @@
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== live: FN-002 / FN-001 / AC-1 / AC-21 (the switch and the exclusion changed with no restart)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  switch off: request-code -> domainNotEnabled ; crpByEmail otpEnabled flags: ['false']
+  => PASS [AC-1/FN-001] switch off: request-code refused (domainNotEnabled), no mail, no challenge   (domainNotEnabled)
+  => PASS [AC-1] switch off: crpByEmail offers no OTP for any unit
+  => PASS [AC-1/FN-019] password login unchanged with the feature off   (/marlo-web/AICCRA/crpDashboard.do)
+  cognitoLogin.do?crp=AICCRA -> HTTP 200 Location 
+  switch on again: request-code -> sent ; otpEnabled flags: ['true']
+  => PASS [FN-002/AC-21] turning the switch on takes effect on the next request with no restart
+  outlook.com excluded: request-code -> domainNotEnabled ; otpEnabled flags: ['false']
+  => PASS [FN-002/AC-21] adding a domain to the exclusion takes effect on the next request: domainNotEnabled, no mail, otpEnabled false   (domainNotEnabled)
+  outlook.com no longer excluded: request-code -> sent ; otpEnabled flags: ['true']
+  => PASS [FN-002/AC-21] removing a domain from the exclusion takes effect on the next request
+  => PASS [FN-003] an empty exclusion excludes nobody   (sent)
+  (before the toggles: sent ; the unit's values then: switch=true exclusion=excluded.test ; restored to the standing fixture)
+
+SUMMARY: 7 checks, 0 failed

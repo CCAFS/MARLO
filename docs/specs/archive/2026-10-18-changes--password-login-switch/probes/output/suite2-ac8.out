@@ -1,0 +1,16 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) 2026-10-18 09:26 -05, HEAD 6a0c65e5e4, JVM pid 34049, db aiccradb_otp_probe, key valid
+$ probes/ac-live.sh ac8
+
+== ac8: FN-002 / AC-8 (a change of the switch is live: raw SQL, no restart)
+  (JVM pid 34049; unit 45: password switch false, code switch true, no exclusion)
+  => PASS [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false)   ((True, False))
+  => PASS [AC-8] off: validateUser.do refuses the correct password
+  => PASS [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both)   ((True, True))
+  => PASS [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password
+  => PASS [AC-8] UPDATE ... 'true': the next login.do signs in   (/marlo-web/AICCRA/crpDashboard.do)
+  => PASS [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again   ((True, False))
+  => PASS [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+  => PASS [AC-8] no restart: the JVM pid is the same before and after   (34049 -> 34049)
+
+SUMMARY: 8 checks, 0 failed
+EXIT=0

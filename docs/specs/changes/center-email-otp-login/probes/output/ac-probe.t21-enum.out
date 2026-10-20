@@ -1,0 +1,48 @@
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== enum: AC-4 / AC-3 / AC-13 / FN-006 / FN-003 / FN-016
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  eligible                                             HTTP 200  {"status":"sent","destination":"p***@outlook.com"}
+  unknown                                              HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  inactive                                             HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  non-member                                           HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  soft-deleted (crp_users.is_active=0, what deleteCrpUser writes) HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  => PASS [AC-4] request-code answer, headers and cookie names identical across the 5 account states   (reference={"destination": "X***@outlook.com", "status": "sent"})
+  (no recorded challenge can authenticate: T11 unit test OtpVerifyCodeActionTest, search aDecoyGuessed)
+  => PASS [AC-4] no email for any ineligible state; exactly 1 for the eligible one   ({'eligible': 1, 'unknown': 0, 'inactive': 0, 'non-member': 0, 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': 0})
+  otp_challenges columns: ['id', 'nonce', 'email_hmac', 'global_unit_id', 'code_hmac', 'expires_at', 'attempts', 'consumed_at', 'created_at']
+  rows (len nonce, len email_hmac, len code_hmac, attempts, open, ttl s): [['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300']]
+  => PASS [AC-4] one challenge row per request, all the same shape, no column marks a decoy   (rows=5 distinct shapes=1)
+  FN-017 elements: {'application name': True, '6-digit code': True, '5-minute expiry': True, 'works once': True, 'do not share': True, 'ignore if not requested': True, 'support contact': True, 'no link carrying the code': True, 'not addressed to the typed address (non-production: the support mailbox only, the typed address in the body header)': True}
+  => PASS [AC-3] challenge row + one email with a 6-digit code and every FN-017 element
+  -- the same sequence on every state: wrong, wrong, resend inside 30 s, wrong, correct-or-random
+  eligible                                             ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  unknown                                              ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  inactive                                             ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  non-member                                           ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  soft-deleted (crp_users.is_active=0, what deleteCrpUser writes) ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  => PASS [AC-4] later wrong codes, in-window resend, exhaustion and a further code answer identically for all 5 states   (['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted'])
+  -- real 31 s wait, then resend on every state
+  {'eligible': ('sent', 'mismatch'), 'unknown': ('sent', 'mismatch'), 'inactive': ('sent', 'mismatch'), 'non-member': ('sent', 'mismatch'), 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': ('sent', 'mismatch')}
+  => PASS [AC-4] resend after 30 s and a wrong code answer identically for all 5 states   (('sent', 'mismatch'))
+  => PASS [AC-4] still only the eligible account was mailed after the resend (2 mails)   ({'eligible': 2, 'unknown': 0, 'inactive': 0, 'non-member': 0, 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': 0})
+  => PASS [FN-016] verify with no challenge in the session answers like a wrong code   (mismatch)
+  -- AC-13: an is_cgiar_user=1 account on the Cognito-active unit
+  crpByEmail for otp.cgiar@outlook.com (an outlook.com account): isCgiarUser=True units(cognitoEnabled, otpEnabled)={'AICCRA': (True, True)}
+  crpByEmail for otp.staff@cgiar.org (a cgiar.org account): isCgiarUser=True units(cognitoEnabled, otpEnabled)={'AICCRA': (True, True)}
+  => PASS [AC-13] step 3 data for the cgiar.org account, empty exclusion of its domain: isCgiarUser, cognitoEnabled and otpEnabled are all true (the two methods are offered)   ((True, {'AICCRA': (True, True)}))
+  => PASS [AC-13/SEC-009] both CGIAR accounts are mailed exactly one code each (is_cgiar_user plays no part)   (((1, 1), (2, 2)))
+  verify: {'otp.cgiar@outlook.com': '{"status":"ok","redirect":"http:\\/\\/localhost:8080\\/marlo-web\\/AICCRA\\/crpDashboard.do"}', 'otp.staff@cgiar.org': '{"status":"ok","redirect":"http:\\/\\/localhost:8080\\/marlo-web\\/AICCRA\\/crpDashboard.do"}'}
+  => PASS [AC-13/SEC-009] each code signs its CGIAR account in   ({'otp.cgiar@outlook.com': 'ok', 'otp.staff@cgiar.org': 'ok'})
+  => PASS [AC-13/SEC-005] the signed-in sessions are authenticated (read from the JVM)   ({'otp.cgiar@outlook.com': True, 'otp.staff@cgiar.org': True})
+  cgiar.org excluded: request-code -> domainNotEnabled ; staff {'AICCRA': (True, False)} ; outlook account {'AICCRA': (True, True)}
+  => PASS [AC-13/FN-006] with cgiar.org excluded a direct request-code call answers domainNotEnabled, no mail, no challenge   (domainNotEnabled)
+  => PASS [AC-13/UI-006] with cgiar.org excluded the page data keeps cognitoEnabled true and turns otpEnabled false (step 3 shows only Sign in with CGIAR); an outlook.com account is unaffected   (({'AICCRA': (True, False)}, {'AICCRA': (True, True)}))
+  exclusion excluded.test: {'x@excluded.test': 'domainNotEnabled', '  Y@EXCLUDED.TEST ': 'domainNotEnabled', 'x@attackerexcluded.test': 'sent', 'x@excluded.test.evil.com': 'sent', 'x@sub.excluded.test': 'sent', 'someone@gmail.com': 'sent'}
+  => PASS [FN-006/FN-003] the excluded domain, as typed and in its normalised form, answers domainNotEnabled
+  => PASS [FN-003/AC-2] lookalikes, a sub-domain that is not listed and an unrelated domain are not excluded: they get the neutral answer   ({'x@excluded.test': 'domainNotEnabled', '  Y@EXCLUDED.TEST ': 'domainNotEnabled', 'x@attackerexcluded.test': 'sent', 'x@excluded.test.evil.com': 'sent', 'x@sub.excluded.test': 'sent', 'someone@gmail.com': 'sent'})
+  => PASS [FN-005] no mail for any of them (none is a registered account), and a row only for the ones that went on
+  => PASS [FN-003] '  Probe.User@OUTLOOK.COM ' is accepted as the normalised address and mailed   (sent)
+
+SUMMARY: 18 checks, 0 failed

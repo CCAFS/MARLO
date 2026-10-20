@@ -479,5 +479,6 @@
   <mapping resource="xmls/UserIdeas.hbm.xml"/>
   <mapping resource="xmls/HelldotsComments.hbm.xml"/>
   <mapping resource="xmls/HelldotsScreenshots.hbm.xml"/>
+  <mapping resource="xmls/OtpChallenges.hbm.xml"/>
  </session-factory>
 </hibernate-configuration>

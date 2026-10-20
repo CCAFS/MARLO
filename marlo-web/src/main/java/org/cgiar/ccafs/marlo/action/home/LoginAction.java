@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.awt.Color;
@@ -108,19 +109,27 @@ public class LoginAction extends BaseAction {
 
   private final ParameterManager parameterManager;
 
+  /**
+   * CHG-PWD-SWITCH-001-T05 (DD-5): the password gate of {@link #login()} -- the one place that decides whether the
+   * Global Unit of the attempt still allows a password.
+   */
+  private final OtpEligibility eligibility;
+
   private List<GlobalUnit> crpList;
   private List<GlobalUnit> centerList;
   private List<GlobalUnit> platformsList;
 
   // @Inject
   public LoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
-    CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+    CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager,
+    OtpEligibility eligibility) {
     super(config);
     this.userManager = userManager;
     this.crpManager = crpManager;
     this.crpUserManager = crpUserManager;
     this.customParameterManager = customParameterManager;
     this.parameterManager = parameterManager;
+    this.eligibility = eligibility;
   }
 
   @Override
@@ -345,7 +354,26 @@ public class LoginAction extends BaseAction {
         return BaseAction.INPUT;
       }
 
-      User loggedUser = userManager.login(userEmail, user.getPassword());
+      // CHG-PWD-SWITCH-001-T05 (SEC-001, SEC-002, DD-5): the password switch of the Global Unit of the attempt. It
+      // runs after the SEC-005 guard and BEFORE userManager.login(), for the same reason: once that call executes the
+      // password has been compared, or has already left MARLO for the realm's LDAP branch. The gate decides and logs
+      // its own INFO line (OPS-001). A refusal then takes the road of a failed login: it leaves in the Shiro session
+      // what the realm leaves for this kind of account, and getLoginMessages() and the failure branch below read it as
+      // they read a real failure. The field error is therefore the one a wrong password gets for that account
+      // (login.error.userOrPass for a local account, the disabled text for an inactive one, the CGIAR text for a
+      // CGIAR one, see the accepted residual at PasswordGateDecision#leaveRealmMessage), never a message of its own.
+      // It also runs Shiro's remember-me failure handling, which Subject.login runs on every failure and which sends
+      // the rememberMe=deleteMe cookie.
+      OtpEligibility.PasswordGateDecision passwordGate =
+        this.eligibility.passwordGate(userEmail, loggedCrp == null ? null : loggedCrp.getId());
+      User loggedUser = null;
+      if (passwordGate.isRefused()) {
+        passwordGate.leaveRealmMessage(SecurityUtils.getSubject().getSession());
+        passwordGate.leaveRememberMeFailure(SecurityUtils.getSubject(), SecurityUtils.getSecurityManager(), userEmail,
+          user.getPassword());
+      } else {
+        loggedUser = userManager.login(userEmail, user.getPassword());
+      }
       this.getLoginMessages();
       if (loggedUser != null) {
         String result = this.login(loggedUser, loggedCrp);

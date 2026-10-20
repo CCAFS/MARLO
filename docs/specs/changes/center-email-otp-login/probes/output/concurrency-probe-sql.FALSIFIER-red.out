@@ -1,0 +1,39 @@
+database under test: aiccradb_otp_probe   MAX_ATTEMPTS=3
+  SUPERSEDE          UPDATE otp_challenges SET consumed_at = :now WHERE email_hmac = :emailHmac AND consumed_at IS NULL
+  INSERT             INSERT INTO otp_challenges (nonce, email_hmac, global_unit_id, code_hmac, expires_at, attempts, consumed_at, created_at) VALUES (:nonce, :emailHmac, :globalUnitId, :codeHmac, :expiresAt, 0, NULL, :now)
+  INCREMENT_ATTEMPTS UPDATE otp_challenges SET attempts = attempts + 1 WHERE nonce = :nonce AND consumed_at IS NULL AND attempts < 3
+  CONSUME            UPDATE otp_challenges SET consumed_at = :now WHERE nonce = :nonce AND consumed_at IS NULL AND expires_at > :now
+isolation: @@global.transaction_isolation=REPEATABLE-READ   @@session.transaction_isolation=REPEATABLE-READ (the probe's own sessions)
+isolation of the connections open on aiccradb_otp_probe right now (the application pool, when it is running): REPEATABLE-READ x 15
+
+[S1] 10 parallel CONSUME on one open challenge (AC-7)
+  sessions blocked on the barrier when released: 10   affected rows per session: ['1', '0', '0', '0', '0', '0', '0', '0', '0', '0']   final (attempts, consumed): ['0', '1']
+  => PASS: S1: exactly one UPDATE affects a row   (winners=1)
+
+[S2] 10 parallel INCREMENT_ATTEMPTS on one open challenge (FN-012)
+  barrier: 10   affected rows per session: ['1', '1', '1', '0', '0', '0', '0', '0', '0', '0']   final (attempts, consumed): ['3', '0']
+  => PASS: S2: attempts ends at 3, exactly 3 increments land   (winners=3 attempts=3)
+
+[S3] challenge already EXHAUSTED (attempts=3): 3 wrong-code increments + 4 consume attempts fired together (JS-1)
+  round 1: increments ['0', '0', '0'] consumes ['1', '0', '0', '0'] final ['3', '1']
+  round 2: increments ['0', '0', '0'] consumes ['0', '1', '0', '0'] final ['3', '1']
+  round 3: increments ['0', '0', '0'] consumes ['0', '1', '0', '0'] final ['3', '1']
+  round 4: increments ['0', '0', '0'] consumes ['0', '1', '0', '0'] final ['3', '1']
+  round 5: increments ['0', '0', '0'] consumes ['0', '1', '0', '0'] final ['3', '1']
+  round 6: increments ['0', '0', '0'] consumes ['0', '0', '1', '0'] final ['3', '1']
+  round 7: increments ['0', '0', '0'] consumes ['1', '0', '0', '0'] final ['3', '1']
+  round 8: increments ['0', '0', '0'] consumes ['1', '0', '0', '0'] final ['3', '1']
+  round 9: increments ['0', '0', '0'] consumes ['0', '0', '0', '1'] final ['3', '1']
+  round 10: increments ['0', '0', '0'] consumes ['1', '0', '0', '0'] final ['3', '1']
+  total consumes over 10 rounds: 10
+  => FAIL: S3: 0 consumes after exhaustion (10 rounds)   (consumes=10)
+
+[S3b] race burst from attempts=0, 30 rounds: 3 increments + 1 consume together
+  outcomes: {('consumed', 'attempts=3'): 25, ('consumed', 'attempts=1'): 2, ('consumed', 'attempts=2'): 3}
+  => FAIL: S3b: never consumed with attempts=3   (violations=25 of 30)
+
+[S4] 10 parallel issue transactions (supersede + insert) for ONE email, no cooldown in front (FN-007; informational)
+  barrier: 10   sessions' last ROW_COUNT: ['0', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta', 'ERR:ERROR 1213 (40001) at line 14: Deadlock found when trying to get lock; try resta']   open rows afterwards: 1
+  (the HTTP probe case 4 covers the real path, where the cooldown row lock admits one request at a time)
+
+SUMMARY: 4 checks, 2 failed: S3: 0 consumes after exhaustion (10 rounds); S3b: never consumed with attempts=3   [S4 open rows without cooldown: 1]

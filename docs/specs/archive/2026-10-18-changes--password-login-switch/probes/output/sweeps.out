@@ -1,0 +1,187 @@
+
+### FORWARD S1 enabled-by-listing-domains and applies-only-while-password-on
+grep -n -iE 'listing domains|Emptying the list|enabled per Global Unit by|only while password sign-in is on|applies only while password' <live documents>
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:28:The capability is **off by default** and is switched on per Global Unit by the boolean `system_otp_login_active`, with an optional list of excluded email domains. Turning the switch off d
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:91:- **CHG-OTP-LOGIN-001-FN-001** — Code sign-in MUST be enabled per Global Unit by the boolean specificity `system_otp_login_active`, off by default. Off or absent MUST disable it for that 
+[CHECK] docs/specs/changes/center-email-otp-login/requirements.md:464:  - **Executive Summary corrected:** it said the capability is "enabled per Global Unit by listing domains" and that "Emptying the list switches it off", which described the allow-list T
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:467:  - **Closure sweep, forward** (`docs/specs/changes/password-login-switch/probes/sweeps.sh`, raw run in its `output/sweeps.out`): five families of the superseded sentences over `requirem
+[CHECK] docs/specs/changes/password-login-switch/design.md:343:  shown directly. Its stale Executive Summary ("enabled by listing domains") is corrected in the same task.
+historical, append-only (counted, not edited): center-email-otp-login/proposal.md=0 center-email-otp-login/tasks.md=0 center-email-otp-login/execution.md=0 center-email-otp-login/judgment.md=0 password-login-switch/proposal.md=0 password-login-switch/tasks.md=2 password-login-switch/execution.md=0 password-login-switch/judgment.md=0 
+
+### FORWARD S2 password and Cognito logins do not change (FN-019)
+grep -n -iE 'Password and Cognito (logins|paths) do not change|exactly as before|do not change behavior|logins are unaffected' <live documents>
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:28:The capability is **off by default** and is switched on per Global Unit by the boolean `system_otp_login_active`, with an optional list of excluded email domains. Turning the switch off d
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:194:- **CHG-OTP-LOGIN-001-FN-019** — Password login and Cognito login MUST behave exactly as before for every Global Unit, whether or not code sign-in is enabled. *(Amended 2026-10-17, `CHG-
+[CHECK] docs/specs/changes/center-email-otp-login/requirements.md:463:  - **Clauses amended:** FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 (the two descriptions are replaced by the texts of that spec's DA-003, the former ones kept as "was" line
+[CHECK] docs/specs/changes/center-email-otp-login/requirements.md:464:  - **Executive Summary corrected:** it said the capability is "enabled per Global Unit by listing domains" and that "Emptying the list switches it off", which described the allow-list T
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:467:  - **Closure sweep, forward** (`docs/specs/changes/password-login-switch/probes/sweeps.sh`, raw run in its `output/sweeps.out`): five families of the superseded sentences over `requirem
+[note]  docs/specs/changes/center-email-otp-login/design.md:31:Password and Cognito paths do not change behavior. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: true while the Global Unit has password sign-in on, the default. A unit that turns `system_p
+[note]  docs/specs/changes/center-email-otp-login/design.md:394:| Victim lockout | A third party can spend a user's per-email buckets and block code sign-in for 15 min. **Accepted**: password and Cognito logins are unaffected *(Amended 2026-10-17, `C
+historical, append-only (counted, not edited): center-email-otp-login/proposal.md=0 center-email-otp-login/tasks.md=2 center-email-otp-login/execution.md=1 center-email-otp-login/judgment.md=0 password-login-switch/proposal.md=0 password-login-switch/tasks.md=0 password-login-switch/execution.md=0 password-login-switch/judgment.md=0 
+
+### FORWARD S3 not enabled for this email (FN-001, FN-006)
+grep -n -iE 'domainNotEnabled|not enabled for this email|Not enabled for this project|Off or absent MUST disable' <live documents>
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:91:- **CHG-OTP-LOGIN-001-FN-001** — Code sign-in MUST be enabled per Global Unit by the boolean specificity `system_otp_login_active`, off by default. Off or absent MUST disable it for that 
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:124:- **CHG-OTP-LOGIN-001-FN-006** — When G's switch is off, or the email's domain is on G's exclusion list, the system MUST return an explicit "not enabled for this email" message that name
+[CHECK] docs/specs/changes/center-email-otp-login/requirements.md:465:  - **`design.md`:** notes on the executive paragraph, the `crpByEmail.do` diagram, the status table row `domainNotEnabled`, steps 4 and 8 of request and verify, the struck-through Cogni
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:467:  - **Closure sweep, forward** (`docs/specs/changes/password-login-switch/probes/sweeps.sh`, raw run in its `output/sweeps.out`): five families of the superseded sentences over `requirem
+[note]  docs/specs/changes/center-email-otp-login/design.md:199:| `domainNotEnabled` | request | Domain not on the Global Unit's list, unknown Global Unit, or feature unconfigured (FN-006, SEC-008) | `login.otp.error.domain` *(Amended 2026-10-17, `CH
+[CHECK] docs/specs/changes/center-email-otp-login/design.md:238:2. **Shape.** The email must have valid syntax, at most 254 characters, and exactly one `@`; `globalUnitId` must be numeric. Otherwise → `domainNotEnabled`.
+[CHECK] docs/specs/changes/center-email-otp-login/design.md:239:3. **Configured?** If `OtpKeys` is unconfigured → `domainNotEnabled` (SEC-008). *Execution order amended 2026-10-13 (T10): this check runs **before** step 1. It reads no account state, s
+[note]  docs/specs/changes/center-email-otp-login/design.md:240:4. **Domain.** Read the Global Unit's switch and exclusion list through the uncached read (DD-12). The switch off, an unknown Global Unit, or an email whose domain exactly matches an exc
+[note]  docs/specs/changes/center-email-otp-login/design.md:493:- **Status vocabulary:** unchanged. `domainNotEnabled` now covers "switch off" and "domain excluded", and its message already reads "not available for this email". *(Amended 2026-10-17, 
+[note]  docs/specs/changes/center-email-otp-login/runbook.md:76:| Without it, or too short | The feature is **off**. `OtpKeys` logs **one WARN**, `auth.otp.keys outcome=unconfigured: ... <reason>`, **without the value, its length or its decoded length
+[note]  docs/specs/changes/center-email-otp-login/runbook.md:180:| **Switch off, or the domain is on the unit's exclusion list** | **"Not enabled for this project"** (a different message, by design, FN-006) | No *(Amended 2026-10-17, `CHG-PWD-SWITCH-0
+[note]  docs/specs/changes/center-email-otp-login/runbook.md:184:> The domain case is deliberately not neutral: design section 4 and FN-006 answer it with `domainNotEnabled`. The login *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: while the unit has pas
+[CHECK] docs/specs/changes/center-email-otp-login/runbook.md:330:| 8 | Next request: `otpRequestCode` for the test user | **`{"status":"domainNotEnabled"}`**. Log: `auth.otp.request outcome=denied_domain gu=aiccra`. **No restart**: the JVM pid was unc
+[CHECK] docs/specs/changes/center-email-otp-login/runbook.md:339:| `UPDATE custom_parameters SET value = ''` on the same row | **`false`** | **`domainNotEnabled`** |
+[note]  docs/specs/changes/center-email-otp-login/probes/README.md:9:> **Amended 2026-10-17 (`CHG-PWD-SWITCH-001`).** Every verdict and run below was taken with the password switch `system_password_login_active` absent or on, the only state that existed. Wh
+[CHECK] docs/specs/changes/center-email-otp-login/probes/README.md:81:| AC-1 | **PASS** (re-run 2026-10-15, T21; the first run's environment note still applies) | The switch turned off through the database with no restart (stage `live`, `output/ac-probe.t21
+[CHECK] docs/specs/changes/center-email-otp-login/probes/README.md:82:| AC-2 | **PASS** (re-run 2026-10-15, T21, amended) | `OtpDomainPolicyTest` is green in the suite (34 tests; the lookalike, normalisation and `cgiar.org`-is-an-ordinary-entry cases). End 
+[CHECK] docs/specs/changes/center-email-otp-login/probes/README.md:92:| AC-12 | **PASS** | Two starts, one file each. **No secret** (`ac-probe.nosecret.out`): `login.do` HTTP 200, `request-code` answers `domainNotEnabled` with the allow-list set, no challen
+[CHECK] docs/specs/changes/center-email-otp-login/probes/README.md:93:| AC-13 | **PASS** (re-run 2026-10-15, T21, amended) | Stage `enum`, `output/ac-probe.t21-enum.out`, on AICCRA (`cognito_auth_active = true`, switch on). With the exclusion `excluded.test
+[CHECK] docs/specs/changes/password-login-switch/requirements.md:346:- 2026-10-16 — Cross-spec amendment: `CHG-OTP-LOGIN-001` FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 and UI-006 are amended: while password sign-in is off, the code switch an
+[CHECK] docs/specs/changes/password-login-switch/design.md:341:  here: under a password-off unit, step 4 admits the override instead of answering `domainNotEnabled`; the code switch
+historical, append-only (counted, not edited): center-email-otp-login/proposal.md=0 center-email-otp-login/tasks.md=5 center-email-otp-login/execution.md=4 center-email-otp-login/judgment.md=0 password-login-switch/proposal.md=1 password-login-switch/tasks.md=1 password-login-switch/execution.md=1 password-login-switch/judgment.md=0 
+
+### FORWARD S4 eligibility never reads is_cgiar_user (SEC-009)
+grep -n -iE 'plays no part|MUST NOT depend on|no longer read by the code path|is_cgiar_user. no longer|nobody can' <live documents>
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:43:| **Eligible user** | An account that is active, has an active `crp_users` membership in the selected Global Unit, and has an email domain the unit has not excluded, in a unit whose switc
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:206:- **CHG-OTP-LOGIN-001-SEC-009** — Eligibility for code sign-in MUST NOT depend on `is_cgiar_user`. A CGIAR account with access to G gets a code like any other account, unless its domain 
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:253:- **CHG-OTP-LOGIN-001-UI-001** — The authentication step for G MUST offer "Email me a sign-in code" only when the feature is configured, G's switch is on, and the entered email's domain 
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:384:| OQ-4 | `is_cgiar_user = 1`: refuse always, or only where Cognito is active? | SEC-009 | **Superseded 2026-10-15 (T21):** `is_cgiar_user` plays no part; exclusion is per domain, per uni
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:467:  - **Closure sweep, forward** (`docs/specs/changes/password-login-switch/probes/sweeps.sh`, raw run in its `output/sweeps.out`): five families of the superseded sentences over `requirem
+[note]  docs/specs/changes/center-email-otp-login/design.md:320:| `crpByEmail.do` | Each Global Unit entry gains `otpEnabled`. It is `true` when the feature is configured, the unit's switch is on, and the user's domain is not on its exclusion list. `
+[note]  docs/specs/changes/center-email-otp-login/design.md:491:- **`is_cgiar_user`:** no longer read by the code path. The `CognitoAuthSpecificity` read leaves `OtpEligibility`, and `crpByEmail.do`'s `otpEnabled` follows the same rule. *(Amended 202
+[note]  docs/specs/changes/center-email-otp-login/runbook.md:38:| `system_otp_login_active` | Boolean | **On:** every account with access to the unit (active, active membership, terms accepted) can ask for a code, CGIAR or not. **Off:** nobody can *(A
+[CHECK] docs/specs/changes/center-email-otp-login/runbook.md:131:| `outcome=internal_error` | Fault, usually with an `auth.otp.fault` line | Developer. Usually the user saw "unavailable"; with an `auth.otp.fault stage=eligibility` line the user saw "c
+[note]  docs/specs/changes/center-email-otp-login/runbook.md:248:| OQ-4 | `is_cgiar_user = 1`: refuse always or only where Cognito is active | Kenji | Not blocking | **Superseded 2026-10-15 (T21):** `is_cgiar_user` plays no part; each unit's exclusion
+historical, append-only (counted, not edited): center-email-otp-login/proposal.md=0 center-email-otp-login/tasks.md=0 center-email-otp-login/execution.md=0 center-email-otp-login/judgment.md=0 password-login-switch/proposal.md=1 password-login-switch/tasks.md=0 password-login-switch/execution.md=0 password-login-switch/judgment.md=0 
+
+### FORWARD S5 single method shown directly (UI-006)
+grep -n -iE 'single method|shown directly|every single-method case|only when the feature is configured' <live documents>
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:253:- **CHG-OTP-LOGIN-001-UI-001** — The authentication step for G MUST offer "Email me a sign-in code" only when the feature is configured, G's switch is on, and the entered email's domain 
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:275:  - when a single method applies (Cognito or the password, with the code off or the domain excluded), it is shown directly, with no choice; *(Amended 2026-10-17, `CHG-PWD-SWITCH-001` UI-
+[CHECK] docs/specs/changes/center-email-otp-login/requirements.md:414:- 2026-10-14 — Step 3 asks for the sign-in method when both the code and the password apply (user decision after reviewing the PRMS login and two recorded prototypes) — UI-006 is added. 
+[note]  docs/specs/changes/center-email-otp-login/requirements.md:467:  - **Closure sweep, forward** (`docs/specs/changes/password-login-switch/probes/sweeps.sh`, raw run in its `output/sweeps.out`): five families of the superseded sentences over `requirem
+[note]  docs/specs/changes/center-email-otp-login/design.md:320:| `crpByEmail.do` | Each Global Unit entry gains `otpEnabled`. It is `true` when the feature is configured, the unit's switch is on, and the user's domain is not on its exclusion list. `
+[note]  docs/specs/changes/center-email-otp-login/design.md:322:| Method choice (T17) | Shown only on LOCAL with `otpEnabled`. Heading "How do you want to sign in?", a primary "Email me a sign-in code" and a secondary "Continue with your password".<b
+[note]  docs/specs/changes/center-email-otp-login/design.md:376:| Load | A request-code call costs:<br>• 2 window upserts, and the cooldown's locking upsert, `SELECT … FOR UPDATE` and conditional update (amended 2026-10-13);<br>• 2 uncached specifici
+[note]  docs/specs/changes/center-email-otp-login/design.md:494:- **Step 3 (UI-006):** the choice now also covers Cognito against the code. *(Amended 2026-10-17, `CHG-PWD-SWITCH-001`: with password sign-in off, a single method is shown directly)*
+[note]  docs/specs/changes/password-login-switch/requirements.md:221:- **CHG-PWD-SWITCH-001-UI-001** — When an account has a single method in G, step 3 MUST show it directly, without the
+[CHECK] docs/specs/changes/password-login-switch/requirements.md:346:- 2026-10-16 — Cross-spec amendment: `CHG-OTP-LOGIN-001` FN-001, FN-003, FN-005, FN-006, FN-015, SEC-009, DA-002 and UI-006 are amended: while password sign-in is off, the code switch an
+[CHECK] docs/specs/changes/password-login-switch/design.md:37:     login.js step 3: 1 method → shown directly · 2 methods → choice menu
+[CHECK] docs/specs/changes/password-login-switch/design.md:342:  and exclusion apply only to Cognito accounts; a Cognito account is refused under the override; a single method is
+[CHECK] docs/specs/changes/password-login-switch/design.md:343:  shown directly. Its stale Executive Summary ("enabled by listing domains") is corrected in the same task.
+historical, append-only (counted, not edited): center-email-otp-login/proposal.md=0 center-email-otp-login/tasks.md=1 center-email-otp-login/execution.md=0 center-email-otp-login/judgment.md=0 password-login-switch/proposal.md=2 password-login-switch/tasks.md=0 password-login-switch/execution.md=0 password-login-switch/judgment.md=0 
+
+### BACKWARD B1 full clause ids, anywhere in the repository docs, reports, guides and sources
+grep -rnE 'CHG-OTP-LOGIN-001-(FN-001|FN-003|FN-005|FN-006|FN-015|FN-019|SEC-009|DA-002|UI-001|UI-006)' docs reports AGENTS.md CLAUDE.md marlo-web/src marlo-data/src
+docs/specs/changes/center-email-otp-login/requirements.md:91:- **CHG-OTP-LOGIN-001-FN-001** — Code sign-in MUST be enabled per Global Unit by the bool
+docs/specs/changes/center-email-otp-login/requirements.md:111:- **CHG-OTP-LOGIN-001-FN-003** — A Global Unit MAY exclude email domains from code sign-
+docs/specs/changes/center-email-otp-login/requirements.md:123:- **CHG-OTP-LOGIN-001-FN-005** — When G's switch is on and the domain is not excluded, b
+docs/specs/changes/center-email-otp-login/requirements.md:124:- **CHG-OTP-LOGIN-001-FN-006** — When G's switch is off, or the email's domain is on G's
+docs/specs/changes/center-email-otp-login/requirements.md:156:- **CHG-OTP-LOGIN-001-FN-015** — Eligibility MUST be re-checked after the code is consum
+docs/specs/changes/center-email-otp-login/requirements.md:194:- **CHG-OTP-LOGIN-001-FN-019** — Password login and Cognito login MUST behave exactly as
+docs/specs/changes/center-email-otp-login/requirements.md:206:- **CHG-OTP-LOGIN-001-SEC-009** — Eligibility for code sign-in MUST NOT depend on `is_cg
+docs/specs/changes/center-email-otp-login/requirements.md:242:- **CHG-OTP-LOGIN-001-DA-002** — The switch `system_otp_login_active` (boolean, default 
+docs/specs/changes/center-email-otp-login/requirements.md:253:- **CHG-OTP-LOGIN-001-UI-001** — The authentication step for G MUST offer "Email me a si
+docs/specs/changes/center-email-otp-login/requirements.md:270:- **CHG-OTP-LOGIN-001-UI-006** — When the authentication step for G offers the code and 
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:5:[note]  docs/specs/changes/center-email-otp-login/requirements.md:91:- **CHG-OTP-L
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:14:[note]  docs/specs/changes/center-email-otp-login/requirements.md:194:- **CHG-OTP
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:24:[note]  docs/specs/changes/center-email-otp-login/requirements.md:91:- **CHG-OTP-
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:25:[note]  docs/specs/changes/center-email-otp-login/requirements.md:124:- **CHG-OTP
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:50:[note]  docs/specs/changes/center-email-otp-login/requirements.md:206:- **CHG-OTP
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:51:[note]  docs/specs/changes/center-email-otp-login/requirements.md:253:- **CHG-OTP
+docs/specs/changes/password-login-switch/probes/output/sweeps.out:63:[note]  docs/specs/changes/center-email-otp-login/requirements.md:253:- **CHG-OTP
+
+### BACKWARD B2 short ids, files outside docs/specs/changes/{center-email-otp-login,password-login-switch} (candidate citers)
+FN-001: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRuleTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicyTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibilityTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpStrutsPackageTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/data/manager/impl/OtpChallengeManagerImplTest.java marlo-web/src/main/resources/database/migrations/V2_6_0_20261009_1025__AddEmailOtpLogin.sql marlo-web/src/main/resources/database/migrations/V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl marlo-web/src/main/webapp/global/js/login/login.js marlo-web/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRule.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicy.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeAction.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailAction.java marlo-data/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java 
+FN-003: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRuleTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicyTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibilityTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/CognitoCallbackActionTest.java marlo-web/src/main/webapp/global/js/login/login.js marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRule.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicy.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/CognitoCallbackAction.java 
+FN-005: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRuleTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibilityTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/directory/LdapDirectoryServiceTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailActionTest.java marlo-web/src/main/webapp/global/js/login/login.js marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/CognitoCallbackAction.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeAction.java 
+FN-006: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRuleTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibilityTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/CognitoIdentityMappingTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/crp/admin/CrpUsersActionDirectoryTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/center/json/global/CenterManageUsersActionDirectoryTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/SearchUserActionDirectoryTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/ManageUsersActionDirectoryTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/validation/superadmin/GuestUsersValidatorDirectoryTest.java marlo-web/src/main/webapp/global/js/login/login.js marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeAction.java marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/impl/CognitoIdentityMapperImpl.java 
+FN-015: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibilityTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeActionTest.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeAction.java 
+FN-019: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/ReturnUrlsTest.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/ReturnUrls.java 
+SEC-009: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicyTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibilityTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeActionTest.java marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailActionTest.java marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicy.java 
+DA-002: marlo-web/src/main/resources/database/migrations/V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql marlo-web/src/main/resources/database/migrations/V2_6_0_20261009_1025__AddEmailOtpLogin.sql marlo-web/src/main/resources/database/migrations/V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql 
+UI-001: marlo-web/src/test/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRuleTest.java marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl marlo-web/src/main/webapp/global/js/login/login.js marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailAction.java 
+UI-006: marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl marlo-web/src/main/webapp/global/css/customLogin.css marlo-web/src/main/webapp/global/js/login/login.js 
+
+### BACKWARD B3 citers of the OTP rules in code comments and templates
+marlo-web/src/main/resources/global.properties:6655:# Center email one-time-code sign-in: the code email (CHG-OTP-LOGIN-001, FN-017). The arguments are {0} the
+marlo-web/src/main/resources/global.properties:6662:# Center email one-time-code sign-in: the login page copy (CHG-OTP-LOGIN-001, UI-002, UI-005). {0} in login.otp.sent i
+marlo-web/src/main/resources/database/migrations/V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql:1:-- CHG-OTP-LOGIN-001-T21 (DD-13, DA-002): replaces 
+marlo-web/src/main/resources/database/migrations/V2_6_0_20261009_1025__AddEmailOtpLogin.sql:1:-- CHG-OTP-LOGIN-001-T01 -- storage and specificity catalog for the Center e
+marlo-web/src/main/resources/struts-home.xml:25:		CHG-OTP-LOGIN-001-T12 (design.md 4, DD-1): the pre-authentication JSON endpoints of the Center email
+marlo-web/src/main/resources/config/marlo-dev.properties:189:# Center email one-time-code sign-in (CHG-OTP-LOGIN-001)
+marlo-web/src/main/resources/config/marlo-test.properties:256:# Center email one-time-code sign-in (CHG-OTP-LOGIN-001)
+marlo-web/src/main/resources/custom/aicrra.properties:3206:# Center email one-time-code sign-in: the code email in the branded format of this unit (CHG-OTP-LOGIN-001, T20
+marlo-web/src/main/resources/custom/aiccra3.properties:3206:# Center email one-time-code sign-in: the code email in the branded format of this unit (CHG-OTP-LOGIN-001, T2
+marlo-web/src/main/resources/custom/test.properties:3303:# Center email one-time-code sign-in: the code email in the branded format of this unit (CHG-OTP-LOGIN-001, T20).
+marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl:100:          [#-- CHG-OTP-LOGIN-001-T17 / UI-006: the method choice and the code panel. Both stay hidden and
+marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl:114:            [#-- CHG-OTP-LOGIN-001-T21: the other way of a CGIAR account on a Cognito unit. Same handler 
+marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl:175:        [#-- CHG-OTP-LOGIN-001-T14 / UI-002, UI-003: the e-mailed sign-in code step. Inert and hidden unt
+marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl:246:        [#-- CHG-OTP-LOGIN-001-T14: shown on the password step when "Email me a sign-in code" is refused
+marlo-web/src/main/webapp/WEB-INF/global/pages/loginForm.ftl:286:        [#-- CHG-OTP-LOGIN-001-T17 / UI-006: "Choose another way to sign in" of the password panel (the c
+marlo-web/src/main/webapp/global/css/customLogin.css:717:/* CHG-OTP-LOGIN-001-T17 / UI-006: step 3 method choice. The method buttons reuse .login-form-button (the
+marlo-web/src/main/webapp/global/js/login/login.js:39:// CHG-OTP-LOGIN-001-T14: per-unit "Email me a sign-in code" flag (crpByEmail.do otpEnabled) of the Global Unit
+marlo-web/src/main/webapp/global/js/login/login.js:54:// CHG-OTP-LOGIN-001-T17 / UI-006: what step 3 shows on the LOCAL branch. "direct" is today's password field with
+marlo-web/src/main/webapp/global/js/login/login.js:228:      // CHG-OTP-LOGIN-001-T17 / UI-006: Enter never submits a method that is not open
+marlo-web/src/main/webapp/global/js/login/login.js:286:  // CHG-OTP-LOGIN-001-T21 / UI-006: the same handler serves the "Sign in with CGIAR" control of the method choice,
+marlo-web/src/main/webapp/global/js/login/login.js:304:  // CHG-OTP-LOGIN-001-T14: the OTP controls. All of them are inert unless showPasswordStep() revealed the
+marlo-web/src/main/webapp/global/js/login/login.js:338:  // CHG-OTP-LOGIN-001-T17 / UI-006: the method choice. While the choice or the code panel is open, Enter on a
+marlo-web/src/main/webapp/global/js/login/login.js:462:  // CHG-OTP-LOGIN-001-T14: an OTP answer still in flight belongs to the step just left, so drop it (UI-004).
+marlo-web/src/main/webapp/global/js/login/login.js:588:    // CHG-OTP-LOGIN-001-T17 / UI-006: Cognito alone is a single method, shown directly, with no choice
+marlo-web/src/main/webapp/global/js/login/login.js:596:    // CHG-OTP-LOGIN-001-T21 / UI-006: a CGIAR account on a Cognito unit whose code sign-in is on for this email
+marlo-web/src/main/webapp/global/js/login/login.js:620:    // CHG-OTP-LOGIN-001-T14 / UI-001: the additive code option, only when the unit enables it. Since T17 the
+marlo-web/src/main/webapp/global/js/login/login.js:636:    // CHG-OTP-LOGIN-001-T17 / UI-006: with the code enabled, step 3 always opens on the method choice (and
+marlo-web/src/main/webapp/global/js/login/login.js:1144:// CHG-OTP-LOGIN-001-T14: e-mailed sign-in code (UI-001 .. UI-005). Everything below is reachable only from the
+marlo-web/src/main/webapp/global/js/login/login.js:1222:// CHG-OTP-LOGIN-001-T17 / UI-006: true while step 3 shows the method choice or the code panel, the two views in
+marlo-web/src/main/webapp/global/js/login/login.js:1257:// CHG-OTP-LOGIN-001-T21 / UI-006: the other way the choice offers next to the code. "Continue with your password"
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java:151:  // CHG-OTP-LOGIN-001-T21: per-Global-Unit switch for the Center email one-time-code sign-in (b
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java:154:  // CHG-OTP-LOGIN-001-T21: per-Global-Unit email domains excluded from that sign-in (comma-sepa
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java:605:  // CHG-OTP-LOGIN-001-T02: pre-auth challenge state. FIXED key, one pending email-code challeng
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpPending.java:21: * The session handle of an open one-time-code challenge (CHG-OTP-LOGIN-001-T05, SEC-004, JD
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpCodes.java:33: * Codes, nonces and code MACs of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T0
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/ClientIpResolver.java:33: * The client address used to rate-limit the Center email one-time-code sign-in (CHG-O
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpKeys.java:34: * The three MAC keys of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001, SEC-008, DD
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicy.java:27: * The pure email, switch and exclusion rules of the Center email one-time-code sign-in
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicy.java:28: * FN-001, FN-003, SEC-009; amended by T21, DD-13).
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpDomainPolicy.java:35: * that lists it, and whether the account is a CGIAR one plays no part (SEC-009).
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpRateLimiter.java:38: * The rate limits of the Center email one-time-code sign-in (CHG-OTP-LOGIN-001-T04, SEC
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/ReturnUrls.java:30: * The same-origin return URL guard shared by the sign-in flows (CHG-OTP-LOGIN-001-T08, FN-011, 
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/OtpMailSender.java:52: * Sends the one-time-code email of the Center email sign-in (CHG-OTP-LOGIN-001-T09, FN-017, FN-
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/UnitTextProvider.java:31: * A text provider for one Global Unit that is built on its own, before any user is signed in
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeAction.java:64: * Verify a sign-in code (CHG-OTP-LOGIN-001-T11, FN-011 to FN-016, SEC-004 to SEC-00
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeAction.java:89: * <li>the pending challenge is removed and {@link OtpEligibility} runs again, uncac
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpVerifyCodeAction.java:359:    // Step 8 (FN-015). The pending challenge goes first: a consumed challenge is n
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/OtpRequestCodeAction.java:67: * Request a sign-in code (CHG-OTP-LOGIN-001-T10, FN-001, FN-004 to FN-008, SEC-006
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailAction.java:160:      // CHG-OTP-LOGIN-001-T13 (UI-001): whether the one-time-code option m
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/SendFailEmailAction.java:124:   * selected, by id or in bulk: a resent one would carry no code or an expi
+marlo-data/src/main/resources/xmls/OtpChallenges.hbm.xml:4:<!-- CHG-OTP-LOGIN-001-T03. Read mapping of otp_challenges: the rows are written by native statements of
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java:127:  // CHG-OTP-LOGIN-001-T21: per-Global-Unit switch for the Center email one-time-code sign-in (
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java:130:  // CHG-OTP-LOGIN-001-T21: per-Global-Unit email domains excluded from that sign-in (comma-sep
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/security/APCustomRealm.java:149:    // CHG-OTP-LOGIN-001-T07: the email-code sign-in, also above the cast. The code was ver
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/OtpChallengeDAO.java:25: * Storage of the Center email one-time-code challenges (CHG-OTP-LOGIN-001-T03).
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java:36: * CHG-OTP-LOGIN-001-T03. Native, conditional statements whose affected-row cou
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpRateLimitMySQLDAO.java:35: * CHG-OTP-LOGIN-001-T04. Native statements on {@code otp_rate_limits} and {@co
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/OtpRateLimitDAO.java:22: * (CHG-OTP-LOGIN-001-T04, SEC-010, FN-008, DA-003).
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/manager/impl/OtpChallengeManagerImpl.java:35: * CHG-OTP-LOGIN-001-T03. Every write method is {@code @Transactional}: w
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/manager/impl/OtpRateLimitManagerImpl.java:32: * CHG-OTP-LOGIN-001-T04. Every method writes, so every method is {@code 
+
+### BACKWARD B4 readers of the password switch: the CLARISA filter, HTTP Basic (APCustomRealm, UserManagerImp) and the Shiro configuration must not be among them (SEC-006)
+grep -rlE 'PASSWORD_LOGIN_ACTIVE|passwordGate|SignInMethodRule' marlo-web/src/main marlo-data/src/main
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/OtpEligibility.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/security/otp/SignInMethodRule.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/WelcomeSignInText.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/home/LoginAction.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/ValidateUserAction.java
+marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/global/CrpByUserEmailAction.java
+marlo-data/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java
+files on the Basic / CLARISA path that do NOT appear above: ClarisaPublicAccesFilter.java APCustomRealm.java UserManagerImp.java MarloShiroConfiguration.java WebAppInitializer.java
+  ClarisaPublicAccesFilter: 0 reference(s)
+  APCustomRealm: 0 reference(s)
+  UserManagerImp: 0 reference(s)
+  MarloShiroConfiguration: 0 reference(s)
+  WebAppInitializer: 0 reference(s)

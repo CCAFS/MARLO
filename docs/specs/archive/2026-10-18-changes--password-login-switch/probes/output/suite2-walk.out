@@ -1,0 +1,13 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) 2026-10-18 09:26 -05, HEAD 6a0c65e5e4, JVM pid 34049, db aiccradb_otp_probe, key valid
+$ probes/ac-live.sh walk
+
+== walk: the advisory items of the T05 pointer
+  (4) a session signed in through unit AICCRA_III (switch on): loginSuccess=True
+  => PASS [walk-4] the authenticated session that posts the correct password for the switch-off unit gets the refusal any caller gets   ({"agree": true, "userEmail": "probe.user@outlook.com", "userFound": {"loginSuccess": false}})
+  (1)(5) CGIAR account (is_cgiar_user=1) on unit AICCRA_III without Cognito, a wrong password, Active Directory unreachable offline:
+      switch on : null   (directory lookup threw UnknownHostException 4 time(s))
+      switch off: "Invalid CGIAR email or password, please try again"
+  (1) NOT REACHABLE offline: the directory does not answer, so the text of a real AD 'wrong password' cannot be produced. What is observed is the accepted residual (requirements Decision Log, T05): the refusal says the CGIAR wrong-password text while an unreachable directory leaves no message at all
+
+SUMMARY: 1 checks, 0 failed; NOT RUN: [walk-1] a wrong CGIAR password against a refusal gives the text a real directory failure gives
+EXIT=0

@@ -36,6 +36,25 @@ var selectedGlobalUnitId = null;
 // template is what restores it if the same page later needs the LOCAL branch again. Never
 // inserted directly - always re-cloned, so it can restore the field more than once per page load
 var passwordFieldTemplate;
+// CHG-OTP-LOGIN-001-T14: per-unit "Email me a sign-in code" flag (crpByEmail.do otpEnabled) of the Global Unit
+// card currently selected. False unless the server said exactly true, so every flow below behaves as it did
+// before this feature whenever the specificity is off
+var otpEnabled = false;
+// CHG-PWD-SWITCH-001-T06 / UI-001: whether the selected unit offers the password. Anything but the server saying
+// exactly false reads as true, so a cached page against an older server (no attribute) keeps showing the password
+var passwordEnabled = true;
+// Incremented on every OTP request/verify call and on "use a different email". A response whose number is no
+// longer the latest belongs to an attempt the user has left and is dropped untouched (UI-004)
+var otpRequestSeq = 0;
+var otpRequestInFlight = false, otpVerifyInFlight = false;
+// True once verification succeeded and the redirect has started: any later verify answer is ignored
+var otpRedirecting = false;
+var otpCooldownTimer = null, otpCooldownLeft = 0;
+var OTP_COOLDOWN_SECONDS = 30;
+// CHG-OTP-LOGIN-001-T17 / UI-006: what step 3 shows on the LOCAL branch. "direct" is today's password field with
+// "Log in" (the code is not offered); "choice", "code" and "password" only exist when otpEnabled === true
+var methodView = "direct";
+var OTP_REQUEST_TIMEOUT_MS = 20000;
 
 function init() {
   initJreject();
@@ -78,6 +97,8 @@ function init() {
     // which Global Unit was actually selected
     selectedGlobalUnitId = $(this).attr('data-global-unit-id') || null;
     cognitoEnabled = $(this).attr('data-cognito-enabled') === 'true';
+    otpEnabled = $(this).attr('data-otp-enabled') === 'true';
+    passwordEnabled = $(this).attr('data-password-enabled') !== 'false';
 
     // Mirror the selected project card (image/acronym) into the step 3 full-width card(s) -
     // .selected-project-card matches the mirror in both the password step and the cgiar step
@@ -204,6 +225,11 @@ function init() {
       }
       $(this).removeData("enterStartedHere");
 
+      // CHG-OTP-LOGIN-001-T17 / UI-006: Enter never submits a method that is not open
+      if(methodNotPassword()) {
+        return;
+      }
+
       // The button is disabled while step 1 is empty, and a disabled button is not guaranteed to
       // dispatch a click, so raise the validation message here instead of relying on one
       if(currentStep == "email" && $.trim(username.val()) == "") {
@@ -242,7 +268,7 @@ function init() {
   $('.login-back-container .loginBack').on('click', function() {
     // Ignore clicks while a login attempt is still running: navigating away mid-request left the
     // form on another step while the pending response was still about to repaint the button
-    if(isSubmitting) {
+    if(isSubmitting || otpRequestInFlight || otpVerifyInFlight) {
       return;
     }
 
@@ -256,8 +282,10 @@ function init() {
   // CHG-COGNITO-AUTH-001-T12: the CGIAR sign-in control (FN-001 COGNITO branch). A real
   // <button type="button">, so it is keyboard-reachable and activates on both Enter and Space for
   // free, and it never submits the login form - it navigates to cognitoLogin.do instead. The
-  // redirect is always user-initiated (design.md 5.5): nothing here fires without this click
-  $('#login-cgiar-button').on('click', function() {
+  // redirect is always user-initiated (design.md 5.5): nothing here fires without this click.
+  // CHG-OTP-LOGIN-001-T21 / UI-006: the same handler serves the "Sign in with CGIAR" control of the method choice,
+  // which a CGIAR account on a Cognito unit sees next to "Email me a sign-in code"
+  $('#login-cgiar-button, #login-method-cgiar-button').on('click', function() {
     // BUG-LOGIN-TERMS-001-FN-002: this control is type="button", so the HTML5 "required" that used to sit
     // on #terms never fired for it and the redirect carried &agree=false to a server that refuses it under
     // the generic "cognitoFailed" category (SEC-006) - a dead end the user could not diagnose, one page
@@ -271,6 +299,65 @@ function init() {
         + "?email=" + encodeURIComponent($.trim(username.val()))
         + "&globalUnitId=" + encodeURIComponent(selectedGlobalUnitId)
         + "&agree=" + $('input#terms').is(':checked');
+  });
+
+  // CHG-OTP-LOGIN-001-T14: the OTP controls. All of them are inert unless showPasswordStep() revealed the
+  // request button, which only happens when the selected unit reported otpEnabled === true
+  $('#login-otp-button').on('click', function() {
+    requestOtpCode();
+  });
+  $('#login-otp-resend').on('click', function() {
+    requestOtpCode();
+  });
+  $('#login-otp-verify').on('click', function() {
+    verifyOtpCode();
+  });
+  // CHG-PWD-SWITCH-001-T06 / FN-010: the way back to step 1 from the "use your email address" view
+  $('#login-otp-different, #login-method-username-different').on('click', function() {
+    // A verified code is already redirecting: leaving now would strand the user on the email step
+    if(otpRedirecting) {
+      return;
+    }
+    showEmailStep();
+  });
+  // Digits only, six at most. Enter verifies here instead of falling through to the form's implicit submit,
+  // whose first submit button is the (hidden) "Log in" one
+  $('#login-otp-code').on('input', function() {
+    var digits = this.value.replace(/\D/g, '').slice(0, 6);
+    if(digits !== this.value) {
+      this.value = digits;
+    }
+    $('#login-otp-error').addClass("hidden");
+  }).on('keydown', function(event) {
+    if(event.keyCode === 13) {
+      event.preventDefault();
+      verifyOtpCode();
+    }
+  });
+
+  // CHG-OTP-LOGIN-001-T17 / UI-006: the method choice. While the choice or the code panel is open, Enter on a
+  // control that is not a button (the terms checkbox is the one that can hold the focus) would run the form's
+  // implicit submission and post login.do with an empty password, so it is stopped here. Buttons keep their own
+  // Enter activation
+  $('.loginForm').on('keydown', function(event) {
+    if(event.keyCode === 13 && methodNotPassword() && !$(event.target).is('button, a')) {
+      event.preventDefault();
+    }
+  });
+  $('#login-method-code-button').on('click', function() {
+    fillMethodInfo();
+    showMethodView("code");
+  });
+  $('#login-method-password-button').on('click', function() {
+    showMethodView("password");
+  });
+  $('#login-method-code-back, #login-method-password-back-button').on('click', function() {
+    // The code request owns the panel while it is in flight
+    if(otpRequestInFlight || otpRedirecting) {
+      return;
+    }
+    cleanWrongData();
+    showMethodView("choice");
   });
 
   // Reflect the initial state of the email field (it may be prefilled from the cookie) on the button
@@ -287,7 +374,10 @@ function showEmailStep() {
   userDisplayName = "";
   isCgiarUser = false;
   cognitoEnabled = false;
+  passwordEnabled = true;
   selectedGlobalUnitId = null;
+  resetOtpState();
+  resetMethodView();
 
   cleanWrongData();
 
@@ -369,6 +459,14 @@ function showProjectSkeleton() {
 function showProjectStep() {
   currentStep = "project";
 
+  // CHG-OTP-LOGIN-001-T14: an OTP answer still in flight belongs to the step just left, so drop it (UI-004).
+  // Both flags are false whenever OTP is off, so this changes nothing there
+  otpRequestSeq++;
+  otpRequestInFlight = false;
+  otpVerifyInFlight = false;
+  otpRefreshButtons();
+  resetMethodView();
+
   cleanWrongData();
 
   $("#login-step-email, #login-step-password, #login-step-cgiar").addClass("hidden");
@@ -389,6 +487,7 @@ function showProjectStep() {
   $("input#login_next").val("Log in");
   $("input#login_next").removeClass("hidden");
   $("#login-cgiar-button").addClass("hidden");
+  $("#login-otp-request-container").addClass("hidden");
 
   clearLoginButtonLoading();
   updateNextButtonState();
@@ -426,6 +525,8 @@ function showPasswordStep() {
     if($activeCard.length) {
       selectedGlobalUnitId = $activeCard.attr('data-global-unit-id') || null;
       cognitoEnabled = $activeCard.attr('data-cognito-enabled') === 'true';
+      otpEnabled = $activeCard.attr('data-otp-enabled') === 'true';
+      passwordEnabled = $activeCard.attr('data-password-enabled') !== 'false';
     }
   }
 
@@ -470,7 +571,7 @@ function showPasswordStep() {
 
   var mode = (isCgiarUser && cognitoEnabled) ? "COGNITO" : "LOCAL";
 
-  if(mode == "COGNITO") {
+  if(mode == "COGNITO" && otpEnabled !== true) {
     // FN-001: the password input must not be rendered, focusable, or present in the submitted
     // form. .remove() - not .hide(), not disabled - a hidden or disabled input still ships in
     // FormData; this is the exact defect Judgment Day found in revision 1 (tasks.md T12)
@@ -483,17 +584,42 @@ function showPasswordStep() {
     // the dedicated Cognito control, which navigates to cognitoLogin.do instead of submitting
     $("input#login_next").addClass("hidden");
     $("#login-cgiar-button").removeClass("hidden");
+    $("#login-otp-request-container").addClass("hidden");
+    // CHG-OTP-LOGIN-001-T17 / UI-006: Cognito alone is a single method, shown directly, with no choice
+    resetMethodView();
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 3): hiding input#login_next above can leave focus
     // on <body> when it held focus, so the Cognito control mirrors the LOCAL arm's own focus call
     // below rather than leaving the user to tab in from the top of the document
     $("#login-cgiar-button").focus();
+  } else if(mode == "COGNITO") {
+    // CHG-OTP-LOGIN-001-T21 / UI-006: a CGIAR account on a Cognito unit whose code sign-in is on for this email
+    // (otpEnabled) chooses between "Sign in with CGIAR" and "Email me a sign-in code". The choice and the code panel
+    // are the ones the LOCAL branch uses; the password is not one of the methods, so its input stays out of the
+    // document exactly as on the single-method branch above (FN-001: not rendered, not focusable, not submitted)
+    $("#login-password").remove();
+
+    $("#login-step-email, #login-step-project, #login-step-cgiar").addClass("hidden");
+    $("#login-step-password").removeClass("hidden");
+
+    $("#login-cgiar-button").addClass("hidden");
+    $("input#login_next").addClass("hidden");
+    $("#login-otp-request-container").removeClass("hidden");
+
+    setChoiceAlternative(true);
+    showMethodView("choice");
   } else {
+    // The choice offers the password next to the code on this branch (UI-006)
+    setChoiceAlternative(false);
+
     $("#login-step-email, #login-step-project, #login-step-cgiar").addClass("hidden");
     $("#login-step-password").removeClass("hidden");
 
     $("#login-cgiar-button").addClass("hidden");
     $("input#login_next").removeClass("hidden");
+    // CHG-OTP-LOGIN-001-T14 / UI-001: the additive code option, only when the unit enables it. Since T17 the
+    // request button is the "Send code" control of the code panel, which stays closed until it is chosen
+    $("#login-otp-request-container").toggleClass("hidden", otpEnabled !== true);
 
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 1): a prior visit to the COGNITO branch above
     // .remove()d #login-password from the document. Restore it from the template captured in
@@ -507,9 +633,28 @@ function showPasswordStep() {
       inputPassword = $("input[name='user.password']");
     }
 
-    // Set focus on password input (LOCAL only - the Cognito control manages its own
-    // focus/activation and is not part of this form's tab-to-submit flow)
-    $(".loginForm #login-password input").focus();
+    // CHG-OTP-LOGIN-001-T17 / UI-006: with the code enabled, step 3 always opens on the method choice (and
+    // moves the focus into it). Otherwise it is today's password field, shown directly
+    if(passwordEnabled === false && otpEnabled === true) {
+      // CHG-PWD-SWITCH-001-T06 / UI-001, UI-002: the password is off for this unit, so the code is the only method
+      // and is shown directly. The password input leaves the document exactly as on the COGNITO arms (FN-001), and
+      // there is no other way to choose, so the "Choose another way to sign in" link goes too
+      $("#login-password").remove();
+      fillMethodInfo();
+      showMethodView("code");
+      $("#login-method-code-back").addClass("hidden");
+    } else if(passwordEnabled === false) {
+      // CHG-PWD-SWITCH-001-T06 / FN-010: the code is the only method but this identifier cannot receive one (a
+      // username, or an email that is not one). No password field and no dead end: say what to type and offer step 1
+      showUsernameOnlyView();
+    } else if(otpEnabled === true) {
+      showMethodView("choice");
+    } else {
+      resetMethodView();
+      // Set focus on password input (LOCAL only - the Cognito control manages its own
+      // focus/activation and is not part of this form's tab-to-submit flow)
+      $(".loginForm #login-password input").focus();
+    }
   }
 
   clearLoginButtonLoading();
@@ -631,7 +776,10 @@ function loadAvailableItems(email) {
                 // without a second round trip to crpByEmail.do
                 $('.selection-bar-options ul #crp-' + data.crps[i].acronym).attr({
                   'data-global-unit-id': data.crps[i].id,
-                  'data-cognito-enabled': data.crps[i].cognitoEnabled ? 'true' : 'false'
+                  'data-cognito-enabled': data.crps[i].cognitoEnabled ? 'true' : 'false',
+                  'data-otp-enabled': data.crps[i].otpEnabled === true ? 'true' : 'false',
+                  // CHG-PWD-SWITCH-001-T06: absent from an older server's answer, which means "on"
+                  'data-password-enabled': data.crps[i].passwordEnabled === false ? 'false' : 'true'
                 });
 
                 // Reveal the card itself. Every Global Unit with login=true is rendered in the DOM,
@@ -990,6 +1138,339 @@ function updateNextButtonState() {
 function showTermsCheckbox() {
   $('.terms-container').removeClass("hidden");
 
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// CHG-OTP-LOGIN-001-T14: e-mailed sign-in code (UI-001 .. UI-005). Everything below is reachable only from the
+// OTP controls, which stay hidden unless the selected Global Unit reported otpEnabled === true
+// ---------------------------------------------------------------------------------------------------------------
+
+// Text of one i18n message rendered (hidden) by loginForm.ftl
+function otpCopy(key) {
+  return $('#login-otp-copy [data-otp-copy="' + key + '"]').text();
+}
+
+// Show exactly one OTP message: inside the code step once it is open, otherwise under the password step
+function otpShowError(key) {
+  // T22: on a unit whose password is switched off "use your password" would point at a method that is refused there
+  if(key === "unavailable" && passwordEnabled === false) {
+    key = "unavailablePasswordOff";
+  }
+  cleanWrongData();
+  var $target = (currentStep == "otp") ? $('#login-otp-error') : $('.loginForm p.invalidField.otpRequestError');
+  $target.text(otpCopy(key)).removeClass("hidden");
+}
+
+// One place that derives every OTP button's state, so a request in flight can never leave one stuck
+function otpRefreshButtons() {
+  var busy = otpRequestInFlight || otpVerifyInFlight || otpRedirecting;
+
+  $('#login-otp-button').attr("disabled", otpRequestInFlight)
+      .text(otpRequestInFlight ? otpCopy("sending") : otpCopy("sendCode"));
+  // T17: "Choose another way to sign in" is unavailable while the code request owns the panel
+  $('.login-method-back-container .loginBack').attr("disabled", otpRequestInFlight || otpRedirecting);
+
+  $('#login-otp-verify').attr("disabled", busy).text(otpVerifyInFlight ? otpCopy("verifying") : otpCopy("verify"));
+
+  var resendText = otpCopy("resend");
+  if(otpRequestInFlight) {
+    resendText = otpCopy("sending");
+  } else if(otpCooldownLeft > 0) {
+    resendText = otpCopy("resendIn").replace("__N__", function() {
+      return String(otpCooldownLeft);
+    });
+  }
+  $('#login-otp-resend').attr("disabled", busy || otpCooldownLeft > 0).text(resendText);
+  $('#login-otp-different').attr("disabled", otpRedirecting);
+}
+
+function stopOtpCooldown() {
+  if(otpCooldownTimer !== null) {
+    clearInterval(otpCooldownTimer);
+    otpCooldownTimer = null;
+  }
+  otpCooldownLeft = 0;
+}
+
+// Resend countdown. A restart replaces any timer still running
+function startOtpCooldown() {
+  stopOtpCooldown();
+  otpCooldownLeft = OTP_COOLDOWN_SECONDS;
+  otpCooldownTimer = setInterval(function() {
+    otpCooldownLeft--;
+    if(otpCooldownLeft <= 0) {
+      stopOtpCooldown();
+    }
+    otpRefreshButtons();
+  }, 1000);
+  otpRefreshButtons();
+}
+
+// Back to a clean slate: called by showEmailStep(), which is also what "use a different email" runs. The
+// sequence bump is what makes a response still in flight stale
+function resetOtpState() {
+  otpRequestSeq++;
+  otpRequestInFlight = false;
+  otpVerifyInFlight = false;
+  otpRedirecting = false;
+  otpEnabled = false;
+  stopOtpCooldown();
+  $("#login-step-otp").addClass("hidden");
+  $("#login-otp-request-container").addClass("hidden");
+  $("#login-otp-code").val("");
+  $("#login-otp-status").text("");
+  $("#login-otp-error").addClass("hidden").text("");
+  otpRefreshButtons();
+}
+
+// CHG-OTP-LOGIN-001-T17 / UI-006: true while step 3 shows the method choice or the code panel, the two views in
+// which no password is being entered and Enter must not submit anything
+function methodNotPassword() {
+  return currentStep == "password" && (methodView == "choice" || methodView == "code" || methodView == "username");
+}
+
+// Fills the code panel's sentence with the masked destination. Used by the choice click and by the code-only view
+function fillMethodInfo() {
+  $('#login-method-info').text(otpCopy("methodInfo").replace("__DEST__", function() {
+    return otpMaskedEmail(username.val());
+  }));
+}
+
+// CHG-PWD-SWITCH-001-T06 / FN-010: step 3 for an identifier the code cannot be sent to when the password is off.
+// Leaves only the message and the "use a different email" action; no password input, no "Log in", no terms
+function showUsernameOnlyView() {
+  methodView = "username";
+  $("#login-password").remove();
+  $("#login-method-choice, #login-method-code, #login-method-password-back").addClass("hidden");
+  $("#login-password-label, input#login_next, #login-otp-request-container, .terms-container").addClass("hidden");
+  $("#login-method-username").removeClass("hidden");
+  $("#login-method-username-different").focus();
+}
+
+// Browser-side twin of OtpDomainPolicy.mask(): first character, "***", then the domain, from the typed email.
+// Anything without exactly one "@" in the middle shows just "***", like the server
+function otpMaskedEmail(email) {
+  var typed = $.trim(email == null ? "" : String(email)).toLowerCase();
+  var at = typed.indexOf("@");
+  if(at <= 0 || at !== typed.lastIndexOf("@") || at === typed.length - 1) {
+    return "***";
+  }
+  return typed.charAt(0) + "***" + typed.substring(at);
+}
+
+// CHG-OTP-LOGIN-001-T21 / UI-006: the other way the choice offers next to the code. "Continue with your password" for
+// the LOCAL branch, "Sign in with CGIAR" for a CGIAR account on a Cognito unit (then the "External user" caption of
+// the password step does not apply either)
+function setChoiceAlternative(cognito) {
+  $("#login-method-password-container, #login-external-user-label").toggleClass("hidden", cognito);
+  $("#login-method-cgiar-container").toggleClass("hidden", !cognito);
+}
+
+// Leaves step 3 in its plain state: no choice, no code panel, the password field shown. Does not touch
+// "Log in" or the focus, which every caller already owns
+function resetMethodView() {
+  methodView = "direct";
+  setChoiceAlternative(false);
+  $("#login-method-choice, #login-method-code, #login-method-password-back, #login-method-username")
+      .addClass("hidden");
+  $("#login-password-label, #login-password").removeClass("hidden");
+  $("#login-method-code-back").removeClass("hidden");
+}
+
+// Opens one view of step 3 when the code is enabled: "choice", "code" or "password". Only the opened view's
+// controls are shown, and the focus moves to the first of them
+function showMethodView(view) {
+  methodView = view;
+  var passwordOpen = (view == "password");
+  $("#login-method-username").addClass("hidden");
+  // The code-only view hides the way back to the choice after opening; every other opening shows it again
+  $("#login-method-code-back").removeClass("hidden");
+  $("#login-method-choice").toggleClass("hidden", view != "choice");
+  $("#login-method-code").toggleClass("hidden", view != "code");
+  $("#login-password-label, #login-password").toggleClass("hidden", !passwordOpen);
+  $("input#login_next").toggleClass("hidden", !passwordOpen);
+  $("#login-method-password-back").toggleClass("hidden", !passwordOpen);
+
+  if(view == "choice") {
+    $("#login-method-code-button").focus();
+  } else if(view == "code") {
+    $("#login-otp-button").focus();
+  } else {
+    $(".loginForm #login-password input").focus();
+  }
+}
+
+// Opens (or refreshes, on a resend) the code step
+function showOtpStep(destination) {
+  currentStep = "otp";
+
+  cleanWrongData();
+
+  $("#login-step-email, #login-step-project, #login-step-password, #login-step-cgiar").addClass("hidden");
+  $("#login-step-otp").removeClass("hidden");
+  $("input#login_next, #login-cgiar-button, #login-otp-request-container").addClass("hidden");
+  $('.terms-container, .login-back-container, #login-method-password-back').addClass("hidden");
+
+  $("#login-otp-status").text(otpCopy("sent").replace("__DEST__", function() {
+    return destination == null ? "" : String(destination);
+  }));
+  $("#login-otp-error").addClass("hidden").text("");
+  $("#login-otp-code").val("").focus();
+
+  startOtpCooldown();
+}
+
+// "Email me a sign-in code" and "Resend code"
+function requestOtpCode() {
+  if(otpRequestInFlight || otpVerifyInFlight || otpRedirecting) {
+    return;
+  }
+  // Same gate as the other buttons, before any request. The server refuses it too (termsRequired)
+  if(!termsAccepted()) {
+    return;
+  }
+
+  var seq = ++otpRequestSeq;
+  var stepAtStart = currentStep;
+  otpRequestInFlight = true;
+  cleanWrongData();
+  otpRefreshButtons();
+
+  // A non-JSON answer, a network error and a timeout are all "unavailable"
+  var failedRequest = function() {
+    if(seq !== otpRequestSeq) {
+      return;
+    }
+    // Same drop rule as the success path: a password attempt or another step owns the page now
+    if(currentStep !== stepAtStart || isSubmitting) {
+      otpRequestInFlight = false;
+      otpRefreshButtons();
+      return;
+    }
+    otpRequestInFlight = false;
+    otpShowError("unavailable");
+    otpRefreshButtons();
+  };
+
+  $.ajax({
+    url: baseUrl + "/otpRequestCode.do",
+    type: "POST",
+    dataType: "json",
+    timeout: OTP_REQUEST_TIMEOUT_MS,
+    data: {
+      email: $.trim(username.val()),
+      globalUnitId: selectedGlobalUnitId,
+      agree: $('input#terms').is(':checked')
+    },
+    success: function(data) {
+      if(seq !== otpRequestSeq) {
+        return;
+      }
+      if(data == null || typeof data.status != "string") {
+        failedRequest();
+        return;
+      }
+      otpRequestInFlight = false;
+      // A password attempt started meanwhile (or any other step change) owns the page now
+      if(currentStep !== stepAtStart || isSubmitting) {
+        otpRefreshButtons();
+        return;
+      }
+      if(data.status == "sent") {
+        showOtpStep(data.destination);
+      } else if(data.status == "termsRequired") {
+        wrongData("termsRequired");
+      } else if(data.status == "domainNotEnabled" || data.status == "rateLimited") {
+        otpShowError(data.status);
+      } else {
+        otpShowError("unavailable");
+      }
+      otpRefreshButtons();
+    },
+    error: function(jqXHR) {
+      // Browser console logging is limited to the HTTP status
+      if(window.console && jqXHR) {
+        console.log("otpRequestCode.do status " + jqXHR.status);
+      }
+      failedRequest();
+    }
+  });
+}
+
+// "Verify code"
+function verifyOtpCode() {
+  if(otpRequestInFlight || otpVerifyInFlight || otpRedirecting) {
+    return;
+  }
+
+  var code = $.trim($('#login-otp-code').val());
+  if(!/^\d{6}$/.test(code)) {
+    otpShowError("codeRequired");
+    $('#login-otp-code').focus();
+    return;
+  }
+
+  var seq = ++otpRequestSeq;
+  otpVerifyInFlight = true;
+  cleanWrongData();
+  otpRefreshButtons();
+
+  var failedVerify = function() {
+    if(seq !== otpRequestSeq || otpRedirecting) {
+      return;
+    }
+    otpVerifyInFlight = false;
+    otpShowError("unavailable");
+    otpRefreshButtons();
+  };
+
+  $.ajax({
+    url: baseUrl + "/otpVerifyCode.do",
+    type: "POST",
+    dataType: "json",
+    timeout: OTP_REQUEST_TIMEOUT_MS,
+    data: {
+      code: code
+    },
+    success: function(data) {
+      if(seq !== otpRequestSeq || otpRedirecting) {
+        return;
+      }
+      if(data == null || typeof data.status != "string") {
+        failedVerify();
+        return;
+      }
+
+      // "failed" carries the generic login redirect the server picked, so it navigates like "ok" does
+      if((data.status == "ok" || data.status == "failed") && typeof data.redirect == "string" && data.redirect != "") {
+        otpRedirecting = true;
+        otpRefreshButtons();
+        window.location.href = data.redirect;
+        return;
+      }
+
+      otpVerifyInFlight = false;
+      if(data.status == "mismatch") {
+        otpShowError("mismatch");
+        $('#login-otp-code').val("").focus();
+      } else if(data.status == "exhausted" || data.status == "invalid") {
+        // The code is spent: let the user ask for a new one at once. The server still enforces its own bucket
+        otpShowError(data.status);
+        stopOtpCooldown();
+      } else if(data.status == "rateLimited") {
+        otpShowError("rateLimited");
+      } else {
+        otpShowError("unavailable");
+      }
+      otpRefreshButtons();
+    },
+    error: function(jqXHR) {
+      if(window.console && jqXHR) {
+        console.log("otpVerifyCode.do status " + jqXHR.status);
+      }
+      failedVerify();
+    }
+  });
 }
 
 // Show the image of the selected crp (big image)

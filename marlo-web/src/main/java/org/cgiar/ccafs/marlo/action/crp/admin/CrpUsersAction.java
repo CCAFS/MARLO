@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.WelcomeSignInText;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
 
 import java.io.ByteArrayOutputStream;
@@ -106,6 +107,7 @@ public class CrpUsersAction extends BaseAction {
   private GlobalUnitManager globalUnitManager;
   private CrpUserManager crpUserManager;
   private final SendMailS sendMailS;
+  private final WelcomeSignInText welcomeSignInText;
   private UserManager userManager;
   private ProjectManager projectManager;
   private List<Project> phasesProjects;
@@ -154,8 +156,9 @@ public class CrpUsersAction extends BaseAction {
     UserManager userManager, ProjectManager projectManager, PhaseManager phaseManager, RoleManager roleManager,
     UserRoleManager userRoleManager, SendMailS sendMailS, GuestUsersValidator validator,
     DirectoryService directoryService, CustomParameterManager customParameterManager,
-    ParameterManager parameterManager) {
+    ParameterManager parameterManager, WelcomeSignInText welcomeSignInText) {
     super(config);
+    this.welcomeSignInText = welcomeSignInText;
     this.customParameterManager = customParameterManager;
     this.parameterManager = parameterManager;
     this.projectManager = projectManager;
@@ -1031,8 +1034,9 @@ public class CrpUsersAction extends BaseAction {
      * this.getText("email.newUser.part2", new String[] {this.getText("global.sClusterOfActivities").toLowerCase(),
      * config.getBaseUrl(), crp, user.getEmail(), password, this.getText("email.support", new String[] {crpAdmins})}));
      */
-    message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-      config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support.noCrpAdmins")}));
+    // loggedCrp is the unit selected for this account (the globalUnit of save()), not the session unit.
+    message.append(this.welcomeSignInText.part1(this, user, loggedCrp, password,
+      this.getText("email.role.support.noCrpAdmins")));
     message.append(this.getText("email.role.bye"));
 
     // Send pdf

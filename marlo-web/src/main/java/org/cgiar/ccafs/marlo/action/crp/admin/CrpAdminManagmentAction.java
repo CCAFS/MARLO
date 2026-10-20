@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.WelcomeSignInText;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -138,6 +139,7 @@ public class CrpAdminManagmentAction extends BaseAction {
   private Role fpmRole;
   // Util
   private SendMailS sendMail;
+  private final WelcomeSignInText welcomeSignInText;
 
 
   @Inject
@@ -145,8 +147,9 @@ public class CrpAdminManagmentAction extends BaseAction {
     CrpProgramManager crpProgramManager, GlobalUnitManager crpManager, CustomParameterManager crpParameterManager,
     CrpProgramLeaderManager crpProgramLeaderManager, UserManager userManager, SendMailS sendMail,
     LiaisonUserManager liaisonUserManager, LiaisonInstitutionManager liaisonInstitutionManager,
-    CrpUserManager crpUserManager, ParameterManager parameterManager) {
+    CrpUserManager crpUserManager, ParameterManager parameterManager, WelcomeSignInText welcomeSignInText) {
     super(config);
+    this.welcomeSignInText = welcomeSignInText;
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
     this.crpManager = crpManager;
@@ -281,8 +284,8 @@ public class CrpAdminManagmentAction extends BaseAction {
         }
       }
 
-      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support.noCrpAdmins")}));
+      message.append(this.welcomeSignInText.part1(this, user, loggedCrp, password,
+        this.getText("email.role.support.noCrpAdmins")));
       message.append(this.getText("email.role.bye"));
 
       // Saving the new user configuration.

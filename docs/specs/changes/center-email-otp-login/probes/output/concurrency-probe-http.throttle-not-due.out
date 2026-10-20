@@ -1,0 +1,14 @@
+database under test: aiccradb_otp_probe   base: http://localhost:8080/marlo-web
+
+[case 4] 10 parallel request-code calls, ONE email, fresh buckets, stale rows of all three tables pre-seeded (FN-007/008, T04 pointer)
+  (guard: challenge rows of the application's own requests are in aiccradb_otp_probe)
+  statuses: {'rateLimited': 9, 'sent': 1}   overlap: True   start spread: 0.7 ms
+  open rows: 1   rows total: 1   mails delivered: 1   pre-seeded 3h-old expired row still present: 0
+  stale otp_cooldowns row (2 h) left: 1   control cooldown (10 min) left: 1   stale otp_rate_limits window (2 days) left: 1   control window (1 h) left: 1
+  => PASS: case 4: at most 1 open row   (open=1)
+  => PASS: case 4: exactly 1 sent, none unavailable (no deadlock/lock timeout)   ({'rateLimited': 9, 'sent': 1})
+  => PASS: case 4: exactly 1 mail   (mails=1)
+  => PASS: case 4: purge of the expired challenge ran alongside, no failure   (stale=0)
+  => FAIL: case 4: the stale cooldown and the stale rate-limit window were purged during the accept burst, the in-retention controls survived   (cooldown stale=1 control=1, window stale=1 control=1 (a nonzero stale count with the app not freshly started means the 10-minute throttle was not due))
+
+[case 1] 10 parallel CORRECT verifies, one challenge (AC-7, FN-013)

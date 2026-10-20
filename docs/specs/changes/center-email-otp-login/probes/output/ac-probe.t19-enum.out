@@ -1,0 +1,40 @@
+# CHG-OTP-LOGIN-001-T19, 2026-10-15: ac-probe.sh enum (AC-3, AC-4, AC-13, FN-003, FN-006, FN-016) after the probe started finding a user's
+# code by the body header, because outside production every code email is addressed to the support mailbox. Same run as
+# ac-probe.t19-nonprod-leak-emaillog.out. Paths shortened.
+
+
+== enum: AC-4 / AC-3 / AC-13 / FN-006 / FN-003 / FN-016
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  eligible                                             HTTP 200  {"status":"sent","destination":"p***@outlook.com"}
+  unknown                                              HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  inactive                                             HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  non-member                                           HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  cgiar-refused (is_cgiar_user=1, Cognito-active unit) HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  soft-deleted (crp_users.is_active=0, what deleteCrpUser writes) HTTP 200  {"status":"sent","destination":"o***@outlook.com"}
+  => PASS [AC-4] request-code answer, headers and cookie names identical across the 6 account states   (reference={"destination": "X***@outlook.com", "status": "sent"})
+  (no recorded challenge can authenticate: T11 unit test OtpVerifyCodeActionTest, search aDecoyGuessed)
+  => PASS [AC-4] no email for any ineligible state; exactly 1 for the eligible one   ({'eligible': 1, 'unknown': 0, 'inactive': 0, 'non-member': 0, 'cgiar-refused (is_cgiar_user=1, Cognito-active unit)': 0, 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': 0})
+  otp_challenges columns: ['id', 'nonce', 'email_hmac', 'global_unit_id', 'code_hmac', 'expires_at', 'attempts', 'consumed_at', 'created_at']
+  rows (len nonce, len email_hmac, len code_hmac, attempts, open, ttl s): [['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300'], ['22', '64', '64', '0', '1', '300']]
+  => PASS [AC-4] one challenge row per request, all the same shape, no column marks a decoy   (rows=6 distinct shapes=1)
+  FN-017 elements: {'application name': True, '6-digit code': True, '5-minute expiry': True, 'works once': True, 'do not share': True, 'ignore if not requested': True, 'support contact': True, 'no link carrying the code': True, 'not addressed to the typed address (non-production: the support mailbox only, the typed address in the body header)': True}
+  => PASS [AC-3] challenge row + one email with a 6-digit code and every FN-017 element
+  -- the same sequence on every state: wrong, wrong, resend inside 30 s, wrong, correct-or-random
+  eligible                                             ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  unknown                                              ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  inactive                                             ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  non-member                                           ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  cgiar-refused (is_cgiar_user=1, Cognito-active unit) ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  soft-deleted (crp_users.is_active=0, what deleteCrpUser writes) ['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted']
+  => PASS [AC-4] later wrong codes, in-window resend, exhaustion and a further code answer identically for all 6 states   (['mismatch', 'mismatch', 'rateLimited', 'exhausted', 'exhausted'])
+  -- real 31 s wait, then resend on every state
+  {'eligible': ('sent', 'mismatch'), 'unknown': ('sent', 'mismatch'), 'inactive': ('sent', 'mismatch'), 'non-member': ('sent', 'mismatch'), 'cgiar-refused (is_cgiar_user=1, Cognito-active unit)': ('sent', 'mismatch'), 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': ('sent', 'mismatch')}
+  => PASS [AC-4] resend after 30 s and a wrong code answer identically for all 6 states   (('sent', 'mismatch'))
+  => PASS [AC-4] still only the eligible account was mailed after the resend (2 mails)   ({'eligible': 2, 'unknown': 0, 'inactive': 0, 'non-member': 0, 'cgiar-refused (is_cgiar_user=1, Cognito-active unit)': 0, 'soft-deleted (crp_users.is_active=0, what deleteCrpUser writes)': 0})
+  => PASS [FN-016] verify with no challenge in the session answers like a wrong code   (mismatch)
+  => PASS [AC-13] is_cgiar_user=1 on a Cognito-active unit: neutral response, no email (the cgiar-refused row above)
+  not-allow-listed / lookalike domains: {'someone@gmail.com': 'domainNotEnabled', 'x@outlook.com.evil.com': 'domainNotEnabled', 'x@suboutlook.com': 'domainNotEnabled', 'x@sub.outlook.com': 'domainNotEnabled', 'x@attackeroutlook.com': 'domainNotEnabled', 'x@cgiar.org': 'domainNotEnabled'}
+  => PASS [FN-006/FN-003] every lookalike and other domain answers domainNotEnabled, no mail
+  => PASS [FN-003] '  Probe.User@OUTLOOK.COM ' is accepted as the normalised address and mailed   (sent)
+
+SUMMARY: 11 checks, 0 failed
