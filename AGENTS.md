@@ -25,7 +25,7 @@ MARLO (Managing Agricultural Research for Learning and Outcomes) is an online ma
 - SQL migrations
 
 ## Web Layer: Struts 2 vs Spring MVC
-- **Struts 2**: Traditional web actions (`.do`, `.json`), FreeMarker/FTL views, and interceptors. Main config: `marlo-web/src/main/resources/struts.xml` plus module-specific `struts-*.xml` files (e.g. `struts-projects.xml`, `struts-admin.xml`, `struts-api.xml`).
+- **Struts 2**: Traditional web actions (`.do`, `.json`), FreeMarker/FTL views, and interceptors. Main config: `marlo-web/src/main/resources/struts.xml` plus module-specific `struts-*.xml` files (e.g. `struts-projects.xml`, `struts-admin.xml`, `struts-summaries.xml`).
 - **Spring MVC**: REST API under `/api/*`. These paths are excluded from Struts via `struts.action.excludePattern`. Controllers use `@RestController` and `@RequestMapping`.
 
 ## Configuration & Properties
