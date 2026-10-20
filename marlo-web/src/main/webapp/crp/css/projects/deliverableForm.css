@@ -1177,6 +1177,9 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 .dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item > .elementName { display: none; }
 .dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item > .dlf-shared { order: 1; }
 .dlf .dlf-card .listClusters .panel-head label { font-weight: 400; color: var(--dlf-ink-soft); }
+/* No other cluster in the phase: the empty note stands in for the list and its add control. */
+.dlf .dlf-card .listClusters.is-empty .panel-body { display: none; }
+.dlf .dlf-card .listClusters.is-empty p.emptyText { margin: 8px 0 0; }
 .dlf .dlf-shared { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
 /* global.css gives span.flag-icon a 0 7px margin and .8 opacity; restated here so a card without a country
    (is-empty, no flag-icon class) lines up with the ones that have a flag. */

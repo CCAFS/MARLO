@@ -386,8 +386,13 @@
 
 [#-- Projects shared: .listClusters is what deliverableDissemination.js watches to keep the trainees split per cluster --]
 [#macro dlfSharedProjects]
-  <div class="listClusters">
+  [#-- myProjects is every other cluster of the phase: with none, and nothing shared yet, there is nothing to pick --]
+  [#local noSharedOptions = !((myProjects)?has_content) && !((deliverable.sharedDeliverables)?has_content) /]
+  <div class="listClusters[#if noSharedOptions] is-empty[/#if]">
     [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+    [#if noSharedOptions]
+      <p class="emptyText">[@s.text name="project.deliverable.redesign.shared.empty"][@s.param]${sectionNoun}[/@s.param][/@s.text]</p>
+    [/#if]
   </div>
 [/#macro]
 
