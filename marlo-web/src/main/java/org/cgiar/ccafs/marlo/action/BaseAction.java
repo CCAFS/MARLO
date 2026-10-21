@@ -3736,15 +3736,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         } // End deliverables for
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           deliverableDTOs = deliverableDTOs.stream()
-            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
-          if (deliverableDTOs.get(0).getDeliverableID() != null) {
-
-          }
-          if (deliverableDTOs.get(0).getDeliverableID() == deliverableID) {
-            deliverableDTOs.clear();
-            return deliverableDTOs;
-          }
-          if (deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID,
+              Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList());
+          // A null id is never unboxed; nulls sort last, so the first id is null only when all of them are
+          Long firstDeliverableID = deliverableDTOs.get(0).getDeliverableID();
+          if (firstDeliverableID != null && firstDeliverableID >= deliverableID) {
             deliverableDTOs.clear();
             return deliverableDTOs;
           }
@@ -3804,15 +3801,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         if (deliverableDTOs != null && !deliverableDTOs.isEmpty()) {
           deliverableDTOs = deliverableDTOs.stream()
-            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID)).collect(Collectors.toList());
-          if (deliverableDTOs.get(0).getDeliverableID() != null) {
-
-          }
-          if (deliverableDTOs.get(0).getDeliverableID() == deliverableID) {
-            deliverableDTOs.clear();
-            return deliverableDTOs;
-          }
-          if (deliverableDTOs.get(0).getDeliverableID() > deliverableID) {
+            .sorted(Comparator.comparing(DeliverableSearchSummary::getDeliverableID,
+              Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList());
+          // A null id is never unboxed; nulls sort last, so the first id is null only when all of them are
+          Long firstDeliverableID = deliverableDTOs.get(0).getDeliverableID();
+          if (firstDeliverableID != null && firstDeliverableID >= deliverableID) {
             deliverableDTOs.clear();
             return deliverableDTOs;
           }
@@ -4228,9 +4222,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
-    if (projectInnovationInfoList.size() > 0) {
-      if (projectInnovationInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
-        allYears.add(projectInnovationInfoList.get(0).getYear().intValue());
+    // year is nullable: an info with no year adds no year of its own, instead of failing on the unboxing
+    Long innovationYear = projectInnovationInfoList.isEmpty() ? null : projectInnovationInfoList.get(0).getYear();
+    if (innovationYear != null) {
+      if (innovationYear.intValue() != this.getActualPhase().getYear()) {
+        allYears.add(innovationYear.intValue());
       } else {
         List<ProjectInnovationInfo> projectInnovationInfoList2 = this.projectInnovationInfoManager.findAll().stream()
           .filter(c -> c != null && c.getProjectInnovation() != null
@@ -4238,7 +4234,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
-        if (projectInnovationInfoList2.size() > 0) {
+        if (!projectInnovationInfoList2.isEmpty() && projectInnovationInfoList2.get(0).getYear() != null) {
           allYears.add(projectInnovationInfoList2.get(0).getYear().intValue());
         }
       }
@@ -4576,9 +4572,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
-    if (projectPolicyInfoList.size() > 0) {
-      if (projectPolicyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
-        allYears.add(projectPolicyInfoList.get(0).getYear().intValue());
+    // year is nullable: an info with no year adds no year of its own, instead of failing on the unboxing
+    Long policyYear = projectPolicyInfoList.isEmpty() ? null : projectPolicyInfoList.get(0).getYear();
+    if (policyYear != null) {
+      if (policyYear.intValue() != this.getActualPhase().getYear()) {
+        allYears.add(policyYear.intValue());
       } else {
         List<ProjectPolicyInfo> projectPolicyInfoList2 = this.projectPolicyInfoManager.findAll().stream()
           .filter(c -> c != null && c.getProjectPolicy() != null
@@ -4586,7 +4584,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
-        if (projectPolicyInfoList2.size() > 0) {
+        if (!projectPolicyInfoList2.isEmpty() && projectPolicyInfoList2.get(0).getYear() != null) {
           allYears.add(projectPolicyInfoList2.get(0).getYear().intValue());
         }
       }
