@@ -1426,12 +1426,18 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   background: #fff;
 }
 .dlf .block-findable .dlf-wosPanel[hidden] { display: none; }
-/* The dividers belong to the cells, so a short last row leaves white space instead of the divider colour. */
+/* The dividers belong to the cells; the last cell runs to the end of its row, so a short last row leaves no empty
+   cells with stray dividers (whatever the column count). */
 .dlf .block-findable .dlf-wosPanel__item { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 9px 12px; background: #fff; box-shadow: 1px 1px 0 var(--dlf-line); }
+.dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(4n+1) { grid-column: 1 / -1; }
+.dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(4n+2) { grid-column: span 3; }
+.dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(4n+3) { grid-column: span 2; }
 .dlf .block-findable .dlf-wosPanel__key { font: 600 11px Figtree, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--dlf-muted); }
 .dlf .block-findable .dlf-wosPanel__value { font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); overflow-wrap: anywhere; }
 @media (max-width: 767px) {
   .dlf .block-findable .dlf-wosPanel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(n) { grid-column: auto; }
+  .dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(2n+1) { grid-column: 1 / -1; }
 }
 
 /* Not disseminated: confidential question and its answer. */
