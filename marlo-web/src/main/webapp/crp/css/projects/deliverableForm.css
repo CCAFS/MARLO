@@ -1692,7 +1692,8 @@ html.dlf-guideOpen body { overflow: hidden; }
 .dlf .block-involveParticipants .block-formalTraining .block-periodTime .helpLabel strong { font-weight: 600; color: var(--dlf-ink); }
 .dlf .block-involveParticipants .block-formalTraining .block-periodTime .helpLabel u { text-decoration: none; }
 .dlf .block-involveParticipants .block-formalTraining .block-periodTime > br { display: none; }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat {
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat,
+.dlf .dlf-question .dlf-chipRadios .radioFlat {
   display: inline-flex;
   align-items: center;
   width: auto !important;
@@ -1702,9 +1703,12 @@ html.dlf-guideOpen body { overflow: hidden; }
   border-radius: 8px;
   background: #fff;
 }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:hover { border-color: var(--dlf-subtle); }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat .radio-label {
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:hover,
+.dlf .dlf-question .dlf-chipRadios .radioFlat:hover { border-color: var(--dlf-subtle); }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:has(input:checked),
+.dlf .dlf-question .dlf-chipRadios .radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat .radio-label,
+.dlf .dlf-question .dlf-chipRadios .radioFlat .radio-label {
   display: inline-flex;
   align-items: center;
   height: 40px;
@@ -1714,7 +1718,8 @@ html.dlf-guideOpen body { overflow: hidden; }
   color: var(--dlf-ink);
   cursor: pointer;
 }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat .radio-label::before {
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat .radio-label::before,
+.dlf .dlf-question .dlf-chipRadios .radioFlat .radio-label::before {
   left: 0;
   width: 16px;
   height: 16px;
@@ -1724,15 +1729,40 @@ html.dlf-guideOpen body { overflow: hidden; }
   background: #fff;
   box-shadow: none;
 }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat input:checked + .radio-label::before {
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat input:checked + .radio-label::before,
+.dlf .dlf-question .dlf-chipRadios .radioFlat input:checked + .radio-label::before {
   border-color: var(--dlf-brand);
   background: var(--dlf-brand);
   box-shadow: inset 0 0 0 3px #fff;
 }
-.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:has(input:checked) .radio-label { color: var(--dlf-brand-dark); }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:has(input:checked) .radio-label,
+.dlf .dlf-question .dlf-chipRadios .radioFlat:has(input:checked) .radio-label { color: var(--dlf-brand-dark); }
 @media (max-width: 767px) {
   .dlf .block-involveParticipants .block-formalTraining > .block-academicDegree { width: 100%; }
 }
+/* Not disseminated: "Is this deliverable confidential...?" answers as the same option chips (deliverableMacros.ftl adds
+   .dlf-chipRadios in the redesigned form), and its "No" note is the design's information alert. */
+/* The hidden answer block stays the last child, so the visible one keeps its form-group margin; a gap spaces them. */
+.dlf .dlf-question > .simpleBox > .block-notFindable:not([style*="none"]) { display: flex !important; flex-direction: column; gap: 16px; }
+.dlf .dlf-question > .simpleBox > .block-notFindable > .form-group { margin: 0; }
+.dlf .dlf-question .dlf-chipRadios { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dlf .dlf-question .dlf-chipRadios > label { display: block; flex-basis: 100%; margin: 0; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+/* The design draws these chips a little smaller than the training period ones. */
+.dlf .dlf-question .dlf-chipRadios .radioFlat .radio-label { height: 38px; padding-left: 11px; font-size: 13.5px; }
+.dlf .dlf-question .dlf-chipRadios > br,
+.dlf .dlf-question .dlf-chipRadios > .feedback-flex-items:not(:has(*)) { display: none !important; }
+.dlf .dlf-question .confidentialBlock-true .helpLabel { margin: 0 0 6px; }
+.dlf .dlf-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 8px;
+  background: var(--dlf-info-bg);
+}
+.dlf .dlf-alert > svg { flex: none; margin-top: 2px; color: var(--dlf-brand); }
+.dlf .dlf-alert > span { font: 400 13.5px/1.55 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
 /* Type of activity, academic degree (only for an academic degree) and type of participant(s) flow through the
    design's two columns in that order: the hidden academic degree takes no cell, so the participant type sits next to
    the activity type, or under it when the academic degree shows. */

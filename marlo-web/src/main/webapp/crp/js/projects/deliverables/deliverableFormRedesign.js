@@ -514,6 +514,24 @@ $(document).ready(function() {
 
   hideExhaustedAdds();
 
+  // ---- Participants/Trainees: the question's helper says why the answer is Yes ----
+  // A capacity development event (known when the page loads) and the trainees indicator (searchIndicator() in
+  // deliverableDissemination.js, on every indicator change) each set the answer to Yes. The general helper stays
+  // while neither applies.
+  $root.find('.dlf-traineesHelper').each(function() {
+    var $helper = $(this);
+    var general = $.trim($helper.text());
+    var $question = $helper.closest('.yesNoTrainees');
+    var refresh = function() {
+      var capacity = $helper.attr('data-capacity') === 'true';
+      var indicator = $question.attr('data-indicator-linked') === 'true';
+      var key = capacity && indicator ? 'both' : capacity ? 'capacity' : indicator ? 'indicator' : '';
+      $helper.text((key && text('trainees-helper-' + key)) || general);
+    };
+    $question.on('dlf:traineesIndicator', refresh);
+    refresh();
+  });
+
   // ---- Participants/Trainees: a note under each number, as the design ----
   // The total reads "All participants/trainees"; the others give their share of the total, or say a value is higher
   // than the total, or that the number of females is marked as not known. Notes only: the save is not blocked.

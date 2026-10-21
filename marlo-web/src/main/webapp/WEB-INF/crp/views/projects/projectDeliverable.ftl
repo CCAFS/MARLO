@@ -5,18 +5,18 @@
 [#assign customJS = [
   "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20261021",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20261020-1",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20261021",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261021"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261021-1"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261021"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261021-1"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
