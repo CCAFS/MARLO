@@ -51,7 +51,7 @@
     <script type="text/javascript" src="${baseUrlCdn}/global/js/global.js?20261021" ></script>
     [#if logged]
       [#-- Pusher app --]
-      <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js" ></script>
+      <script type="text/javascript" src="${baseUrlCdn}/global/js/pusher-app.js?20261021-1" ></script>
     [/#if]
     [#-- import the custom JS and CSS --]
     [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
