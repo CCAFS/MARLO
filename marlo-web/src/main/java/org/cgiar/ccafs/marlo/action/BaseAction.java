@@ -3961,9 +3961,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         .collect(Collectors.toList());
 
 
-      if (projectExpectedStudyInfoList.size() > 0) {
-        if (projectExpectedStudyInfoList.get(0).getYear() != this.getActualPhase().getYear()) {
-          allYears.add(projectExpectedStudyInfoList.get(0).getYear());
+      // year is nullable: an info with no year adds no year of its own, instead of failing on the unboxing
+      Integer studyYear = projectExpectedStudyInfoList.isEmpty() ? null : projectExpectedStudyInfoList.get(0).getYear();
+      if (studyYear != null) {
+        if (studyYear.intValue() != this.getActualPhase().getYear()) {
+          allYears.add(studyYear);
         } else {
           List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList2 =
             // this.projectExpectedStudyInfoManager.findAll()
@@ -3973,7 +3975,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
                 && c.getPhase().getYear() < (this.getActualPhase().getYear()))
               .collect(Collectors.toList());
-          if (projectExpectedStudyInfoList2.size() > 0) {
+          if (!projectExpectedStudyInfoList2.isEmpty() && projectExpectedStudyInfoList2.get(0).getYear() != null) {
             allYears.add(projectExpectedStudyInfoList2.get(0).getYear());
           }
         }
