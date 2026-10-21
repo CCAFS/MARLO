@@ -11,7 +11,32 @@ var pusher = new Pusher(PUSHER_KEY, {
   pongTimeout: 30000
 });
 
-var globalChannel = pusher.subscribe('presence-global');
+// pusherAutentication.do answers 401 or 403 once the session has expired. Pusher would ask again for every channel
+// on each reconnection while the tab stays open, so the connection is closed, and opened again once when the user
+// comes back to the tab: after a new login the tab joins the presence and editing channels again.
+var pusherAuthFailed = false;
+
+function disconnectOnAuthError(channel) {
+  channel.bind('pusher:subscription_error', function(status) {
+    if (status == 401 || status == 403) {
+      pusherAuthFailed = true;
+      pusher.disconnect();
+    }
+  });
+  return channel;
+}
+
+function reconnectAfterAuthError() {
+  if (pusherAuthFailed && document.visibilityState === 'visible') {
+    pusherAuthFailed = false;
+    pusher.connect();
+  }
+}
+
+document.addEventListener('visibilitychange', reconnectAfterAuthError);
+window.addEventListener('focus', reconnectAfterAuthError);
+
+var globalChannel = disconnectOnAuthError(pusher.subscribe('presence-global'));
 globalChannel.bind('client-system-reset', function(data) {
   showSystemResetMessage(data);
 });
@@ -95,10 +120,10 @@ function showMinNotification(timer) {
 // Pusher Users Online
 
 var currentSectionString = $('#currentSectionString').text();
-var presenceChannel = pusher.subscribe("presence-"+currentSectionString);
+var presenceChannel = disconnectOnAuthError(pusher.subscribe("presence-"+currentSectionString));
 
 if(editable && canEdit){
-  var editingChannel = pusher.subscribe("presence-"+currentSectionString+"-canEdit");
+  var editingChannel = disconnectOnAuthError(pusher.subscribe("presence-"+currentSectionString+"-canEdit"));
   var myID;
   var myTurn;
   var savedBy;
@@ -106,8 +131,15 @@ if(editable && canEdit){
   
   editingChannel.bind('pusher:subscription_succeeded', function(members) {
     myID = members.myID;
+    // On a reconnection the list still holds the members of the previous connection, including the own id of an
+    // expired session, which would leave this user waiting behind themselves: keep only the current members
+    currentUsers = $.grep(currentUsers, function(id) {
+      return members.members.hasOwnProperty(id);
+    });
     $.each(members.members, function(key, value) {
-      currentUsers.push(key);
+      if (currentUsers.indexOf(key) === -1) {
+        currentUsers.push(key);
+      }
     });
     removeFromArray(currentUsers, myID);
     addToArray(currentUsers, myID);

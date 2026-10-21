@@ -72,6 +72,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -589,6 +590,22 @@ public class ProjectDescriptionAction extends BaseAction {
       && liaisonInstitution.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue();
   }
 
+  /**
+   * Finds the active liaison institution that represents the given institution.
+   *
+   * @param liaisonInstitutions the liaison institutions of the Global Unit.
+   * @param institutionId the id of the institution.
+   * @return the first match, or empty when the Global Unit has no active liaison for that institution.
+   */
+  static Optional<LiaisonInstitution> findLiaisonForInstitution(Collection<LiaisonInstitution> liaisonInstitutions,
+    Long institutionId) {
+    if (liaisonInstitutions == null || institutionId == null) {
+      return Optional.empty();
+    }
+    return liaisonInstitutions.stream().filter(c -> c != null && c.isActive() && c.getInstitution() != null
+      && institutionId.equals(c.getInstitution().getId())).findFirst();
+  }
+
 
   @Override
   public void prepare() throws Exception {
@@ -902,17 +919,12 @@ public class ProjectDescriptionAction extends BaseAction {
           .filter(c -> c.isActive() && c.getInstitution() == null).collect(Collectors.toList()));
         if (project.getProjectInfo() != null && project.getProjectInfo().getLiaisonInstitution() != null
           && project.getProjectInfo().getLiaisonInstitution().getInstitution() != null
-          && loggedCrp.getLiaisonInstitutions() != null
-          && loggedCrp.getLiaisonInstitutions().stream()
-            .filter(c -> c.isActive() && c.getInstitution() != null
-              && c.getInstitution().getId()
-                .equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId()))
-            .collect(Collectors.toList()) != null) {
-          liaisonInstitutions.add(loggedCrp.getLiaisonInstitutions().stream()
-            .filter(c -> c.isActive() && c.getInstitution() != null
-              && c.getInstitution().getId()
-                .equals(project.getProjectInfo().getLiaisonInstitution().getInstitution().getId()))
-            .collect(Collectors.toList()).get(0));
+          && loggedCrp.getLiaisonInstitutions() != null) {
+          // The Global Unit may have no active liaison for that institution: the option is then left out, instead
+          // of failing the page
+          findLiaisonForInstitution(loggedCrp.getLiaisonInstitutions(),
+            project.getProjectInfo().getLiaisonInstitution().getInstitution().getId())
+              .ifPresent(liaisonInstitutions::add);
         }
 
       }

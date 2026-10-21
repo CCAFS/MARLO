@@ -60,6 +60,9 @@ shell loads its images.
 - **Opt-in, on purpose.** `SendMailS` also sends the technical alerts and every other notification;
   only the call sites listed in §2 and §3 wrap their body. A new role email must call
   `EmailLayout.wrap()` too, or it goes out without the shell.
+  The exception reports to the support team (`UnhandledExceptionAction`, `ExceptionTranslator`) do not
+  use this key: `logging/ExceptionEmail` draws the same frame in code, for every Global Unit, with a
+  support-team footer instead of the registered-user one, and masks credential parameters.
 - **Editing the shell:** it is split over continuation lines (`\` at the end of each line). It is a
   `MessageFormat` pattern, so it must hold no `'` and no `{`/`}` other than `{0}` and `{1}`.
   `EmailLayoutTest` loads the real files and fails on an unfilled placeholder.

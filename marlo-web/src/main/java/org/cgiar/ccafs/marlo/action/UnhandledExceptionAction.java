@@ -15,24 +15,23 @@
 package org.cgiar.ccafs.marlo.action;
 
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.logging.ErrorNotificationThrottle;
+import org.cgiar.ccafs.marlo.logging.ExceptionEmail;
 import org.cgiar.ccafs.marlo.logging.LogContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,20 +58,20 @@ public class UnhandledExceptionAction extends BaseAction {
     // Print the exception in the log. The page is rendered with HTTP 200, but the request failed as a 500; a client
     // that closed the connection received nothing, so it gets no status, not even the 401/403/404 of the page that was
     // being written when the connection closed.
-    if (exception instanceof ClientAbortException) {
+    boolean clientAborted = exception instanceof ClientAbortException;
+    if (clientAborted) {
+      // Not a server failure: the client closed the connection, typically by cancelling a download
       LogContext.removeStatusCode();
+      LOG.warn("The client closed the connection before the response was written: {}", exception.getMessage());
     } else {
       LogContext.putStatusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      LOG.error("There was an unexpected exception", exception);
     }
-    LOG.error("There was an unexpected exception", exception);
 
-    if (this.isAiccra()) {
+    // The email is sent whenever the request has a Global Unit, and otherwise only in production, as
+    // ExceptionTranslator does for REST errors. A closed connection is never emailed
+    if (!clientAborted && (this.getCurrentCrp() != null || config.isProduction())) {
       this.sendExceptionMessage();
-    } else {
-      // Send email only if we are in production mode.
-      if (config.isProduction() && !(exception instanceof ClientAbortException)) {
-        this.sendExceptionMessage();
-      }
     }
     return super.execute();
   }
@@ -94,9 +93,7 @@ public class UnhandledExceptionAction extends BaseAction {
    */
   public void sendExceptionMessage() {
     String subject;
-    StringBuilder message = new StringBuilder();
 
-    StringWriter writer = new StringWriter();
     if (exception == null) {
       exception = new Exception("MARLOCustomPersistFilter ERROR!");
     }
@@ -117,9 +114,6 @@ public class UnhandledExceptionAction extends BaseAction {
       return;
     }
 
-    exception.printStackTrace(new PrintWriter(writer));
-
-
     GlobalUnit crp = this.getCurrentCrp();
 
     String globalUnitName = "MARLO";
@@ -129,24 +123,43 @@ public class UnhandledExceptionAction extends BaseAction {
     }
     subject = "Exception occurred in " + globalUnitName;
 
+    ExceptionEmail message = new ExceptionEmail("Unexpected error in " + globalUnitName);
     User user = this.getCurrentUser();
+    String userName = null;
     if (user != null) {
-      message.append("The user " + user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ") ");
+      userName = (StringUtils.trimToEmpty(user.getFirstName()) + " " + StringUtils.trimToEmpty(user.getLastName()))
+        .trim();
+      message.intro(userName + " (" + user.getEmail() + ") hit an unhandled exception on " + config.getBaseUrl() + ".");
     } else {
-      message.append("A user who was not logged in ");
+      message.intro("A user who was not logged in hit an unhandled exception on " + config.getBaseUrl() + ".");
     }
-    message.append("has experienced an exception on the platform. </br>");
-    message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
-    message.append("<b>Global Unit: </b>" + globalUnitName + ".</br>");
-    message.append(ErrorNotificationThrottle.correlationHtml(suppressedRepeats));
-    if (this.getActualPhase() != null) {
-      message.append("<b>Phase: </b>" + this.getActualPhase().getComposedName() + ".</br>");
+    message.exception(exception);
+    message.detail("Global Unit", globalUnitName);
+    Phase phase = this.getActualPhase();
+    if (phase != null) {
+      message.detail("Phase", phase.getComposedName());
+      // getActualPhase() can answer an empty Phase, whose id is null: the line is then left out.
+      message.detail("Phase id", phase.getId() != null ? String.valueOf(phase.getId()) : null);
     }
+    message.detail("Action", this.getActionName());
+    message.correlation(suppressedRepeats);
+    if (user != null) {
+      message.detail("User", userName);
+      message.detail("User email", user.getEmail());
+      message.detail("User id", user.getId() != null ? String.valueOf(user.getId()) : null);
+    }
+    HttpServletRequest httpServletRequest = this.getRequest();
+    if (httpServletRequest != null) {
+      message.detail("HTTP method", httpServletRequest.getMethod());
+      message.detail("Referer", httpServletRequest.getHeader("Referer"));
+      message.detail("User agent", httpServletRequest.getHeader("User-Agent"));
+    }
+    message.environment(config.getBaseUrl());
+
     String actionNameSubject = "";
     if (this.getActionName() != null) {
-      message.append("<b>ActionName: </b>" + this.getActionName() + ".</br>");
       String actionName = this.getActionName();
-      if (this.isAiccra()) {
+      if (crp != null) {
         int namespaceSeparator = actionName.indexOf('/');
         actionNameSubject = " - "
           + (namespaceSeparator >= 0 ? actionName.substring(namespaceSeparator + 1) : actionName);
@@ -164,32 +177,12 @@ public class UnhandledExceptionAction extends BaseAction {
     }
     subject += actionNameSubject;
 
-    message.append("</br></br><b>Exception message: </b></br></br>");
-    message.append(writer.toString() + "</br></br></br>");
-
-    if (this.getRequest() != null) {
-      HttpServletRequest httpServletRequest = this.getRequest();
-      if (httpServletRequest.getParameterMap() != null && !httpServletRequest.getParameterMap().isEmpty()) {
-        // Order Parameters
-        SortedSet<String> keys = new TreeSet<>(httpServletRequest.getParameterMap().keySet());
-
-        message.append("<b>Parameters: </b>");
-        for (String parameter : keys) {
-          if (httpServletRequest.getParameterMap().get(parameter) != null
-            && httpServletRequest.getParameterMap().get(parameter).length > 0) {
-            message.append("</br>" + parameter + ": ");
-            Set<String> values = new HashSet<>();
-            for (String value : httpServletRequest.getParameterMap().get(parameter)) {
-              values.add(value);
-            }
-            message.append(String.join(", ", values));
-          }
-        }
-      }
+    if (httpServletRequest != null) {
+      message.parameters(httpServletRequest.getParameterMap());
     }
 
-    sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(), null,
-      null, null, true);
+    sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject,
+      message.toHtml(this.getBaseUrlCdn()), null, null, null, true);
     LOG.info("sendExceptionMessage() > The platform has sent a message reporting a exception.");
   }
 
