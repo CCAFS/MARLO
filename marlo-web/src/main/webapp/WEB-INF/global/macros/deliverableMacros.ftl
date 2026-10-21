@@ -1418,7 +1418,7 @@
     <input type="hidden" name="${customName}.deliverablePartnerType.id" class="partnerTypeID" value="${typeID}"/>
     [#-- Partner Institution --]
     <div class="form-group" style="margin-bottom: 0px;"> 
-      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="partnerInstitutionID" editable=editable required=true /]
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false placeholder=(isResponsable && (deliverableFormRedesign)!false)?then("project.deliverable.redesign.placeholder.responsiblePartner", "") listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="partnerInstitutionID" editable=editable required=true /]
     </div>
     [#-- Users Selected--]
     [#local selectedUsersID = []]

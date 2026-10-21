@@ -61,10 +61,16 @@ $(document).ready(function() {
   // before the required mark changes, so the mark, the help text and the feedback bubble inside the label stay.
   function dropLabelColons($scope) {
     $scope.find('.dlf-card label, .dlf-card .yesNoLabel').each(function() {
+      var first = this.firstChild;
       $(this).contents().filter(function() {
         return this.nodeType === 3;
       }).each(function() {
-        this.nodeValue = this.nodeValue.replace(/:\s*$/, ' ').replace(/^\s+/, '');
+        // Only the label's own leading text loses its indent: a text node after inline markup ("<b>contributing</b>
+        // to ...") keeps the space that separates the words.
+        this.nodeValue = this.nodeValue.replace(/:\s*$/, ' ');
+        if(this === first) {
+          this.nodeValue = this.nodeValue.replace(/^\s+/, '');
+        }
       });
     });
   }
@@ -851,6 +857,90 @@ $(document).ready(function() {
       $root.on('change', 'input[name="deliverable.dissemination.isOpenAccess"]', refreshHint);
     });
   }
+
+  // ---- Participants/Trainees: "What do these mean?" as the design's types guide ----
+  // The rows come from the typeOfActivityTable modal (name, description); "Use this type" sets the matching option
+  // of the type of activity select (deliverableDissemination.js then shows the formal training details).
+  $root.find('.block-typeActivity .note.left a[href="#modal-typeOfActivity"]').each(function() {
+    var $opener = $(this).removeAttr('data-toggle');
+    var $select = $opener.closest('.block-typeActivity').find('select.trainingType');
+    var $guide = null;
+    var normalise = function(value) {
+      return $.trim(String(value || '')).replace(/\s+/g, ' ').toLowerCase();
+    };
+    var close = function() {
+      if(!$guide) {
+        return;
+      }
+      $guide.remove();
+      $guide = null;
+      $('html').removeClass('dlf-guideOpen');
+      $(document).off('keydown.dlfTypesGuide');
+      $opener.trigger('focus');
+    };
+    var open = function() {
+      close();
+      var current = String($select.val() || '');
+      var valueOf = {};
+      $select.find('option').each(function() {
+        if(this.value && this.value !== '-1') {
+          valueOf[normalise($(this).text())] = this.value;
+        }
+      });
+      var $list = $('<div class="dlf-typesGuide__list"></div>');
+      $('#modal-typeOfActivity table tbody tr').each(function() {
+        var $cells = $(this).children('td');
+        var name = $.trim($cells.eq(0).text());
+        if(!name) {
+          return;
+        }
+        var value = valueOf[normalise(name)];
+        var selected = value !== undefined && value === current;
+        var $row = $('<div class="dlf-typesGuide__row"></div>').toggleClass('is-selected', selected)
+          .append($('<span class="dlf-typesGuide__name"></span>').text(name))
+          .append($('<span class="dlf-typesGuide__desc"></span>').text($.trim($cells.eq(1).text())));
+        if(value !== undefined && $select.length && !$select.prop('disabled')) {
+          $('<button type="button" class="dlf-typesGuide__use"></button>').attr('data-value', value)
+            .text(text(selected ? 'types-selected' : 'types-use')).appendTo($row);
+        } else {
+          $row.append('<span></span>');
+        }
+        $list.append($row);
+      });
+      $guide = $('<div class="dlf-typesGuide" role="presentation"></div>')
+        .append($('<div class="dlf-typesGuide__dialog" role="dialog" aria-modal="true" tabindex="-1"></div>')
+          .attr('aria-label', text('types-title'))
+          .append($('<div class="dlf-typesGuide__head"></div>')
+            .append($('<span class="dlf-typesGuide__title"></span>').text(text('types-title')))
+            .append($('<button type="button" class="dlf-typesGuide__x" data-dlf-close></button>')
+              .attr('aria-label', text('types-close'))))
+          .append($list)
+          .append($('<div class="dlf-typesGuide__foot"></div>')
+            .append($('<button type="button" class="dlf-typesGuide__close" data-dlf-close></button>')
+              .text(text('types-close')))))
+        .appendTo('body');
+      $('html').addClass('dlf-guideOpen');
+      $guide.on('click', function(e) {
+        if(e.target === this || $(e.target).closest('[data-dlf-close]').length) {
+          close();
+        }
+      });
+      $guide.on('click', '.dlf-typesGuide__use', function() {
+        $select.val($(this).attr('data-value')).trigger('change');
+        close();
+      });
+      $(document).on('keydown.dlfTypesGuide', function(e) {
+        if(e.key === 'Escape') {
+          close();
+        }
+      });
+      $guide.find('.dlf-typesGuide__dialog').trigger('focus');
+    };
+    $opener.on('click', function(e) {
+      e.preventDefault();
+      open();
+    });
+  });
 
   // ---- Word counters ----
   // applyWordCounter() (utils.js) prints "(20 words remaining of 20)"; the design drops the brackets. Only the

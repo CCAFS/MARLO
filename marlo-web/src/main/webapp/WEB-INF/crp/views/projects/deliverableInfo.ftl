@@ -35,6 +35,10 @@
     data-trainees-percent="[@s.text name="project.deliverable.redesign.trainees.note.percent" /]"
     data-trainees-over="[@s.text name="project.deliverable.redesign.trainees.note.overTotal" /]"
     data-trainees-not-known="[@s.text name="project.deliverable.redesign.trainees.note.notKnown" /]"
+    data-types-title="[@s.text name="project.deliverable.redesign.typeOfActivity.title" /]"
+    data-types-use="[@s.text name="project.deliverable.redesign.typeOfActivity.use" /]"
+    data-types-selected="[@s.text name="project.deliverable.redesign.typeOfActivity.selected" /]"
+    data-types-close="[@s.text name="project.deliverable.redesign.typeOfActivity.close" /]"
     data-dissem-from="[@s.text name="project.deliverable.redesign.dissemination.from" /]"
     data-dissem-doi-help="[@s.text name="project.deliverable.redesign.dissemination.doiHelp" /]"
     data-dissem-found="[@s.text name="project.deliverable.redesign.dissemination.found" /]"
@@ -65,7 +69,7 @@
         [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableCategory.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
       </div>
       <div class="dlf-field subType-select">
-        [@customForm.select name="deliverable.deliverableInfo.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
+        [@customForm.select name="deliverable.deliverableInfo.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" placeholder="project.deliverable.redesign.placeholder.subCategory" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
       </div>
     </div>
 
@@ -145,7 +149,7 @@
         [#assign startExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
         [#if editable || editStatus]
           <div class="overlay expectedDisabled" style="display:${(!isStatusExtended)?string('block', 'none')}"></div>
-          [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear"  listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
+          [@customForm.select name="deliverable.deliverableInfo.newExpectedYear"  i18nkey="deliverable.newExpectedYear" placeholder="project.deliverable.redesign.placeholder.year" listName="project.projectInfo.getYears(${startExpectedYear})" header=true  multiple=false required=true  className="yearNewExpected" editable=editable || editStatus/]
         [#else]
           <div class="select">
             <label for="">[@s.text name="deliverable.newExpectedYear" /]:</label>

@@ -207,8 +207,10 @@ function init() {
 
   $('.typeSelect').on('change', function () {
     var $subTypeSelect = $(".subTypeSelect");
+    // Keep the placeholder the view gave the select (the deliverable form says "Select a sub-category").
+    var subTypePlaceholder = $subTypeSelect.find("option[value='-1']").first().text() || "Select an option...";
     $subTypeSelect.empty();
-    $subTypeSelect.append("<option value='-1' >Select an option... </option>");
+    $subTypeSelect.append($("<option value='-1'></option>").text(subTypePlaceholder));
     $subTypeSelect.trigger("change.select2");
     var option = $(this).find("option:selected");
 

@@ -393,6 +393,87 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 .ui-dialog.deliverableTypesDialog .ui-dialog-content { overflow: auto !important; padding: 0 16px 16px; }
 .ui-dialog.deliverableTypesDialog #deliverableTypes { width: 100%; }
 
+/* "What do these mean?" types guide (deliverableFormRedesign.js), appended to <body> as the design's dialog: a brand
+   header, one row per type (name, description, "Use this type") and a Close footer. The page behind stays still. */
+html.dlf-guideOpen,
+html.dlf-guideOpen body { overflow: hidden; }
+.dlf-typesGuide {
+  position: fixed;
+  inset: 0;
+  z-index: 1003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(31, 42, 55, .45);
+}
+.dlf-typesGuide__dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 760px;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(31, 42, 55, .3);
+  outline: none;
+  font-family: Figtree, sans-serif;
+}
+.dlf-typesGuide__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: #0277A2; }
+.dlf-typesGuide__title { font: 600 16px Figtree, sans-serif; color: #fff; }
+.dlf-typesGuide__x {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf-typesGuide__x:hover { background-color: #015C7D; }
+.dlf-typesGuide__list { display: flex; flex-direction: column; overflow: auto; }
+.dlf-typesGuide__row {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  padding: 14px 18px;
+  border-bottom: 1px solid #EEF2F5;
+  background: #fff;
+}
+.dlf-typesGuide__row.is-selected { background: #F2F9FC; }
+.dlf-typesGuide__name { font: 600 13px Figtree, sans-serif; color: #1F2A37; }
+.dlf-typesGuide__row.is-selected .dlf-typesGuide__name { color: #015C7D; }
+.dlf-typesGuide__desc { font: 400 13px/1.55 Figtree, sans-serif; color: #4B5563; text-wrap: pretty; }
+.dlf-typesGuide__use {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #BEDFEC;
+  border-radius: 7px;
+  background: #fff;
+  font: 600 12px Figtree, sans-serif;
+  color: #0277A2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.dlf-typesGuide__use:hover { background: #F2F9FC; }
+.dlf-typesGuide__foot { display: flex; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid #E5E9EF; }
+.dlf-typesGuide__close {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  background: #fff;
+  font: 600 13px Figtree, sans-serif;
+  color: #1F2A37;
+  cursor: pointer;
+}
+.dlf-typesGuide__close:hover { background: #F7F9FB; }
+@media (max-width: 600px) {
+  .dlf-typesGuide__row { grid-template-columns: minmax(0, 1fr) auto; }
+  .dlf-typesGuide__desc { grid-column: 1 / -1; grid-row: 2; }
+}
+
 /* select2 single selects as the design's native-looking selects. */
 .dlf .dlf-card .selectList { position: relative; }
 .dlf .dlf-card .select2-container--default .select2-selection--single,
