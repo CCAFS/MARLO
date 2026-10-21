@@ -1511,7 +1511,7 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   border-radius: 10px;
   background: var(--dlf-surface-alt);
 }
-.dlf .block-involveParticipants .numericInput.form-control { font-weight: 600; font-size: 16px; font-variant-numeric: tabular-nums; }
+.dlf .block-involveParticipants .numericInput.form-control { font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
 .dlf .block-involveParticipants [class*="col-"] > br { display: none; }
 .dlf .block-involveParticipants .dottedBox {
   display: flex;
