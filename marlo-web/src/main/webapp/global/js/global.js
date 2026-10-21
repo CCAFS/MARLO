@@ -36,9 +36,12 @@ $(document).ready(function () {
 
   
   showHelpText();
-  validatePhase().then(function(isProgress){
-    showNotificationMessages();
-  }).catch(function(error){});
+  // isProgressActive.do answers 403 without a session user, so pages without one skip it
+  if (userLogged) {
+    validatePhase().then(function(isProgress){
+      showNotificationMessages();
+    }).catch(function(error){});
+  }
 
   // Set elementsListComponent
   setElementsListComponent();

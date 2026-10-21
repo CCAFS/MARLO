@@ -100,6 +100,14 @@ public class EmailPlainTextTest {
   }
 
   @Test
+  public void testPreformattedBlocksKeepTheirLines() {
+    String text = EmailPlainText.fromHtml("<p>Trace</p><pre>java.lang.IllegalStateException: boom\n\tat A.b(A.java:1)\n"
+      + "\tat C.d(C.java:2)</pre>");
+
+    assertEquals("Trace\n\njava.lang.IllegalStateException: boom\nat A.b(A.java:1)\nat C.d(C.java:2)", text);
+  }
+
+  @Test
   public void testEmptyBodyGivesEmptyText() {
     assertEquals("", EmailPlainText.fromHtml(null));
     assertEquals("", EmailPlainText.fromHtml("  "));

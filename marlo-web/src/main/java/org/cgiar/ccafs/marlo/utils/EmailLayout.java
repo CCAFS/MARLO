@@ -24,7 +24,8 @@ import com.opensymphony.xwork2.TextProvider;
  * is; the ones that do override it with the HTML shell, where {0} is the body and {1} the URL the images of the
  * shell are served from.
  * The shell is applied only by the notifications that opt in, which are the role notifications and the welcome
- * email: SendMailS also sends the technical alerts, which must stay without it.
+ * email: SendMailS also sends the technical alerts, which must stay without it. The error report to the support
+ * team has its own frame, built by ExceptionEmail.
  */
 public final class EmailLayout {
 

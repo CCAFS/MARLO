@@ -31,6 +31,19 @@ function init() {
   $(".removeDeliverable").on("click", removeDeliverable);
   // $('select.activityTitle').on("change", updateActivityList);
 
+  // Dates typed by hand: flag a format the server cannot read, and block the save while one is left.
+  // While typing, the warning is only cleared, so a date half typed is not flagged before the field is left.
+  $("form").on("change blur", "input.startDate, input.endDate", function() {
+    validateActivityDate($(this));
+  });
+  $("form").on("input", "input.startDate, input.endDate", function() {
+    if(isValidActivityDate($.trim($(this).val() || ""))) {
+      validateActivityDate($(this));
+    }
+  });
+  // Capture phase, so it runs before the global Save handler turns the button into its saving state
+  document.addEventListener("click", blockSaveOnInvalidDates, true);
+
   // Missing fields in activities
   $("form .projectActivity").each(function(i,e) {
     verifyMissingFields(e);
@@ -120,10 +133,12 @@ function getAndSaveLocallyTitle() {
 // change title
 function changeTitle() {
   var $blockTitle = $(this).parents(".projectActivity").find(".blockTitle");
-  $blockTitle.html($(this).val());
-  if($blockTitle.html() == "" || $blockTitle.html() == " ") {
-    $blockTitle.html("New Activity");
+  // The catalog select holds the entry id as its value, so show the text of the chosen option instead
+  var title = $(this).is("select") ? ($(this).val() == "-1" ? "" : $(this).find("option:selected").text()) : $(this).val();
+  if($.trim(title || "") == "") {
+    title = "New Activity";
   }
+  $blockTitle.text(title);
 }
 
 // Add a new activity element
@@ -251,6 +266,9 @@ function date(start,end) {
         if(selectedDate != "") {
           $(end).datepicker("option", "minDate", selectedDate);
         }
+        // setDate fires no change event, and the minDate option clears an unreadable end date
+        validateActivityDate($(start));
+        validateActivityDate($(end));
       }
   });
 
@@ -267,6 +285,9 @@ function date(start,end) {
         if(selectedDate != "") {
           $(start).datepicker("option", "maxDate", selectedDate);
         }
+        // setDate fires no change event, and the maxDate option clears an unreadable start date
+        validateActivityDate($(start));
+        validateActivityDate($(end));
       }
   });
 
@@ -281,6 +302,73 @@ function date(start,end) {
 
     return date;
   }
+}
+
+/**
+ * Flags a start or end date whose text is not a real yyyy-mm-dd date. The server cannot convert such a value, and
+ * then refuses the whole form: nothing is saved and the page comes back read only, without saying why.
+ * An empty date is left to the missing-fields check, which does not block the save.
+ * @param $input the start or end date input
+ * @returns true when the date is empty or valid
+ */
+function validateActivityDate($input) {
+  var value = $.trim($input.val() || "");
+  var isValid = value == "" || isValidActivityDate(value);
+  var $field = $input.closest(".input");
+  $field.toggleClass("has-error", !isValid);
+  $field.find(".activityDateError").remove();
+  if(!isValid) {
+    $("<span class='help-block activityDateError'></span>").text($("#activityDateInvalidMessage").text())
+      .insertAfter($input);
+  }
+  return isValid;
+}
+
+function isValidActivityDate(value) {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+  var date;
+  try {
+    date = $.datepicker.parseDate("yy-mm-dd", value);
+  } catch(error) {
+    return false;
+  }
+  // A day that does not exist, such as 2026-02-30, must not pass as the next valid one
+  return $.datepicker.formatDate("yy-mm-dd", date) == value;
+}
+
+/**
+ * Stops the save while a date the server cannot read is left, and opens the activity that holds the first one.
+ * @param e the click event, seen in the capture phase
+ */
+function blockSaveOnInvalidDates(e) {
+  var $button = $(e.target).closest('button[name="save"]');
+  if(!$button.length) {
+    return;
+  }
+  var $invalid = $("form .projectActivity").find("input.startDate, input.endDate").not("[type=hidden]")
+    .filter(function() {
+      return !validateActivityDate($(this));
+    });
+  if($invalid.length == 0) {
+    return;
+  }
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  // The unsaved-changes dialog (changes.js) clicks Save through jQuery, so the global Save handler has already
+  // run: undo its saving state, or the disabled button would ignore every later click, and drop the pending
+  // redirection so the next save stays on this page
+  turnSavingStateOff($button);
+  $(".container_page_load").hide();
+  $("#redirectionUrl").val("");
+  var $activity = $invalid.first().closest(".projectActivity");
+  if($activity.find(".blockContent").is(":hidden")) {
+    $activity.find(".blockTitle").click();
+  }
+  $("html, body").animate({
+    scrollTop: $activity.offset().top - 110
+  }, 500);
 }
 
 function checkItems(block) {

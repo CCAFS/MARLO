@@ -677,6 +677,9 @@ public class FundingSourceAction extends BaseAction {
                       && b.getFundingSource().getId().equals(this.fundingSource.getId()) && b.getPhase() != null
                       && b.getPhase().equals(crpPhase))
                   .collect(Collectors.toList());
+              } else {
+                // The other global unit has no phase matching the current one, so none of its budgets apply
+                tempBudgets = new ArrayList<>();
               }
             }
             fundingSourceShow.setProjectBudgetsList(tempBudgets);

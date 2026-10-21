@@ -73,7 +73,12 @@
       [#elseif actionPath == "activities" ]
         <h3 >[@s.text name="guide.button.activity.popup.title" /]</h3>   
         <div class="text-inter">
-          [@s.text name="guide.button.activity.popup.descriptionAR" /]
+          [#-- The usual text says activities are predefined, which is wrong once clusters type their own titles --]
+          [#if action.isProjectActivityCreationActive()]
+            [@s.text name="guide.button.activity.popup.descriptionFreeText" /]
+          [#else]
+            [@s.text name="guide.button.activity.popup.descriptionAR" /]
+          [/#if]
       [#elseif actionPath == "budgetByPartners" ]
         <h3 >[@s.text name="guide.button.budget.popup.title" /]</h3>   
         
@@ -131,7 +136,11 @@
       [#elseif actionPath == "activities" ]
         <h3 >[@s.text name="guide.button.activity.popup.title" /]</h3>   
         <div class="text-inter">
-          [@s.text name="guide.button.activity.popup.descriptionAWPB" /]
+          [#if action.isProjectActivityCreationActive()]
+            [@s.text name="guide.button.activity.popup.descriptionFreeText" /]
+          [#else]
+            [@s.text name="guide.button.activity.popup.descriptionAWPB" /]
+          [/#if]
       [#elseif actionPath == "budgetByPartners" ]
         <h3 >[@s.text name="guide.button.budget.popup.title" /]</h3>   
         
@@ -193,7 +202,11 @@
       [#elseif actionPath == "activities" ]
         <h3 >[@s.text name="activity.popup.title" /]</h3>   
         <div class="text-inter">
-          [@s.text name="activity.popup.descriptionMY" /]
+          [#if action.isProjectActivityCreationActive()]
+            [@s.text name="guide.button.activity.popup.descriptionFreeText" /]
+          [#else]
+            [@s.text name="activity.popup.descriptionMY" /]
+          [/#if]
       [#elseif actionPath == "budgetByPartners" ]
         <h3 >[@s.text name="budget.popup.title" /]</h3>   
         
