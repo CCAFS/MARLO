@@ -11,12 +11,12 @@
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261020-1"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261020-2"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261020-4"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261020-5"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]

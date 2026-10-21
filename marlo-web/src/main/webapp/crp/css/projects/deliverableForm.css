@@ -1255,17 +1255,26 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 .dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [style*="display: none"],
 .dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [style*="display:none"] { display: none; }
 
-/* Channel + URL format example. */
-.dlf .disseminationChannelBlock .form-group.row { align-items: end; }
-.dlf .exampleUrl-block label { margin-bottom: 3px; font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
+/* Disseminated: the design's channel row, URL row with its sync buttons and note, Handle and DOI, then what the sync
+   found. deliverableDissemination.js shows and hides each part with inline styles; the rules below win over those
+   where the design needs another display. */
+.dlf .dlf-question > .simpleBox > .block-findable:not([style*="none"]) { display: flex !important; flex-direction: column; gap: 16px; }
+.dlf .dlf-question > .simpleBox > .block-findable > .disseminationChannelBlock > .form-group.row { align-items: end; margin: 0; }
+.dlf .dlf-question > .simpleBox > .block-findable > .disseminationChannelBlock .select > label { margin: 0 0 6px; }
+.dlf .exampleUrl-block { display: flex; flex-direction: column; gap: 3px; padding-bottom: 4px; }
+.dlf .exampleUrl-block label { margin: 0; font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
 .dlf .exampleUrl-block .exampleUrl,
-.dlf .exampleUrl-block p { margin: 0; padding-bottom: 10px; }
-.dlf .exampleUrl-block small { font: 500 12.5px ui-monospace, Menlo, Consolas, monospace; color: var(--dlf-ink-soft); word-break: break-all; }
+.dlf .exampleUrl-block p { margin: 0; padding: 0; }
+.dlf .exampleUrl-block small { font: 500 12.5px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--dlf-ink-soft); word-break: break-all; }
 .dlf .exampleUrl-block strong { font-weight: 700; color: var(--dlf-brand-dark); }
+.dlf .dlf-question > .simpleBox > .block-findable > #disseminationUrl:not([style*="none"]) { display: flex !important; flex-direction: column; gap: 16px; }
+.dlf .dlf-question > .simpleBox > .block-findable > #disseminationUrl > .clearfix,
+.dlf .dlf-question > .simpleBox > .block-findable > #disseminationUrl > .form-group.row:empty { display: none; }
 
-/* URL field with the sync buttons beside it. */
-.dlf #disseminationUrl > .form-group { display: flex; align-items: flex-end; gap: 8px; }
+/* URL field and its buttons on one line; the note under them. */
+.dlf #disseminationUrl > .form-group { display: flex; align-items: flex-end; gap: 8px; margin: 0; }
 .dlf #disseminationUrl .url-field { flex: 1; min-width: 0; float: none; width: auto; }
+.dlf #disseminationUrl .url-field .input > label { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 6px; }
 .dlf #disseminationUrl .buttons-field { flex: none; float: none; width: auto; padding-bottom: 0; }
 .dlf #disseminationUrl .buttons-field:empty { display: none; }
 .dlf #fillMetadata .unSyncBlock { gap: 8px; }
@@ -1281,7 +1290,7 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   width: auto;
   height: 40px;
   margin: 0;
-  padding: 0 16px;
+  padding: 0 14px;
   border: 0;
   border-radius: var(--dlf-radius-sm);
   background: var(--dlf-brand);
@@ -1292,21 +1301,50 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   cursor: pointer;
   white-space: nowrap;
 }
+.dlf #disseminationUrl .checkButton[style*="block"] { display: inline-flex !important; }
+.dlf #disseminationUrl .checkButton { padding: 0 16px; }
 .dlf #disseminationUrl .checkButton:hover { background: var(--dlf-brand-dark); }
 .dlf #disseminationUrl .updateButton { border: 1px solid var(--dlf-brand); background: #fff; color: var(--dlf-brand); }
 .dlf #disseminationUrl .updateButton:hover { background: var(--dlf-info-bg); }
 .dlf #disseminationUrl .uncheckButton { border: 1px solid #EBD3CE; background: #fff; color: var(--dlf-danger); }
 .dlf #disseminationUrl .uncheckButton:hover { background: var(--dlf-danger-bg); }
 .dlf #disseminationUrl #WOSSyncBtn { background: #fff; border: 1px solid var(--dlf-line-strong); color: var(--dlf-ink-soft); }
+.dlf #disseminationUrl .dlf-urlNote { margin: -10px 0 0; font: 400 12px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+/* "From <channel>" on the URL label once synced. */
+.dlf #disseminationUrl .dlf-fromChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: var(--dlf-ok-bg);
+  font: 600 11px Figtree, sans-serif;
+  color: var(--dlf-ok);
+}
+.dlf #disseminationUrl .dlf-fromChip::before {
+  content: "";
+  width: 9px;
+  height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='10' viewBox='0 0 9 10' fill='none'%3E%3Crect x='1' y='4.3' width='7' height='5' rx='1.2' stroke='%232E6B2F' stroke-width='1.2'/%3E%3Cpath d='M2.6 4.3V3a1.9 1.9 0 0 1 3.8 0v1.3' stroke='%232E6B2F' stroke-width='1.2'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf #disseminationUrl input[readonly].form-control { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-ink-soft); }
 
-/* Handle and DOI: their validity notes sit under the field instead of floating over the next row. */
+/* Handle and DOI: two columns, labels on one line, the DOI validity note under its field. */
 .dlf #disseminationUrl .form-group.row.ifIsReadOnly {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 16px;
-  margin-top: 0 !important;
+  margin: 0 !important;
 }
 .dlf #disseminationUrl .ifIsReadOnly > .conditionalRequire { display: block; width: auto; }
+.dlf #disseminationUrl .ifIsReadOnly .input > label { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; margin: 0 0 6px; }
+.dlf #disseminationUrl .dlf-infoMark {
+  width: 14px;
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='6.4' stroke='%236B7280' stroke-width='1.4'/%3E%3Cpath d='M8 7.3v3.6' stroke='%236B7280' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='5.1' r='.95' fill='%236B7280'/%3E%3C/svg%3E") center no-repeat;
+  cursor: help;
+}
 .dlf #disseminationUrl .doi-bridge .invalidDOI,
 .dlf #disseminationUrl .doi-bridge .validDOI { position: static !important; margin: 5px 0 0 !important; font: 600 11.5px/1.4 Figtree, sans-serif !important; }
 .dlf #disseminationUrl > br,
@@ -1314,31 +1352,54 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 .dlf #disseminationUrl .isOtherUrl .inputsFlat,
 .dlf #disseminationUrl .isOtherUrl label { margin: 0; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink-soft); }
 .dlf #disseminationUrl .isOtherUrl > br { display: none; }
+/* The alternative URL row is empty unless its checkbox or field shows. */
+.dlf #disseminationUrl > .form-group.row:not(.ifIsReadOnly):not(:has(> [class*="col-"]:not([style*="none"]))) { display: none !important; }
+.dlf #disseminationUrl > .form-group.row:not(.ifIsReadOnly) { margin: 0 !important; }
+.dlf #disseminationUrl > .form-group.row:not(.ifIsReadOnly) > .col-md-6 > br { display: none; }
 
-/* What the sync found: the design's green source chips. */
-.dlf .block-findable #metadata-container { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
-.dlf .block-findable .metadata-text-container { display: flex; flex-wrap: wrap; gap: 8px; }
-.dlf .block-findable .metadata-output-persistent:not(:empty) {
-  display: inline-flex;
+/* The Web of Science lookup in progress: one line instead of a 110px loader. */
+.dlf #disseminationUrl .loading-WOS-container { display: flex; align-items: center; gap: 8px; min-height: 0; margin: 0; }
+.dlf #disseminationUrl .loading-WOS-container[style*="none"] { display: none !important; }
+.dlf #disseminationUrl .loading-WOS-container p { position: static !important; order: 2; margin: 0; font: 500 12.5px Figtree, sans-serif !important; color: var(--dlf-muted) !important; }
+.dlf #disseminationUrl .loading-WOS-container svg { width: 28px; height: 28px; margin: 0 -4px; }
+
+/* What the sync found: the design's source chips over a hairline, the Web of Science link on the right. */
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-output:empty { display: none; }
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-container { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0; padding-top: 14px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-container:not(:has(.metadata-output-persistent:not([style*="none"]))) { display: none; }
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-container > [data-toggle="tooltip"]:not(:has(img:not([style*="none"]))) { display: none; }
+/* projectDeliverable.css stacks these in a 90% column; the design sets them side by side. */
+.dlf .block-findable .metadata-text-container { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; width: auto; }
+.dlf .block-findable .metadata-output-persistent:not([style*="none"]) {
+  display: inline-flex !important;
   align-items: center;
   gap: 6px;
-  min-height: 28px;
+  width: auto;
+  height: 28px;
   margin: 0;
-  padding: 3px 12px;
+  padding: 0 10px;
   border: 1px solid var(--dlf-ok-border);
   border-radius: 999px;
   background: var(--dlf-ok-bg);
   font: 600 12.5px Figtree, sans-serif;
   font-style: normal;
   color: var(--dlf-ok);
+  white-space: nowrap;
 }
+.dlf .block-findable .metadata-output-persistent.is-found::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.2 5 8.6l4.5-5' stroke='%232E6B2F' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .block-findable .metadata-output-persistent.is-warn { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); color: var(--dlf-warn); white-space: normal; height: auto; min-height: 28px; }
 .dlf .block-findable .metadata-output-persistent * { font: inherit; color: inherit; margin: 0; }
-.dlf .block-findable #WOSModalBtn.note {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-}
+/* global.css gives every .note a full width and its spans 20px. */
+.dlf .block-findable #metadata-container > #WOSModalBtn { order: 3; width: auto; margin: 0 0 0 auto; padding: 0; border: 0; background: none; }
+.dlf .block-findable #WOSModalBtn a span { font: inherit; }
+.dlf .block-findable #WOSModalBtn[style*="none"] { display: none !important; }
+.dlf .block-findable #WOSModalBtn .helpMessage4,
+.dlf .block-findable #WOSModalBtn p { margin: 0; padding: 0; }
 .dlf .block-findable #WOSModalBtn a {
   display: inline-flex;
   align-items: center;
@@ -1349,10 +1410,29 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   font: 600 12.5px Figtree, sans-serif;
   color: var(--dlf-brand);
   text-decoration: none;
+  cursor: pointer;
 }
 .dlf .block-findable #WOSModalBtn a:hover { background: var(--dlf-info-bg); }
-.dlf .block-findable #WOSModalBtn p { margin: 0; }
-.dlf .block-findable .loading-WOS-container p { font: 600 13px Figtree, sans-serif !important; color: var(--dlf-brand) !important; }
+.dlf .block-findable #WOSModalBtn a svg { transition: transform .15s ease; }
+.dlf .block-findable #WOSModalBtn a.is-open svg { transform: rotate(180deg); }
+/* The Web of Science fields, inline under the chips. */
+.dlf .block-findable .dlf-wosPanel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  margin-top: -6px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: #fff;
+}
+.dlf .block-findable .dlf-wosPanel[hidden] { display: none; }
+/* The dividers belong to the cells, so a short last row leaves white space instead of the divider colour. */
+.dlf .block-findable .dlf-wosPanel__item { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 9px 12px; background: #fff; box-shadow: 1px 1px 0 var(--dlf-line); }
+.dlf .block-findable .dlf-wosPanel__key { font: 600 11px Figtree, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .block-findable .dlf-wosPanel__value { font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .dlf .block-findable .dlf-wosPanel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 
 /* Not disseminated: confidential question and its answer. */
 /* Radio questions (confidential, ISI, training period): the label on its own line, the options in one row. */
@@ -1385,8 +1465,10 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
 }
 .dlf .dlf-card .note--2 p { margin: 0; }
 
-/* Open Access: what Web of Science says, as the design's hint chip. */
-.dlf .dlf-card .WOS_tag { margin-top: 8px; }
+/* Open Access: what Web of Science says, as the design's single hint chip (deliverableFormRedesign.js): green when
+   the answer matches, amber with the suggestion when it does not. The legacy line stays in the DOM for the scripts. */
+.dlf .dlf-card .WOS_tag { margin: 10px 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-card .WOS_tag:has(.dlf-wosHint) > p { display: none; }
 .dlf .dlf-card .WOS_tag p {
   display: inline-flex;
   align-items: center;
@@ -1400,6 +1482,21 @@ html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; 
   color: var(--dlf-warn);
 }
 .dlf .dlf-card .WOS_tag p::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .dlf-card .dlf-wosHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 7px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .dlf-card .dlf-wosHint:empty { display: none; }
+.dlf .dlf-card .dlf-wosHint::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .dlf-card .dlf-wosHint[data-state="match"] { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-card .dlf-wosHint[data-state="match"]::before { background: var(--dlf-ok); }
 
 /* Participants/Trainees: the numbers sit in the design's metric cards. */
 .dlf .block-involveParticipants .form-group.row > [class*="col-"]:has(.numericInput) {

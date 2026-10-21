@@ -674,6 +674,184 @@ $(document).ready(function() {
     });
   });
 
+  // ---- Dissemination: the design's sync states, source chips and Web of Science hints ----
+  // deliverableDissemination.js keeps driving the sync (fillMetadata buttons), the found / not-found messages, the
+  // Web of Science lookup and its Open Access suggestion through ids and inline styles; this only presents them.
+  var $findable = $root.find('.block-findable').first();
+  if($findable.length) {
+    var observe = function(nodes, options, fn) {
+      if(!window.MutationObserver) {
+        return;
+      }
+      var busy = false;
+      var observer = new MutationObserver(function() {
+        if(busy) {
+          return;
+        }
+        busy = true;
+        fn();
+        observer.takeRecords();
+        busy = false;
+      });
+      $(nodes).each(function() {
+        observer.observe(this, options);
+      });
+    };
+    var channelName = function() {
+      var $channel = $findable.find('select.disseminationChannel');
+      var value = $channel.val();
+      return value && value !== '-1' ? $.trim($channel.find('option:selected').text()) : '';
+    };
+
+    // Synced or not: the note under the URL and the "From <channel>" chip on its label.
+    var $note = $findable.find('.dlf-urlNote');
+    var $urlLabel = $findable.find('.url-field label').first();
+    var refreshSync = function() {
+      // Its own display, not :visible: the tab can be hidden when this runs.
+      var $unsync = $findable.find('#fillMetadata .unSyncBlock');
+      var synced = $unsync.length > 0 && $unsync.css('display') !== 'none'
+        && $findable.find('#fillMetadata').css('display') !== 'none';
+      if($note.length) {
+        var noteText = $note.attr(synced ? 'data-synced' : 'data-unsynced');
+        if($note.text() !== noteText) {
+          $note.text(noteText);
+        }
+      }
+      var $chip = $urlLabel.children('.dlf-fromChip');
+      var name = channelName();
+      if(synced && name) {
+        if(!$chip.length) {
+          $chip = $('<span class="dlf-fromChip"></span>').appendTo($urlLabel);
+        }
+        var chipText = text('dissem-from').replace('{0}', name);
+        if($chip.text() !== chipText) {
+          $chip.text(chipText);
+        }
+      } else {
+        $chip.remove();
+      }
+    };
+    refreshSync();
+    observe($findable.find('#fillMetadata')[0], {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['style']
+    }, refreshSync);
+    $findable.on('change', 'select.disseminationChannel', refreshSync);
+
+    // DOI: the design's info mark with the explanation as its title.
+    $findable.find('.doi-bridge .input > label').first().each(function() {
+      if(!$(this).children('.dlf-infoMark').length) {
+        $('<span class="dlf-infoMark" aria-hidden="false"></span>').attr('title', text('dissem-doi-help'))
+          .attr('aria-label', text('dissem-doi-help')).appendTo(this);
+      }
+    });
+
+    // What the sync found, in the design's words: "Metadata found in <channel>" / "... in Web of Science".
+    var $outputs = $findable.find('#output-dissemination, #output-wos');
+    var refreshOutputs = function() {
+      $outputs.each(function() {
+        var $output = $(this);
+        var raw = $.trim($output.text());
+        var found = /^Found metadata successfully in/i.test(raw);
+        var wanted = raw;
+        if(found && this.id === 'output-wos') {
+          wanted = text('dissem-wos-found');
+        } else if(found) {
+          wanted = text('dissem-found').replace('{0}', channelName() || raw.replace(/^Found metadata successfully in\s*/i, ''));
+        }
+        $output.toggleClass('is-found', found || /^Metadata found in/i.test(raw))
+          .toggleClass('is-warn', !!raw && !found && !/^Metadata found in/i.test(raw) && !/^Searching/i.test(raw));
+        if(wanted !== raw) {
+          $output.text(wanted);
+        }
+      });
+    };
+    refreshOutputs();
+    observe($outputs, {
+        childList: true,
+        characterData: true,
+        subtree: true
+    }, refreshOutputs);
+
+    // "View Web of Science metadata": the modal's fields inline, under the chips, as the design.
+    var $wosButton = $findable.find('#WOSModalBtn');
+    var $container = $findable.find('#metadata-container');
+    if($wosButton.length && $container.length) {
+      $wosButton.appendTo($container);
+      var $link = $wosButton.find('a').removeAttr('data-toggle').removeAttr('data-target');
+      var $panel = $('<div class="dlf-wosPanel" hidden></div>').insertAfter($container);
+      $link.empty().append($('<span class="dlf-wosLink__text"></span>').text(text('dissem-wos-view')))
+        .append('<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">'
+          + '<path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" '
+          + 'stroke-linejoin="round"></path></svg>')
+        .attr({
+            role: 'button',
+            'aria-expanded': 'false'
+        });
+      $link.on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var open = $panel.prop('hidden');
+        if(open) {
+          $panel.empty();
+          $('#WOSModal table tr').each(function() {
+            var key = $.trim($(this).children('th').text());
+            var value = $.trim($(this).children('td').text());
+            $('<span class="dlf-wosPanel__item"></span>')
+              .append($('<span class="dlf-wosPanel__key"></span>').text(key))
+              .append($('<span class="dlf-wosPanel__value"></span>').text(value || '—'))
+              .appendTo($panel);
+          });
+        }
+        $panel.prop('hidden', !open);
+        $link.attr('aria-expanded', String(open)).toggleClass('is-open', open)
+          .find('.dlf-wosLink__text').text(text(open ? 'dissem-wos-hide' : 'dissem-wos-view'));
+      });
+      // Unsync, a new lookup or a channel change hides the link: the open panel goes with it.
+      observe($wosButton[0], {
+          attributes: true,
+          attributeFilter: ['style']
+      }, function() {
+        if($wosButton.css('display') === 'none' && !$panel.prop('hidden')) {
+          $panel.prop('hidden', true);
+          $link.attr('aria-expanded', 'false').removeClass('is-open')
+            .find('.dlf-wosLink__text').text(text('dissem-wos-view'));
+        }
+      });
+    }
+
+    // Open Access: green when the answer matches Web of Science, amber with the suggestion when it does not.
+    $root.find('.WOS_tag').has('#WOS_tag_IOA_yes').each(function() {
+      var $tag = $(this);
+      var $yes = $tag.find('#WOS_tag_IOA_yes');
+      var $no = $tag.find('#WOS_tag_IOA_no');
+      var $hint = $('<span class="dlf-wosHint"></span>').appendTo($tag);
+      var refreshHint = function() {
+        var suggestion = $yes.css('display') !== 'none' ? $yes : ($no.css('display') !== 'none' ? $no : null);
+        if(!suggestion) {
+          $hint.attr('data-state', '').text('');
+          return;
+        }
+        var expected = suggestion.is($yes) ? 'true' : 'false';
+        var answer = $root.find('input[name="deliverable.dissemination.isOpenAccess"]:checked').val();
+        var word = $.trim(suggestion.text());
+        var match = answer === expected;
+        var hintText = text(match ? 'dissem-oa-match' : 'dissem-oa-mismatch').replace('{0}', word);
+        $hint.attr('data-state', match ? 'match' : 'mismatch');
+        if($hint.text() !== hintText) {
+          $hint.text(hintText);
+        }
+      };
+      refreshHint();
+      observe([$tag[0], $yes[0], $no[0]], {
+          attributes: true,
+          attributeFilter: ['style']
+      }, refreshHint);
+      $root.on('change', 'input[name="deliverable.dissemination.isOpenAccess"]', refreshHint);
+    });
+  }
+
   // ---- Word counters ----
   // applyWordCounter() (utils.js) prints "(20 words remaining of 20)"; the design drops the brackets. Only the
   // outer text changes, so the count it keeps updating is untouched.

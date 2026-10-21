@@ -643,7 +643,7 @@
     <div class="form-group row">
       <div class="col-md-4">
         [#if editable]
-          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=validateIsProgressWithStatus!true   editable=editable/]
+          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey=((deliverableFormRedesign)!false)?then("project.deliverable.redesign.dissemination.channel","project.deliverable.dissemination.selectChannelLabel") listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=validateIsProgressWithStatus!true   editable=editable/]
         [#else]
         <div class="input">
           <label for="disChannel" style="display:block;">Dissemination channel:</label>
@@ -689,10 +689,10 @@
           <div id="fillMetadata" style="display:${showSync?string('block','none')};">
             <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
             [#-- Sync Button --]
-            <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+            <div class="checkButton" style="display:${isSynced?string('none','block')};">[#if (deliverableFormRedesign)!false]<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.2 8A5.2 5.2 0 1 1 11.6 4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M11.8 1.8v2.8H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>[@s.text name="project.deliverable.redesign.dissemination.sync" /][#else][@s.text name="project.deliverable.dissemination.sync" /][/#if]</div>
             <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
               [#-- Update Button --]
-              <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+              <div class="updateButton">[#if (deliverableFormRedesign)!false]<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.2 8A5.2 5.2 0 1 1 11.6 4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M11.8 1.8v2.8H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>[@s.text name="project.deliverable.redesign.dissemination.update" /][#else][@s.text name="project.deliverable.dissemination.update" /][/#if]</div>
               [#-- Unsync Button --]
               <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
             </div>
@@ -701,6 +701,10 @@
       </div>
       
     </div>
+    [#if (deliverableFormRedesign)!false && editable]
+      [#-- The design's note under the URL; deliverableFormRedesign.js switches it with the sync state --]
+      <p class="dlf-urlNote" data-unsynced="[@s.text name="project.deliverable.redesign.dissemination.noteUnsynced" /]" data-synced="[@s.text name="project.deliverable.redesign.dissemination.noteSynced" /]">[#if isSynced][@s.text name="project.deliverable.redesign.dissemination.noteSynced" /][#else][@s.text name="project.deliverable.redesign.dissemination.noteUnsynced" /][/#if]</p>
+    [/#if]
     <div class="clearfix"></div>
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
@@ -922,7 +926,7 @@
 
 [#macro channelExampleMacro name="" url="" ]
   <div class="exampleUrl-block channel-${name}" style="display:[#if (deliverable.dissemination.disseminationChannel==name)!false]block[#else]none[/#if];">
-    <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
+    <label for="">[#if (deliverableFormRedesign)!false][@s.text name="project.deliverable.redesign.dissemination.urlFormat" /][#else][@s.text name="project.deliverable.dissemination.exampleUrl" /]:[/#if]</label>
     [#-- repository_channel.url_example marks the identifier with <b></b>; auto-escaping printed the tags, so the
          marked part is drawn bold here and every part stays escaped. --]
     [#if url?contains("<b>") && url?contains("</b>")]

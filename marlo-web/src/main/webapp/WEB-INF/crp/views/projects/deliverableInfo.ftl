@@ -35,6 +35,14 @@
     data-trainees-percent="[@s.text name="project.deliverable.redesign.trainees.note.percent" /]"
     data-trainees-over="[@s.text name="project.deliverable.redesign.trainees.note.overTotal" /]"
     data-trainees-not-known="[@s.text name="project.deliverable.redesign.trainees.note.notKnown" /]"
+    data-dissem-from="[@s.text name="project.deliverable.redesign.dissemination.from" /]"
+    data-dissem-doi-help="[@s.text name="project.deliverable.redesign.dissemination.doiHelp" /]"
+    data-dissem-found="[@s.text name="project.deliverable.redesign.dissemination.found" /]"
+    data-dissem-wos-found="[@s.text name="project.deliverable.redesign.dissemination.wosFound" /]"
+    data-dissem-wos-view="[@s.text name="project.deliverable.redesign.dissemination.wosView" /]"
+    data-dissem-wos-hide="[@s.text name="project.deliverable.redesign.dissemination.wosHide" /]"
+    data-dissem-oa-match="[@s.text name="project.deliverable.redesign.dissemination.oaMatch" /]"
+    data-dissem-oa-mismatch="[@s.text name="project.deliverable.redesign.dissemination.oaMismatch" /]"
     data-project-code="C${project.id?c}"></span>
 
   [#-- ─── Basic information ─────────────────────────────────────────────── --]
