@@ -5,10 +5,10 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/global/js/usersManagement.js?20260925",
-  "${baseUrlMedia}/js/projects/projectPartners.js?20261009-6"
+  "${baseUrlMedia}/js/projects/projectPartners.js?20261020-1"
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20261009-4"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20261020-1"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -255,6 +255,7 @@
   data-unsaved-other="[@s.text name="projectPartners.redesign.save.unsavedOther" /]"
   data-check-missing="[@s.text name="projectPartners.redesign.check.missing" /]"
   data-save-clean="[@s.text name="projectPartners.redesign.save.clean" /]"
+  data-save-locked-draft="[@s.text name="projectPartners.redesign.save.lockedDraft" /]"
   data-country-add="[@s.text name="projectPartners.redesign.country.add" /]"
   data-country-remove="[@s.text name="projectPartners.redesign.country.remove" /]"
   data-org-placeholder="[@s.text name="projectPartners.redesign.org.placeholder" /]"
