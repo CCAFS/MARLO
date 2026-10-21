@@ -5408,12 +5408,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       if (project.isAutoFill()) {
         try {
           CenterProjectFundingSource fundingSource = project.getProjectFundingSources().stream()
-            .filter(fs -> fs.isActive() && fs.isAutoFill()).collect(Collectors.toList()).get(0);
+            .filter(fs -> fs != null && fs.isActive() && fs.isAutoFill()).findFirst().orElse(null);
           if (fundingSource != null) {
             return fundingSource.getCode();
           }
         } catch (Exception e) {
-          LOG.debug("The center project {} has no autofill funding source, so no sync code is returned",
+          LOG.debug("Could not read the funding sources of the center project {}, so no sync code is returned",
             centerProjectID, e);
           return "---";
         }
