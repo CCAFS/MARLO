@@ -214,7 +214,13 @@
   <div class="form-group row yesNoInputDeliverable yesNoTrainees">
   <span class="col-md-9">
     <label class="yesNoLabel" for="">[@s.text name="deliverable.involveParticipants.title" /] [@customForm.req required=(validateIsProgressWithStatus!true) /]</label>
-    <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub.AF" /] </small></p>
+    [#-- The redesigned form says why the answer is Yes: deliverableFormRedesign.js swaps in the capacity
+         development, indicator or both text (each program's bundle words them). --]
+    [#if (deliverableFormRedesign)!false]
+      <p><small class="dlf-traineesHelper" data-capacity="${capacityEventType?c}">[@s.text name="project.deliverable.redesign.trainees.helper" /]</small></p>
+    [#else]
+      <p><small>[@s.text name="project.deliverable.dissemination.involveParticipantsSub.AF" /] </small></p>
+    [/#if]
   </span>
     [#if capacityEventType]
         <div class="col-md-3">[@customForm.yesNoInputDeliverableParticipants name="${customName}.hasParticipants"  editable=editable inverse=false  cssClass="type-involveParticipants text-center" value = "true" /] </div>  
@@ -613,8 +619,10 @@
     </div>
     <div class="block-notFindable findableOptions" style="display:${(isDisseminated == "false")?string('block', 'none')}">
       <hr />
-      [#-- Is this deliverable confidential and/or a management/internal deliverable? --]
-      <div class="form-group">
+      [#-- Is this deliverable confidential and/or a management/internal deliverable? The redesigned form draws the
+           answers as option chips and the "No" note as an alert. --]
+      [#local redesign = (deliverableFormRedesign)!false /]
+      <div class="form-group[#if redesign] dlf-chipRadios[/#if]">
         <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]? [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true!true) /]</label> <br />
         [#assign isConfidential = (deliverable.dissemination.confidential?string)!""]
         [@customForm.radioFlat id="confidetial-yes" name="${name}.confidential" label="Yes" value="true"  checked=(isConfidential == "true")  cssClass="radioType-confidential" cssClassLabel="radio-label-yes" editable=editable /]
@@ -626,7 +634,14 @@
         [@customForm.input name="${name}.confidentialUrl" type="text" i18nkey="project.deliverable.dissemination.confidentialUrl" help="project.deliverable.dissemination.confidentialUrl.help" helpIcon=false placeholder="global.webSiteLink.placeholder" className="" required=validateIsProgressWithStatus!true editable=editable /]
       </div>
       <div class="form-group confidentialBlock-false" style="display:${(isConfidential == "false")?string('block', 'none')}">
-        <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
+        [#if redesign]
+          <div class="dlf-alert" role="alert">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 7.3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="8" cy="5.1" r=".95" fill="currentColor"></circle></svg>
+            <span>[@s.text name="project.deliverable.dissemination.confidentialNoMessage" /]</span>
+          </div>
+        [#else]
+          <p class="note"> [@s.text name="project.deliverable.dissemination.confidentialNoMessage" /] </p>
+        [/#if]
       </div>
     </div>
   </div>

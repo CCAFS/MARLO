@@ -359,7 +359,10 @@ function searchIndicator(){
   // Makes the trainee question mandatory. A program without a trainees indicator gets an empty value, which
   // indexOf() finds in any text, so it must not count as chosen.
   var traineesIndicator = ($('#traineesIndicator').val() || '').trim();
-  if (traineesIndicator !== '' && text.indexOf(traineesIndicator) !== -1) {
+  var indicatorLinked = traineesIndicator !== '' && text.indexOf(traineesIndicator) !== -1;
+  // The redesigned form words the trainee question's helper after the reason (deliverableFormRedesign.js).
+  $('.yesNoTrainees').attr('data-indicator-linked', indicatorLinked).trigger('dlf:traineesIndicator');
+  if (indicatorLinked) {
     $('.yesNoTrainees .yes-button-label').addClass('radio-checked');
     // Clicking the label focuses its radio, which scrolls the page to the trainees block; click only to change
     // the answer, and keep the reader where they were.
