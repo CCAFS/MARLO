@@ -229,26 +229,50 @@
     [/#if]
   >
     <hr />
+    [#-- Section subtitles of the redesigned deliverable form (projectDeliverable.ftl sets deliverableFormRedesign) --]
+    [#if (deliverableFormRedesign)!false]<p class="dlf-subhead">[@s.text name="project.deliverable.redesign.trainees.event" /]</p>[/#if]
     [#-- Title Event/Activity --]
     <div class="form-group text-area-container">
-      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+      [@customForm.input name="${customName}.eventActivityName" i18nkey="involveParticipants.title" placeholder="project.deliverable.redesign.placeholder.eventName" className="limitWords-20" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
-    [#-- Type of activity --]
-    <div class="form-group row">
-      <div class="col-md-6">
+    [#-- Type of activity, then the academic degree (formal training: academic degree only), then the type of
+         participant(s): one row --]
+    <div class="form-group row block-activityTypes">
+      <div class="col-md-6 block-typeActivity">
         [@customForm.select name="${customName}.repIndTypeActivity.id" className="setSelect2 trainingType" i18nkey="involveParticipants.typeActivity" listName="repIndTypeActivities" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
+        <div class="note left">
+          <a href="#modal-typeOfActivity" data-toggle="modal"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="project.deliverable.redesign.typeOfActivity.help" /]</a>
+        </div>
       </div>
-      [#-- Formal training: Academic Degree --]
-      [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
-      <div class="col-md-6 block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
-        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" help="involveParticipants.academicDegree.help" className="" required=validateIsProgressWithStatus!true editable=editable /]
+      [#-- Type of Participant(s): --]
+      <div class="col-md-6 block-typeParticipant">
+        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
       </div>
     </div>
-     <div class="note left">
-      <a href="#modal-typeOfActivity" data-toggle="modal"> <span class="glyphicon glyphicon-info-sign"></span> [@s.text name="deliverable.typeOfActivity.help" /]</a>
-     </div>
-     <br />
+
+    [#-- Formal training details, under the two types: the academic degree (formal training: academic degree only)
+         and the training period (every formal training). deliverableDissemination.js shows and hides each one;
+         the panel shows with the training period. --]
+    <div class="block-formalTraining">
+      [#-- Formal training: Academic Degree --]
+      [#local isAcademicDegree = (deliverable.deliverableParticipant.repIndTypeActivity.id == 1)!false /]
+      <div class="block-academicDegree" style="display:${isAcademicDegree?string('block','none')}">
+        [@customForm.input name="${customName}.academicDegree" i18nkey="involveParticipants.academicDegree" placeholder="involveParticipants.academicDegree.help" className="" required=validateIsProgressWithStatus!true editable=editable /]
+      </div>
+      [#-- Training period of time: (Only if formal training) --]
+      [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
+      <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
+        <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=(editable!false && validateIsProgressWithStatus!true)  /]
+          [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
+        </label><br />
+        [#list (repIndTrainingTerms)![] as item]
+          [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+        [#else]
+          LIST NOT FOUND
+        [/#list]
+      </div>
+    </div>
 
     
     [#-- Modal --]
@@ -269,63 +293,40 @@
       </div>
     </div>
     
-    [#-- Total number of Participants: --]
-    <div class="form-group row">
-      <div class="col-md-6">
+    [#if (deliverableFormRedesign)!false]<p class="dlf-subhead">[@s.text name="project.deliverable.redesign.trainees.numbers" /]</p>[/#if]
+    [#-- Total, females, African-based and youth: one row of four --]
+    <div class="form-group row block-participantNumbers">
+      <div class="col-md-3">
         <div class="text-area-container">
-         [@customForm.input name="${customName}.participants" i18nkey="involveParticipants.participants" help="involveParticipants.participants.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+         [@customForm.input name="${customName}.participants" i18nkey="project.deliverable.redesign.participants.total" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
-      <div class="col-md-6 femaleNumbers">
+      <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
         </div>
         <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
-          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" help="involveParticipants.dontKnow.help" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
-    </div>
-    
-    [#-- Type of Participant(s): --]
-    <div class="form-group row">
-      <div class="col-md-6">
-        [@customForm.select name="${customName}.repIndTypeParticipant.id" className="setSelect2" i18nkey="involveParticipants.participantsType" listName="repIndTypeParticipants" keyFieldName="id"  displayFieldName="name" editable=editable required=(editable!false && validateIsProgressWithStatus!true) /]
-      </div>
-    </div>
-    
-    [#-- Training period of time: (Only if formal training) --]
-    [#local isFormal = ([1, 3, 2, 4]?seq_contains(deliverable.deliverableParticipant.repIndTypeActivity.id))!false /]
-    <div class="form-group block-periodTime" style="display:${isFormal?string('block','none')}">
-      <label for="">[@s.text name="involveParticipants.trainingPeriod" /]:[@customForm.req required=(editable!false && validateIsProgressWithStatus!true)  /]
-        [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
-      </label><br />
-      [#list (repIndTrainingTerms)![] as item]
-        [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
-      [#else]
-        LIST NOT FOUND
-      [/#list]
-    </div> 
-    
-    [#-- African - Youth: --]
-    <div class="form-group row">
-      <div class="col-md-6">
+      <div class="col-md-3">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.african" i18nkey="involveParticipants.african" help="involveParticipants.african.help" placeholder="global.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+          [@customForm.input name="${customName}.african" i18nkey="project.deliverable.redesign.participants.african" help="involveParticipants.african.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
           [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
-      <div class="col-md-6 femaleNumbers">
+      <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="global.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
+          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
         </div>
         <br>
         <div class="dottedBox">
@@ -333,14 +334,15 @@
         </div>
       </div>
     </div>
-    
+
+    [#if (deliverableFormRedesign)!false]<p class="dlf-subhead">[@s.text name="project.deliverable.redesign.trainees.focus" /]</p>[/#if]
     [#-- Focus --]
     <div class="form-group text-area-container">
-      [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" className="" required=editable editable=editable /]
+      [@customForm.textArea name="${customName}.focus" i18nkey="involveParticipants.focus" placeholder="project.deliverable.redesign.placeholder.focus" className="" required=editable editable=editable /]
     </div>
     [#-- Likely Outcomes --]
     <div class="form-group text-area-container">
-      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" className="" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+      [@customForm.textArea name="${customName}.likelyOutcomes" i18nkey="involveParticipants.likelyOutcomes" placeholder="project.deliverable.redesign.placeholder.outcomes" className="" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
     </div>
     
     [@deliverableMacros.deliverableClusterParticipantsMacro /]
@@ -356,15 +358,25 @@
 [#local customName = "deliverable.clusterParticipant" /]
 [#if action.hasSpecificities("deliverable_shared_clusters_trainees_active")]
 [#-- [#if list?has_content] --]
+[#-- The redesigned deliverable form (projectDeliverable.ftl) draws this as the design's split table; the publication
+     form keeps its texts. deliverableFormRedesign.js draws the team cells, the sum row and the status. --]
+[#local redesign = (deliverableFormRedesign)!false /]
+[#local sectionNoun = (action.getText("projects.menu.status.noun"))!"project" /]
+[#local anySubmitted = false /]
 <div class="sharedClustersList">
   <br>
-  <span class="">
-    <label class="yesNoLabel" for="">[@s.text name="involveParticipants.sharedClusters" /] </label>
-    <p><small>[@s.text name="involveParticipants.sharedClusters.help" /] </small></p>
-  </span>
+  <div class="dlf-splitHead">
+    <span class="dlf-splitHead__text">
+      <label class="yesNoLabel" for="">[#if redesign][@s.text name="project.deliverable.redesign.split.title" /][#else][@s.text name="involveParticipants.sharedClusters" /][/#if] </label>
+      <p><small>[#if redesign][@s.text name="project.deliverable.redesign.split.help" /][#else][@s.text name="involveParticipants.sharedClusters.help" /][/#if] </small></p>
+    </span>
+    [#if redesign && editable]
+      <button type="button" class="dlf-splitManage" data-dlf-manage-shared>[@s.text name="project.deliverable.redesign.split.manage" /]<svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+    [/#if]
+  </div>
   <div class="simpleBox">
   
-  [#if actualPhase.name != 'Progress']
+  [#if actualPhase.name != 'Progress' && !redesign]
     <div class="note--2 text-center">
       <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
     </div>
@@ -375,31 +387,31 @@
           <div class="form-group row">
             <div class="col-md-2 col-sm-2 hidden-xs">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.project" /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.team" /][#else][@customForm.text name="involveParticipants.sharedClusters.project" /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.total" /][#else][@customForm.text name="involveParticipants.sharedClusters.participants" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.females" /][#else][@customForm.text name="involveParticipants.sharedClusters.females" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.african" /][#else][@customForm.text name="involveParticipants.sharedClusters.africans" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [#if redesign][@s.text name="project.deliverable.redesign.split.youth" /][#else][@customForm.text name="involveParticipants.sharedClusters.youth" /][/#if][#if !redesign][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /][/#if]
               </div>
               <br>
             </div>
@@ -409,6 +421,7 @@
         [#list list as cluster]
 
           [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (actualPhase.name != 'Progress') /]
+          [#if isSharedCluster][#local anySubmitted = true /][/#if]
 
           <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
@@ -427,25 +440,25 @@
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal participantsNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].participants"  placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].participants"  placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal femaleNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].females" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].females" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal africanNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].african" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].african" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 col-xs-normal youthNumbers">
               <div class="text-area-container">
-              [@customForm.input name="${customName}[${index}].youth" placeholder="global.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
+              [@customForm.input name="${customName}[${index}].youth" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" editable=editable showTitle=false disabled=isSharedCluster /]
               </div>
               <br>
             </div>
@@ -462,10 +475,19 @@
         [/#list]
           </div>
         <hr />
-                <div class="form-group row">
+    [#if redesign]
+    <div class="form-group row dlf-splitSum">
+      <div class="col-md-2 col-sm-2 col-xs-12"><div class="text-area-container">[@s.text name="project.deliverable.redesign.split.sum" /]</div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="participants">0</div></div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="females">0</div></div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="african">0</div></div></div>
+      <div class="col-md-2 col-sm-2 col-xs-3"><div class="text-area-container"><div class="dlf-splitSum__value" data-dlf-sum="youth">0</div></div></div>
+    </div>
+    [/#if]
+                <div class="form-group row dlf-splitReported">
     <div class="col-md-2 col-sm-2 col-xs-12">
       <div class="text-area-container">
-        Total report</div>
+        [#if redesign][@s.text name="project.deliverable.redesign.split.reported" /][#else]Total report[/#if]</div>
       <br>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
@@ -506,7 +528,7 @@
   ">
     <div class="col-md-2 col-sm-2 col-xs-12">
       <div class="text-area-container " style="font-weight: 600;">
-        Remaining </div>
+        [#if redesign][@s.text name="project.deliverable.redesign.split.remaining" /][#else]Remaining[/#if] </div>
       <br>
     </div>
     <div class="col-md-2 col-sm-2 col-xs-3">
@@ -551,6 +573,18 @@
         <div class="textNote" style="color: #333;">  The sum of the Participants/Trainees are equal to the total reported</div>
       </div>
     </div>
+    [#if redesign]
+      [#-- The design's status line and footnote; deliverableFormRedesign.js keeps the status current --]
+      <div class="dlf-splitStatus" role="status" aria-live="polite"
+        data-ok="[@s.text name="project.deliverable.redesign.split.statusOk" /]"
+        data-over="[@s.text name="project.deliverable.redesign.split.statusOver" /]"
+        data-pending="[@s.text name="project.deliverable.redesign.split.statusPending" /]"
+        data-pending-some="[@s.text name="project.deliverable.redesign.split.statusPendingSome" /]"
+        data-submitted="[@s.text name="project.deliverable.redesign.split.submitted" /]"
+        data-submitted-help="[@s.text name="project.deliverable.redesign.split.submittedHelp" /]"
+        data-this-team="[@s.text name="project.deliverable.redesign.thisSection"][@s.param]${sectionNoun}[/@s.param][/@s.text]"><span class="dlf-splitStatus__text"></span></div>
+      <p class="dlf-splitFoot" [#if !anySubmitted]hidden[/#if]>[@s.text name="project.deliverable.redesign.split.footnote" /]</p>
+    [/#if]
   </div>
 </div>
 [/#if]
@@ -609,7 +643,7 @@
     <div class="form-group row">
       <div class="col-md-4">
         [#if editable]
-          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey="project.deliverable.dissemination.selectChannelLabel" listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=validateIsProgressWithStatus!true   editable=editable/]
+          [@customForm.select name="${customName}.disseminationChannel" value="'${(deliverable.dissemination.disseminationChannel)!}'"  stringKey=true label=""  i18nkey=((deliverableFormRedesign)!false)?then("project.deliverable.redesign.dissemination.channel","project.deliverable.dissemination.selectChannelLabel") listName="repositoryChannels" displayFieldName="name" keyFieldName="shortName" className="disseminationChannel"   multiple=false required=validateIsProgressWithStatus!true   editable=editable/]
         [#else]
         <div class="input">
           <label for="disChannel" style="display:block;">Dissemination channel:</label>
@@ -646,7 +680,7 @@
   <div id="disseminationUrl" style="display:[#if channelsArray?seq_contains(channelSelected) || (channelSelected == "other") ]block[#else]none[/#if];">
     <div class="form-group" > 
       <div class="url-field text-area-container">
-        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="" className="deliverableDisseminationUrl" required=validateIsProgressWithStatus!true readOnly=isSynced editable=editable /]
+        [@customForm.input name="${customName}.disseminationUrl" type="text" i18nkey="project.deliverable.dissemination.disseminationUrl"  placeholder="project.deliverable.redesign.placeholder.disseminationUrl" className="deliverableDisseminationUrl" required=validateIsProgressWithStatus!true readOnly=isSynced editable=editable /]
       </div>
       <div class="buttons-field">
         [#if editable]
@@ -655,10 +689,10 @@
           <div id="fillMetadata" style="display:${showSync?string('block','none')};">
             <input type="hidden" name="deliverable.dissemination.synced" value="${isSynced?string}" />
             [#-- Sync Button --]
-            <div class="checkButton" style="display:${isSynced?string('none','block')};">[@s.text name="project.deliverable.dissemination.sync" /]</div>
+            <div class="checkButton" style="display:${isSynced?string('none','block')};">[#if (deliverableFormRedesign)!false]<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.2 8A5.2 5.2 0 1 1 11.6 4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M11.8 1.8v2.8H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>[@s.text name="project.deliverable.redesign.dissemination.sync" /][#else][@s.text name="project.deliverable.dissemination.sync" /][/#if]</div>
             <div class="unSyncBlock" style="display:${isSynced?string('block','none')};">
               [#-- Update Button --]
-              <div class="updateButton">[@s.text name="project.deliverable.dissemination.update" /]</div>
+              <div class="updateButton">[#if (deliverableFormRedesign)!false]<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13.2 8A5.2 5.2 0 1 1 11.6 4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M11.8 1.8v2.8H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>[@s.text name="project.deliverable.redesign.dissemination.update" /][#else][@s.text name="project.deliverable.dissemination.update" /][/#if]</div>
               [#-- Unsync Button --]
               <div class="uncheckButton">[@s.text name="project.deliverable.dissemination.unsync" /]</div>
             </div>
@@ -667,14 +701,18 @@
       </div>
       
     </div>
+    [#if (deliverableFormRedesign)!false && editable]
+      [#-- The design's note under the URL; deliverableFormRedesign.js switches it with the sync state --]
+      <p class="dlf-urlNote" data-unsynced="[@s.text name="project.deliverable.redesign.dissemination.noteUnsynced" /]" data-synced="[@s.text name="project.deliverable.redesign.dissemination.noteSynced" /]">[#if isSynced][@s.text name="project.deliverable.redesign.dissemination.noteSynced" /][#else][@s.text name="project.deliverable.redesign.dissemination.noteUnsynced" /][/#if]</p>
+    [/#if]
     <div class="clearfix"></div>
 
     <div class="form-group row ifIsReadOnly" style="margin-top: 10px;">
       <div class="col-md-6 conditionalRequire handle-bridge text-area-container">
-        [@customForm.input name="handle-bridge" required=(require!false && validateIsProgressWithStatus!true)value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" readOnly=mElementHide editable=editable id="handleField"/]
+        [@customForm.input name="handle-bridge" required=(require!false && validateIsProgressWithStatus!true)value="" className="metadataValue handleField"  type="text" i18nkey="Handle" help="" placeholder="project.deliverable.redesign.placeholder.handle" readOnly=mElementHide editable=editable id="handleField"/]
       </div>
       <div class="col-md-6 conditionalRequire doi-bridge text-area-container" style="position: relative;">
-        [@customForm.input name="doi-bridge" required=(require!false && validateIsProgressWithStatus!true) value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" readOnly=mElementHide editable=editable id="doiField"/]
+        [@customForm.input name="doi-bridge" required=(require!false && validateIsProgressWithStatus!true) value="" className="metadataValue doiField" type="text" i18nkey="DOI" help="nada2" placeholder="project.deliverable.redesign.placeholder.doi" readOnly=mElementHide editable=editable id="doiField"/]
         <p class="invalidDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(207, 40, 40); font-weight: 600; font-size: 0.8em; display: none; bottom: -32px; margin: 12px 2px 0 12px;">Invalid DOI identifier.<br>Please use the correct format <strong>(e.g. 10.1109/5.771073)</strong></p>
         <p class="validDOI" style="position: absolute; bottom: 0 + 15px; color: rgb(50, 206, 45); font-weight: 600; font-size: 0.8em; display: none; bottom: -18px; margin: 12px 2px 0 12px;">Valid DOI identifier</p>
       </div>
@@ -888,8 +926,14 @@
 
 [#macro channelExampleMacro name="" url="" ]
   <div class="exampleUrl-block channel-${name}" style="display:[#if (deliverable.dissemination.disseminationChannel==name)!false]block[#else]none[/#if];">
-    <label for="">[@s.text name="project.deliverable.dissemination.exampleUrl" /]:</label>
-    <p><small>${url}</small></p>
+    <label for="">[#if (deliverableFormRedesign)!false][@s.text name="project.deliverable.redesign.dissemination.urlFormat" /][#else][@s.text name="project.deliverable.dissemination.exampleUrl" /]:[/#if]</label>
+    [#-- repository_channel.url_example marks the identifier with <b></b>; auto-escaping printed the tags, so the
+         marked part is drawn bold here and every part stays escaped. --]
+    [#if url?contains("<b>") && url?contains("</b>")]
+      <p class="exampleUrl"><small>${url?keep_before("<b>")}<strong>${url?keep_after("<b>")?keep_before("</b>")}</strong>${url?keep_after("</b>")}</small></p>
+    [#else]
+      <p class="exampleUrl"><small>${url}</small></p>
+    [/#if]
   </div>
 [/#macro]
 
@@ -1374,7 +1418,7 @@
     <input type="hidden" name="${customName}.deliverablePartnerType.id" class="partnerTypeID" value="${typeID}"/>
     [#-- Partner Institution --]
     <div class="form-group" style="margin-bottom: 0px;"> 
-      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="partnerInstitutionID" editable=editable required=true /]
+      [@customForm.select name="${customName}.institution.id" value="${(element.institution.id)!'-1'}"  i18nkey="" showTitle=false placeholder=(isResponsable && (deliverableFormRedesign)!false)?then("project.deliverable.redesign.placeholder.responsiblePartner", "") listName="partners" keyFieldName="institution.id"  displayFieldName="composedName" className="partnerInstitutionID" editable=editable required=true /]
     </div>
     [#-- Users Selected--]
     [#local selectedUsersID = []]
@@ -1400,7 +1444,12 @@
     [#if (dpp.user.id == user.id)!false][#local deliverableUser = dpp ][#break][/#if]
   [/#list]
   
-  <div class="deliverableUserItem col-md-6 ${isResponsable?then('radioFlat-flex','')}">
+  [#-- The redesigned deliverable form draws the person's initials and email from these two attributes --]
+  [#local personName = ((user.composedCompleteName)!"")?trim /]
+  [#local personWords = personName?split(" ")?filter(w -> w?has_content) /]
+  [#local personInitials = ""]
+  [#if personWords?has_content][#local personInitials = (personWords?first?substring(0, 1) + ((personWords?size > 1)?then(personWords?last?substring(0, 1), "")))?upper_case /][/#if]
+  <div class="deliverableUserItem col-md-6 ${isResponsable?then('radioFlat-flex','')}" data-dlf-initials="${personInitials}" data-dlf-email="${(user.email)!}">
     [#-- Deliverable User ID --]
     [#if (!isResponsable) || (deliverableUser.id??)!false]
       <input type="hidden" name="${customName}.id" value="${(deliverableUser.id)!}" />
@@ -1625,7 +1674,7 @@
 
       [#-- Commissioning Study --]
       <div class="form-group">
-        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" help="deliverable.melia.commissioning.help" helpIcon=false i18nkey="deliverable.melia.commissioning"  placeholder="" className="limitWords-15" required=true editable=editable isWidthFull=true/]
+        [@customForm.input name="deliverable.deliverableInfo.commissioningStudy" value="${(deliverable.deliverableInfo.commissioningStudy)!}" i18nkey="deliverable.melia.commissioning"  placeholder="deliverable.melia.commissioning.help" className="limitWords-15" required=true editable=editable isWidthFull=true/]
       </div>
       
       [#-- Activity Description --]

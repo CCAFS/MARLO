@@ -1,4 +1,7 @@
 var $statuses, $statusDescription, $detoneChange;
+// Funding source labels by id, kept before the chosen ones are taken out of the select so a removed source
+// comes back with its own label.
+var fundingSourceNames = {};
 
 $(document).ready(init);
 function hideOrShowCheckBoxIsOtherUrl(value) {
@@ -152,6 +155,12 @@ function init() {
 
   /** Funding source * */
 
+  $(".fundingSource option").each(function (i, e) {
+    if ($(e).val() != "-1") {
+      fundingSourceNames[$(e).val()] = $(e).text();
+    }
+  });
+
   $(".fundingSource").on("change", function () {
     var option = $(this).find("option:selected");
     if (option.val() != "-1") {
@@ -198,8 +207,10 @@ function init() {
 
   $('.typeSelect').on('change', function () {
     var $subTypeSelect = $(".subTypeSelect");
+    // Keep the placeholder the view gave the select (the deliverable form says "Select a sub-category").
+    var subTypePlaceholder = $subTypeSelect.find("option[value='-1']").first().text() || "Select an option...";
     $subTypeSelect.empty();
-    $subTypeSelect.append("<option value='-1' >Select an option... </option>");
+    $subTypeSelect.append($("<option value='-1'></option>").text(subTypePlaceholder));
     $subTypeSelect.trigger("change.select2");
     var option = $(this).find("option:selected");
 
@@ -348,11 +359,37 @@ function activeByNoDOIProvidedCheckbox() {
 
 }
 
+// The deliverable types table as a modal that fits the window: it does not move or resize, takes 85% of the
+// window height (never closer than 16px to its edges), scrolls inside, and keeps the page behind it still.
 function openDialog() {
+  var margin = 16;
+  var dialogHeight = function () {
+    return Math.min($(window).height() - margin * 2, Math.round($(window).height() * 0.85));
+  };
+  var fitDialog = function () {
+    $("#dialog").dialog("option", {
+      width: Math.min(980, $(window).width() - margin * 2),
+      height: dialogHeight(),
+      position: { my: "center", at: "center", of: window }
+    });
+  };
   $("#dialog").dialog({
-    width: '980',
+    width: Math.min(980, $(window).width() - margin * 2),
+    height: dialogHeight(),
     modal: true,
-    closeText: ""
+    draggable: false,
+    resizable: false,
+    closeText: "",
+    dialogClass: "deliverableTypesDialog",
+    position: { my: "center", at: "center", of: window },
+    open: function () {
+      $("html").addClass("deliverableTypesDialog-open");
+      $(window).on("resize.deliverableTypesDialog", fitDialog);
+    },
+    close: function () {
+      $("html").removeClass("deliverableTypesDialog-open");
+      $(window).off("resize.deliverableTypesDialog");
+    }
   });
 }
 
@@ -458,8 +495,8 @@ function removeFundingSource() {
   var $list = $(this).parents('.list');
   var $item = $(this).parents('.fundingSources');
   var value = $item.find(".fId").val();
-  var name = $item.find(".name").attr("title");
-  console.log(name + "-" + value);
+  // The row has no title to read the label from (it was always undefined); use the label the option had.
+  var name = fundingSourceNames[value] || $.trim($("#fundingSource-" + value).text()) || value;
   var $select = $(".fundingSource");
   $item.hide(500, function () {
     $item.remove();

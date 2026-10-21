@@ -1,0 +1,2258 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster deliverable form (A2-2607 redesign).
+ *
+ * Scoped under .dlf (projectDeliverable.ftl) so nothing here reaches the sidebar or any
+ * other page. The fields keep the markup customForm (forms.ftl) and deliverableMacros.ftl
+ * emit, because the deliverable scripts, the feedback module and fieldsValidation.js read
+ * it; only its presentation is restated here, at a weight that beats global.css and the
+ * legacy projectDeliverable.css loaded before this file.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.dlf,
+.dlf p, .dlf a, .dlf span, .dlf small, .dlf strong, .dlf label, .dlf li,
+.dlf h1, .dlf h2, .dlf h3, .dlf h4, .dlf h5,
+.dlf input, .dlf textarea, .dlf select, .dlf button {
+  font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.dlf .glyphicon { font-family: 'Glyphicons Halflings'; }
+
+.dlf {
+  --dlf-brand: #0277A2;
+  --dlf-brand-dark: #015C7D;
+  --dlf-ink: #1F2A37;
+  --dlf-ink-soft: #4B5563;
+  --dlf-muted: #6B7280;
+  --dlf-subtle: #9AA4B0;
+  --dlf-line: #E5E9EF;
+  --dlf-line-soft: #EEF2F5;
+  --dlf-line-strong: #CBD5DE;
+  --dlf-surface: #FFFFFF;
+  --dlf-surface-alt: #FAFBFC;
+  --dlf-chip: #EEF2F5;
+  --dlf-info-bg: #F2F9FC;
+  --dlf-info-hover: #E8F4F9;
+  --dlf-info-border: #BEDFEC;
+  --dlf-ok: #2E6B2F;
+  --dlf-ok-bg: #EDF7ED;
+  --dlf-ok-border: #BEE0BE;
+  --dlf-warn: #8A5A00;
+  --dlf-warn-bg: #FDF3E4;
+  --dlf-warn-border: #F3DCAE;
+  --dlf-warn-dot: #C08A2E;
+  --dlf-danger: #B03028;
+  --dlf-danger-bg: #FCF3F1;
+  --dlf-required: #C7401C;
+  --dlf-focus-ring: 0 0 0 3px rgba(2, 119, 162, .12);
+  --dlf-radius: 12px;
+  --dlf-radius-sm: 8px;
+  --dlf-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 6px;
+  color: var(--dlf-ink);
+}
+.dlf *, .dlf *::before, .dlf *::after { box-sizing: border-box; }
+.dlf strong, .dlf b { font-weight: 600; }
+.dlf .dlf-icon { flex: none; display: block; }
+
+/* The design draws no outline (Chrome's #005FCC/#025FCC ring); fields show a border and a soft ring, controls the ring. */
+.dlf *:focus,
+.dlf *:focus-visible { outline: none !important; }
+.dlf button:focus-visible,
+.dlf a:focus-visible,
+.dlf .button-label:focus-visible { box-shadow: var(--dlf-focus-ring); }
+
+/* ---------- Shared bits ---------- */
+
+.dlf-link,
+.dlf .dlf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px;
+  margin: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+  cursor: pointer;
+}
+.dlf .dlf-link:hover,
+.dlf .dlf-link:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); text-decoration: none; }
+.dlf .dlf-link--end { align-self: flex-end; margin-left: auto; }
+
+.dlf .dlf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--dlf-radius-sm);
+  font: 600 13px Figtree, sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dlf .dlf-btn--soft { border: 1px solid var(--dlf-info-border); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .dlf-btn--ghost { border: 1px solid var(--dlf-line-strong); background: #fff; color: var(--dlf-ink); }
+.dlf .dlf-btn--ghost:hover,
+.dlf .dlf-btn--ghost:focus { border-color: var(--dlf-subtle); background: #fff; color: var(--dlf-ink); }
+.dlf .dlf-btn--soft:hover { background: var(--dlf-info-hover); }
+.dlf .dlf-btn--sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: 7px; }
+
+.dlf .dlf-hint { margin: 0; font: 400 12.5px/1.45 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-hint a { color: var(--dlf-brand); }
+
+
+/* ---------- Header ---------- */
+
+.dlf .dlf-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 8px 0 4px;
+  border-radius: 7px;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+}
+.dlf .dlf-back:hover,
+.dlf .dlf-back:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); text-decoration: none; }
+
+.dlf .dlf-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: -6px; }
+.dlf .dlf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-decoration: none;
+}
+.dlf .dlf-chip--id { padding: 0 8px; border-radius: 6px; background: var(--dlf-chip); font-weight: 700; font-variant-numeric: tabular-nums; }
+.dlf .dlf-chip--owner { padding: 0 9px 0 3px; border: 1px solid var(--dlf-line); border-radius: 999px; background: #fff; }
+/* Required fields state of the section (the design's req chip): green when complete, amber when not. */
+.dlf .dlf-chip--fields { padding: 0 9px; border: 1px solid; border-radius: 999px; }
+.dlf .dlf-chip--fields.is-ok { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-chip--fields.is-warn { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); color: var(--dlf-warn); }
+.dlf .dlf-chip__dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.dlf .dlf-chip--fields.is-warn .dlf-chip__dot { background: var(--dlf-warn-dot); }
+.dlf .dlf-field--status .dlf-hint { margin-top: 6px; }
+.dlf .dlf-chip--owner:hover,
+.dlf .dlf-chip--owner:focus { border-color: var(--dlf-line-strong); color: var(--dlf-ink); text-decoration: none; }
+.dlf .dlf-chip__avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #C7401C;
+  color: #fff;
+  font: 700 10px Figtree, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-feedbackLegend { margin-left: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.dlf .dlf-feedbackLegend__title { font: 600 11px Figtree, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #5B6472; }
+.dlf .dlf-feedbackLegend__item { display: inline-flex; align-items: center; gap: 7px; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-feedbackLegend__item img { width: 16px; height: auto; margin: 0; }
+
+.dlf .dlf-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-top: 15px; }
+.dlf .dlf-head__title { flex: 1; min-width: 0; margin: 0; font: 600 22px/1.3 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .dlf-head__fair { flex: none; flex-direction: column; align-items: flex-end; gap: 6px; padding-top: 2px; }
+.dlf .dlf-head__fairLabel { font: 600 11px Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .dlf-head__fairBoxes { display: flex; gap: 4px; }
+/* The mini FAIR boxes of projectDeliverable.css, drawn as the design's status squares. */
+.dlf .dlf-head .fairCompliant.mini {
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  border: 1px solid #E0E5EB;
+  border-radius: 6px;
+  background: #F1F3F6;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-head .fairCompliant.mini .sign {
+  float: none;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 700 12.5px Figtree, sans-serif;
+  line-height: 1;
+  color: var(--dlf-subtle);
+}
+.dlf .dlf-head .fairCompliant.mini.achieved { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); }
+.dlf .dlf-head .fairCompliant.mini.achieved .sign { color: var(--dlf-ok); }
+.dlf .dlf-head .fairCompliant.mini.not-achieved { border-color: #EBD3CE; background: var(--dlf-danger-bg); }
+.dlf .dlf-head .fairCompliant.mini.not-achieved .sign { color: var(--dlf-danger); }
+
+.dlf .dlf-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius);
+  background: var(--dlf-info-bg);
+}
+.dlf .dlf-note__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--dlf-brand);
+  color: #fff;
+  font: 700 12px Figtree, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-note__text { flex: 1; min-width: 0; margin: 0; font: 400 13.5px/1.55 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .dlf-note--warn { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); }
+.dlf .dlf-note--warn .dlf-note__icon { background: var(--dlf-warn-dot); }
+
+/* ---------- Tabs ---------- */
+
+.dlf .dlf-tabs { display: flex; flex-direction: column; gap: 14px; }
+.dlf .dlf-tabs > .nav-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin: 0;
+  border-bottom: 1px solid #DDE3EA;
+}
+.dlf .dlf-tabs > .nav-tabs::before,
+.dlf .dlf-tabs > .nav-tabs::after { display: none; }
+.dlf .dlf-tabs > .nav-tabs > li { float: none; margin: 0 0 -1px; }
+.dlf .dlf-tabs > .nav-tabs > li > a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  font: 500 14px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .dlf-tabs > .nav-tabs > li > a:hover,
+.dlf .dlf-tabs > .nav-tabs > li > a:focus { border: 0; border-bottom: 2px solid transparent; background: none; color: var(--dlf-brand-dark); }
+.dlf .dlf-tabs > .nav-tabs > li.active > a,
+.dlf .dlf-tabs > .nav-tabs > li.active > a:hover,
+.dlf .dlf-tabs > .nav-tabs > li.active > a:focus {
+  border: 0;
+  border-bottom: 2px solid var(--dlf-brand);
+  background: none;
+  font-weight: 600;
+  color: var(--dlf-brand-dark);
+}
+/* fieldsValidation.js marks the tab of a field the validator rejected. */
+.dlf .dlf-tabs > .nav-tabs > li > a.fieldError { color: var(--dlf-required); }
+.dlf .dlf-tabs > .nav-tabs > li > a.fieldError::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dlf-required);
+}
+.dlf .dlf-tabs > .tab-content { padding: 0; border: 0; background: none; }
+/* projectDeliverable.css frames the active pane; the cards inside carry their own frame. */
+.dlf .dlf-tabs > .tab-content > .tab-pane { margin: 0; padding: 0; border: 0; background: none; }
+
+/* ---------- Section cards ---------- */
+
+.dlf .dlf-sections { display: flex; flex-direction: column; gap: 14px; }
+.dlf .dlf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 20px 20px;
+  background: var(--dlf-surface);
+  border: 1px solid var(--dlf-line);
+  border-radius: var(--dlf-radius);
+  box-shadow: var(--dlf-shadow);
+}
+.dlf .dlf-card__title { margin: 0; font: 600 16px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-card__subtitle { margin: 0 0 6px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-divided { padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }
+
+.dlf .dlf-grid { display: grid; gap: 16px; align-items: start; }
+.dlf .dlf-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dlf .dlf-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* ---------- Fields (customForm markup) ---------- */
+
+/* flow-root keeps the floats of a field (word counter, feedback bubble) inside it. */
+.dlf .dlf-field { display: flow-root; position: relative; min-width: 0; margin: 0; }
+.dlf .dlf-field .form-group { margin-bottom: 0; }
+.dlf .feedback-flex-items { align-items: flex-start; gap: 8px; }
+.dlf .feedback-flex-items > .fieldReference { flex: 1; min-width: 0; }
+
+.dlf .dlf-card label,
+.dlf .dlf-card .yesNoLabel {
+  display: block;
+  margin: 0 0 6px;
+  font: 600 13px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card label .requiredTag,
+.dlf .dlf-card .requiredTag { margin-left: 4px; font-weight: 700; color: var(--dlf-required); }
+.dlf .dlf-card label.readOnly { color: var(--dlf-muted); }
+.dlf .dlf-card .helpLabel { display: block; margin-top: 2px; font: 400 12.5px/1.45 Figtree, sans-serif; font-style: normal; color: var(--dlf-muted) !important; }
+.dlf .dlf-card label br { display: none; }
+
+.dlf .dlf-card input.form-control,
+.dlf .dlf-card textarea.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  box-shadow: none;
+  font: 400 14px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card textarea.form-control { height: auto; min-height: 96px; padding: 10px 12px; line-height: 1.6; resize: vertical; }
+.dlf .dlf-card input.form-control:focus,
+.dlf .dlf-card textarea.form-control:focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); outline: none; }
+.dlf .dlf-card input.form-control[readonly] { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-ink-soft); }
+.dlf .dlf-card .fieldError,
+.dlf .dlf-card input.form-control.fieldError,
+.dlf .dlf-card textarea.form-control.fieldError { border-color: #D48A6A; }
+
+/* customForm prints a committed answer as a <p>; global.css justifies it with break-all. */
+.dlf .dlf-card .input > p,
+.dlf .dlf-card .textArea > p,
+.dlf .dlf-card .select > p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--dlf-ink);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Word counters (applyWordCounter, utils.js): a quiet caption under the control's right edge. */
+.dlf .dlf-card .charCount {
+  float: none;
+  display: block;
+  width: auto;
+  margin: 5px 0 0;
+  font-size: 11.5px !important;
+  line-height: 1.4;
+  color: var(--dlf-muted);
+  text-align: right !important;
+}
+.dlf .dlf-card .charCount.fieldError { color: var(--dlf-required); }
+
+/* The feedback bubble beside the control, level with its first line. */
+.dlf .dlf-card .commentNumberContainer { position: relative; flex: none; margin-top: 26px; }
+.dlf .dlf-card label .commentNumberContainer { display: none; }
+.dlf .dlf-card img.qaComment { width: 22px; margin-left: 0; }
+.dlf .dlf-card .numberOfCommentsBubble { top: -9px; right: -9px; left: auto; z-index: 1; margin: 0; transform: none; }
+.dlf .dlf-card .numberOfCommentsBubble p { min-width: 20px; padding: 1px 5px; font-size: 9.5px; line-height: 14px; }
+
+/* The open dropdown is appended to <body>, outside .dlf, so it is reached through select2's own classes; this
+   stylesheet only loads on the deliverable form. global.css gives every search field width 100% plus a 14% right
+   margin, which overflows the dropdown and scrolls it sideways. */
+.select2-container .select2-dropdown .select2-search--dropdown .select2-search__field { margin-right: 0; }
+
+/* An add control with nothing left to add (deliverableFormRedesign.js hideExhaustedAdds). */
+.dlf .select2-container.dlf-isExhausted,
+.dlf .select2-search--inline.dlf-isExhausted { display: none !important; }
+/* A hidden sub-action control would still take the 8px flex gap under the last row. */
+.dlf .dlf-shfrm .subSectionsSelector > .subActionsSelector:has(.dlf-isExhausted) { display: none; }
+
+/* Deliverable types modal (deliverableInfo.js openDialog). jQuery UI appends it to <body>, outside .dlf; its
+   size comes from the dialog options, the table scrolls inside the content and the page behind stays still. */
+html.deliverableTypesDialog-open,
+html.deliverableTypesDialog-open body { overflow: hidden; }
+/* Above the page chrome: the fixed phase badge (span.reporting) sits at z-index 1000, over jQuery UI's 100. */
+html.deliverableTypesDialog-open .ui-widget-overlay { z-index: 1001 !important; }
+.ui-dialog.deliverableTypesDialog { z-index: 1002 !important; max-width: calc(100vw - 32px); padding: 0; }
+.ui-dialog.deliverableTypesDialog .ui-dialog-titlebar { cursor: default; }
+.ui-dialog.deliverableTypesDialog .ui-dialog-content { overflow: auto !important; padding: 0 16px 16px; }
+.ui-dialog.deliverableTypesDialog #deliverableTypes { width: 100%; }
+
+/* "What do these mean?" types guide (deliverableFormRedesign.js), appended to <body> as the design's dialog: a brand
+   header, one row per type (name, description, "Use this type") and a Close footer. The page behind stays still. */
+html.dlf-guideOpen,
+html.dlf-guideOpen body { overflow: hidden; }
+.dlf-typesGuide {
+  position: fixed;
+  inset: 0;
+  z-index: 1003;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(31, 42, 55, .45);
+}
+.dlf-typesGuide__dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 760px;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(31, 42, 55, .3);
+  outline: none;
+  font-family: Figtree, sans-serif;
+}
+.dlf-typesGuide__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: #0277A2; }
+.dlf-typesGuide__title { font: 600 16px Figtree, sans-serif; color: #fff; }
+.dlf-typesGuide__x {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf-typesGuide__x:hover { background-color: #015C7D; }
+.dlf-typesGuide__list { display: flex; flex-direction: column; overflow: auto; }
+.dlf-typesGuide__row {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+  padding: 14px 18px;
+  border-bottom: 1px solid #EEF2F5;
+  background: #fff;
+}
+.dlf-typesGuide__row.is-selected { background: #F2F9FC; }
+.dlf-typesGuide__name { font: 600 13px Figtree, sans-serif; color: #1F2A37; }
+.dlf-typesGuide__row.is-selected .dlf-typesGuide__name { color: #015C7D; }
+.dlf-typesGuide__desc { font: 400 13px/1.55 Figtree, sans-serif; color: #4B5563; text-wrap: pretty; }
+.dlf-typesGuide__use {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #BEDFEC;
+  border-radius: 7px;
+  background: #fff;
+  font: 600 12px Figtree, sans-serif;
+  color: #0277A2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.dlf-typesGuide__use:hover { background: #F2F9FC; }
+.dlf-typesGuide__foot { display: flex; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid #E5E9EF; }
+.dlf-typesGuide__close {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  background: #fff;
+  font: 600 13px Figtree, sans-serif;
+  color: #1F2A37;
+  cursor: pointer;
+}
+.dlf-typesGuide__close:hover { background: #F7F9FB; }
+@media (max-width: 600px) {
+  .dlf-typesGuide__row { grid-template-columns: minmax(0, 1fr) auto; }
+  .dlf-typesGuide__desc { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* select2 single selects as the design's native-looking selects. */
+.dlf .dlf-card .selectList { position: relative; }
+.dlf .dlf-card .select2-container--default .select2-selection--single,
+.dlf .dlf-card .select2-container--default .select2-selection--multiple {
+  min-height: 40px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+}
+.dlf .dlf-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 32px 0 12px;
+  font: 500 14px/38px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .select2-container--default .select2-selection--single .select2-selection__arrow { top: 7px; right: 8px; height: 24px; }
+.dlf .dlf-card .select2-container--default.select2-container--focus .select2-selection--single,
+.dlf .dlf-card .select2-container--default.select2-container--open .select2-selection--single,
+.dlf .dlf-card .select2-container--default.select2-container--focus .select2-selection--multiple { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .dlf-card .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  margin: 5px 6px 0 0;
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .select2-container--default .select2-selection--multiple .select2-selection__choice__remove { margin-right: 5px; color: var(--dlf-ink-soft); }
+
+/* The overlays deliverableInfo.js shows over the year selects to lock them. */
+.dlf #deliverableYear,
+.dlf #newExpectedYear { position: relative; }
+.dlf #deliverableYear .overlay,
+.dlf #newExpectedYear .overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: rgba(247, 249, 251, .55);
+  border-radius: var(--dlf-radius-sm);
+  cursor: not-allowed;
+}
+
+/* ---------- Lists (elementsListComponent, activities, funding sources) ---------- */
+
+.dlf .dlf-card .elementsListComponent.panel,
+.dlf .dlf-card .panel.tertiary {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.dlf .dlf-card .elementsListComponent .panel-head,
+.dlf .dlf-card .elementsListComponent .panel-body { padding: 0; border: 0; background: none; min-height: 0 !important; }
+.dlf .dlf-card .elementsListComponent ul.list,
+.dlf .dlf-card .dlf-list ul.list { display: flex; flex-direction: column; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
+.dlf .dlf-card .elementsListComponent ul.list:empty { margin: 0; }
+.dlf .dlf-card .elementsListComponent li.relationElement,
+.dlf .dlf-card .dlf-list li.activities,
+.dlf .dlf-card .dlf-list li.fundingSources {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 9px 40px 9px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 500 13.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .elementsListComponent li.relationElement .elementName { display: block; text-wrap: pretty; }
+.dlf .dlf-card .dlf-list li .name { display: block; }
+.dlf .dlf-card .dlf-list li .name br:last-child { display: none; }
+.dlf .dlf-card .dlf-list li .description { font-weight: 400; font-size: 12.5px; color: var(--dlf-muted); }
+/* The remove buttons, as the design's small red cross. */
+.dlf .dlf-card .elementsListComponent .removeElement,
+.dlf .dlf-card .removeActivity,
+.dlf .dlf-card .removeFundingSource {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .dlf-card .elementsListComponent .removeElement:hover,
+.dlf .dlf-card .removeActivity:hover,
+.dlf .dlf-card .removeFundingSource:hover { background-color: var(--dlf-danger-bg); }
+.dlf .dlf-card p.emptyText {
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  text-align: left;
+}
+/* The "add" select of a list reads as the design's dashed "+ Add" control. */
+.dlf .dlf-card .elementsListComponent .select2-container--default .select2-selection--single,
+.dlf .dlf-card .dlf-list .select2-container--default .select2-selection--single {
+  min-height: 38px;
+  border: 1px dashed #9ACBE0;
+  background: #F7FBFD;
+}
+.dlf .dlf-card .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered,
+.dlf .dlf-card .dlf-list .select2-container--default .select2-selection--single .select2-selection__rendered {
+  font: 600 13px/36px Figtree, sans-serif;
+  color: var(--dlf-brand);
+}
+.dlf .dlf-card .dlf-list__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.dlf .dlf-card .dlf-list__head label { margin: 0; }
+.dlf .dlf-card .dlf-list .note,
+.dlf .dlf-card .elementsListComponent .note { margin: 6px 0 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+
+/* ---------- Questions (yes/no rows of deliverableMacros) ---------- */
+
+.dlf .dlf-question > .simpleBox,
+.dlf .dlf-question .simpleBox.form-group {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+  box-shadow: none;
+}
+.dlf .dlf-question + br,
+.dlf .dlf-question > br { display: none; }
+.dlf .dlf-card .yesNoInputDeliverable.row,
+.dlf .dlf-card .yesNoInputMeliaStudy.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  padding: 12px 14px;
+}
+.dlf .dlf-card .yesNoInputDeliverable.row::before,
+.dlf .dlf-card .yesNoInputDeliverable.row::after,
+.dlf .dlf-card .yesNoInputMeliaStudy.row::before,
+.dlf .dlf-card .yesNoInputMeliaStudy.row::after { display: none; }
+.dlf .dlf-card .yesNoInputDeliverable.row > [class*="col-md-"],
+.dlf .dlf-card .yesNoInputMeliaStudy.row > [class*="col-md-"] { float: none; width: auto; padding: 0; }
+.dlf .dlf-card .yesNoInputDeliverable.row > .col-md-9,
+.dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-9 { flex: 1; min-width: 0; }
+.dlf .dlf-card .yesNoInputDeliverable.row > .col-md-3,
+.dlf .dlf-card .yesNoInputMeliaStudy.row > .col-md-3 { flex: none; display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-card .yesNoInputDeliverable .yesNoLabel,
+.dlf .dlf-card .yesNoInputMeliaStudy .yesNoLabel { margin: 0; font-size: 13.5px; line-height: 1.45; text-wrap: pretty; }
+.dlf .dlf-card .yesNoInputDeliverable small { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-card .yesNoInputDeliverable p { margin: 3px 0 0; }
+.dlf .dlf-card .yesNoInputDeliverable .feedback-flex-items { display: flex; align-items: center; }
+.dlf .dlf-card .yesNoInputDeliverable .commentNumberContainer,
+.dlf .dlf-card .yesNoInputMeliaStudy .commentNumberContainer { margin-top: 0; }
+
+/* The yes/no switch (forms.ftl yesNoInputDeliverable) as a segmented control. */
+.dlf .dlf-card .onoffswitch { margin: 0; text-align: left; }
+.dlf .dlf-card .onoffswitch .button-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--dlf-chip);
+}
+.dlf .dlf-card .onoffswitch .button-wrap .radio-input { position: absolute; opacity: 0; pointer-events: none; }
+.dlf .dlf-card .onoffswitch .button-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 30px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  box-shadow: none;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+  transition: background-color .12s ease, color .12s ease;
+}
+.dlf .dlf-card .onoffswitch .button-label:hover { color: var(--dlf-ink); }
+.dlf .dlf-card .onoffswitch .yes-button-label.radio-checked { background: var(--dlf-brand); color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(2, 119, 162, .3); }
+.dlf .dlf-card .onoffswitch .no-button-label.radio-checked { background: var(--dlf-ink-soft); color: #fff; font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .3); }
+.dlf .dlf-card .onoffswitch .no-button-label-disabled { opacity: .45; cursor: not-allowed; }
+/* The neutral switch (trainees) gets a pale blue from global.css with !important; it reads like the others here. */
+.dlf .dlf-card .onoffswitch .button-label.neutral:hover { background: transparent !important; color: var(--dlf-ink) !important; }
+.dlf .dlf-card .onoffswitch .yes-button-label.neutral.radio-checked { background: var(--dlf-brand) !important; color: #fff !important; }
+.dlf .dlf-card .onoffswitch .no-button-label.neutral.radio-checked { background: var(--dlf-ink-soft) !important; color: #fff !important; }
+/* The DOI bridge carries a placeholder help text in the shared macro; the design has none there. */
+.dlf #disseminationUrl .doi-bridge .input > img { display: none; }
+
+/* The answer block a Yes opens. */
+.dlf .dlf-card .block-yesNo,
+.dlf .dlf-card .block-yesNoInputMeliaStudy {
+  padding: 16px 14px 14px;
+  border-top: 1px solid var(--dlf-line);
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+}
+.dlf .dlf-card .block-yesNo > hr,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > hr,
+.dlf .dlf-card .block-yesNo > br,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > br { display: none; }
+.dlf .dlf-card .block-yesNo > .form-group,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > .form-group { margin: 0 0 16px; }
+.dlf .dlf-card .block-yesNo > .form-group:last-child,
+.dlf .dlf-card .block-yesNoInputMeliaStudy > .form-group:last-child { margin-bottom: 0; }
+
+/* SHFRM priority actions (projectPartnerMacro blocks). */
+.dlf .dlf-card #projectPartnersBlock.simpleBox { margin: 0; padding: 0; border: 0; background: none; }
+.dlf .dlf-card #projectPartnersBlock .projectPartner {
+  margin: 0 0 8px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .dlf-card #projectPartnersBlock .blockTitle { padding: 10px 12px; font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ---------- Status ---------- */
+
+
+/* ---------- Geographic scope ---------- */
+
+.dlf #dlf-geographicScope .geographicScopeBlock > .form-group { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+.dlf #dlf-geographicScope .geographicScopeBlock .row { margin: 0; }
+.dlf #dlf-geographicScope .geographicScopeBlock .row > .col-md-6 { float: none; width: 100%; padding: 0; }
+.dlf #dlf-geographicScope .regionalBlock,
+.dlf #dlf-geographicScope .nationalBlock { margin: 0; }
+
+/* ---------- Cross-cutting dimensions ---------- */
+
+.dlf #dlf-crossCutting > .form-group { margin: 0; }
+.dlf #dlf-crossCutting .labelheader {
+  margin: -8px 0 12px;
+  padding: 0;
+  border: 0;
+  font: 400 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf #dlf-crossCutting .labelheader::after { display: none; }
+.dlf #dlf-crossCutting .row { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.dlf #dlf-crossCutting .row::before,
+.dlf #dlf-crossCutting .row::after { display: none; }
+.dlf #dlf-crossCutting .row > [class*="col-md-"] {
+  float: none;
+  width: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+
+/* ---------- Partners ---------- */
+
+.dlf #dlf-partners #deliverable-partnerships-new { display: flex; flex-direction: column; gap: 18px; margin: 0; padding: 0; border: 0; background: none; }
+.dlf #dlf-partners .deliverablePartnerItem.simpleBox {
+  position: relative;
+  margin: 0 0 8px;
+  padding: 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+/* Room for the remove control, wherever the macro renders one. */
+.dlf #dlf-partners .deliverablePartnerItem.simpleBox:has(> .removePartnerItem) { padding-right: 44px; }
+.dlf #dlf-partners .deliverablePartnerItem .removePartnerItem {
+  position: absolute;
+  top: 14px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf #dlf-partners .deliverablePartnerItem .removePartnerItem:hover { background-color: var(--dlf-danger-bg); }
+.dlf #dlf-partners .usersBlock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 10px 0 0; }
+.dlf #dlf-partners .usersBlock:empty { display: none; }
+.dlf #dlf-partners .usersBlock::before,
+.dlf #dlf-partners .usersBlock::after { display: none; }
+.dlf #dlf-partners .deliverableUserItem {
+  float: none;
+  width: auto;
+  padding: 7px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: #fff;
+}
+.dlf #dlf-partners .deliverableUserItem:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf #dlf-partners .deliverableUserItem label { margin: 0; font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf #dlf-partners .otherDeliverablePartners .emptyText { margin: 0 0 8px; }
+.dlf #dlf-partners .partnerListMsj { margin-top: 4px; }
+
+/* ---------- General information: design components over the shared list markup ---------- */
+
+/* Code pills (IPI 1.1, Priority action 10, Sub-action 2). */
+.dlf .dlf-code {
+  flex: none;
+  margin-top: 1px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: #DCEEF6;
+  font: 700 11.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+  white-space: nowrap;
+}
+.dlf .dlf-code--sub { background: var(--dlf-chip); color: var(--dlf-ink-soft); }
+.dlf .dlf-count { margin-left: 6px; font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-count:empty { display: none; }
+
+/* Performance indicators: pill + label rows, and no add control once the three are chosen. */
+/* global.css draws every list row (.panel.tertiary .panel-body > ul.list > li: grey fill, hard shadow, 2px corners);
+   the design's row is restated at a weight that beats it. Region chips and shared cluster cards refine it below. */
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 8px 9px 12px;
+  border: 1px solid #E5E9EF !important; /* global.css forces #E0E0E0 with !important */
+  border-radius: 9px;
+  background: #FAFBFC;
+  box-shadow: none;
+  font: 500 13.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .elementName {
+  order: 1;
+  flex: 1;
+  min-width: 0;
+  font: 500 13.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-wrap: pretty;
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .dlf-code {
+  order: 0;
+  flex: none;
+  margin-top: 2px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: #DCEEF6;
+  font: 700 11px/1.5 Figtree, sans-serif;
+  color: #015C7D;
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement {
+  order: 2;
+  position: static;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  border-radius: 6px;
+}
+.dlf .dlf-card .panel.tertiary .panel-body > ul.list > li.relationElement > .sortElement { display: none !important; }
+.dlf .listindicators .elementsListComponent.is-full .panel-body > .select,
+.dlf .listindicators .elementsListComponent.is-full .panel-body > .feedback-flex-items + .select,
+.dlf .listindicators .elementsListComponent.is-full .select2-container { display: none !important; }
+
+/* Funding sources: the design's money icon on the left of each source. */
+.dlf .dlf-card .dlf-list li.fundingSources { display: flex; align-items: center; gap: 10px; padding-left: 8px; }
+.dlf .dlf-card .dlf-list li.fundingSources::before {
+  content: "";
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--dlf-ok-border);
+  border-radius: 7px;
+  background: var(--dlf-ok-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Crect x='1.8' y='4' width='12.4' height='8.4' rx='1.6' stroke='%232E6B2F' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8.2' r='1.8' stroke='%232E6B2F' stroke-width='1.3'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .dlf-card .dlf-list li.fundingSources > .clearfix { display: none; }
+.dlf .dlf-card .dlf-list li.fundingSources strong { font-weight: 600; }
+
+/* SHFRM: the answer block is a flex column so the priority action cards sit between the question and its add control. */
+.dlf .dlf-shfrm { display: flex; flex-direction: column; gap: 18px; }
+.dlf .dlf-shfrm > hr,
+.dlf .dlf-shfrm > br { display: none; }
+.dlf .dlf-shfrm > .form-group { margin: 0; }
+.dlf .dlf-shfrm .dlf-shfrm__pa,
+.dlf .dlf-shfrm .dlf-shfrm__pa #actionsListReference,
+.dlf .dlf-shfrm .dlf-shfrm__pa .feedback-flex-items,
+.dlf .dlf-shfrm .dlf-shfrm__pa .elementsListComponent { display: contents; }
+.dlf .dlf-shfrm .dlf-shfrm__pa .panel-head { order: 1; margin-bottom: -8px; }
+.dlf .dlf-shfrm #projectPartnersBlock { order: 2; }
+.dlf .dlf-shfrm .dlf-shfrm__pa .panel-body { order: 3; }
+.dlf .dlf-shfrm .dlf-shfrm__pa .commentNumberContainer { order: 1; align-self: flex-end; margin-top: -40px; }
+/* The list of priority actions keeps the posted ids; the cards show them. */
+.dlf .dlf-shfrm .dlf-shfrm__pa .panel-body > ul.list { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock { display: flex; flex-direction: column; gap: 10px; }
+.dlf .dlf-shfrm #projectPartnersBlock:not(:has(.projectPartner)) { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock .projectPartner {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf .dlf-shfrm #projectPartnersBlock .projectPartner .blockTitle {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 10px 10px 12px;
+  border-bottom: 1px solid var(--dlf-line-soft);
+  background: none;
+  font: 600 13.5px/1.45 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: default;
+}
+.dlf .dlf-shfrm #projectPartnersBlock .blockTitle::before,
+.dlf .dlf-shfrm #projectPartnersBlock .blockTitle::after { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock .blockTitle > span:not(.dlf-code) { flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: 10px; }
+.dlf .dlf-shfrm #projectPartnersBlock .priorityActionTitle { text-wrap: pretty; }
+.dlf .dlf-pa__remove,
+.dlf .dlf-shfrm .removeDeliverable {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .dlf-pa__remove:hover,
+.dlf .dlf-shfrm .removeDeliverable:hover { background-color: var(--dlf-danger-bg); }
+/* The cards are always open: the accordion of the legacy blocks is not part of the design. */
+.dlf .dlf-shfrm #projectPartnersBlock .blockContent { display: block !important; padding: 12px; }
+.dlf .dlf-shfrm #projectPartnersBlock .blockContent > hr { display: none; }
+.dlf .dlf-shfrm #projectPartnersBlock .contactsPerson.panel { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+/* The card body is the design's 12px box with 8px between rows; the legacy blocks stack 15px of padding and
+   16px + 5px of margins under the last row, which would stay behind when the add control is hidden. */
+.dlf .dlf-shfrm #projectPartnersBlock .fullPartBlock { padding: 0; }
+.dlf .dlf-shfrm .subSectionsSelector { display: flex; flex-direction: column; gap: 8px; }
+.dlf .dlf-shfrm .dlf-sub__head { order: 0; display: flex; align-items: center; gap: 4px; font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .dlf-shfrm .dlf-sub__head .requiredTag { margin-left: 3px; color: var(--dlf-required); }
+.dlf .dlf-shfrm .subSectionsSelector > .deliverableWrapper.form-group { order: 1; display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.dlf .dlf-shfrm .deliverableWrapper:empty { display: none; }
+.dlf .dlf-shfrm .subSectionsSelector > .subActionsSelector.form-group { order: 2; margin: 0; }
+.dlf .dlf-shfrm .subActionsSelector label { display: none; }
+.dlf .dlf-shfrm .deliverableActivity {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 7px 6px 7px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .dlf-shfrm .deliverableActivity[style*="none"] { display: none !important; }
+.dlf .dlf-shfrm .deliverableActivity > span.name { flex: 1; min-width: 0; order: 1; font: 500 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-shfrm .deliverableActivity > .dlf-code { order: 0; }
+.dlf .dlf-shfrm .deliverableActivity > .removeDeliverable { order: 2; float: none; position: static; }
+.dlf .dlf-shfrm .deliverableActivity > .clearfix { display: none; }
+/* Both add controls are the design's dashed "+ Add ..." selects. */
+.dlf .dlf-shfrm .select2-container--default .select2-selection--single {
+  min-height: 38px;
+  border: 1px dashed #9ACBE0;
+  background: #F7FBFD;
+}
+.dlf .dlf-shfrm .select2-container--default .select2-selection--single .select2-selection__rendered { font: 600 13px/36px Figtree, sans-serif; color: var(--dlf-brand); }
+
+/* MELIA: the help under "Description of activity / study" is a plain caption, as the design writes it. */
+.dlf .dlf-card label .note--2 {
+  display: block;
+  float: none;
+  width: auto;
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 400 12.5px/1.45 Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+.dlf .dlf-card label .note--2 p { margin: 0; font: inherit; color: inherit; }
+.dlf .dlf-card label .note--2::before { display: none; }
+
+/* Geographic scope: the scopes as toggle chips; the list underneath keeps the posted ids. */
+.dlf .dlf-scope > .panel-body { display: none; }
+.dlf .dlf-scope__hint { margin-left: 8px; font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-scopeChips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+.dlf .dlf-scopeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .dlf-scopeChip:hover { border-color: var(--dlf-subtle); }
+.dlf .dlf-scopeChip__box {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .dlf-scopeChip.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .dlf-scopeChip.is-on .dlf-scopeChip__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Region and countries: one field box per list, the chips and an inline "+ Add ..." prompt inside it. */
+.dlf #dlf-geographicScope .regionalBlock .panel.tertiary,
+.dlf #dlf-geographicScope .nationalBlock .select { margin: 0; padding: 0; border: 0; background: none; }
+.dlf #dlf-geographicScope .regionalBlock .panel.tertiary > .panel-head { margin: 0 0 8px; padding: 0; background: none; text-align: left; }
+.dlf #dlf-geographicScope .nationalBlock .select > label { margin: 0 0 8px; }
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 40px;
+  margin: 0;
+  padding: 6px !important;
+  border: 1px solid var(--dlf-line-strong) !important;
+  border-radius: var(--dlf-radius-sm);
+  background: #fff !important;
+  box-shadow: none;
+}
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body:focus-within { border-color: var(--dlf-brand) !important; box-shadow: var(--dlf-focus-ring); }
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body > ul.list { display: contents; }
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin: 0;
+  padding: 0 4px 0 10px;
+  border: 0 !important;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .elementName { font: inherit; }
+/* The chips' cross: the design's grey x, 20px, on a hover tint (region rows and country choices alike). */
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement,
+.dlf .dlf-card .nationalBlock .select2-selection__choice__remove {
+  order: 2;
+  position: static;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border-radius: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%234B5563' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  font-size: 0;
+  cursor: pointer;
+}
+.dlf .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement:hover,
+.dlf .dlf-card .nationalBlock .select2-selection__choice__remove:hover { background-color: #DDE5EC; }
+/* The add select sits after the chips on the same line instead of under them; select2 writes width:100%. */
+.dlf .dlf-card .regionalBlock .panel.tertiary > .panel-body > .select2-container { flex: 1 1 150px; width: auto !important; min-width: 150px; }
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single {
+  min-height: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  box-shadow: none;
+}
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default.select2-container--open .select2-selection--single { background: var(--dlf-info-bg); }
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 30px 0 6px;
+  font: 500 12.5px/28px Figtree, sans-serif;
+  color: var(--dlf-brand);
+}
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__arrow {
+  top: 2px;
+  right: 2px;
+  width: 24px;
+  height: 24px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%230277A2' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .dlf-card .regionalBlock .elementsListComponent .select2-selection__arrow b { display: none; }
+
+.dlf .dlf-card .nationalBlock .select2-container--default .select2-selection--multiple { min-height: 40px; padding: 6px; cursor: text; }
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-selection__rendered {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+}
+.dlf .dlf-card .nationalBlock .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin: 0;
+  padding: 0 4px 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .nationalBlock .select2-selection__choice > span:not(.select2-selection__choice__remove) { display: inline-flex; align-items: center; gap: 7px; }
+.dlf .dlf-card .nationalBlock .select2-selection__choice .flag-icon {
+  flex: none;
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  background-size: cover;
+  background-position: center;
+  background-color: #E3E8EE;
+  box-shadow: 0 0 0 1px rgba(31, 42, 55, .12);
+}
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-search--inline { flex: 1 1 150px; min-width: 150px; }
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-search__field {
+  width: 100% !important;
+  height: 28px;
+  margin: 0;
+  padding: 0 6px;
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .nationalBlock .select2-selection--multiple .select2-search__field::placeholder { color: var(--dlf-brand); opacity: 1; }
+
+/* Cross-cutting: label, then the levels as numbered segments; the select underneath keeps the posted value. */
+.dlf #dlf-crossCutting .dlf-crossField {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf #dlf-crossCutting .dlf-crossField .feedback-flex-items { flex: none; align-items: center; }
+.dlf #dlf-crossCutting .dlf-crossField .select { display: flex; align-items: center; width: 110px; }
+.dlf #dlf-crossCutting .dlf-crossField .select > label { margin: 0; }
+.dlf #dlf-crossCutting .dlf-crossField .selectList { display: none; }
+.dlf #dlf-crossCutting .dlf-crossField .commentNumberContainer { margin: 0 0 0 auto; order: 3; }
+.dlf .dlf-levels { display: inline-flex; align-items: center; gap: 2px; padding: 4px; border-radius: 10px; background: var(--dlf-chip); }
+.dlf .dlf-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .dlf-level__n {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #DDE3EA;
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-level.is-on { background: #fff; color: var(--dlf-ink); font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+.dlf .dlf-level.is-on .dlf-level__n { background: var(--dlf-brand); color: #fff; }
+
+/* Partner people: the design's card, a grid of ring | initials | name over email (macro data-dlf-* attributes).
+   radioFlat-flex (global.css) makes the card a flex row and its feedback holder an inline-flex line, which pushed
+   the name down; the grid places every part on its own cell instead. The whole card toggles the person
+   (deliverableFormRedesign.js). */
+.dlf #dlf-partners .usersBlock .deliverableUserItem {
+  display: grid;
+  grid-template-columns: 16px 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  align-items: center;
+  column-gap: 10px;
+  position: relative;
+  min-height: 46px;
+  margin: 0;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.dlf #dlf-partners .deliverableUserItem:hover { border-color: var(--dlf-subtle); }
+.dlf #dlf-partners .deliverableUserItem:has(input:checked):hover { border-color: var(--dlf-brand); }
+.dlf #dlf-partners .deliverableUserItem::before {
+  content: attr(data-dlf-initials);
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #E3E8EE;
+  font: 700 10.5px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf #dlf-partners .deliverableUserItem::after {
+  content: attr(data-dlf-email);
+  grid-column: 3;
+  grid-row: 2;
+  overflow: hidden;
+  font: 400 12px/1.4 Figtree, sans-serif;
+  color: var(--dlf-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dlf #dlf-partners .deliverableUserItem .fieldReference,
+.dlf #dlf-partners .deliverableUserItem .inputsFlat {
+  grid-column: 3;
+  grid-row: 1;
+  position: static;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+/* The feedback holder (QA comments) floats in the corner instead of taking a line above the name. */
+.dlf #dlf-partners .deliverableUserItem > .feedback-flex-items { position: absolute; top: 4px; right: 6px; margin: 0; }
+.dlf #dlf-partners .deliverableUserItem .radio-input,
+.dlf #dlf-partners .deliverableUserItem input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
+.dlf #dlf-partners .deliverableUserItem label {
+  display: block;
+  position: static;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font: 600 13.5px/1.35 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+/* The ring (or check box) is the first column, centred on the card. */
+.dlf #dlf-partners .deliverableUserItem .radio-label::before,
+.dlf #dlf-partners .deliverableUserItem .checkbox-label::before {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0;
+}
+.dlf #dlf-partners .deliverableUserItem .radio-label::before { border: 1.5px solid var(--dlf-subtle); border-radius: 50%; background: #fff; }
+.dlf #dlf-partners .deliverableUserItem input[type="radio"]:checked + .radio-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand);
+  box-shadow: inset 0 0 0 3px #fff;
+}
+/* The check box of the other contacts is the scope chips' box: legacy draws it #3197EE without a mark. */
+.dlf #dlf-partners .deliverableUserItem .checkbox-label::before {
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf #dlf-partners .deliverableUserItem input[type="checkbox"]:checked + .checkbox-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+
+/* Shared clusters: two columns of cards with flag, country, code and lead. */
+.dlf .listClusters .elementsListComponent ul.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item { align-items: center; padding: 8px 8px 8px 10px; }
+.dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item > .elementName { display: none; }
+.dlf .dlf-card .listClusters .panel.tertiary .panel-body > ul.list > li.dlf-shared-item > .dlf-shared { order: 1; }
+.dlf .dlf-card .listClusters .panel-head label { font-weight: 400; color: var(--dlf-ink-soft); }
+/* No other cluster in the phase: the empty note stands in for the list and its add control. */
+.dlf .dlf-card .listClusters.is-empty .panel-body { display: none; }
+.dlf .dlf-card .listClusters.is-empty p.emptyText { margin: 8px 0 0; }
+.dlf .dlf-shared { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
+/* global.css gives span.flag-icon a 0 7px margin and .8 opacity; restated here so a card without a country
+   (is-empty, no flag-icon class) lines up with the ones that have a flag. */
+.dlf .dlf-shared__flag {
+  flex: none;
+  width: 24px;
+  height: 17px;
+  margin: 0 7px;
+  border-radius: 3px;
+  opacity: 1;
+  background-color: #E3E8EE;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(31, 42, 55, .12);
+}
+.dlf .dlf-shared__flag.flag-icon { line-height: 17px; }
+.dlf .dlf-shared__flag.flag-icon::before { content: none; }
+.dlf .dlf-shared__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dlf .dlf-shared__name { font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-shared__code { font-weight: 500; color: var(--dlf-muted); }
+.dlf .dlf-shared__lead { font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-shared__this {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: #DCEEF6;
+  font: 600 11px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
+
+/* ---------- Dissemination & Metadata tab ---------- */
+
+/* Help icons (customForm helpLabel) follow their label on the same line instead of taking one of their own. */
+.dlf .dlf-card .input > label,
+.dlf .dlf-card .textArea > label { display: inline-block; }
+.dlf .dlf-card .input > img,
+.dlf .dlf-card .textArea > img {
+  width: 14px;
+  height: 14px;
+  margin: 0 0 6px 4px;
+  vertical-align: -1px;
+  opacity: .65;
+  cursor: help;
+}
+.dlf .dlf-card .input > .hint { display: none !important; }
+.dlf .dlf-card .input > input.form-control,
+.dlf .dlf-card .textArea > textarea.form-control { display: block; }
+
+/* Every answer block a yes/no question opens: findable, not findable, trainees. */
+.dlf .dlf-question > .simpleBox > [class*="block-"] {
+  padding: 16px 14px 14px;
+  border-top: 1px solid var(--dlf-line);
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+}
+.dlf .dlf-question > .simpleBox > [class*="block-"] > hr,
+.dlf .dlf-question > .simpleBox > [class*="block-"] > br { display: none; }
+.dlf .dlf-card .form-group { margin-bottom: 16px; }
+.dlf .dlf-card .form-group:last-child { margin-bottom: 0; }
+.dlf .dlf-card .row { margin-left: 0; margin-right: 0; }
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row,
+.dlf #dlf-metadata .form-group.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row::before,
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row::after,
+.dlf #dlf-metadata .form-group.row::before,
+.dlf #dlf-metadata .form-group.row::after { display: none; }
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [class*="col-"],
+.dlf #dlf-metadata .form-group.row > [class*="col-"] { float: none; width: auto; min-width: 0; padding: 0; }
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [style*="display: none"],
+.dlf .dlf-question > .simpleBox > [class*="block-"] .form-group.row > [style*="display:none"] { display: none; }
+
+/* Disseminated: the design's channel row, URL row with its sync buttons and note, Handle and DOI, then what the sync
+   found. deliverableDissemination.js shows and hides each part with inline styles; the rules below win over those
+   where the design needs another display. */
+.dlf .dlf-question > .simpleBox > .block-findable:not([style*="none"]) { display: flex !important; flex-direction: column; gap: 16px; }
+.dlf .dlf-question > .simpleBox > .block-findable > .disseminationChannelBlock > .form-group.row { align-items: end; margin: 0; }
+.dlf .dlf-question > .simpleBox > .block-findable > .disseminationChannelBlock .select > label { margin: 0 0 6px; }
+.dlf .exampleUrl-block { display: flex; flex-direction: column; gap: 3px; padding-bottom: 4px; }
+.dlf .exampleUrl-block label { margin: 0; font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .exampleUrl-block .exampleUrl,
+.dlf .exampleUrl-block p { margin: 0; padding: 0; }
+.dlf .exampleUrl-block small { font: 500 12.5px/1.45 ui-monospace, Menlo, Consolas, monospace; color: var(--dlf-ink-soft); word-break: break-all; }
+.dlf .exampleUrl-block strong { font-weight: 700; color: var(--dlf-brand-dark); }
+.dlf .dlf-question > .simpleBox > .block-findable > #disseminationUrl:not([style*="none"]) { display: flex !important; flex-direction: column; gap: 16px; }
+.dlf .dlf-question > .simpleBox > .block-findable > #disseminationUrl > .clearfix,
+.dlf .dlf-question > .simpleBox > .block-findable > #disseminationUrl > .form-group.row:empty { display: none; }
+
+/* URL field and its buttons on one line; the note under them. */
+.dlf #disseminationUrl > .form-group { display: flex; align-items: flex-end; gap: 8px; margin: 0; }
+.dlf #disseminationUrl .url-field { flex: 1; min-width: 0; float: none; width: auto; }
+.dlf #disseminationUrl .url-field .input > label { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 6px; }
+.dlf #disseminationUrl .buttons-field { flex: none; float: none; width: auto; padding-bottom: 0; }
+.dlf #disseminationUrl .buttons-field:empty { display: none; }
+.dlf #fillMetadata .unSyncBlock { gap: 8px; }
+.dlf #fillMetadata .unSyncBlock[style*="block"] { display: flex !important; }
+.dlf #disseminationUrl .checkButton,
+.dlf #disseminationUrl .updateButton,
+.dlf #disseminationUrl .uncheckButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  float: none;
+  width: auto;
+  height: 40px;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-brand);
+  box-shadow: none;
+  font: 600 13px Figtree, sans-serif;
+  color: #fff;
+  text-shadow: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dlf #disseminationUrl .checkButton[style*="block"] { display: inline-flex !important; }
+.dlf #disseminationUrl .checkButton { padding: 0 16px; }
+.dlf #disseminationUrl .checkButton:hover { background: var(--dlf-brand-dark); }
+.dlf #disseminationUrl .updateButton { border: 1px solid var(--dlf-brand); background: #fff; color: var(--dlf-brand); }
+.dlf #disseminationUrl .updateButton:hover { background: var(--dlf-info-bg); }
+.dlf #disseminationUrl .uncheckButton { border: 1px solid #EBD3CE; background: #fff; color: var(--dlf-danger); }
+.dlf #disseminationUrl .uncheckButton:hover { background: var(--dlf-danger-bg); }
+.dlf #disseminationUrl #WOSSyncBtn { background: #fff; border: 1px solid var(--dlf-line-strong); color: var(--dlf-ink-soft); }
+.dlf #disseminationUrl .dlf-urlNote { margin: -10px 0 0; font: 400 12px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+/* "From <channel>" on the URL label once synced. */
+.dlf #disseminationUrl .dlf-fromChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 7px;
+  border-radius: 5px;
+  background: var(--dlf-ok-bg);
+  font: 600 11px Figtree, sans-serif;
+  color: var(--dlf-ok);
+}
+.dlf #disseminationUrl .dlf-fromChip::before {
+  content: "";
+  width: 9px;
+  height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='10' viewBox='0 0 9 10' fill='none'%3E%3Crect x='1' y='4.3' width='7' height='5' rx='1.2' stroke='%232E6B2F' stroke-width='1.2'/%3E%3Cpath d='M2.6 4.3V3a1.9 1.9 0 0 1 3.8 0v1.3' stroke='%232E6B2F' stroke-width='1.2'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf #disseminationUrl input[readonly].form-control { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-ink-soft); }
+
+/* Handle and DOI: two columns, labels on one line, the DOI validity note under its field. */
+.dlf #disseminationUrl .form-group.row.ifIsReadOnly {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+  margin: 0 !important;
+}
+.dlf #disseminationUrl .ifIsReadOnly > .conditionalRequire { display: block; width: auto; }
+.dlf #disseminationUrl .ifIsReadOnly .input > label { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; margin: 0 0 6px; }
+.dlf #disseminationUrl .dlf-infoMark {
+  width: 14px;
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='6.4' stroke='%236B7280' stroke-width='1.4'/%3E%3Cpath d='M8 7.3v3.6' stroke='%236B7280' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='5.1' r='.95' fill='%236B7280'/%3E%3C/svg%3E") center no-repeat;
+  cursor: help;
+}
+.dlf #disseminationUrl .doi-bridge .invalidDOI,
+.dlf #disseminationUrl .doi-bridge .validDOI { position: static !important; margin: 5px 0 0 !important; font: 600 11.5px/1.4 Figtree, sans-serif !important; }
+.dlf #disseminationUrl > br,
+.dlf #disseminationUrl > hr { display: none; }
+.dlf #disseminationUrl .isOtherUrl .inputsFlat,
+.dlf #disseminationUrl .isOtherUrl label { margin: 0; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf #disseminationUrl .isOtherUrl > br { display: none; }
+/* The alternative URL row is empty unless its checkbox or field shows. */
+.dlf #disseminationUrl > .form-group.row:not(.ifIsReadOnly):not(:has(> [class*="col-"]:not([style*="none"]))) { display: none !important; }
+.dlf #disseminationUrl > .form-group.row:not(.ifIsReadOnly) { margin: 0 !important; }
+.dlf #disseminationUrl > .form-group.row:not(.ifIsReadOnly) > .col-md-6 > br { display: none; }
+
+/* The Web of Science lookup in progress: one line instead of a 110px loader. */
+.dlf #disseminationUrl .loading-WOS-container { display: flex; align-items: center; gap: 8px; min-height: 0; margin: 0; }
+.dlf #disseminationUrl .loading-WOS-container[style*="none"] { display: none !important; }
+.dlf #disseminationUrl .loading-WOS-container p { position: static !important; order: 2; margin: 0; font: 500 12.5px Figtree, sans-serif !important; color: var(--dlf-muted) !important; }
+.dlf #disseminationUrl .loading-WOS-container svg { width: 28px; height: 28px; margin: 0 -4px; }
+
+/* What the sync found: the design's source chips over a hairline, the Web of Science link on the right. */
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-output:empty { display: none; }
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-container { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0; padding-top: 14px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-container:not(:has(.metadata-output-persistent:not([style*="none"]))) { display: none; }
+.dlf .dlf-question > .simpleBox > .block-findable > #metadata-container > [data-toggle="tooltip"]:not(:has(img:not([style*="none"]))) { display: none; }
+/* projectDeliverable.css stacks these in a 90% column; the design sets them side by side. */
+.dlf .block-findable .metadata-text-container { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; width: auto; }
+.dlf .block-findable .metadata-output-persistent:not([style*="none"]) {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: 28px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-ok-border);
+  border-radius: 999px;
+  background: var(--dlf-ok-bg);
+  font: 600 12.5px Figtree, sans-serif;
+  font-style: normal;
+  color: var(--dlf-ok);
+  white-space: nowrap;
+}
+.dlf .block-findable .metadata-output-persistent.is-found::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.2 5 8.6l4.5-5' stroke='%232E6B2F' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .block-findable .metadata-output-persistent.is-warn { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); color: var(--dlf-warn); white-space: normal; height: auto; min-height: 28px; }
+.dlf .block-findable .metadata-output-persistent * { font: inherit; color: inherit; margin: 0; }
+/* global.css gives every .note a full width and its spans 20px. */
+.dlf .block-findable #metadata-container > #WOSModalBtn { order: 3; width: auto; margin: 0 0 0 auto; padding: 0; border: 0; background: none; }
+.dlf .block-findable #WOSModalBtn a span { font: inherit; }
+.dlf .block-findable #WOSModalBtn[style*="none"] { display: none !important; }
+.dlf .block-findable #WOSModalBtn .helpMessage4,
+.dlf .block-findable #WOSModalBtn p { margin: 0; padding: 0; }
+.dlf .block-findable #WOSModalBtn a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+  cursor: pointer;
+}
+.dlf .block-findable #WOSModalBtn a:hover { background: var(--dlf-info-bg); }
+.dlf .block-findable #WOSModalBtn a svg { transition: transform .15s ease; }
+.dlf .block-findable #WOSModalBtn a.is-open svg { transform: rotate(180deg); }
+/* The Web of Science fields, inline under the chips. */
+.dlf .block-findable .dlf-wosPanel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  margin-top: -6px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: #fff;
+}
+.dlf .block-findable .dlf-wosPanel[hidden] { display: none; }
+/* The dividers belong to the cells; the last cell runs to the end of its row, so a short last row leaves no empty
+   cells with stray dividers (whatever the column count). */
+.dlf .block-findable .dlf-wosPanel__item { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 9px 12px; background: #fff; box-shadow: 1px 1px 0 var(--dlf-line); }
+.dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(4n+1) { grid-column: 1 / -1; }
+.dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(4n+2) { grid-column: span 3; }
+.dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(4n+3) { grid-column: span 2; }
+.dlf .block-findable .dlf-wosPanel__key { font: 600 11px Figtree, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .block-findable .dlf-wosPanel__value { font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); overflow-wrap: anywhere; }
+@media (max-width: 767px) {
+  .dlf .block-findable .dlf-wosPanel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(n) { grid-column: auto; }
+  .dlf .block-findable .dlf-wosPanel__item:last-child:nth-child(2n+1) { grid-column: 1 / -1; }
+}
+
+/* Not disseminated: confidential question and its answer. */
+/* Radio questions (confidential, ISI, training period): the label on its own line, the options in one row. */
+.dlf .block-notFindable > .form-group:has(> .radioFlat),
+.dlf #dlf-metadata .isIsiJournal,
+.dlf .block-involveParticipants .block-periodTime { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
+.dlf .block-notFindable > .form-group:has(> .radioFlat) > label,
+.dlf #dlf-metadata .isIsiJournal > label,
+.dlf #dlf-metadata .isIsiJournal > p,
+.dlf #dlf-metadata .isIsiJournal > .WOS_tag,
+.dlf .block-involveParticipants .block-periodTime > label { flex-basis: 100%; }
+.dlf .block-notFindable > .form-group:has(> .radioFlat) > br,
+.dlf #dlf-metadata .isIsiJournal > br,
+.dlf .block-involveParticipants .block-periodTime > br { display: none; }
+.dlf .block-notFindable .radioFlat,
+.dlf #dlf-metadata .isIsiJournal .radioFlat,
+.dlf .block-involveParticipants .block-periodTime .radioFlat { display: inline-flex; align-items: center; width: auto !important; flex: none; margin: 0; }
+.dlf .block-notFindable .feedback-flex-items:empty,
+.dlf #dlf-metadata .isIsiJournal .feedback-flex-items:empty,
+.dlf .block-involveParticipants .block-periodTime .feedback-flex-items:empty { display: none; }
+.dlf .block-notFindable .note,
+.dlf .dlf-card .note--2 {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .note--2 p { margin: 0; }
+
+/* Open Access: what Web of Science says, as the design's single hint chip (deliverableFormRedesign.js): green when
+   the answer matches, amber with the suggestion when it does not. The legacy line stays in the DOM for the scripts. */
+.dlf .dlf-card .WOS_tag { margin: 10px 0 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-card .WOS_tag:has(.dlf-wosHint) > p { display: none; }
+.dlf .dlf-card .WOS_tag p {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 5px 10px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 7px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .dlf-card .WOS_tag p::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .dlf-card .dlf-wosHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 7px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .dlf-card .dlf-wosHint:empty { display: none; }
+.dlf .dlf-card .dlf-wosHint::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .dlf-card .dlf-wosHint[data-state="match"] { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-card .dlf-wosHint[data-state="match"]::before { background: var(--dlf-ok); }
+
+/* Participants/Trainees: the numbers sit in the design's metric cards. */
+.dlf .block-involveParticipants .form-group.row > [class*="col-"]:has(.numericInput) {
+  padding: 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .block-involveParticipants .numericInput.form-control { font-weight: 600; font-size: 14px; font-variant-numeric: tabular-nums; }
+.dlf .block-involveParticipants [class*="col-"] > br { display: none; }
+.dlf .block-involveParticipants .dottedBox {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px solid var(--dlf-line);
+  background: none;
+}
+/* The four numbers sit in one row of cards, as the design, when the row is 870px or wider: the longest title
+   ("Total participants/trainees *", 176px) then fits on one line with the card padding. Narrower, the cards go two by two instead of squeezing the titles onto two or three lines (never
+   three and one). The clamp picks the track: a quarter of the row from 870px, half of it below. Each card spans
+   three rows of the row's grid (label, input, check boxes), so the inputs and the boxes line up across cards. */
+.dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-participantNumbers {
+  grid-template-columns: repeat(auto-fill, minmax(clamp(calc(25% - 9px), (870px - 100%) * 999, calc(50% - 6px)), 1fr));
+  grid-auto-rows: auto;
+  column-gap: 12px;
+  row-gap: 12px;
+}
+.dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-participantNumbers > [class*="col-"] {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 6px;
+  row-gap: 8px;
+  position: relative;
+  padding: 14px 16px;
+}
+/* The input macro writes style="display:block;" on its wrapper. */
+.dlf .block-involveParticipants .block-participantNumbers .text-area-container,
+.dlf .block-involveParticipants .block-participantNumbers .input.fieldReference { display: contents !important; }
+.dlf .block-involveParticipants .block-participantNumbers .input.fieldReference > label { grid-row: 1; grid-column: 1; align-self: end; margin: 0; }
+/* The field's help icon ([?]) closes the label line. */
+.dlf .block-involveParticipants .block-participantNumbers .input.fieldReference > img { grid-row: 1; grid-column: 2; align-self: end; margin-bottom: 2px; }
+.dlf .block-involveParticipants .block-participantNumbers .input.fieldReference > input { grid-row: 2; grid-column: 1 / -1; }
+.dlf .block-involveParticipants .block-participantNumbers .dottedBox { grid-row: 4; grid-column: 1 / -1; align-self: start; margin: 0; }
+/* The note under each number (deliverableFormRedesign.js): share of the total, or the over-total error. */
+.dlf .block-involveParticipants .block-participantNumbers .dlf-numberNote {
+  grid-row: 3;
+  grid-column: 1 / -1;
+  margin: -2px 0 0;
+  font: 400 12.5px/1.4 Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+.dlf .block-involveParticipants .block-participantNumbers .is-overTotal .dlf-numberNote { color: var(--dlf-required); }
+.dlf .block-involveParticipants .block-participantNumbers .is-overTotal input.numericInput { border-color: var(--dlf-required); }
+.dlf .block-involveParticipants .block-participantNumbers .is-overTotal input.numericInput:focus { box-shadow: 0 0 0 3px rgba(199, 64, 28, .12); }
+/* The QA comment holders and feedback bubbles stay out of the three rows. */
+.dlf .block-involveParticipants .block-participantNumbers .text-area-container > .feedback-flex-items,
+.dlf .block-involveParticipants .block-participantNumbers .commentNumberContainer { position: absolute; top: 8px; right: 8px; margin: 0; }
+.dlf .block-involveParticipants .inputsFlat { margin: 0; }
+.dlf .block-involveParticipants .checkbox-label { margin: 0; font: 400 12.5px Figtree, sans-serif !important; font-style: normal !important; color: var(--dlf-ink-soft); }
+/* Trainees section subtitles (Event, Participants/Trainees, Focus and outcomes), as the design: small caps over a
+   hairline that separates the sections. */
+.dlf .block-involveParticipants > .dlf-subhead {
+  margin: 0 0 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--dlf-line-soft);
+  font: 600 11px/1.3 Figtree, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--dlf-muted);
+}
+.dlf .block-involveParticipants > hr:has(+ .dlf-subhead) { display: none; }
+/* Formal training details: one tinted panel under the two types with the academic degree (half width) and the
+   training period as option chips. deliverableDissemination.js shows and hides each part with an inline display;
+   the panel goes with the training period, which every formal training shows. */
+.dlf .block-involveParticipants .block-formalTraining {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 0 0 18px;
+  padding: 20px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 12px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .block-involveParticipants .block-formalTraining:has(> .block-periodTime[style*="none"]) { display: none; }
+.dlf .block-involveParticipants .block-formalTraining > .block-academicDegree { width: calc(50% - 8px); padding: 0; }
+.dlf .block-involveParticipants .block-formalTraining > .block-academicDegree > img,
+.dlf .block-involveParticipants .block-formalTraining > .block-academicDegree .input > img { display: none; }
+.dlf .block-involveParticipants .block-formalTraining > .block-periodTime { flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+/* Each option carries an empty feedback holder (whitespace only, so :empty misses it; global.css forces it to
+   inline-flex !important) that would take a flex gap. */
+.dlf .block-involveParticipants .block-formalTraining > .block-periodTime > .feedback-flex-items:not(:has(*)) { display: none !important; }
+.dlf .block-involveParticipants .block-formalTraining > .block-periodTime > label { display: block; flex-basis: 100%; margin: 0 0 4px; }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .helpLabel {
+  display: block;
+  margin-top: 6px;
+  font: 400 13px/1.5 Figtree, sans-serif;
+  font-style: normal;
+  color: var(--dlf-muted) !important;
+}
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .helpLabel strong { font-weight: 600; color: var(--dlf-ink); }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .helpLabel u { text-decoration: none; }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime > br { display: none; }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat {
+  display: inline-flex;
+  align-items: center;
+  width: auto !important;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+}
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:hover { border-color: var(--dlf-subtle); }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat .radio-label {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  margin: 0;
+  padding: 0 16px 0 14px;
+  font: 500 14px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat .radio-label::before {
+  left: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0 10px 0 0;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat input:checked + .radio-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand);
+  box-shadow: inset 0 0 0 3px #fff;
+}
+.dlf .block-involveParticipants .block-formalTraining .block-periodTime .radioFlat:has(input:checked) .radio-label { color: var(--dlf-brand-dark); }
+@media (max-width: 767px) {
+  .dlf .block-involveParticipants .block-formalTraining > .block-academicDegree { width: 100%; }
+}
+/* Type of activity, academic degree (only for an academic degree) and type of participant(s) flow through the
+   design's two columns in that order: the hidden academic degree takes no cell, so the participant type sits next to
+   the activity type, or under it when the academic degree shows. */
+.dlf .dlf-question > .simpleBox > .block-involveParticipants .form-group.row.block-activityTypes { align-items: start; }
+/* The label and "What do these mean?" share the label line (the select box takes no box of its own); the link wraps
+   under the label, before the select, when the column is too narrow for both. */
+.dlf .block-involveParticipants .block-typeActivity { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; }
+.dlf .block-involveParticipants .block-typeActivity > .select { display: contents; }
+.dlf .block-involveParticipants .block-typeActivity > .select > label { order: 1; }
+.dlf .block-involveParticipants .block-typeActivity > .feedback-flex-items { order: 2; }
+.dlf .block-involveParticipants .block-typeActivity > .note.left {
+  order: 3;
+  flex: none;
+  width: auto;
+  float: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 24px;
+}
+.dlf .block-involveParticipants .block-typeActivity > .select > .selectList { order: 4; flex-basis: 100%; }
+.dlf .block-involveParticipants .block-typeActivity > .note.left a { display: inline-flex; align-items: center; gap: 5px; font: 600 12px Figtree, sans-serif; color: var(--dlf-brand); cursor: pointer; }
+.dlf .block-involveParticipants .block-typeActivity > .note.left .glyphicon { font-size: 12px; top: 0; }
+
+/* Split across shared clusters: the design's table (Team | Total | Females | African-based | Youth), then the sum,
+   reported and remaining rows, the status line and the footnote. The rows are the legacy Bootstrap rows of
+   deliverableClusterParticipantsMacro and of addcluster() (deliverableDissemination.js), laid out on one grid;
+   deliverableFormRedesign.js adds the team cell, the sums and the status. The selectors outweigh the two-column grid
+   and the number cards of the trainees block. */
+.dlf .dlf-question .sharedClustersList { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .dlf-question .sharedClustersList > br { display: none; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 0 0 12px; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead .yesNoLabel { margin: 0; font: 600 11px/1.3 Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead p { margin: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-splitHead small { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-splitManage {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .dlf-question .sharedClustersList .dlf-splitManage:hover { background: var(--dlf-info-bg); }
+.dlf .dlf-question .sharedClustersList > .simpleBox { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants { margin: 0; padding: 0; overflow-x: auto; border: 1px solid var(--dlf-line); border-radius: 10px; background: #fff; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > hr { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM.container { width: auto !important; max-width: none; margin: 0; padding: 0; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  align-items: center;
+  min-width: 560px;
+  margin: 0;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--dlf-line-soft);
+  background: #fff;
+}
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row::before,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row::after { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row > [class*="col-"] { float: none; width: auto; min-width: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row > [class*="col-"] > br { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .form-group.row .text-area-container { margin: 0; }
+/* Column heads. */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row:first-child { background: #F7F9FB; border-bottom-color: var(--dlf-line); font: 600 12px/1.3 Figtree, sans-serif; color: var(--dlf-ink-soft); }
+/* Team rows: the drawn team cell replaces the acronym cell; clearing a row is done from the shared list. */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM > .form-group.row > .col-xs-first,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM > .form-group.row > .col-xs-last { display: none; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM > .form-group.row.is-submitted { background: var(--dlf-surface-alt); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM input.form-control { height: 34px; padding: 0 10px; border-radius: 7px; font: 500 14px Figtree, sans-serif; font-variant-numeric: tabular-nums; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .listClusterDM input.form-control:disabled { border-color: var(--dlf-line); background: #F1F3F6; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-team { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-team__flag {
+  flex: none;
+  width: 22px;
+  height: 16px;
+  margin: 0;
+  border-radius: 3px;
+  background-color: var(--dlf-chip);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(31, 42, 55, .1);
+  opacity: 1;
+}
+.dlf .dlf-question .sharedClustersList .dlf-team__flag.flag-icon::before { content: none; }
+.dlf .dlf-question .sharedClustersList .dlf-team__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dlf .dlf-question .sharedClustersList .dlf-team__code { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.dlf .dlf-question .sharedClustersList .dlf-team__code > b { font: 600 13px Figtree, sans-serif; font-variant-numeric: tabular-nums; color: var(--dlf-ink); }
+.dlf .dlf-question .sharedClustersList .dlf-team__country { font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-question .sharedClustersList .dlf-team__badge { padding: 1px 6px; border: 1px solid #BEDFEC; border-radius: 5px; background: var(--dlf-info-bg); font: 600 11px Figtree, sans-serif; color: var(--dlf-brand-dark); }
+.dlf .dlf-question .sharedClustersList .dlf-team__badge--lock { display: inline-flex; align-items: center; gap: 4px; border-color: transparent; background: var(--dlf-chip); color: var(--dlf-ink-soft); cursor: help; }
+.dlf .dlf-question .sharedClustersList .dlf-team__badge--lock::before {
+  content: "";
+  width: 9px;
+  height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='10' viewBox='0 0 9 10' fill='none'%3E%3Crect x='1' y='4.3' width='7' height='5' rx='1.2' stroke='%234B5563' stroke-width='1.2'/%3E%3Cpath d='M2.6 4.3V3a1.9 1.9 0 0 1 3.8 0v1.3' stroke='%234B5563' stroke-width='1.2'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Sum, reported and remaining rows. */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.dlf-splitSum,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.dlf-splitReported,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.remaining-container { padding: 8px 14px; background: var(--dlf-surface-alt); font: 500 13px Figtree, sans-serif; color: var(--dlf-ink-soft) !important; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.remaining-container { border-bottom: 0; border-top: 1px solid var(--dlf-line); font-weight: 600; color: var(--dlf-ink) !important; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .form-group.row.remaining-container > [class*="col-"]:first-child .text-area-container { font-weight: 600 !important; }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .dlf-splitSum__value,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants [class^="total"],
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants [class^="remaining"] { padding-left: 11px; font: 500 14px Figtree, sans-serif; font-variant-numeric: tabular-nums; color: var(--dlf-ink); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .remaining-container [class^="remaining"] { font-weight: 600; color: var(--dlf-ok); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .remaining-container [class^="remaining"].is-pending { color: var(--dlf-warn); }
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants > .remaining-container [class^="remaining"].is-over { color: var(--dlf-required); }
+/* The legacy alert and done notes give way to the status line (deliverableDissemination.js still drives them). */
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .alertParticipant,
+.dlf .dlf-question .sharedClustersList > .simpleBox > .block-involveParticipants .doneParticipant { display: none !important; }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus { display: flex; align-items: flex-start; gap: 9px; padding: 10px 12px; border: 1px solid; border-radius: 8px; font: 500 13px/1.5 Figtree, sans-serif; }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: currentColor; }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="ok"] { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="pending"] { border-color: var(--dlf-warn-border); background: var(--dlf-warn-bg); color: var(--dlf-warn); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="pending"]::before { background: var(--dlf-warn-dot); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="over"] { border-color: #EBD3CE; background: var(--dlf-danger-bg); color: var(--dlf-danger); }
+.dlf .dlf-question .sharedClustersList .dlf-splitStatus[data-state="over"]::before { background: var(--dlf-required); }
+.dlf .dlf-question .sharedClustersList .dlf-splitFoot { margin: 0; font: 400 12px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+
+/* ---------- Deliverable metadata ---------- */
+
+.dlf #dlf-metadata .metadataElement { margin: 0 0 16px; }
+/* global.css makes these containers flex rows; the feedback wrapper inside them takes the whole row. */
+.dlf .dlf-card .metadataElement > .feedback-flex-items,
+.dlf .dlf-card .text-area-container > .feedback-flex-items { flex: 1 1 auto; min-width: 0; }
+.dlf #dlf-metadata .metadataElement input.form-control,
+.dlf #dlf-metadata .metadataElement textarea.form-control { width: 100%; }
+.dlf #dlf-metadata .metadataElement-publicationDate input.form-control { max-width: 260px; }
+.dlf #dlf-metadata .metadataElement input[readonly].form-control,
+.dlf #dlf-metadata .metadataElement textarea[readonly].form-control { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-ink-soft); }
+.dlf #dlf-metadata h3,
+.dlf #dlf-metadata h4,
+.dlf #dlf-metadata .headTitle {
+  margin: 4px 0 12px;
+  padding: 16px 0 0;
+  border: 0;
+  border-top: 1px solid var(--dlf-line-soft);
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf #dlf-metadata .headTitle::after { display: none; }
+.dlf #dlf-metadata .simpleBox { margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf #dlf-metadata .simpleBox.author { padding: 0 12px 0 12px; }
+
+/* Creator / Authors as the design's chips. */
+.dlf #dlf-metadata .authorsList { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; background: none; }
+.dlf #dlf-metadata .authorsList::before,
+.dlf #dlf-metadata .authorsList::after { display: none; }
+.dlf #dlf-metadata .authorsList .author {
+  position: relative;
+  float: none;
+  width: auto;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  margin: 0;
+  padding: 4px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 999px;
+  background: var(--dlf-surface-alt);
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf #dlf-metadata .authorsList .author > br { display: none; }
+.dlf #dlf-metadata .authorsList .author small { font: 400 11.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf #dlf-metadata .authorsList .author .removeLink { position: static; float: none; margin-left: 4px; }
+
+/* Publication metadata (journal articles). */
+.dlf #dlf-metadata .publicationMetadataBlock > .note,
+.dlf #dlf-metadata .publicationMetadataBlock .note {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-info-bg);
+  font: 400 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf #dlf-metadata .flagshipList .flagships,
+.dlf #dlf-metadata .flagshipList li {
+  position: relative;
+  margin: 0 0 6px;
+  padding: 9px 40px 9px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 500 13.5px Figtree, sans-serif;
+  list-style: none;
+}
+.dlf #dlf-metadata .flagshipList .removeFlagship {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  float: none;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf #dlf-metadata .flagshipList .removeFlagship:hover { background-color: var(--dlf-danger-bg); }
+
+/* ---------- Quality check tab ---------- */
+
+/* FAIR compliant card. */
+.dlf .dlf-fairCard { gap: 14px; }
+.dlf .dlf-fairCard__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dlf .dlf-fairCard__summary {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 999px;
+  background: var(--dlf-info-bg);
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
+.dlf .dlf-fairCard__summary:empty { display: none; }
+.dlf .dlf-fairCard__summary.is-complete { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-fairCard__note { margin-left: auto; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-fairCard__rows { display: flex; flex-direction: column; gap: 8px; }
+
+/* A principle row; projectDeliverable.css still styles .fairCompliant, so every property it sets is restated. */
+.dlf .dlf-fairRow.fairCompliant {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .dlf-fairRow.fairCompliant.achieved { border-color: var(--dlf-ok-border); background: #FAFDFA; }
+.dlf .dlf-fairRow .dlf-fairRow__badge.sign {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  padding: 0;
+  border-radius: 10px;
+  background: #E3E8EE;
+  font: 700 22px Figtree, sans-serif;
+  color: var(--dlf-subtle);
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .dlf-fairRow.achieved .dlf-fairRow__badge.sign { background: var(--dlf-ok); color: #fff; }
+.dlf .dlf-fairRow__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.dlf .dlf-fairRow__title { display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-fairRow__name { font: 600 14.5px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__name { color: var(--dlf-ink); }
+.dlf .dlf-fairRow__pill { padding: 1px 7px; border-radius: 5px; font: 600 11.5px Figtree, sans-serif; }
+.dlf .dlf-fairRow__pill--on { display: none; background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .dlf-fairRow__pill--off { background: var(--dlf-chip); color: var(--dlf-muted); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__pill--on { display: inline-block; }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__pill--off { display: none; }
+.dlf .dlf-fairRow__items { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.dlf .dlf-fairRow__items li {
+  position: relative;
+  padding-left: 24px;
+  font: 400 13.5px/1.45 Figtree, sans-serif;
+  color: var(--dlf-muted);
+  opacity: 1;
+}
+.dlf .dlf-fairRow__items li::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 50%;
+  background: #fff;
+}
+.dlf .dlf-fairRow.achieved .dlf-fairRow__items li { color: var(--dlf-ink); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__items li::before {
+  border-color: var(--dlf-ok);
+  background: var(--dlf-ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .dlf-fairRow__fix { align-self: flex-start; margin-top: 2px; color: var(--dlf-brand); }
+.dlf .dlf-fairRow__fix:hover { background: var(--dlf-info-bg); }
+.dlf .dlf-fairRow.achieved .dlf-fairRow__fix { display: none; }
+
+/* Compliance check (data deliverables): the macro's own heading gives way to the card's. */
+.dlf .dlf-compliance > .headTitle { display: none; }
+.dlf .dlf-compliance > .simpleBox { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child { display: flex; align-items: center; gap: 16px; margin: 0; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child::before,
+.dlf .dlf-compliance > .simpleBox > .row:first-child::after { display: none; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child > [class*="col-"] { float: none; width: auto; padding: 0; }
+.dlf .dlf-compliance > .simpleBox > .row:first-child > .col-md-10 { flex: 1; min-width: 0; }
+.dlf .dlf-compliance .note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+/* Gold data meter: the three lights in a row, the lit one at full colour. */
+.dlf .dlf-compliance #box-out {
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 999px;
+  background: #fff;
+}
+.dlf .dlf-compliance #box-inside {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  filter: none;
+}
+.dlf .dlf-compliance #red,
+.dlf .dlf-compliance #yellow,
+.dlf .dlf-compliance #green {
+  position: static;
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  filter: none;
+  opacity: .22;
+}
+.dlf .dlf-compliance #red { background: var(--dlf-danger); }
+.dlf .dlf-compliance #yellow { background: var(--dlf-warn-dot); }
+.dlf .dlf-compliance #green { background: var(--dlf-ok); }
+.dlf .dlf-compliance #red.highlightRed,
+.dlf .dlf-compliance #yellow.highlightYellow,
+.dlf .dlf-compliance #green.highlightGreen { opacity: 1 !important; box-shadow: 0 0 0 3px rgba(31, 42, 55, .08); }
+
+/* Each question: the statement, the answers in a row, and the file-or-link proof a Yes asks for. */
+.dlf .dlf-compliance .question {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .dlf-compliance .question > h5 { margin: 0; font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-compliance .question > hr,
+.dlf .dlf-compliance .question > .clearfix { display: none; }
+.dlf .dlf-compliance .question > [class*="col-"] { float: none; width: auto; padding: 0; }
+.dlf .dlf-compliance .question > .col-md-4 { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.dlf .dlf-compliance .radio-block { margin: 0; padding: 0; }
+.dlf .dlf-compliance .radio-block label { display: inline-flex; align-items: center; gap: 7px; margin: 0; font: 500 13px Figtree, sans-serif; color: var(--dlf-ink); }
+/* Bootstrap's .radio pushes the label right and pins the input over its first letters. */
+.dlf .dlf-compliance .radio-block label { padding-left: 0; }
+.dlf .dlf-compliance .radio-block input[type="radio"] { position: static; flex: none; margin: 0; accent-color: var(--dlf-brand); }
+/* jQuery's show() empties the style attribute, so the grid keys on "not hidden" rather than on "block". */
+.dlf .dlf-compliance .fileOptions:not([style*="none"]) {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: end;
+  padding: 12px;
+  border-top: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: #fff;
+}
+.dlf .dlf-compliance .fileOptions > [class*="col-"] { float: none; width: auto; padding: 0; margin: 0; }
+.dlf .dlf-compliance .fileOptions > [class*="col-"] > br { display: none; }
+.dlf .dlf-compliance .fileOptions > .col-md-1 { padding-bottom: 10px; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .dlf-compliance .fileOptions > .col-md-1 > br { display: none; }
+.dlf .dlf-compliance .fileUploaded.textMessage {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--dlf-ok-border);
+  border-radius: 7px;
+  background: var(--dlf-ok-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-ok);
+}
+.dlf .dlf-compliance .fileUploaded.textMessage[style*="none"] { display: none; }
+
+/* ---------- Save bar ----------
+ * The bar of the other redesigned sections: it follows the scroll 12px off the viewport
+ * bottom and settles at the end of the form. */
+.dlf .dlf-saveBar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin-top: 4px;
+  padding: 10px 12px 10px 18px;
+  background: var(--dlf-surface);
+  border: 1px solid var(--dlf-line);
+  border-radius: var(--dlf-radius);
+  box-shadow: 0 6px 18px rgba(31, 42, 55, .12);
+}
+.dlf .dlf-saveBar__info { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
+.dlf .dlf-saveBar__state { display: flex; align-items: center; gap: 8px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ok); }
+.dlf .dlf-saveBar__dot { flex: none; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--dlf-ok); }
+.dlf .dlf-saveBar.is-dirty .dlf-saveBar__state { color: var(--dlf-warn); }
+.dlf .dlf-saveBar.is-dirty .dlf-saveBar__dot { background: var(--dlf-warn-dot); }
+.dlf .dlf-saveBar__actions { flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.dlf .dlf-saveBar .clearfix { display: none; }
+.dlf .dlf-saveBar .buttons,
+.dlf .dlf-saveBar .buttons-content {
+  float: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+/* global.js pins .buttons-content to the viewport on scroll; inside the sticky bar it stays put. */
+.dlf .dlf-saveBar .buttons-content.positionFixedBot { position: static; bottom: auto; right: auto !important; }
+.dlf .dlf-saveBar .buttons-content.animated { animation: none; }
+.dlf .dlf-saveBar .button-save,
+.dlf .dlf-saveBar .button-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--dlf-radius-sm);
+  background: var(--dlf-brand);
+  color: #fff;
+  font: 600 14px Figtree, sans-serif;
+  text-decoration: none;
+}
+.dlf .dlf-saveBar .button-save:hover,
+.dlf .dlf-saveBar .button-save:focus,
+.dlf .dlf-saveBar .button-save:active,
+.dlf .dlf-saveBar .button-edit:hover,
+.dlf .dlf-saveBar .button-edit:focus,
+.dlf .dlf-saveBar .button-edit:active { border: 0; background: var(--dlf-brand-dark); color: #fff; }
+.dlf .dlf-saveBar .button-cancel,
+.dlf .dlf-saveBar .button-history,
+.dlf .dlf-saveBar .form-button:not(.button-save):not(.button-edit) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  color: var(--dlf-ink-soft);
+  font: 600 13px Figtree, sans-serif;
+  text-decoration: none;
+}
+.dlf .dlf-saveBar #lastUpdateMessage {
+  display: block;
+  float: none !important;
+  width: auto;
+  margin: 0;
+  font: 400 12.5px Figtree, sans-serif;
+  font-style: normal;
+  color: var(--dlf-muted);
+  text-align: left;
+}
+/* Until the script moves it next to the state it claims no room among the buttons. */
+.dlf .dlf-saveBar .dlf-saveBar__actions #lastUpdateMessage { display: none; }
+.dlf .dlf-saveBar.is-dirty #lastUpdateMessage { display: none; }
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 991px) {
+  .dlf .dlf-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .dlf .dlf-head { flex-direction: column; }
+  .dlf .dlf-head__fair { align-items: flex-start; }
+  .dlf .dlf-grid--2,
+  .dlf .dlf-grid--3,
+  .dlf #dlf-crossCutting .row,
+  .dlf #dlf-partners .usersBlock { grid-template-columns: minmax(0, 1fr); }
+  .dlf .dlf-card .yesNoInputDeliverable.row,
+  .dlf .dlf-card .yesNoInputMeliaStudy.row { flex-direction: column; align-items: flex-start; }
+  .dlf .dlf-saveBar { flex-wrap: wrap; }
+  .dlf .dlf-saveBar__info { flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dlf .dlf-card .onoffswitch .button-label { transition: none; }
+}
