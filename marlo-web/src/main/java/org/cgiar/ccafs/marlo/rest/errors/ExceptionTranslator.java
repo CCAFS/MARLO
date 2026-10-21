@@ -16,20 +16,19 @@
 package org.cgiar.ccafs.marlo.rest.errors;
 
 import org.cgiar.ccafs.marlo.logging.ErrorNotificationThrottle;
+import org.cgiar.ccafs.marlo.logging.ExceptionEmail;
 import org.cgiar.ccafs.marlo.logging.LogContext;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.catalina.connector.ClientAbortException;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.slf4j.Logger;
@@ -48,6 +47,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
@@ -190,34 +190,47 @@ public class ExceptionTranslator {
         return;
       }
 
-      StringWriter stackTrace = new StringWriter();
-      ex.printStackTrace(new PrintWriter(stackTrace));
       String globalUnitName = globalUnit != null ? globalUnit : "MARLO";
       String subject = "REST exception occurred in " + globalUnitName + " - "
         + (route != null ? route : "unknown route") + " - " + status.value();
 
-      StringBuilder message = new StringBuilder();
-      message.append("A REST request failed with " + status.value() + " " + status.getReasonPhrase() + ".</br>");
-      message.append("This exception occurs in the server: " + config.getBaseUrl() + "</br></br>");
-      message.append("<b>Global Unit: </b>" + globalUnitName + ".</br>");
-      String userId = LogContext.get(LogContext.USER_ID);
-      if (userId != null) {
-        message.append("<b>User id: </b>" + userId + ".</br>");
+      ExceptionEmail message = new ExceptionEmail("REST error in " + globalUnitName);
+      message.intro("A REST request failed with " + status.value() + " " + status.getReasonPhrase() + " on "
+        + config.getBaseUrl() + ".");
+      message.exception(ex);
+      message.detail("Global Unit", globalUnitName);
+      message.detail("Endpoint", keyRoute);
+      message.correlation(suppressedRepeats);
+      message.detail("User", LogContext.get(LogContext.USER_NAME));
+      message.detail("User email", LogContext.get(LogContext.USER_EMAIL));
+      message.detail("User id", LogContext.get(LogContext.USER_ID));
+      HttpServletRequest request = currentRequest(RequestContextHolder.getRequestAttributes());
+      if (request != null) {
+        message.detail("HTTP method", request.getMethod());
+        message.detail("User agent", request.getHeader("User-Agent"));
       }
-      String userName = LogContext.get(LogContext.USER_NAME);
-      if (userName != null) {
-        message.append("<b>User: </b>" + StringEscapeUtils.escapeHtml4(userName) + ".</br>");
+      message.environment(config.getBaseUrl());
+      if (request != null) {
+        message.parameters(request.getParameterMap());
       }
-      message.append(ErrorNotificationThrottle.correlationHtml(suppressedRepeats));
-      message.append("</br><b>Exception message: </b></br><pre>");
-      message.append(StringEscapeUtils.escapeHtml4(stackTrace.toString()) + "</pre>");
 
-      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-        null, null, null, true);
+      String assetsUrl = config.getBaseUrlCdn() != null ? config.getBaseUrlCdn() : config.getBaseUrl();
+      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject,
+        message.toHtml(assetsUrl), null, null, null, true);
       LOG.info("The platform has sent a message reporting a REST exception");
     } catch (RuntimeException e) {
       LOG.debug("Could not email the REST error to the support team", e);
     }
+  }
+
+  /**
+   * Returns the servlet request of the current REST call, or null when there is none.
+   */
+  private static HttpServletRequest currentRequest(RequestAttributes attributes) {
+    if (attributes instanceof ServletRequestAttributes) {
+      return ((ServletRequestAttributes) attributes).getRequest();
+    }
+    return null;
   }
 
   /**
