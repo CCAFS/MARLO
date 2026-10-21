@@ -2915,10 +2915,11 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     Phase phase = null;
     if (crpID != null && crpID != 0 && year != 0 && phaseDescription != null && !phaseDescription.isEmpty()) {
 
+      // A global unit may have no phase for this year and description; return null instead of failing
       phase = phaseManager.findAll().stream()
-        .filter(p -> p != null && p.getYear() == year && p.getCrp() != null && p.getCrp().getId() != null
-          && p.getCrp().getId() == crpID && p.getDescription() != null && p.getDescription().equals(phaseDescription))
-        .collect(Collectors.toList()).get(0);
+        .filter(p -> p != null && p.getYear() == year && p.getCrp() != null && crpID.equals(p.getCrp().getId())
+          && phaseDescription.equals(p.getDescription()))
+        .findFirst().orElse(null);
     }
     return phase;
   }
