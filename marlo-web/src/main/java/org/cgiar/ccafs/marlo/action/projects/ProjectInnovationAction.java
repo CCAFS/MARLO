@@ -352,6 +352,8 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ImpactArea> impactAreaList;
   private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
   private List<ScalingReadiness> scalingReadinessList;
+  // Missing fields per form tab (general, alliance, crossCutting, bundle, knowledge), set by ProjectInnovationValidator
+  private final Map<String, Integer> tabMissingCounts = new HashMap<>();
 
   private List<Actor> actorList;
 
@@ -908,6 +910,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
+  }
+
+  public Map<String, Integer> getTabMissingCounts() {
+    return tabMissingCounts;
   }
 
   public List<ToolFunctionCategory> getToolCategoryList() {

@@ -1,134 +1,119 @@
 [#ftl]
 
-[#macro innovationDescription element name index=-1 template=false ]
-  <div class="borderBox borderBox--noPadding generalInformationInnovations margin-buttom-20">    
-    [#-- General Inputs --]
-    <div class="form-group paddingBorderBox">
+[#-- A2-2613: the form header's actions, beside the title. projectInnovations.js keeps driving them through
+     #modalCounterShared, #sharedClusterModal and the .copyButton / .urlInput pair inside .generalInnovationsOptions. --]
+[#macro innovationHeaderActions element]
+  <span class="inf-head__actions generalInnovationsOptions">
+    [#-- Shared Clusters --]
+    <button type="button" class="dlf-btn dlf-btn--ghost inf-headBtn" data-toggle="modal" data-target="#sharedClusterModal">
+      <svg class="dlf-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="4" cy="8" r="2" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12" cy="3.6" r="2" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12" cy="12.4" r="2" stroke="currentColor" stroke-width="1.5"></circle><path d="M5.8 7 10.2 4.6M5.8 9l4.4 2.4" stroke="currentColor" stroke-width="1.5"></path></svg>
+      [@s.text name="projectInnovations.redesign.share" /]
+      <span class="inf-headBtn__count" id="modalCounterShared">0</span>
+    </button>
 
-      [#-- hr in elements --]
-      <hr class="line-hr" />
-    
-      [#-- Innovation ID --]
-      <div class="col-md-4">
-        [@customForm.input name="${(innovationID)!}" i18nkey="projectInnovations.id" helpIcon=false required=false editable=false readOnly=true /]
-      </div>
+    [#-- Copy --]
+    <button type="button" class="dlf-btn dlf-btn--ghost inf-headBtn copyButton">
+      <svg class="dlf-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="5" y="2.2" width="8.4" height="9.6" rx="1.6" stroke="currentColor" stroke-width="1.4"></rect><path d="M3 5v7.6c0 .9.7 1.6 1.6 1.6H10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+      [@s.text name="projectInnovations.redesign.copyLink" /]
+    </button>
+    [#local summaryPDF = "${baseUrl}/summaries/${crpSession}/projectInnovationSummary.do?innovationID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
+    [@customForm.input name="innovation.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
+  </span>
 
-      [#-- Year --]        
-      <div class="col-md-4">                   
-        [@customForm.select name="innovation.projectInnovationInfo.year" className="setSelect2" i18nkey="policy.year" listName="getInnovationsYears(${innovationID})" header=false required=true editable=editable /]                        
-      </div>      
-
-      [#-- Buttons - Shared Clusters & Copy --]
-      <div class="col-md-4 generalInnovationsOptions">
-        [#-- Shared Clusters --]
-        <button type="button" class="btn btn-default btn-sm" style="margin-right: 5px;" data-toggle="modal" data-target="#sharedClusterModal">
-          <p><span class="glyphicon glyphicon-log-out"></span>[@s.text name="projectInnovations.shared" /]</p>
-          <p id="modalCounterShared">0</p>
-        </button>
-
-        [#-- Copy --]
-        <button type="button" class="btn btn-default btn-sm copyButton" style="margin-right: 5px;">
-          <p><span class="glyphicon glyphicon-duplicate"></span>[@s.text name="projectInnovations.copylink" /]</p> 
-        </button>
-        [#local summaryPDF = "${baseUrl}/summaries/${crpSession}/projectInnovationSummary.do?innovationID=${(element.id)!}&cycle=Reporting&year=${(actualPhase.year)!}"]
-        [@customForm.input name="innovation.projectExpectedStudyInfo.link" i18nkey="study.general.link" className="form-control input-sm urlInput" value="${summaryPDF}" editable=editable display=false readOnly=true/]
-        <div class="message text-center" style="display:none; margin-top:6px;">[@s.text name="study.general.link.copy" /]</div>
-
-      </div>
-
-      [#-- Shared Cluster Modal --]
-      <div class="form-group col-md-12 sharedClusterMessage">
-        <div class="modal fade" id="sharedClusterModal" tabindex="-1" role="dialog" aria-labelledby="sharedClusterModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="sharedClusterModalLabel">[@s.text name="projectInnovations.sharedProjects.title" /]</h4>
-              </div>
-              <div class="modal-body">
-                      [#-- Projects shared --]
-                <h5 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h5>
-                [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">[@s.text name="projectInnovations.sharedProjects.close" /]</button>
-              </div>
-            </div>
-          </div>
+  [#-- Shared Cluster Modal --]
+  <div class="modal fade sharedClusterMessage" id="sharedClusterModal" tabindex="-1" role="dialog" aria-labelledby="sharedClusterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="sharedClusterModalLabel">[@s.text name="projectInnovations.sharedProjects.title" /]</h4>
         </div>
-
-        <div class="clearfix"></div>
+        <div class="modal-body">
+          [#-- Projects shared --]
+          <h5 class="headTitle">[@s.text name="projectInnovations.sharedProjects.title" /]</h5>
+          [@customForm.elementsListComponent name="innovation.sharedInnovations" elementType="project" elementList=(innovation.sharedInnovations)![] label="projectInnovations.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">[@s.text name="projectInnovations.sharedProjects.close" /]</button>
+        </div>
       </div>
-              
-
     </div>
-    <div class="form-group col-md-12 margin-buttom-0 margin-top-10" style="height: 63px;" >
-      <div class="col-md-6 grayNeutralBox padding-left-16-px displayFlex" style="height: inherit;">
-        <img src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32px" height="32px" alt="CGIAR Logo" />
-        <div class="prmsContents margin-left-10">
-          <p class="font-size-12 margin-buttom-0">Innovations with PRMS</p>
-          <div class="prmsContents__amount font-size-12" style="display: none;">
-            <span>Already Mapped:</span>
-            <span id="modalCounterPRMS">0</span>
-            <span><b>innovation(s)</b></span>
-          </div>
-          <b class="prmsContents__no__amount font-size-12">No innovations mapped</b>
-        </div>
-        <button type="button" class="btn btn-default btn-sm btnPRMSInnovations" data-toggle="modal" data-target="#prmsInnovationsModal"><span class="entypo--popup"></span>Map innovations</button>
-      </div>
-      <div class="col-md-6 grayPlatinumBox padding-left-16-px" style="height: inherit; align-content: center;">
-        <label class="displayContents" style="cursor: auto;">Status:</label>
-        <label class="displayContents" style="cursor: auto;"><b>Not yet synchronized with PRMS</b></label>
-      </div>
+  </div>
+[/#macro]
 
+[#-- A2-2613: Annual Report year and the PRMS mapping in one card. projectInnovations.js keeps the PRMS counter
+     (.prmsContents__amount, #modalCounterPRMS, .prmsContents__no__amount) and the mapped list current. --]
+[#macro innovationReportingStrip element]
+  <div class="dlf-card inf-strip">
+    [#-- Year --]
+    <div class="inf-strip__year">
+      [@customForm.select name="innovation.projectInnovationInfo.year" i18nkey="policy.year" listName="getInnovationsYears(${innovationID})" header=false required=true editable=editable /]
+      <span class="dlf-hint inf-strip__hint" data-inf-year-hint data-phase-year="${(actualPhase.year?c)!}"
+        data-current="[@s.text name="projectInnovations.redesign.year.current"][@s.param]${(actualPhase.name)!} ${(actualPhase.year?c)!}[/@s.param][/@s.text]"
+        data-previous="[@s.text name="projectInnovations.redesign.year.previous" /]"></span>
+    </div>
 
-      [#-- PRMS Innovations List Modal --]
-      <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel">
-        <div class="modal-dialog modal-lg" style="width: 1100px;">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" >&times;</button>
-              <h4 class="modal-title" id="prmsInnovationsModalLabel">[@s.text name="projectInnovations.prmsInnovations.title" /]</h4>
-            </div>
-            <div class="modal-body" style="padding: 24px; display: flex; flex-direction: column; gap: 6px;">
-              [#-- Note - Green --]
-              <div class="note">
-                <p>[@s.text name="projectInnovations.prmsInnovations.helpText.readText" /]</p>
-              </div>
-
-              [#-- Note - Yellow - Warning No save information --]
-                <label class="note note--3 warningUnsaveInformation" style="display: none;"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >The mapped innovations changes are not save yet. Please save all the changes made after close the modal.</span></label>
-
-              [@tablePRMSInnovation list=prmsInnovationList selected=element.prmsInnovations /]
-
-              <hr style="background: #CCC; width: 100%;" />
-
-              <div>
-                <label>[@s.text name="projectInnovations.prmsInnovations.additionalNotes" /]:</label>
-                [@s.text name="projectInnovations.prmsInnovations.additionalNotes.items" /]
-              </div>
-
-            </div>
-          </div>
-        </div>
-        <div class="clearfix"></div>
-      </div>
-
-      [#-- Reference List of Mapped PRMS Innovations --]
-      <div id="referenceMappedPRMSInnovations" style="display: none;">
-      [#if element.prmsInnovations?has_content]
-        [#list element.prmsInnovations as prmsInnovation]
-          [@hiddenMapPRMSInnovations element=prmsInnovation name="innovation.prmsInnovations" index=prmsInnovation_index template=false editable=editable /]
-        [/#list]
+    [#-- PRMS --]
+    <div class="inf-strip__prms">
+      <img class="inf-strip__logo" src="${baseUrlCdn}/global/images/cgiar_logo_black.png" width="32" height="32" alt="CGIAR" />
+      <span class="inf-strip__prmsText prmsContents">
+        <span class="inf-strip__eyebrow">[@s.text name="projectInnovations.redesign.prms.title" /]</span>
+        <span class="inf-strip__count prmsContents__amount" style="display: none;">[@s.text name="projectInnovations.redesign.prms.mapped" /] <span id="modalCounterPRMS">0</span> [@s.text name="projectInnovations.redesign.prms.mappedUnit" /]</span>
+        <span class="inf-strip__count prmsContents__no__amount">[@s.text name="projectInnovations.redesign.prms.none" /]</span>
+      </span>
+      <span class="inf-strip__status"><span class="inf-strip__statusDot" aria-hidden="true"></span>[@s.text name="projectInnovations.redesign.prms.status" /]</span>
+      [#if editable]
+        <button type="button" class="dlf-btn inf-strip__map btnPRMSInnovations" data-toggle="modal" data-target="#prmsInnovationsModal">
+          <svg class="dlf-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.4" y="5" width="8.6" height="8.6" rx="1.6" stroke="currentColor" stroke-width="1.5"></rect><path d="M5.6 2.4h8v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          [@s.text name="projectInnovations.redesign.prms.map" /]
+        </button>
       [/#if]
-      </div>
-
-      [#-- Template hiddenMapPRMSInnovations --]
-      <div id="hiddenMapPRMSInnovations" style="display: none;">
-        [@hiddenMapPRMSInnovations element={} name="innovation.prmsInnovations" index=-1 template=true editable=editable /]
-      </div>
-
     </div>
+  </div>
+
+  [#-- PRMS Innovations List Modal --]
+  <div class="modal fade" id="prmsInnovationsModal" tabindex="-1" role="dialog" aria-labelledby="prmsInnovationsModalLabel">
+    <div class="modal-dialog modal-lg" style="width: 1100px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" >&times;</button>
+          <h4 class="modal-title" id="prmsInnovationsModalLabel">[@s.text name="projectInnovations.prmsInnovations.title" /]</h4>
+        </div>
+        <div class="modal-body" style="padding: 24px; display: flex; flex-direction: column; gap: 6px;">
+          [#-- Note - Green --]
+          <div class="note">
+            <p>[@s.text name="projectInnovations.prmsInnovations.helpText.readText" /]</p>
+          </div>
+
+          [#-- Note - Yellow - Warning No save information --]
+          <label class="note note--3 warningUnsaveInformation" style="display: none;"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >The mapped innovations changes are not save yet. Please save all the changes made after close the modal.</span></label>
+
+          [@tablePRMSInnovation list=prmsInnovationList selected=element.prmsInnovations /]
+
+          <hr style="background: #CCC; width: 100%;" />
+
+          <div>
+            <label>[@s.text name="projectInnovations.prmsInnovations.additionalNotes" /]:</label>
+            [@s.text name="projectInnovations.prmsInnovations.additionalNotes.items" /]
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  [#-- Reference List of Mapped PRMS Innovations --]
+  <div id="referenceMappedPRMSInnovations" style="display: none;">
+  [#if element.prmsInnovations?has_content]
+    [#list element.prmsInnovations as prmsInnovation]
+      [@hiddenMapPRMSInnovations element=prmsInnovation name="innovation.prmsInnovations" index=prmsInnovation_index template=false editable=editable /]
+    [/#list]
+  [/#if]
+  </div>
+
+  [#-- Template hiddenMapPRMSInnovations --]
+  <div id="hiddenMapPRMSInnovations" style="display: none;">
+    [@hiddenMapPRMSInnovations element={} name="innovation.prmsInnovations" index=-1 template=true editable=editable /]
   </div>
 [/#macro]
 
@@ -515,6 +500,27 @@
           
         </div>
         
+[/#macro]
+
+[#-- A2-2613: the Alliance Alignment tab left the form, but the save replaces the innovation info and the Alliance
+     levers with what the form posts. Its stored answers are posted back unchanged so a save keeps them as they are
+     (the tab's own macro below forced lever 3 on every save). --]
+[#macro innovationAllianceStored element]
+  [#if editable]
+    [#list (element.allianceLevers)![] as elementLever]
+      [#if (elementLever.allianceLever.id)??]
+        <input type="hidden" name="innovation.allianceLevers[${elementLever_index}].id" value="${(elementLever.id?c)!}" />
+        <input type="hidden" name="innovation.allianceLevers[${elementLever_index}].allianceLever.id" value="${elementLever.allianceLever.id?c}" />
+      [/#if]
+    [/#list]
+    [#local info = (element.projectInnovationInfo)! /]
+    [#if (info.otherAllianceLever)??]<input type="hidden" name="innovation.projectInnovationInfo.otherAllianceLever" value="${info.otherAllianceLever}" />[/#if]
+    [#if (info.intellectualPropertyInstitution.id)??]<input type="hidden" name="innovation.projectInnovationInfo.intellectualPropertyInstitution.id" value="${info.intellectualPropertyInstitution.id?c}" />[/#if]
+    [#if (info.otherIntellectualProperty)??]<input type="hidden" name="innovation.projectInnovationInfo.otherIntellectualProperty" value="${info.otherIntellectualProperty}" />[/#if]
+    [#if (info.hasLegalRestrictions)??]<input type="hidden" name="innovation.projectInnovationInfo.hasLegalRestrictions" value="${info.hasLegalRestrictions?c}" />[/#if]
+    [#if (info.hasAssetPotential)??]<input type="hidden" name="innovation.projectInnovationInfo.hasAssetPotential" value="${info.hasAssetPotential?c}" />[/#if]
+    [#if (info.hasFurtherDevelopment)??]<input type="hidden" name="innovation.projectInnovationInfo.hasFurtherDevelopment" value="${info.hasFurtherDevelopment?c}" />[/#if]
+  [/#if]
 [/#macro]
 
 [#macro innovationAlliance element name index=-1 template=false]

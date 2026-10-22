@@ -1,0 +1,189 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster innovation form (A2-2613 redesign).
+ *
+ * projectInnovation.ftl reuses the deliverable form redesign (deliverableForm.css, .dlf):
+ * header chips, title, notes, tabs, section cards, customForm fields and the save bar.
+ * This file only carries what the innovation form adds, scoped under .inf, at a weight
+ * that beats the legacy projectInnovations.css loaded before it.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.dlf.inf [hidden] { display: none !important; }
+
+/* ---------- Header ---------- */
+
+.dlf .inf-chip--bundle {
+  padding: 0 9px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 999px;
+  background: var(--dlf-info-bg);
+  color: var(--dlf-brand-dark);
+}
+
+/* projectInnovations.css pins .generalInnovationsOptions to the corner as a column of blue buttons. */
+.dlf .inf-head__actions.generalInnovationsOptions {
+  position: static;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 0;
+}
+.dlf .inf-head__actions .inf-headBtn {
+  position: static;
+  top: auto;
+  width: auto;
+  height: 34px;
+  padding: 0 12px;
+  justify-content: center;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  color: var(--dlf-ink);
+}
+.dlf .inf-head__actions #modalCounterShared { width: auto; color: var(--dlf-ink-soft); }
+.dlf .inf-head__actions #modalCounterShared.is-on { color: #fff; }
+.dlf .inf-headBtn:hover,
+.dlf .inf-headBtn:focus { border-color: var(--dlf-brand); color: var(--dlf-brand-dark); }
+.dlf .inf-headBtn__count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--dlf-chip);
+  color: var(--dlf-ink-soft);
+  font: 700 11px/18px Figtree, sans-serif;
+  text-align: center;
+}
+.dlf .inf-headBtn__count.is-on { background: var(--dlf-brand); color: #fff; }
+/* projectInnovations.js paints the copied state inline; the design's copied state is the soft green. */
+.dlf .inf-headBtn.copyButton[style*="background-color"] {
+  border-color: var(--dlf-ok-border) !important;
+  background-color: var(--dlf-ok-bg) !important;
+  color: var(--dlf-ok) !important;
+}
+.dlf .inf-head__actions .urlInput,
+.dlf .inf-head__actions .input { display: none; }
+
+/* ---------- Annual Report year + PRMS ---------- */
+
+.dlf .inf-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+}
+.dlf .inf-strip__year {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 18px;
+  border-right: 1px solid var(--dlf-line-soft);
+}
+.dlf .inf-strip__year .form-group { margin: 0; }
+.dlf .inf-strip__year label { margin-bottom: 6px; }
+.dlf .inf-strip__year select.form-control {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 12px center no-repeat;
+  box-shadow: none;
+  font: 500 14px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-strip__year select.form-control:focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-strip__hint:empty { display: none; }
+.dlf .inf-strip__prms { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 18px; }
+.dlf .inf-strip__logo { flex: none; width: 40px; height: 40px; padding: 4px; border: 1px solid var(--dlf-line); border-radius: 8px; object-fit: contain; }
+.dlf .inf-strip__prmsText { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px; }
+.dlf .inf-strip__eyebrow { font: 600 11px Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .inf-strip__count { font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-strip__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid #E0E5EB;
+  border-radius: 999px;
+  background: #F1F3F6;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-strip__statusDot { width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-subtle); }
+/* projectInnovations.css pins .btnPRMSInnovations to the card corner as a filled button. */
+.dlf .inf-strip__map.btnPRMSInnovations {
+  position: static;
+  height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--dlf-brand);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  color: var(--dlf-brand);
+}
+.dlf .inf-strip__map:hover,
+.dlf .inf-strip__map:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+
+/* ---------- Read-only note ---------- */
+
+.dlf .inf-readOnly {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px 11px 16px;
+  border: 1px solid #E0E5EB;
+  border-radius: var(--dlf-radius);
+  background: #F7F9FB;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-readOnly__text { flex: 1; font: 500 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-readOnly__edit { height: 32px; background: var(--dlf-brand); color: #fff; text-decoration: none; }
+.dlf .inf-readOnly__edit:hover,
+.dlf .inf-readOnly__edit:focus { background: var(--dlf-brand-dark); color: #fff; text-decoration: none; }
+
+/* ---------- Tabs: equal widths, a check or the missing-fields pill ---------- */
+
+/* projectInnovations.js sets an inline width on each tab; the row shares itself out instead (33% / 25%). */
+.dlf .inf-tabs > .nav-tabs { gap: 0; }
+.dlf .inf-tabs > .nav-tabs > li { flex: 1 1 0; min-width: 0; width: auto !important; }
+.dlf .inf-tabs > .nav-tabs > li > a {
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 12px;
+  border-radius: 8px 8px 0 0;
+}
+.dlf .inf-tabs > .nav-tabs > li > a:hover { background: #F7FAFC; }
+.dlf .inf-tab__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dlf .inf-tab__ok { color: var(--dlf-ok); }
+.dlf .inf-tab__missing {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 999px;
+  background: var(--dlf-warn-bg);
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .inf-tab__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dlf-warn-dot); }
+/* projectInnovations.css paints the legacy submitted / toSubmit tab states. */
+.dlf .inf-tabs > .nav-tabs > li.submitted > a,
+.dlf .inf-tabs > .nav-tabs > li.toSubmit > a { background-image: none; }
+.dlf .inf-tabs > .nav-tabs > li.submitted > a::after,
+.dlf .inf-tabs > .nav-tabs > li.toSubmit > a::after,
+.dlf .inf-tabs > .nav-tabs > li.submitted::after,
+.dlf .inf-tabs > .nav-tabs > li.toSubmit::after { display: none; content: none; }
+
+@media (max-width: 767px) {
+  .dlf .inf-strip { grid-template-columns: minmax(0, 1fr); }
+  .dlf .inf-strip__year { border-right: 0; border-bottom: 1px solid var(--dlf-line-soft); }
+  .dlf .inf-tabs > .nav-tabs { overflow-x: auto; }
+  .dlf .inf-tabs > .nav-tabs > li { flex: 1 0 auto; }
+}

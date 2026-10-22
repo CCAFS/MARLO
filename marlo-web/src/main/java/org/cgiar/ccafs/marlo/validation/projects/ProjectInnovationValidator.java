@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.projects.ProjectInnovationAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
@@ -106,6 +107,26 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
     return false;
+  }
+
+  /**
+   * Number of missing fields a tab added after startIndex, for the tab's missing-fields pill in the innovation form.
+   *
+   * @param action the action collecting the missing fields
+   * @param tab the tab key read by projectInnovation.ftl
+   * @param startIndex length of the missing fields before the tab was validated
+   */
+  private void recordTabMissingCount(BaseAction action, String tab, int startIndex) {
+    if (!(action instanceof ProjectInnovationAction)) {
+      return;
+    }
+    int count = 0;
+    for (String field : action.getMissingFields().substring(startIndex).split(";")) {
+      if (!field.trim().isEmpty()) {
+        count++;
+      }
+    }
+    ((ProjectInnovationAction) action).getTabMissingCounts().put(tab, count);
   }
 
   private void updateAllianceAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
@@ -200,22 +221,33 @@ public class ProjectInnovationValidator extends BaseValidator {
     int innovationGeneralStart = action.getMissingFields().length();
     this.validateGeneralInformation(action, project, projectInnovation, saving);
     this.updateGeneralInformationStatus(action, projectInnovation, innovationGeneralStart, saving);
+    this.recordTabMissingCount(action, "general", innovationGeneralStart);
 
-    int innovationAllianceStart = action.getMissingFields().length();
-    this.validateAllianceAlignment(action, project, projectInnovation, saving);
-    this.updateAllianceAlignmentStatus(action, projectInnovation, innovationAllianceStart, saving);
+    // A2-2613: a global unit without the Alliance Alignment tab (AICCRA-FSRP IV) does not validate its fields. The
+    // stored answers stay untouched for the earlier phases and their summaries.
+    if (action.hasSpecificities(APConstants.INNOVATION_WITHOUT_ALLIANCE_ALIGNMENT_ACTIVE)) {
+      action.setInnovationAllianceAlignmentComplete(true);
+    } else {
+      int innovationAllianceStart = action.getMissingFields().length();
+      this.validateAllianceAlignment(action, project, projectInnovation, saving);
+      this.updateAllianceAlignmentStatus(action, projectInnovation, innovationAllianceStart, saving);
+      this.recordTabMissingCount(action, "alliance", innovationAllianceStart);
+    }
 
     int innovationOneCgiarStart = action.getMissingFields().length();
     this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
     this.updateOneCgiarAlignmentStatus(action, projectInnovation, innovationOneCgiarStart, saving);
+    this.recordTabMissingCount(action, "crossCutting", innovationOneCgiarStart);
 
     int innovationBundleStart = action.getMissingFields().length();
     this.validateInnovationBundle(action, project, projectInnovation, saving);
     this.updateBundleStatus(action, projectInnovation, innovationBundleStart, saving);
+    this.recordTabMissingCount(action, "bundle", innovationBundleStart);
 
     int innovationRightsStart = action.getMissingFields().length();
     this.validateInnovationRights(action, project, projectInnovation, saving);
     this.updateRightsStatus(action, projectInnovation, innovationRightsStart, saving);
+    this.recordTabMissingCount(action, "knowledge", innovationRightsStart);
 
     // The validator is called by Struts
     if (struts) {
