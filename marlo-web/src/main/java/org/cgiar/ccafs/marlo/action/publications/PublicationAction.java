@@ -104,6 +104,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -116,7 +117,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1233,7 +1233,10 @@ public class PublicationAction extends BaseAction {
       /**
        * The following is required because we need to update something on the @Deliverable if we want a row
        * created in the auditlog table.
+       * activeSince is the last modification date of the deliverable, and a new value on every save makes the
+       * update happen even when only child rows changed.
        */
+      deliverablePrew.setActiveSince(new Date());
       this.setModificationJustification(deliverablePrew);
       deliverableManager.saveDeliverable(deliverablePrew, this.getActionName(), relationsName, deliverable.getPhase());
       Path path = this.getAutoSaveFilePath();
@@ -1819,7 +1822,7 @@ public class PublicationAction extends BaseAction {
             deliverableProgramManager.saveDeliverableProgram(deliverableProgram);
           }
         } else {
-          Log.debug("No regional programs can be found in String : " + programID);
+          LOG.debug("No regional programs can be found in String : {}", programID);
         }
       }
     }

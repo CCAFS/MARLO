@@ -15,7 +15,10 @@
 
 package org.cgiar.ccafs.marlo.data;
 
+import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.MarloAuditableEntity;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.AuditLogContextProvider;
 
@@ -55,6 +58,15 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
     return user;
   }
 
+
+  /**
+   * The entities whose activeSince is the date of their last modification. Their mappings allow updating it.
+   * Every other entity keeps activeSince as the date it was created.
+   */
+  private boolean isActiveSinceModificationDate(MarloAuditableEntity entity) {
+    return entity instanceof Deliverable || entity instanceof ProjectInnovation
+      || entity instanceof ProjectExpectedStudy;
+  }
 
   /**
    * Note the implementation would be much simpler if we use JPA annotation @PreInser rather than raw hibernate.
@@ -101,6 +113,22 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
       return false;
     }
 
+    String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
+    Object[] state = event.getState();
+
+    MarloAuditableEntity auditableEntity = (MarloAuditableEntity) event.getEntity();
+
+    /**
+     * Deliverables, innovations and OICRs keep the date of their last modification in activeSince (their creation
+     * date is in create_date). It is set before the user check below, so an update without a session user still
+     * records when it happened.
+     */
+    if (this.isActiveSinceModificationDate(auditableEntity)) {
+      Date now = new Date();
+      this.setValue(state, propertyNames, "activeSince", now, auditableEntity);
+      auditableEntity.setActiveSince(now);
+    }
+
     User user = this.getUser();
 
     /**
@@ -110,10 +138,6 @@ public class AuditColumnHibernateListener implements PreInsertEventListener, Pre
       return false;
     }
 
-    String[] propertyNames = event.getPersister().getEntityMetamodel().getPropertyNames();
-    Object[] state = event.getState();
-
-    MarloAuditableEntity auditableEntity = (MarloAuditableEntity) event.getEntity();
     this.setValue(state, propertyNames, "modifiedBy", user, auditableEntity);
 
 

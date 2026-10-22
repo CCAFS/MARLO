@@ -181,6 +181,7 @@ public class DeliverablesItem<T> {
       deliverable.setCrp(globalUnitEntity);
       deliverable.setPhase(phase);
       deliverable.setIsPublication(true);
+      deliverable.setCreateDate(new Date());
       // save deliverables
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverablesID = deliverable.getId();
@@ -577,6 +578,7 @@ public class DeliverablesItem<T> {
       deliverable.setCrp(globalUnitEntity);
       deliverable.setPhase(phase);
       deliverable.setIsPublication(true);
+      deliverable.setCreateDate(new Date());
       deliverable = deliverableManager.saveDeliverable(deliverable);
       deliverablesID = deliverable.getId();
       if (deliverablesID != null) {
@@ -1317,6 +1319,9 @@ public class DeliverablesItem<T> {
       deliverable.setCrp(globalUnitEntity);
       deliverable.setPhase(phase);
       deliverable.setIsPublication(true);
+      // activeSince is the last modification date: a new value makes the update happen even when only child
+      // rows changed.
+      deliverable.setActiveSince(new Date());
       // save deliverables
       deliverable = deliverableManager.saveDeliverable(deliverable);
       idDeliverableDB = deliverable.getId();
@@ -1851,6 +1856,9 @@ public class DeliverablesItem<T> {
       deliverable.setCrp(globalUnitEntity);
       deliverable.setPhase(phase);
       deliverable.setIsPublication(true);
+      // activeSince is the last modification date: a new value makes the update happen even when only child
+      // rows changed.
+      deliverable.setActiveSince(new Date());
       // save deliverables
       deliverable = deliverableManager.saveDeliverable(deliverable);
       idDeliverableDB = deliverable.getId();

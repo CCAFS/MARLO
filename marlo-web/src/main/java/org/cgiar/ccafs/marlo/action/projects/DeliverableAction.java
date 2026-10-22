@@ -171,6 +171,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -3511,7 +3512,10 @@ public class DeliverableAction extends BaseAction {
       /**
        * The following is required because we need to update something on
        * the @Deliverable if we want a row created in the auditlog table.
+       * activeSince is the last modification date of the deliverable, and a new value on every save makes the
+       * update happen even when only child rows changed.
        */
+      deliverableManagedState.setActiveSince(new Date());
       this.setModificationJustification(deliverableManagedState);
       deliverableManagedState = deliverableManager.saveDeliverable(deliverableManagedState, this.getActionName(),
         relationsName, this.getActualPhase());
