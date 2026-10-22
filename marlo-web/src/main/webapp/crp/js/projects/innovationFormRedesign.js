@@ -176,6 +176,16 @@ $(document).ready(function() {
     refreshLevers();
   }
 
+  // ---- Organizations (mal-multiselect): "n selected" beside the label, kept in step with the list Vue draws ----
+  var $orgsCount = $root.find('[data-inf-orgs-count]');
+  watch($root.find('.inf-users mal-multiselect'), function() {
+    var selected = $root.find('.inf-users mal-multiselect .p-chip').length;
+    var label = selected ? format($orgsCount.attr('data-selected'), [selected]) : '';
+    if($orgsCount.text() !== label) {
+      $orgsCount.text(label);
+    }
+  });
+
   // Regional countries: deliverableFormRedesign.js labels every select of .regionalBlock "+ Add region..."; the
   // countries field under "specify countries" is a multi-select and reads "+ Add country..." instead.
   var $specifiedCountries = $root.find('.block-hasSpecifiedOutputCountries');

@@ -1532,6 +1532,7 @@
 .dlf .inf-users .block-anticipatedUsers { margin-top: 4px; }
 .dlf .inf-users .organizationsBlock,
 .dlf .inf-users .organizationsBlock > .form-group { margin: 0; padding: 0 !important; }
+.dlf .inf-users .organizationsBlock > .form-group { margin-top: 10px; }
 .dlf .inf-users .organizationsBlock > .form-group > label { display: block; }
 
 /* Actors: the help note in the form's font, the cards in the design's grey, removal as a bin */
@@ -1545,25 +1546,155 @@
 .dlf .inf-users .actorsInnovation .removeActor:hover,
 .dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement:hover { background-color: var(--dlf-danger-bg) !important; }
 
-/* Organizations (mal-multiselect, PrimeVue): the form's field */
+/* Organizations (mal-multiselect, PrimeVue): the form's select, then the chosen organizations as a list of rows.
+   projectInnovations.css styles the component with !important, so these rules repeat it. */
 .dlf .inf-users mal-multiselect { display: block; width: 100%; }
+.dlf .inf-users .organizationsBlock > .form-group > label .inf-count { margin-left: 8px; }
 .dlf .inf-users mal-multiselect .p-multiselect {
+  display: flex;
+  align-items: center;
   width: 100%;
-  min-height: 40px;
+  height: 40px;
+  padding: 0;
   border: 1px solid var(--dlf-line-strong);
   border-radius: 8px;
   background: #fff;
   box-shadow: none;
-  font-family: Figtree, sans-serif;
 }
 .dlf .inf-users mal-multiselect .p-multiselect:hover { border-color: var(--dlf-subtle); }
 .dlf .inf-users mal-multiselect .p-multiselect.p-focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
-.dlf .inf-users mal-multiselect .p-multiselect-label { padding: 9px 12px; font: 400 13.5px/20px Figtree, sans-serif; color: var(--dlf-ink); }
-.dlf .inf-users mal-multiselect .p-multiselect-label.p-placeholder { color: var(--dlf-subtle); }
-.dlf .inf-users mal-multiselect .p-multiselect-dropdown { width: 36px; color: var(--dlf-muted); }
-.dlf .inf-users mal-multiselect .p-component > .mt-2:not(:has(*)) { display: none; } /* the selected chips, when there is none */
-.dlf .inf-users mal-multiselect .p-component > .mt-2 { margin-top: 8px !important; }
-.dlf .inf-users mal-multiselect .p-chip { height: 28px; padding: 0 8px 0 10px; border-radius: 7px; background: var(--dlf-chip); font: 500 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-users mal-multiselect .p-multiselect-label-container { padding: 0; }
+/* Always "Select an organization..." (the component would read "n items selected") */
+.dlf .inf-users mal-multiselect .p-multiselect-label { padding: 0 12px; font-size: 0; line-height: 38px; }
+.dlf .inf-users mal-multiselect .p-multiselect-label > * { display: none; }
+.dlf .inf-users mal-multiselect .p-multiselect-label::before {
+  content: var(--inf-select-label, "");
+  font: 400 14px/38px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-users mal-multiselect .p-multiselect-dropdown { width: 36px; color: var(--dlf-ink-soft); }
+.dlf .inf-users mal-multiselect .p-multiselect-dropdown svg { width: 11px; height: 11px; }
+/* The chosen organizations */
+.dlf .inf-users mal-multiselect .p-component > .mt-2 {
+  display: flex !important;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0 !important;
+  margin-top: 8px !important;
+  padding: 0 !important;
+  background: none !important;
+}
+.dlf .inf-users mal-multiselect .p-component > .mt-2:not(:has(.p-chip)) { display: none !important; }
+.dlf .inf-users mal-multiselect .p-chip {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: auto;
+  min-height: 46px;
+  margin: 0 !important;
+  padding: 8px 10px 8px 12px !important;
+  border: 1px solid var(--dlf-line) !important;
+  border-radius: 10px;
+  background: var(--dlf-surface-alt) !important;
+  box-shadow: none !important;
+  font: 500 13.5px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-users mal-multiselect .p-chip:hover { background: var(--dlf-surface-alt) !important; }
+.dlf .inf-users mal-multiselect .p-chip::before {
+  content: "";
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 7px;
+  background: var(--dlf-info-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M2.5 7.2 8 2.8l5.5 4.4v6H2.5v-6Z' stroke='%230277A2' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M6.4 13.2V9.6h3.2v3.6' stroke='%230277A2' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-users mal-multiselect .p-chip-text {
+  flex: 1;
+  float: none;
+  width: auto;
+  min-width: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.dlf .inf-users mal-multiselect .p-chip-remove-icon {
+  position: static !important;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0 !important;
+  border-radius: 6px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat !important;
+  color: transparent !important;
+  font-size: 0;
+  opacity: 1;
+}
+.dlf .inf-users mal-multiselect .p-chip-remove-icon:hover { background-color: var(--dlf-danger-bg) !important; opacity: 1; }
+.dlf .inf-users mal-multiselect .p-chip-remove-icon::before { content: none; }
+
+/* Read-only: the list only, or "Not provided" */
+.dlf.inf.is-readonly .inf-users mal-multiselect .p-multiselect,
+.dlf.inf.is-readonly .inf-users mal-multiselect .p-chip-remove-icon { display: none; }
+.dlf.inf.is-readonly .inf-users mal-multiselect .p-component > .mt-2 { margin-top: 0 !important; }
+.dlf.inf.is-readonly .inf-users mal-multiselect #multi-select-container > .p-component:not(:has(.p-chip))::after {
+  content: var(--inf-empty-label, "");
+  font: 400 14px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+
+/* Its option list is portalled to <body>: the form's dropdown look */
+body:has(.dlf.inf) .p-multiselect-overlay {
+  min-width: 420px !important;
+  max-width: calc(100vw - 32px);
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid var(--dlf-line, #E5E9EF) !important;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(31, 42, 55, .12);
+  font-family: Figtree, sans-serif;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 0 0 6px;
+  border-bottom: 1px solid #EEF2F5 !important;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container {
+  flex: 1;
+  position: relative;
+  padding: 0;
+  border: 0;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-filter {
+  width: 100%;
+  height: 36px;
+  padding: 0 32px 0 12px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  font: 400 13.5px Figtree, sans-serif;
+  color: #1F2A37;
+  outline: none;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-filter:focus { border-color: #0277A2; box-shadow: 0 0 0 3px rgba(2, 119, 162, .12); }
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container .p-inputicon { top: 50%; right: 11px; margin-top: -7px; color: #9AA4B0; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-option {
+  gap: 10px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font: 400 13.5px Figtree, sans-serif;
+  color: #1F2A37;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-option:hover,
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-option.p-focus { background-color: #F2F9FC !important; color: #1F2A37 !important; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox { width: 16px; height: 16px; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-box { width: 16px; height: 16px; border: 1.5px solid #9AA4B0; border-radius: 4px; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-checked .p-checkbox-box { border-color: #0277A2; background: #0277A2; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-box .p-checkbox-icon { width: 10px; height: 10px; color: #fff; }
 
 /* ---- Evidence: notice, numbered cards in the design's grey, the source as a segmented control ---- */
 .dlf .inf-evid .statusEvidenceInImpactArea { display: none !important; } /* replaced by the notice below */
