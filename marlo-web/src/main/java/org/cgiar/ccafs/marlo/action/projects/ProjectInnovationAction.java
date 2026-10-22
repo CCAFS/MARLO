@@ -366,6 +366,8 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ScalingReadiness> scalingReadinessList;
   // Missing fields per form tab (general, alliance, crossCutting, bundle, knowledge), set by ProjectInnovationValidator
   private final Map<String, Integer> tabMissingCounts = new HashMap<>();
+  // Form tab to open (1 general ... 5 knowledge); posted by the form and kept in the session across the save redirect
+  private int indexTab;
 
   private List<Actor> actorList;
 
@@ -782,6 +784,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public ProjectInnovation getInnovation() {
     return innovation;
+  }
+
+  public int getIndexTab() {
+    return indexTab;
   }
 
   public long getInnovationID() {
@@ -2436,6 +2442,16 @@ public class ProjectInnovationAction extends BaseAction {
       }
     }
 
+    // Reopen the tab the user saved from: save() leaves it in the session for the page after the redirect
+    Object savedTab = this.getSession().remove("innovationIndexTab");
+    if (savedTab != null) {
+      try {
+        indexTab = Integer.parseInt(savedTab.toString());
+      } catch (NumberFormatException e) {
+        indexTab = 0;
+      }
+    }
+
     if (innovation.getProjectInnovationInfo() != null) {
       this.validateTabs();
     }
@@ -2445,6 +2461,7 @@ public class ProjectInnovationAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
+      this.getSession().put("innovationIndexTab", indexTab);
       ProjectInnovationAction.getIsSaving().put("" + innovationID, "1");
 
       Phase phase = this.getActualPhase();
@@ -5104,6 +5121,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public void setInnovation(ProjectInnovation innovation) {
     this.innovation = innovation;
+  }
+
+  public void setIndexTab(int indexTab) {
+    this.indexTab = indexTab;
   }
 
   public void setInnovationID(long innovationID) {

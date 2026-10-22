@@ -176,6 +176,11 @@ $(document).ready(function() {
     refreshLevers();
   }
 
+  // The open tab goes out with the form, so the page after a save opens on it again (ProjectInnovationAction)
+  $root.find('.inf-tabs a[data-toggle="tab"][index]').on('shown.bs.tab', function() {
+    $('#indexTab').val($(this).attr('index'));
+  });
+
   // ---- Organizations (mal-multiselect): "n selected" beside the label, kept in step with the list Vue draws ----
   var $orgsCount = $root.find('[data-inf-orgs-count]');
   watch($root.find('.inf-users mal-multiselect'), function() {

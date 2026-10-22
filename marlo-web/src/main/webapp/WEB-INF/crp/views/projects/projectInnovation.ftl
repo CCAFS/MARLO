@@ -21,7 +21,7 @@
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#-- The form redesign reuses the deliverable form's (A2-2607): save state, labels and word counters --]
   "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261021-1",
-  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261022-18"
+  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261022-19"
 ] /]
 
 [#assign moduleJS = [
@@ -74,7 +74,8 @@
 
 <input type="hidden" id="sectionNameToFeedback" value="innovation" />
 
-[#assign indexTab = 0]
+[#-- The tab the user saved from (ProjectInnovationAction keeps it across the save redirect); 0 or 1 is General --]
+[#assign indexTab = (action.indexTab)!0]
 
 [#assign geographicScopeList = (element.geographicScopes)![] ]
 [#assign isGlobal =        findElementID(geographicScopeList,  action.reportingIndGeographicScopeGlobal) /]
@@ -131,6 +132,12 @@
         [#assign isBundleCompositionRequired =  false /]
         [#if innovation.projectInnovationInfo?has_content && innovation.projectInnovationInfo.innovationBundle?has_content]
           [#assign isBundleCompositionRequired = innovation.projectInnovationInfo.innovationBundle!false /]
+        [/#if]
+
+        [#-- A tab that does not show for this innovation (any more) falls back to General Information --]
+        [#if (indexTab == 2 && !isAllianceContribution) || (indexTab == 3 && !withCrossCutting)
+          || (indexTab == 4 && !isBundleCompositionRequired) || indexTab gt 5]
+          [#assign indexTab = 1 /]
         [/#if]
 
         <div class="dlf inf[#if !editable] is-readonly[/#if]">
@@ -202,15 +209,15 @@
           [#-- Tabs share the row equally: 33% each, 25% each when Bundle composition shows (innovationFormRedesign.css) --]
           <div class="innovationTabs dlf-tabs inf-tabs">
             <ul class="nav nav-tabs" role="tablist" aria-label="[@s.text name="projectInnovations.redesign.tabs.label" /]">
-              [@infTab key="general" pane="innovationGeneral" label="projectInnovations.tab.general" complete=((action.isInnovationGeneralInformationComplete())!false) active=(indexTab==1 || indexTab==0) /]
+              [@infTab key="general" index=1 pane="innovationGeneral" label="projectInnovations.tab.general" complete=((action.isInnovationGeneralInformationComplete())!false) active=(indexTab==1 || indexTab==0) /]
               [#if !withoutAllianceAlignment]
-                [@infTab key="alliance" pane="innovationAlliance" label="projectInnovations.tab.allianceAlignment" complete=((action.isInnovationAllianceAlignmentComplete())!false) active=(indexTab==2) id="allianceTab" shown=isAllianceContribution /]
+                [@infTab key="alliance" index=2 pane="innovationAlliance" label="projectInnovations.tab.allianceAlignment" complete=((action.isInnovationAllianceAlignmentComplete())!false) active=(indexTab==2) id="allianceTab" shown=isAllianceContribution /]
               [/#if]
               [#if withCrossCutting]
-                [@infTab key="crossCutting" pane="innovationOneCGIAR" label="projectInnovations.tab.oneCGIARAlignment" complete=((action.isInnovationOneCgiarAlignmentComplete())!false) active=(indexTab==3) /]
+                [@infTab key="crossCutting" index=3 pane="innovationOneCGIAR" label="projectInnovations.tab.oneCGIARAlignment" complete=((action.isInnovationOneCgiarAlignmentComplete())!false) active=(indexTab==3) /]
               [/#if]
-              [@infTab key="bundle" pane="innovationBundle" label="projectInnovations.tab.bundleComposition" complete=((action.isInnovationBundleComplete())!false) active=(indexTab==4) id="bundleTab" shown=isBundleCompositionRequired /]
-              [@infTab key="knowledge" pane="innovationSharing" label="projectInnovations.tab.innovationSharing" complete=((action.isInnovationRightsComplete())!false) active=(indexTab==5) /]
+              [@infTab key="bundle" index=4 pane="innovationBundle" label="projectInnovations.tab.bundleComposition" complete=((action.isInnovationBundleComplete())!false) active=(indexTab==4) id="bundleTab" shown=isBundleCompositionRequired /]
+              [@infTab key="knowledge" index=5 pane="innovationSharing" label="projectInnovations.tab.innovationSharing" complete=((action.isInnovationRightsComplete())!false) active=(indexTab==5) /]
             </ul>
 
             [#-- Tabs Content --]
@@ -295,10 +302,10 @@
   [#return false]
 [/#function]
 [#-- One form tab: its label and its state, a check when complete or the count of missing required fields --]
-[#macro infTab key pane label complete active id="" shown=true]
+[#macro infTab key index pane label complete active id="" shown=true]
   [#local missing = (action.tabMissingCounts[key])!0 /]
   <li role="presentation"[#if id?has_content] id="${id}"[/#if] class="[#if active]active[/#if] ${complete?then('submitted','toSubmit')}" data-inf-tab="${key}"[#if !shown] style="display: none;"[/#if]>
-    <a href="#${pane}" role="tab" data-toggle="tab">
+    <a href="#${pane}" role="tab" data-toggle="tab" index="${index}">
       <span class="inf-tab__label" title="[@s.text name=label /]">[@s.text name=label /]</span>
       [#if complete]
         <svg class="dlf-icon inf-tab__ok" width="15" height="15" viewBox="0 0 16 16" fill="none" role="img" aria-label="[@s.text name="projectInnovations.redesign.tab.complete" /]"><circle cx="8" cy="8" r="6.4" fill="currentColor"></circle><path d="M5.2 8.2 7.1 10l3.7-4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
