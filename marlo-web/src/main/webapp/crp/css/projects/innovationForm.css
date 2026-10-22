@@ -549,3 +549,72 @@
 @media (max-width: 991px) {
   .dlf .inf-general #dlf-partners .usersBlock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ---- Value chain(s) (A2-2613): checkbox chips, an "or", then the exclusive "Not value-chain specific" ---- */
+.dlf .inf-vc { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-vc__head { display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-card .inf-vc__head > .inf-vc__label { margin: 0; }
+.dlf .inf-vc__head > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-vc__help { margin: -2px 0 0; }
+.dlf .inf-vc__group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+/* fieldsValidation.js marks the group label when the value chains are missing */
+.dlf .inf-vc:has(.inf-vc__error:not([hidden])) .inf-vc__group { border-color: var(--dlf-required); background: #FFF8F6; }
+.dlf .inf-vc__error { display: flex; align-items: center; gap: 6px; margin: 0; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-required); }
+.dlf .dlf-card label.inf-vcChip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-vcChip input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-vcChip__box {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--dlf-line-strong);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .inf-vcChip--exclusive .inf-vcChip__box { border-radius: 50%; }
+.dlf .dlf-card label.inf-vcChip:hover { border-color: var(--dlf-brand); }
+.dlf .dlf-card label.inf-vcChip.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-vcChip.is-on .inf-vcChip__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-vcChip--exclusive.is-on .inf-vcChip__box { background: radial-gradient(circle, var(--dlf-brand) 0 3px, #fff 3.5px); }
+.dlf .dlf-card label.inf-vcChip.is-disabled { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-subtle); cursor: not-allowed; }
+.dlf .inf-vcChip.is-disabled .inf-vcChip__box { border-color: var(--dlf-line); background: #F1F3F6; }
+.dlf .inf-vcChip input:focus-visible + .inf-vcChip__box { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-vc__or {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 4px;
+  font: 500 12px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+.dlf .inf-vc__or::before { content: ""; width: 1px; height: 24px; background: #DDE3EA; }
+.dlf .inf-vc__note { margin: 0; font: 400 12px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .inf-vc__readOnly { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.dlf .inf-vc__value { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; background: var(--dlf-chip); font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-vc__empty { font: 400 14px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-vc > .inf-other { margin-top: 0; }

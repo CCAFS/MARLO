@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.projects.ProjectInnovationAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -32,13 +33,17 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ValueChain;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -60,12 +65,15 @@ public class ProjectInnovationValidator extends BaseValidator {
   private boolean struts = true;
   private Boolean clearLead = false;
   private InstitutionManager institutionManager;
+  private ValueChainManager valueChainManager;
 
   @Inject
-  public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
+  public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager,
+    ValueChainManager valueChainManager) {
     super();
     this.crpManager = crpManager;
     this.institutionManager = institutionManager;
+    this.valueChainManager = valueChainManager;
   }
 
   private Path getAutoSaveFilePath(ProjectInnovation innovation, long crpID, BaseAction action) {
@@ -287,6 +295,46 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
+  }
+
+  /**
+   * Validate the value chains of an innovation (A2-2613): at least one, and the other value chain (up to 10 words)
+   * when "Other" is one of them.
+   *
+   * @param action base action
+   * @param projectInnovation the innovation, with the value chains of the phase (posted or loaded)
+   * @param innovationInfo the innovation info of the phase
+   */
+  private void validateValueChains(BaseAction action, ProjectInnovation projectInnovation,
+    ProjectInnovationInfo innovationInfo) {
+    List<ValueChain> valueChains = new ArrayList<>();
+    if (projectInnovation.getValueChains() != null) {
+      for (ProjectInnovationValueChain item : projectInnovation.getValueChains()) {
+        if (item != null && item.getValueChain() != null && item.getValueChain().getId() != null) {
+          ValueChain valueChain = valueChainManager.getValueChainById(item.getValueChain().getId());
+          if (valueChain != null) {
+            valueChains.add(valueChain);
+          }
+        }
+      }
+    }
+
+    if (valueChains.isEmpty()) {
+      action.addMessage(action.getText("projectInnovations.valueChains.missing"));
+      action.addMissingField("projectInnovations.valueChains");
+      action.getInvalidFields().put("list-innovation.valueChains",
+        action.getText("projectInnovations.valueChains.missing"));
+      return;
+    }
+
+    boolean hasOther = valueChains.stream().anyMatch(ValueChain::isOther);
+    String otherValueChain = innovationInfo != null ? innovationInfo.getOtherValueChain() : null;
+    if (hasOther && !(this.isValidString(otherValueChain) && this.wordCount(otherValueChain) <= 10)) {
+      action.addMessage(action.getText("projectInnovations.otherValueChain"));
+      action.addMissingField("projectInnovations.otherValueChain");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherValueChain",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
   /**
@@ -611,6 +659,8 @@ public class ProjectInnovationValidator extends BaseValidator {
         }
       }
     }
+
+    this.validateValueChains(action, projectInnovation, innovationInfo);
 
     // Validate Description Stage
     if (!resultProgessValidate && !action.isAiccra()) {

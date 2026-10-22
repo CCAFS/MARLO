@@ -72,6 +72,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationToolCategoryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -90,6 +91,7 @@ import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.SdgManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ToolFunctionCategoryManager;
+import org.cgiar.ccafs.marlo.data.manager.ValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Actor;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
@@ -147,6 +149,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -168,6 +171,7 @@ import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ToolFunctionCategory;
+import org.cgiar.ccafs.marlo.data.model.ValueChain;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -288,6 +292,8 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationActorManager projectInnovationActorManager;
   private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
+  private ValueChainManager valueChainManager;
+  private ProjectInnovationValueChainManager projectInnovationValueChainManager;
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
   private ImpactAreaScoreManager impactAreaScoreManager;
@@ -360,6 +366,7 @@ public class ProjectInnovationAction extends BaseAction {
   private List<InstitutionType> institutionTypeList;
 
   private List<ToolFunctionCategory> toolCategoryList;
+  private List<ValueChain> valueChainList;
   private List<DeliverableType> deliverableTypeParent;
   private List<DeliverableType> deliverableSubTypes;
   private List<ProjectInnovation> innovationList;
@@ -426,7 +433,8 @@ public class ProjectInnovationAction extends BaseAction {
       ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager,
       ProjectInnovationBundleManager projectInnovationBundleManager,
       ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager,
-      PRMSInnovationManager prmsInnovationManager, ProjectInnovationPRMSManager projectInnovationPRMSManager) {
+      PRMSInnovationManager prmsInnovationManager, ProjectInnovationPRMSManager projectInnovationPRMSManager,
+      ValueChainManager valueChainManager, ProjectInnovationValueChainManager projectInnovationValueChainManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -492,6 +500,8 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationReferenceComplementarySolutionManager = projectInnovationReferenceComplementarySolutionManager;
     this.projectInnovationActorManager = projectInnovationActorManager;
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
+    this.valueChainManager = valueChainManager;
+    this.projectInnovationValueChainManager = projectInnovationValueChainManager;
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.institutionLocationManager = institutionLocationManager;
@@ -914,6 +924,10 @@ public class ProjectInnovationAction extends BaseAction {
 
   public Map<String, Integer> getTabMissingCounts() {
     return tabMissingCounts;
+  }
+
+  public List<ValueChain> getValueChainList() {
+    return valueChainList;
   }
 
   public List<ToolFunctionCategory> getToolCategoryList() {
@@ -1447,6 +1461,10 @@ public class ProjectInnovationAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovation value chains (A2-2613)
+        innovation.setValueChains(new ArrayList<>(
+            projectInnovationValueChainManager.getByInnovationAndPhase(innovation.getId(), phase.getId())));
+
         // Innovations SDGs
         if (innovation.getProjectInnovationSDGs() != null) {
           innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
@@ -1653,6 +1671,7 @@ public class ProjectInnovationAction extends BaseAction {
         this.scalingReadinessList = this.scalingReadinessManager.findAll();
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+        this.valueChainList = this.valueChainManager.findAll();
         this.optionList = this.repIndOptionsManager.findAll();
         this.projectInnovationFunctionList = this.projectInnovationFunctionManager.findAll();
         try {
@@ -2328,6 +2347,9 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getSdgs() != null) {
         innovation.getSdgs().clear();
       }
+      if (innovation.getValueChains() != null) {
+        innovation.getValueChains().clear();
+      }
       if (innovation.getAllianceLevers() != null) {
         innovation.getAllianceLevers().clear();
       }
@@ -2472,6 +2494,7 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveGeographicScope(innovationDB, phase);
       this.saveProjectInnovationPartnership(innovationDB, phase);
       this.saveAllianceLevers(innovationDB, phase);
+      this.saveValueChains(innovationDB, phase);
       this.saveSDGs(innovationDB, phase);
       this.saveImpactAreas(innovationDB, phase);
       // this.saveRegions(innovationDB, phase);
@@ -2563,6 +2586,10 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.setModificationJustification(this.getJustification());
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
+      // A2-2613: the other value chain only stands while "Other" is one of the value chains
+      if (this.postedValueChains().stream().noneMatch(ValueChain::isOther)) {
+        innovation.getProjectInnovationInfo().setOtherValueChain(null);
+      }
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
 
       // Setup focusLevel
@@ -2864,6 +2891,32 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
+  /**
+   * Value chains the form posted, as active catalog entries: without the gaps the unchecked boxes leave, without
+   * repeats, and only "Not value-chain specific" when it came together with other value chains (A2-2613 rule 4.1.2).
+   *
+   * @return the posted value chains, an empty list when none was posted
+   */
+  private List<ValueChain> postedValueChains() {
+    List<ValueChain> posted = new ArrayList<>();
+    if (innovation.getValueChains() == null) {
+      return posted;
+    }
+    Set<Long> seen = new HashSet<>();
+    for (ProjectInnovationValueChain item : innovation.getValueChains()) {
+      if (item == null || item.getValueChain() == null || item.getValueChain().getId() == null
+          || !seen.add(item.getValueChain().getId())) {
+        continue;
+      }
+      ValueChain valueChain = valueChainManager.getValueChainById(item.getValueChain().getId());
+      if (valueChain != null && valueChain.isActive()) {
+        posted.add(valueChain);
+      }
+    }
+    List<ValueChain> notSpecific = posted.stream().filter(ValueChain::isNotSpecific).collect(Collectors.toList());
+    return notSpecific.isEmpty() ? posted : notSpecific;
+  }
+
   public void saveAllianceLevers(ProjectInnovation projectInnovation, Phase phase) {
     try {
       // Search and deleted form Information
@@ -4580,6 +4633,41 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
+  /**
+   * Save the innovation value chains of the phase (A2-2613): the ones no longer posted are removed and the new ones
+   * added. The manager replicates both to the next phases.
+   *
+   * @param projectInnovation the innovation being saved
+   * @param phase the phase being saved
+   */
+  public void saveValueChains(ProjectInnovation projectInnovation, Phase phase) {
+    List<ValueChain> posted = this.postedValueChains();
+    Set<Long> postedIds = posted.stream().map(ValueChain::getId).collect(Collectors.toSet());
+    List<ProjectInnovationValueChain> saved =
+        projectInnovationValueChainManager.getByInnovationAndPhase(projectInnovation.getId(), phase.getId());
+    Set<Long> savedIds = new HashSet<>();
+    for (ProjectInnovationValueChain valueChainDB : saved) {
+      Long valueChainId = valueChainDB.getValueChain().getId();
+      if (postedIds.contains(valueChainId)) {
+        savedIds.add(valueChainId);
+      } else {
+        projectInnovationValueChainManager.deleteProjectInnovationValueChain(valueChainDB.getId());
+      }
+    }
+    for (ValueChain valueChain : posted) {
+      if (savedIds.contains(valueChain.getId())) {
+        continue;
+      }
+      ProjectInnovationValueChain valueChainSave = new ProjectInnovationValueChain();
+      valueChainSave.setProjectInnovation(projectInnovation);
+      valueChainSave.setValueChain(valueChain);
+      valueChainSave.setPhase(phase);
+      valueChainSave = projectInnovationValueChainManager.saveProjectInnovationValueChain(valueChainSave);
+      // Added so the audit log of the innovation records it
+      projectInnovation.getProjectInnovationValueChains().add(valueChainSave);
+    }
+  }
+
   public void saveSDGs(ProjectInnovation projectInnovation, Phase phase) {
     try {
       // Search and deleted form Information

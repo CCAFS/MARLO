@@ -464,6 +464,8 @@
   <mapping resource="xmls/ProjectInnovationReferenceComplementarySolutions.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationActors.hbm.xml"/>
   <mapping resource="xmls/ToolFunctionCategories.hbm.xml"/>
+  <mapping resource="xmls/ValueChains.hbm.xml"/>
+  <mapping resource="xmls/ProjectInnovationValueChains.hbm.xml"/>
   <mapping resource="xmls/ProjectInnovationToolCategories.hbm.xml"/>
   <mapping resource="xmls/ReportConfigurations.hbm.xml"/>
   <mapping resource="xmls/ImpactAreaScores.hbm.xml"/>

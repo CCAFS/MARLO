@@ -116,6 +116,45 @@ $(document).ready(function() {
   setAddLabel($root.find('.inf-leads .elementsListComponent select'), text('add-lead'));
   setAddLabel($root.find('.inf-indicators .elementsListComponent select'), text('add-indicator'));
 
+  // ---- Value chain(s) (A2-2613) ----
+  // "Not value-chain specific" is exclusive: choosing it clears and disables every other value chain, and choosing any
+  // other value chain disables it. "Other" shows the other value chain text.
+  var $valueChains = $root.find('[data-inf-value-chains]');
+  function refreshValueChains() {
+    var $boxes = $valueChains.find('.inf-vcChip input[type="checkbox"]');
+    var $notSpecific = $boxes.filter('[data-not-specific]');
+    var $specific = $boxes.not('[data-not-specific]');
+    var notSpecificOn = $notSpecific.is(':checked');
+    var specificOn = $specific.is(':checked');
+    $specific.prop('disabled', notSpecificOn);
+    $notSpecific.prop('disabled', specificOn);
+    $boxes.each(function() {
+      var why = '';
+      if(this.disabled) {
+        why = $valueChains.attr($(this).is('[data-not-specific]') ? 'data-clear-first' : 'data-unavailable');
+      }
+      $(this).closest('.inf-vcChip').toggleClass('is-on', this.checked).toggleClass('is-disabled', this.disabled)
+        .attr('title', why || null);
+    });
+    var $note = $valueChains.find('[data-inf-vc-note]');
+    $note.text(notSpecificOn ? $valueChains.attr('data-note') : '').prop('hidden', !notSpecificOn);
+    $valueChains.find('[data-inf-vc-other]').toggle($boxes.filter('[data-other]').is(':checked'));
+    var selected = $boxes.filter(':checked').length;
+    $valueChains.find('[data-inf-vc-count]').text(selected ? format($valueChains.attr('data-selected'), [selected]) : '');
+    // The missing message stands until a value chain is chosen
+    var missing = $valueChains.find('.inf-vc__label').hasClass('fieldError') && !selected;
+    $valueChains.find('[data-inf-vc-error]').prop('hidden', !missing);
+  }
+  if($valueChains.length) {
+    $valueChains.on('change', '.inf-vcChip input[type="checkbox"]', function() {
+      if(this.checked && $(this).is('[data-not-specific]')) {
+        $valueChains.find('.inf-vcChip input[type="checkbox"]').not(this).prop('checked', false);
+      }
+      refreshValueChains();
+    });
+    refreshValueChains();
+  }
+
   // Regional countries: deliverableFormRedesign.js labels every select of .regionalBlock "+ Add region..."; the
   // countries field under "specify countries" is a multi-select and reads "+ Add country..." instead.
   var $specifiedCountries = $root.find('.block-hasSpecifiedOutputCountries');

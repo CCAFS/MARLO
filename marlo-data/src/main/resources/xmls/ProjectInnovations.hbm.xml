@@ -172,6 +172,14 @@
       <one-to-many
         class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationPartnership" />
     </set>
+    <set name="projectInnovationValueChains" table="project_innovation_value_chains"
+      inverse="true" lazy="true" fetch="select">
+      <key>
+        <column name="innovation_id" />
+      </key>
+      <one-to-many
+        class="org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain" />
+    </set>
     <set name="projectInnovationAllianceLevers" table="project_innovation_alliance_levers"
       inverse="true" lazy="true" fetch="select">
       <key>

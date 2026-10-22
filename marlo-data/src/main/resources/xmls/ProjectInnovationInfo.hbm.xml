@@ -114,6 +114,9 @@
 		<property name="otherInnovationNature" type="string">
 			<column name="other_innovation_nature" sql-type="TEXT" />
 		</property>
+		<property name="otherValueChain" type="string">
+			<column name="other_value_chain" sql-type="TEXT" />
+		</property>
 		<property name="otherAllianceLever" type="string">
 			<column name="other_alliance_lever" sql-type="TEXT" />
 		</property>

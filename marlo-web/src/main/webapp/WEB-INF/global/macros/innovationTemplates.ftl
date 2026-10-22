@@ -230,6 +230,56 @@
         </div>
       </div>
 
+      [#-- Value chain(s) (A2-2613): one checkbox per catalog entry, posted at its catalog position. "Not value-chain
+           specific" sits after an "or" and is exclusive of the rest (innovationFormRedesign.js); "Other" asks for the
+           value chain in a text. listname lets fieldsValidation.js mark the group when it is missing. --]
+      [#local selectedValueChainIds = [] /]
+      [#list (element.valueChains)![] as elementValueChain]
+        [#if (elementValueChain.valueChain.id)??][#local selectedValueChainIds = selectedValueChainIds + [elementValueChain.valueChain.id] /][/#if]
+      [/#list]
+      [#local hasOtherValueChain = false /]
+      [#list (valueChainList)![] as valueChain]
+        [#if valueChain.other && selectedValueChainIds?seq_contains(valueChain.id)][#local hasOtherValueChain = true /][/#if]
+      [/#list]
+      <div class="dlf-field dlf-divided inf-vc" listname="innovation.valueChains" data-inf-value-chains
+        data-note="[@s.text name="projectInnovations.valueChains.exclusiveNote" /]"
+        data-unavailable="[@s.text name="projectInnovations.valueChains.unavailable" /]"
+        data-clear-first="[@s.text name="projectInnovations.valueChains.clearFirst" /]"
+        data-selected="[@s.text name="projectInnovations.redesign.selected" /]">
+        <div class="inf-vc__head">
+          <label class="inf-vc__label">[@s.text name="projectInnovations.valueChains" /][@customForm.req required=editable /]<span class="inf-count" data-inf-vc-count></span></label>
+          <div class="commentNumberContainer">
+            <div class="numberOfCommentsBubble"><p></p></div>
+            <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.valueChains" fieldID="" description="">
+          </div>
+        </div>
+        <p class="dlf-hint inf-vc__help">[@s.text name="projectInnovations.valueChains.help" /]</p>
+        [#if editable]
+          <div class="inf-vc__group" role="group" aria-label="[@s.text name="projectInnovations.valueChains" /]">
+            [#list (valueChainList)![] as valueChain]
+              [#if !valueChain.notSpecific][@valueChainChip valueChain=valueChain index=valueChain_index checked=selectedValueChainIds?seq_contains(valueChain.id) /][/#if]
+            [/#list]
+            <span class="inf-vc__or" aria-hidden="true">[@s.text name="projectInnovations.valueChains.or" /]</span>
+            [#list (valueChainList)![] as valueChain]
+              [#if valueChain.notSpecific][@valueChainChip valueChain=valueChain index=valueChain_index checked=selectedValueChainIds?seq_contains(valueChain.id) /][/#if]
+            [/#list]
+          </div>
+          <p class="inf-vc__note" data-inf-vc-note hidden></p>
+          [#-- innovationFormRedesign.js shows it when fieldsValidation.js marked the value chains as missing --]
+          <p class="inf-vc__error" role="alert" data-inf-vc-error hidden>
+            <svg class="dlf-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" fill="currentColor"></circle><path d="M8 4.6v4.2" stroke="#fff" stroke-width="1.7" stroke-linecap="round"></path><circle cx="8" cy="11.1" r="1" fill="#fff"></circle></svg>
+            [@s.text name="projectInnovations.valueChains.missing" /]
+          </p>
+        [#else]
+          <p class="inf-vc__readOnly">
+            [#list ((valueChainList)![])?filter(v -> selectedValueChainIds?seq_contains(v.id)) as valueChain]<span class="inf-vc__value">${valueChain.name}</span>[#else]<span class="inf-vc__empty">[@s.text name="projectInnovations.valueChains.none" /]</span>[/#list]
+          </p>
+        [/#if]
+        <div class="inf-other" data-inf-vc-other style="display:${hasOtherValueChain?string('block','none')}">
+          [@customForm.input name="innovation.projectInnovationInfo.otherValueChain" type="text" i18nkey="projectInnovations.otherValueChain" placeholder="projectInnovations.otherValueChain.placeholder" className="limitWords-10" helpIcon=false required=true editable=editable /]
+        </div>
+      </div>
+
       [#-- Modal with Table Comparative between innovation type and innovation type in PRMS --]
       <div class="modal fade" id="innovationTypeComparisonModal" tabindex="-1" role="dialog" aria-labelledby="innovationTypeComparisonModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document" style="width: 1000px;">
@@ -1073,6 +1123,15 @@
       </div>
       
   </div>
+[/#macro]
+
+[#-- One value chain of the innovation form, as a checkbox chip --]
+[#macro valueChainChip valueChain index checked]
+  <label class="inf-vcChip[#if valueChain.notSpecific] inf-vcChip--exclusive[/#if]">
+    <input type="checkbox" name="innovation.valueChains[${index}].valueChain.id" value="${valueChain.id?c}"[#if checked] checked[/#if]
+      [#if valueChain.notSpecific]data-not-specific[/#if] [#if valueChain.other]data-other[/#if] />
+    <span class="inf-vcChip__box" aria-hidden="true"></span>${valueChain.name}
+  </label>
 [/#macro]
 
 [#function findElementID list id]
