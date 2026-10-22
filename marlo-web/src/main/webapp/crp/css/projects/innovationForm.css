@@ -725,6 +725,7 @@
 .dlf .inf-evidence.is-added::before { background: var(--dlf-ok); }
 .dlf .inf-goTab {
   flex: none;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -740,3 +741,65 @@
 .dlf .inf-goTab:hover,
 .dlf .inf-goTab:focus { background: var(--dlf-info-bg); color: var(--dlf-brand); text-decoration: none; }
 .dlf .inf-goTab:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+
+/* ==== Bundle composition: Co-developing African institution(s) (A2-2613) ==== */
+.dlf .inf-codev { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.dlf .inf-codev__field { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-codev__head { display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-card label.inf-codev__label { display: block; font: 600 16px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-codev__field > .dlf-hint { margin: -4px 0 0; }
+.dlf .dlf-card .inf-codev__head > .inf-codev__label { margin: 0; }
+.dlf .inf-codev__head > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-codev__new {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--dlf-info-bg);
+  font: 600 11px Figtree, sans-serif;
+  letter-spacing: .02em;
+  color: var(--dlf-brand);
+}
+.dlf .inf-codev__group[hidden] { display: none; }
+.dlf .inf-codev:has(.inf-vc__error:not([hidden])) .inf-codev__group { border-color: var(--dlf-required); background: #FFF8F6; }
+.dlf .inf-codev__notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 8px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-codev__notice[hidden] { display: none; }
+.dlf .inf-codev__notice > span { flex: 1; }
+.dlf .inf-codev__dismiss { flex: none; width: 24px; height: 24px; border: 0; border-radius: 6px; background: none; font: 400 18px/1 Figtree, sans-serif; color: #5C3D00; cursor: pointer; }
+.dlf .inf-codev__dismiss:hover { background: rgba(192, 138, 46, .14); }
+.dlf .inf-codev__empty {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-codev__empty[hidden] { display: none; }
+.dlf .inf-codev__empty > span { flex: 1; min-width: 220px; }
+.dlf .inf-codev__level { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding-top: 12px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-codev__level > .inf-iaRow__label { flex: none; min-width: 0; }
+.dlf .inf-codev__levels { display: flex; align-items: center; flex-wrap: wrap; row-gap: 4px; }
+.dlf .inf-codev__levels .radioFlat-flex,
+.dlf .inf-codev__levels .feedback-flex-items { display: contents !important; } /* the feedback module wraps radios */
+.dlf .inf-codev__levels .fieldReference.radioFlat { width: auto !important; margin: 0; padding: 0; }
+.dlf .inf-codev__levels .radioFlat > p { margin: 0; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-codev__levels .fieldReference.radioFlat label { display: inline-flex; align-items: center; margin: 0; padding-top: 0; padding-bottom: 0; line-height: 20px; }
+.dlf .inf-codev__level > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-codev__levels .fieldReference.radioFlat.radio-inline { margin: 0 18px 0 0 !important; padding: 0 !important; }

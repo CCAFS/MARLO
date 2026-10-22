@@ -72,6 +72,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationToolCategoryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCoDeveloperManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
@@ -149,6 +150,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCoDeveloper;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
@@ -213,6 +215,9 @@ public class ProjectInnovationAction extends BaseAction {
 
   private static final long serialVersionUID = 2025842196563364380L;
   private static final long[] EMPTY_ARRAY = {};
+  /** A2-2613: values of the institutional level of the institutions that co-developed a bundle (IRI 1.5) */
+  public static final List<String> INSTITUTIONAL_LEVELS =
+      Collections.unmodifiableList(Arrays.asList("regional", "national", "joint"));
   private static HashMap<String, String> isSaving = new HashMap<>();
 
   public static HashMap<String, String> getIsSaving() {
@@ -294,6 +299,7 @@ public class ProjectInnovationAction extends BaseAction {
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
   private ValueChainManager valueChainManager;
   private ProjectInnovationValueChainManager projectInnovationValueChainManager;
+  private ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager;
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
   private ImpactAreaScoreManager impactAreaScoreManager;
@@ -434,7 +440,8 @@ public class ProjectInnovationAction extends BaseAction {
       ProjectInnovationBundleManager projectInnovationBundleManager,
       ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager,
       PRMSInnovationManager prmsInnovationManager, ProjectInnovationPRMSManager projectInnovationPRMSManager,
-      ValueChainManager valueChainManager, ProjectInnovationValueChainManager projectInnovationValueChainManager) {
+      ValueChainManager valueChainManager, ProjectInnovationValueChainManager projectInnovationValueChainManager,
+      ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -502,6 +509,7 @@ public class ProjectInnovationAction extends BaseAction {
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
     this.valueChainManager = valueChainManager;
     this.projectInnovationValueChainManager = projectInnovationValueChainManager;
+    this.projectInnovationCoDeveloperManager = projectInnovationCoDeveloperManager;
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.institutionLocationManager = institutionLocationManager;
@@ -1465,6 +1473,10 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.setValueChains(new ArrayList<>(
             projectInnovationValueChainManager.getByInnovationAndPhase(innovation.getId(), phase.getId())));
 
+        // Institutions that co-developed the bundle (A2-2613)
+        innovation.setCoDevelopers(new ArrayList<>(
+            projectInnovationCoDeveloperManager.getByInnovationAndPhase(innovation.getId(), phase.getId())));
+
         // Innovations SDGs
         if (innovation.getProjectInnovationSDGs() != null) {
           innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
@@ -2353,6 +2365,9 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getValueChains() != null) {
         innovation.getValueChains().clear();
       }
+      if (innovation.getCoDevelopers() != null) {
+        innovation.getCoDevelopers().clear();
+      }
       if (innovation.getAllianceLevers() != null) {
         innovation.getAllianceLevers().clear();
       }
@@ -2498,6 +2513,9 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveProjectInnovationPartnership(innovationDB, phase);
       this.saveAllianceLevers(innovationDB, phase);
       this.saveValueChains(innovationDB, phase);
+      if (this.isCoDevelopersEditable()) {
+        this.saveCoDevelopers(innovationDB, phase);
+      }
       this.saveSDGs(innovationDB, phase);
       this.saveImpactAreas(innovationDB, phase);
       // this.saveRegions(innovationDB, phase);
@@ -2589,6 +2607,15 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.setModificationJustification(this.getJustification());
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
+      // A2-2613: the institutional level only changes where the co-developing fields are shown; elsewhere (a single
+      // innovation, or a global unit without the flag) the stored value is kept (rule 4.2.5)
+      if (!this.isCoDevelopersEditable()) {
+        ProjectInnovationInfo infoDB = innovationDB.getProjectInnovationInfo(this.getActualPhase());
+        innovation.getProjectInnovationInfo()
+          .setInstitutionalLevel(infoDB != null ? infoDB.getInstitutionalLevel() : null);
+      } else if (!INSTITUTIONAL_LEVELS.contains(innovation.getProjectInnovationInfo().getInstitutionalLevel())) {
+        innovation.getProjectInnovationInfo().setInstitutionalLevel(null);
+      }
       // A2-2613: the other value chain only stands while "Other" is one of the value chains
       if (this.postedValueChains().stream().noneMatch(ValueChain::isOther)) {
         innovation.getProjectInnovationInfo().setOtherValueChain(null);
@@ -2894,6 +2921,60 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
+  /**
+   * Whether the co-developing institutions of this save are written (A2-2613): only for a bundle, and only for a
+   * global unit with innovation_co_developing_institutions_active.
+   *
+   * @return true when the posted co-developing institutions and institutional level are saved
+   */
+  private boolean isCoDevelopersEditable() {
+    return this.isCoDevelopersActive() && innovation.getProjectInnovationInfo() != null
+        && Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getInnovationBundle());
+  }
+
+  /**
+   * Whether the global unit asks for the co-developing institutions of a bundle (A2-2613, IRI 1.5).
+   *
+   * @return the innovation_co_developing_institutions_active specificity
+   */
+  public boolean isCoDevelopersActive() {
+    return this.hasSpecificities(APConstants.INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE);
+  }
+
+  /**
+   * Co-developing institutions the form posted: without repeats, and only the ones that are still contributing
+   * external partners of the innovation, so a partner removed in General Information leaves this list too (rule
+   * 4.2.3).
+   *
+   * @return the posted institutions, an empty list when none was posted
+   */
+  private List<Institution> postedCoDevelopers() {
+    List<Institution> posted = new ArrayList<>();
+    if (innovation.getCoDevelopers() == null) {
+      return posted;
+    }
+    Set<Long> partnerIds = new HashSet<>();
+    if (innovation.getContributingOrganizations() != null) {
+      for (ProjectInnovationContributingOrganization partner : innovation.getContributingOrganizations()) {
+        if (partner != null && partner.getInstitution() != null && partner.getInstitution().getId() != null) {
+          partnerIds.add(partner.getInstitution().getId());
+        }
+      }
+    }
+    Set<Long> seen = new HashSet<>();
+    for (ProjectInnovationCoDeveloper item : innovation.getCoDevelopers()) {
+      if (item == null || item.getInstitution() == null || item.getInstitution().getId() == null
+          || !partnerIds.contains(item.getInstitution().getId()) || !seen.add(item.getInstitution().getId())) {
+        continue;
+      }
+      Institution institution = institutionManager.getInstitutionById(item.getInstitution().getId());
+      if (institution != null) {
+        posted.add(institution);
+      }
+    }
+    return posted;
+  }
+
   /**
    * Value chains the form posted, as active catalog entries: without the gaps the unchecked boxes leave, without
    * repeats, and only "Not value-chain specific" when it came together with other value chains (A2-2613 rule 4.1.2).
@@ -4670,6 +4751,41 @@ public class ProjectInnovationAction extends BaseAction {
       valueChainSave = projectInnovationValueChainManager.saveProjectInnovationValueChain(valueChainSave);
       // Added so the audit log of the innovation records it
       projectInnovation.getProjectInnovationValueChains().add(valueChainSave);
+    }
+  }
+
+  /**
+   * Save the institutions that co-developed the bundle in the phase (A2-2613): the ones no longer posted are removed
+   * and the new ones added. The manager replicates both to the next phases.
+   *
+   * @param projectInnovation the innovation being saved
+   * @param phase the phase being saved
+   */
+  public void saveCoDevelopers(ProjectInnovation projectInnovation, Phase phase) {
+    List<Institution> posted = this.postedCoDevelopers();
+    Set<Long> postedIds = posted.stream().map(Institution::getId).collect(Collectors.toSet());
+    List<ProjectInnovationCoDeveloper> saved =
+        projectInnovationCoDeveloperManager.getByInnovationAndPhase(projectInnovation.getId(), phase.getId());
+    Set<Long> savedIds = new HashSet<>();
+    for (ProjectInnovationCoDeveloper coDeveloperDB : saved) {
+      Long institutionId = coDeveloperDB.getInstitution().getId();
+      if (postedIds.contains(institutionId)) {
+        savedIds.add(institutionId);
+      } else {
+        projectInnovationCoDeveloperManager.deleteProjectInnovationCoDeveloper(coDeveloperDB.getId());
+      }
+    }
+    for (Institution institution : posted) {
+      if (savedIds.contains(institution.getId())) {
+        continue;
+      }
+      ProjectInnovationCoDeveloper coDeveloperSave = new ProjectInnovationCoDeveloper();
+      coDeveloperSave.setProjectInnovation(projectInnovation);
+      coDeveloperSave.setInstitution(institution);
+      coDeveloperSave.setPhase(phase);
+      coDeveloperSave = projectInnovationCoDeveloperManager.saveProjectInnovationCoDeveloper(coDeveloperSave);
+      // Added so the audit log of the innovation records it
+      projectInnovation.getProjectInnovationCoDevelopers().add(coDeveloperSave);
     }
   }
 

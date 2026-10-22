@@ -229,6 +229,89 @@ $(document).ready(function() {
   watch($partners, refreshContacts);
   $partners.on('change', 'input', refreshContacts);
 
+  // ---- Bundle composition: co-developing institutions (A2-2613, rule 4.2) ----
+  // The options are the contributing external partners of General Information, kept in step with that list: a partner
+  // added there is offered here, and a removed one leaves this field with a notice (rule 4.2.3).
+  var $codev = $root.find('[data-inf-codev]');
+  var $codevGroup = $codev.find('[data-inf-codev-group]');
+  var $codevTemplate = $codev.find('template[data-inf-codev-template]');
+  var $partnerList = $root.find('.inf-externals .elementsListComponent ul.list').first();
+  var codevIndex = $codevGroup.find('.inf-vcChip').length;
+  function currentPartners() {
+    return $partnerList.children('li.relationElement').map(function() {
+      return {
+          id: String($(this).find('input.elementRelationID').val() || ''),
+          name: $.trim($(this).find('.elementName').first().text())
+      };
+    }).get().filter(function(partner) {
+      return partner.id && partner.id !== '-1';
+    });
+  }
+  function refreshCoDevelopers() {
+    var $boxes = $codevGroup.find('.inf-vcChip input[type="checkbox"]');
+    $boxes.each(function() {
+      $(this).closest('.inf-vcChip').toggleClass('is-on', this.checked);
+    });
+    var selected = $boxes.filter(':checked').length;
+    $codev.find('[data-inf-codev-count]').text($boxes.length ? format($codev.attr('data-count'), [selected,
+        $boxes.length]) : '');
+    // The missing message stands until an institution is chosen
+    var missing = $codev.find('.inf-codev__label.fieldError').length > 0 && !selected;
+    $codev.find('[data-inf-codev-error]').prop('hidden', !missing);
+  }
+  function syncCoDevelopers() {
+    var partners = currentPartners();
+    var ids = partners.map(function(partner) {
+      return partner.id;
+    });
+    var removed = [];
+    $codevGroup.find('.inf-vcChip').each(function() {
+      if(ids.indexOf(String($(this).attr('data-institution'))) < 0) {
+        if($(this).find('input').is(':checked')) {
+          removed.push($.trim($(this).find('.inf-codev__name').text()));
+        }
+        $(this).remove();
+      }
+    });
+    partners.forEach(function(partner) {
+      var $chip = $codevGroup.find('.inf-vcChip[data-institution="' + partner.id + '"]');
+      if(!$chip.length) {
+        $chip = $($.trim($codevTemplate[0].innerHTML));
+        $chip.attr('data-institution', partner.id);
+        $chip.find('input').attr('name', 'innovation.coDevelopers[' + (codevIndex++) + '].institution.id')
+          .val(partner.id).prop('checked', false);
+        $codevGroup.append($chip);
+      }
+      $chip.find('.inf-codev__name').text(partner.name);
+    });
+    if(removed.length) {
+      $codev.find('[data-inf-codev-notice-text]').text(format($codev.attr('data-removed'), [removed.join(', ')]));
+      $codev.find('[data-inf-codev-notice]').prop('hidden', false);
+    }
+    $codev.find('[data-inf-codev-empty]').prop('hidden', partners.length > 0);
+    $codevGroup.prop('hidden', !partners.length);
+    refreshCoDevelopers();
+  }
+  if($codevGroup.length && $codevTemplate.length) {
+    $codev.on('change', '.inf-vcChip input[type="checkbox"]', refreshCoDevelopers);
+    $codev.on('click', '[data-inf-codev-dismiss]', function() {
+      $codev.find('[data-inf-codev-notice]').prop('hidden', true);
+    });
+    // "Go to Contributing external partners": open General Information and bring the list into view
+    $codev.on('click', '[data-inf-go-partners]', function(event) {
+      event.preventDefault();
+      $('a[data-toggle="tab"][href="' + $(this).attr('data-inf-go-partners') + '"]').one('shown.bs.tab', function() {
+        var $target = $root.find('.inf-externals').first();
+        if($target.length) {
+          $('html, body').animate({
+            scrollTop: $target.offset().top - 140
+          }, 300);
+        }
+      }).tab('show');
+    });
+    watch($partnerList, syncCoDevelopers);
+  }
+
   // ---- Cross-cutting alignment: SDGs ----
   // Each "Goal n: Name" of the list reads as "GOAL n" over the name, beside the goal's icon (projectInnovations.js
   // draws it); the options are listed in goal order.
@@ -323,7 +406,7 @@ $(document).ready(function() {
     // "Go to Knowledge & Scaling": open the tab and bring its evidence list into view
     $ia.on('click', '[data-inf-go-tab]', function(event) {
       event.preventDefault();
-      var $tab = $('a[data-toggle="tab"][href="' + $(this).attr('href') + '"]');
+      var $tab = $('a[data-toggle="tab"][href="' + $(this).attr('data-inf-go-tab') + '"]');
       $tab.one('shown.bs.tab', function() {
         var $target = $root.find('.referenceBlock').first();
         if($target.length) {

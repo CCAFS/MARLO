@@ -703,6 +703,10 @@
 
 [#macro innovationBundleComposition element name index=-1 template=false]
   <div id="bundleComposition" class="borderBox clearfix">
+    [#-- A2-2613: co-developing institutions (IRI 1.5), behind innovation_co_developing_institutions_active --]
+    [#if (action.isCoDevelopersActive())!false]
+      [@innovationCoDevelopers element=element /]
+    [/#if]
     <div class="form-group">
 
       [#-- Select an innovation --]
@@ -1117,6 +1121,85 @@
 [/#macro]
 
 [#-- One value chain of the innovation form, as a checkbox chip --]
+[#-- Co-developing African institution(s) and Institutional level of a bundle (A2-2613, rule 4.2). The options are
+     the innovation's contributing external partners: innovationFormRedesign.js keeps them in step with General
+     Information (a partner added there is offered here, a removed one leaves with a notice). listname lets
+     fieldsValidation.js mark the group when it is missing. --]
+[#macro innovationCoDevelopers element]
+  [#local partners = [] /]
+  [#list (element.contributingOrganizations)![] as partner]
+    [#if (partner.institution.id)??][#local partners = partners + [partner.institution] /][/#if]
+  [/#list]
+  [#local selectedIds = [] /]
+  [#list (element.coDevelopers)![] as coDeveloper]
+    [#if (coDeveloper.institution.id)??][#local selectedIds = selectedIds + [coDeveloper.institution.id] /][/#if]
+  [/#list]
+  [#local level = (element.projectInnovationInfo.institutionalLevel)!"" /]
+  <section class="dlf-card inf-codev" id="inf-codev" data-inf-codev
+    data-count="[@s.text name="projectInnovations.coDevelopers.count" /]"
+    data-removed="[@s.text name="projectInnovations.coDevelopers.removed" /]">
+    [#-- fieldsValidation.js marks div[listname] and its first label when the institutions are missing --]
+    <div class="inf-codev__field" listname="innovation.coDevelopers">
+    <div class="inf-codev__head">
+      <label class="dlf-card__title inf-codev__label">[@s.text name="projectInnovations.coDevelopers" /][@customForm.req required=editable /]</label>
+      <span class="inf-codev__new">[@s.text name="projectInnovations.coDevelopers.new" /]</span>
+      <span class="inf-count" data-inf-codev-count></span>
+      <div class="commentNumberContainer">
+        <div class="numberOfCommentsBubble"><p></p></div>
+        <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.coDevelopers" fieldID="" description="">
+      </div>
+    </div>
+    <p class="dlf-hint">[@s.text name="projectInnovations.coDevelopers.help" /]</p>
+
+    <p class="inf-codev__notice" role="status" data-inf-codev-notice hidden>
+      <span data-inf-codev-notice-text></span>
+      <button type="button" class="inf-codev__dismiss" data-inf-codev-dismiss aria-label="Dismiss">&times;</button>
+    </p>
+
+    [#if editable]
+      <div class="inf-codev__empty" data-inf-codev-empty[#if partners?has_content] hidden[/#if]>
+        <span>[@s.text name="projectInnovations.coDevelopers.empty" /]</span>
+        <button type="button" class="inf-goTab" data-inf-go-partners="#innovationGeneral">[@s.text name="projectInnovations.coDevelopers.goToPartners" /]<svg class="dlf-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+      </div>
+      <div class="inf-vc__group inf-codev__group" role="group" aria-label="[@s.text name="projectInnovations.coDevelopers" /]" data-inf-codev-group>
+        [#list partners as institution]
+          [@coDeveloperChip institution=institution index=institution_index checked=selectedIds?seq_contains(institution.id) /]
+        [/#list]
+      </div>
+      <p class="inf-vc__error" role="alert" data-inf-codev-error hidden>[@s.text name="projectInnovations.coDevelopers.missing" /]</p>
+      [#-- Chip template: innovationFormRedesign.js clones it for a partner added in this visit --]
+      <template data-inf-codev-template>[@coDeveloperChip institution={} index=-1 checked=false /]</template>
+    [#else]
+      <p class="inf-vc__readOnly">
+        [#list partners?filter(i -> selectedIds?seq_contains(i.id)) as institution]<span class="inf-vc__value">${(institution.nameWithCountry)!(institution.composedName)!""}</span>[#else]<span class="inf-vc__empty">[@s.text name="projectInnovations.coDevelopers.none" /]</span>[/#list]
+      </p>
+    [/#if]
+    </div>
+
+    [#-- Institutional level --]
+    <div class="inf-codev__level">
+      <span class="inf-iaRow__label">[@s.text name="projectInnovations.institutionalLevel" /][@customForm.req required=editable /]</span>
+      <div class="inf-codev__levels" role="radiogroup" aria-label="[@s.text name="projectInnovations.institutionalLevel" /]">
+        [#list ["regional", "national", "joint"] as option]
+          [@customForm.radioFlat id="institutionalLevel-${option}" name="innovation.projectInnovationInfo.institutionalLevel" i18nkey="projectInnovations.institutionalLevel.${option}" value=option checked=(level == option) cssClass="radioType-institutionalLevel" cssClassLabel="radio-label" editable=editable canComment=false /]
+        [/#list]
+        [#if !editable && !level?has_content]<p class="inf-vc__empty">[@s.text name="projectInnovations.valueChains.none" /]</p>[/#if]
+      </div>
+      <div class="commentNumberContainer">
+        <div class="numberOfCommentsBubble"><p></p></div>
+        <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.projectInnovationInfo.institutionalLevel" fieldID="" description="">
+      </div>
+    </div>
+  </section>
+[/#macro]
+
+[#macro coDeveloperChip institution index checked]
+  <label class="inf-vcChip" data-institution="${(institution.id?c)!""}">
+    <input type="checkbox" name="innovation.coDevelopers[${index?c}].institution.id" value="${(institution.id?c)!""}"[#if checked] checked[/#if] />
+    <span class="inf-vcChip__box" aria-hidden="true"></span><span class="inf-codev__name">${(institution.nameWithCountry)!(institution.composedName)!""}</span>
+  </label>
+[/#macro]
+
 [#macro valueChainChip valueChain index checked]
   <label class="inf-vcChip[#if valueChain.notSpecific] inf-vcChip--exclusive[/#if]">
     <input type="checkbox" name="innovation.valueChains[${index}].valueChain.id" value="${valueChain.id?c}"[#if checked] checked[/#if]
@@ -1392,7 +1475,7 @@
         <svg class="dlf-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 7.3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="8" cy="5.1" r=".95" fill="currentColor"></circle></svg>
         <span class="inf-iaRow__msg">[@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong>[@s.text name=fieldLabel /]</strong>[/@][/@]</span>
         <span class="inf-evidence" data-inf-evidence></span>
-        <a class="inf-goTab" href="#innovationSharing" data-inf-go-tab>[@s.text name="projectInnovations.redesign.goTo"][@s.param]${evidenceTab}[/@s.param][/@s.text]<svg class="dlf-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+        <button type="button" class="inf-goTab" data-inf-go-tab="#innovationSharing">[@s.text name="projectInnovations.redesign.goTo"][@s.param]${evidenceTab}[/@s.param][/@s.text]<svg class="dlf-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
       </div>
     </div>
   </div>

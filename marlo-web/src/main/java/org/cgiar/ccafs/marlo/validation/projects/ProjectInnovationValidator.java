@@ -28,7 +28,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCoDeveloper;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
@@ -43,7 +45,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -295,6 +299,50 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
+  }
+
+  /**
+   * Validate the co-developing institutions of a bundle (A2-2613): at least one of the innovation's contributing
+   * external partners, and the institutional level.
+   *
+   * @param action base action
+   * @param projectInnovation the innovation, with the co-developers and partners of the phase (posted or loaded)
+   * @param innovationInfo the innovation info of the phase
+   */
+  private void validateCoDevelopers(BaseAction action, ProjectInnovation projectInnovation,
+    ProjectInnovationInfo innovationInfo) {
+    Set<Long> partnerIds = new HashSet<>();
+    if (projectInnovation.getContributingOrganizations() != null) {
+      for (ProjectInnovationContributingOrganization partner : projectInnovation.getContributingOrganizations()) {
+        if (partner != null && partner.getInstitution() != null && partner.getInstitution().getId() != null) {
+          partnerIds.add(partner.getInstitution().getId());
+        }
+      }
+    }
+    boolean hasCoDeveloper = false;
+    if (projectInnovation.getCoDevelopers() != null) {
+      for (ProjectInnovationCoDeveloper coDeveloper : projectInnovation.getCoDevelopers()) {
+        if (coDeveloper != null && coDeveloper.getInstitution() != null
+          && partnerIds.contains(coDeveloper.getInstitution().getId())) {
+          hasCoDeveloper = true;
+          break;
+        }
+      }
+    }
+    if (!hasCoDeveloper) {
+      action.addMessage(action.getText("projectInnovations.coDevelopers.missing"));
+      action.addMissingField("projectInnovations.coDevelopers");
+      action.getInvalidFields().put("list-innovation.coDevelopers",
+        action.getText("projectInnovations.coDevelopers.missing"));
+    }
+
+    String level = innovationInfo.getInstitutionalLevel();
+    if (level == null || !ProjectInnovationAction.INSTITUTIONAL_LEVELS.contains(level)) {
+      action.addMessage(action.getText("projectInnovations.institutionalLevel"));
+      action.addMissingField("projectInnovations.institutionalLevel");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.institutionalLevel",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
   /**
@@ -782,6 +830,13 @@ public class ProjectInnovationValidator extends BaseValidator {
        * action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
        * }
        */
+      // A2-2613: co-developing institutions and institutional level (IRI 1.5), for a bundle and behind
+      // innovation_co_developing_institutions_active (on for AICCRA-FSRP IV only, see its migration)
+      if (Boolean.TRUE.equals(innovationInfo.getInnovationBundle())
+        && action.hasSpecificities(APConstants.INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE)) {
+        this.validateCoDevelopers(action, projectInnovation, innovationInfo);
+      }
+
       // Validate Complementary Solutions
       if (projectInnovation.getComplementarySolutions() != null
         && !projectInnovation.getComplementarySolutions().isEmpty()) {

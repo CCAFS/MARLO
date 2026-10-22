@@ -117,6 +117,9 @@
 		<property name="otherValueChain" type="string">
 			<column name="other_value_chain" sql-type="TEXT" />
 		</property>
+		<property name="institutionalLevel" type="string">
+			<column name="institutional_level" length="20" />
+		</property>
 		<property name="otherAllianceLever" type="string">
 			<column name="other_alliance_lever" sql-type="TEXT" />
 		</property>

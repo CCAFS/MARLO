@@ -145,6 +145,8 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
   private String otherAllianceLever;
   // A2-2613: the value chain written when "Other" is one of the innovation value chains
   private String otherValueChain;
+  // A2-2613: level of the institutions that co-developed the bundle: regional, national or joint (IRI 1.5)
+  private String institutionalLevel;
   @Expose
   private String otherToolNarrative;
   @Expose
@@ -393,6 +395,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
 
   public String getOtherAllianceLever() {
     return otherAllianceLever;
+  }
+
+  public String getInstitutionalLevel() {
+    return institutionalLevel;
   }
 
   public String getOtherValueChain() {
@@ -682,6 +688,10 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.otherAllianceLever = otherAllianceLever;
   }
 
+  public void setInstitutionalLevel(String institutionalLevel) {
+    this.institutionalLevel = institutionalLevel;
+  }
+
   public void setOtherValueChain(String otherValueChain) {
     this.otherValueChain = otherValueChain;
   }
@@ -878,6 +888,7 @@ public class ProjectInnovationInfo extends MarloBaseEntity implements java.io.Se
     this.setOtherInnovationNature(projectInnovationInfoUpdate.getOtherInnovationNature());
     this.setOtherAllianceLever(projectInnovationInfoUpdate.getOtherAllianceLever());
     this.setOtherValueChain(projectInnovationInfoUpdate.getOtherValueChain());
+    this.setInstitutionalLevel(projectInnovationInfoUpdate.getInstitutionalLevel());
     this.setOtherToolNarrative(projectInnovationInfoUpdate.getOtherToolNarrative());
     this.setKnowledgeMethodsAndToolsNarrative(projectInnovationInfoUpdate.getKnowledgeMethodsAndToolsNarrative());
     this.setGenderScore(projectInnovationInfoUpdate.getGenderScore());

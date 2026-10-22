@@ -158,6 +158,8 @@ public final class APConstants {
   public static final String DELIVERABLE_PARTICIPANTS_GENERAL_INFO_ACTIVE =
     "deliverable_participants_general_info_active";
   public static final String INNOVATION_ALLIANCE_ALIGNMENT_ACTIVE = "innovation_alliance_alignment_active";
+  public static final String INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE =
+    "innovation_co_developing_institutions_active";
   public static final String TIP_SECTION_ACTIVE = "tip_section_active";
   public static final String TIP_SECURITY_ACTIVE = "tip_security_active";
   public static final String NOTIFY_DELIVERABLE_STATUS_CHANGE = "notify_deliverable_status_change";
