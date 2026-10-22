@@ -12,7 +12,7 @@ watch. Nobody has turned it off in any production unit; this spec does not decid
 
 | I want to | Do this |
 |---|---|
-| Turn the password off for a unit | Check section 2, then System Admin, PTF Parameters, the unit, Specificities, `system_password_login_active` off, Save (section 3) |
+| Turn the password off for a unit | Check section 2, then System Admin, Parameters (`/superadmin/marloParameters.do`) *(Corrected 2026-10-21: the menu label varies per unit: "Parameters" in the global bundle, "PTF Parameters" in the AICCRA, aiccra3 and PABRA bundles, "CRP Parameters" in the Alliance and test bundles; the URL is `/superadmin/marloParameters.do`)*, the unit, Specificities, `system_password_login_active` off, Save (section 3) |
 | Turn it back on, normally | Same screen, switch on, Save. It applies on the **next login attempt**, no restart (section 4) |
 | Turn it back on, one statement | The `UPDATE` in section 4 |
 | Know whether it is working | Search the application log for `auth.password.` and `auth.otp.request` (section 5) |
@@ -26,12 +26,12 @@ watch. Nobody has turned it off in any production unit; this spec does not decid
 |---|---|---|
 | Without Cognito (local account, or a CGIAR account on a unit without Cognito) | Today's methods: the password, plus the code when the code switch is on and the domain is not excluded | **The code only.** It is offered even when `system_otp_login_active` is off and even when the domain is excluded |
 | Uses Sign in with CGIAR (`is_cgiar_user = 1` in a unit with `cognito_auth_active` on) | Cognito, plus the code under the code switch | **Unchanged.** The password switch never touches these accounts |
-| Any account, server **without a valid code key** | Today's methods | **The password.** A missing key is a server fault, not the unit's choice, so the password stays (last resort) |
+| Any account without Cognito, server **without a valid code key** | Today's methods | **The password.** A missing key is a server fault, not the unit's choice, so the password stays (last resort) *(Corrected 2026-10-21: the row said "any account". An account that uses Sign in with CGIAR never gets the password, key or no key: `SignInMethodRule.methodsFor` computes `password = !cognitoAccountInG && (passwordOn || !keyConfigured)`)* |
 
 What else changes while it is off:
 
 - The server **refuses a password** posted to `validateUser.do` and `login.do` for that unit, **before** any password or LDAP
-  check, with exactly the answer a wrong password gets for that kind of account. The user sees the ordinary failed-login answer, never a message that says the password is off.
+  check, with exactly the answer a wrong password gets for that kind of account. *(Corrected 2026-10-21: which unit decides: the unit the attempt names counts only when the account is a member of it; otherwise every membership of the account is checked, and any one with the switch off refuses the password (`OtpEligibility.passwordGate`, `decidingUnits`))* The user sees the ordinary failed-login answer, never a message that says the password is off.
 - A user who typed a **username** (not an email) in step 1 sees "Password sign-in is not available for this account. Enter your
   email address to receive a sign-in code." with the way back to step 1, because a code needs an email address.
 - A **new account's welcome email** carries no password and explains code sign-in. A random password is still stored, so
@@ -71,10 +71,10 @@ cannot exist, and the case the T03 review raised (a type-less unit that cannot g
 
 ## 3. Turn it off
 
-1. Sign in as a super admin and open **System Admin > PTF Parameters** (`/superadmin/marloParameters.do`).
+1. Sign in as a super admin and open **System Admin > Parameters** (`/superadmin/marloParameters.do`) *(Corrected 2026-10-21: the menu label varies per unit: "Parameters" in the global bundle, "PTF Parameters" in the AICCRA, aiccra3 and PABRA bundles, "CRP Parameters" in the Alliance and test bundles; the URL is `/superadmin/marloParameters.do`)*.
 2. Expand the unit, open the **Specificities** tab and type `password` in the search box.
 3. Switch `system_password_login_active` **off** and press **Save**. The first save writes a `custom_parameters` row for each
-   unit that lacked one, blank for the others, which still reads as **on** (a blank value is not `false`).
+   unit that lacked one, blank for the others, which still reads as **on** (a blank value is not `false`). *(Corrected 2026-10-21: read from the code, not run live: `CrpParametersAction.prepare()` pre-fills each missing row with the parameter's default value, `'true'` for this key, and `marloParameters.ftl` then pre-checks **Yes**, so the first Save writes `true` for the other units, not blank. They stay on either way)*
 4. Check `crpByEmail.do` for an account of that unit: the unit entry has `"passwordEnabled": false` and, for an account without Cognito,
    `"otpEnabled": true`. Load the login page for the unit with that account: step 3 shows the code directly, with no password field.
 5. Watch section 5 for the first day.

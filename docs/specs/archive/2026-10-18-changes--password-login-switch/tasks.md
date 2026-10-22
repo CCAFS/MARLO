@@ -78,7 +78,7 @@
   resolves the unit's Cognito flag before the lookup on password-off units and refuses a Cognito account after
   `existActiveCrpUser`; `methodsFor(identifier, units, cognitoAccountByUnit)` returning per unit
   `{otpEnabled, passwordEnabled}` with the query always run (early exit at `:159-161` removed); once-per-unit ERROR set
-  for the last resort.
+  for the last resort. *(Corrected 2026-10-21: the line reference is pre-change; in the current `OtpEligibility.methodsFor` the unconfigured early exit is gone, the specificity query runs at `:383` whatever the key, and the only early return left is for an empty unit list.)*
 - **Tests:** override issues a code with the code switch off and with an excluded domain; Cognito account refused under
   the override with the neutral `sent` and a decoy row; same query count for known, unknown and Cognito accounts on a
   password-off unit; **replacing the four T21 locks** (design P-16): on a password-on unit, zero calls to the Cognito
@@ -150,11 +150,11 @@
   `global.properties` (FN-010 message key).
 - **Scope:** `data-password-enabled` set at `:761-764` and read at `:96-97`, `:523-524` (missing → `true`); code-only
   view (password removed, back link hidden, info filled); FN-010 view with the "use a different email" action;
-  `resetMethodView` restores the back link.
+  `resetMethodView` restores the back link. *(Corrected 2026-10-21: the line references are pre-change; in the current `login.js` the attribute is set at `:782` (in the attribute map at `:778-783`) and read at `:101` and `:529`.)*
 - **Tests:** no JS harness — **substitute:** claude-in-chrome walkthrough on the throwaway copy of every §5 row plus a
   username on a password-off unit and an old-page fallback (attribute absent); record `probes/output/` walkthrough file;
   i18n gate on the new key.
-- **Falsifier:** remove the attribute read at `:523-524` → reopening step 3 after "Go back" shows the password on a
+- **Falsifier:** remove the attribute read at `:523-524` *(Corrected 2026-10-21: now `:529`)* → reopening step 3 after "Go back" shows the password on a
   password-off unit → walkthrough row red.
 - **Red run:** before the change, a password-off unit still shows the password field (walkthrough).
 - **Disqualifier:** a walkthrough step driven by synthetic events where a real click is possible, reported as a pass.

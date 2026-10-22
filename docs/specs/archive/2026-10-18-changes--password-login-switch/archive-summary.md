@@ -41,7 +41,7 @@ All 30 requirements are delivered: FN-001–010, SEC-001–007, OPS-001–003, D
 | Per-unit switch `system_password_login_active`, default on, read live with no cache | FN-001, FN-002, DA-001–003 |
 | One rule (`SignInMethodRule`) for Cognito, code and password, used by every consumer | NF-001, FN-003–007 |
 | The code as default method with the switch off, including when the code switch is off or the domain is excluded; Cognito accounts unchanged | FN-004, FN-005, SEC-003, SEC-004 |
-| Last-resort password when the code key is missing, with one ERROR per unit per start | FN-006, OPS-002 |
+| Last-resort password when the code key is missing, with one ERROR per unit per start *(Corrected 2026-10-21: written at the first `crpByEmail.do` lookup or welcome-email build that answers for that unit, not at startup; `OtpEligibility.logLastResortOnce`)* | FN-006, OPS-002 |
 | Server-side password refusal before any credential or LDAP check, answered like a wrong password | SEC-001, SEC-002, OPS-001 |
 | Step 3 shows the code alone, or "use your email" when the user typed a username | UI-001, UI-002, UI-004, UI-005, FN-010 |
 | The welcome email explains code sign-in and still stores a password | FN-008, FN-009, UI-003 |
@@ -53,10 +53,10 @@ Counted with `git diff 5f11bc37e2..f1611e669b`:
 
 | Area | Files | Lines |
 |---|---|---|
-| Production Java (`marlo-web`, `marlo-data`) | 21, including 2 new: `SignInMethodRule`, `WelcomeSignInText` | +896 / −85 |
+| Production Java (`marlo-web`, `marlo-data`) | 19 *(Corrected 2026-10-21: was 21; `git diff --numstat 5f11bc37e2 f1611e669b` over `marlo-web/src/main` and `marlo-data/src/main` Java lists 19)*, including 2 new: `SignInMethodRule`, `WelcomeSignInText` | +896 / −85 |
 | Webapp (`login.js`, `loginForm.ftl`, 2 cache-busters) | 4 | +61 / −10 |
 | Resources (migration `V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql`, 4 properties files) | 5 | +45 |
-| Tests | 23, including 9 new | +4859 / −94 |
+| Tests | 23, including 10 new *(Corrected 2026-10-21: was 9; `git diff --diff-filter=A` lists 10: 8 test classes plus 2 helpers without `@Test`, `RealCredentialPath` and `UnconfiguredOtpEligibility`)* | +4859 / −94 |
 | Docs and probes (this folder, plus amendments in `center-email-otp-login`) | — | ~+4,300 |
 
 ## 7. Test Evidence Summary
@@ -97,7 +97,7 @@ Counted with `git diff 5f11bc37e2..f1611e669b`:
 | # | Item | Owner / where |
 |---|---|---|
 | F-1 | Switch stays **on** in production. Turning it off is an operational decision behind the runbook §2 prerequisites (mail relay, delivery data, OQ-3 counts) | PMU / support, `runbook.md` |
-| F-2 | `CHG-OTP-LOGIN-001` cites this folder at its old path in 5 places: `requirements.md:462`, `:467`, `:470`, `runbook.md:14`, `probes/README.md:318`. After this move they should read `docs/specs/archive/2026-10-18-changes--password-login-switch/` | `center-email-otp-login`, at its next edit (it is still active) |
+| F-2 | `CHG-OTP-LOGIN-001` cites this folder at its old path in 5 places: `requirements.md:462`, `:467`, `:470`, `runbook.md:14`, `probes/README.md:318`. After this move they should read `docs/specs/archive/2026-10-18-changes--password-login-switch/` | `center-email-otp-login`, at its next edit (it is still active) *(Corrected 2026-10-21: resolved. A grep for `changes/password-login-switch` in `docs/specs/changes/center-email-otp-login/` now finds only the validation-report V-11 entries that record the fix)* |
 | F-3 | Harness fixes R1–R3. The scripts in `probes/` (`sweeps.sh`, `ac1-ac14-migration.sh`) also hard-code the pre-archive path, so they are history and need path edits before any re-run | Next live re-run |
 | F-4 | Advisory A-1 (the `CrpByUserEmailAction` logger is named `FlaghshipsByCrpAction`) and A-3 (`OtpDomainPolicy` comments lines 28 and 35) | Optional small code change |
 | F-5 | `finishLogin` uses the activity-blind `existCrpUser`, and the SEC-005 guard compares the raw identifier (older than this spec) | Separate bugfix spec (requirements Decision Log, T05) |

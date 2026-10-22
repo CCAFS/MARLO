@@ -399,12 +399,12 @@ Field conventions:
 - **Requirements:** UI-001, SEC-006 (no new disclosure), FN-002 (live)
 - **Design:** §6 `crpByEmail.do` row; Premise Ledger P-20
 - **Files:**
-  - `CrpByUserEmailAction.java`: add the `otpEnabled` key per unit, using one uncached query per call, and only when configured.
+  - `CrpByUserEmailAction.java`: add the `otpEnabled` key per unit, using one uncached query per call, and only when configured. *(Amended 2026-10-21, doc drift check against the code, `CHG-PWD-SWITCH-001` T04: the query now runs even when the secret is unconfigured, because `passwordEnabled` needs the password switch: one query for all three keys, `system_password_login_active` included, for every listed unit; `OtpEligibility.methodsFor`, `OtpEligibility.java:382-383`.)*
   - `CrpByUserEmailActionTest.java`: extended.
 - **Tests:**
   - The flag is true only when configured, the domain is allowed and SEC-009 passes. *(Superseded by T21, 2026-10-15: configured, switch on and domain not excluded; SEC-009 no longer gates it on a password-on unit.)*
   - The flag is identical for an active and an inactive user, and for a member and a non-member listed unit (JI-11).
-  - Unconfigured → no allow-list query (a fake counts the calls) and every flag false. *(Superseded by T21, 2026-10-15: it is the switch and exclusion query that is not run.)*
+  - Unconfigured → no allow-list query (a fake counts the calls) and every flag false. *(Superseded by T21, 2026-10-15: it is the switch and exclusion query that is not run.)* *(Amended 2026-10-21, doc drift check against the code, `CHG-PWD-SWITCH-001` T04: no longer true: unconfigured makes exactly one specificity query (the three keys, every listed unit) and every `otpEnabled` is false; test `CrpByUserEmailActionTest.unconfiguredMakesExactlyOneSpecificityQueryAndOtpIsFalseForEveryUnit`.)*
   - Every existing key in the response is unchanged.
 - **Verification:**
   - `-Dtest=CrpByUserEmailActionTest`.
@@ -532,20 +532,20 @@ Field conventions:
 - **Requirements:** OPS-005 (new 2026-10-14), AC-18, AC-11 (amended), SEC-001, SEC-006, OPS-002, FN-018 (unchanged)
 - **Design:** §5.3 `OtpMailSender` (amended 2026-10-14), §11, DD-7 amendment; Decision Log 2026-10-14 in `requirements.md`
 - **Files:**
-  - `utils/OtpMailSender.java`: inject `EmailLogManager`; after the delivery attempt of a queued message, on the worker thread, save one row; a public `SOURCE_ACTION = "/otpRequestCode"` and the placeholder constant.
+  - `utils/OtpMailSender.java`: inject `EmailLogManager`; after the delivery attempt of a queued message, on the worker thread, save one row; a public `SOURCE_ACTION = "/otpRequestCode"` and the placeholder constant. *(Superseded by T19, 2026-10-15, recorded 2026-10-21 by the doc drift check against the code: there is no placeholder constant; `message` holds the full wrapped HTML body, code included.)*
   - `action/home/OtpRequestCodeAction.java`: the `CodeSender` seam also passes the Global Unit id, so the row carries `global_unit_id`.
   - `action/json/global/SendFailEmailAction.java`: `selectedEmailLogs()` drops rows whose `source_action` is `OtpMailSender.SOURCE_ACTION`, for the single id and for the filtered bulk path.
   - `OtpMailSenderTest.java`, `OtpRequestCodeActionTest.java`: updated; a test for `SendFailEmailAction` (new or extended).
   - `runbook.md` (A4 sender row, A5 support shortcut): already amended with the spec; check it matches the code.
   - `probes/ac-probe.sh` and `probes/README.md` (added after the attempt 1 review): the AC-11 check follows the amended AC-11, a new stage proves AC-18, and the ledger rows for AC-11 and AC-18 are re-recorded from a new run.
 - **Scope:**
-  - Row fields: `to_email` = the recipient, `subject` = the rendered subject, `date_email` = now, `global_unit_id`, `source_action`, `tried = 1`, `succes_email` = true on delivery and false on failure, `error_email` = the exception class simple name on failure, `message` = "Sign-in code email (code withheld)". `cc`, `bbc`, file columns stay null.
+  - Row fields: `to_email` = the recipient, `subject` = the rendered subject, `date_email` = now, `global_unit_id`, `source_action`, `tried = 1`, `succes_email` = true on delivery and false on failure, `error_email` = the exception class simple name on failure, `message` = "Sign-in code email (code withheld)". `cc`, `bbc`, file columns stay null. *(Superseded by T19, 2026-10-15, recorded 2026-10-21 by the doc drift check against the code: `message` is the full wrapped HTML body, code included; `bbc_email` is the support mailbox outside production and null in production.)*
   - The save goes through `EmailLogManager.saveEmailLog` (`@Transactional`), after `delivered` or `email_failed` is logged. Any exception from the save is caught, logged at WARN with the class name only, and swallowed: the worker keeps running.
   - A hand-off rejected before queueing (full queue, a message that cannot be built, a bad recipient) writes no row.
   - No row anywhere on the request thread; nothing changes in the response or its timing.
 - **Out of scope:** `SendMailS`, `ThreadSendMail`, the notification and support-redirect specificities, OQ-5, the System Admin → Emails UI, any migration.
 - **Tests:**
-  - delivered → one saved row with `succes_email` true, the placeholder message, the source, the unit id, and the code in no field (check every string field);
+  - delivered → one saved row with `succes_email` true, the placeholder message, the source, the unit id, and the code in no field (check every string field); *(Superseded by T19, 2026-10-15, recorded 2026-10-21 by the doc drift check against the code: the code is allowed in `message` only, and in no other field.)*
   - transport failure → one row with `succes_email` false and the class name as error, no exception message;
   - queue full and unbuildable message → no row;
   - a save that throws → the delivery line is still written and the next send still works;
@@ -553,7 +553,7 @@ Field conventions:
   - `OtpRequestCodeAction`: the unit id reaches the seam on the eligible path; the neutral path still calls the seam never.
   - The T09 test `theMailerNeverReachesTheEmailLogTheNotificationFlagOrTheSupportRedirect` is narrowed: `SendMailS`, `ThreadSendMail`, the two specificity keys (`CRP_EMAIL_NOTIFICATIONS`, `CRP_EMAIL_SUPPORT_TEAM` and their key strings) and the redirect methods stay forbidden; `EmailLogManager`/`EmailLog` are now required.
 - **Verification:** compile gate (clean classes); Checkstyle delta against HEAD on the changed Java files; `mvn -q -o -pl marlo-web -am test -Dtest='OtpMailSenderTest,OtpRequestCodeActionTest,SendFailEmailAction*Test' -DfailIfNoTests=false`; a local run on `aiccradb_otp_probe` with the sink: one delivered and one failed code email give the two rows, and an ineligible request gives none.
-- **Falsifier:** write the rendered body (`message` with the code) instead of the placeholder; the code-in-no-field test must go red. Remove the `source_action` filter; the resend exclusion test must go red.
+- **Falsifier:** write the rendered body (`message` with the code) instead of the placeholder; the code-in-no-field test must go red. Remove the `source_action` filter; the resend exclusion test must go red. *(Superseded by T19, 2026-10-15, recorded 2026-10-21 by the doc drift check against the code: the first falsifier is inverted by T19: storing the placeholder instead of the body turns the body test red.)*
 - **Red run:** the new tests run red before the change.
 - **Disqualifier:** a test that saves on the calling thread instead of the executor thread; a local run against `aiccradb_actsave` or with mail pointed at a real relay.
 - **Consumers:** `OtpRequestCodeAction.handOff` (the only caller of the seam); System Admin → Emails (`EmailLogsAction`, list only) and `SendFailEmailAction` (resend).
@@ -757,8 +757,8 @@ Field conventions:
     - `APConstants` in both modules: `OTP_LOGIN_ACTIVE` and `OTP_EXCLUDED_EMAIL_DOMAINS` replace `OTP_ALLOWED_EMAIL_DOMAINS`.
     - Data layer: `OtpChallengeDAO.findSpecificityValues(keys, ids)`, one native uncached statement for both keys and every listed unit, and `OtpChallengeManager.specificityValuesFor(keys, ids)`. The old `allowListFor` and `findAllowListValues` are gone.
     - `OtpDomainPolicy`: `parseExclusionList`, `isExcluded`, `isSwitchOn` (only the text `true`, trimmed, any case) and `isOffered(switch, exclusion, email)`. The `cgiar.org` drop is removed.
-    - `OtpEligibility`: no longer takes `CustomParameterManager` or `ParameterManager`. New `isOffered(email, unit)` (request step 4); `isEligible` and `otpEnabledFor(email, units)` use it.
-    - `OtpRequestCodeAction` step 4 calls `eligibility.isOffered`. `CrpByUserEmailAction` passes no `cgiarUser`; its `cognitoEnabled` read is unchanged.
+    - `OtpEligibility`: no longer takes `CustomParameterManager` or `ParameterManager`. New `isOffered(email, unit)` (request step 4); `isEligible` and `otpEnabledFor(email, units)` use it. *(Amended 2026-10-21, doc drift check against the code, `CHG-PWD-SWITCH-001`: `OtpEligibility` takes `CustomParameterManager` and `ParameterManager` again and reads the Cognito flag on password-off units; `otpEnabledFor` has no main-code caller any more, since `CrpByUserEmailAction` uses `methodsFor`.)*
+    - `OtpRequestCodeAction` step 4 calls `eligibility.isOffered`. `CrpByUserEmailAction` passes no `cgiarUser`; its `cognitoEnabled` read is unchanged. *(Amended 2026-10-21, doc drift check against the code, `CHG-PWD-SWITCH-001`: `CrpByUserEmailAction` now passes `cognitoAccountByUnit` to `methodsFor`, built from `cognitoEnabled` and `usrDB.isCgiarUser()`.)*
     - UI: `login.js` (`mode == "COGNITO"` with `otpEnabled` opens the choice; `setChoiceAlternative`; the Cognito handler is shared) and `loginForm.ftl` (`#login-method-cgiar-button`, container ids, `#login-external-user-label`). No new i18n key (`login.cgiarSignIn`), no CSS change. Cache-buster `?20261014` to `?20261015` in `login.ftl` and `401.ftl`.
     - Probes: `ac-probe.sh` (standing fixture, `enum`, `live`, `emaillog`, `postlogin` text), new `ac21-migration.sh`, six new outputs under `probes/output/`, `probes/README.md` (section 11, AC-1, AC-2, AC-4, AC-13, AC-17, AC-21).
     - Runbook, code facts only (see Deviations).
@@ -884,6 +884,7 @@ T09 + T10 ── T18 email_logs row for support (added 2026-10-14)
 T09 + T18 ── T19 non-production recipient rule (added 2026-10-15)
 T19 ── T20 branded email format (added 2026-10-15)
 T20 ── T21 per-unit switch and domain exclusion (added 2026-10-15)
+T21 ── T22 POST-only code endpoints, Error catch, password-off copy (added 2026-10-18; graph amended 2026-10-21, doc drift check against the code)
 ```
 
 There are no cycles. **Parallel-safe groups** (disjoint files): {T01, T02, T08}; then {T03, T04, T05, T07, T09}; then {T06}; then {T10, T11, T13}. Execution stays sequential under one Leader; run in parallel only through separate worktrees.
