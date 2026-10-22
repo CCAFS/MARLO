@@ -984,23 +984,40 @@
 .dlf .inf-btable .dataTables_info { padding: 0 !important; font: 400 12.5px Figtree, sans-serif; white-space: nowrap !important; color: var(--dlf-ink-soft); }
 .dlf .inf-btable .dataTables_paginate { margin: 0; padding: 0; }
 .dlf .inf-btable .pagination { display: flex; gap: 4px; margin: 0; }
+/* The design's 28x28 page buttons; Previous / Next as chevrons (their text stays for screen readers) */
 .dlf .inf-btable .pagination > li > a,
 .dlf .inf-btable .pagination > li > span {
   float: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   min-width: 28px;
   height: 28px;
   margin: 0 !important;
-  padding: 0 8px;
+  padding: 0 6px;
   border: 1px solid #E0E5EB;
   border-radius: 7px !important;
   background: #fff;
-  font: 600 12.5px/26px Figtree, sans-serif;
+  font: 600 12.5px/1 Figtree, sans-serif;
   text-align: center;
   color: var(--dlf-ink-soft);
 }
+.dlf .inf-btable .pagination > li > a:hover { border-color: var(--dlf-brand); background-color: var(--dlf-info-bg); color: var(--dlf-brand); }
 .dlf .inf-btable .pagination > .active > a,
 .dlf .inf-btable .pagination > .active > a:hover { border-color: var(--dlf-brand); background: var(--dlf-brand); color: #fff; }
-.dlf .inf-btable .pagination > .disabled > a { opacity: .5; }
+.dlf .inf-btable .pagination > .previous > a,
+.dlf .inf-btable .pagination > .next > a {
+  width: 28px;
+  padding: 0;
+  font-size: 0;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M7.5 2.5 4 6l3.5 3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-btable .pagination > .next > a {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M4.5 2.5 8 6l-3.5 3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.dlf .inf-btable .pagination > .disabled > a,
+.dlf .inf-btable .pagination > .disabled > a:hover { border-color: #E0E5EB; background-color: #fff; opacity: .45; cursor: default; }
 .dlf .inf-btable__self {
   display: flex;
   align-items: center;
@@ -1179,3 +1196,5 @@
 }
 .dlf .inf-emptyOptions > .dlf-icon { flex: none; color: var(--dlf-brand); }
 .dlf .inf-emptyOptions > span { flex: 1; min-width: 240px; }
+/* The "…" between page numbers is not a button */
+.dlf .inf-btable .pagination > .disabled:not(.previous):not(.next) > a { min-width: 16px; padding: 0 2px; border-color: transparent; background: none; opacity: 1; color: var(--dlf-muted); }
