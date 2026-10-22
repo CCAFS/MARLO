@@ -61,8 +61,14 @@ public final class EmailPlainText {
       @Override
       public void head(Node node, int depth) {
         if (node instanceof TextNode) {
-          // Runs of spaces and line breaks in the source are layout, not text, as a browser reads them.
-          text.append(((TextNode) node).getWholeText().replaceAll("[\\s\\u00A0]+", " "));
+          String whole = ((TextNode) node).getWholeText();
+          if (isPreformatted(node)) {
+            // A pre block, such as the stack trace of an error report, keeps its lines as written.
+            text.append(whole);
+          } else {
+            // Runs of spaces and line breaks in the source are layout, not text, as a browser reads them.
+            text.append(whole.replaceAll("[\\s\\u00A0]+", " "));
+          }
         } else if (node instanceof Element && "li".equals(((Element) node).normalName())) {
           // Each item starts its own line, with no blank line between the items of one list.
           if (text.length() > 0 && text.charAt(text.length() - 1) != '\n') {
@@ -96,6 +102,15 @@ public final class EmailPlainText {
     }, body);
 
     return tidy(text.toString());
+  }
+
+  private static boolean isPreformatted(Node node) {
+    for (Node parent = node.parentNode(); parent != null; parent = parent.parentNode()) {
+      if (parent instanceof Element && "pre".equals(((Element) parent).normalName())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

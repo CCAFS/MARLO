@@ -36,7 +36,6 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyLink;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyPartnership;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyQuantification;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyReference;
-import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SDGContribution;
@@ -394,26 +393,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           }
           allianceLeverIndex++;
         }
-
-        // If no alliance lever was selected, mark as missing
-        if (!isAllianceLeverSelected && !action.isAiccra()) {
-
-          for (int i = 0; i < allianceLeverSize; i++) {
-            action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + i + "].id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-          action.addMessage(this.getTextCustom(action, "expectedStudy.allianceLevers"));
-
-        }
-      } else {
-        if (!action.isAiccra()) {
-          action.addMessage(this.getTextCustom(action, "expectedStudy.allianceLevers"));
-          // If the alliance levers list is null or empty, mark as missing
-          for (int i = 0; i < allianceLeverSize; i++) {
-            action.getInvalidFields().put("input-expectedStudy.allianceLevers[" + i + "].id",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
       }
     }
 
@@ -653,27 +632,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
     }
 
-    if (!action.isPOWB() && !action.isAiccra()) {
-
-      if (baseAction.isReportingActive() || baseAction.isUpKeepActive()) {
-        if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType() != null
-          && projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getStudyType()
-            .getId() == 1) {
-
-          if (!resultProgessValidate) {
-            // Validate Contacts
-            if (!this.isValidString(
-              projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getContacts())) {
-              action.addMessage(this.getTextCustom(action, "Contacts"));
-              action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.contacts",
-                InvalidFieldsMessages.EMPTYFIELD);
-            }
-          }
-
-        }
-      }
-    }
-
     // Validate publications
     /*
      * int index = 0;
@@ -797,32 +755,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
     if (!action.isPOWB()) {
       // Not AWPB phase - just for reporting and progress
-      // Validate Sub-Idos
-      if (!action.isAiccra()) {
-        if (projectExpectedStudy.getSubIdos() == null || projectExpectedStudy.getSubIdos().isEmpty()) {
-          action.addMessage(this.getTextCustom(action, "subIdos"));
-          action.getInvalidFields().put("list-expectedStudy.subIdos",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
-        } else {
-          // Validate primary sub-IDO
-          if (projectExpectedStudy.getSubIdos().size() > 1) {
-            int count = 0;
-            for (ProjectExpectedStudySubIdo studySubIdo : projectExpectedStudy.getSubIdos()) {
-              if (studySubIdo.getPrimary() != null && studySubIdo.getPrimary()) {
-                count++;
-              }
-            }
-
-            if (count == 0) {
-              action.addMessage(this.getTextCustom(action, "subIdos"));
-              action.getInvalidFields().put("list-expectedStudy.subIdos",
-                action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"subIdos"}));
-            }
-          }
-        }
-      }
-
-
       if (!resultProgessValidate) {
         // validate Milestones
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()) != null
@@ -957,17 +889,6 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
 
         // Validate References Cited - Mandatory in reporting and progress phases
         this.validateReferencesCited(projectExpectedStudy, action, true);
-
-        if (!resultProgessValidate && !action.isAiccra()) {
-          // Validate Contacts
-          if (!this.isValidString(
-            projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getContacts())) {
-            action.addMessage(this.getTextCustom(action, "Contacts"));
-            action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.contacts",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
-        }
-
 
         // Validate Gender Radio Button
         if (projectExpectedStudy.getProjectExpectedStudyInfo(baseAction.getActualPhase()).getGenderLevel() == null) {

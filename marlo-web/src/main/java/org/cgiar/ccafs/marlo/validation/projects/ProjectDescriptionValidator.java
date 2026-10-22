@@ -174,21 +174,6 @@ public class ProjectDescriptionValidator extends BaseValidator {
         action.getInvalidFields().put("list-project.flagshipValue", InvalidFieldsMessages.EMPTYFIELD);
       }
 
-
-      if (!action.isCenterGlobalUnit() && !action.isAiccra()) {
-        if (project.getClusterActivities() != null) {
-          if (project.getClusterActivities().size() == 0) {
-            action.addMessage(action.getText("projectDescription.clusterActivities"));
-            action.getInvalidFields().put("list-project.clusterActivities",
-              action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
-          }
-        } else {
-          action.addMessage(action.getText("projectDescription.clusterActivities"));
-          action.getInvalidFields().put("list-project.clusterActivities",
-            action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"Cluster of Activites"}));
-        }
-      }
-
       if (action.getSession().containsKey(APConstants.CRP_HAS_REGIONS)
         && action.getSession().get(APConstants.CRP_HAS_REGIONS).toString().equals("true")
         && this.hasActivePrograms(action, ProgramType.REGIONAL_PROGRAM_TYPE.getValue())) {

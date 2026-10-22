@@ -47,14 +47,8 @@
   <div class="container">
     [#if programs?has_content]
 
-      [#-- AICCRA calls these "indicators"; every other global unit calls them "outcomes". --]
-      [#if action.isAiccra()]
-        [#assign countNounOne][@s.text name="outcomes.status.count.one"/][/#assign]
-        [#assign countNounMany][@s.text name="outcomes.status.count.many"/][/#assign]
-      [#else]
-        [#assign countNounOne][@s.text name="outcomes.status.count.one.outcome"/][/#assign]
-        [#assign countNounMany][@s.text name="outcomes.status.count.many.outcome"/][/#assign]
-      [/#if]
+      [#assign countNounOne][@s.text name="outcomes.status.count.one"/][/#assign]
+      [#assign countNounMany][@s.text name="outcomes.status.count.many"/][/#assign]
 
       [#-- i18n carrier for outcomes.js (no user-facing literals in the JS) --]
       <span id="opiI18n" style="display:none"

@@ -307,7 +307,7 @@
                A2-2622): outside it each answer reads back, or "Not answered". The
                markup must be posted in every cycle anyway: saveIndicators() deletes
                every ProjectOutcomeIndicator the form does not send back. --]
-          [#assign cpiAnswerQuestions = !((action.isAiccra())!false) || reportingActive /]
+          [#assign cpiAnswerQuestions = reportingActive /]
           [#if action.hasSpecificities('crp_baseline_indicators')]
             <div class="cpi-card cpi-questions">
               <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>

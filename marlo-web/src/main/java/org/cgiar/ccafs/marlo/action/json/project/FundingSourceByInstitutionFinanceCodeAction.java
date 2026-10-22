@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.FundingSourceManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -35,13 +36,16 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
 
 
   private static final long serialVersionUID = 6304226585314276677L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(FundingSourceByInstitutionFinanceCodeAction.class);
 
 
   List<Map<String, Object>> sources;
@@ -126,8 +130,9 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
               summary.setCrpName(crpName);
             }
 
-            phaseID =
-              this.getCrpPhase(crpID, this.getActualPhase().getYear(), this.getActualPhase().getDescription()).getId();
+            Phase crpPhase =
+              this.getCrpPhase(crpID, this.getActualPhase().getYear(), this.getActualPhase().getDescription());
+            phaseID = crpPhase != null ? crpPhase.getId() : null;
 
             if (crpID != null && phaseID != null) {
               summary.setPhaseID(phaseID);
@@ -161,7 +166,7 @@ public class FundingSourceByInstitutionFinanceCodeAction extends BaseAction {
       financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
       leadCenter = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
     } catch (Exception e) {
-      Log.info(e);
+      LOG.info("Finance code or lead institution parameter missing", e);
     }
   }
 

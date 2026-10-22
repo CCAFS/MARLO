@@ -169,11 +169,7 @@
 [#if !centerGlobalUnit]
   [#-- Submition message --]
   [#if !submission && completed && !canSubmit]
-    [#if action.isAiccra()]
-      <p class="text-center" style="display:block">You complete your Progress report, you can access the information through the Summaries section.</p>
-    [#else]
-      <p class="text-center" style="display:block">The Project can be submitted now by the project leader.</p>
-    [/#if]
+    <p class="text-center" style="display:block">You complete your Progress report, you can access the information through the Summaries section.</p>
   [/#if]
   
   [#-- Check button --]
