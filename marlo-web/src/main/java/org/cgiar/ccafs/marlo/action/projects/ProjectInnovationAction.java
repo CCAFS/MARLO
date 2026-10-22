@@ -2421,11 +2421,15 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
         innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
-        innovation.getProjectInnovationInfo().setGenderScore(null);
-        innovation.getProjectInnovationInfo().setClimateChangeScore(null);
-        innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
-        innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
-        innovation.getProjectInnovationInfo().setPovertyScore(null);
+        // A2-2613: the Impact Area scores are only posted where the Cross-cutting alignment tab shows; elsewhere the
+        // stored ones are kept
+        if (this.isCrossCuttingAlignmentActive()) {
+          innovation.getProjectInnovationInfo().setGenderScore(null);
+          innovation.getProjectInnovationInfo().setClimateChangeScore(null);
+          innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
+          innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
+          innovation.getProjectInnovationInfo().setPovertyScore(null);
+        }
         innovation.getProjectInnovationInfo().setHasKnowledgePotential(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
@@ -2512,11 +2516,15 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveGeographicScope(innovationDB, phase);
       this.saveProjectInnovationPartnership(innovationDB, phase);
       this.saveAllianceLevers(innovationDB, phase);
-      this.saveValueChains(innovationDB, phase);
+      if (this.isValueChainsActive()) {
+        this.saveValueChains(innovationDB, phase);
+      }
       if (this.isCoDevelopersEditable()) {
         this.saveCoDevelopers(innovationDB, phase);
       }
-      this.saveSDGs(innovationDB, phase);
+      if (this.isCrossCuttingAlignmentActive()) {
+        this.saveSDGs(innovationDB, phase);
+      }
       this.saveImpactAreas(innovationDB, phase);
       // this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
@@ -2607,18 +2615,21 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.setModificationJustification(this.getJustification());
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
-      // A2-2613: the institutional level only changes where the co-developing fields are shown; elsewhere (a single
-      // innovation, or a global unit without the flag) the stored value is kept (rule 4.2.5)
+      // A2-2613: a field the global unit does not show keeps its stored value, since the form does not post it
+      ProjectInnovationInfo infoDB = innovationDB.getProjectInnovationInfo(this.getActualPhase());
+      ProjectInnovationInfo infoPosted = innovation.getProjectInnovationInfo();
+      // The institutional level only changes where the co-developing fields are shown: a bundle, with the flag
+      // (rule 4.2.5)
       if (!this.isCoDevelopersEditable()) {
-        ProjectInnovationInfo infoDB = innovationDB.getProjectInnovationInfo(this.getActualPhase());
-        innovation.getProjectInnovationInfo()
-          .setInstitutionalLevel(infoDB != null ? infoDB.getInstitutionalLevel() : null);
-      } else if (!INSTITUTIONAL_LEVELS.contains(innovation.getProjectInnovationInfo().getInstitutionalLevel())) {
-        innovation.getProjectInnovationInfo().setInstitutionalLevel(null);
+        infoPosted.setInstitutionalLevel(infoDB != null ? infoDB.getInstitutionalLevel() : null);
+      } else if (!INSTITUTIONAL_LEVELS.contains(infoPosted.getInstitutionalLevel())) {
+        infoPosted.setInstitutionalLevel(null);
       }
-      // A2-2613: the other value chain only stands while "Other" is one of the value chains
-      if (this.postedValueChains().stream().noneMatch(ValueChain::isOther)) {
-        innovation.getProjectInnovationInfo().setOtherValueChain(null);
+      // The other value chain only stands while "Other" is one of the value chains
+      if (!this.isValueChainsActive()) {
+        infoPosted.setOtherValueChain(infoDB != null ? infoDB.getOtherValueChain() : null);
+      } else if (this.postedValueChains().stream().noneMatch(ValueChain::isOther)) {
+        infoPosted.setOtherValueChain(null);
       }
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
 
@@ -2930,6 +2941,25 @@ public class ProjectInnovationAction extends BaseAction {
   private boolean isCoDevelopersEditable() {
     return this.isCoDevelopersActive() && innovation.getProjectInnovationInfo() != null
         && Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getInnovationBundle());
+  }
+
+  /**
+   * Whether the global unit shows the Cross-cutting alignment (One CGIAR Alignment) tab: SDGs and Impact Area scores
+   * (A2-2613).
+   *
+   * @return the innovation_cross_cutting_alignment_active specificity
+   */
+  public boolean isCrossCuttingAlignmentActive() {
+    return this.hasSpecificities(APConstants.INNOVATION_CROSS_CUTTING_ALIGNMENT_ACTIVE);
+  }
+
+  /**
+   * Whether the global unit asks for the value chains of an innovation (A2-2613).
+   *
+   * @return the innovation_value_chains_active specificity
+   */
+  public boolean isValueChainsActive() {
+    return this.hasSpecificities(APConstants.INNOVATION_VALUE_CHAINS_ACTIVE);
   }
 
   /**

@@ -230,6 +230,8 @@
         </div>
       </div>
 
+      [#-- Value chain(s), behind innovation_value_chains_active (on for AICCRA-FSRP IV only, see its migration) --]
+      [#if (action.isValueChainsActive())!false]
       [#-- Value chain(s) (A2-2613): one checkbox per catalog entry, posted at its catalog position. "Not value-chain
            specific" sits after an "or" and is exclusive of the rest (innovationFormRedesign.js); "Other" asks for the
            value chain in a text. listname lets fieldsValidation.js mark the group when it is missing. --]
@@ -279,6 +281,7 @@
           [@customForm.input name="innovation.projectInnovationInfo.otherValueChain" type="text" i18nkey="projectInnovations.otherValueChain" placeholder="projectInnovations.otherValueChain.placeholder" className="limitWords-10" helpIcon=false required=true editable=editable /]
         </div>
       </div>
+      [/#if]
 
       [#-- Modal with Table Comparative between innovation type and innovation type in PRMS --]
       <div class="modal fade" id="innovationTypeComparisonModal" tabindex="-1" role="dialog" aria-labelledby="innovationTypeComparisonModalLabel" aria-hidden="true">

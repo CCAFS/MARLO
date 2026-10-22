@@ -246,10 +246,16 @@ public class ProjectInnovationValidator extends BaseValidator {
       this.recordTabMissingCount(action, "alliance", innovationAllianceStart);
     }
 
-    int innovationOneCgiarStart = action.getMissingFields().length();
-    this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
-    this.updateOneCgiarAlignmentStatus(action, projectInnovation, innovationOneCgiarStart, saving);
-    this.recordTabMissingCount(action, "crossCutting", innovationOneCgiarStart);
+    // A2-2613: without innovation_cross_cutting_alignment_active the form has no Cross-cutting alignment (One CGIAR
+    // Alignment) tab, so its SDGs and scores are not validated; the stored ones stay untouched.
+    if (!action.hasSpecificities(APConstants.INNOVATION_CROSS_CUTTING_ALIGNMENT_ACTIVE)) {
+      action.setInnovationOneCgiarAlignmentComplete(true);
+    } else {
+      int innovationOneCgiarStart = action.getMissingFields().length();
+      this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
+      this.updateOneCgiarAlignmentStatus(action, projectInnovation, innovationOneCgiarStart, saving);
+      this.recordTabMissingCount(action, "crossCutting", innovationOneCgiarStart);
+    }
 
     int innovationBundleStart = action.getMissingFields().length();
     this.validateInnovationBundle(action, project, projectInnovation, saving);
@@ -708,7 +714,10 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
-    this.validateValueChains(action, projectInnovation, innovationInfo);
+    // A2-2613: behind innovation_value_chains_active (on for AICCRA-FSRP IV only, see its migration)
+    if (action.hasSpecificities(APConstants.INNOVATION_VALUE_CHAINS_ACTIVE)) {
+      this.validateValueChains(action, projectInnovation, innovationInfo);
+    }
 
     // Validate Description Stage
     if (!resultProgessValidate && !action.isAiccra()) {
@@ -928,26 +937,33 @@ public class ProjectInnovationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        // Validate scores
+        // Validate scores: a score of 2 asks for evidence, unless the global unit has no Cross-cutting alignment tab
+        // to see the scores in (A2-2613)
+        boolean scoresShown = action.hasSpecificities(APConstants.INNOVATION_CROSS_CUTTING_ALIGNMENT_ACTIVE);
         boolean needsGender = false;
         boolean needsClimateChange = false;
         boolean needsFoodSecurity = false;
         boolean needsEnvironmentalScore = false;
         boolean needsPovertyScore = false;
         boolean markMissingScore = false;
-        if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getGenderScore() != null
+          && innovationInfo.getGenderScore().getId() == 3) {
           needsGender = true;
         }
-        if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getClimateChangeScore() != null
+          && innovationInfo.getClimateChangeScore().getId() == 3) {
           needsClimateChange = true;
         }
-        if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getFoodSecurityScore() != null
+          && innovationInfo.getFoodSecurityScore().getId() == 3) {
           needsFoodSecurity = true;
         }
-        if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getEnvironmentalScore() != null
+          && innovationInfo.getEnvironmentalScore().getId() == 3) {
           needsEnvironmentalScore = true;
         }
-        if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getPovertyScore() != null
+          && innovationInfo.getPovertyScore().getId() == 3) {
           needsPovertyScore = true;
         }
 

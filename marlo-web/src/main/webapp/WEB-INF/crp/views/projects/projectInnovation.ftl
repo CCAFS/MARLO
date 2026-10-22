@@ -111,9 +111,12 @@
 
         [#assign isProgressActive = action.isProgressActive() /]
 
-        [#-- A2-2613: the Alliance Alignment tab is gone unless innovation_alliance_alignment_active is on (off for every
-             global unit, see its migration). On, the tab shows when an Alliance center is selected, as before. --]
+        [#-- A2-2613: the Alliance Alignment tab is gone unless innovation_alliance_alignment_active is on (off for
+             AICCRA-FSRP IV only, see its migrations). On, the tab shows when an Alliance center is selected, as before. --]
         [#assign withoutAllianceAlignment = !action.hasSpecificities('innovation_alliance_alignment_active') /]
+        [#-- A2-2613: the Cross-cutting alignment (One CGIAR Alignment) tab, behind
+             innovation_cross_cutting_alignment_active (on for every global unit); off, its stored data is kept --]
+        [#assign withCrossCutting = (action.isCrossCuttingAlignmentActive())!true /]
         [#assign isAllianceContribution = false /]
         [#if !withoutAllianceAlignment]
           [#list (innovation.centers)![] as center]
@@ -203,7 +206,9 @@
               [#if !withoutAllianceAlignment]
                 [@infTab key="alliance" pane="innovationAlliance" label="projectInnovations.tab.allianceAlignment" complete=((action.isInnovationAllianceAlignmentComplete())!false) active=(indexTab==2) id="allianceTab" shown=isAllianceContribution /]
               [/#if]
-              [@infTab key="crossCutting" pane="innovationOneCGIAR" label="projectInnovations.tab.oneCGIARAlignment" complete=((action.isInnovationOneCgiarAlignmentComplete())!false) active=(indexTab==3) /]
+              [#if withCrossCutting]
+                [@infTab key="crossCutting" pane="innovationOneCGIAR" label="projectInnovations.tab.oneCGIARAlignment" complete=((action.isInnovationOneCgiarAlignmentComplete())!false) active=(indexTab==3) /]
+              [/#if]
               [@infTab key="bundle" pane="innovationBundle" label="projectInnovations.tab.bundleComposition" complete=((action.isInnovationBundleComplete())!false) active=(indexTab==4) id="bundleTab" shown=isBundleCompositionRequired /]
               [@infTab key="knowledge" pane="innovationSharing" label="projectInnovations.tab.innovationSharing" complete=((action.isInnovationRightsComplete())!false) active=(indexTab==5) /]
             </ul>
@@ -220,10 +225,12 @@
                   [@innovations.innovationAlliance element=(innovation)!{} name="innovation" index=0 /]
                 </div>
               [/#if]
-              <div role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]" id="innovationOneCGIAR">
-                [#-- Innovation OneCGIAR Aligment--]
-                [@innovations.innovationOneCGIAR element=(innovation)!{} name="innovation" index=0 /]
-              </div>
+              [#if withCrossCutting]
+                <div role="tabpanel" class="tab-pane fade [#if indexTab==3]in active[/#if]" id="innovationOneCGIAR">
+                  [#-- Innovation OneCGIAR Aligment--]
+                  [@innovations.innovationOneCGIAR element=(innovation)!{} name="innovation" index=0 /]
+                </div>
+              [/#if]
               <div role="tabpanel" class="tab-pane fade [#if indexTab==4]in active[/#if]" id="innovationBundle">
                 [#-- Innovation Bundle Composition --]
                 [@innovations.innovationBundleComposition element=(innovation)!{} name="innovation" index=0 /]
