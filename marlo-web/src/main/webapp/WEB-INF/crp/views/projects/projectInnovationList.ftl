@@ -8,7 +8,7 @@
 ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/deliverableList.css?20261019-4",
-  "${baseUrlMedia}/css/projects/innovationList.css?20261021"
+  "${baseUrlMedia}/css/projects/innovationList.css?20261021-1"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
@@ -74,6 +74,18 @@
               [#if (project.acronym)?has_content]${project.acronym}[#else]C${project.id?c}[/#if]
             </a>
           [/#if]
+        </div>
+
+        [#-- Webinar note, shown to every global unit as before the redesign --]
+        <div class="dlv-note" role="note">
+          <span class="dlv-note__icon" aria-hidden="true">i</span>
+          <div class="dlv-note__body">
+            <p class="dlv-note__text">[@s.text name="projectInnovations.webinar.note" /]</p>
+          </div>
+          <a class="dlv-btn dlv-btn--ghost dlv-btn--sm inv-webinar" href="https://cgiar.sharepoint.com/:p:/s/AICCRA/EdfDKeegVkxHn2mdcBYmsy4Bh1kkzjX73X5673y3Ynjj7w?e=uCzD2T" target="_blank" rel="noopener noreferrer">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M9 2.6h4.4V7M13.2 2.8 7.6 8.4M11.6 9.6v3.6H2.8V4.4h3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            [@s.text name="projectInnovations.webinar.link" /]
+          </a>
         </div>
 
         [#-- Toolbar: innovation set and add --]

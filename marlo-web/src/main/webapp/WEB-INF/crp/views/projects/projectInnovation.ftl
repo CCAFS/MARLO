@@ -37,7 +37,7 @@
   "${baseUrlCdn}/global/css/customDataTable.css?20250825",
   [#-- A2-2613: the deliverable form redesign (.dlf) plus what the innovation form adds (.inf) --]
   "${baseUrl}/crp/css/projects/deliverableForm.css?20261021-1",
-  "${baseUrlMedia}/css/projects/innovationForm.css?20261021"
+  "${baseUrlMedia}/css/projects/innovationForm.css?20261021-1"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
@@ -111,8 +111,9 @@
 
         [#assign isProgressActive = action.isProgressActive() /]
 
-        [#-- A2-2613: AICCRA-FSRP IV has no Alliance Alignment tab; elsewhere it shows when an Alliance center is selected --]
-        [#assign withoutAllianceAlignment = action.hasSpecificities('innovation_without_alliance_alignment_active') /]
+        [#-- A2-2613: the Alliance Alignment tab is gone unless innovation_alliance_alignment_active is on (off for every
+             global unit, see its migration). On, the tab shows when an Alliance center is selected, as before. --]
+        [#assign withoutAllianceAlignment = !action.hasSpecificities('innovation_alliance_alignment_active') /]
         [#assign isAllianceContribution = false /]
         [#if !withoutAllianceAlignment]
           [#list (innovation.centers)![] as center]
@@ -170,6 +171,16 @@
 
           [#-- Annual Report year and PRMS mapping --]
           [@innovations.innovationReportingStrip element=(innovation)!{} /]
+
+          [#-- Webinar note, shown to every global unit as before the redesign --]
+          <div class="dlf-note" role="note">
+            <span class="dlf-note__icon" aria-hidden="true">i</span>
+            <p class="dlf-note__text">[@s.text name="projectInnovations.webinar.note" /]</p>
+            <a class="dlf-btn dlf-btn--ghost dlf-btn--sm inf-webinar" href="https://cgiar.sharepoint.com/:p:/s/AICCRA/EdfDKeegVkxHn2mdcBYmsy4Bh1kkzjX73X5673y3Ynjj7w?e=uCzD2T" target="_blank" rel="noopener noreferrer">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M9 2.6h4.4V7M13.2 2.8 7.6 8.4M11.6 9.6v3.6H2.8V4.4h3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              [@s.text name="projectInnovations.webinar.link" /]
+            </a>
+          </div>
 
           [#if !editable && canEdit && !(transaction??)]
             <div class="inf-readOnly" role="note">
@@ -281,7 +292,7 @@
   [#local missing = (action.tabMissingCounts[key])!0 /]
   <li role="presentation"[#if id?has_content] id="${id}"[/#if] class="[#if active]active[/#if] ${complete?then('submitted','toSubmit')}" data-inf-tab="${key}"[#if !shown] style="display: none;"[/#if]>
     <a href="#${pane}" role="tab" data-toggle="tab">
-      <span class="inf-tab__label">[@s.text name=label /]</span>
+      <span class="inf-tab__label" title="[@s.text name=label /]">[@s.text name=label /]</span>
       [#if complete]
         <svg class="dlf-icon inf-tab__ok" width="15" height="15" viewBox="0 0 16 16" fill="none" role="img" aria-label="[@s.text name="projectInnovations.redesign.tab.complete" /]"><circle cx="8" cy="8" r="6.4" fill="currentColor"></circle><path d="M5.2 8.2 7.1 10l3.7-4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       [#elseif missing gt 0]

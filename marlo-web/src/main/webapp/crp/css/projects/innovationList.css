@@ -139,3 +139,6 @@
   .inv .inv-td--rl[data-label],
   .inv .inv-td--status[data-label] { align-items: center; }
 }
+
+/* Webinar note: the presentation link sits at the note's end */
+.inv .inv-webinar { flex: none; align-self: center; }

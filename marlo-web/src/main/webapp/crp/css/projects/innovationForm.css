@@ -187,3 +187,8 @@
   .dlf .inf-tabs > .nav-tabs { overflow-x: auto; }
   .dlf .inf-tabs > .nav-tabs > li { flex: 1 0 auto; }
 }
+
+/* Webinar note: the presentation link sits at the note's end */
+.dlf .inf-webinar { flex: none; align-self: center; text-decoration: none; }
+.dlf .inf-webinar:hover,
+.dlf .inf-webinar:focus { text-decoration: none; }

@@ -163,8 +163,7 @@ public final class APConstants {
   public static final String DELIVERABLE_MELIA_MODULE_ACTIVE = "deliverable_melia_module_active";
   public static final String DELIVERABLE_PARTICIPANTS_GENERAL_INFO_ACTIVE =
     "deliverable_participants_general_info_active";
-  public static final String INNOVATION_WITHOUT_ALLIANCE_ALIGNMENT_ACTIVE =
-    "innovation_without_alliance_alignment_active";
+  public static final String INNOVATION_ALLIANCE_ALIGNMENT_ACTIVE = "innovation_alliance_alignment_active";
   public static final String TIP_SECTION_ACTIVE = "tip_section_active";
   public static final String TIP_SECURITY_ACTIVE = "tip_security_active";
   public static final String NOTIFY_DELIVERABLE_STATUS_CHANGE = "notify_deliverable_status_change";
