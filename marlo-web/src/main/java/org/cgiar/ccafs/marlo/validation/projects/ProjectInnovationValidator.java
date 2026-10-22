@@ -1047,10 +1047,11 @@ public class ProjectInnovationValidator extends BaseValidator {
                   action.getInvalidFields().put("input-innovation.references[" + i + "].deliverableType.id",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
+                // A2-2613: grouped so a reference without type (reported just above) no longer throws a
+                // NullPointerException, which skipped the rest of this tab's validation
                 if (reference.getDeliverableType() != null
-                  && reference.getDeliverableType().getDeliverableCategory() == null
-                  || (reference.getDeliverableType().getDeliverableCategory() != null
-                    && reference.getDeliverableType().getDeliverableCategory().getId() == null
+                  && (reference.getDeliverableType().getDeliverableCategory() == null
+                    || reference.getDeliverableType().getDeliverableCategory().getId() == null
                     || reference.getDeliverableType().getDeliverableCategory().getId() == -1)) {
                   action.addMessage("References type");
                   action.getInvalidFields().put(
