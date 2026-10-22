@@ -490,118 +490,119 @@
   
   [#local customName = "${name}"/]
 
-  <div id="alliance" class="borderBox clearfix">
-    [#-- Alliance Research Theme --]
-    <div class="form-group radioToCheckbox ">
-      [@customForm.labelText name="innovation.allianceLevers" text="projectInnovations.alliance.researchTheme" required=true isMainTitle=true /]
-      <label>[@s.text name="projectInnovations.alliance.researchTheme.subtitle" /]</label>
-      [#if allianceLeverList?has_content]
-          [#list allianceLeverList as lever]
-            [#if lever.description?has_content]
-              [#local customLabel = "${lever.name} : ${lever.description}" /]
-            [#else]
-              [#local customLabel = "${lever.name}" /]
-            [/#if]
-
-            [#local isOther = (lever.name == "Other")!false /]
-
-            [#local isChecked = false /]
-
-            <div class="containerRadioToCheckbox ${isOther?then('containerRadioToCheckbox--other','')}">
-              [#if element.allianceLevers?has_content]
-                [#list element.allianceLevers as elementLever]
-                  [#if (elementLever.allianceLever.id??) && (elementLever.allianceLever.id == lever.id)]
-                    <div class="form-group hiddenIdReference">
-                        [@customForm.input name="${customName}.allianceLevers[${elementLever_index}].id" editable=false display=false value="${elementLever.id!-1}" /]
-                    </div>
-                    [#local isChecked = true /]
-                    [#break /]
-                  [/#if]
-
-                [/#list]
-              [/#if]
- 
-              [@customForm.checkBoxFlat id="lever-${lever.id}" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" label="${customLabel}" value="${lever.id}" checked=((isChecked)||(lever.id == 3)) editable=editable disabled=(lever.id == 3) /]
-              [#if isOther]
-                <div class="form-group inputOther">
-                  [@customForm.input name="${customName}.projectInnovationInfo.otherAllianceLever" placeholder="Other" editable=editable showTitle=false /]
-                </div>
-              [/#if]
-            </div>
-          [/#list]
-        [#else]
-        <p>No information available</p>
-      [/#if]
-    </div>
-    [#-- Intellectual property rights --]
-    <div class="form-group">
-      <label class="label--2" style="width:100%">[@s.text name="projectInnovations.alliance.intellectualProperty" /]:</label>
-      <label class="note--2">
-        <p>[@s.text name="projectInnovations.alliance.intellectualProperty.subtitle" /]</p>
-      </label>
-      [#-- Intellectual property rights - Owner --]
-      <div class="form-group">
-        [@customForm.select name="${customName}.projectInnovationInfo.intellectualPropertyInstitution.id" i18nkey="projectInnovations.alliance.intellectualProperty.description" listName="intellectualInstitutionsList" keyFieldName="id" className="innovationPropertyRightsSelect" displayFieldName="customName" required=false editable=editable /]
-        [#local otherIntellectualProperty = (element.projectInnovationInfo.intellectualPropertyInstitution.id == 4)!false  /]
-        <div class="col-md-12 margin-top-10">
-          <div class="form-group otherIntellectualProperty" style="display: ${otherIntellectualProperty?then('block','none')}">
-            [@customForm.input name="${customName}.projectInnovationInfo.otherIntellectualProperty" type="text" i18nkey="projectInnovations.alliance.intellectualProperty.other" helpIcon=false required=false editable=editable /]
+  <div id="alliance" class="dlf-sections inf-alliance">
+    [#-- ─── Alliance research theme: one card per lever (projectInnovations.js reindexes the checked ones) ── --]
+    <section class="dlf-card" id="inf-levers">
+      <div class="dlf-field inf-levers" listname="innovation.allianceLevers" data-inf-levers
+        data-selected="[@s.text name="projectInnovations.redesign.selected" /]">
+        <div class="inf-card__head">
+          <h2 class="dlf-card__title">[@s.text name="projectInnovations.alliance.researchTheme" /][@customForm.req required=editable /]<span class="inf-count" data-inf-levers-count></span></h2>
+          <div class="commentNumberContainer">
+            <div class="numberOfCommentsBubble"><p></p></div>
+            <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.allianceLevers" fieldID="" description="">
           </div>
         </div>
-        
-      </div>
-      [#-- Intellectual property rights - Legal Restrictions --]
-      <div class="form-group">
-        <div class="col-md-12">
-          <label>
-            [@s.text name="projectInnovations.alliance.intellectualProperty.legalRestrictions" /]
-          </label> 
+        <p class="dlf-hint inf-levers__help">[@s.text name="projectInnovations.redesign.alliance.researchTheme.help" /]</p>
+        [#local hasOtherLever = false /]
+        [#if allianceLeverList?has_content]
+          <div class="inf-levers__grid" role="group" aria-label="[@s.text name="projectInnovations.alliance.researchTheme" /]">
+          [#list allianceLeverList as lever]
+            [#local isOther = (lever.name == "Other")!false /]
+            [#-- Lever 3 (Climate Action) is assigned by default to every innovation and cannot be unchecked (view rule since
+                 Dec 2024, no server-side counterpart) --]
+            [#local isLocked = (lever.id == 3) /]
+            [#local isChecked = isLocked /]
+            [#local storedLever = {} /]
+            [#list (element.allianceLevers)![] as elementLever]
+              [#if (elementLever.allianceLever.id == lever.id)!false]
+                [#local isChecked = true /]
+                [#local storedLever = elementLever /]
+                [#local storedIndex = elementLever_index /]
+                [#break /]
+              [/#if]
+            [/#list]
+            [#if isOther && isChecked][#local hasOtherLever = true /][/#if]
+            [#if editable || isChecked]
+            <div class="containerRadioToCheckbox inf-lever${isOther?then(' containerRadioToCheckbox--other inf-lever--other','')}${isChecked?then(' is-on','')}${isLocked?then(' is-locked','')}">
+              [#if storedLever?has_content]
+                <div class="form-group hiddenIdReference">
+                  [@customForm.input name="${customName}.allianceLevers[${storedIndex}].id" editable=false display=false value="${storedLever.id!-1}" /]
+                </div>
+              [/#if]
+              <label class="inputsFlat inf-lever__card"[#if editable] for="lever-${lever.id}"[/#if]>
+                [#if editable]
+                  <input id="lever-${lever.id}" type="checkbox" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" value="${lever.id}"[#if isChecked] checked[/#if][#if isLocked] readonly onclick="this.checked=!this.checked;" aria-disabled="true"[/#if] />
+                  <span class="inf-lever__box" aria-hidden="true"></span>
+                [/#if]
+                <span class="inf-lever__text">
+                  <span class="inf-lever__key">${lever.name}</span>
+                  <span class="inf-lever__name">[#if isOther][@s.text name="projectInnovations.redesign.alliance.otherTheme" /][#else]${(lever.description)!}[/#if]</span>
+                  [#if isLocked]<span class="inf-lever__locked">[@s.text name="projectInnovations.redesign.alliance.leverLocked" /]</span>[/#if]
+                </span>
+                [#if isLocked]
+                  <svg class="inf-lever__lock" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3.2" y="7.2" width="9.6" height="6.6" rx="1.6" stroke="currentColor" stroke-width="1.4"></rect><path d="M5.4 7.2V5.4a2.6 2.6 0 0 1 5.2 0v1.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+                [/#if]
+              </label>
+            </div>
+            [/#if]
+          [/#list]
+          </div>
+        [#else]
+          <p class="inf-vc__empty">[@s.text name="projectInnovations.redesign.alliance.noLevers" /]</p>
+        [/#if]
+        <div class="inf-other inputOther" data-inf-lever-other style="display:${hasOtherLever?string('block','none')}">
+          [@customForm.input name="${customName}.projectInnovationInfo.otherAllianceLever" i18nkey="projectInnovations.redesign.alliance.otherTheme.label" type="text" helpIcon=false required=true editable=editable /]
         </div>
-        [#local innovationIntellectualLegalRestrictions = "innovationIntellectualLegalRestrictions" /]
-        [#local showLegalRestrictions = (innovation.projectInnovationInfo.hasLegalRestrictions)! /]    
+      </div>
+    </section>
 
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-yes" name="${customName}.projectInnovationInfo.hasLegalRestrictions" label="Yes" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.hasLegalRestrictions??) &&(showLegalRestrictions)) cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-yes" editable=editable /]
-        </div>
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualLegalRestrictions}-no" name="${customName}.projectInnovationInfo.hasLegalRestrictions" label="No" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.hasLegalRestrictions??) &&(!showLegalRestrictions)) cssClass="radioType-${innovationIntellectualLegalRestrictions}" cssClassLabel="radio-label-no" editable=editable /]
-        </div>
+    [#-- ─── Intellectual property rights ───────────────────────────────────── --]
+    <section class="dlf-card inf-ip" id="inf-ip">
+      <h2 class="dlf-card__title">[@s.text name="projectInnovations.alliance.intellectualProperty" /]</h2>
+      <div class="dlf-note" role="note">
+        <span class="dlf-note__icon" aria-hidden="true">i</span>
+        <p class="dlf-note__text">[@s.text name="projectInnovations.redesign.alliance.ipNote" /] <strong>[@s.text name="projectInnovations.redesign.alliance.ipLawyer" /]</strong>.</p>
       </div>
-      [#-- Intellectual property rights - Commercialization --]
-      <div class="form-group">
-        <div class="col-md-12">
-          <label>
-            [@s.text name="projectInnovations.alliance.intellectualProperty.commercialization" /]
-          </label> 
-        </div>
-        [#local innovationIntellectualCommercialization = "innovationIntellectualCommercialization" /]
-        [#local showCommercialization = (innovation.projectInnovationInfo.hasAssetPotential)! /]   
 
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-yes" name="${customName}.projectInnovationInfo.hasAssetPotential" label="Yes" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.hasAssetPotential??) && (showCommercialization)) cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-yes" editable=editable /]
-        </div>
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualCommercialization}-no" name="${customName}.projectInnovationInfo.hasAssetPotential" label="No" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.hasAssetPotential??) && (!showCommercialization))  cssClass="radioType-${innovationIntellectualCommercialization}" cssClassLabel="radio-label-no" editable=editable /]
+      [#-- Owner; "Other" (id 4) opens a free text (projectInnovations.js) --]
+      <div class="dlf-field inf-ip__owner">
+        [#if editable]
+          [@customForm.select name="${customName}.projectInnovationInfo.intellectualPropertyInstitution.id" i18nkey="projectInnovations.alliance.intellectualProperty.description" listName="intellectualInstitutionsList" keyFieldName="id" className="innovationPropertyRightsSelect" displayFieldName="customName" required=false editable=editable /]
+        [#else]
+          [#-- customForm.select reads customName off the stored institution, which does not carry it: take it from the list --]
+          [#local ownerId = (element.projectInnovationInfo.intellectualPropertyInstitution.id)!-1 /]
+          [#local owner = ((intellectualInstitutionsList)![])?filter(i -> i.id == ownerId) /]
+          <label>[@s.text name="projectInnovations.alliance.intellectualProperty.description" /]</label>
+          <p class="inf-ip__value">[#if owner?has_content]${(owner[0].customName)!}[#else]<span class="inf-vc__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</span>[/#if]</p>
+        [/#if]
+        [#local otherIntellectualProperty = (element.projectInnovationInfo.intellectualPropertyInstitution.id == 4)!false /]
+        <div class="inf-other otherIntellectualProperty" style="display:${otherIntellectualProperty?then('block','none')}">
+          [@customForm.input name="${customName}.projectInnovationInfo.otherIntellectualProperty" type="text" i18nkey="projectInnovations.alliance.intellectualProperty.other" helpIcon=false required=false editable=editable /]
         </div>
       </div>
-      [#-- Intellectual property rights - Further Development --]
-      <div class="form-group">
-        <div class="col-md-12">
-          <label>
-            [@s.text name="projectInnovations.alliance.intellectualProperty.furtherDevelopment" /]
-          </label> 
-        </div>
-        [#local innovationIntellectualFurtherDevelopment = "innovationIntellectualFurtherDevelopment" /]
-        [#local showFurtherDevelopment = (innovation.projectInnovationInfo.hasFurtherDevelopment)! /]
 
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-yes" name="${customName}.projectInnovationInfo.hasFurtherDevelopment" label="Yes" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.hasFurtherDevelopment??)&&(showFurtherDevelopment)) cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-yes" editable=editable /]
-        </div>
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${innovationIntellectualFurtherDevelopment}-no" name="${customName}.projectInnovationInfo.hasFurtherDevelopment" label="No" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.hasFurtherDevelopment??)&&(!showFurtherDevelopment)) cssClass="radioType-${innovationIntellectualFurtherDevelopment}" cssClassLabel="radio-label-no" editable=editable /]
-        </div>
+      [#-- The three Yes / No questions as the design's segmented control --]
+      <div class="inf-ip__questions">
+        [@allianceQuestion element=element customName=customName field="hasLegalRestrictions" key="legalRestrictions" radioType="innovationIntellectualLegalRestrictions" /]
+        [@allianceQuestion element=element customName=customName field="hasAssetPotential" key="commercialization" radioType="innovationIntellectualCommercialization" /]
+        [@allianceQuestion element=element customName=customName field="hasFurtherDevelopment" key="furtherDevelopment" radioType="innovationIntellectualFurtherDevelopment" /]
       </div>
-      
+    </section>
+  </div>
+[/#macro]
+
+[#macro allianceQuestion element customName field key radioType]
+  [#local answered = ((element.projectInnovationInfo[field])??) /]
+  [#local answer = (element.projectInnovationInfo[field])!false /]
+  [#local labelKey = "projectInnovations.alliance.intellectualProperty.${key}" /]
+  <div class="inf-question">
+    <div class="inf-question__text">
+      <span class="inf-question__label">[@s.text name=labelKey /]</span>
+    </div>
+    <div class="inf-segmented" role="radiogroup" aria-label="[@s.text name=labelKey /]">
+      [@customForm.radioFlat id="${radioType}-yes" name="${customName}.projectInnovationInfo.${field}" label="Yes" value="true" checked=(answered && answer) cssClass="radioType-${radioType}" cssClassLabel="radio-label-yes" editable=editable /]
+      [@customForm.radioFlat id="${radioType}-no" name="${customName}.projectInnovationInfo.${field}" label="No" value="false" checked=(answered && !answer) cssClass="radioType-${radioType}" cssClassLabel="radio-label-no" editable=editable /]
+      [#if !editable && !answered]<p class="inf-question__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</p>[/#if]
     </div>
   </div>
 [/#macro]

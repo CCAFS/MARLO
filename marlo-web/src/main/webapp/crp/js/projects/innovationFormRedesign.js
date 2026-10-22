@@ -155,6 +155,27 @@ $(document).ready(function() {
     refreshValueChains();
   }
 
+  // ---- Alliance research theme: the checked cards, "n selected" and the other theme text. projectInnovations.js
+  // still reindexes the checked levers. ----
+  var $levers = $root.find('[data-inf-levers]');
+  function refreshLevers() {
+    var $boxes = $levers.find('.inf-lever input[type="checkbox"]');
+    $boxes.each(function() {
+      $(this).closest('.inf-lever').toggleClass('is-on', this.checked);
+    });
+    var selected = $boxes.filter(':checked').length;
+    $levers.find('[data-inf-levers-count]').text(selected ? format($levers.attr('data-selected'), [selected]) : '');
+    var $other = $levers.find('[data-inf-lever-other]');
+    var otherOn = $boxes.filter('.inf-lever--other input').is(':checked');
+    if(otherOn !== $other.is(':visible')) {
+      $other[otherOn ? 'slideDown' : 'slideUp'](150);
+    }
+  }
+  if($levers.length) {
+    $levers.on('change', '.inf-lever input[type="checkbox"]', refreshLevers);
+    refreshLevers();
+  }
+
   // Regional countries: deliverableFormRedesign.js labels every select of .regionalBlock "+ Add region..."; the
   // countries field under "specify countries" is a multi-select and reads "+ Add country..." instead.
   var $specifiedCountries = $root.find('.block-hasSpecifiedOutputCountries');

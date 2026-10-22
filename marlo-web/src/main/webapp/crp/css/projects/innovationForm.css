@@ -1680,3 +1680,95 @@
 .dlf .inf-evid .evidence__meta[hidden] { display: none; }
 .dlf .inf-evid .evidence__meta a { color: var(--dlf-brand); text-decoration: underline; word-break: break-all; }
 .dlf .inf-evid .evidence__meta b { font-weight: 500; color: var(--dlf-ink); }
+
+/* ══════════ Alliance alignment ══════════ */
+
+/* ---- Alliance research theme: a 3-column grid of checkbox cards, "LEVER n" over the theme name ---- */
+.dlf .inf-levers { display: flex; flex-direction: column; gap: 12px; }
+.dlf .inf-levers .inf-card__head .dlf-card__title { display: flex; align-items: baseline; gap: 4px; }
+.dlf .inf-levers .inf-card__head .inf-count { margin-left: 4px; }
+.dlf .inf-levers__help { margin: -4px 0 0; font-size: 13px; color: var(--dlf-ink-soft); }
+.dlf .inf-levers__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-levers.fieldError .inf-levers__grid,
+.dlf .inf-levers:has(.fieldError) .inf-levers__grid { border-color: var(--dlf-required); background: #FFFBFA; }
+.dlf .inf-lever { position: relative; display: flex; min-width: 0; margin: 0; padding: 0; float: none; width: auto; }
+.dlf .inf-lever .hiddenIdReference { display: none; }
+.dlf .dlf-card label.inf-lever__card {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 11px;
+  border: 1px solid #DDE3EA;
+  border-radius: 9px;
+  background: #fff;
+  font-weight: 400;
+  cursor: pointer;
+}
+.dlf .inf-lever__card input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-lever__box {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .inf-lever__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.dlf .inf-lever__key { font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .inf-lever__name { font: 600 13.5px/1.4 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .dlf-card .inf-lever:not(.is-on) label.inf-lever__card:hover { border-color: var(--dlf-brand); }
+.dlf .dlf-card .inf-lever.is-on label.inf-lever__card { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .inf-lever.is-on .inf-lever__key { color: var(--dlf-brand-dark); }
+.dlf .inf-lever.is-on .inf-lever__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Lever 3 is assigned by default: a muted checked card with a lock, not a control the user can change */
+.dlf .dlf-card .inf-lever.is-locked label.inf-lever__card { position: relative; padding-right: 32px; border-color: var(--dlf-line); background: #F7F9FB; cursor: default; }
+.dlf .inf-lever.is-locked .inf-lever__key { color: var(--dlf-ink-soft); }
+.dlf .inf-lever.is-locked .inf-lever__box { border-color: var(--dlf-ink-soft); background-color: var(--dlf-ink-soft); }
+.dlf .inf-lever__locked { margin-top: 4px; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-lever__lock { position: absolute; top: 11px; right: 11px; color: var(--dlf-muted); }
+.dlf .inf-lever__card input:focus-visible + .inf-lever__box { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-levers > .inf-other { margin-top: 0; }
+/* Read-only: the chosen themes only, without the box */
+.dlf.inf.is-readonly .dlf-card label.inf-lever__card { cursor: default; }
+@media (max-width: 991px) {
+  .dlf .inf-levers__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .dlf .inf-levers__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Intellectual property rights: the note, the owner, then three Yes / No questions ---- */
+.dlf .inf-ip { display: flex; flex-direction: column; gap: 16px; }
+.dlf .dlf-card.inf-ip > .dlf-card__title { margin: 0; }
+.dlf .inf-ip .dlf-note { margin: 0; }
+.dlf .inf-ip .dlf-note__text strong { font-weight: 600; }
+.dlf .inf-ip__owner > .form-group { margin-bottom: 0; }
+.dlf .inf-ip__owner .select,
+.dlf .inf-ip__owner .select2-container { width: 100% !important; }
+.dlf .inf-ip__owner .inf-other { margin-top: 10px; }
+.dlf .inf-ip__questions { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-ip__questions .inf-question { align-items: center; padding: 10px 14px; }
+.dlf .inf-ip__questions .inf-question__text { padding-top: 0; }
+.dlf .inf-ip__questions .inf-segmented .radioFlat label { min-width: 60px; text-align: center; }
+.dlf .inf-question__empty { margin: 0; padding: 0 10px; font: 400 13.5px/30px Figtree, sans-serif; color: var(--dlf-muted); }
+/* The owner's QA bubble sits on the label row, as in the design, instead of beside the select */
+.dlf .inf-ip__owner > .feedback-flex-items { position: relative; display: block; }
+.dlf .inf-ip__owner > .feedback-flex-items > .commentNumberContainer { position: absolute; top: -4px; right: 0; margin: 0; }
+.dlf .inf-ip__owner > .feedback-flex-items > .select > label { display: block; min-height: 26px; padding-right: 40px; }
+.dlf .inf-ip__owner > label { display: block; margin: 0 0 6px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-ip__value { margin: 0; font: 400 14px Figtree, sans-serif; color: var(--dlf-ink); }
