@@ -305,47 +305,6 @@
             [/#if]
             [/#if]
 
-            [#-- Cluster of Activities --]
-            [#if !((project.projectInfo.administrative)!false) && !phaseOne && isCrpProject && !aiccra]
-            <div class="panel tertiary">
-              <div class="panel-head ${customForm.changedField('project.clusterActivities')}">
-                <label for="">[@s.text name="projectDescription.clusterActivities"][@s.param][@s.text name="global.clusterOfActivities" /][/@s.param] [/@s.text]:[@customForm.req required=!aiccra  && action.hasPermission("activities") /]</label>
-              </div>
-              <div id="projectsList" class="panel-body" listname="project.clusterActivities">
-                [#-- Loading --]
-                <div class="loading clustersBlock" style="display:none"></div>
-                <ul class="list">
-                [#if project.clusterActivities?has_content]
-                  [#list project.clusterActivities as element]
-                    <li class="clusterActivity clearfix [#if !element_has_next]last[/#if]">
-                      <input class="id" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.id" value="${element.crpClusterOfActivity.id}" />
-                      <input class="cid" type="hidden" name="project.clusterActivities[${element_index}].id" value="${(element.id)!}" />
-                      <input class="identifier" type="hidden" name="project.clusterActivities[${element_index}].crpClusterOfActivity.identifier" value="${(element.crpClusterOfActivity.identifier)!}" />
-                      [#if editable && !reportingActive && action.hasPermission("activities") ]<span class="listButton remove popUpValidation pull-right">[@s.text name="form.buttons.remove" /]</span>[/#if]
-                      <span class="name">${(element.crpClusterOfActivity.composedName)!'null'}</span>
-                      <div class="clearfix"></div>
-                      <ul class="leaders">
-                        [#list (element.crpClusterOfActivity.leaders)![] as leader]<li class="leader">${(leader.user.composedName)!'null'}</li>[/#list]
-                      </ul>
-                    </li>
-                  [/#list]
-                [#else]
-                  [#if !action.hasPermission("activities")] <p class="emptyText"> [@s.text name="projectDescription.clusterActivities.empty" /]</p> [/#if]
-                [/#if]
-                </ul>
-                [#if editable && !reportingActive && action.hasPermission("activities")]
-                  [#assign multipleCoA = action.hasSpecificities('crp_multiple_coa')]
-                  <span id="coaSelectedIds" style="display:none">[#if project.clusterActivities?has_content][#list project.clusterActivities as e]${e.crpClusterOfActivity.id}[#if e_has_next],[/#if][/#list][/#if]</span>
-                  [@customForm.select name="" label="" disabled=!canEdit i18nkey="" listName="clusterofActivites" keyFieldName="id" displayFieldName="ComposedName" className="CoASelect multipleCoA-${multipleCoA?string}" value="" /]
-                [#else]
-                  [#if !project.clusterActivities?has_content]
-                    <p>[@s.text name="form.values.fieldEmpty" /]</p>
-                  [/#if]
-                [/#if]
-              </div>
-            </div>
-            [/#if]
-
             [#if isCenterProject]
             [#-- CENTER Reserach Outcomes (SA Version) --]
             <div class="form-group">

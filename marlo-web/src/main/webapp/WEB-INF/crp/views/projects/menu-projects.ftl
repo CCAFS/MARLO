@@ -200,11 +200,7 @@
   [#if !centerGlobalUnit]
     [#-- Submission message --]
     [#if !submission && completed && !canSubmit]
-      [#if action.isAiccra()]
-        <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.completedAiccra" /]</p>
-      [#else]
-        <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.completedLeader" /]</p>
-      [/#if]
+      <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.completedAiccra" /]</p>
     [/#if]
 
     [#-- Check button --]

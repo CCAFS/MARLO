@@ -165,7 +165,6 @@ Recorded so a future session does not mistake absence for breakage.
 | Gap | Consequence |
 |---|---|
 | `/usr/local/lib/node_modules` is root-owned | `akili update` fails at its npm step with `EACCES`. Run `sudo npm install -g akili-specs@latest`, then `akili install --force --tool claude` to refresh the files in `~/.claude` |
-| `playwright-cli` is not installed | `akili doctor` reports it as recommended. Without it, E2E/browser work loads the Playwright MCP schemas instead |
 | No `.agents/agents/` nested wrappers | Google Antigravity cannot discover the personas. Claude Code is unaffected |
 | `/akili-audit` has never run | `docs/specs/audits/` holds only its README. There is no drift baseline yet |
 | `/akili-quick` has never run | `docs/specs/quick/` does not exist; it is created on first use |
