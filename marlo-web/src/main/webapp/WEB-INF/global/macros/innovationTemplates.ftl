@@ -399,6 +399,14 @@
       [#-- External Contributing partners, sortable, with their roles --]
       <div class="dlf-field dlf-divided top-five-contributing inf-externals" data-inf-sort-hint="[@s.text name="projectInnovations.redesign.externals.sortHint" /]">
         [@customForm.elementsListComponent name="innovation.contributingOrganizations" i18nkey="innovation.contributingOrganizations" help="projectInnovations.contributingOrganizations.help" helpIcon=false isNote=false maxLimit=5 elementType="institution" elementList=innovation.contributingOrganizations label="projectInnovations.contributingOrganizations"  listName="contributingPartnerList" keyFieldName="id" displayFieldName="nameWithCountry" hasInnerCheckbox=true argsInnerCheckbox={"listCheckbox": organizationRoles, "subtitleElement": "Organization", "subtitleCheckbox": "Role"} orderById=true  /]
+        [#-- The options are the cluster's partners that are not CGIAR centers: say so when there is none --]
+        [#if editable && !((contributingPartnerList)![])?has_content]
+          <div class="inf-emptyOptions" role="status">
+            <svg class="dlf-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 7.3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="8" cy="5.1" r=".95" fill="currentColor"></circle></svg>
+            <span>[@s.text name="projectInnovations.redesign.externals.none"][@s.param]${sectionNoun}[/@s.param][/@s.text]</span>
+            <a class="inf-goTab" href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="_blank">[@s.text name="projectInnovations.redesign.externals.goToPartners" /]<svg class="dlf-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
+          </div>
+        [/#if]
       </div>
     </section>
 
@@ -705,97 +713,94 @@
 [/#macro]
 
 [#macro innovationBundleComposition element name index=-1 template=false]
-  <div id="bundleComposition" class="borderBox clearfix">
-    [#-- A2-2613: co-developing institutions (IRI 1.5), behind innovation_co_developing_institutions_active --]
+  [#-- A2-2613: the tab drawn as the design's cards (.dlf). The bundle table, the selected list and the complementary
+       innovations keep the classes and names projectInnovations.js and the save rely on. --]
+  <div id="bundleComposition" class="dlf-sections inf-bundle">
+    [#-- Co-developing institutions (IRI 1.5), behind innovation_co_developing_institutions_active --]
     [#if (action.isCoDevelopersActive())!false]
       [@innovationCoDevelopers element=element /]
     [/#if]
-    <div class="form-group">
 
-      [#-- Select an innovation --]
-      [#-- Table with all innovations and a selector list --]
-      <div class="form-group">
-        <div class="form-group">
-            <div class="col-md-12" style="display: flex; align-items: center; gap: 15px;">
-            <div style="flex: 1;">
-              <label for="innovation.bundles" class="label--2">[@s.text name="projectInnovations.bundle.selectInnovation" /]: </label>
-              <div class="note" style="align-items: center;">
-              <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</p>
-              </div>
-            </div>
-            <div class="commentNumberContainer" style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-              <div class="numberOfCommentsBubble">
-              <p></p>
-              </div>
-              <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.bundles" fieldID="" description="">
-            </div>
-            </div>
+    [#-- ─── Select an innovation ──────────────────────────────────────────── --]
+    <section class="dlf-card inf-bsel" id="inf-bsel">
+      <div class="inf-card__head">
+        <h2 class="dlf-card__title">[@s.text name="projectInnovations.bundle.selectInnovation" /]</h2>
+        <span class="inf-card__optional">[@s.text name="projectInnovations.redesign.optional" /]</span>
+        <div class="commentNumberContainer">
+          <div class="numberOfCommentsBubble"><p></p></div>
+          <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.bundles" fieldID="" description="">
         </div>
-        [#-- Table --]
-        <div class="col-md-12 simpleBox">
-          [#if editable]
-            [@tableAllInnovationsMacro list=allInnovationList selected=element.bundles clusterName=element.project.acronym /]
+      </div>
+      <div class="inf-inlineNote" role="note">
+        <svg class="dlf-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 7.3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="8" cy="5.1" r=".95" fill="currentColor"></circle></svg>
+        <span>[@s.text name="projectInnovations.bundle.selectInnovation.helpText" /]</span>
+      </div>
+
+      [#if editable]
+        <div class="inf-btable">
+          [#-- A cluster reads as its acronym, or C<id> when it has none (projectInnovations.js filters on it) --]
+          [#local ownCluster = (element.project.acronym?has_content)?then(element.project.acronym, "C" + ((element.project.id)!0)?c) /]
+          [@tableAllInnovationsMacro list=allInnovationList selected=element.bundles clusterName=ownCluster /]
+          [#-- The innovation being edited is not offered (A2-2613 rule 5.3) --]
+          <p class="inf-btable__self">
+            <svg class="dlf-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 7.3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="8" cy="5.1" r=".95" fill="currentColor"></circle></svg>
+            [@s.text name="projectInnovations.redesign.bundle.selfNote"][@s.param]I${(element.id?c)!}[/@s.param][/@s.text]
+          </p>
+        </div>
+      [/#if]
+
+      [#-- Innovations selected - bundles --]
+      <div class="innovationBundleBlock inf-bselected" listname="innovation.bundles">
+        <div class="inf-bselected__head">
+          <span class="inf-bselected__title">[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]</span>
+          <span class="inf-count" data-inf-bsel-count></span>
+        </div>
+        <div class="innovationBundleList" data-inf-bsel-list data-empty="[@s.text name="projectInnovations.redesign.bundle.noneSelected" /]">
+          [#if element.bundles?has_content]
+            [#list element.bundles as innovation]
+              [@innovationSelectedMacro element=innovation name="innovation.bundles" index=innovation_index template=false editable=editable /]
+            [/#list]
           [/#if]
         </div>
-        [#-- Innovations selected - bundles --]
-        <div class="col-md-12 innovationBundleBlock" listname="innovation.bundles">
-          <label>[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]:[@customForm.req required=false /]</label>
-          [#-- Innovation selected List - bundles --]
-          <div class="innovationBundleList">
-            [#if element.bundles?has_content]
-              [#list element.bundles as innovation]
-                [@innovationSelectedMacro element=innovation name="innovation.bundles" index=innovation_index template=false editable=editable /]
-              [/#list]
-            [/#if]
-          </div>
-          <div class="clearfix"></div>
-          [#-- Template item --]
-          <div style="display:none">
-            [@innovationSelectedMacro element={} name="innovation.bundles" index=-1 template=true editable=editable /]
-          </div>
-        </div>
-        <div class="clearfix"></div>
-      </div>
-
-
-      [#-- Add complementary innovation --]
-      [#-- A module that creates accordions with inner unique data --]
-      <div class="form-group">
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <div style="flex: 1;">
-            <label for="innovation.complementarySolutions" class="label--2">[@s.text name="projectInnovations.bundle.complementaryInnovations" /]:</label>
-          </div>
-          <div class="commentNumberContainer" style="flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-            <div class="numberOfCommentsBubble">
-              <p></p>
-            </div>
-            <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.complementarySolutions" fieldID="" description="">
-          </div>
-        </div>
-        <br />
-        <div class="col-md-12">
-          <div class="complementarySolutionsBlock">
-            <div class="complementarySolutionsList">
-              [#if element.complementarySolutions?has_content]
-                [#list element.complementarySolutions as solution]
-                  [#-- Complementary Solutions Macro --]
-                  [@complementarySolutionsMacro name="innovation.complementarySolutions" element=solution index=solution_index template=false editable=editable /]
-                [/#list]
-              [/#if]
-            </div>
-            [#if editable]
-            <div class="addButtonComplementarySolutions bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add a complementary innovation</div>
-            <div class="clearfix"></div>
-            [/#if]
-          </div>
-          [#-- Element item Template --]
-          <div style="display:none">
-            [@complementarySolutionsMacro name="innovation.complementarySolutions" element={} index=-1 template=true  /]
-          </div>
+        [#-- Template item --]
+        <div style="display:none">
+          [@innovationSelectedMacro element={} name="innovation.bundles" index=-1 template=true editable=editable /]
         </div>
       </div>
-    </div>
-  </div>  
+    </section>
+
+    [#-- ─── Complementary innovations ─────────────────────────────────────── --]
+    <section class="dlf-card inf-comps" id="inf-comps">
+      <div class="inf-card__head">
+        <h2 class="dlf-card__title">[@s.text name="projectInnovations.redesign.bundle.comps" /]</h2>
+        <span class="inf-count" data-inf-comps-count></span>
+        <div class="commentNumberContainer">
+          <div class="numberOfCommentsBubble"><p></p></div>
+          <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.complementarySolutions" fieldID="" description="">
+        </div>
+      </div>
+      <p class="dlf-hint inf-comps__help">[@s.text name="projectInnovations.redesign.bundle.compsHelp" /]</p>
+      <div class="complementarySolutionsBlock">
+        <div class="complementarySolutionsList">
+          [#if element.complementarySolutions?has_content]
+            [#list element.complementarySolutions as solution]
+              [@complementarySolutionsMacro name="innovation.complementarySolutions" element=solution index=solution_index template=false editable=editable /]
+            [/#list]
+          [/#if]
+        </div>
+        [#if editable]
+          <button type="button" class="addButtonComplementarySolutions inf-addComp">
+            <svg class="dlf-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2.6v8.8M2.6 7h8.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+            [@s.text name="projectInnovations.bundle.complementaryInnovations" /]
+          </button>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@complementarySolutionsMacro name="innovation.complementarySolutions" element={} index=-1 template=true  /]
+      </div>
+    </section>
+  </div>
 [/#macro] 
 
 [#macro innovationSharing element name index=-1 template=false]
@@ -1484,56 +1489,60 @@
   </div>
 [/#macro]
 
+[#-- One complementary innovation of a bundle, as the design's accordion: the head shows its number, title, type and
+     functions (innovationFormRedesign.js keeps them in step with the fields); projectInnovations.js opens it, clones
+     the template and reindexes the names. --]
 [#macro complementarySolutionsMacro element name index template=false editable=false ]
   [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
 
-  <div id="complementaryInnovation-${template?string('template',index)}" class="complementaryInnovation borderBox" style="display:${template?string('none','block')}">
+  <div id="complementaryInnovation-${template?string('template',index)}" class="complementaryInnovation inf-comp" style="display:${template?string('none','block')}">
     [#-- Remove Button --]
-    <div class="remove-element removeElement removeComplementaryInnovation" title="Remove"></div>
+    <button type="button" class="removeComplementaryInnovation inf-comp__remove" title="Remove" aria-label="Remove">
+      <svg class="dlf-icon" width="11" height="11" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+    </button>
 
-    [#-- Complementary innovation --]
-    <div class="blockTitle closed">
-		  [#if element.title?has_content]
-				${element.title}
-			[#else]
-				New Complementary Innovation
-			[/#if]
+    [#-- Head: opens the fields --]
+    <div class="blockTitle closed inf-comp__head" role="button" tabindex="0" data-new="[@s.text name="projectInnovations.redesign.bundle.newComp" /]"
+      data-functions="[@s.text name="projectInnovations.redesign.bundle.functions" /]" data-missing="[@s.text name="projectInnovations.redesign.bundle.missing" /]">
+      <svg class="dlf-icon inf-comp__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      <span class="inf-comp__n" data-inf-comp-n>${(index + 1)?c}</span>
+      <span class="inf-comp__title" data-inf-comp-title>[#if element.title?has_content]${element.title}[#else][@s.text name="projectInnovations.redesign.bundle.newComp" /][/#if]</span>
+      <span class="inf-comp__type" data-inf-comp-type hidden></span>
+      <span class="inf-comp__missing" data-inf-comp-missing hidden></span>
+      <span class="inf-comp__functions" data-inf-comp-functions></span>
     </div>
-    
-    <div class="blockContent" style="display:none">
-      <hr />
+
+    <div class="blockContent inf-comp__body" style="display:none">
       [#-- ID  --]
       <input type="hidden" name="${customName}.id" value="${(element.id)!}"/>
-      [#-- Title  --]
-      <div class="form-group">
-        [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-30" required=true /]
+      <div class="inf-comp__row">
+        [#-- Title  --]
+        <div class="dlf-field">
+          [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-30" required=true /]
+        </div>
+        [#-- Short title  --]
+        <div class="dlf-field">
+          [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-15" required=true /]
+        </div>
       </div>
-      <div class="clearfix"></div>
-      [#-- Short title  --]
-      <div class="form-group">
-        [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-15" required=true /]
-      </div>
-      <div class="clearfix"></div>
       [#-- Short description  --]
-      <div class="form-group">
+      <div class="dlf-field">
         [@customForm.textArea name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-80" required=true /]
       </div>
-      <div class="clearfix"></div>
       [#-- Innovation type select --]
-      <div class="form-group" listname="${customName}.projectInnovationType.id">
+      <div class="dlf-field inf-comp__type-field" listname="${customName}.projectInnovationType.id">
         [@customForm.select name="${customName}.projectInnovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
       </div>
-      <div class="clearfix"></div>
       [#-- Function  --]
-      <div class="form-group" listname="${customName}.complementarySolutionFunctions">
+      <div class="dlf-field inf-comp__functions-field" listname="${customName}.complementarySolutionFunctions">
         [@customForm.labelText name="${customName}.function" text="projectInnovations.bundle.complementaryInnovations.function" required=true helpText="projectInnovations.bundle.complementaryInnovations.function.helpText" /]
+        <div class="inf-comp__functionList">
         [#if projectInnovationFunctionList?has_content]
           [#list projectInnovationFunctionList as function]
-            <div class="col-md-12">
+            <div class="inf-comp__function">
               [#local functionLabel = function.title!"" /]
               [#local cleanedLabel = functionLabel?replace('\\\\/', '/')?replace('\\/', '/') /]
               [#local cleanedLabel = cleanedLabel?js_string!"" /]
-
 
               [#local isChecked = false /]
               [#if element.complementarySolutionFunctions?has_content]
@@ -1545,18 +1554,18 @@
                 [/#list]
               [/#if]
 
-							[#-- Hidden ID --]
-							[#if isChecked && savedFunctionId?has_content]
-								<input name="${customName}.complementarySolutionFunctions[${(function.id)!}].id" value="${savedFunctionId}" type="hidden" />
-							[/#if]
+              [#-- Hidden ID --]
+              [#if isChecked && savedFunctionId?has_content]
+                <input name="${customName}.complementarySolutionFunctions[${(function.id)!}].id" value="${savedFunctionId}" type="hidden" />
+              [/#if]
 
               [#-- Checkbox Function --]
               [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=isChecked cssClass="check-function" /]
             </div>
           [/#list]
         [/#if]
+        </div>
       </div>
-      <div class="clearfix"></div>
     </div>
   </div>
 [/#macro]
@@ -1566,12 +1575,15 @@
   <table id="table-all-innovations" class="table table-striped table-hover" width="100%" data-cluster="${clusterName}"
     data-filter-label="[@s.text name="projectInnovations.bundle.filter.label" /]"
     data-filter-all="[@s.text name="projectInnovations.bundle.filter.all" /]"
-    data-filter-placeholder="[@s.text name="projectInnovations.bundle.filter.placeholder" /]">
+    data-filter-placeholder="[@s.text name="projectInnovations.bundle.filter.placeholder" /]"
+    data-search-placeholder="[@s.text name="projectInnovations.redesign.bundle.search" /]"
+    data-empty-table="[@s.text name="projectInnovations.redesign.bundle.emptyTable" /]"
+    data-zero-records="[@s.text name="projectInnovations.redesign.bundle.zeroRecords" /]">
     <thead>
       <tr>
         <th id="tb-id" width="1%" class="no-sort">ID</th>
         <th id="tb-title" width="32%">[@s.text name="projectInnovations.table.title" /]</th>
-        <th id="tb-cluster" width="10%">[@s.text name="projectInnovations.table.cluster" /]</th>
+        <th id="tb-cluster" width="10%" title="[@s.text name="projectInnovations.table.cluster.readText" /]">[@s.text name="projectInnovations.table.cluster" /]</th>
         <th id="tb-type" width="20%">[@s.text name="projectInnovations.table.type" /]</th>
         <th id="tb-readinessLevel" width="15%">[@s.text name="projectInnovations.table.readinessLevel" /]</th>
         <th id="tb-year" width="1%">[@s.text name="projectInnovations.table.year" /]</th>
@@ -1614,7 +1626,7 @@
             [#-- Cluster --]
             <td class="text-center">
               [#if innovation.project??]
-                ${innovation.project.acronym!''}
+                [#if (innovation.project.acronym)?has_content]${innovation.project.acronym}[#else]C${innovation.project.id?c}[/#if]
               [/#if]
             </td>
             [#-- Type of Innovation --]
@@ -1676,7 +1688,7 @@
       <input type="hidden" id="reference-selected" name="${customName}.selectedInnovation.id" value="${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}" />
 
       <span  title="Remove" class="removeInnovationBundleItem removeElement sm removeIcon" aria-hidden="true"></span>
-      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> - <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
+      <p><b class="innovationBundleItemID">${(element.selectedInnovation?? && element.selectedInnovation.id??)?then(element.selectedInnovation.id,'')}</b> <span class="innovationBundleItemName">${(element.selectedInnovation?? && element.selectedInnovation.projectInnovationInfo?? && element.selectedInnovation.projectInnovationInfo.title??)?then(element.selectedInnovation.projectInnovationInfo.title,'')}</span></p>
   </div>
 [/#macro]
 

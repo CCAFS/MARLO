@@ -312,6 +312,62 @@ $(document).ready(function() {
     watch($partnerList, syncCoDevelopers);
   }
 
+  // ---- Bundle composition: selected innovations and complementary innovations (A2-2613 redesign) ----
+  // projectInnovations.js adds and removes both; this only draws the counts, the empty state and the accordion heads.
+  var $bselList = $root.find('[data-inf-bsel-list]');
+  watch($bselList, function() {
+    var count = $bselList.children('.innovationBundleItem').length;
+    $root.find('[data-inf-bsel-count]').text(count ? String(count) : '');
+    $bselList.children('p').addClass('inf-bselected__empty').text($bselList.attr('data-empty'));
+  });
+
+  var $compList = $root.find('.complementarySolutionsList');
+  function refreshComplementary() {
+    var $items = $compList.children('.complementaryInnovation');
+    $root.find('[data-inf-comps-count]').text($items.length ? String($items.length) : '');
+    $items.each(function(index) {
+      var $item = $(this);
+      var $head = $item.find('.inf-comp__head');
+      var title = $.trim($item.find('input[name$=".title"]').val() || '');
+      var $type = $item.find('select[name$=".projectInnovationType.id"]');
+      var typeValue = $type.val();
+      var typeName = typeValue && typeValue !== '-1' ? $.trim($type.find('option:selected').text()) : '';
+      var functions = $item.find('input.check-function:checked').length;
+      var missing = !title || !$.trim($item.find('input[name$=".shortTitle"]').val() || '')
+          || !$.trim($item.find('textarea[name$=".shortDescription"]').val() || '') || !typeName || !functions;
+      $head.find('[data-inf-comp-n]').text(index + 1);
+      $head.find('[data-inf-comp-title]').text(title || $head.attr('data-new'));
+      $head.find('[data-inf-comp-type]').text(typeName).prop('hidden', !typeName);
+      $head.find('[data-inf-comp-missing]').text($head.attr('data-missing')).prop('hidden', !missing);
+      $head.find('[data-inf-comp-functions]').text(functions ? format($head.attr('data-functions'), [functions]) : '');
+      $head.attr('aria-expanded', $head.hasClass('opened'));
+    });
+  }
+  if($compList.length) {
+    watch($compList, refreshComplementary);
+    $compList.on('input change', 'input, select, textarea', refreshComplementary);
+    $compList.on('click', '.inf-comp__head', function() {
+      setTimeout(refreshComplementary, 0);
+    });
+    // The head opens with the keyboard too
+    $compList.on('keydown', '.inf-comp__head', function(event) {
+      if(event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        $(this).trigger('click');
+      }
+    });
+  }
+
+  // The bundle table search reads as the design's
+  var $bundleTable = $root.find('#table-all-innovations');
+  watch($bundleTable.closest('.inf-btable'), function() {
+    $bundleTable.closest('.inf-btable').find('.dataTables_filter input').each(function() {
+      if(this.getAttribute('placeholder') !== $bundleTable.attr('data-search-placeholder')) {
+        this.setAttribute('placeholder', $bundleTable.attr('data-search-placeholder'));
+      }
+    });
+  });
+
   // ---- Cross-cutting alignment: SDGs ----
   // Each "Goal n: Name" of the list reads as "GOAL n" over the name, beside the goal's icon (projectInnovations.js
   // draws it); the options are listed in goal order.

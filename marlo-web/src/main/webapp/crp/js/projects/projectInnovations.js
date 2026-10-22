@@ -1766,7 +1766,8 @@ function addDataTableAllInnovations() {
         "iDisplayLength": 10,
         "language": {
           "searchPlaceholder": "Search...",
-          "emptyTable": "No innovation entries entered into the system yet."
+          "emptyTable": $(table).attr('data-empty-table') || "No innovation entries entered into the system yet.",
+          "zeroRecords": $(table).attr('data-zero-records') || "No matching records found"
         },
         "order": columns > 1 ? [[1, 'desc']] : [],
         "columnDefs": [
@@ -1860,15 +1861,18 @@ function ajaxAllClusters(selectElement, table) {
 
       $(selectElement).append($('<option value=""></option>').text(table.attr('data-filter-all') || 'All Clusters'));
 
+      // A cluster reads as its acronym, or C<id> when it has none, as in the table column (A2-2613)
       data.projectList.forEach(function (cluster) {
-        $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
+        const label = cluster.acronym || ('C' + cluster.id);
+        $(selectElement).append($('<option></option>').val(label).text(label));
       });
 
       // Initialize select2 on the new select element
       $(selectElement).select2({
         width: '100%',
         height: '30px',
-        placeholder: table.attr('data-filter-placeholder') || "Select a cluster",
+        // The empty value is "All ...": select2 shows it as the placeholder, so the placeholder reads the same
+        placeholder: table.attr('data-filter-all') || table.attr('data-filter-placeholder') || "Select a cluster",
         allowClear: true
       });
 
@@ -2023,7 +2027,8 @@ function addDataTablePRMSInnovations() {
         "iDisplayLength": 10,
         "language": {
           "searchPlaceholder": "Search...",
-          "emptyTable": "No innovation entries entered into the system yet."
+          "emptyTable": $(table).attr('data-empty-table') || "No innovation entries entered into the system yet.",
+          "zeroRecords": $(table).attr('data-zero-records') || "No matching records found"
         },
         "order": columns > 1 ? [[1, 'desc']] : [],
         "columnDefs": [

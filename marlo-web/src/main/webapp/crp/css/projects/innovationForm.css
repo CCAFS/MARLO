@@ -793,13 +793,389 @@
 }
 .dlf .inf-codev__empty[hidden] { display: none; }
 .dlf .inf-codev__empty > span { flex: 1; min-width: 220px; }
-.dlf .inf-codev__level { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; padding-top: 12px; border-top: 1px solid var(--dlf-line-soft); }
-.dlf .inf-codev__level > .inf-iaRow__label { flex: none; min-width: 0; }
-.dlf .inf-codev__levels { display: flex; align-items: center; flex-wrap: wrap; row-gap: 4px; }
+.dlf .inf-codev__level { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; padding-top: 12px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-codev__level > .inf-iaRow__label { min-width: 0; font-size: 13px; }
+.dlf .inf-codev__level > .commentNumberContainer { grid-column: 2; grid-row: 1; margin: 0; }
+.dlf .inf-codev__levels { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .dlf .inf-codev__levels .radioFlat-flex,
 .dlf .inf-codev__levels .feedback-flex-items { display: contents !important; } /* the feedback module wraps radios */
-.dlf .inf-codev__levels .fieldReference.radioFlat { width: auto !important; margin: 0; padding: 0; }
-.dlf .inf-codev__levels .radioFlat > p { margin: 0; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
-.dlf .inf-codev__levels .fieldReference.radioFlat label { display: inline-flex; align-items: center; margin: 0; padding-top: 0; padding-bottom: 0; line-height: 20px; }
-.dlf .inf-codev__level > .commentNumberContainer { margin: 0 0 0 auto; }
-.dlf .inf-codev__levels .fieldReference.radioFlat.radio-inline { margin: 0 18px 0 0 !important; padding: 0 !important; }
+/* The design's option chips: a bordered card with a ring, as the deliverable form's (.dlf-chipRadios) */
+.dlf .inf-codev__levels .fieldReference.radioFlat {
+  display: inline-flex;
+  align-items: center;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+}
+.dlf .inf-codev__levels .fieldReference.radioFlat:hover { border-color: var(--dlf-brand); }
+.dlf .inf-codev__levels .fieldReference.radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .inf-codev__levels .fieldReference.radioFlat .radio-label {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px 0 11px;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-codev__levels .fieldReference.radioFlat .radio-label::before {
+  position: static;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0 9px 0 0;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf .inf-codev__levels .fieldReference.radioFlat input:checked + .radio-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand);
+  box-shadow: inset 0 0 0 3.5px #fff;
+}
+.dlf .inf-codev__levels .fieldReference.radioFlat input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); border-radius: 8px; }
+.dlf .inf-codev__levels .radioFlat > p { margin: 0; padding: 0 12px; font: 600 13.5px/36px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ==== Bundle composition: Select an innovation and Complementary innovations (A2-2613 redesign) ==== */
+.dlf .inf-bundle .dlf-card { display: flex; flex-direction: column; gap: 12px; }
+.dlf .inf-card__head { display: flex; align-items: center; gap: 10px; }
+.dlf .dlf-card .inf-card__head > .dlf-card__title { margin: 0; }
+.dlf .inf-card__head > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-card__optional { font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-inlineNote {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 9px;
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-inlineNote > .dlf-icon { flex: none; color: var(--dlf-brand); }
+
+/* ---- The innovations table (DataTables, built by projectInnovations.js) ---- */
+.dlf .inf-btable { border: 1px solid var(--dlf-line); border-radius: 10px; overflow: hidden; background: var(--dlf-surface); }
+.dlf .inf-btable .dataTables_wrapper { padding: 0; }
+.dlf .inf-btable .dataTables_wrapper > .row { margin: 0; }
+.dlf .inf-btable .dataTables_wrapper > .row:first-child {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--dlf-line);
+  background: #FBFCFD;
+}
+.dlf .inf-btable .select-container {
+  position: static !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  width: auto !important;
+  margin: 0 !important;
+}
+.dlf .inf-btable .select-container > label { margin: 0 !important; font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); white-space: nowrap; }
+.dlf .inf-btable .select-container .select2-container { width: 260px !important; margin: 0 !important; }
+.dlf .inf-btable .select-container .select2-container .select2-selection--single { height: 32px !important; min-height: 32px !important; padding: 0 !important; border: 1px solid var(--dlf-line-strong); border-radius: 8px; }
+.dlf .inf-btable .select-container .select2-container .select2-selection__rendered { padding: 0 28px 0 10px !important; line-height: 30px !important; font: 500 13px/30px Figtree, sans-serif; color: var(--dlf-ink); }
+/* "All ..." is an option already: no clear button; the design's chevron, centred */
+.dlf .inf-btable .select-container .select2-selection__clear { display: none !important; }
+.dlf .inf-btable .select-container .select2-container .select2-selection__arrow {
+  top: 0 !important;
+  right: 8px !important;
+  width: 14px !important;
+  height: 30px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-btable .select-container .select2-selection__arrow b { display: none; }
+/* The page length control: the design pages by ten */
+.dlf .inf-btable .dataTables_wrapper > .row:first-child > .col-sm-6:has(.dataTables_length) { display: none; }
+.dlf .inf-btable .dataTables_wrapper > .row:first-child > .col-sm-6:has(.dataTables_filter) { flex: 0 1 300px; width: auto; margin-left: auto; padding: 0; float: none; }
+.dlf .inf-btable .iconSearch { display: none !important; } /* global.css shows it as a blue square */
+.dlf .inf-btable .dataTables_filter { float: none; margin: 0; text-align: left; }
+.dlf .inf-btable .dataTables_filter label { display: block; width: 100%; margin: 0; font-size: 0; }
+.dlf .inf-btable .dataTables_filter input {
+  width: 100% !important;
+  height: 32px;
+  margin: 0 !important;
+  padding: 0 10px 0 30px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='7' cy='7' r='4.6' stroke='%236B7280' stroke-width='1.6'/%3E%3Cpath d='m10.5 10.5 3 3' stroke='%236B7280' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") 10px center no-repeat;
+  font: 400 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  box-shadow: none;
+}
+.dlf .inf-btable .dataTables_filter input:focus { border-color: var(--dlf-brand); outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-btable .dataTables_wrapper > .row:nth-child(2) > .col-sm-12 { padding: 0; }
+.dlf .inf-btable table.dataTable { width: 100% !important; margin: 0 !important; border: 0; border-collapse: collapse; }
+.dlf .inf-btable table.dataTable thead th {
+  height: 34px;
+  padding: 0 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--dlf-line) !important;
+  background: #FBFCFD !important;
+  font: 600 10.5px Figtree, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  text-align: left !important;
+  vertical-align: middle;
+  color: var(--dlf-muted) !important;
+}
+.dlf .inf-btable table.dataTable thead th.sorting,
+.dlf .inf-btable table.dataTable thead th.sorting_asc,
+.dlf .inf-btable table.dataTable thead th.sorting_desc { background-image: none !important; cursor: pointer; }
+.dlf .inf-btable table.dataTable thead th#tb-cluster { white-space: nowrap; }
+.dlf .inf-btable table.dataTable thead th::before,
+.dlf .inf-btable table.dataTable thead th::after { display: none !important; } /* Bootstrap's glyph sort icons */
+.dlf .inf-btable table.dataTable thead th.sorting_asc,
+.dlf .inf-btable table.dataTable thead th.sorting_desc { color: var(--dlf-ink) !important; }
+.dlf .inf-btable table.dataTable tbody tr,
+.dlf .inf-btable table.dataTable tbody tr:nth-of-type(odd) { background: #fff !important; }
+.dlf .inf-btable table.dataTable tbody tr:hover { background: #FAFBFC !important; }
+.dlf .inf-btable table.dataTable tbody td {
+  height: 52px;
+  padding: 6px 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #F1F4F7 !important;
+  font: 500 12.5px/1.4 Figtree, sans-serif;
+  text-align: left !important;
+  vertical-align: middle;
+  color: var(--dlf-ink);
+}
+.dlf .inf-btable table.dataTable tbody td:first-child { font-weight: 600; color: var(--dlf-ink-soft); font-variant-numeric: tabular-nums; }
+.dlf .inf-btable table.dataTable tbody td .title-link {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font: 600 13px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-decoration: none;
+}
+.dlf .inf-btable table.dataTable tbody td .title-link:hover { color: var(--dlf-brand); text-decoration: underline; }
+.dlf .inf-btable table.dataTable tbody td:last-of-type:not([style]),
+.dlf .inf-btable table.dataTable tbody td:nth-last-child(2) { white-space: nowrap; }
+.dlf .inf-btable .selectInnovationBundle {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-brand);
+  border-radius: 7px;
+  background: var(--dlf-brand);
+  font: 600 12px Figtree, sans-serif;
+  color: #fff;
+  vertical-align: middle;
+  box-shadow: none;
+}
+.dlf .inf-btable .selectInnovationBundle:hover { background: var(--dlf-brand-dark); border-color: var(--dlf-brand-dark); }
+.dlf .inf-btable .selectInnovationBundle[disabled] { opacity: 1; border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); cursor: default; }
+.dlf .inf-btable table.dataTable tbody td a > img[src*="pdf"] { height: 22px; margin-left: 4px; vertical-align: middle; }
+.dlf .inf-btable td.dataTables_empty { height: 64px; text-align: center !important; font-weight: 500; color: var(--dlf-ink-soft); }
+.dlf .inf-btable .dataTables_wrapper > .row:last-child { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 9px 12px; }
+.dlf .inf-btable .dataTables_wrapper > .row:last-child > [class*="col-sm-"] { width: auto; padding: 0; float: none; }
+.dlf .inf-btable .dataTables_wrapper > .row:last-child > [class*="col-sm-"]:last-child { margin-left: auto; }
+.dlf .inf-btable .dataTables_info { padding: 0 !important; font: 400 12.5px Figtree, sans-serif; white-space: nowrap !important; color: var(--dlf-ink-soft); }
+.dlf .inf-btable .dataTables_paginate { margin: 0; padding: 0; }
+.dlf .inf-btable .pagination { display: flex; gap: 4px; margin: 0; }
+.dlf .inf-btable .pagination > li > a,
+.dlf .inf-btable .pagination > li > span {
+  float: none;
+  min-width: 28px;
+  height: 28px;
+  margin: 0 !important;
+  padding: 0 8px;
+  border: 1px solid #E0E5EB;
+  border-radius: 7px !important;
+  background: #fff;
+  font: 600 12.5px/26px Figtree, sans-serif;
+  text-align: center;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-btable .pagination > .active > a,
+.dlf .inf-btable .pagination > .active > a:hover { border-color: var(--dlf-brand); background: var(--dlf-brand); color: #fff; }
+.dlf .inf-btable .pagination > .disabled > a { opacity: .5; }
+.dlf .inf-btable__self {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0 12px 10px;
+  font: 400 12px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+
+/* ---- Innovations selected ---- */
+.dlf .inf-bselected { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-bselected__head { display: flex; align-items: center; gap: 7px; }
+.dlf .inf-bselected__title { font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-bselected .inf-count { margin: 0; }
+.dlf .innovationBundleList { display: flex; flex-direction: column; gap: 6px; }
+.dlf .innovationBundleList .innovationBundleItem.grayGreenBox {
+  position: relative;
+  align-items: center;
+  margin: 0;
+  padding: 8px 40px 8px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .innovationBundleList .innovationBundleItem > p { margin: 0; font: 500 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .innovationBundleList .innovationBundleItemID { margin-right: 6px; font: 700 12.5px Figtree, sans-serif; color: var(--dlf-brand-dark); font-variant-numeric: tabular-nums; }
+.dlf .innovationBundleList .innovationBundleItemID::before { content: "I"; }
+.dlf .innovationBundleList .removeInnovationBundleItem {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .innovationBundleList .removeInnovationBundleItem:hover { background-color: var(--dlf-danger-bg); }
+.dlf .innovationBundleList > p.inf-bselected__empty {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+
+/* ---- Complementary innovations: an accordion per innovation ---- */
+.dlf .inf-comps .inf-card__head .inf-count { margin: 0; }
+.dlf .inf-comps__help { margin: -6px 0 0; }
+.dlf .complementarySolutionsList { display: flex; flex-direction: column; gap: 8px; }
+.dlf .complementarySolutionsList:empty { display: none; }
+.dlf .inf-comp { position: relative; margin: 0; padding: 0; border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface); }
+.dlf .inf-comp:has(.inf-comp__missing:not([hidden])) { border-color: var(--dlf-warn-border); }
+.dlf .dlf-card .inf-comp__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin: 0;
+  padding: 4px 48px 4px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .dlf-card .inf-comp__head::before,
+.dlf .dlf-card .inf-comp__head::after { display: none !important; }
+.dlf .dlf-card .inf-comp__head.opened { border-radius: 10px 10px 0 0; background: var(--dlf-surface-alt); }
+.dlf .inf-comp__head:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-comp__chevron { flex: none; color: var(--dlf-muted); transition: transform .15s ease; }
+.dlf .inf-comp__head.opened .inf-comp__chevron { transform: rotate(90deg); }
+.dlf .inf-comp__n { flex: none; width: 22px; height: 22px; border-radius: 6px; background: var(--dlf-chip); font: 700 11px/22px Figtree, sans-serif; text-align: center; color: var(--dlf-ink-soft); }
+.dlf .inf-comp__title { min-width: 0; font: 600 14px Figtree, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dlf .inf-comp__type { flex: none; padding: 1px 8px; border: 1px solid var(--dlf-info-border); border-radius: 5px; background: var(--dlf-info-bg); font: 600 11.5px Figtree, sans-serif; color: var(--dlf-brand-dark); }
+.dlf .inf-comp__type[hidden],
+.dlf .inf-comp__missing[hidden] { display: none; }
+.dlf .inf-comp__missing { flex: none; display: inline-flex; align-items: center; gap: 5px; font: 600 12px Figtree, sans-serif; color: var(--dlf-warn); }
+.dlf .inf-comp__missing::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .inf-comp__functions { flex: none; margin-left: auto; font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-comp__remove {
+  position: absolute;
+  top: 11px; /* centred on the 52px head */
+  right: 5px; /* the cross sits as far from the right edge as the chevron from the left */
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--dlf-danger);
+  cursor: pointer;
+}
+.dlf .inf-comp__remove:hover { background: var(--dlf-danger-bg); }
+.dlf .inf-comp__body { padding: 16px 16px 18px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-comp__body > .dlf-field + .dlf-field,
+.dlf .inf-comp__body > .inf-comp__row + .dlf-field { margin-top: 16px; }
+.dlf .inf-comp__row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+.dlf .inf-comp__type-field { max-width: 420px; }
+.dlf .inf-comp__functionList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-comp__function .inputsFlat { margin: 0; }
+.dlf .inf-comp__function .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13px/1.45 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-comp__function input:checked + .checkbox-label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+/* The legacy box is the label's ::before, in its flow: the first item of the row */
+.dlf .inf-comp__function .checkbox-label::before { flex: none; margin: 2px 9px 0 0 !important; }
+.dlf .inf-addComp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  border: 1px dashed #9ACBE0;
+  border-radius: 10px;
+  background: #F7FBFD;
+  font: 600 13.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .inf-addComp:hover { border-color: var(--dlf-brand); background: #EAF4F8; }
+@media (max-width: 991px) {
+  .dlf .inf-comp__row,
+  .dlf .inf-comp__functionList { grid-template-columns: minmax(0, 1fr); }
+}
+/* Read-only: nothing to remove */
+.dlf.inf.is-readonly .innovationBundleList .removeInnovationBundleItem,
+.dlf.inf.is-readonly .inf-comp__remove { display: none; }
+.dlf.inf.is-readonly .innovationBundleList .innovationBundleItem.grayGreenBox { padding-right: 12px; }
+.dlf.inf.is-readonly .dlf-card .inf-comp__head { padding-right: 14px; }
+
+/* Contributing external partners without options: why, and where to add them */
+.dlf .inf-emptyOptions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-emptyOptions > .dlf-icon { flex: none; color: var(--dlf-brand); }
+.dlf .inf-emptyOptions > span { flex: 1; min-width: 240px; }
