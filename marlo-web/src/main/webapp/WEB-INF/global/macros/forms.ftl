@@ -1288,13 +1288,19 @@
 
 
     [#if editable]
-      <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
-
-      <div class="col-md-4">
-        [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
-      </div>
-      <div class="col-md-4">
-        [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /] 
+      [#-- A2-2613 redesign: the evidence number, then its source as a segmented control (the radios keep their names
+           and classes: projectInnovations.js reindexes them) --]
+      <div class="evidence__head">
+        <span class="evidence__n" aria-hidden="true"></span>
+        <label for="${customName}.reference" class="sr-only">[@s.text name="projectInnovations.evidence.title" /]</label>
+        <div class="inf-segmented evidence__source" role="radiogroup" aria-label="[@s.text name="projectInnovations.evidence.title" /]">
+          <div class="col-md-4">
+            [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
+          </div>
+          <div class="col-md-4">
+            [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /]
+          </div>
+        </div>
       </div>
       
       [#if isDeliverable]
@@ -1306,36 +1312,25 @@
           [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceInnovation${class}" /]
         </div>
       [/#if]
+      [#-- A2-2613 redesign: Evidence/Reference | URL, then Evidence type: Category | Sub-category, in two columns.
+           .evidenceType holds both selects: projectInnovations.js loads the sub-categories of the chosen category. --]
       <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
-        <div class="col-md-12 row">
-          <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
+        <div class="evidence__grid evidenceType">
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.redesign.evidence.reference" /][@customForm.req required=true /]</span>
+            [@customForm.input name="${customName}.reference" placeholder="" showTitle=false i18nkey=""  editable=editable required=true /]
           </div>
-          <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.redesign.evidence.url" /][@customForm.req required=true /]</span>
+            [@customForm.input name="${customName}.link" placeholder="projectInnovations.redesign.evidence.urlPlaceholder" showTitle=false i18nkey="" editable=editable required=true /]
           </div>
-        </div>
-        <div class="col-md-12">
-          <div class="col-md-6">
-            [@customForm.input name="${customName}.reference" placeholder="projectInnovations.evidence.reference" showTitle=false i18nkey=""  editable=editable required=true /]
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.redesign.evidence.category" /][@customForm.req required=true /]</span>
+            [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
           </div>
-          <div class="col-md-6">
-            [@customForm.input name="${customName}.link" placeholder="projectInnovations.evidence.link" showTitle=false i18nkey="" editable=editable required=true /]
-          </div>
-        </div>
-        <div class="col-md-12">
-          <div class="col-md-12 evidenceType">
-            <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
-              <div class="col-md-12 row">
-              <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
-              </div>
-              <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true  /]
-              </div>
-            </div>
-            <div class="col-md-6">
-              [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
-            </div>
-            <div class="col-md-6">
-              [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
-            </div>            
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true /]</span>
+            [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
           </div>
         </div>
       </div>

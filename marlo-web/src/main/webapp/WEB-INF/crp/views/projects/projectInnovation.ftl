@@ -16,12 +16,12 @@
   "https://unpkg.com/primevue@4.5.5/umd/primevue.min.js",
   "https://unpkg.com/@primeuix/themes@2.0.3/umd/aura.js",
   "${baseUrlCdn}/global/js/sortableList.js?20250604",
-  "${baseUrlMedia}/js/projects/projectInnovations.js?20261022-4",
+  "${baseUrlMedia}/js/projects/projectInnovations.js?20261022-5",
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250825",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#-- The form redesign reuses the deliverable form's (A2-2607): save state, labels and word counters --]
   "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261021-1",
-  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261022-11"
+  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261022-16"
 ] /]
 
 [#assign moduleJS = [
@@ -37,7 +37,7 @@
   "${baseUrlCdn}/global/css/customDataTable.css?20250825",
   [#-- A2-2613: the deliverable form redesign (.dlf) plus what the innovation form adds (.inf) --]
   "${baseUrl}/crp/css/projects/deliverableForm.css?20261021-1",
-  "${baseUrlMedia}/css/projects/innovationForm.css?20261022-28"
+  "${baseUrlMedia}/css/projects/innovationForm.css?20261022-44"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]

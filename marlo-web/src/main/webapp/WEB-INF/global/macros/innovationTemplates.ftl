@@ -805,51 +805,51 @@
 
 [#macro innovationSharing element name index=-1 template=false]
   [#local customName = "${name}"/]
+  [#-- A2-2613: the tab drawn as the design's cards (.dlf). Every field keeps the customForm markup, names and classes
+       projectInnovations.js, fieldsValidation.js and the feedback module read. --]
+  <div id="funding" class="dlf-sections inf-ks">
 
-  <div id="funding" class="borderBox clearfix">
-    <div class="form-group">
+    [#-- ─── Innovation Scaling Readiness ──────────────────────────────────── --]
+    <section class="dlf-card inf-rl" id="inf-rl">
+      [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
+    </section>
 
-      [#-- Innovation Scaling Readiness --]
-      <div class="form-group">
-        [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
-      </div>
+    [#-- ─── Bottlenecks and results ───────────────────────────────────────── --]
+    <section class="dlf-card" id="inf-barriers">
+      <h2 class="dlf-card__title">[@s.text name="projectInnovations.redesign.ks.barriers" /]</h2>
 
-      [#-- Foresee barriers --]
-      <div class="form-group col-md-12">
-        <label class="col-md-12">[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /][@customForm.req required=editanle /]</label>
-        [#local foreseeBarriersText = "foreseeBarriers" /]
-        [#local foreseeBarriers = (element.projectInnovationInfo.foreseeBarriers)! /]  
-
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${foreseeBarriersText}-yes" name="${customName}.projectInnovationInfo.foreseeBarriers" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-yes" editable=editable /]
+      [#-- Foresee barriers: the question and its Yes / No as the design's segmented control --]
+      [#local foreseeBarriersText = "foreseeBarriers" /]
+      [#local foreseeBarriers = (element.projectInnovationInfo.foreseeBarriers)! /]
+      <div class="inf-questionBox">
+        <div class="inf-question">
+          <div class="inf-question__text">
+            <span class="inf-question__label">[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /][@customForm.req required=editable /]</span>
+          </div>
+          <div class="inf-segmented" role="radiogroup" aria-label="[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /]">
+            [@customForm.radioFlat id="${foreseeBarriersText}-yes" name="${customName}.projectInnovationInfo.foreseeBarriers" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label" editable=editable /]
+            [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label" editable=editable /]
+          </div>
         </div>
-        <div class="col-md-1">
-          [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label-no" editable=editable /]
-        </div>
-
         [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(foreseeBarriers)) || ((!editable)) /]
         [#-- knowledgeToolUsesNarrative --]
-        <div class="col-md-12 padding-left-2 block-foreseeBarriers" style="display:${(isDisplayKnowledgeToolUsesNarrative)?then('block','none')};">
+        <div class="inf-questionBox__answer block-foreseeBarriers" style="display:${(isDisplayKnowledgeToolUsesNarrative)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=editable editable=editable /]
         </div>
-      </div>  
-
-      [#-- knowledgeResultsNarrative --]
-      <div class="col-md-12">
-        [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=false editable=editable /]
       </div>
 
-      [#-- Knowledge Sharing and Scaling Potential --]
-      <div class="form-group">
-        <div class="col-md-12">
-          <label class="col-md-12 label--2">[@s.text name="projectInnovations.sharing.knowledge" /]:</label>
-        </div>
-        <div class="col-md-12 padding-left-2">
+      [#-- knowledgeResultsNarrative --]
+      <div class="dlf-field">
+        [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeResultsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.results" helpIcon=false className="limitWords-500" required=false editable=editable /]
+      </div>
+    </section>
 
+    [#-- ─── Knowledge Sharing and Scaling Potential ───────────────────────── --]
+    <section class="dlf-card inf-likert" id="inf-likert">
+      <h2 class="dlf-card__title">[@s.text name="projectInnovations.sharing.knowledge" /]</h2>
           [#-- Technical excellence --]
-          <label class="label--2 col-md-12 blueLightColor">
-            [@s.text name="projectInnovations.sharing.technicalExcellence" /]:
-          </label>
+          <div class="inf-likertGroup">
+          <h3 class="inf-likertGroup__title">[@s.text name="projectInnovations.sharing.technicalExcellence" /]</h3>
 
           [#local cheaperAlternativesValue = (element.projectInnovationInfo.cheaperAlternatives)!{} /]
           [#local simplerUseValue = (element.projectInnovationInfo.simplerUse)!{} /]
@@ -859,10 +859,11 @@
           [@customForm.likertScale name="${customName}.projectInnovationInfo.simplerUse" id="${customName}.projectInnovationInfo.simplerUse" value=(simplerUseValue) label="projectInnovations.sharing.technicalExcellence.simplerUse" required=true editable=editable subLabelLeft="projectInnovations.sharing.technicalExcellence.simplerUse.subLabel.left" subLabelRight="projectInnovations.sharing.technicalExcellence.simplerUse.subLabel.right" /]
           [@customForm.likertScale name="${customName}.projectInnovationInfo.performBetter" id="${customName}.projectInnovationInfo.performBetter" value=(performBetterValue) label="projectInnovations.sharing.technicalExcellence.performBetter" required=true editable=editable subLabelLeft="projectInnovations.sharing.technicalExcellence.performBetter.subLabel.left" subLabelRight="projectInnovations.sharing.technicalExcellence.performBetter.subLabel.right" /]
 
+          </div>
+
           [#-- Demand and Investment --]
-          <label class="label--2 col-md-12 blueLightColor">
-            [@s.text name="projectInnovations.sharing.demand&Investment" /]:
-          </label>
+          <div class="inf-likertGroup">
+          <h3 class="inf-likertGroup__title">[@s.text name="projectInnovations.sharing.demand&Investment" /]</h3>
           
           [#local innovationDesirableValue = (element.projectInnovationInfo.innovationDesirable)!{} /]
           [#local innovationCommerciallyValue = (element.projectInnovationInfo.innovationCommercially)!{} /]
@@ -870,47 +871,42 @@
           [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationDesirable" id="${customName}.projectInnovationInfo.innovationDesirable" value=(innovationDesirableValue) label="projectInnovations.sharing.demand&Investment.innovationDesirable" required=true editable=editable subLabelLeft="projectInnovations.sharing.demand&Investment.innovationDesirable.subLabel.left" subLabelRight="projectInnovations.sharing.demand&Investment.innovationDesirable.subLabel.right" /]
           [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationCommercially" id="${customName}.projectInnovationInfo.innovationCommercially" value=(innovationCommerciallyValue) label="projectInnovations.sharing.demand&Investment.innovationCommercially" required=true editable=editable subLabelLeft="projectInnovations.sharing.demand&Investment.innovationCommercially.subLabel.left" subLabelRight="projectInnovations.sharing.demand&Investment.innovationCommercially.subLabel.right" /]
           
+          </div>
+
           [#-- Sustained use --]
-          <label class="label--2 col-md-12 blueLightColor">
-            [@s.text name="projectInnovations.sharing.sustainedUse" /]:
-          </label>
+          <div class="inf-likertGroup">
+          <h3 class="inf-likertGroup__title">[@s.text name="projectInnovations.sharing.sustainedUse" /]</h3>
 
           [#local innovationSupportedValue = (element.projectInnovationInfo.innovationSupported)!{} /]
           [#local evidenceUptakeValue = (element.projectInnovationInfo.evidenceUptake)!{} /]
 
           [@customForm.likertScale name="${customName}.projectInnovationInfo.innovationSupported" id="${customName}.projectInnovationInfo.innovationSupported" value=(innovationSupportedValue) label="projectInnovations.sharing.sustainedUse.innovationSupported" required=true editable=editable subLabelLeft="projectInnovations.sharing.sustainedUse.innovationSupported.subLabel.left" subLabelRight="projectInnovations.sharing.sustainedUse.innovationSupported.subLabel.right" /]
           [@customForm.likertScale name="${customName}.projectInnovationInfo.evidenceUptake" id="${customName}.projectInnovationInfo.evidenceUptake" value=(evidenceUptakeValue) label="projectInnovations.sharing.sustainedUse.evidenceUptake" required=true editable=editable subLabelLeft="projectInnovations.sharing.sustainedUse.evidenceUptake.subLabel.left" subLabelRight="projectInnovations.sharing.sustainedUse.evidenceUptake.subLabel.right" /]
+          </div>
 
-        </div>
-      </div>
-
-      [#-- hasKnowledgePotential --]
-      <div class="col-md-12 margin-top-10 form-group">
+      [#-- hasKnowledgePotential: the answer as the design's option chips --]
+      <div class="dlf-field dlf-divided inf-potential">
         [@customForm.labelText name="innovation.hasKnowledgePotential" text="projectInnovations.sharing.aboutTheTool.potential" required=true className="width-100" /]
         [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
-        [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential.id)!-1 /]    
-
-        <div class="col-md-1">
+        [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential.id)!-1 /]
+        <div class="inf-chipRadios" role="radiogroup" aria-label="[@s.text name="projectInnovations.sharing.aboutTheTool.potential" /]">
           [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes" value="1" checked=(hasKnowledgePotential == 1) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
-        </div>
-        <div class="col-md-3">
           [@customForm.radioFlat id="${hasKnowledgePotentialText}-yesW" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes with adaptations" value="2" checked=(hasKnowledgePotential == 2) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
-        </div>
-        <div class="col-md-1">
           [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="No" value="3" checked=(hasKnowledgePotential == 3) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
         </div>
 
         [#local isDisplayReasonKnowledgePotential = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&((hasKnowledgePotential == 2))) || ((!editable)) /]
-        
+
         [#-- reasonKnowledgePotential --]
-        <div class="col-md-12 block-w-${hasKnowledgePotentialText} padding-left-2" style="display:${(isDisplayReasonKnowledgePotential)?then('block','none')};">
+        <div class="inf-other block-w-${hasKnowledgePotentialText}" style="display:${(isDisplayReasonKnowledgePotential)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.reasonKnowledgePotential" i18nkey="projectInnovations.sharing.aboutTheTool.reasonProvided"  helpIcon=false className="limitWords-500" required=(editable) editable=editable /]
         </div>
       </div>
       [#-- knowledge support the outreach --]
-      <div class="col-md-12">
+      <div class="dlf-field dlf-divided">
         [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeMethodsAndToolsNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.supportTheOutreach" helpIcon=false className="limitWords-500" required=false editable=editable /]
       </div>
+    </section>
 
       [#-- About the innovation --]
       [#--        <div class="form-group">
@@ -927,15 +923,19 @@
         </div>
       </div>  --]
       
+    [#-- ─── Users and beneficiaries ───────────────────────────────────────── --]
+    <section class="dlf-card inf-users" id="inf-users">
+      <h2 class="dlf-card__title">[@s.text name="projectInnovations.redesign.ks.users" /]</h2>
+
       [#-- Anticipated users --]
-      <div class="form-group col-md-12 block-innovationAnticipatedUsers">
+      <div class="dlf-field block-innovationAnticipatedUsers">
         [@customForm.labelText name="innovation.anticipatedUsers" text="projectInnovations.anticipatedUsers" twoPoints=false required=true isMainTitle=true className="width-100" /]
         [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
-        <div class="col-md-12">
-          <div class="col-md-4">
+        <div class="inf-chipRadios" role="radiogroup" aria-label="[@s.text name="projectInnovations.anticipatedUsers" /]">
+          <div>
             [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
           </div>
-          <div class="col-md-4">
+          <div>
             [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
           </div>
         </div>
@@ -1006,14 +1006,13 @@
       </div>
 
       [#-- Beneficiries --]
-      <div class="form-group col-md-12">
-        <label for="innovation.actors">[@s.text name="projectInnovations.beneficiaries" /]:[@customForm.req required=true /]</label>
-        <div class="note" style="align-items: center;">
-          <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name="projectInnovations.beneficiaries.helpText" /]</p>
-        </div>
+      <div class="dlf-field dlf-divided inf-benef">
+        <label for="innovation.projectInnovationInfo.beneficiariesNarrative">[@s.text name="projectInnovations.beneficiaries" /][@customForm.req required=true /]</label>
+        <p class="dlf-hint">[@s.text name="projectInnovations.beneficiaries.helpText" /]</p>
         [@customForm.textArea name="innovation.projectInnovationInfo.beneficiariesNarrative"  showTitle=false placeholder="" className="limitWords-80"  isNote=true helpIcon=false required=true editable=editable isWidthFull=true /]
       </div>
-      
+    </section>
+
       [#-- URLs: Tool website, publications, stories and more  --]
       [#--        <div class="form-group">
         <label class="label--2 col-md-12 blueLightColor">[@s.text name="projectInnovations.sharing.urls" /]:</label>
@@ -1099,36 +1098,57 @@
         </div>
       </div>  --]
 
-      [#-- Evidence and Reference --]
-      <div class="form-group">
-        [@customForm.labelText name="innovation.references" text="projectInnovations.readiness.evidence" helpText="projectInnovations.readiness.evidence.help" required=false isMainTitle=true twoPoints=false classNameLabel="blueLightColor" className="width-100" /]
-        <br>
-        <label class="note note--3 statusEvidenceInImpactArea"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >Problem available</span></label>
-        <div class="col-md-12">
-          <div class="referenceBlock">
-            <div class="referenceListReadiness">
-              [#if element.references?has_content]
-                [#list element.references as reference]
-                  [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" editable=editable /]
-                [/#list]
-              [/#if]
-            </div>
-            [#if editable]
-            <div class="addButtonReferenceReadiness bigAddButton text-center"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add evidence </div>
-            <div class="clearfix"></div>
-            [/#if]
-          </div>
-          [#-- Element item Template --]
-          <div style="display:none">
-            [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness"  /]
-          </div>
+    [#-- ─── Evidence of Innovation/bundle performance and scaling ─────────── --]
+    [#-- The evidence a score of 2 or the readiness level still needs: innovationFormRedesign.js lists it in the notice and
+         marks the matching tags "Required" (the legacy .statusEvidenceInImpactArea stays hidden) --]
+    <section class="dlf-card inf-evid" id="inf-evid" data-inf-evid
+      data-required="[@s.text name="projectInnovations.redesign.evidence.required" /]"
+      data-tick="[@s.text name="projectInnovations.redesign.evidence.tick" /]"
+      data-ok="[@s.text name="projectInnovations.redesign.evidence.ok" /]"
+      data-item="[@s.text name="projectInnovations.redesign.evidence.item" /]"
+      data-readiness="[@s.text name="projectInnovations.redesign.evidence.readiness" /]"
+      data-badge="[@s.text name="projectInnovations.redesign.evidence.badge" /]"
+      data-handle="[@s.text name="projectInnovations.redesign.evidence.handle" /]"
+      data-type="[@s.text name="projectInnovations.redesign.evidence.type" /]"
+      data-area-gender="[@s.text name="projectInnovations.oneCGIARAligment.genderScore" /]"
+      data-area-climate-change="[@s.text name="projectInnovations.oneCGIARAligment.climateChangeScore" /]"
+      data-area-nutrition="[@s.text name="projectInnovations.oneCGIARAligment.nutritionScore" /]"
+      data-area-environmental="[@s.text name="projectInnovations.oneCGIARAligment.environmentScore" /]"
+      data-area-poverty="[@s.text name="projectInnovations.oneCGIARAligment.povertyScore" /]">
+      <div class="inf-card__head">
+        <h2 class="dlf-card__title">[@s.text name="projectInnovations.readiness.evidence" /]</h2>
+        <span class="inf-count" data-inf-evid-count></span>
+        <div class="commentNumberContainer">
+          <div class="numberOfCommentsBubble"><p></p></div>
+          <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="innovation.references" fieldID="" description="">
         </div>
       </div>
-      
+      <p class="dlf-hint inf-evid__help">[@s.text name="projectInnovations.readiness.evidence.help" /]</p>
+      <div class="inf-evidNotice" role="status" aria-live="polite" data-inf-evid-notice hidden></div>
+      <label class="note note--3 statusEvidenceInImpactArea"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="contentInformation" >Problem available</span></label>
+      <div class="referenceBlock">
+        <div class="referenceListReadiness">
+          [#if element.references?has_content]
+            [#list element.references as reference]
+              [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" editable=editable /]
+            [/#list]
+          [/#if]
+        </div>
+        [#if editable]
+          <button type="button" class="addButtonReferenceReadiness inf-addComp">
+            <svg class="dlf-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2.6v8.8M2.6 7h8.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+            [@s.text name="projectInnovations.redesign.ks.addEvidence" /]
+          </button>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@customForm.evidence name="innovation.references" element={} index=-1 template=true class="Readiness"  /]
+      </div>
+    </section>
   </div>
 [/#macro]
 
-[#-- One value chain of the innovation form, as a checkbox chip --]
 [#-- Co-developing African institution(s) and Institutional level of a bundle (A2-2613, rule 4.2). The options are
      the innovation's contributing external partners: innovationFormRedesign.js keeps them in step with General
      Information (a partner added there is offered here, a removed one leaves with a notice). listname lets
@@ -1187,7 +1207,7 @@
     [#-- Institutional level --]
     <div class="inf-codev__level">
       <span class="inf-iaRow__label">[@s.text name="projectInnovations.institutionalLevel" /][@customForm.req required=editable /]</span>
-      <div class="inf-codev__levels" role="radiogroup" aria-label="[@s.text name="projectInnovations.institutionalLevel" /]">
+      <div class="inf-codev__levels inf-chipRadios" role="radiogroup" aria-label="[@s.text name="projectInnovations.institutionalLevel" /]">
         [#list ["regional", "national", "joint"] as option]
           [@customForm.radioFlat id="institutionalLevel-${option}" name="innovation.projectInnovationInfo.institutionalLevel" i18nkey="projectInnovations.institutionalLevel.${option}" value=option checked=(level == option) cssClass="radioType-institutionalLevel" cssClassLabel="radio-label" editable=editable canComment=false /]
         [/#list]
@@ -1208,6 +1228,7 @@
   </label>
 [/#macro]
 
+[#-- One value chain of the innovation form, as a checkbox chip --]
 [#macro valueChainChip valueChain index checked]
   <label class="inf-vcChip[#if valueChain.notSpecific] inf-vcChip--exclusive[/#if]">
     <input type="checkbox" name="innovation.valueChains[${index}].valueChain.id" value="${valueChain.id?c}"[#if checked] checked[/#if]
@@ -1288,25 +1309,24 @@
             </div>
           </div>
         </div>
-        [#-- Message to appear if a value overpass the total with a banish in 10 seconds --]
-        <div class="col-md-12 message-overpass-total" style="display: none;">
-          <div class="alert alert-warning">
-            <strong>Warning!</strong> The value in <b>Of which women</b> or <b>Of which youth</b> exceeds the total. The values will be modified to match the total.
-          </div>
+        [#-- Shown for a few seconds when "Of which women / youth" goes above Total: projectInnovations.js writes the field
+             and the value it was adjusted to into the message (A2-2613 redesign) --]
+        <div class="col-md-12 message-overpass-total" style="display: none;" data-template="[@s.text name="projectInnovations.redesign.actors.overTotal" /]">
+          <p class="inf-actorWarn" role="status" data-message></p>
         </div>
         [#else]
         <div class="col-md-12">
           <div class="col-md-3">
             <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.total" /]:</span>
-            <span class="col-md-12"><b>${(element.total)!0}</b></span>
+            <span class="col-md-12"><b>[#if (element.total)??]${element.total?c}[#else][@s.text name="projectInnovations.valueChains.none" /][/#if]</b></span>
           </div>
           <div class="col-md-3">
             <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichWomen" /]:</span>
-            <span class="col-md-12"><b>${(element.womenYouthNumber)!0}</b></span>
+            <span class="col-md-12"><b>[#if (element.womenYouthNumber)??]${element.womenYouthNumber?c}[#else][@s.text name="projectInnovations.valueChains.none" /][/#if]</b></span>
           </div>
           <div class="col-md-3">
             <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichYouth" /]:</span>
-            <span class="col-md-12"><b>${(element.womenNonYouthNumber)!0}</b></span>
+            <span class="col-md-12"><b>[#if (element.womenNonYouthNumber)??]${element.womenNonYouthNumber?c}[#else][@s.text name="projectInnovations.valueChains.none" /][/#if]</b></span>
           </div>
         </div>
         [/#if]
@@ -1410,35 +1430,54 @@
   </div>
 [/#macro]
 
+[#-- Innovation Scaling Readiness (A2-2613 redesign): the 0-9 levels as the design's stepper, each with its name, and
+     the chosen level described below. The radios keep their names and classes: projectInnovations.js fills the
+     description (.scaling__message) from .scaling__hiddenInfo when another level is chosen. --]
 [#macro scalingMacro name element editable label="" helpLabel="" listName=[] class=""]
   [#local customName = "${name}"]
-  <div id="scalingInnovation" class="scaling form-group ${class}">
-    <label for="${customName}" class="label--2">[@s.text name=label /]: [@customForm.req required=(editable) /]</label>
-    <div class="note" style="align-items: unset;">
-      <span class="glyphicon glyphicon-question-sign" style="margin-top: 3px; font-size: 24px;"></span><p style="margin: 0;"> [@s.text name=helpLabel /]</p>
+  <div id="scalingInnovation" class="scaling ${class}">
+    <div class="inf-card__head">
+      <h2 class="dlf-card__title"><label for="${customName}">[@s.text name=label /]</label>[@customForm.req required=(editable) /]</h2>
+      <div class="commentNumberContainer">
+        <div class="numberOfCommentsBubble"><p></p></div>
+        <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="${customName}" fieldID="" description="">
+      </div>
+    </div>
+    <div class="dlf-note" role="note">
+      <span class="dlf-note__icon" aria-hidden="true">i</span>
+      <p class="dlf-note__text">[@s.text name=helpLabel /]</p>
     </div>
 
-    <div class="scaling__container">
-      <div class="scaling__line col-md-11"></div>
+    <div class="scaling__container" role="radiogroup" aria-label="[@s.text name=label /]">
+      <div class="scaling__line" aria-hidden="true"></div>
       [#if listName?has_content]
         [#list listName as item]
-          <div class="col-md-1 scaling__item">
+          <div class="scaling__item" data-level="${(item.id - 1)?c}">
             [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" canComment=false /]
+            <span class="scaling__name">${(item.name!"")?replace("^\\d+\\s*-\\s*", "", "r")}</span>
           </div>
         [/#list]
       [/#if]
     </div>
-    <div class="scaling__message grayBox">
-      [#if element != -1]
-        [#local elemInformation = listName?filter(it -> (it.id == element)) /]
-        [#if elemInformation?size > 0]
-          <h5>[@s.text name=elemInformation[0].name /]</h5>
-          <p>[@s.text name=elemInformation[0].description /]</p>
+    [#local selectedLevel = "" /]
+    [#if element != -1]
+      [#local elemInformation = listName?filter(it -> (it.id == element)) /]
+      [#if elemInformation?size > 0][#local selectedLevel = (elemInformation[0].id - 1)?c /][/#if]
+    [/#if]
+    [#-- The chosen level: its number on the left, its name and description beside it --]
+    <div class="scaling__message grayBox" data-level="${selectedLevel}">
+      <span class="scaling__num" aria-hidden="true">${selectedLevel}</span>
+      <div class="scaling__text">
+        [#if element != -1]
+          [#if elemInformation?size > 0]
+            <h5>[@s.text name=elemInformation[0].name /]</h5>
+            <p>[@s.text name=elemInformation[0].description /]</p>
+          [/#if]
+        [#else]
+          <h5>[@s.text name="projectInnovations.readiness.scale.message1" /]</h5>
+          <p>[@s.text name="projectInnovations.readiness.scale.message2" /]</p>
         [/#if]
-      [#else]
-        <h5>[@s.text name="projectInnovations.readiness.scale.message1" /]</h5>
-        <p>[@s.text name="projectInnovations.readiness.scale.message2" /]</p>
-      [/#if]
+      </div>
     </div>
     <div class="scaling__hiddenInfo" style="display: none">
       [#if listName?has_content]
@@ -1453,9 +1492,7 @@
           </div>
         [/#list]
       [/#if]
-        
     </div>
-    <div class="clearfix"></div>
   </div>
 [/#macro]
 

@@ -796,11 +796,12 @@
 .dlf .inf-codev__level { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; padding-top: 12px; border-top: 1px solid var(--dlf-line-soft); }
 .dlf .inf-codev__level > .inf-iaRow__label { min-width: 0; font-size: 13px; }
 .dlf .inf-codev__level > .commentNumberContainer { grid-column: 2; grid-row: 1; margin: 0; }
-.dlf .inf-codev__levels { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.dlf .inf-codev__levels .radioFlat-flex,
-.dlf .inf-codev__levels .feedback-flex-items { display: contents !important; } /* the feedback module wraps radios */
-/* The design's option chips: a bordered card with a ring, as the deliverable form's (.dlf-chipRadios) */
-.dlf .inf-codev__levels .fieldReference.radioFlat {
+.dlf .inf-codev__levels { grid-column: 1 / -1; }
+.dlf .inf-chipRadios { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.dlf .inf-chipRadios .radioFlat-flex,
+.dlf .inf-chipRadios .feedback-flex-items { display: contents !important; } /* the feedback module wraps radios */
+/* The design's option chips (.inf-chipRadios): a bordered card with a ring, as the deliverable form's .dlf-chipRadios */
+.dlf .inf-chipRadios .fieldReference.radioFlat {
   display: inline-flex;
   align-items: center;
   width: auto !important;
@@ -810,9 +811,9 @@
   border-radius: 8px;
   background: #fff;
 }
-.dlf .inf-codev__levels .fieldReference.radioFlat:hover { border-color: var(--dlf-brand); }
-.dlf .inf-codev__levels .fieldReference.radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
-.dlf .inf-codev__levels .fieldReference.radioFlat .radio-label {
+.dlf .inf-chipRadios .fieldReference.radioFlat:hover { border-color: var(--dlf-brand); }
+.dlf .inf-chipRadios .fieldReference.radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .inf-chipRadios .fieldReference.radioFlat .radio-label {
   display: inline-flex;
   align-items: center;
   height: 38px;
@@ -822,7 +823,7 @@
   color: var(--dlf-ink);
   cursor: pointer;
 }
-.dlf .inf-codev__levels .fieldReference.radioFlat .radio-label::before {
+.dlf .inf-chipRadios .fieldReference.radioFlat .radio-label::before {
   position: static;
   flex: none;
   width: 16px;
@@ -833,13 +834,13 @@
   background: #fff;
   box-shadow: none;
 }
-.dlf .inf-codev__levels .fieldReference.radioFlat input:checked + .radio-label::before {
+.dlf .inf-chipRadios .fieldReference.radioFlat input:checked + .radio-label::before {
   border-color: var(--dlf-brand);
   background: var(--dlf-brand);
   box-shadow: inset 0 0 0 3.5px #fff;
 }
-.dlf .inf-codev__levels .fieldReference.radioFlat input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); border-radius: 8px; }
-.dlf .inf-codev__levels .radioFlat > p { margin: 0; padding: 0 12px; font: 600 13.5px/36px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-chipRadios .fieldReference.radioFlat input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); border-radius: 8px; }
+.dlf .inf-chipRadios .radioFlat > p { margin: 0; padding: 0 12px; font: 600 13.5px/36px Figtree, sans-serif; color: var(--dlf-ink); }
 
 /* ==== Bundle composition: Select an innovation and Complementary innovations (A2-2613 redesign) ==== */
 .dlf .inf-bundle .dlf-card { display: flex; flex-direction: column; gap: 12px; }
@@ -1198,3 +1199,484 @@
 .dlf .inf-emptyOptions > span { flex: 1; min-width: 240px; }
 /* The "…" between page numbers is not a button */
 .dlf .inf-btable .pagination > .disabled:not(.previous):not(.next) > a { min-width: 16px; padding: 0 2px; border-color: transparent; background: none; opacity: 1; color: var(--dlf-muted); }
+
+/* ==== Knowledge & Scaling (A2-2613 redesign) ==== */
+.dlf .inf-ks .dlf-card { display: flex; flex-direction: column; gap: 14px; }
+.dlf .inf-ks .dlf-card [class*="col-md-"]:not(.radioFlat-flex):not(.checkbox-list-item) { float: none; width: auto; padding-left: 0; padding-right: 0; }
+.dlf .inf-ks .form-group { margin-bottom: 0; }
+
+/* ---- Readiness: the 0-9 stepper, the level colours of the design ---- */
+.dlf .inf-rl .scaling { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+.dlf .inf-rl .inf-card__head .dlf-card__title label { margin: 0; font: inherit; color: inherit; }
+.dlf .inf-rl .scaling__container {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 4px 0 0;
+}
+.dlf .inf-rl .scaling__line { position: absolute; top: 21px; left: 5%; right: 5%; width: auto !important; height: 2px; margin: 0; padding: 0 !important; background: #E5E9EF; }
+.dlf .inf-rl .scaling__item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; width: auto !important; margin: 0; padding: 0 !important; text-align: center; }
+.dlf .inf-rl .scaling__item .radioFlat-flex,
+.dlf .inf-rl .scaling__item .feedback-flex-items { display: contents !important; }
+.dlf .inf-rl .scaling__item .fieldReference.radioFlat { position: relative; width: auto !important; margin: 0 !important; padding: 0 !important; }
+.dlf .inf-rl .scaling__item input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-rl .scaling__item .radio-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid var(--dlf-line-strong);
+  border-radius: 50%;
+  background: #fff;
+  font: 700 14px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.dlf .inf-rl .scaling__item .radio-label::before,
+.dlf .inf-rl .scaling__item .radio-label::after { display: none !important; }
+.dlf .inf-rl .scaling__item .radio-label:hover { border-color: var(--dlf-brand); color: var(--dlf-brand); }
+.dlf .inf-rl .scaling__item input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-rl .scaling__item input:checked + .radio-label { border-color: var(--inf-rl) !important; background: var(--inf-rl) !important; color: #fff !important; box-shadow: 0 2px 6px rgba(31, 42, 55, .2); } /* projectInnovations.css paints it #7AB800 */
+.dlf .inf-rl .scaling__name { font: 500 11.5px/1.3 Figtree, sans-serif; color: var(--dlf-muted); text-wrap: balance; }
+.dlf .inf-rl .scaling__item:has(input:checked) .scaling__name { font-weight: 600; color: var(--dlf-ink); }
+.dlf .inf-rl .scaling__item > p { margin: 0; }
+.dlf .inf-rl [data-level="0"] { --inf-rl: #6B7280; }
+.dlf .inf-rl [data-level="1"] { --inf-rl: #5F6B7A; }
+.dlf .inf-rl [data-level="2"] { --inf-rl: #4F6E86; }
+.dlf .inf-rl [data-level="3"] { --inf-rl: #2F6F92; }
+.dlf .inf-rl [data-level="4"] { --inf-rl: #0277A2; }
+.dlf .inf-rl [data-level="5"] { --inf-rl: #13788A; }
+.dlf .inf-rl [data-level="6"] { --inf-rl: #1F7A6A; }
+.dlf .inf-rl [data-level="7"] { --inf-rl: #2E7D4F; }
+.dlf .inf-rl [data-level="8"] { --inf-rl: #2E6B2F; }
+.dlf .inf-rl [data-level="9"] { --inf-rl: #1F5A21; }
+/* The chosen level, described */
+.dlf .inf-rl .scaling__message.grayBox {
+  margin: 0;
+  padding: 12px 16px 12px 18px;
+  border: 1px solid var(--dlf-line);
+  border-left: 4px solid var(--inf-rl, var(--dlf-line-strong));
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-rl .scaling__message h5 { margin: 0 0 4px; font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-rl .scaling__message p { margin: 0; font: 400 13px/1.55 Figtree, sans-serif; color: var(--dlf-ink-soft); }
+@media (max-width: 991px) {
+  .dlf .inf-rl .scaling__container { grid-template-columns: repeat(5, minmax(0, 1fr)); row-gap: 14px; }
+  .dlf .inf-rl .scaling__line { display: none; }
+}
+
+/* ---- Bottlenecks: the question box of General Information, its answer below ---- */
+.dlf .inf-questionBox__answer { padding: 12px 14px 14px; border-top: 1px solid var(--dlf-line-soft); }
+
+/* ---- Likert scales: question, then "left label | 1 2 3 4 5 | right label" ---- */
+.dlf .inf-likertGroup { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-likertGroup__title { margin: 0; font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-brand-dark); }
+.dlf .inf-likert .likertScale {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: "q q q" "l s r";
+  align-items: center;
+  gap: 6px 14px;
+  width: 100% !important;
+  margin: 0;
+  padding: 10px 12px !important;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-likert .likertScale::before,
+.dlf .inf-likert .likertScale::after { display: none; }
+.dlf .inf-likert .likertScale > label:first-child { grid-area: q; width: auto !important; margin: 0; padding: 0 !important; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-likert .likertScale > label.subLabel { width: auto !important; margin: 0; padding: 0 !important; font: 400 12px/1.35 Figtree, sans-serif; font-style: normal; color: var(--dlf-muted); }
+.dlf .inf-likert .likertScale > label.subLabel.text-left { grid-area: l; text-align: right !important; }
+.dlf .inf-likert .likertScale > label.subLabel.text-right { grid-area: r; text-align: left !important; }
+.dlf .inf-likert .likertScale > div { grid-area: s; display: inline-flex; align-items: center; gap: 2px; width: auto !important; padding: 4px !important; border-radius: 10px; background: var(--dlf-chip); }
+.dlf .inf-likert .likertScale > div > div { display: block !important; width: auto !important; float: none !important; }
+.dlf .inf-likert .likertScale .radioFlat-flex,
+.dlf .inf-likert .likertScale .feedback-flex-items { display: contents !important; }
+.dlf .inf-likert .likertScale .fieldReference.radioFlat { position: relative; display: block; width: auto !important; margin: 0 !important; padding: 0 !important; }
+.dlf .inf-likert .likertScale input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-likert .likertScale .radio-label {
+  display: block;
+  min-width: 36px;
+  height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  border-radius: 7px;
+  font: 600 13px/30px Figtree, sans-serif;
+  text-align: center;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .inf-likert .likertScale .radio-label::before,
+.dlf .inf-likert .likertScale .radio-label::after { display: none !important; }
+.dlf .inf-likert .likertScale input:checked + .radio-label { background: var(--dlf-brand); color: #fff; box-shadow: 0 1px 3px rgba(31, 42, 55, .15); }
+.dlf .inf-likert .likertScale input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-likert .likertScale .radio-label.fieldError { color: var(--dlf-required); }
+@media (max-width: 767px) {
+  .dlf .inf-likert .likertScale { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "q q" "s s" "l r"; }
+  .dlf .inf-likert .likertScale > label.subLabel.text-left { text-align: left !important; }
+  .dlf .inf-likert .likertScale > label.subLabel.text-right { text-align: right !important; }
+}
+.dlf .inf-potential .inf-chipRadios { margin-top: 2px; }
+.dlf .inf-potential .inf-other { margin-top: 10px; }
+
+/* ---- Users and beneficiaries ---- */
+.dlf .inf-users .block-innovationAnticipatedUsers { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-users .block-innovationAnticipatedUsers .inf-chipRadios > div { display: contents; }
+.dlf .inf-users .block-anticipatedUsers { padding: 0 !important; }
+.dlf .inf-users .actorsBlock { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-users .actorsBlock > label { margin: 0; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-users .actorsBlock > .note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 9px;
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-users .actorsBlock > .note > .glyphicon { display: none; }
+.dlf .inf-users .actorsBlock > .note ul { margin: 0; padding-left: 16px !important; padding-top: 0 !important; }
+.dlf .inf-users .actorsList { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-users .actorsInnovation.graySoftBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 48px 14px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .inf-users .actorsInnovation .select--flex { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px 16px; padding: 0 !important; }
+.dlf .inf-users .actorsInnovation .select--flex > div:first-child { flex: 1 1 320px; }
+.dlf .inf-users .actorsInnovation .checkbox-sexAgeNotApply { flex: 0 1 auto; padding-bottom: 8px !important; }
+/* Total, then "of which women / youth" on one row (the women / youth block carries an inline display:block) */
+.dlf .inf-users .actorsInnovation .innerOptions { display: flex !important; flex-direction: row !important; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 0 !important; }
+.dlf .inf-users .actorsInnovation .innerOptions > div { flex: 0 0 auto; width: 160px !important; margin: 0 !important; }
+.dlf .inf-users .actorsInnovation .innerOptions > .block-sexAgeNotApply { width: auto !important; } /* its display stays jQuery's: it slides */
+.dlf .inf-users .actorsInnovation .innerOptions > .block-sexAgeNotApply > div { display: inline-block; width: 160px !important; margin: 0 12px 0 0 !important; vertical-align: bottom; }
+.dlf .inf-users .actorsInnovation .innerOptions input { width: 100%; }
+/* Total takes the width of "Of which women / youth" */
+.dlf .inf-users .actorsInnovation .innerOptions > div:not(.block-sexAgeNotApply) { flex: 0 0 160px !important; width: 160px !important; max-width: 160px !important; }
+.dlf .inf-users .actorsInnovation .innerOptions input.input-total { width: 100% !important; max-width: 160px; }
+.dlf .inf-users .actorsInnovation .otherType { max-width: 420px; }
+.dlf .inf-users .actorsInnovation .removeActor {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .inf-users .actorsInnovation .removeActor:hover { background-color: var(--dlf-danger-bg); }
+/* "Of which ..." above Total: the design's warning line under the numbers */
+.dlf .inf-users .actorsInnovation .message-overpass-total { margin-top: 12px !important; }
+.dlf .inf-users .actorsInnovation .inf-actorWarn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 8px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-users .actorsInnovation .inf-actorWarn::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .inf-users .addActors.bigAddButton,
+.dlf .inf-evid .addButtonReferenceReadiness.bigAddButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px dashed #9ACBE0;
+  border-radius: 10px;
+  background: #F7FBFD;
+  font: 600 13.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .inf-users .addActors.bigAddButton:hover { border-color: var(--dlf-brand); background: #EAF4F8; }
+.dlf .inf-users .addActors .glyphicon { top: 0; font-size: 11px; }
+.dlf .inf-users .organizationsBlock > br { display: none; }
+.dlf .inf-users .organizationsBlock > .form-group > label { margin: 0 0 6px; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-users .organizationsBlock > .form-group > br { display: none; }
+.dlf .inf-benef > label { margin: 0; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-benef > .dlf-hint { margin: 2px 0 6px; }
+
+/* ---- Evidence ---- */
+.dlf .inf-evid > .form-group:first-child,
+.dlf .inf-evid > label:first-child { margin: 0; }
+.dlf .inf-evid .statusEvidenceInImpactArea {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 10px;
+  background: var(--dlf-warn-bg);
+  font: 500 13px/1.5 Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-evid .statusEvidenceInImpactArea .glyphicon { top: 3px; color: var(--dlf-warn-dot); }
+.dlf .inf-evid .statusEvidenceInImpactArea p,
+.dlf .inf-evid .statusEvidenceInImpactArea ul { margin: 0; }
+.dlf .inf-evid .referenceBlock { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-evid .referenceListReadiness { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-evid .referenceListReadiness:empty { display: none; }
+.dlf .inf-evid .evidences.grayBox {
+  position: relative;
+  margin: 0;
+  padding: 14px 48px 16px 16px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .inf-evid .evidences.grayBox::after { content: ""; display: table; clear: both; }
+.dlf .inf-evid .evidences .removeElement,
+.dlf .inf-evid .evidences [class*="removeButtonReference"] { top: 12px !important; right: 10px !important; }
+.dlf .inf-rl .inf-card__head .dlf-card__title { display: flex; align-items: baseline; gap: 4px; }
+.dlf .inf-rl .inf-card__head .dlf-card__title label { display: inline; }
+
+/* ---- One evidence ---- */
+/* Impact Area / readiness tags */
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > label { display: block; margin: 4px 0 8px !important; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > .col-md-12 { display: flex !important; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > .col-md-12 > div { display: contents !important; } /* their inline widths carry !important */
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) .inputsFlat { margin: 0; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) .checkbox-label::before { flex: none; margin: 0 8px 0 0 !important; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) input:checked + .checkbox-label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement {
+  position: absolute;
+  top: 12px !important;
+  right: 10px !important;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat !important;
+  cursor: pointer;
+}
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement:hover { background-color: var(--dlf-danger-bg) !important; }
+/* Read-only: the answer stays visible over the legacy .disabled-label (white on grey) */
+.dlf .inf-likert .likertScale input:checked + .radio-label.disabled-label { background: var(--dlf-brand) !important; color: #fff !important; }
+.dlf .inf-likert .likertScale .radio-label.disabled-label { background: none !important; cursor: default; }
+.dlf .inf-likert .likertScale > div > div,
+.dlf .inf-likert .likertScale .fieldReference.radioFlat.radio-inline { margin: 0 !important; padding: 0 !important; height: auto; }
+
+/* ==== Knowledge & Scaling: review pass (A2-2613) ==== */
+/* Readiness: the stepper keeps the height of its names (projectInnovations.css fixes it), then the chosen level as
+   "number | name and description" */
+.dlf .inf-rl .scaling__container { height: auto !important; min-height: 0 !important; }
+.dlf .inf-rl .scaling__message.grayBox { display: flex; align-items: center; gap: 14px; margin-top: 15px; padding: 12px 14px; border: 1px solid var(--dlf-line); border-left-width: 1px; }
+.dlf .inf-rl .scaling__num {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--inf-rl, var(--dlf-line-strong));
+  font: 700 18px Figtree, sans-serif;
+  color: #fff;
+}
+.dlf .inf-rl .scaling__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dlf .inf-rl .scaling__text h5 { margin: 0; }
+.dlf .inf-rl .scaling__message[data-level=""] { border-style: dashed; border-color: var(--dlf-line-strong); }
+.dlf .inf-rl .scaling__message[data-level=""] .scaling__num { display: none; }
+
+/* Long answers of the tab open at three to four rows */
+.dlf .inf-ks textarea.form-control { min-height: 96px !important; }
+
+/* Anticipated users: the feedback holder sits beside the question instead of taking a row of its own */
+.dlf .inf-users .block-innovationAnticipatedUsers { position: relative; }
+/* The question and its feedback bubble on one row, without the holder's extra height */
+.dlf .inf-users .block-innovationAnticipatedUsers > .feedback-flex-items:first-child { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100% !important; min-height: 0; margin: 0; }
+.dlf .inf-users .block-innovationAnticipatedUsers > .feedback-flex-items:first-child > label { margin: 0 !important; }
+.dlf .inf-users .block-innovationAnticipatedUsers > label,
+.dlf .inf-users .block-innovationAnticipatedUsers > .feedback-flex-items:first-child + label { margin: 0; }
+.dlf .inf-users .block-anticipatedUsers { margin-top: 4px; }
+.dlf .inf-users .organizationsBlock,
+.dlf .inf-users .organizationsBlock > .form-group { margin: 0; padding: 0 !important; }
+.dlf .inf-users .organizationsBlock > .form-group > label { display: block; }
+
+/* Actors: the help note in the form's font, the cards in the design's grey, removal as a bin */
+.dlf .inf-users .actorsBlock > .note,
+.dlf .inf-users .actorsBlock > .note * { font-family: Figtree, sans-serif !important; font-size: 13px; }
+.dlf .inf-users .actorsInnovation.graySoftBox { background: var(--dlf-surface-alt); }
+.dlf .inf-users .actorsInnovation .removeActor,
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M2.8 4.4h10.4M6.4 4.4V2.8h3.2v1.6M4.4 4.4l.7 8.8h5.8l.7-8.8' stroke='%23B03028' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat !important;
+}
+.dlf .inf-users .actorsInnovation .removeActor:hover,
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement:hover { background-color: var(--dlf-danger-bg) !important; }
+
+/* Organizations (mal-multiselect, PrimeVue): the form's field */
+.dlf .inf-users mal-multiselect { display: block; width: 100%; }
+.dlf .inf-users mal-multiselect .p-multiselect {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+  font-family: Figtree, sans-serif;
+}
+.dlf .inf-users mal-multiselect .p-multiselect:hover { border-color: var(--dlf-subtle); }
+.dlf .inf-users mal-multiselect .p-multiselect.p-focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-users mal-multiselect .p-multiselect-label { padding: 9px 12px; font: 400 13.5px/20px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-users mal-multiselect .p-multiselect-label.p-placeholder { color: var(--dlf-subtle); }
+.dlf .inf-users mal-multiselect .p-multiselect-dropdown { width: 36px; color: var(--dlf-muted); }
+.dlf .inf-users mal-multiselect .p-component > .mt-2:not(:has(*)) { display: none; } /* the selected chips, when there is none */
+.dlf .inf-users mal-multiselect .p-component > .mt-2 { margin-top: 8px !important; }
+.dlf .inf-users mal-multiselect .p-chip { height: 28px; padding: 0 8px 0 10px; border-radius: 7px; background: var(--dlf-chip); font: 500 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ---- Evidence: notice, numbered cards in the design's grey, the source as a segmented control ---- */
+.dlf .inf-evid .statusEvidenceInImpactArea { display: none !important; } /* replaced by the notice below */
+.dlf .inf-evid > .inf-card__head .inf-count { margin: 0; }
+.dlf .inf-evid__help { margin: -8px 0 0; }
+.dlf .inf-evidNotice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 10px 14px 10px 40px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 10px;
+  background: var(--dlf-warn-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='6.4' fill='%23C08A2E'/%3E%3Cpath d='M8 4.6v4.2' stroke='%23fff' stroke-width='1.7' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.2' r='.95' fill='%23fff'/%3E%3C/svg%3E") 14px 12px no-repeat;
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-evidNotice[hidden] { display: none; }
+.dlf .inf-evidNotice__title { font-weight: 600; }
+.dlf .inf-evidNotice__list { margin: 0; padding-left: 16px; }
+.dlf .inf-evidNotice.is-ok {
+  border-color: var(--dlf-ok-border);
+  background: var(--dlf-ok-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='6.4' fill='%232E6B2F'/%3E%3Cpath d='M5.2 8.2 7.1 10l3.7-4' stroke='%23fff' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 14px 12px no-repeat;
+  color: var(--dlf-ok);
+}
+.dlf .inf-evid .referenceListReadiness { counter-reset: inf-evid; }
+.dlf .inf-evid .evidences.grayBox { display: flex; flex-direction: column; gap: 14px; padding: 12px 14px 14px; background: var(--dlf-surface-alt); counter-increment: inf-evid; }
+.dlf .inf-evid .evidences.grayBox > * { margin: 0 !important; }
+.dlf .inf-evid .evidences.grayBox::after { display: none; }
+.dlf .inf-evid .evidence__head { display: flex; align-items: center; gap: 12px; padding-right: 36px; }
+.dlf .inf-evid .evidence__n { flex: none; width: 22px; height: 22px; border-radius: 6px; background: var(--dlf-chip); font: 700 11px/22px Figtree, sans-serif; text-align: center; color: var(--dlf-ink-soft); }
+.dlf .inf-evid .evidence__n::before { content: counter(inf-evid); }
+.dlf .inf-evid .evidence__source > .col-md-4 { display: contents; }
+.dlf .inf-evid .evidence__source .radioFlat label { height: 28px; padding: 0 12px; font-size: 13px; line-height: 28px; }
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement { top: 11px !important; right: 12px !important; }
+.dlf .inf-evid .evidences .evidenceByDeliverable label,
+.dlf .inf-evid .evidences .evidenceByLink .colTitleCenter,
+.dlf .inf-evid .evidences .evidenceType > label,
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > label,
+.dlf .inf-evid .evidences .textArea > label { font: 600 12.5px Figtree, sans-serif !important; color: var(--dlf-ink); }
+.dlf .inf-evid .evidences .evidenceByDeliverable .select2-container,
+.dlf .inf-evid .evidences .evidenceByDeliverable select { width: 100% !important; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > .col-md-12 { margin-bottom: 0; }
+.dlf .inf-evid .evidences .form-group { margin: 0; }
+/* "Required" on a tag the notice still asks for */
+.dlf .inf-reqBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 5px;
+  background: var(--dlf-warn-bg);
+  font: 600 10.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .inf-evid .addButtonReferenceReadiness { margin-top: 0; }
+
+/* ---- Checkboxes of the redesigned tabs (customForm.checkBoxFlat): the design's 16px box with a white check ---- */
+.dlf .inf-ks .inputsFlat input[type="checkbox"] + .checkbox-label::before,
+.dlf .inf-comp__function .inputsFlat input[type="checkbox"] + .checkbox-label::before {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0 8px 0 0 !important;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff center / 10px 10px no-repeat;
+  box-shadow: none;
+  vertical-align: middle;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.dlf .inf-ks .inputsFlat input[type="checkbox"]:hover + .checkbox-label::before,
+.dlf .inf-ks .inputsFlat .checkbox-label:hover::before,
+.dlf .inf-comp__function .inputsFlat .checkbox-label:hover::before { border-color: var(--dlf-brand); }
+.dlf .inf-ks .inputsFlat input[type="checkbox"]:checked + .checkbox-label::before,
+.dlf .inf-comp__function .inputsFlat input[type="checkbox"]:checked + .checkbox-label::before {
+  border-color: var(--dlf-brand);
+  background-color: var(--dlf-brand);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.2 5 8.5l4.5-5' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  box-shadow: none;
+}
+.dlf .inf-ks .inputsFlat input[type="checkbox"]:focus-visible + .checkbox-label::before,
+.dlf .inf-comp__function .inputsFlat input[type="checkbox"]:focus-visible + .checkbox-label::before { box-shadow: var(--dlf-focus-ring); }
+/* Sex and age disaggregation: a plain checkbox line, centred on the actor type field */
+.dlf .inf-users .actorsInnovation .checkbox-sexAgeNotApply .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-users .actorsInnovation .checkbox-sexAgeNotApply { padding-bottom: 0 !important; }
+
+/* ---- Evidence through a link: the design's 2x2 grid (forms.ftl evidence macro) ---- */
+.dlf .inf-evid .evidence__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.dlf .inf-evid .evidence__field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dlf .inf-evid .evidence__label { font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-evid .evidence__field > .feedback-flex-items { display: contents !important; }
+.dlf .inf-evid .evidence__field .input,
+.dlf .inf-evid .evidence__field .select,
+.dlf .inf-evid .evidence__field .select2-container { width: 100% !important; margin: 0; }
+.dlf .inf-evid .evidence__field input.form-control { height: 38px; padding: 0 12px; border-radius: 8px; font: 400 13.5px Figtree, sans-serif; }
+.dlf .inf-evid .evidence__field input.form-control::placeholder { color: var(--dlf-subtle); }
+@media (max-width: 767px) {
+  .dlf .inf-evid .evidence__grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* A selected deliverable reads as its name, centred in the field; its handle and type go under it */
+.dlf .inf-evid .evidenceByDeliverable .select2-container .select2-selection--single { height: 38px !important; min-height: 38px !important; }
+.dlf .inf-evid .evidenceByDeliverable .select2-container .select2-selection__rendered { display: block !important; height: 36px; padding: 0 32px 0 12px !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis; font: 500 13.5px/36px Figtree, sans-serif !important; color: var(--dlf-ink); }
+.dlf .inf-evid .evidence__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-evid .evidence__meta[hidden] { display: none; }
+.dlf .inf-evid .evidence__meta a { color: var(--dlf-brand); text-decoration: underline; word-break: break-all; }
+.dlf .inf-evid .evidence__meta b { font-weight: 500; color: var(--dlf-ink); }

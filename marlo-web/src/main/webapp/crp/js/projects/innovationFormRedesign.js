@@ -368,6 +368,122 @@ $(document).ready(function() {
     });
   });
 
+  // ---- Knowledge & Scaling: the chosen readiness level, its number and colour beside its description ----
+  $root.on('change', 'input.scalingInnovation__item__value', function() {
+    var level = (parseInt(this.value, 10) || 1) - 1;
+    $root.find('.scaling__message').attr('data-level', level).find('.scaling__num').text(level);
+  });
+
+  // ---- Knowledge & Scaling: the evidence a score of 2 and the readiness level still need ----
+  // Same rule as projectInnovations.js (dynamicStatusCheckedForEvidences): a score of 2 asks for an evidence tagged with
+  // its Impact Area, a readiness level above 0 for one tagged "Innovation readiness". The notice lists what is pending
+  // and the matching tags read "Required".
+  var $evid = $root.find('[data-inf-evid]');
+  var evidenceAreas = [
+      ['genderScore', 'gender', 'data-area-gender'],
+      ['climateChangeScore', 'climateChange', 'data-area-climate-change'],
+      ['foodSecurityScore', 'nutrition', 'data-area-nutrition'],
+      ['environmentalScore', 'environmental', 'data-area-environmental'],
+      ['povertyScore', 'poverty', 'data-area-poverty']
+  ];
+  function refreshEvidence() {
+    var required = [];
+    evidenceAreas.forEach(function(area) {
+      if($root.find('input[name="innovation.projectInnovationInfo.' + area[0] + '.id"]:checked').val() === '3') {
+        required.push({
+            tag: area[1],
+            text: format($evid.attr('data-item'), [$evid.attr(area[2])])
+        });
+      }
+    });
+    var readiness = parseInt($root.find('input[name="innovation.projectInnovationInfo.readinessScale"]:checked').val(),
+        10);
+    if(readiness >= 2) {
+      required.push({
+          tag: 'innovationReadiness',
+          text: $evid.attr('data-readiness')
+      });
+    }
+    var $items = $evid.find('.referenceListReadiness > .evidences');
+    var pending = required.filter(function(item) {
+      return !$items.find('input[type="checkbox"][id$=".' + item.tag + '"]:checked').length;
+    });
+
+    var $notice = $evid.find('[data-inf-evid-notice]').empty().removeClass('is-ok is-pending');
+    if(!required.length) {
+      $notice.prop('hidden', true);
+    } else if(!pending.length) {
+      $notice.addClass('is-ok').prop('hidden', false)
+        .append($('<span class="inf-evidNotice__title"></span>').text($evid.attr('data-ok')));
+    } else {
+      var $list = $('<ul class="inf-evidNotice__list"></ul>');
+      pending.forEach(function(item) {
+        $list.append($('<li></li>').text(item.text));
+      });
+      $notice.addClass('is-pending').prop('hidden', false)
+        .append($('<span class="inf-evidNotice__title"></span>').text($evid.attr('data-required'))).append($list)
+        .append($('<span class="inf-evidNotice__tick"></span>').text($evid.attr('data-tick')));
+    }
+
+    $items.find('input[type="checkbox"]').each(function() {
+      var tag = String(this.id || '').split('.').pop();
+      var $label = $(this).next('label');
+      var $badge = $label.find('.inf-reqBadge');
+      var needed = pending.some(function(item) {
+        return item.tag === tag;
+      });
+      if(needed && !$badge.length) {
+        $label.append($('<span class="inf-reqBadge"></span>').text($evid.attr('data-badge')));
+      } else if(!needed) {
+        $badge.remove();
+      }
+    });
+    $evid.find('[data-inf-evid-count]').text($items.length ? String($items.length) : '');
+  }
+  // A deliverable option carries its handle and type in its label (Deliverable.getInnovationsComposedName): the field
+  // shows the name, the handle and type go under it as the design's meta line.
+  function deliverableMeta() {
+    var $select = $(this);
+    var $option = $select.find('option:selected');
+    var $box = $select.closest('.evidenceByDeliverable');
+    var $meta = $box.find('.evidence__meta');
+    if(!$meta.length) {
+      $meta = $('<div class="evidence__meta"></div>').appendTo($box);
+    }
+    $meta.empty().prop('hidden', true);
+    if(!$option.length || !$option.val() || $option.val() === '-1') {
+      return;
+    }
+    var $label = $('<div></div>').html($option.text());
+    var name = $.trim($label.find('p').first().text()) || $.trim($label.text());
+    var href = $label.find('a[href]').attr('href');
+    var type = $.trim($label.find('small').filter(function() {
+      return /Type:/.test($(this).text());
+    }).first().text().replace(/^\s*Type:\s*/, ''));
+    $select.next('.select2').find('.select2-selection__rendered').text(name).attr('title', name);
+    if(href) {
+      $meta.append($('<span></span>').text($evid.attr('data-handle') + ' ')
+        .append($('<a target="_blank" rel="noopener noreferrer"></a>').attr('href', href).text(href)));
+    }
+    if(type) {
+      $meta.append($('<span></span>').text($evid.attr('data-type') + ' ').append($('<b></b>').text(type)));
+    }
+    $meta.prop('hidden', !(href || type));
+  }
+  if($evid.length) {
+    // Driven by the list's DOM changes rather than "change": on an evidence added in this visit, the select2 handler
+    // projectInnovations.js clones from the template throws, so the event never bubbles. select2 redrawing the
+    // selection is a DOM change too.
+    $evid.find('.referenceListReadiness select[name$="deliverable.id"]').each(deliverableMeta);
+    $root.on('change', 'input[name$="Score.id"], input[name="innovation.projectInnovationInfo.readinessScale"]',
+        refreshEvidence);
+    $evid.on('change', 'input[type="checkbox"]', refreshEvidence);
+    watch($evid.find('.referenceListReadiness'), function() {
+      $evid.find('.referenceListReadiness select[name$="deliverable.id"]').each(deliverableMeta);
+      refreshEvidence();
+    });
+  }
+
   // ---- Cross-cutting alignment: SDGs ----
   // Each "Goal n: Name" of the list reads as "GOAL n" over the name, beside the goal's icon (projectInnovations.js
   // draws it); the options are listed in goal order.

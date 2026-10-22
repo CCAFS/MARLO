@@ -1913,49 +1913,43 @@ function limitedValueFillInput(reference, input) {
   applyNumericSanitization($(reference));
   applyNumericSanitization($(input));
 
-  const initialMaxValue = parseInt($(reference).val(), 10) || 0;
   const $input = $(input);
-  $input.attr('max', initialMaxValue);
-  // If the current value exceeds the initial max, adjust it
-  const currentValue = parseInt($input.val(), 10) || 0;
-  if (currentValue > initialMaxValue) {
-    $input.val(initialMaxValue);
-    displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'));
+
+  // Caps the value at Total. An empty Total caps nothing (A2-2613): it is not a 0 the user entered.
+  function capAtTotal() {
+    const rawMax = $.trim($(reference).val());
+    if (rawMax === '') {
+      $input.removeAttr('max');
+      return;
+    }
+    const maxValue = parseInt(rawMax, 10) || 0;
+    $input.attr('max', maxValue);
+    const rawValue = $.trim($input.val());
+    if (rawValue !== '' && (parseInt(rawValue, 10) || 0) > maxValue) {
+      $input.val(maxValue);
+      displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'), $input, maxValue);
+    }
   }
 
-  $(reference).on('change', function () {
-    const maxValue = parseInt($(reference).val(), 10) || 0;
-
-    // Set max attribute for number inputs
-    $input.attr('max', maxValue);
-
-    // If the current value exceeds the new max, adjust it
-    const currentValue = parseInt($input.val(), 10) || 0;
-    if (currentValue > maxValue) {
-      displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'));
-      $input.val(maxValue);
-    }
-  });
-
-  $(input).on('change', function () {
-    const maxValue = parseInt($(reference).val(), 10) || 0;
-
-    // If the current value exceeds the new max, adjust it
-    const currentValue = parseInt($(input).val(), 10) || 0;
-    if (currentValue > maxValue) {
-      displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'));
-      $(input).val(maxValue);
-    }
-  });
+  capAtTotal();
+  $(reference).on('change', capAtTotal);
+  $input.on('change', capAtTotal);
 }
 
-function displayWarningMessage(container, customName) {
+function displayWarningMessage(container, customName, $input, value) {
   if(container.length === 0){
     console.warn('Invalid container element passed to displayWarningMessage');
     return;
   }
 
-  container.find(customName).fadeIn().delay(8000).fadeOut();
+  const $message = container.find(customName);
+  // "“Of which women” cannot be higher than Total. It was adjusted to 20."
+  const template = $message.attr('data-template');
+  if (template && $input && $input.length) {
+    const label = $.trim($input.closest('.input').find('label').first().text()).replace(/[\s?:*]+$/, '');
+    $message.find('[data-message]').text(template.replace('{0}', label).replace('{1}', value));
+  }
+  $message.stop(true, true).fadeIn().delay(8000).fadeOut();
 }
 
 function changeInformativeTextPRMSEquivalence() {
