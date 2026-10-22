@@ -1654,7 +1654,10 @@ public class ProjectInnovationAction extends BaseAction {
 
       try {
         this.prmsInnovationList = this.prmsInnovationManager.findAll();
-        this.allInnovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase());
+        // A2-2613: an innovation cannot be a component of its own bundle
+        this.allInnovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
+          .filter(i -> i != null && i.getId() != null && i.getId().longValue() != innovationID)
+          .collect(Collectors.toList());
         this.impactAreaScores = this.impactAreaScoreManager.findAll();
         this.allianceLeverList = this.allianceLeverManager.findAll();
         this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
@@ -3166,7 +3169,9 @@ public class ProjectInnovationAction extends BaseAction {
             logger.error("unable to rehydrate selectedInnovation", e);
           }
 
-          if (selectedInnovationManaged != null) {
+          // A2-2613: an innovation cannot be a component of its own bundle
+          if (selectedInnovationManaged != null
+            && !selectedInnovationManaged.getId().equals(projectInnovation.getId())) {
             ProjectInnovationBundle bundleToSave = new ProjectInnovationBundle();
 
             try {

@@ -1804,7 +1804,7 @@ function addDataTableAllInnovations() {
       const $firstChildren = $wrapper.children().first();
       if ($firstChildren.length) {
         const $selectContainer = $('<div class="select-container"></div>');
-        const $selectLabel = $('<label for="filter-select">Cluster:</label>');
+        const $selectLabel = $('<label for="filter-select"></label>').text($table.attr('data-filter-label') || 'Cluster:');
         const $select = $('<select class="form-control select2"></select>');
 
         ajaxAllClusters($select, $table);
@@ -1858,7 +1858,7 @@ function ajaxAllClusters(selectElement, table) {
     },
     success: function (data) {
 
-      $(selectElement).append('<option value="">All Clusters</option>');
+      $(selectElement).append($('<option value=""></option>').text(table.attr('data-filter-all') || 'All Clusters'));
 
       data.projectList.forEach(function (cluster) {
         $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
@@ -1868,7 +1868,7 @@ function ajaxAllClusters(selectElement, table) {
       $(selectElement).select2({
         width: '100%',
         height: '30px',
-        placeholder: "Select a cluster",
+        placeholder: table.attr('data-filter-placeholder') || "Select a cluster",
         allowClear: true
       });
 

@@ -1476,7 +1476,11 @@
 [/#macro]
 
 [#macro tableAllInnovationsMacro list selected={} clusterName="" ]
-  <table id="table-all-innovations" class="table table-striped table-hover" width="100%" data-cluster="${clusterName}">
+  [#-- The filter texts: projectInnovations.js builds the filter over the table --]
+  <table id="table-all-innovations" class="table table-striped table-hover" width="100%" data-cluster="${clusterName}"
+    data-filter-label="[@s.text name="projectInnovations.bundle.filter.label" /]"
+    data-filter-all="[@s.text name="projectInnovations.bundle.filter.all" /]"
+    data-filter-placeholder="[@s.text name="projectInnovations.bundle.filter.placeholder" /]">
     <thead>
       <tr>
         <th id="tb-id" width="1%" class="no-sort">ID</th>
