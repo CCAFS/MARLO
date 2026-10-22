@@ -600,7 +600,7 @@
 
   [#local hasContributionToCGIAR = (element.projectInnovationInfo.hasCgiarContribution)!false ]
 
-  <div id="oneCGIAR" class="borderBox">
+  <div id="oneCGIAR" class="dlf-sections inf-cross">
 
     [#-- reflect a contribution --]
     [#-- 
@@ -635,59 +635,50 @@
     </div>
     --]
 
-    [#-- SDG Targets --]
-    <div class="form-group">
-      <label for="innovation.sdgs" class="label--2" style="width:100%">[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets" /]:[@customForm.req required=true /]</label>
-      <label>[@s.text name="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" /]:</label>
-      [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(innovation.sdgs)![] helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true showTitle=false /]
-    </div>
-    
-    <div class="form-group">
-      <label class="label--2">[@s.text name="projectInnovations.oneCGIARAligment.impactAreasScore" /]:</label>
-      <div class="note" style="align-items: unset;">
-        <span class="glyphicon glyphicon-question-sign"></span> [@s.text name="innovation.oneCGIAR.tooltip" /]
-      </div>
-    </div>
+    [#-- A2-2613: the tab drawn as the design's cards (.dlf). The SDG list component and the score radios keep the names
+         and classes projectInnovations.js, fieldsValidation.js, the validator and the feedback module read. --]
+    [#local evidenceTab = action.getText("projectInnovations.tab.innovationSharing") /]
 
-    [#local genderScoreValue = (element.projectInnovationInfo.genderScore)!{} /]
-    [#local climateChangeScoreValue = (element.projectInnovationInfo.climateChangeScore)!{} /]
-    [#local foodSecurityScoreValue = (element.projectInnovationInfo.foodSecurityScore)!{} /]
-    [#local environmentalScoreValue = (element.projectInnovationInfo.environmentalScore)!{} /]
-    [#local povertyScoreValue = (element.projectInnovationInfo.povertyScore)!{} /]
-    
-    <div class="form-group">
-      [#-- Gender --]
-      [@impactScoreRadioGroup 
-        fieldName="genderScore" 
-        fieldLabel="projectInnovations.oneCGIARAligment.genderScore" 
-        fieldValue=genderScoreValue
-        editable=editable /]
-      
-      [@impactScoreRadioGroup 
-        fieldName="climateChangeScore" 
-        fieldLabel="projectInnovations.oneCGIARAligment.climateChangeScore" 
-        fieldValue=climateChangeScoreValue
-        editable=editable /]
-      
-      [@impactScoreRadioGroup 
-        fieldName="foodSecurityScore" 
-        fieldLabel="projectInnovations.oneCGIARAligment.nutritionScore" 
-        fieldValue=foodSecurityScoreValue
-        editable=editable /]
-      
-      [@impactScoreRadioGroup 
-        fieldName="environmentalScore" 
-        fieldLabel="projectInnovations.oneCGIARAligment.environmentScore" 
-        fieldValue=environmentalScoreValue
-        editable=editable /]
-      
-      [@impactScoreRadioGroup 
-        fieldName="povertyScore" 
-        fieldLabel="projectInnovations.oneCGIARAligment.povertyScore" 
-        fieldValue=povertyScoreValue
-        editable=editable /]
-    </div>
-   
+    [#-- ─── Contribution to SDG targets ────────────────────────────────────── --]
+    <section class="dlf-card" id="inf-sdgs">
+      [#-- projectInnovations.js draws each goal with its official icon (global/images/sdg/svg/goal-NN.svg) --]
+      <div class="dlf-field inf-sdgs" data-inf-sdgs data-icons="${baseUrlCdn}/global/images/sdg/svg/"
+        data-add-label="[@s.text name="projectInnovations.redesign.add.sdg" /]"
+        data-selected="[@s.text name="projectInnovations.redesign.selected" /]">
+        [@customForm.elementsListComponent name="${customName}.sdgs" elementType="sdg" elementList=(element.sdgs)![] label="projectInnovations.oneCGIARAligment.sdgTargets" help="projectInnovations.oneCGIARAligment.sdgTargets.subtitle" helpIcon=false listName="sdgList" keyFieldName="id" displayFieldName="shortName" required=true isMainTitle=true /]
+      </div>
+    </section>
+
+    [#-- ─── Impact Area scores ─────────────────────────────────────────────── --]
+    [#-- The warnings and the evidence status are hints only (innovationFormRedesign.js); the validator is unchanged --]
+    <section class="dlf-card inf-ia" id="inf-ia" data-inf-ia
+      data-warn-many="[@s.text name="projectInnovations.redesign.ia.warnMany" /]"
+      data-warn-zero="[@s.text name="projectInnovations.redesign.ia.warnZero" /]"
+      data-evidence-added="[@s.text name="projectInnovations.redesign.ia.evidenceAdded" /]"
+      data-evidence-pending="[@s.text name="projectInnovations.redesign.ia.evidencePending" /]">
+      <h2 class="dlf-card__title">[@s.text name="projectInnovations.oneCGIARAligment.impactAreasScore" /]</h2>
+
+      <div class="dlf-note inf-iaGuide" role="note">
+        <span class="dlf-note__icon" aria-hidden="true">i</span>
+        <div class="inf-iaGuide__text">
+          <p class="dlf-note__text">[@s.text name="projectInnovations.redesign.ia.intro" /]</p>
+          <div class="inf-iaGuide__body" id="inf-ia-guide" hidden>[@s.text name="projectInnovations.redesign.ia.guide" /]</div>
+        </div>
+        <button type="button" class="inf-iaGuide__toggle" aria-expanded="false" aria-controls="inf-ia-guide" data-inf-ia-guide
+          data-show="[@s.text name="projectInnovations.redesign.ia.guide.show" /]"
+          data-hide="[@s.text name="projectInnovations.redesign.ia.guide.hide" /]">[@s.text name="projectInnovations.redesign.ia.guide.show" /]</button>
+      </div>
+
+      [#if editable]
+        <p class="inf-iaWarn" role="status" data-inf-ia-warn hidden></p>
+      [/#if]
+
+      [@impactScoreRadioGroup fieldName="genderScore" fieldLabel="projectInnovations.oneCGIARAligment.genderScore" fieldValue=((element.projectInnovationInfo.genderScore)!{}) evidenceTag="gender" evidenceTab=evidenceTab editable=editable /]
+      [@impactScoreRadioGroup fieldName="climateChangeScore" fieldLabel="projectInnovations.oneCGIARAligment.climateChangeScore" fieldValue=((element.projectInnovationInfo.climateChangeScore)!{}) evidenceTag="climateChange" evidenceTab=evidenceTab editable=editable /]
+      [@impactScoreRadioGroup fieldName="foodSecurityScore" fieldLabel="projectInnovations.oneCGIARAligment.nutritionScore" fieldValue=((element.projectInnovationInfo.foodSecurityScore)!{}) evidenceTag="nutrition" evidenceTab=evidenceTab editable=editable /]
+      [@impactScoreRadioGroup fieldName="environmentalScore" fieldLabel="projectInnovations.oneCGIARAligment.environmentScore" fieldValue=((element.projectInnovationInfo.environmentalScore)!{}) evidenceTag="environmental" evidenceTab=evidenceTab editable=editable /]
+      [@impactScoreRadioGroup fieldName="povertyScore" fieldLabel="projectInnovations.oneCGIARAligment.povertyScore" fieldValue=((element.projectInnovationInfo.povertyScore)!{}) evidenceTag="poverty" evidenceTab=evidenceTab editable=editable /]
+    </section>
 
   </div>
 [/#macro]
@@ -1377,38 +1368,31 @@
   </div>
 [/#macro]
 
-[#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} editable=editable]
-  <div class="form-group col-md-12">
-    [#local fieldValue = fieldValue!{}]
-    <div class="col-sm-12 col-md-6 col-lg-6 col-xlg-5 col-xxlg-4" style="padding-left: 0px;">
-      <label class="label--2">
-        [@s.text name="${fieldLabel}" /]:[@customForm.req required=(editable) /]
-      </label>
-      <div style="display: flex; flex-wrap: nowrap; gap: 3px; align-items: left;">
-        [#if impactAreaScores?? && (impactAreaScores?size > 0)]
-          [#list impactAreaScores as option]
-            <div>
-              [@customForm.radioFlat
-                id="${fieldName}-${option.id}"
-                name="innovation.projectInnovationInfo.${fieldName}.id"
-                value="${option.id}"
-                label="${option.description}"
-                checked=(fieldValue.id?? && fieldValue.id == option.id)
-                cssClass="radioType-contributionToCGIAR"
-                cssClassContainer="padding-left-0"
-                cssClassLabel="font-normal"
-                editable=editable
-              /]
-            </div>
-          [/#list]
+[#-- One Impact Area: the label and the 0 / 1 / 2 answer as a segmented control (the score number is drawn by
+     innovationForm.css from the radio value). With a score of 2 the row asks for evidence in the Knowledge tab:
+     projectInnovations.js slides the note in, innovationFormRedesign.js fills the evidence status. --]
+[#macro impactScoreRadioGroup fieldName fieldLabel fieldValue={} evidenceTag="" evidenceTab="" editable=editable]
+  [#local fieldValue = fieldValue!{} /]
+  [#local inputName = "innovation.projectInnovationInfo.${fieldName}.id" /]
+  [#local isPrincipal = (fieldValue.id?? && fieldValue.id == 3) /]
+  <div class="inf-iaRow" id="inf-ia-${fieldName}" data-inf-ia-row data-evidence="${evidenceTag}">
+    <div class="inf-iaRow__main">
+      <span class="inf-iaRow__label">[@s.text name=fieldLabel /][@customForm.req required=editable /]</span>
+      <div class="inf-segmented inf-iaScore" role="radiogroup" aria-label="[@s.text name=fieldLabel /]">
+        [#list (impactAreaScores)![] as option]
+          [#local optionLabel = editable?then((option.completeDescription)!option.description, option.description) /]
+          [@customForm.radioFlat id="${fieldName}-${option.id}" name=inputName value="${option.id}" label=optionLabel checked=(fieldValue.id?? && fieldValue.id == option.id) cssClass="radioType-contributionToCGIAR" cssClassLabel="radio-label" editable=editable /]
         [#else]
           <p class="text-muted">No options available.</p>
-        [/#if]
+        [/#list]
       </div>
     </div>
-    <div class="col-sm-12 col-md-6 col-lg-6 col-xlg-7 col-xxlg-8" style="padding-right: 0px;">
-      <div class="note" name="innovation.projectInnovationInfo.${fieldName}.id" style="display: ${(fieldValue.id?? && fieldValue.id == 3)?string('block','none')};" >
-        [@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong style="display: contents;">[@s.text name="${fieldLabel}" /]</strong>[/@][/@]
+    <div class="note inf-iaRow__principal" name="${inputName}" style="display:${isPrincipal?string('block','none')};">
+      <div class="inf-iaRow__principalInner">
+        <svg class="dlf-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6.4" stroke="currentColor" stroke-width="1.4"></circle><path d="M8 7.3v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="8" cy="5.1" r=".95" fill="currentColor"></circle></svg>
+        <span class="inf-iaRow__msg">[@s.text name="innovation.oneCGIAR.tooltip2"][@s.param]<strong>[@s.text name=fieldLabel /]</strong>[/@][/@]</span>
+        <span class="inf-evidence" data-inf-evidence></span>
+        <a class="inf-goTab" href="#innovationSharing" data-inf-go-tab>[@s.text name="projectInnovations.redesign.goTo"][@s.param]${evidenceTab}[/@s.param][/@s.text]<svg class="dlf-icon" width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>
       </div>
     </div>
   </div>

@@ -618,3 +618,125 @@
 .dlf .inf-vc__value { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; background: var(--dlf-chip); font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
 .dlf .inf-vc__empty { font: 400 14px Figtree, sans-serif; color: var(--dlf-muted); }
 .dlf .inf-vc > .inf-other { margin-top: 0; }
+
+/* ==== Cross-cutting alignment (A2-2613) ==== */
+/* ---- SDGs: the selected goals as numbered tiles in two columns ---- */
+.dlf .dlf-card .inf-sdgs .elementsListComponent ul.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.dlf .dlf-card .inf-sdgs .elementsListComponent ul.list:empty { display: none; }
+.dlf .dlf-card .inf-sdgs .panel.tertiary .panel-body > ul.list > li.inf-sdgItem { align-items: center; gap: 12px; padding: 6px 8px 6px 6px; }
+.dlf .dlf-card .inf-sdgs .panel.tertiary .panel-body > ul.list > li.inf-sdgItem > .removeElement { align-self: center; }
+/* The goal's official SVG icon (projectInnovations.js) */
+.dlf .dlf-card .inf-sdgs li.relationElement > .sdgImage { order: 0; flex: none; display: block; width: 44px; height: 44px; margin: 0; border-radius: 6px; }
+.dlf .dlf-card .inf-sdgs li.inf-sdgItem > .elementName { display: flex !important; flex-direction: column; }
+.dlf .inf-sdgItem__goal { font: 600 11px Figtree, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .inf-sdgItem__name { font: 600 13.5px/1.35 Figtree, sans-serif; color: var(--dlf-ink); }
+@media (max-width: 767px) {
+  .dlf .dlf-card .inf-sdgs .elementsListComponent ul.list { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Impact Area scores ---- */
+.dlf .inf-ia { display: flex; flex-direction: column; gap: 12px; }
+.dlf .inf-ia > .dlf-card__title { margin-bottom: 0; }
+.dlf .inf-iaGuide { align-items: flex-start; }
+.dlf .inf-iaGuide__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-iaGuide__body { padding-top: 10px; border-top: 1px solid #DCEEF6; font: 400 13px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-iaGuide__body p { margin: 0 0 8px; text-wrap: pretty; }
+.dlf .inf-iaGuide__body strong { font-weight: 600; }
+.dlf .inf-iaGuide__body ul { margin: -2px 0 0; padding-left: 18px; }
+.dlf .inf-iaGuide__body li { margin-bottom: 3px; }
+.dlf .inf-iaGuide__toggle {
+  flex: none;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .inf-iaGuide__toggle:hover { background: var(--dlf-info-hover); }
+.dlf .inf-iaGuide__toggle:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-iaWarn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 8px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-iaWarn[hidden] { display: none; }
+.dlf .inf-iaWarn::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+
+.dlf .inf-iaRow { display: flex; flex-direction: column; border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface-alt); }
+/* fieldsValidation.js marks the radios of a missing score; the row stays red until a score is chosen */
+.dlf .inf-iaRow:has(.radioFlat .fieldError):not(:has(input[type="radio"]:checked)) { border-color: var(--dlf-required); }
+.dlf .inf-iaRow__main { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 10px 14px; }
+.dlf .inf-iaRow__label { flex: 1; min-width: 220px; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-iaRow__label .requiredTag,
+.dlf .inf-iaRow__label .red { margin-left: 4px; }
+/* The score number before each answer, from the catalog id (1 = 0, 2 = 1, 3 = 2) */
+.dlf .inf-iaScore .radioFlat label { display: flex; align-items: center; gap: 7px; padding: 0 12px; }
+.dlf .inf-segmented.inf-iaScore .radioFlat label::before {
+  display: flex !important;
+  position: static;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 9px;
+  background: #DDE3EA;
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  box-shadow: none !important; /* the legacy radio draws its inner ring with an inset shadow */
+  transform: none;
+}
+.dlf .inf-segmented.inf-iaScore .radioFlat input[value="1"] + label::before { content: "0"; }
+.dlf .inf-segmented.inf-iaScore .radioFlat input[value="2"] + label::before { content: "1"; }
+.dlf .inf-segmented.inf-iaScore .radioFlat input[value="3"] + label::before { content: "2"; }
+.dlf .inf-segmented.inf-iaScore .radioFlat input:checked + label::before { background: var(--dlf-brand); color: #fff; }
+.dlf .inf-iaRow__principal { margin: 0; padding: 0; border: 0; border-top: 1px solid var(--dlf-line); border-radius: 0 0 10px 10px; background: var(--dlf-surface); }
+.dlf .inf-iaRow__principalInner { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 10px 14px; color: var(--dlf-brand); }
+.dlf .inf-iaRow__msg { flex: 1; min-width: 240px; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .inf-iaRow__msg strong { font-weight: 600; }
+.dlf .inf-evidence {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 999px;
+  background: var(--dlf-warn-bg);
+  font: 600 11.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .inf-evidence:empty { display: none; }
+.dlf .inf-evidence::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .inf-evidence.is-added { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .inf-evidence.is-added::before { background: var(--dlf-ok); }
+.dlf .inf-goTab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--dlf-brand);
+  border-radius: 7px;
+  background: var(--dlf-surface);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+}
+.dlf .inf-goTab:hover,
+.dlf .inf-goTab:focus { background: var(--dlf-info-bg); color: var(--dlf-brand); text-decoration: none; }
+.dlf .inf-goTab:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }

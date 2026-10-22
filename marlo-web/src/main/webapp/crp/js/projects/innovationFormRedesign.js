@@ -228,4 +228,110 @@ $(document).ready(function() {
   }
   watch($partners, refreshContacts);
   $partners.on('change', 'input', refreshContacts);
+
+  // ---- Cross-cutting alignment: SDGs ----
+  // Each "Goal n: Name" of the list reads as "GOAL n" over the name, beside the goal's icon (projectInnovations.js
+  // draws it); the options are listed in goal order.
+  var $sdgs = $root.find('[data-inf-sdgs]');
+  var $sdgList = $sdgs.find('.elementsListComponent');
+  var $sdgSelect = $sdgList.find('select');
+  function goalOf(label) {
+    var match = String(label || '').match(/^\s*Goal\s+(\d+)\s*:\s*(.*)$/);
+    return match ? {
+        n: parseInt(match[1], 10),
+        name: match[2]
+    } : null;
+  }
+  $sdgSelect.find('option').filter(function() {
+    return goalOf($(this).text());
+  }).sort(function(a, b) {
+    return goalOf($(a).text()).n - goalOf($(b).text()).n;
+  }).appendTo($sdgSelect);
+  setAddLabel($sdgSelect, $sdgs.attr('data-add-label'));
+  watch($sdgList.find('ul.list'), function() {
+    var $items = $sdgList.find('ul.list > li.relationElement');
+    $items.each(function() {
+      var $name = $(this).find('.elementName');
+      if($(this).hasClass('inf-sdgItem')) {
+        return;
+      }
+      var goal = goalOf($name.text());
+      if(!goal) {
+        return;
+      }
+      $(this).addClass('inf-sdgItem');
+      $name.empty().append($('<span class="inf-sdgItem__goal"></span>').text('Goal ' + goal.n))
+        .append($('<span class="inf-sdgItem__name"></span>').text(goal.name));
+    });
+    var $label = $sdgList.find('.panel-head label').first();
+    var $count = $label.find('.inf-count');
+    if(!$count.length) {
+      $count = $('<span class="inf-count"></span>');
+      var $required = $label.find('.requiredTag');
+      if($required.length) {
+        $required.after($count);
+      } else {
+        $label.append($count);
+      }
+    }
+    $count.text($items.length ? format($sdgs.attr('data-selected'), [$items.length]) : '');
+  });
+
+  // ---- Cross-cutting alignment: Impact Area scores ----
+  // Score ids: 1 = (0) Not Targeted, 2 = (1) Significant, 3 = (2) Principal.
+  var $ia = $root.find('[data-inf-ia]');
+  var $iaRows = $ia.find('[data-inf-ia-row]');
+  $ia.on('click', '[data-inf-ia-guide]', function() {
+    var open = $(this).attr('aria-expanded') !== 'true';
+    $(this).attr('aria-expanded', open).text($(this).attr(open ? 'data-hide' : 'data-show'));
+    $ia.find('#' + $(this).attr('aria-controls')).prop('hidden', !open);
+  });
+  function scoreOf($row) {
+    // Read-only forms print the answer only: the principal note tells the score 2 apart
+    var $checked = $row.find('input[type="radio"]:checked');
+    if($checked.length) {
+      return $checked.val();
+    }
+    return $row.find('.inf-iaRow__principal').css('display') !== 'none' ? '3' : '';
+  }
+  function refreshImpactAreas() {
+    var principal = 0;
+    var notTargeted = 0;
+    $iaRows.each(function() {
+      var $row = $(this);
+      var score = scoreOf($row);
+      principal += score === '3' ? 1 : 0;
+      notTargeted += score === '1' ? 1 : 0;
+      var tag = $row.attr('data-evidence');
+      var has = !!tag && $('.referenceListReadiness input[type="checkbox"][id$=".' + tag + '"]:checked').length > 0;
+      $row.find('[data-inf-evidence]').toggleClass('is-added', has)
+        .text($ia.attr(has ? 'data-evidence-added' : 'data-evidence-pending'));
+    });
+    var warn = '';
+    if(principal > 2) {
+      warn = $ia.attr('data-warn-many');
+    } else if($iaRows.length && notTargeted === $iaRows.length) {
+      warn = $ia.attr('data-warn-zero');
+    }
+    $ia.find('[data-inf-ia-warn]').text(warn).prop('hidden', !warn);
+  }
+  if($ia.length) {
+    $ia.on('change', 'input[type="radio"]', refreshImpactAreas);
+    $root.on('change', '.referenceListReadiness input[type="checkbox"]', refreshImpactAreas);
+    watch($root.find('.referenceListReadiness'), refreshImpactAreas);
+    refreshImpactAreas();
+    // "Go to Knowledge & Scaling": open the tab and bring its evidence list into view
+    $ia.on('click', '[data-inf-go-tab]', function(event) {
+      event.preventDefault();
+      var $tab = $('a[data-toggle="tab"][href="' + $(this).attr('href') + '"]');
+      $tab.one('shown.bs.tab', function() {
+        var $target = $root.find('.referenceBlock').first();
+        if($target.length) {
+          $('html, body').animate({
+            scrollTop: $target.offset().top - 140
+          }, 300);
+        }
+      }).tab('show');
+    });
+  }
 });

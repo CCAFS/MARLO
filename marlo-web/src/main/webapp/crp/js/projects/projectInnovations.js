@@ -987,12 +987,18 @@ function updateWidthTab() {
 function addImageToSelectSDGTargets() {
 
   const $listRender = $('div[listname="innovation.sdgs"] .panel-body li.relationElement');
+  // A2-2613: the goal's official SVG icon (global/images/sdg/svg/goal-NN.svg), found by the number in "Goal N: ..."
+  const iconsUrl = $('[data-inf-sdgs]').attr('data-icons');
 
   $listRender.each(function (index, element) {
     const $elementVisualization = $(element);
     const $elementId = $(element).find('input[type="hidden"].elementRelationID').val();
+    const goal = $elementVisualization.find('.elementName').text().match(/Goal\s+(\d+)/);
 
-    if ($elementVisualization.find('.sdgImage').length == 0) {
+    if ($elementVisualization.find('.sdgImage').length == 0 && iconsUrl && goal) {
+      const number = (goal[1].length < 2 ? '0' : '') + goal[1];
+      $elementVisualization.find('.elementName').before(`<img src="${iconsUrl}goal-${number}.svg" class="sdgImage" alt="" aria-hidden="true">`);
+    } else if ($elementVisualization.find('.sdgImage').length == 0) {
 
       $.ajax({
         url: baseURL + '/getSdgImage.do',
