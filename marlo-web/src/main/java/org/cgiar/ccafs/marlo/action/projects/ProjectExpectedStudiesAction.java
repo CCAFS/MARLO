@@ -2579,7 +2579,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
       /**
        * The following is required because we need to update something on
        * the @ProjectExpectedStudy if we want a row created in the auditlog table.
+       * activeSince is the last modification date of the study, and a new value on every save makes the update
+       * happen even when only child rows changed.
        */
+      this.expectedStudy.setActiveSince(new Date());
       this.setModificationJustification(this.expectedStudy);
       this.projectExpectedStudyManager.save(this.expectedStudy, this.getActionName(), relationsName,
         this.getActualPhase());

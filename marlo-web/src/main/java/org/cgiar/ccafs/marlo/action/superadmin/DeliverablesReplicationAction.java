@@ -61,6 +61,7 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -548,7 +549,8 @@ public class DeliverablesReplicationAction extends BaseAction {
             deliverable.getDeliverableInfo(phase).setModificationJustification(this.getJustification());
             deliverableInfoManager.saveDeliverableInfo(deliverable.getDeliverableInfo(phase));
 
-            // Deliverable
+            // Deliverable. activeSince is its last modification date.
+            deliverable.setActiveSince(new Date());
             this.setModificationJustification(deliverable);
             deliverableManager.saveDeliverable(deliverable, this.getActionName(), relationsName, phase);
 

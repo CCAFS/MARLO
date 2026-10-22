@@ -37,7 +37,7 @@
 			<column name="is_publication" />
 		</property>
 
-		<property name="activeSince" type="timestamp" update="false" >
+		<property name="activeSince" type="timestamp">
 			<column name="active_since" length="19" not-null="true" />
 		</property>
 		<property name="createDate" type="timestamp">
