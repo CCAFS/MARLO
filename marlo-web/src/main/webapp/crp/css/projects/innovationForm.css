@@ -153,7 +153,7 @@
   justify-content: center;
   gap: 8px;
   height: 46px;
-  padding: 0 12px;
+  padding: 0 12px !important; /* projectInnovations.css keeps 28px on the right for the old status icon */
   border-radius: 8px 8px 0 0;
 }
 .dlf .inf-tabs > .nav-tabs > li > a:hover { background: #F7FAFC; }
