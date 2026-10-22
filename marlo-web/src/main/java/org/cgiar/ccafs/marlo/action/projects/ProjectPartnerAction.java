@@ -103,6 +103,7 @@ import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.WelcomeSignInText;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectPartnersValidator;
 
 import java.io.BufferedReader;
@@ -232,6 +233,7 @@ public class ProjectPartnerAction extends BaseAction {
   private final HistoryComparator historyComparator;
   // Util
   private final SendMailS sendMail;
+  private final WelcomeSignInText welcomeSignInText;
 
   @Inject
   public ProjectPartnerAction(APConfig config, ProjectPartnerManager projectPartnerManager,
@@ -254,8 +256,9 @@ public class ProjectPartnerAction extends BaseAction {
     ProjectInnovationCenterManager projectInnovationCenterManager, ProjectInnovationManager projectInnovationManager,
     ProjectExpectedStudyCenterManager projectExpectedStudyCenterManager,
     ProjectExpectedStudyManager projectExpectedStudyManager, ActivityManager activityManager,
-    TipParametersManager tipParametersManager) {
+    TipParametersManager tipParametersManager, WelcomeSignInText welcomeSignInText) {
     super(config);
+    this.welcomeSignInText = welcomeSignInText;
     this.projectPartnersValidator = projectPartnersValidator;
     this.auditLogManager = auditLogManager;
     this.projectPartnerManager = projectPartnerManager;
@@ -808,9 +811,8 @@ public class ProjectPartnerAction extends BaseAction {
           }
         }
 
-        message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-          config.getBaseUrl(), user.getEmail(), password,
-          this.getText("email.role.support", new String[] {crpAdmins})}));
+        message.append(this.welcomeSignInText.part1(this, user, loggedCrp, password,
+          this.getText("email.role.support", new String[] {crpAdmins})));
         message.append(this.getText("email.role.bye"));
 
         Map<String, Object> mapUser = new HashMap<>();

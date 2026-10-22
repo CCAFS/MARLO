@@ -1,0 +1,16 @@
+# CHG-PWD-SWITCH-001-T08 ac8 FALSIFIER, ATTEMPT 1 (did NOT turn red, so it is not the red run): OtpEligibility.specificities() replaced the password value by a read through CustomParameterManager (an entity-returning cacheable query, ac8.FALSIFIER-attempt1-entity-path.patch). The probe stayed green: the query cache holds only the ids, the entity is loaded by id from the database, so the value was fresh on every request (0 runs of the cacheable SQL for 3 lookups, and a raw UPDATE showed on the next lookup). That path cannot hold a stale value, so it is not a valid falsifier; attempt 2 caches the value itself (ac8.FALSIFIER.patch)
+# date 2026-10-18T02:45Z; HEAD 9b2448578d plus ac8.FALSIFIER.patch; application built clean (2415 / 1066 files, BUILD SUCCESS); database aiccradb_otp_probe; command: probes/ac-live.sh ac8
+
+== ac8: FN-002 / AC-8 (a change of the switch is live: raw SQL, no restart)
+  (JVM pid 45156; unit 45: password switch false, code switch true, no exclusion)
+  => PASS [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false)   ((True, False))
+  => PASS [AC-8] off: validateUser.do refuses the correct password
+  => PASS [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both)   ((True, True))
+  => PASS [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password
+  => PASS [AC-8] UPDATE ... 'true': the next login.do signs in   (/marlo-web/AICCRA/crpDashboard.do)
+  => PASS [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again   ((True, False))
+  => PASS [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+  => PASS [AC-8] no restart: the JVM pid is the same before and after   (45156 -> 45156)
+
+SUMMARY: 8 checks, 0 failed
+# exit 0

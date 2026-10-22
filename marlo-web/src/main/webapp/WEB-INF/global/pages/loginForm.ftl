@@ -83,7 +83,7 @@
                headline/subtext pair steps 1 and 2 already use (loginForm.ftl:25, :38), so it reads as
                this step's heading rather than as a field label of the card below it. Placed before
                #login-password, which login.js restores with append() and must stay the last child --]
-          <p class="login-subtext">[@s.text name="login.externalUser"/]</p>
+          <p class="login-subtext" id="login-external-user-label">[@s.text name="login.externalUser"/]</p>
           <div class="selected-project-container">
             <p class="login-field-label">[@s.text name="login.selectedProject"/]</p>
             <ul class="selected-project-card-list">
@@ -97,7 +97,46 @@
               <span class="login-echoed-name"></span><span class="login-echoed-username"></span>
             </p>
           </div>
-          <p class="login-field-label">[@s.text name="login.password"/]:</p>
+          [#-- CHG-OTP-LOGIN-001-T17 / UI-006: the method choice and the code panel. Both stay hidden and inert
+               unless login.js opens them, which it does when otpEnabled === true, on the LOCAL branch and (T21) for
+               a CGIAR account on a Cognito unit, where "Sign in with CGIAR" replaces the password method. The
+               password label and #login-password below are the existing markup, reused as the password panel.
+               Placed before the label on purpose: #login-password must stay this step's last child, which
+               login.js relies on to restore it with append() --]
+          <div class="login-method-choice hidden" id="login-method-choice">
+            <p class="login-field-label" id="login-method-heading">[@s.text name="login.otp.method.heading"/]</p>
+            <div class="login-button-container">
+              <button type="button" id="login-method-code-button" class="login-form-button">[@s.text name="login.otp.method.code"/]</button>
+            </div>
+            <div class="login-button-container" id="login-method-password-container">
+              <button type="button" id="login-method-password-button" class="login-form-button login-form-button-secondary">[@s.text name="login.otp.method.password"/]</button>
+            </div>
+            [#-- CHG-OTP-LOGIN-001-T21: the other way of a CGIAR account on a Cognito unit. Same handler as
+                 #login-cgiar-button, which stays the single-method control when the code is not offered --]
+            <div class="login-button-container hidden" id="login-method-cgiar-container">
+              <button type="button" id="login-method-cgiar-button" class="login-form-button login-form-button-secondary">[@s.text name="login.cgiarSignIn"/]</button>
+            </div>
+          </div>
+          <div class="login-method-code hidden" id="login-method-code">
+            <p class="login-method-info" id="login-method-info"></p>
+            [#-- The T14 request button, moved here as the panel's "Send code": same id, same handler --]
+            <div class="login-button-container hidden" id="login-otp-request-container">
+              <button type="button" id="login-otp-button" class="login-form-button">[@s.text name="login.otp.method.send"/]</button>
+            </div>
+            <div class="login-method-back-container">
+              <button type="button" id="login-method-code-back" class="loginBack">[@s.text name="login.otp.method.back"/]</button>
+            </div>
+          </div>
+          [#-- CHG-PWD-SWITCH-001-T06 / FN-010: the code is the only method but the identifier typed in step 1 cannot
+               receive one. Hidden and inert unless login.js opens it. Before #login-password-label on purpose, so
+               #login-password stays this step's last child --]
+          <div class="login-method-username hidden" id="login-method-username">
+            <p class="login-method-info" id="login-method-username-info" role="status">[@s.text name="login.otp.usernameOnly"/]</p>
+            <div class="text-center">
+              <button type="button" id="login-method-username-different" class="btn btn-link" aria-describedby="login-method-username-info">[@s.text name="login.otp.differentEmail"/]</button>
+            </div>
+          </div>
+          <p class="login-field-label" id="login-password-label">[@s.text name="login.password"/]:</p>
           <div class="login-input-container" id="login-password">
             <span class="glyphicon glyphicon-eye-close icon-show-password"></span>
             <input id="user.password" class="login-input user-password form-control" type="password" name="user.password" placeholder="${passwordPlaceholder}" tabindex=0 required/>
@@ -133,6 +172,51 @@
           </div>
         </div>
 
+        [#-- CHG-OTP-LOGIN-001-T14 / UI-002, UI-003: the e-mailed sign-in code step. Inert and hidden until
+             login.js opens it, which only happens after a successful otpRequestCode.do answer for a Global
+             Unit whose crpByEmail.do entry reported otpEnabled === true. The code input has no "name" and is
+             not a .login-input, so it is never submitted with this form and the existing Enter/keyup relays
+             never reach it. Every string comes from global.properties --]
+        <div class="login-step hidden" id="login-step-otp">
+          <p class="login-headline">[@s.text name="login.otp.title"/]</p>
+          <p class="login-subtext" id="login-otp-status" role="status" aria-live="polite"></p>
+          <label class="login-field-label" for="login-otp-code">[@s.text name="login.otp.codeLabel"/]</label>
+          <div class="login-input-container">
+            <input id="login-otp-code" class="form-control" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" aria-describedby="login-otp-error" autocapitalize="off" spellcheck="false"/>
+          </div>
+          <p class="invalidField hidden" id="login-otp-error" role="alert"></p>
+          <div class="login-button-container">
+            <button type="button" id="login-otp-verify" class="login-form-button">[@s.text name="login.otp.verify"/]</button>
+          </div>
+          <div class="text-center">
+            <button type="button" id="login-otp-resend" class="btn btn-link" disabled="disabled">[@s.text name="login.otp.resend"/]</button>
+          </div>
+          <div class="text-center">
+            <button type="button" id="login-otp-different" class="btn btn-link">[@s.text name="login.otp.differentEmail"/]</button>
+          </div>
+        </div>
+
+        [#-- Copy read by login.js (text only, never HTML). Hidden and inert; __DEST__ and __N__ are replaced
+             client-side so the messages stay whole i18n strings --]
+        <div class="hidden" id="login-otp-copy" aria-hidden="true">
+          <span data-otp-copy="sent">[@s.text name="login.otp.sent"][@s.param]__DEST__[/@s.param][/@s.text]</span>
+          <span data-otp-copy="sending">[@s.text name="login.otp.sending"/]</span>
+          <span data-otp-copy="verifying">[@s.text name="login.otp.verifying"/]</span>
+          <span data-otp-copy="resend">[@s.text name="login.otp.resend"/]</span>
+          <span data-otp-copy="resendIn">[@s.text name="login.otp.resendIn"][@s.param]__N__[/@s.param][/@s.text]</span>
+          <span data-otp-copy="sendCode">[@s.text name="login.otp.method.send"/]</span>
+          <span data-otp-copy="methodInfo">[@s.text name="login.otp.method.info"][@s.param]__DEST__[/@s.param][/@s.text]</span>
+          <span data-otp-copy="verify">[@s.text name="login.otp.verify"/]</span>
+          <span data-otp-copy="codeRequired">[@s.text name="login.otp.error.codeRequired"/]</span>
+          <span data-otp-copy="mismatch">[@s.text name="login.otp.error.mismatch"/]</span>
+          <span data-otp-copy="exhausted">[@s.text name="login.otp.error.exhausted"/]</span>
+          <span data-otp-copy="invalid">[@s.text name="login.otp.error.invalid"/]</span>
+          <span data-otp-copy="rateLimited">[@s.text name="login.otp.error.rateLimited"/]</span>
+          <span data-otp-copy="unavailable">[@s.text name="login.otp.error.unavailable"/]</span>
+          <span data-otp-copy="unavailablePasswordOff">[@s.text name="login.otp.error.unavailablePasswordOff"/]</span>
+          <span data-otp-copy="domainNotEnabled">[@s.text name="login.otp.error.domainNotEnabled"/]</span>
+        </div>
+
         [#-- Error messages. login.js shows exactly one of these at a time, selecting it by its
              second CSS class --]
         <p class="invalidField emailRequired hidden">[@s.text name="login.error.invalidField.emailRequired"/]</p>
@@ -159,6 +243,10 @@
              template ever runs (SEC-005, SEC-006) --]
         <p class="invalidField cognitoUnavailable${(cognitoUnavailable!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoUnavailable"/]</p>
         <p class="invalidField cognitoFailed${(cognitoFailed!false)?then('', ' hidden')}">[@s.text name="login.error.cognitoFailed"/]</p>
+
+        [#-- CHG-OTP-LOGIN-001-T14: shown on the password step when "Email me a sign-in code" is refused
+             before the code step opens. Same cleanWrongData() lifecycle as the messages above --]
+        <p class="invalidField otpRequestError hidden" role="alert"></p>
 
         [#-- Terms and conditions checkbox.
              BUG-LOGIN-TERMS-001-UI-002: deliberately NO "required" here. HTML5 constraint validation
@@ -194,6 +282,13 @@
           <button type="button" id="login-cgiar-button" class="login-form-button hidden">
             [@s.text name="login.cgiarSignIn"/]
           </button>
+        </div>
+
+        [#-- CHG-OTP-LOGIN-001-T17 / UI-006: "Choose another way to sign in" of the password panel (the code
+             panel carries its own inside #login-step-password). Hidden unless login.js opens the password panel
+             of the method choice. The T14 request button now lives in the code panel above --]
+        <div class="login-method-back-container hidden" id="login-method-password-back">
+          <button type="button" id="login-method-password-back-button" class="loginBack">[@s.text name="login.otp.method.back"/]</button>
         </div>
 
         [#-- Go back to the previous step. A real <button> so it is in the tab order, exposes a

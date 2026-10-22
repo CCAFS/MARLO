@@ -1,0 +1,18 @@
+# akili-test Suite 2 (non-author re-run) 2026-10-18 11:11 -0500, HEAD a76807b4f9; invocation: docs/specs/changes/center-email-otp-login/probes/ac-probe.sh smtp
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== smtp: AC-15 / FN-018 / OPS-002 / NF-001
+  crp_enable_email_notification custom_parameters for the unit: [['2184', 'true']]
+  a password login now carries crp_enable_email_notification = "false" in its session
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  => PASS [AC-15] notifications off for the unit: the code email still arrives   (flag="false" code=received)
+  notifications restored to the saved value 'true'
+  SMTP down: response 200 in 0.04 s: {"status":"sent","destination":"p***@outlook.com"}
+  => PASS [AC-15] SMTP down: the response is the neutral one (sent), unchanged   ({"status":"sent","destination":"p***@outlook.com"})
+  => PASS [NF-001] the response does not wait for the mail server (<15 s)   (0.04 s)
+  log: ['[WARN] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=email_failed gu=aiccra domain=outlook.com ms=1']
+  => PASS [AC-15/OPS-002] auth.otp.delivery outcome=email_failed is logged at WARN   (2026-10-18T16:11:03.890Z - [otp-mail-2] [WARN ] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=email_failed gu=aiccra dom)
+
+SUMMARY: 4 checks, 0 failed
+# exit 0

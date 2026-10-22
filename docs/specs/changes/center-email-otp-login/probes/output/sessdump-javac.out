@@ -1,0 +1,2 @@
+$ javac -d <dir> probes/tools/SessDump.java   (JDK 17)
+(no output: compiled without warnings or errors; SessDump.class produced)

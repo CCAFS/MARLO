@@ -1,0 +1,24 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) 2026-10-18 09:26 -05, HEAD 6a0c65e5e4, db aiccradb_otp_probe
+# first attempt from the spec folder failed in the harness (runbook path resolved from the CWD, not the script: ac-live.sh runs as 'python3 -' so sys.argv[0] is '-'):
+#   # CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) 2026-10-18 09:26 -05, HEAD 6a0c65e5e4, JVM pid 34049, db aiccradb_otp_probe, key valid
+#   $ probes/ac-live.sh runbook-sql
+#   
+#   == runbook-sql: the statements of runbook.md, as written (OPS-003)
+#   Traceback (most recent call last):
+#     File "<stdin>", line 602, in <module>
+#     File "<stdin>", line 543, in stage_runbook_sql
+#   FileNotFoundError: [Errno 2] No such file or directory: '<repo>/docs/specs/changes/password-login-switch/../runbook.md'
+#   EXIT=1
+$ PROBE_RUNBOOK=runbook.md probes/ac-live.sh runbook-sql
+
+== runbook-sql: the statements of runbook.md, as written (OPS-003)
+  => PASS [OPS-003] the runbook holds both statements
+  count for unit 45: active_members, local_accounts, cgiar_accounts = ['448', '445', '3']
+  => PASS [OPS-003] the count statement runs and returns three numbers   ([['448', '445', '3']])
+  before: passwordEnabled=False; after the UPDATE of the runbook: value=[['true']], passwordEnabled=True
+  => PASS [OPS-003] the turn-on statement affects exactly one row (ROW_COUNT)   ([['1']])
+  => PASS [OPS-003] the turn-on statement, as written, flips the unit to on on the next lookup, with no restart
+  => PASS [OPS-003] and the password is accepted again
+
+SUMMARY: 5 checks, 0 failed
+EXIT=0

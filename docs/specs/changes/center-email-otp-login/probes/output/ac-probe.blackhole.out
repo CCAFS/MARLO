@@ -1,0 +1,10 @@
+
+== blackhole: NF-001 / OPS-002 with a mail server that accepts the connection and never answers (needs PROBE_SINK_STOP)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  black-hole SMTP: response HTTP 200 in 0.169 s: {"status":"sent","destination":"p***@outlook.com"}
+  => PASS [AC-15] black-hole SMTP: the neutral response (sent) comes back without waiting for the mail server   (0.169 s)
+  log: ['[WARN] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=email_failed gu=aiccra domain=outlook.com ms=10110']
+  => PASS [AC-15/OPS-002] the delivery outcome=email_failed is logged at WARN after the SMTP timeout (about 10 s)   (2026-10-13T20:07:47.391Z - [otp-mail-2] [WARN ] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=email_failed gu=aiccra dom)
+
+SUMMARY: 2 checks, 0 failed
+exit 0

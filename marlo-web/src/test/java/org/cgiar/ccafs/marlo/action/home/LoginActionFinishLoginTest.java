@@ -27,6 +27,7 @@ import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
 import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.security.otp.UnconfiguredOtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.lang.reflect.Field;
@@ -700,7 +701,8 @@ public class LoginActionFinishLoginTest {
     TestableLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
       CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
       ParameterManager parameterManager) {
-      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager);
+      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager,
+        UnconfiguredOtpEligibility.create());
     }
 
     @Override

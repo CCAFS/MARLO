@@ -1,0 +1,33 @@
+diff --git a/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java b/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java
+index c15192f720..e487666418 100644
+--- a/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java
++++ b/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java
+@@ -129,12 +129,20 @@ public class OtpChallengeMySQLDAO extends AbstractMarloDAO<OtpChallenge, Long> i
+     return challenge;
+   }
+ 
++  private static final Map<String, Map<Long, Map<String, String>>> FALSIFIER_MEMO =
++    new java.util.concurrent.ConcurrentHashMap<>();
++
+   @Override
+   @SuppressWarnings("unchecked")
+   public Map<Long, Map<String, String>> findSpecificityValues(Collection<String> keys,
+     Collection<Long> globalUnitIds) {
+     // Not cacheable and no entity: the read goes straight to the tables, so a change applies on the next request
+     // on every instance (DD-12, FN-002).
++    // FALSIFIER B (CHG-PWD-SWITCH-001 akili-test suite 2, never committed): the first value read is kept for the JVM's life.
++    String falsifierKey = String.valueOf(keys) + String.valueOf(globalUnitIds);
++    if (FALSIFIER_MEMO.containsKey(falsifierKey)) {
++      return FALSIFIER_MEMO.get(falsifierKey);
++    }
+     NativeQuery<Object[]> query = this.getSessionFactory().getCurrentSession().createNativeQuery(SPECIFICITY_SQL);
+     List<Object[]> rows =
+       query.setParameterList("keys", keys).setParameterList("globalUnitIds", globalUnitIds).list();
+@@ -144,6 +152,7 @@ public class OtpChallengeMySQLDAO extends AbstractMarloDAO<OtpChallenge, Long> i
+       values.computeIfAbsent(globalUnitId, id -> new HashMap<>()).put(row[1].toString(),
+         row[2] == null ? null : row[2].toString());
+     }
++    FALSIFIER_MEMO.put(falsifierKey, values);
+     return values;
+   }
+ 

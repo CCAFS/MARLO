@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.WelcomeSignInText;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -110,14 +111,16 @@ public class CrpPpaPartnersAction extends BaseAction {
   private GlobalUnit loggedCrp;
   // Util
   private SendMailS sendMail;
+  private final WelcomeSignInText welcomeSignInText;
 
 
   @Inject
   public CrpPpaPartnersAction(APConfig config, InstitutionManager institutionManager, GlobalUnitManager crpManager,
     CrpPpaPartnerManager crpPpaPartnerManager, LiaisonUserManager liaisonUserManager,
     LiaisonInstitutionManager liaisonInstitutionManager, UserRoleManager userRoleManager, RoleManager roleManager,
-    UserManager userManager, CrpUserManager crpUserManager, SendMailS sendMail) {
+    UserManager userManager, CrpUserManager crpUserManager, SendMailS sendMail, WelcomeSignInText welcomeSignInText) {
     super(config);
+    this.welcomeSignInText = welcomeSignInText;
     this.institutionManager = institutionManager;
     this.crpManager = crpManager;
     this.crpPpaPartnerManager = crpPpaPartnerManager;
@@ -363,8 +366,8 @@ public class CrpPpaPartnersAction extends BaseAction {
         }
       }
 
-      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support", new String[] {crpAdmins})}));
+      message.append(this.welcomeSignInText.part1(this, user, loggedCrp, password,
+        this.getText("email.role.support", new String[] {crpAdmins})));
       message.append(this.getText("email.role.bye"));
 
       // Saving crpUser

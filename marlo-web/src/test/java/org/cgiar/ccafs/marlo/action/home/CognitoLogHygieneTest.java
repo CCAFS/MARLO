@@ -39,6 +39,7 @@ import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 import org.cgiar.ccafs.marlo.security.impl.CognitoIdentityMapperImpl;
 import org.cgiar.ccafs.marlo.security.impl.CognitoTokenValidatorImpl;
 import org.cgiar.ccafs.marlo.security.impl.CognitoTokenValidatorImpl.JwksSource;
+import org.cgiar.ccafs.marlo.security.otp.UnconfiguredOtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.lang.reflect.Field;
@@ -858,7 +859,8 @@ public class CognitoLogHygieneTest {
     parameterManager.catalogRow = catalogRow("false");
 
     ValidateUserAction action =
-      new ValidateUserAction(new APConfig(), userManager, crpManager, customParameterManager, parameterManager);
+      new ValidateUserAction(new APConfig(), userManager, crpManager, customParameterManager, parameterManager,
+        UnconfiguredOtpEligibility.create());
     action.setSession(new HashMap<String, Object>());
     action.setUserEmail(CGIAR_EMAIL);
     action.setUserPassword("whatever-password");
@@ -902,7 +904,8 @@ public class CognitoLogHygieneTest {
     parameterManager.catalogRow = catalogRow("false");
 
     ValidateUserAction action =
-      new ValidateUserAction(new APConfig(), userManager, crpManager, customParameterManager, parameterManager);
+      new ValidateUserAction(new APConfig(), userManager, crpManager, customParameterManager, parameterManager,
+        UnconfiguredOtpEligibility.create());
     action.setSession(new HashMap<String, Object>());
     action.setUserEmail(maliciousEmail);
     action.setUserPassword("whatever-password");
@@ -1540,7 +1543,7 @@ public class CognitoLogHygieneTest {
       ParameterManager parameterManager, CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
       TokenExchangeClient tokenExchangeClient) {
       super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager,
-        tokenValidator, identityMapper, tokenExchangeClient);
+        UnconfiguredOtpEligibility.create(), tokenValidator, identityMapper, tokenExchangeClient);
     }
 
     @Override
@@ -1598,7 +1601,8 @@ public class CognitoLogHygieneTest {
     TestableLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
       CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
       ParameterManager parameterManager) {
-      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager);
+      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager,
+        UnconfiguredOtpEligibility.create());
     }
 
     @Override
