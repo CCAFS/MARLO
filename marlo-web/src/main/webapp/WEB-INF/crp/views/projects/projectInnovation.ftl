@@ -21,12 +21,12 @@
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#-- The form redesign reuses the deliverable form's (A2-2607): save state, labels and word counters --]
   "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261021-1",
-  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261021"
+  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261022-1"
 ] /]
 
 [#assign moduleJS = [
   "${baseUrlMedia}/js/dist/components/my-component.js?20250902",
-  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20260910",
+  "${baseUrlMedia}/js/dist/components/mal-multiselect.js?20261022",
   "${baseUrlMedia}/js/dist/components/mal-select.js?20250902"
 ] /]
 
@@ -37,7 +37,7 @@
   "${baseUrlCdn}/global/css/customDataTable.css?20250825",
   [#-- A2-2613: the deliverable form redesign (.dlf) plus what the innovation form adds (.inf) --]
   "${baseUrl}/crp/css/projects/deliverableForm.css?20261021-1",
-  "${baseUrlMedia}/css/projects/innovationForm.css?20261021-1"
+  "${baseUrlMedia}/css/projects/innovationForm.css?20261022-3"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
@@ -130,7 +130,7 @@
           [#assign isBundleCompositionRequired = innovation.projectInnovationInfo.innovationBundle!false /]
         [/#if]
 
-        <div class="dlf inf">
+        <div class="dlf inf[#if !editable] is-readonly[/#if]">
 
           [#-- Back to the list --]
           <a class="dlf-back" href="[@s.url action='${crpSession}/innovationsList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">

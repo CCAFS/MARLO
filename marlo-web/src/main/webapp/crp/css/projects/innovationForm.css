@@ -192,3 +192,360 @@
 .dlf .inf-webinar { flex: none; align-self: center; text-decoration: none; }
 .dlf .inf-webinar:hover,
 .dlf .inf-webinar:focus { text-decoration: none; }
+
+/* ══════════ General Information ══════════ */
+
+.dlf .inf-general .inf-card__lead { margin: -10px 0 0; }
+.dlf .dlf-note--compact { padding: 9px 12px; border-radius: 9px; }
+.dlf .dlf-note--compact .dlf-note__icon { width: 18px; height: 18px; font-size: 11px; }
+.dlf .dlf-note--compact .dlf-note__text { font-size: 13px; }
+.dlf .inf-general .form-group { margin-bottom: 0; }
+/* The legacy grid columns inside the cards (col-md-*) lay out as plain blocks. */
+.dlf .inf-general .dlf-card [class*="col-md-"]:not(.radioFlat-flex):not(.checkbox-list-item) { float: none; width: auto; padding-left: 0; padding-right: 0; }
+.dlf .inf-general .note--2 { margin: 2px 0 0; padding: 0; border: 0; background: none; }
+.dlf .inf-general .note--2 p { margin: 0; font: 400 12.5px/1.5 Figtree, sans-serif; font-style: normal; color: var(--dlf-muted); }
+
+/* ---- Question row: text on the left, a segmented answer on the right (Innovation/Bundle, specify countries) ---- */
+.dlf .inf-question {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-question--inline { align-items: center; margin-top: 12px; padding: 10px 14px; }
+.dlf .inf-question__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding-top: 4px; }
+.dlf .inf-question--inline .inf-question__text { padding-top: 0; }
+.dlf .inf-question__label { font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-question__label .requiredTag { margin-left: 4px; color: var(--dlf-required); }
+.dlf .inf-question__ask { margin-left: 6px; font-weight: 400; font-size: 13px; color: var(--dlf-ink-soft); }
+
+/* radioFlat (customForm) drawn as the design's segmented control: the radio stays in the form, the label is the pill. */
+.dlf .inf-segmented {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--dlf-chip);
+}
+.dlf .inf-segmented .radioFlat-flex,
+.dlf .inf-segmented .feedback-flex-items { display: contents; }
+.dlf .inf-segmented .radioFlat { position: relative; display: block; margin: 0; padding: 0; }
+.dlf .inf-segmented .radioFlat input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-segmented .radioFlat label {
+  display: block;
+  height: 30px;
+  margin: 0;
+  padding: 0 14px;
+  border-radius: 7px;
+  font: 500 13.5px/30px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.dlf .inf-segmented .radioFlat label::before,
+.dlf .inf-segmented .radioFlat label::after { display: none !important; }
+.dlf .inf-segmented .radioFlat input:checked + label { background: #fff; color: var(--dlf-ink); font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+.dlf .inf-segmented .radioFlat input:focus-visible + label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-segmented .commentNumberContainer { display: none; }
+/* Read-only: customForm prints the chosen answer only. */
+.dlf .inf-segmented > p,
+.dlf .inf-segmented .radioFlat > p { margin: 0; padding: 0 10px; font: 600 13.5px/30px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ---- "Other" free texts under a select ---- */
+.dlf .inf-other { margin-top: 10px; padding: 12px; border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface-alt); }
+
+/* ---- PRMS equivalence line under Innovation type ---- */
+.dlf .inf-prmsLine { margin-top: 8px; }
+.dlf .inf-prmsLine p {
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: #F7F9FB;
+  font: 400 12.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-prmsLine p .dlf-icon { margin-top: 2px; color: var(--dlf-muted); }
+.dlf .inf-prmsLine b { font-weight: 600; color: var(--dlf-ink); }
+.dlf .inf-prmsLine i { font-style: normal; }
+
+/* ---- Geographic scope: radio cards ---- */
+.dlf .inf-radioCards { display: flex; flex-wrap: wrap; gap: 8px; }
+.dlf .inf-radioCards .radioFlat-flex { float: none; width: auto; margin: 0 !important; padding: 0; }
+.dlf .inf-radioCards .feedback-flex-items:empty { display: none; }
+.dlf .inf-radioCards .radioFlat { position: relative; display: block; margin: 0; padding: 0; }
+.dlf .inf-radioCards .radioFlat input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-radioCards .radioFlat label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px 0 11px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-radioCards .radioFlat label::after { display: none !important; }
+.dlf .inf-radioCards .radioFlat label::before {
+  content: "" !important;
+  position: static !important;
+  flex: none;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--dlf-line-strong) !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.dlf .inf-radioCards .radioFlat label:hover { border-color: var(--dlf-brand); }
+.dlf .inf-radioCards .radioFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); font-weight: 600; }
+.dlf .inf-radioCards .radioFlat input:checked + label::before { border-color: var(--dlf-brand) !important; background: radial-gradient(circle, var(--dlf-brand) 0 4px, #fff 4.5px) !important; }
+.dlf .inf-radioCards .radioFlat input:focus-visible + label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-radioCards .commentNumberContainer { display: none; }
+.dlf .inf-radioCards > p,
+.dlf .inf-radioCards .radioFlat > p { margin: 0; font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-general .geographicScopeMessage,
+.dlf .inf-general .nationalBlock,
+.dlf .inf-general .regionalBlock { margin-top: 14px; }
+.dlf .inf-general .geographicScopeMessage label,
+.dlf .inf-general .block-hasSpecifiedOutputCountries > label { font-weight: 400; color: var(--dlf-ink-soft); }
+.dlf .inf-general .block-hasSpecifiedOutputCountries { margin-top: 12px; }
+
+/* ---- Contributing external partners: handle | number | name, the roles under the name ----
+   The deliverable list row (deliverableForm.css) is a flex row that hides .sortElement; it is restated here at a
+   higher weight (.inf-externals .panel.tertiary ...). */
+.dlf .inf-externals ul.list { counter-reset: inf-ext; }
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement {
+  display: grid;
+  grid-template-columns: 20px 22px minmax(0, 1fr);
+  grid-template-areas: "handle n name" "handle n roles";
+  column-gap: 10px;
+  row-gap: 8px;
+  align-items: start;
+  padding: 10px 40px 10px 6px;
+  counter-increment: inf-ext;
+}
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement::before {
+  content: counter(inf-ext);
+  grid-area: n;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 700 11px/22px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  text-align: center;
+}
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement > .sortElement {
+  display: block !important;
+  grid-area: handle;
+  position: static;
+  float: none;
+  width: 20px;
+  height: 22px;
+  margin: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16' fill='%239AA4B0'%3E%3Ccircle cx='3' cy='3' r='1.3'/%3E%3Ccircle cx='7' cy='3' r='1.3'/%3E%3Ccircle cx='3' cy='8' r='1.3'/%3E%3Ccircle cx='7' cy='8' r='1.3'/%3E%3Ccircle cx='3' cy='13' r='1.3'/%3E%3Ccircle cx='7' cy='13' r='1.3'/%3E%3C/svg%3E") center no-repeat;
+  cursor: grab;
+}
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+/* projectInnovations.css pins .innovationTabs .col-md-* widths with !important. */
+/* projectInnovations.css also gives .innovationTabs .col-md-4 a 15px bottom margin, under the partner name. */
+.dlf .dlf-card .inf-externals li.relationElement > span[class*="col-"] { float: none; width: auto !important; min-height: 0; margin: 0; padding: 0; }
+.dlf .dlf-card .inf-externals li.relationElement > span[class*="col-"]:first-of-type { grid-area: name; }
+.dlf .dlf-card .inf-externals li.relationElement > span[class*="col-"]:last-of-type { grid-area: roles; }
+.dlf .inf-externals li.relationElement > span > strong { display: none; }
+.dlf .inf-externals li.relationElement .elementName { margin: 0; font: 600 13.5px/22px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-externals li.relationElement > span > p:empty { display: none; }
+.dlf .inf-externals .checkbox-list { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0; }
+.dlf .inf-externals .checkbox-list > strong.col-md-12 { display: inline; flex: none; width: auto !important; margin-right: 2px; padding: 0; font: 600 12px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .dlf-card .inf-externals .checkbox-list > .checkbox-list-item { flex: none; float: none; width: auto !important; min-height: 0; margin: 0; padding: 0; }
+.dlf .inf-externals .inputsFlat { position: relative; margin: 0; padding: 0; }
+.dlf .inf-externals .inputsFlat input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-externals .inputsFlat label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 7px;
+  background: #fff;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .inf-externals .inputsFlat label::after { display: none !important; }
+.dlf .inf-externals .inputsFlat label::before {
+  content: "" !important;
+  position: static !important;
+  flex: none;
+  width: 13px !important;
+  height: 13px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--dlf-line-strong) !important;
+  border-radius: 3px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.dlf .inf-externals .inputsFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-externals .inputsFlat input:checked + label::before {
+  border-color: var(--dlf-brand) !important;
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat !important;
+}
+.dlf .inf-externals .inputsFlat label .commentNumberContainer { display: none; }
+/* sortableList.js instructions: replaced by the sort hint the script adds to the help text. */
+.dlf .inf-externals .sortableInstructions { display: none !important; }
+.dlf .inf-externals .inf-sortHint { display: inline; }
+
+@media (max-width: 767px) {
+  .dlf .inf-question { flex-direction: column; }
+}
+
+/* Layout fixes over global.css: radioFlat wrappers are full-width blocks, select--flex puts the label beside the
+   control, and the role chips keep their Bootstrap column widths. */
+.dlf .inf-radioCards > .feedback-flex-items,
+.dlf .inf-radioCards > .commentNumberContainer { display: none; }
+.dlf .inf-radioCards > .fieldReference.radioFlat { flex: none; width: auto; float: none; }
+.dlf .inf-general .select.select--flex { display: block; }
+.dlf .inf-general .select.select--flex > label { display: block; width: auto; margin-bottom: 6px; }
+.dlf .inf-general .select.select--flex > label br { display: none; }
+.dlf .inf-general .countriesControlStyle .select2-selection__rendered { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 6px; }
+.dlf .inf-general .countriesControlStyle .select2-container { margin: 0 !important; }
+/* global.css pins every .fieldReference to width: 100% !important, which stretches each radio card to the row. */
+.dlf .inf-radioCards > .fieldReference.radioFlat,
+.dlf .inf-segmented .fieldReference.radioFlat { width: auto !important; }
+
+/* ---- Read-only: the list components keep their add, remove and sort controls; the form shows only the answers ---- */
+.dlf.inf.is-readonly .elementsListComponent .removeElement,
+.dlf.inf.is-readonly .elementsListComponent .sortElement,
+.dlf.inf.is-readonly .elementsListComponent .panel-body > .select2-container,
+.dlf.inf.is-readonly .elementsListComponent .panel-body > select,
+.dlf.inf.is-readonly .elementsListComponent .select2-container,
+.dlf.inf.is-readonly .inf-externals .checkbox-list-item:not(:has(input:checked)) { display: none !important; }
+.dlf.inf.is-readonly .dlf-card .elementsListComponent li.relationElement { padding-right: 12px; }
+.dlf.inf.is-readonly .inf-externals li.relationElement { grid-template-columns: 22px minmax(0, 1fr); grid-template-areas: "n name" "n roles"; }
+.dlf.inf.is-readonly .inf-externals .inputsFlat label { pointer-events: none; }
+.dlf.inf.is-readonly .inf-externals .checkbox-list:not(:has(input:checked)),
+.dlf.inf.is-readonly .listindicators > .dlf-link { display: none !important; }
+
+/* ---- Review fixes (A2-2613) ---- */
+
+/* Hidden feedback holders (feedback-flex-items) take a flex gap while empty. */
+.dlf .inf-general .feedback-flex-items:empty { display: none; }
+
+/* Innovation/Bundle: the question box with its note row */
+.dlf .inf-questionBox { border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface-alt); overflow: hidden; }
+.dlf .inf-questionBox > .inf-question { align-items: center; border: 0; border-radius: 0; background: none; }
+.dlf .inf-questionBox .inf-question__text { padding-top: 0; }
+.dlf .inf-questionBox__note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--dlf-line);
+  background: #fff;
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
+.dlf .inf-questionBox__note .dlf-icon { color: var(--dlf-brand); }
+
+/* PRMS line: projectInnovations.js shows the line of the selected type with display: block */
+.dlf .inf-prmsLine p[style*="block"] { display: flex !important; }
+
+/* Geographic scope: field labels above their control, as in the deliverable form */
+.dlf .inf-fieldLabel { display: block; margin: -8px 0 8px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf #dlf-geographicScope .geographicScopeInput { display: flex; flex-direction: column; gap: 16px; margin-top: -10px; }
+.dlf #dlf-geographicScope .geographicScopeMessage,
+.dlf #dlf-geographicScope .nationalBlock,
+.dlf #dlf-geographicScope .regionalBlock,
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { margin: 0; }
+.dlf #dlf-geographicScope .geographicScopeMessage label { margin: 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf #dlf-geographicScope .regionalBlock { display: flex; flex-direction: column; gap: 14px; }
+.dlf #dlf-geographicScope .regionalBlock .inf-question--inline { margin: 0; }
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { display: flex; flex-direction: column; gap: 8px; }
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries > label { margin: 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf #dlf-geographicScope .select > label { margin: 0 0 8px; }
+/* projectInnovations.js dynamicMarginToSelectedRender pushes the chosen countries under the field with a margin */
+.dlf #dlf-geographicScope .select2-selection--multiple { margin-bottom: 0 !important; }
+/* The regional countries field drawn like the national one (deliverableForm.css .nationalBlock) */
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-container--default .select2-selection--multiple { min-height: 40px; padding: 6px; cursor: text; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-selection__rendered { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin: 0;
+  padding: 0 4px 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice > span:not(.select2-selection__choice__remove) { display: inline-flex; align-items: center; gap: 7px; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice .flag-icon { flex: none; width: 20px; height: 14px; border-radius: 2px; background-size: cover; box-shadow: 0 0 0 1px rgba(31, 42, 55, .12); }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice__remove {
+  order: 2;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border-radius: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%234B5563' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  font-size: 0;
+  cursor: pointer;
+}
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice__remove:hover { background-color: #DDE5EC; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-search--inline { flex: 1 1 150px; min-width: 150px; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-search__field { width: 100% !important; height: 28px; margin: 0; padding: 0 6px; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-search__field::placeholder { color: var(--dlf-brand); opacity: 1; }
+
+/* Lead Centers: the design's building icon, the name centred on the row */
+.dlf .dlf-card .inf-leads .panel.tertiary .panel-body > ul.list > li.relationElement { align-items: center; padding-left: 8px; }
+.dlf .dlf-card .inf-leads .panel.tertiary .panel-body > ul.list > li.relationElement::before {
+  content: "";
+  order: 0;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 7px;
+  background: var(--dlf-info-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M2.4 13.6h11.2M3.6 13.6V6.4L8 3.2l4.4 3.2v7.2M6.6 13.6v-3.2h2.8v3.2' stroke='%230277A2' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+
+/* Performance indicators: the code pill as in the deliverable form */
+.dlf .dlf-card .inf-indicators .panel.tertiary .panel-body > ul.list > li.relationElement > .dlf-code { order: 0; }
+.dlf .inf-count { margin-left: 6px; font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+
+/* Responsible institution: three columns of name-only person cards; the helper paragraphs keep a tight rhythm */
+.dlf .inf-general #addPartnerText p { margin: 0 0 4px; }
+.dlf .inf-general #addPartnerText p:last-of-type { margin-bottom: 0; }
+/* The help's <p> swallows the "here" link; the browser leaves a second, empty anchor after the paragraph. */
+.dlf .inf-general #addPartnerText > p ~ a { display: none; }
+.dlf .inf-general #dlf-partners .usersBlock { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 6px; }
+.dlf .inf-general #dlf-partners .usersBlock .deliverableUserItem { width: auto !important; grid-template-rows: auto; min-height: 40px; padding: 6px 9px; }
+.dlf .inf-general #dlf-partners .usersBlock .deliverableUserItem::before { grid-row: 1; width: 26px; height: 26px; }
+.dlf .inf-general #dlf-partners .usersBlock .deliverableUserItem::after { display: none; }
+.dlf .inf-general #dlf-partners .deliverableUserItem label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dlf .inf-contacts { display: block; margin: 10px 0 0; font: 600 12px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .inf-contacts__count { font-weight: 400; color: var(--dlf-muted); }
+@media (max-width: 991px) {
+  .dlf .inf-general #dlf-partners .usersBlock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
