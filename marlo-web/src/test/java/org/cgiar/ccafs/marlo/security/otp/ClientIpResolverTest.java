@@ -200,7 +200,11 @@ public class ClientIpResolverTest {
         new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
         String line = reader.readLine();
         while (line != null) {
-          lines.add(line);
+          // Logback prints its status to stdout when config/marlo-dev.properties is missing (a clean checkout or
+          // CI), so keep only the probe's own lines.
+          if (line.startsWith("control=") || line.startsWith("hop")) {
+            lines.add(line);
+          }
           line = reader.readLine();
         }
       }
