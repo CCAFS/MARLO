@@ -116,6 +116,18 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  /**
+   * Tell whether a deliverable is one that ProjectSectionValidator.validateProjectDeliverables checks, the only ones
+   * that get a section status. A deliverable that is not required to be completed in the phase is never validated,
+   * so reporting it would always add "No section" and keep the section incomplete for good.
+   *
+   * @param deliverableInfo the information of the deliverable in the phase being validated.
+   * @return true when the deliverable has to be completed in this phase.
+   */
+  static boolean isValidatedDeliverable(DeliverableInfo deliverableInfo) {
+    return deliverableInfo != null && Boolean.TRUE.equals(deliverableInfo.isRequiredToComplete());
+  }
+
   @Override
   public String execute() throws Exception {
     if (existProject && validSection) {
@@ -313,6 +325,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
           for (Deliverable deliverable : deliverables) {
+            if (!isValidatedDeliverable(deliverable.getDeliverableInfo())) {
+              continue;
+            }
             sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
             if (sectionStatus == null) {
