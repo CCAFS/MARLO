@@ -1,0 +1,18 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) 2026-10-18 09:26 -05, HEAD 6a0c65e5e4, JVM pid 34049, db aiccradb_otp_probe, key valid
+$ probes/ac-live.sh override
+
+== override: FN-004 / FN-005 / SEC-004 / AC-3..AC-6 (the code is the default method while the password is off)
+  => PASS [AC-4] password off, code switch OFF: request-code issues a code (sent, one mail)   (sent)
+  => PASS [AC-4] the request line ends with via=password_off   (affected=/marlo-web/otpRequestCode.do: auth.otp.request outcome=sent gu=aiccra domain=outlook.com ms=22 via=password_off)
+  => PASS [AC-4] crpByEmail: code offered, password not (otpEnabled true, passwordEnabled false) although the code switch is off   ((True, False))
+  => PASS [AC-4] the code signs the member in (otpVerifyCode answers ok)   (ok)
+  => PASS [AC-5] password off, domain excluded: request-code still issues a code   (sent)
+  => PASS [AC-5] crpByEmail: code only for the excluded domain   ((True, False))
+  => PASS [AC-5] BUT with the password back on, the excluded domain is password only again (otpEnabled false, passwordEnabled true)   ((False, True))
+  => PASS [AC-5] and request-code answers domainNotEnabled again   (domainNotEnabled)
+  (Cognito account otp.cgiar@outlook.com: crpByEmail per unit {'AICCRA': (False, False)})
+  => PASS [AC-6] Cognito account: the password switch changes nothing in crpByEmail (code not forced, password not offered)   ((False, False))
+  => PASS [AC-6] a direct request-code for the Cognito account answers the neutral 'sent' but sends no mail and logs no via=password_off line   (sent, 0 new mail(s))
+
+SUMMARY: 10 checks, 0 failed
+EXIT=0

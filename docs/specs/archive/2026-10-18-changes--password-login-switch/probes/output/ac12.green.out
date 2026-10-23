@@ -1,0 +1,17 @@
+# CHG-PWD-SWITCH-001-T08 ac12
+# date 2026-10-18T02:30Z; HEAD 9b2448578d; database aiccradb_otp_probe (throwaway copy); application built clean from the working tree, code key valid, JDWP agent on; command: probes/ac-live.sh ac12
+
+== ac12: SEC-006 / AC-12 (authentication outside the login page is unchanged with the switch off)
+  (password switch false in units 45 and 47)
+  GET /swagger/index.html -> HTTP 404, session cookie issued
+  (session read from the JVM: authenticated=true, clarisa attribute=true)
+  => PASS [AC-12] the CLARISA public user is authenticated through ClarisaPublicAccesFilter (session read from the JVM)   (authenticated=true clarisa=true)
+  /api/** Basic, switch off: correct password HTTP 401, wrong password HTTP 401; HibernateException lines 2; password-switch lines 0
+    org.hibernate.HibernateException: Could not obtain transaction-synchronized Session for current thread
+  /api/** Basic, switch on: correct password HTTP 401, wrong password HTTP 401; HibernateException lines 2; password-switch lines 0
+    org.hibernate.HibernateException: Could not obtain transaction-synchronized Session for current thread
+  => PASS [AC-12] /api/** HTTP Basic answers the same with the switch off and on (status, error), and never reaches the password gate   (off=(401, 401, 2, 0) on=(401, 401, 2, 0))
+  /api/** Basic authenticates: NOT VERIFIED. The correct password is refused with 401 on this stack also with the switch ON: the Shiro filter reaches APCustomRealm -> UserManagerImp.getUserByEmail with no Hibernate session (HibernateException 'Could not obtain transaction-synchronized Session'), code this spec does not touch
+
+SUMMARY: 2 checks, 0 failed; NOT RUN: [AC-12] /api/** Basic authenticates
+# exit 0

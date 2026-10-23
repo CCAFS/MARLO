@@ -51,6 +51,7 @@ import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.HistoryComparator;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.WelcomeSignInText;
 import org.cgiar.ccafs.marlo.validation.impactpathway.ClusterActivitiesValidator;
 
 import java.io.BufferedReader;
@@ -129,6 +130,7 @@ public class ClusterActivitiesAction extends BaseAction {
 
   // Util
   private final SendMailS sendMail;
+  private final WelcomeSignInText welcomeSignInText;
   private long crpProgramID;
   private long clRol;
   private List<CrpClusterOfActivity> clusterofActivities;
@@ -147,8 +149,10 @@ public class ClusterActivitiesAction extends BaseAction {
     CrpClusterActivityLeaderManager crpClusterActivityLeaderManager, AuditLogManager auditLogManager,
     SendMailS sendMail, CrpClusterKeyOutputManager crpClusterKeyOutputManager, HistoryComparator historyComparator,
     CrpProgramOutcomeManager crpProgramOutcomeManager,
-    CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager, CrpUserManager crpUserManager) {
+    CrpClusterKeyOutputOutcomeManager crpClusterKeyOutputOutcomeManager, CrpUserManager crpUserManager,
+    WelcomeSignInText welcomeSignInText) {
     super(config);
+    this.welcomeSignInText = welcomeSignInText;
     this.roleManager = roleManager;
     this.userRoleManager = userRoleManager;
     this.crpManager = crpManager;
@@ -327,8 +331,8 @@ public class ClusterActivitiesAction extends BaseAction {
         }
       }
 
-      message.append(this.getText("email.newUser.part1", new String[] {this.getText("email.newUser.listRoles"),
-        config.getBaseUrl(), user.getEmail(), password, this.getText("email.role.support", new String[] {crpAdmins})}));
+      message.append(this.welcomeSignInText.part1(this, user, loggedCrp, password,
+        this.getText("email.role.support", new String[] {crpAdmins})));
       message.append(this.getText("email.role.bye"));
 
       Map<String, Object> mapUser = new HashMap<>();

@@ -1,0 +1,9 @@
+
+== tz: one flow on a JVM whose time zone differs from the database's (false refusals)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  stored created_at / expires_at / UTC now / mysql tz: ['2026-10-13 20:10:30.016', '2026-10-13 20:15:30.016', '2026-10-13 20:10:30.080', 'SYSTEM', '-05']
+  => PASS [TZ] correct code on a non-UTC JVM is accepted (no false refusal)   (ok)
+  => PASS [TZ] expiry boundary is the UTC instant: -2 s refused, +20 s accepted   (invalid / ok)
+
+SUMMARY: 2 checks, 0 failed
+exit 0

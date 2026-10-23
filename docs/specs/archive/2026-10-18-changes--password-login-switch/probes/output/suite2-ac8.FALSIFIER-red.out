@@ -1,0 +1,32 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) -- AC-8 falsifier: build with probes/output/ac8.FALSIFIER.patch applied (switch read through the Hibernate query cache)
+# 2026-10-18 09:33 -05, HEAD 6a0c65e5e4 + patch, JVM pid 79844, clean build 2415/1066 files BUILD SUCCESS; javap: setCacheable present in OtpChallengeMySQLDAO
+$ probes/ac-live.sh ac8
+
+== ac8: FN-002 / AC-8 (a change of the switch is live: raw SQL, no restart)
+  (JVM pid 79844; unit 45: password switch false, code switch true, no exclusion)
+  => FAIL [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false)   ((False, True))
+  => FAIL [AC-8] off: validateUser.do refuses the correct password
+  => FAIL [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both)   ((False, True))
+  => PASS [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password
+  => PASS [AC-8] UPDATE ... 'true': the next login.do signs in   (/marlo-web/AICCRA/crpDashboard.do)
+  => FAIL [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again   ((False, True))
+  => FAIL [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+  => PASS [AC-8] no restart: the JVM pid is the same before and after   (79844 -> 79844)
+
+SUMMARY: 8 checks, 5 failed: [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false); [AC-8] off: validateUser.do refuses the correct password; [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both); [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again; [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+EXIT=1
+
+# NON-AUTHOR FINDING: why it is red. Every switch read in this window threw, so the gate answered through its fail-open path;
+# the switch was never read at all, cached or not (application log of this JVM, first lines of each, request ids dropped):
+#   /marlo-web/crpByEmail.do: unable to resolve the sign-in methods; answering the password for accounts without Cognito
+#   /marlo-web/validateUser.do: auth.password.gate outcome=settings_unavailable fail_open=true
+#   /marlo-web/crpByEmail.do: unable to resolve the sign-in methods; answering the password for accounts without Cognito
+#   /marlo-web/validateUser.do: auth.password.gate outcome=settings_unavailable fail_open=true
+#   /marlo-web/login.do: auth.password.gate outcome=settings_unavailable fail_open=true
+#   /marlo-web/crpByEmail.do: unable to resolve the sign-in methods; answering the password for accounts without Cognito
+#   /marlo-web/validateUser.do: auth.password.gate outcome=settings_unavailable fail_open=true
+#   java.lang.IllegalStateException: aliases expected length is 0; actual length is 3
+#   (7 occurrences): Hibernate cannot cache a native query that returns scalars without addScalar.
+# So this patch falsifies 'the probe sees a build that ignores the switch'; it does NOT model a stale cached value.
+# The first check (state set before any lookup in this JVM) also fails, which a pure staleness defect would pass.
+# A staleness falsifier was therefore added by this suite: suite2-ac8.FALSIFIER-B-*.out.

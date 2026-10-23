@@ -42,7 +42,17 @@
 		<default-interceptor-ref name="jsonStack"></default-interceptor-ref>
 
 		<!-- validPhase answers 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
+		<!-- requireUser answers 401 and SecurityControl 403 when the session has no user; without these results
+			Struts failed the request instead of sending the status -->
 		<global-results>
+			<result name="401" type="httpheader">
+				<param name="status">401</param>
+				<param name="errorMessage">Unauthorized</param>
+			</result>
+			<result name="403" type="httpheader">
+				<param name="status">403</param>
+				<param name="errorMessage">Forbidden</param>
+			</result>
 			<result name="404" type="httpheader">
 				<param name="status">404</param>
 				<param name="errorMessage">Not Found</param>

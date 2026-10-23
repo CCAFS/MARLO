@@ -111,11 +111,12 @@ public class APCustomRealm extends AuthorizingRealm {
    * {@code ClassCastException} inside {@code doGetAuthenticationInfo}'s unconditional cast.
    *
    * @param token the token Shiro is about to authenticate
-   * @return {@code true} only for the two token types this realm actually handles
+   * @return {@code true} only for the three token types this realm actually handles
    */
   @Override
   public boolean supports(AuthenticationToken token) {
-    return token instanceof UsernamePasswordToken || token instanceof CognitoAuthenticationToken;
+    return token instanceof UsernamePasswordToken || token instanceof CognitoAuthenticationToken
+      || token instanceof OtpAuthenticationToken;
   }
 
   @Override
@@ -143,6 +144,14 @@ public class APCustomRealm extends AuthorizingRealm {
     if (token instanceof CognitoAuthenticationToken) {
       CognitoAuthenticationToken cognitoToken = (CognitoAuthenticationToken) token;
       return new SimpleAuthenticationInfo(cognitoToken.getUserId(), cognitoToken.getAssertion(), this.getName());
+    }
+
+    // CHG-OTP-LOGIN-001-T07: the email-code sign-in, also above the cast. The code was verified before this
+    // token could be built (design 5.4), so the realm performs no I/O here. The principal is again the
+    // users.id Long, for the same reason as above. The token itself is the credentials: it holds no secret.
+    if (token instanceof OtpAuthenticationToken) {
+      OtpAuthenticationToken otpToken = (OtpAuthenticationToken) token;
+      return new SimpleAuthenticationInfo(otpToken.getUserId(), otpToken, this.getName());
     }
 
     // identify account to log to

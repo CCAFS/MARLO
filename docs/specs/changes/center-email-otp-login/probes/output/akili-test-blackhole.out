@@ -1,0 +1,13 @@
+# akili-test Suite 2 (non-author re-run) 2026-10-18 11:11 -0500, HEAD a76807b4f9; invocation: docs/specs/changes/center-email-otp-login/probes/ac-probe.sh blackhole
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== blackhole: NF-001 / OPS-002 with a mail server that accepts the connection and never answers (needs PROBE_SINK_STOP)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  black-hole SMTP: response HTTP 200 in 0.097 s: {"status":"sent","destination":"p***@outlook.com"}
+  => PASS [AC-15] black-hole SMTP: the neutral response (sent) comes back without waiting for the mail server   (0.097 s)
+  log: ['[WARN] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=email_failed gu=aiccra domain=outlook.com ms=10042']
+  => PASS [AC-15/OPS-002] the delivery outcome=email_failed is logged at WARN after the SMTP timeout (about 10 s)   (2026-10-18T16:11:18.959Z - [otp-mail-1] [WARN ] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=email_failed gu=aiccra dom)
+
+SUMMARY: 2 checks, 0 failed
+# exit 0

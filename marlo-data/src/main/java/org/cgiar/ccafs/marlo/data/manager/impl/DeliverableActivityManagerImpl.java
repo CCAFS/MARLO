@@ -24,10 +24,15 @@ import org.cgiar.ccafs.marlo.data.model.Activity;
 import org.cgiar.ccafs.marlo.data.model.DeliverableActivity;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -36,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Named
 public class DeliverableActivityManagerImpl implements DeliverableActivityManager {
 
+  private static final Logger LOG = LoggerFactory.getLogger(DeliverableActivityManagerImpl.class);
 
   private DeliverableActivityDAO deliverableActivityDAO;
   private ActivityDAO ActivityDAO;
@@ -81,12 +87,21 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
   public void deleteDeliverableActivityPhase(Phase next, long deliverableID, DeliverableActivity deliverableActivity) {
     Phase phase = phaseDAO.find(next.getId());
 
-    List<DeliverableActivity> activityPrev =
-      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID,
-        deliverableActivity.getActivity().getId(), phase.getId());
-
-    for (DeliverableActivity deliverableActivityDB : activityPrev) {
-      deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityDB.getId());
+    // The link of this phase hangs from the activity's copy in this phase; older replications attached it to the
+    // activity of the saved phase instead, so both are deactivated
+    Set<Long> activityIds = new LinkedHashSet<>();
+    Activity activityInPhase = this.activityInPhase(deliverableActivity.getActivity(), phase);
+    if (activityInPhase != null && activityInPhase.getId() != null) {
+      activityIds.add(activityInPhase.getId());
+    }
+    if (deliverableActivity.getActivity() != null && deliverableActivity.getActivity().getId() != null) {
+      activityIds.add(deliverableActivity.getActivity().getId());
+    }
+    for (Long activityId : activityIds) {
+      for (DeliverableActivity deliverableActivityDB : deliverableActivityDAO
+        .getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID, activityId, phase.getId())) {
+        deliverableActivityDAO.deleteDeliverableActivity(deliverableActivityDB.getId());
+      }
     }
 
     if (phase.getNext() != null) {
@@ -159,6 +174,23 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
     return activity;
   }
 
+  /**
+   * The copy of the activity in the given phase, found by its composed id; the activity itself when that phase has no
+   * copy or the lookup fails.
+   */
+  private Activity activityInPhase(Activity activity, Phase phase) {
+    if (activity == null || activity.getComposeID() == null) {
+      return activity;
+    }
+    try {
+      return ActivityDAO.getActivitiesByComposedID(activity.getComposeID(), phase.getId()).stream().findFirst()
+        .orElse(activity);
+    } catch (Exception e) {
+      LOG.warn("Could not find the copy of activity {} in phase {}", activity.getComposeID(), phase.getId(), e);
+      return activity;
+    }
+  }
+
   private void saveDeliverableActivityPhase(Phase next, Long deliverableID, DeliverableActivity deliverableActivity) {
     Phase phase = phaseDAO.find(next.getId());
     /*
@@ -169,29 +201,18 @@ public class DeliverableActivityManagerImpl implements DeliverableActivityManage
      * && r.getActivity().getId().equals(deliverableActivity.getActivity().getId()))
      * .collect(Collectors.toList());
      */
-    List<DeliverableActivity> deliverableActivityPrev =
-      deliverableActivityDAO.getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID,
-        deliverableActivity.getActivity().getId(), phase.getId());
+    // The link is looked up on the activity it is created on, the activity's copy in this phase: looking it up on
+    // the activity of the saved phase never found it, and every save added the link again
+    Activity activityInPhase = this.activityInPhase(deliverableActivity.getActivity(), phase);
+    List<DeliverableActivity> deliverableActivityPrev = activityInPhase == null || activityInPhase.getId() == null
+      ? Collections.emptyList() : deliverableActivityDAO
+        .getDeliverableActivitiesByDeliverableIDActivityAndPhase(deliverableID, activityInPhase.getId(), phase.getId());
 
-    if (deliverableActivityPrev.isEmpty()) {
+    if (activityInPhase != null && deliverableActivityPrev.isEmpty()) {
       DeliverableActivity deliverableActivitysAdd = new DeliverableActivity();
       deliverableActivitysAdd.setDeliverable(deliverableActivity.getDeliverable());
       deliverableActivitysAdd.setPhase(phase);
-
-
-      // Get activity by phase
-      try {
-        Activity activity =
-          deliverableActivity.getActivity() != null && deliverableActivity.getActivity().getComposeID() != null
-            ? ActivityDAO.getActivitiesByComposedID(deliverableActivity.getActivity().getComposeID(), phase.getId())
-              .stream().findFirst().orElse(null)
-            : null;
-
-        deliverableActivitysAdd.setActivity(activity != null ? activity : deliverableActivity.getActivity());
-      } catch (Exception e) {
-        deliverableActivitysAdd.setActivity(deliverableActivity.getActivity());
-      }
-
+      deliverableActivitysAdd.setActivity(activityInPhase);
       deliverableActivityDAO.save(deliverableActivitysAdd);
     }
     if (phase.getNext() != null) {

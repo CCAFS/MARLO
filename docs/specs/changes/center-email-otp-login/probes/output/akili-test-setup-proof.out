@@ -1,0 +1,13 @@
+# akili-test Suite 2 (non-author re-run) 2026-10-18, HEAD a76807b4f9 -- setup proof
+copy: aiccradb_otp_probe = mysqldump --single-transaction --routines --triggers aiccradb_actsave; 619 tables; fingerprint (CHECKSUM TABLE of users,
+  custom_parameters, parameters, crp_users, user_roles, otp_*, email_logs, schema_version, global_unit_types, global_units, roles + row counts) identical to the source
+build: scripts/run-marlo-java17.sh once: Compiling 6 / 2415 / 1066 / 89 source files (utils / data / web / web test-classes), BUILD SUCCESS
+Flyway on the copy at start: V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql success 1; V2_6_0_20261016_1525__AddPasswordLoginSwitch.sql success 1;
+  the 4 custom_parameters rows the source holds on crp_otp_allowed_email_domains (units 45/47/48/49, empty values) deleted in the copy (0 left);
+  4 parameters rows each of system_otp_login_active, system_otp_excluded_email_domains, system_password_login_active
+ps eww of the JVM owning 8080: MYSQL_DATABASE=aiccradb_otp_probe EMAIL_HOST=127.0.0.1 EMAIL_PORT=2525 EMAIL_HOSTBACKUP=127.0.0.1 EMAIL_PORTBACKUP=2525
+  EMAIL_NOTIFICATION=support.probe@sink.test OTP_HMAC_SECRET=<present, redacted> JAVA_TOOL_OPTIONS=-agentlib:jdwp=...address=127.0.0.1:0
+password login of user 3862 (fixture probe.user@outlook.com): HTTP 302 -> /marlo-web/AICCRA/crpDashboard.do
+  users.last_login of 3862: copy 2026-10-13 12:56:27 -> 2026-10-18 11:07:41 ; aiccradb_actsave 2026-10-13 12:56:27 -> 2026-10-13 12:56:27 (unchanged)
+fixtures: archived CHG-PWD-SWITCH-001 probes/fixtures.sh (37 fixture users); user 3815 (SuperAdmin of unit 45, non-CGIAR) renamed probe.admin@outlook.com with a test password, copy only
+sink: CHG-PWD-SWITCH-001 probes/tools/sink.py on 127.0.0.1:2525

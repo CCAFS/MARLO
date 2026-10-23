@@ -25,9 +25,12 @@ import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.CognitoAuthSpecificity;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility;
+import org.cgiar.ccafs.marlo.security.otp.SignInMethodRule.Methods;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -77,15 +80,18 @@ public class CrpByUserEmailAction extends BaseAction {
   private UserManager userManager;
   private CustomParameterManager customParameterManager;
   private ParameterManager parameterManager;
+  private OtpEligibility otpEligibility;
 
   // @Inject
   public CrpByUserEmailAction(APConfig config, GlobalUnitManager crpManager, UserManager userManager,
-    CustomParameterManager customParameterManager, ParameterManager parameterManager) {
+    CustomParameterManager customParameterManager, ParameterManager parameterManager,
+    OtpEligibility otpEligibility) {
     super(config);
     this.crpManager = crpManager;
     this.userManager = userManager;
     this.customParameterManager = customParameterManager;
     this.parameterManager = parameterManager;
+    this.otpEligibility = otpEligibility;
   }
 
 
@@ -113,6 +119,11 @@ public class CrpByUserEmailAction extends BaseAction {
     List<GlobalUnit> globalUnits = this.crpManager.crpUsers(this.userEmail);
     globalUnits.sort(Comparator.comparing(GlobalUnit::getAcronym));
 
+    // First pass (DD-6): the unit entries and, per unit, whether the account is a Cognito account in it. The rule of
+    // the second pass needs this answer, so nothing about the password may be decided before this loop ends.
+    List<GlobalUnit> listed = new ArrayList<GlobalUnit>();
+    Map<Long, Map<String, Object>> entries = new HashMap<Long, Map<String, Object>>();
+    Map<Long, Boolean> cognitoAccountByUnit = new HashMap<Long, Boolean>();
     for (GlobalUnit crp : globalUnits) {
       try {
         Map<String, Object> crpMap = new HashMap<String, Object>();
@@ -122,10 +133,14 @@ public class CrpByUserEmailAction extends BaseAction {
         crpMap.put("type", crp.getGlobalUnitType().getName());
         crpMap.put("idType", crp.getGlobalUnitType().getId());
         // Per-unit, resolved through the shared resolver (PS-16) -- never a single scalar on `user`.
-        crpMap.put("cognitoEnabled",
-          CognitoAuthSpecificity.isActiveFor(crp, this.customParameterManager, this.parameterManager));
+        boolean cognitoEnabled =
+          CognitoAuthSpecificity.isActiveFor(crp, this.customParameterManager, this.parameterManager);
+        crpMap.put("cognitoEnabled", cognitoEnabled);
 
         this.crps.add(crpMap);
+        listed.add(crp);
+        entries.put(crp.getId(), crpMap);
+        cognitoAccountByUnit.put(crp.getId(), Boolean.valueOf(cognitoEnabled && usrDB.isCgiarUser()));
       } catch (Exception e) {
         this.logger.error("unable to add flagship to crps list", e);
         /**
@@ -134,10 +149,40 @@ public class CrpByUserEmailAction extends BaseAction {
          */
       }
     }
+
+    // One call for every listed unit, with the units this action loaded (never ids built from the request).
+    Map<Long, Methods> methods = this.methodsByUnit(listed, cognitoAccountByUnit);
+
+    // Second pass: the two flags of every unit entry. No method answer (a failure) is the fail-open case of DD-6.
+    for (Map.Entry<Long, Map<String, Object>> entry : entries.entrySet()) {
+      Methods unitMethods = methods.get(entry.getKey());
+      boolean cognitoAccount = Boolean.TRUE.equals(cognitoAccountByUnit.get(entry.getKey()));
+      // CHG-OTP-LOGIN-001-T13 (UI-001): whether the one-time-code option may be offered for this unit, and
+      // CHG-PWD-SWITCH-001-T04 (DD-6): whether the password may be. Both come from the one rule, and both are the
+      // same answer for every account of the same kind in the unit (SEC-005).
+      entry.getValue().put("otpEnabled", Boolean.valueOf(unitMethods != null && unitMethods.isCode()));
+      entry.getValue().put("passwordEnabled",
+        Boolean.valueOf(unitMethods == null ? !cognitoAccount : unitMethods.isPassword()));
+    }
     return SUCCESS;
 
   }
 
+
+  /**
+   * Asks the rule for the methods of every listed unit, failing open as DD-6 says: the lookup must never break, so a
+   * failure is logged at ERROR and answers nothing, which the caller reads as {@code otpEnabled = false} and
+   * {@code passwordEnabled = true} for an account without Cognito in the unit (today's behaviour).
+   */
+  private Map<Long, Methods> methodsByUnit(List<GlobalUnit> units, Map<Long, Boolean> cognitoAccountByUnit) {
+    try {
+      return this.otpEligibility.methodsFor(this.userEmail, units, cognitoAccountByUnit);
+    } catch (RuntimeException e) {
+      this.logger.error("unable to resolve the sign-in methods; answering the password for accounts without Cognito",
+        e);
+      return Collections.<Long, Methods>emptyMap();
+    }
+  }
 
   public List<Map<String, Object>> getCrps() {
     return crps;

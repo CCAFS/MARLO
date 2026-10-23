@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.security.CognitoAuthenticationToken;
 import org.cgiar.ccafs.marlo.security.CognitoIdentityMapper;
 import org.cgiar.ccafs.marlo.security.CognitoTokenValidator;
 import org.cgiar.ccafs.marlo.security.ShiroRequestSessionCacheResetter;
+import org.cgiar.ccafs.marlo.security.otp.OtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.IOException;
@@ -371,9 +372,9 @@ public class CognitoCallbackAction extends LoginAction {
   // @Inject
   public CognitoCallbackAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
     CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager,
-    CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper) {
-    this(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager, tokenValidator,
-      identityMapper, new HttpTokenExchangeClient(config));
+    OtpEligibility eligibility, CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper) {
+    this(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager, eligibility,
+      tokenValidator, identityMapper, new HttpTokenExchangeClient(config));
   }
 
   /**
@@ -383,13 +384,14 @@ public class CognitoCallbackAction extends LoginAction {
    */
   protected CognitoCallbackAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
     CrpUserManager crpUserManager, CustomParameterManager customParameterManager, ParameterManager parameterManager,
-    CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
+    OtpEligibility eligibility, CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
     TokenExchangeClient tokenExchangeClient) {
     // CHG-COGNITO-AUTH-001-T11b: LoginAction's constructor gained a ParameterManager parameter to resolve
     // cognito_auth_active through the shared CognitoAuthSpecificity resolver (PS-16). This class never calls
     // LoginAction#login() (it authenticates via Subject.login(CognitoAuthenticationToken) instead), so the
     // parameter is never read here -- it exists solely so this subclass keeps compiling against its parent.
-    super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager);
+    // CHG-PWD-SWITCH-001-T05 adds the password gate's OtpEligibility to the same constructor, for the same reason.
+    super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager, eligibility);
     this.crpManager = crpManager;
     this.tokenValidator = tokenValidator;
     this.identityMapper = identityMapper;

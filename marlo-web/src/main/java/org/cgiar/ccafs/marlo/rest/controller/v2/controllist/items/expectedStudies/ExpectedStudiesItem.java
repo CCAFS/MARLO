@@ -104,6 +104,7 @@ import org.cgiar.ccafs.marlo.rest.mappers.ProjectExpectedStudyMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -2128,6 +2129,9 @@ public class ExpectedStudiesItem<T> {
           projectExpectedStudy.setPhase(phase.getId());
           projectExpectedStudy.setYear(phase.getYear());
           projectExpectedStudy.setProject(project);
+          // activeSince is the last modification date: a new value makes the update happen even when only child
+          // rows changed.
+          projectExpectedStudy.setActiveSince(new Date());
           ProjectExpectedStudy projectExpectedStudyDB =
             projectExpectedStudyManager.saveProjectExpectedStudy(projectExpectedStudy);
           if (projectExpectedStudyDB != null) {

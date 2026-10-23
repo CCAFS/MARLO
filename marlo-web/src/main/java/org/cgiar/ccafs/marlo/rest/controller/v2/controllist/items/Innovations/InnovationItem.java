@@ -82,6 +82,7 @@ import org.cgiar.ccafs.marlo.rest.mappers.InnovationMapper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -1112,6 +1113,9 @@ public class InnovationItem<T> {
             }
           }
           if (fieldErrors.isEmpty()) {
+            // activeSince is the last modification date: a new value makes the update happen even when only child
+            // rows changed.
+            innovation.setActiveSince(new Date());
             // SAVE innovation info
             innovation = this.projectInnovationManager.saveProjectInnovation(innovation);
             if (innovation != null) {

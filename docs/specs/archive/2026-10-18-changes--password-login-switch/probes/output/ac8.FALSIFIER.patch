@@ -1,0 +1,16 @@
+diff --git a/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java b/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java
+index c15192f720..25e2e26967 100644
+--- a/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java
++++ b/marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/dao/mysql/OtpChallengeMySQLDAO.java
+@@ -136,8 +136,9 @@ public class OtpChallengeMySQLDAO extends AbstractMarloDAO<OtpChallenge, Long> i
+     // Not cacheable and no entity: the read goes straight to the tables, so a change applies on the next request
+     // on every instance (DD-12, FN-002).
+     NativeQuery<Object[]> query = this.getSessionFactory().getCurrentSession().createNativeQuery(SPECIFICITY_SQL);
+-    List<Object[]> rows =
+-      query.setParameterList("keys", keys).setParameterList("globalUnitIds", globalUnitIds).list();
++    // FALSIFIER (CHG-PWD-SWITCH-001-T08, never committed): the switches are read through the Hibernate query cache.
++    List<Object[]> rows = query.setCacheable(true).setParameterList("keys", keys)
++      .setParameterList("globalUnitIds", globalUnitIds).list();
+     Map<Long, Map<String, String>> values = new HashMap<>();
+     for (Object[] row : rows) {
+       Long globalUnitId = Long.valueOf(((Number) row[0]).longValue());

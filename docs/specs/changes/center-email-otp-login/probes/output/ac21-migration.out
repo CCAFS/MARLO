@@ -1,0 +1,35 @@
+PASS  DA-002 text of system_otp_login_active found in requirements.md (yes)
+PASS  DA-002 text of system_otp_excluded_email_domains found in requirements.md (yes)
+migration file: marlo-web/src/main/resources/database/migrations/V2_6_0_20261015_1418__ReplaceOtpAllowListWithSwitchAndExclusion.sql
+invocation per run: $PROBE_ADMIN_MYSQL <database> < $MIGRATION   (databases: aiccradb_otp_probe, otp_probe_ac21_b, otp_probe_ac21_c)
+
+== (a) aiccradb_otp_probe: the throwaway copy, which has the T01 migration; a fixture value on the old key for one unit; apply twice
+before: old key parameters rows 4 ; old key custom_parameters rows 1 ; new keys 0+0
+run 1 exit 0
+run 2 exit 0
+PASS  (a) after run 1: switch rows / exclusion rows / old rows / old custom rows (4/4/0/0)
+PASS  (a) after run 2: nothing duplicated, nothing more removed (4/4/0/0)
+PASS  (a) switch seeded as boolean, default false, specificity, for types 1-4 (1/1/false/2 2/1/false/2 3/1/false/2 4/1/false/2)
+PASS  (a) exclusion seeded as text, empty default, specificity, for types 1-4 (1/4//2 2/4//2 3/4//2 4/4//2)
+PASS  (a) no custom_parameters row seeded for either key (every unit starts off) (0)
+PASS  (a) every other parameters and custom_parameters row is unchanged (295:628082370212|1623:3473321653763)
+PASS  (a) description of system_otp_login_active is the DA-002 text, on all 4 rows (4)
+PASS  (a) description of system_otp_excluded_email_domains is the DA-002 text, on all 4 rows (4)
+PASS  (a) the T01 migration file is untouched (it is not part of the change) ()
+
+== (b) otp_probe_ac21_b: no Global Unit 45 or 47 (21 seeded units, ids < 29), the old key with one custom value; apply twice
+PASS  (b) fixture: no unit 45 or 47 (0)
+PASS  (b) before: old key rows / old custom rows (4/1)
+run 1 exit 0
+run 2 exit 0
+PASS  (b) after run 1: switch / exclusion / old rows / old custom rows (4/4/0/0)
+PASS  (b) after run 2: the same (4/4/0/0)
+PASS  (b) no custom_parameters row exists for either new key, so no unit id was assumed (0)
+
+== (c) otp_probe_ac21_c: no global_unit_types rows at all, no old key; apply twice
+run 1 exit 0
+run 2 exit 0
+PASS  (c) parameters rows (0)
+
+scratch databases otp_probe_ac21_b and otp_probe_ac21_c dropped; aiccradb_otp_probe is the caller's to drop
+RESULT: 0 failed

@@ -1,0 +1,24 @@
+# CHG-PWD-SWITCH-001-T08 ac7 (AC-7, FN-006, OPS-002): SECOND run on the SAME application start (empty OTP_HMAC_SECRET). The first run (ac7.first-run-harness-fail.out) emitted the two ERROR lines and failed one check on a leftover otp_challenges row of an earlier stage (the stage now clears the OTP tables first). Here 'already in the log: 2' shows that the lookups of a second run write no further line
+# date 2026-10-18T02:42Z; HEAD 9b2448578d; database aiccradb_otp_probe; command: probes/ac-live.sh ac7
+
+== ac7: FN-006 / OPS-002 / AC-7 (the code key is blank: the password is the last resort)
+  => PASS [AC-7] the startup WARN says the code key is unconfigured (this application runs with a blank key)   (1 line(s))
+  (JVM pid 37493; OTP_HMAC_SECRET in its environment: empty)
+  => PASS [AC-7] the JVM environment holds an empty OTP_HMAC_SECRET
+  (both units: password switch false; auth.password.last_resort lines already in the log: 2)
+  (crpByEmail otpEnabled/passwordEnabled per unit: {'AICCRA': (False, True), 'AICCRA_III': (False, True)})
+  => PASS [AC-7] both units offer the password and no code, though the switch is off   ({'AICCRA': (False, True), 'AICCRA_III': (False, True)})
+  => PASS [AC-7] request-code issues nothing (domainNotEnabled), no mail, no challenge row   (domainNotEnabled)
+  => PASS [AC-7] validateUser.do accepts the correct password in unit 45 (today's rules)
+  => PASS [AC-7] validateUser.do accepts the correct password in unit 47 (today's rules)
+  => PASS [AC-7] login.do signs in with the password   (/marlo-web/AICCRA/crpDashboard.do)
+  => PASS [AC-7] a wrong password is still refused by the credential check, not by the switch
+  (last_resort lines: whole log 2, since this stage began 0)
+    [ERROR] [MARLO] [dev] [OtpEligibility] environment=DEV request_id=15ec47eefed6b6b7 controller_affected=/marlo-web/crpByEmail.do: auth.password.last_resort gu=AICCRA reason=code_key_unconfigured
+    [ERROR] [MARLO] [dev] [OtpEligibility] environment=DEV request_id=15ec47eefed6b6b7 controller_affected=/marlo-web/crpByEmail.do: auth.password.last_resort gu=AICCRA_III reason=code_key_unconfigured
+  => PASS [OPS-002] exactly one ERROR line per unit however many lookups: AICCRA once, AICCRA_III once   (1 + 1)
+  => PASS [OPS-002] the line names the reason and the unit and nothing else (no address, no password)
+  => PASS [OPS-002] lookups for an unknown address write no further line   (2 total)
+
+SUMMARY: 11 checks, 0 failed
+# exit 0

@@ -1,0 +1,23 @@
+# akili-test Suite 2 (non-author re-run) 2026-10-18 11:07 -0500, HEAD a76807b4f9; invocation: docs/specs/changes/center-email-otp-login/probes/ac17-migration.sh 
+migration file: marlo-web/src/main/resources/database/migrations/V2_6_0_20261009_1025__AddEmailOtpLogin.sql
+invocation per run: $PROBE_ADMIN_MYSQL <database> < $MIGRATION   (databases: aiccradb_otp_probe, otp_probe_ac17_b, otp_probe_ac17_c)
+
+== (a) aiccradb_otp_probe: the throwaway copy, which already has the migration applied once; apply twice more
+before: parameters key rows: 0 ; otp tables: otp_challenges otp_cooldowns otp_rate_limits 
+run 1 exit 0
+run 2 exit 0
+after:  parameters key rows: 4 ; by type: 1 1;2 1;3 1;4 1;
+
+== (b) otp_probe_ac17_b: no global_units table or rows at all, no OTP tables, global_unit_types 1-5, parameters empty; apply twice
+run 1 exit 0
+run 2 exit 0
+otp tables: otp_challenges otp_cooldowns otp_rate_limits  ; parameters by type (type, rows, category): 1 1 2; 2 1 2; 3 1 2; 4 1 2; 
+global_units exists in otp_probe_ac17_b: 0 (0 = no such table)
+
+== (c) otp_probe_ac17_c: no global_unit_types rows at all; apply twice
+run 1 exit 0
+run 2 exit 0
+parameters rows: 0
+
+scratch databases otp_probe_ac17_b and otp_probe_ac17_c dropped
+# exit 0

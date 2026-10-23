@@ -463,9 +463,6 @@
 
   
 
-    [#if !action.isAiccra()]
-    <div class="homeTitle"><b>[@s.text name="dashboard.decisionTree.title" /]</b></div>
-  [/#if]
     [#-- What do you want to do --]
     <div id="decisionTree">
 
@@ -499,35 +496,6 @@
 
       [#else]
 
-        [#if !aiccra]
-          [#-- Add new Project --]
-          <div class="flex-container">
-          [#assign canAddCoreProject = (action.canAddCoreProject()) && (!crpClosed) && (!reportingActive) && (action.getActualPhase().editable)]
-          [#if canAddCoreProject]<a href="[@s.url namespace="/projects" action='${crpSession}/addNewCoreProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[/#if]
-            <div id="newProject" class="hvr-float option ${(!canAddCoreProject)?string('disabled','')}" ${(!canAddCoreProject)?string('title="This link is disabled"','')}>
-              <p>[@s.text name="dashboard.decisionTree.newProject" /]</p>
-            </div>
-          [#if canAddCoreProject]</a>[/#if]
-          </div>
-
-          [#-- Update an ongoing Project --]
-          <div class="flex-container">
-          [#assign canUpdateOngoingProjects = !crpClosed && canEditPhase ]
-          [#if canUpdateOngoingProjects]<a href="[@s.url namespace="/projects" action='${crpSession}/projectsList'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]"> [/#if]
-            <div id="updatePlanning" class="hvr-float option ${(!canUpdateOngoingProjects)?string('disabled','')}" ${(!canUpdateOngoingProjects)?string('title="This link is disabled"','')}>
-              <p>[@s.text name="dashboard.decisionTree.updateProject" /]</p>
-            </div>
-          [#if canUpdateOngoingProjects]</a>[/#if]
-          </div>
-
-          [#-- Evaluate Project --]
-          <div class="flex-container">
-            <div id="reportProject" class="option disabled" title="This link is disabled">
-              <p>[@s.text name="dashboard.decisionTree.evaluateProject" /]</p>
-            </div>
-          </div>
-        [/#if]
-
       <div class="clearfix"></div>
     </div>
     [/#if]
@@ -538,10 +506,6 @@
 
         [#-- The explanatory copy that used to sit here now lives in the homepage banner at the top of
              the page, entered per Global Unit under /admin -> Homepage Banner. --]
-        [#if !aiccra]
-            [@s.text name="dashboard.aiccra.instructions" ] [@s.param] <a href="https://docs.google.com/document/d/1hy2yt6E4pJ5orGqHxBSX_ACcr72pPTwaSesQ9P6vHYQ/edit" target="_blank">here</a>.[/@s.param][/@s.text]
-            <img src="${baseUrlCdn}/global/images/aiccra-planning.png" width="450">
-        [/#if]
 
     </div>
 

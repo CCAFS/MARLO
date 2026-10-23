@@ -21,6 +21,55 @@
     </action>
 	   
   </package>
+	<!--
+		CHG-OTP-LOGIN-001-T12 (design.md 4, DD-1): the pre-authentication JSON endpoints of the Center email
+		one-time-code sign-in. They live in their own package, not in homeJson (which has neither logErrorStatus
+		nor i18nFile) and not in home (a root-less JSON result on a LoginAction subclass would serialise every
+		getter, JD-5): the "json" result type comes from json-default (P-26) and the standard marlo-default
+		stacks stay available. otpUnloggedStack is cognitoUnloggedStack's interceptors, for the same reason
+		(design.md 8): unloggedStack's validCrp and validSessionCrp 404 a flat action name. Only the "response"
+		map of the action is serialised (SEC-004). The global "input" result answers the same JSON, so a
+		conversion or validation interruption answers {status: unavailable} and never a 500 or a login page
+		(RJ-9). Both actions implement ParameterNameAware and accept only their own request parameters.
+	-->
+	<package name="homeOtp" namespace="/" extends="marlo-default,json-default">
+
+		<interceptors>
+			<interceptor-stack name="otpUnloggedStack">
+				<interceptor-ref name="logErrorStatus" />
+				<interceptor-ref name="i18nFile" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<global-results>
+			<result name="input" type="json">
+				<param name="root">response</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</global-results>
+
+		<action name="otpRequestCode" class="org.cgiar.ccafs.marlo.action.home.OtpRequestCodeAction">
+			<interceptor-ref name="otpUnloggedStack" />
+			<result name="success" type="json">
+				<param name="root">response</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+		<action name="otpVerifyCode" class="org.cgiar.ccafs.marlo.action.home.OtpVerifyCodeAction">
+			<interceptor-ref name="otpUnloggedStack" />
+			<result name="success" type="json">
+				<param name="root">response</param>
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+
+	</package>
+
 	<!-- Add addition packages and configuration here. -->
 	<package name="home" namespace="/" extends="marlo-default">
 

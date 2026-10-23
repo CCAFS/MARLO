@@ -1,0 +1,82 @@
+# CHG-OTP-LOGIN-001-T19, 2026-10-15: ac-probe.sh nonprod leak emaillog against the working tree (HEAD ed87f3955f + T19), clean build
+# of the run script, aiccradb_otp_probe (a fresh copy of aiccradb_actsave, T15 fixtures), marlo.production=false, mail to the local sink
+# 127.0.0.1:2525 (nothing relays). The application ran with EMAIL_NOTIFICATION=support.probe@sink.test (environment only, no tracked file
+# edited). Paths shortened; no credential in this file.
+#
+# What the sink recorded for the first code email of the run (envelope, To header, subject):
+#   From sink <support.probe@sink.test> -> <support.probe@sink.test>
+#   To: support.probe@sink.test
+#   Subject: (TESTING ENVIRONMENT) Your MARLO sign-in code
+# The submitted address (probe.user@outlook.com) is in neither; it is in the first line of the body and in email_logs.to_email.
+
+
+== nonprod: AC-19 / FN-018 (marlo.production=false: the support mailbox only, the prefix, the header; the row keeps the submitted address)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  => PASS [AC-19] an eligible request leaves exactly one email at the sink   (1 new message(s))
+  envelope recipients: ['support.probe@sink.test'] ; To header: ['support.probe@sink.test'] ; Cc: None ; Bcc: None ; subject: '(TESTING ENVIRONMENT) Your MARLO sign-in code'
+  => PASS [AC-19] the only recipient (envelope and To header, no Cc or Bcc) is the support mailbox email.notification
+  => PASS [AC-19] the subject starts with '(TESTING ENVIRONMENT) '   ((TESTING ENVIRONMENT) Your MARLO sign-in code)
+  => PASS [AC-19] the plain and the HTML part start with a header naming the submitted address   (plain starts 'To: probe.user@outlook.com\r\n--------------------------------' ; html starts 'To: probe.user@outlook.com<br>------------------------------')
+  => PASS [AC-19] the submitted address received nothing: it is no SMTP recipient and in no To header of any message at the sink   (5 message(s) at the sink, recipients seen: ['support.probe@sink.test'])
+  => PASS [AC-19] the code from the redirected email signs the user in   (ok)
+  email_logs row: {'id': '18310', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': 'Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-15 08:29:11', 'error_email': 'NULL', 'succes_email': '1', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<558 chars>'}
+  => PASS [AC-19] its email_logs row holds the submitted address in to_email, the support mailbox in bbc_email and the subject without the prefix
+  => PASS [AC-19] its message is the HTML as built for production (the code, no test header)
+
+== leak: AC-11 (SEC-001, SEC-002, OPS-001)
+  flow: request -> sent ; wrong -> mismatch ; correct -> ok
+  needles: code=452974 nonce=lS9qRUgwaV2f06ojBb8JlA email=probe.user@outlook.com pre-auth sid=d487489b-6f9a-408a-bbfc-813c0aa6fd14 auth sid=a79ee755-8895-4f80-9d28-f74614ff1bbd
+  => PASS [AC-11] the nonce was captured from the session for the log search
+  (the nonce is the lookup key and is stored by design; only the code and the email are forbidden columns)
+  => PASS [AC-11] otp_challenges holds no code   (1 rows scanned)
+  => PASS [AC-11] otp_challenges holds no full email   (1 rows scanned)
+  => PASS [AC-11] otp_challenges holds no local part   (1 rows scanned)
+  email_logs: 1 row(s) written since the flow began (id > 18310); source_action ['/otpRequestCode']; succes_email ['1']; global_unit_id ['45']
+  => PASS [AC-11] email_logs (the real table name): the code is only in the message of the one row written for this flow, in no other column   (tables=['email_logs'] code matches per column={'message': 1})
+  => PASS [AC-11] email_logs: exactly one new row for the flow, with source_action /otpRequestCode (OPS-005)   (rows=1)
+  => PASS [AC-11] email_logs: the full email and the local part are in no column but to_email, which holds the recipient   (matches outside to_email={'full email': {}, 'local part': {}} to_email=['probe.user@outlook.com'])
+  log <console log of the run>: 78 new lines since the flow began
+  => PASS [AC-11] log t19-app.log: the code is only in the one auth.otp.code line (non-production), in no other line   (78 lines searched, 1 code line)
+  => PASS [AC-11] log t19-app.log: the full email is only in the one auth.otp.code line (non-production), in no other line   (78 lines searched, 1 code line)
+  => PASS [AC-11] log t19-app.log has no line with the nonce   (78 lines searched)
+  => PASS [AC-11] log t19-app.log has no line with the pre-auth session id   (78 lines searched)
+  => PASS [AC-11] log t19-app.log has no line with the authenticated session id   (78 lines searched)
+  => PASS [AC-11/OPS-001] log t19-app.log: the auth.otp.code line is INFO, names the unit, the submitted address and the code of the email   ([INFO ] [MARLO] [dev] [OtpMailSender] environment=DEV: auth.otp.code gu=AICCRA to=probe.user@outlook.com code=<code>)
+  log <logs>/marlo-dev.log: 34 new lines since the flow began
+  => PASS [AC-11] log marlo-dev.log: the code is only in the one auth.otp.code line (non-production), in no other line   (34 lines searched, 1 code line)
+  => PASS [AC-11] log marlo-dev.log: the full email is only in the one auth.otp.code line (non-production), in no other line   (34 lines searched, 1 code line)
+  => PASS [AC-11] log marlo-dev.log has no line with the nonce   (34 lines searched)
+  => PASS [AC-11] log marlo-dev.log has no line with the pre-auth session id   (34 lines searched)
+  => PASS [AC-11] log marlo-dev.log has no line with the authenticated session id   (34 lines searched)
+  => PASS [AC-11/OPS-001] log marlo-dev.log: the auth.otp.code line is INFO, names the unit, the submitted address and the code of the email   ([INFO ] [MARLO] [dev] [OtpMailSender] environment=DEV: auth.otp.code gu=AICCRA to=probe.user@outlook.com code=<code>)
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=00fc18d3e320a165 controller_affected=/marlo-web/otpRequestCode.do: auth.otp.request outcome=sent gu=aiccra domain=outlook.com ms=22
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV: auth.otp.delivery outcome=delivered gu=aiccra domain=outlook.com ms=8
+   [INFO ] [MARLO] [dev] [OtpMailSender] environment=DEV: auth.otp.code gu=AICCRA to=probe.user@outlook.com code=<code>
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=9eec3babe9139b63 controller_affected=/marlo-web/otpVerifyCode.do: auth.otp.verify outcome=mismatch gu=aiccra domain=outlook.com ms=13
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=42cdde7bfc3c9a73 controller_affected=/marlo-web/otpVerifyCode.do: auth.otp.verify outcome=ok gu=aiccra domain=outlook.com ms=36
+  => PASS [AC-11/OPS-001] exactly one auth.otp.request per request call, one auth.otp.verify per verify call, one auth.otp.delivery per mail, and (non-production) one auth.otp.code per mail   ({'request': 1, 'delivery': 1, 'code': 1, 'verify': 2})
+  structured fields present: True
+
+== emaillog: AC-18 / OPS-005 (the code email recorded in email_logs for support, with its body; resend sends nothing)
+  delivered: 1 row(s) above id 18311: {'id': '18312', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': 'Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-15 08:29:22', 'error_email': 'NULL', 'succes_email': '1', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<558 chars>'}
+  => PASS [AC-18] delivered code email: exactly one new email_logs row   (rows=1)
+  => PASS [AC-18] delivered row: succes_email 1, no error, source_action /otpRequestCode, global_unit_id 45, tried 1, the submitted address as recipient, the mail's subject without the non-production prefix, a date   (mail subject '(TESTING ENVIRONMENT) Your MARLO sign-in code', row subject 'Your MARLO sign-in code')
+  => PASS [AC-18] delivered row: message is the HTML part of the sent email with its code and without the non-production header (amended 2026-10-15)   (message 558 chars, equal to the sent HTML minus the header: True)
+  => PASS [AC-18] delivered row: bcc is the support mailbox (non-production), cc, file name, file content and message id stay NULL   (bbc_email is the support mailbox: True)
+  => PASS [AC-18] delivered row: the code is in the message and in no other column, and no other column holds a run of six digits   (code matches={'message': 1} six-digit runs outside message={})
+  => PASS [AC-18] a resend inside the 30 s cooldown answers rateLimited and leaves no second row   (answer=rateLimited rows=1)
+  failed (sink stopped): response {"status":"sent","destination":"p***@outlook.com"} ; 1 row(s) above id 18312: {'id': '18313', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': 'Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-15 08:29:28', 'error_email': 'MailConnectException', 'succes_email': '0', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<558 chars>'}
+  => PASS [AC-18] failed code email: the response is still the neutral one and exactly one new email_logs row exists   (answer=sent rows=1)
+  => PASS [AC-18] failed row: succes_email 0, error_email a bare class name (no address, no space, no SMTP text), the source, the unit, the submitted address as recipient, the support mailbox as bcc, the subject without the prefix   (error_email='MailConnectException')
+  => PASS [AC-18] failed row: the message holds the body with its code and no test header; the code is in no other column and no other column holds a run of six digits (the code never reached the sink)   (code found in the body: True, in {'message': 1})
+  requests that send nothing: {'unknown': 'sent', 'inactive': 'sent', 'non-member': 'sent', 'cgiar-refused': 'sent', 'soft-deleted': 'sent', 'domain not allow-listed': 'domainNotEnabled'} ; email_logs rows written: 0 ; mails at the sink: 0
+  => PASS [AC-18] an ineligible request (5 account states, 1 domain off the allow-list) leaves no email_logs row and no mail   (rows=0)
+  => PASS [AC-18] System Admin -> Emails (emailLogs.do, not sent, source /otpRequestCode) lists the failed code email   (listed ids=['18313', '18308'])
+  sendFailEmail.do on the failed row (id 18313): list by id -> HTTP 200 emails=[] ; resend by id -> HTTP 200 results=[] ; list filtered on the source -> emails=[] ; resend filtered on the source -> results=[]
+  => PASS [AC-18] the failed code email is not selected by id (type 0 lists nothing, type 1 resends nothing)   (list=[] resend=[])
+  => PASS [AC-18] no code email is selected in bulk (the filter of the page, source /otpRequestCode, which does select them in the table)   (list=[] resend=[])
+  => PASS [AC-18] after both resends the code email rows are unchanged (count, succes_email, tried, error, date, message) and no mail reached the sink   (rows/checksum ['8', '3edb131bb4a8976f817f167bb0ac2946'] -> ['8', '3edb131bb4a8976f817f167bb0ac2946'], sink 7 -> 7)
+  control (a failed row of source /probe/control, id 18314): list by id -> ['18314'] ; resend filtered -> ['18314'] ; list filtered -> ['18314']
+  => PASS [AC-18] control: a failed row that is not a code email IS selected by id, in bulk and in the list (so the empty answers above are not a broken request)   ((['18314'], ['18314'], ['18314']))
+
+SUMMARY: 43 checks, 0 failed

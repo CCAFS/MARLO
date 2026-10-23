@@ -226,7 +226,7 @@ The constitutional flow for adding a specificity is documented in `AGENTS.md` §
 
 ### 4.2 Internal Struts routing
 
-- Mapping files: `struts.xml` + per-domain `struts-<area>.xml` (e.g., `struts-projects.xml`, `struts-admin.xml`, `struts-powb.xml`, `struts-annualReport.xml`, `struts-impactPathway.xml`, `struts-fundingSources.xml`, `struts-bi.xml`, `struts-ai.xml`, `struts-qa.xml`, `struts-superadmin.xml`, `struts-publications.xml`, `struts-studies.xml`, `struts-summaries.xml`, `struts-synthesis.xml`, `struts-tip.xml`, `struts-data.xml`, `struts-home.xml`, `struts-json.xml`, `struts-api.xml`, `struts-report.xml`, `struts-center-*.xml`, plus legacy `struts-powb2019.xml` / `struts-annualReport2018.xml`).
+- Mapping files: `struts.xml` + per-domain `struts-<area>.xml` (e.g., `struts-projects.xml`, `struts-admin.xml`, `struts-powb.xml`, `struts-annualReport.xml`, `struts-impactPathway.xml`, `struts-fundingSources.xml`, `struts-bi.xml`, `struts-ai.xml`, `struts-qa.xml`, `struts-superadmin.xml`, `struts-publications.xml`, `struts-studies.xml`, `struts-summaries.xml`, `struts-synthesis.xml`, `struts-tip.xml`, `struts-data.xml`, `struts-home.xml`, `struts-json.xml`, `struts-report.xml`, `struts-center-*.xml`, plus legacy `struts-powb2019.xml` / `struts-annualReport2018.xml`).
 - Critical routing catalog: see `reports/ai-context/struts-critical-routing-catalog.md`.
 
 ### 4.3 Interceptor stacks

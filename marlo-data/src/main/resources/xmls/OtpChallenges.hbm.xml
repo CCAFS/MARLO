@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- CHG-OTP-LOGIN-001-T03. Read mapping of otp_challenges: the rows are written by native statements of
+     OtpChallengeMySQLDAO. The DATETIME columns are UTC wall clocks, read through the private fields. No cache
+     region: the rows are single-use authentication state and must never be served stale. -->
+<hibernate-mapping>
+    <class name="org.cgiar.ccafs.marlo.data.model.OtpChallenge" table="otp_challenges" optimistic-lock="none">
+        <id name="id" type="java.lang.Long">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="nonce" type="string">
+            <column name="nonce" length="32" not-null="true" unique="true" />
+        </property>
+        <property name="emailHmac" type="string">
+            <column name="email_hmac" length="64" not-null="true" />
+        </property>
+        <property name="globalUnitId" type="java.lang.Long">
+            <column name="global_unit_id" not-null="true" />
+        </property>
+        <property name="codeHmac" type="string">
+            <column name="code_hmac" length="64" not-null="true" />
+        </property>
+        <property name="expiresAt" type="java.time.LocalDateTime" access="field">
+            <column name="expires_at" not-null="true" />
+        </property>
+        <property name="attempts" type="int" access="field">
+            <column name="attempts" not-null="true" />
+        </property>
+        <property name="consumedAt" type="java.time.LocalDateTime" access="field">
+            <column name="consumed_at" />
+        </property>
+        <property name="createdAt" type="java.time.LocalDateTime" access="field">
+            <column name="created_at" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

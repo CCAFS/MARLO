@@ -1,0 +1,68 @@
+== standing fixture
+  (standing fixture on unit 45: system_otp_login_active=true, system_otp_excluded_email_domains=excluded.test)
+
+== attempts: AC-6, verify limits (SEC-010), request parameter allow-list (RJ-9)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+  3 wrong then the correct code: ['mismatch', 'mismatch', 'exhausted'] then exhausted
+  => PASS [AC-6] 3rd wrong code says exhausted; the correct code is refused afterwards
+  11 verifies for one email: ['mismatch', 'mismatch', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'exhausted', 'rateLimited']
+  => PASS [AC-14] per-email verify limit: the 11th verify in 15 min is rateLimited
+  52 verifies from one IP with no challenge: {'mismatch': 50, 'rateLimited': 2}
+  => PASS [AC-14] per-IP verify limit (50): the answers beyond 50 are rateLimited   ({'mismatch': 50, 'rateLimited': 2})
+  -- RJ-9: extra request parameters are not bound
+  verify with url/crp/user.email/globalUnit extra: {"status":"ok","redirect":"http:\/\/localhost:8080\/marlo-web\/AICCRA\/crpDashboard.do"}
+  => PASS [RJ-9/T12] email, globalUnitId, agree and code bind through the real package; extra url/crp/user parameters are ignored   ({"status":"ok","redirect":"http:\/\/localhost:8080\/marlo-web\/AICCRA\/crpDashboard.do"})
+
+== removed: AC-9 (the removal MARLO performs is a soft delete: CrpUserMySQLDAO.deleteCrpUser sets is_active = 0)
+  crp_users 5362 set to is_active=0 (soft delete) after the code was issued
+  verify after soft delete: invalid   challenge row (attempts, consumed): [['0', '1']]   dashboard with that session: HTTP 200
+  => PASS [AC-9] soft delete after the request: the correct code answers invalid and the challenge is consumed   (answer=invalid consumed=1)
+  => PASS [AC-9] soft delete after the request: no authenticated session was issued   (pre-auth session authenticated=False)
+  code request for the soft-deleted member: {"status":"sent","destination":"o***@outlook.com"}   (an active member answers {"status":"sent","destination":"o***@outlook.com"})   mails delivered: 0
+  => PASS [AC-9] soft-deleted member: a code request answers the neutral response and no mail is sent   (answer=sent mails=0)
+  (supporting) hard delete of the crp_users row: verify invalid   consumed 1   authenticated False
+  => PASS [AC-9] (supporting) hard delete of the membership row: invalid, consumed, no authenticated session   (answer=invalid consumed=1 auth=False)
+  => PASS [AC-9] (control) the same member, active again, signs in with a new code   (ok)
+
+== limits: AC-14
+  6 requests for one email (cooldown cleared between): ['sent', 'sent', 'sent', 'sent', 'sent', 'rateLimited']   buckets' hits: [['6'], ['5']]
+  => PASS [AC-14] the 6th request in 15 min for one email is rateLimited, the first 5 are sent   (['sent', 'sent', 'sent', 'sent', 'sent', 'rateLimited'])
+  22 requests, 22 different emails, one IP: Counter({'sent': 20, 'rateLimited': 2})
+  => PASS [AC-14] the per-IP limit trips across different emails (21st request)   (first limited at request 21)
+  (control) per-IP bucket is spent: request for a new email -> rateLimited
+
+== nonprod: AC-19 / FN-018 (marlo.production=false: the support mailbox only, the prefix, the header; the row keeps the submitted address)
+  => PASS [AC-19] an eligible request leaves exactly one email at the sink   (1 new message(s))
+  envelope recipients: ['support.probe@sink.test'] ; To header: ['support.probe@sink.test'] ; Cc: None ; Bcc: None ; subject: '(TESTING ENVIRONMENT) [AICCRA] Your MARLO sign-in code'
+  => PASS [AC-19] the only recipient (envelope and To header, no Cc or Bcc) is the support mailbox email.notification
+  => PASS [AC-19] the subject starts with '(TESTING ENVIRONMENT) '   ((TESTING ENVIRONMENT) [AICCRA] Your MARLO sign-in code)
+  => PASS [AC-19] the plain and the HTML part start with a header naming the submitted address   (plain starts 'To: probe.user@outlook.com\n---------------------------------' ; html starts 'To: probe.user@outlook.com<br>------------------------------')
+  => PASS [AC-19] the submitted address received nothing: it is no SMTP recipient and in no To header of any message at the sink   (28 message(s) at the sink, recipients seen: ['support.probe@sink.test'])
+  => PASS [AC-19] the code from the redirected email signs the user in   (ok)
+  email_logs row: {'id': '18332', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': '[AICCRA] Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-15 14:40:19', 'error_email': 'NULL', 'succes_email': '1', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<3833 chars>'}
+  => PASS [AC-19] its email_logs row holds the submitted address in to_email, the support mailbox in bbc_email and the subject without the prefix
+  => PASS [AC-19] its message is the HTML as built for production (the code, no test header)
+
+== postlogin: a refusal AFTER Subject.login (finishLogin INPUT on a Global Unit type with no landing page)
+  fixture (throwaway copy only): global_unit_types 99, unit 9901 PROBEGU whose type has the switch on by catalog default, member otp.p20@outlook.com
+  request -> sent ; verify -> {"status":"failed","redirect":"http:\/\/localhost:8080\/marlo-web\/login.do?authError=cognitoFailed"}
+  session cookie after the answer: set ; authenticated=True ; pre-auth session authenticated=False
+  => PASS [T11-gap] RECORD: answer of the post-login refusal is failed; the authenticated session after it is LEFT BEHIND   ({"status":"failed","redirect":"http:\/\/localhost:8080\/marlo-web\/login.do?authError=cognitoFailed"})
+
+== emaillog: AC-18 / OPS-005 (the code email recorded in email_logs for support, with its body; resend sends nothing)
+  delivered: 1 row(s) above id 18333: {'id': '18334', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': '[AICCRA] Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-15 14:40:26', 'error_email': 'NULL', 'succes_email': '1', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<3833 chars>'}
+  => PASS [AC-18] delivered code email: exactly one new email_logs row   (rows=1)
+  => PASS [AC-18] delivered row: succes_email 1, no error, source_action /otpRequestCode, global_unit_id 45, tried 1, the submitted address as recipient, the mail's subject without the non-production prefix, a date   (mail subject '(TESTING ENVIRONMENT) [AICCRA] Your MARLO sign-in code', row subject '[AICCRA] Your MARLO sign-in code')
+  => PASS [AC-18] delivered row: message is the HTML part of the sent email with its code and without the non-production header (amended 2026-10-15)   (message 3833 chars, equal to the sent HTML minus the header: True)
+  => PASS [AC-18] delivered row: bcc is the support mailbox (non-production), cc, file name, file content and message id stay NULL   (bbc_email is the support mailbox: True)
+  => PASS [AC-18] delivered row: the code is in the message and in no other column, and no other column holds a run of six digits   (code matches={'message': 1} six-digit runs outside message={})
+  => PASS [AC-18] a resend inside the 30 s cooldown answers rateLimited and leaves no second row   (answer=rateLimited rows=1)
+  failed (sink stopped): response {"status":"sent","destination":"p***@outlook.com"} ; 1 row(s) above id 18334: {'id': '18335', 'to_email': 'probe.user@outlook.com', 'cc_email': 'NULL', 'bbc_email': 'support.probe@sink.test', 'subject': '[AICCRA] Your MARLO sign-in code', 'tried': '1', 'date_email': '2026-10-15 14:40:32', 'error_email': 'MailConnectException', 'succes_email': '0', 'global_unit_id': '45', 'source_action': '/otpRequestCode', 'message': '<3833 chars>'}
+  => PASS [AC-18] failed code email: the response is still the neutral one and exactly one new email_logs row exists   (answer=sent rows=1)
+  => PASS [AC-18] failed row: succes_email 0, error_email a bare class name (no address, no space, no SMTP text), the source, the unit, the submitted address as recipient, the support mailbox as bcc, the subject without the prefix   (error_email='MailConnectException')
+  => PASS [AC-18] failed row: the message holds the body with its code and no test header; the code is in no other column and no other column holds a run of six digits (the code never reached the sink)   (code found in the body: True, in {'message': 1})
+  requests that send nothing: {'unknown': 'sent', 'inactive': 'sent', 'non-member': 'sent', 'soft-deleted': 'sent', 'unregistered domain, not excluded': 'sent', 'excluded domain': 'domainNotEnabled'} ; email_logs rows written: 0 ; mails at the sink: 0
+  => PASS [AC-18] an ineligible request (4 account states, an unregistered address, 1 excluded domain) leaves no email_logs row and no mail   (rows=0)
+  resend: NOT RUN (no PROBE_SA_*); covered by SendFailEmailActionTest
+
+SUMMARY: 30 checks, 0 failed; 1 NOT RUN (neither pass nor fail): [AC-18] System Admin -> Emails lists the failed row; resend by id and in bulk sends nothing

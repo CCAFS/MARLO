@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 
 /**
  * Tests for {@link ProjectDescriptionAction}, one section per concern.
@@ -220,5 +222,60 @@ public class ProjectDescriptionActionTest {
 
     assertEquals(0, ProjectDescriptionAction.LIAISON_COMPONENT_ORDER.compare(regional, partner));
     assertEquals(0, ProjectDescriptionAction.LIAISON_COMPONENT_ORDER.compare(partner, noProgram));
+  }
+
+  // Liaison of the project institution: the option the select adds when the specificity
+  // crp_ppa_enable_project_description is off
+
+  private LiaisonInstitution institutionLiaison(Long institutionId, boolean active) {
+    LiaisonInstitution liaison = new LiaisonInstitution();
+    if (institutionId != null) {
+      Institution institution = new Institution();
+      institution.setId(institutionId);
+      liaison.setInstitution(institution);
+    }
+    liaison.setActive(active);
+    return liaison;
+  }
+
+  @Test
+  public void liaisonForInstitutionReturnsTheActiveMatch() {
+    LiaisonInstitution match = this.institutionLiaison(1500L, true);
+    List<LiaisonInstitution> liaisons = Arrays.asList(this.institutionLiaison(7L, true), match);
+
+    // An id above 127 is not a cached Long, so the comparison must be by value
+    assertSame(match, ProjectDescriptionAction.findLiaisonForInstitution(liaisons, Long.valueOf(1500L)).get());
+  }
+
+  @Test
+  public void liaisonForInstitutionIsEmptyWhenNoActiveLiaisonRepresentsIt() {
+    // Before, this case took get(0) of an empty list and failed the page with IndexOutOfBoundsException
+    List<LiaisonInstitution> liaisons =
+      Arrays.asList(this.institutionLiaison(1500L, false), this.institutionLiaison(7L, true));
+
+    assertFalse(ProjectDescriptionAction.findLiaisonForInstitution(liaisons, 1500L).isPresent());
+  }
+
+  @Test
+  public void liaisonForInstitutionSkipsComponentsAndNullEntries() {
+    LiaisonInstitution match = this.institutionLiaison(1500L, true);
+    List<LiaisonInstitution> liaisons = Arrays.asList(null, this.institutionLiaison(null, true), match);
+
+    assertSame(match, ProjectDescriptionAction.findLiaisonForInstitution(liaisons, 1500L).get());
+  }
+
+  @Test
+  public void liaisonForInstitutionIsEmptyWithoutListOrId() {
+    assertFalse(ProjectDescriptionAction.findLiaisonForInstitution(null, 1500L).isPresent());
+    assertFalse(ProjectDescriptionAction
+      .findLiaisonForInstitution(Arrays.asList(this.institutionLiaison(1500L, true)), null).isPresent());
+  }
+
+  @Test
+  public void liaisonForInstitutionKeepsTheFirstMatchInOrder() {
+    LiaisonInstitution first = this.institutionLiaison(1500L, true);
+    List<LiaisonInstitution> liaisons = Arrays.asList(first, this.institutionLiaison(1500L, true));
+
+    assertSame(first, ProjectDescriptionAction.findLiaisonForInstitution(liaisons, 1500L).get());
   }
 }

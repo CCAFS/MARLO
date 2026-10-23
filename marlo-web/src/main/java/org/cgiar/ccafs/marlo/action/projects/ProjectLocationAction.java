@@ -185,6 +185,20 @@ public class ProjectLocationAction extends BaseAction {
     return locations;
   }
 
+  /**
+   * Finds the active location of the project, in the actual phase, for the given element. The ids are compared by
+   * value: most location element ids are above 127, where == compares two Long objects.
+   *
+   * @param locElement the location element.
+   * @return the location, or null when the project has no active location for that element.
+   */
+  private ProjectLocation getActiveDBLocation(LocElement locElement) {
+    return this.getDBLocations().stream()
+      .filter(pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() != null
+        && pl.getLocElement().getId().equals(locElement.getId()))
+      .findFirst().orElse(null);
+  }
+
   public List<LocationLevel> getLocationsLevels() {
     return locationsLevels;
   }
@@ -1141,10 +1155,11 @@ public class ProjectLocationAction extends BaseAction {
       if (!project.getLocationsData().contains(countryLocationLevel)) {
         for (LocElement locElement : countryLocationLevel.getLocElements()) {
           if (locElement != null) {
-            ProjectLocation projectLocation = this.getDBLocations().stream()
-              .filter(
-                pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == locElement.getId())
-              .collect(Collectors.toList()).get(0);
+            ProjectLocation projectLocation = this.getActiveDBLocation(locElement);
+            // Nothing to delete when the project has no active location for the element
+            if (projectLocation == null) {
+              continue;
+            }
 
           if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType().getId()
             .longValue() == 2) {
@@ -1175,9 +1190,10 @@ public class ProjectLocationAction extends BaseAction {
             for (LocElement element : locElements) {
               if (locationData.getLocElements() != null) {
                 if (!locationData.getLocElements().contains(element)) {
-                  ProjectLocation projectLocation = this.getDBLocations().stream().filter(
-                    pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == element.getId())
-                    .collect(Collectors.toList()).get(0);
+                  ProjectLocation projectLocation = this.getActiveDBLocation(element);
+                  if (projectLocation == null) {
+                    continue;
+                  }
                   if (locElementManager.getLocElementById(projectLocation.getLocElement().getId()).getLocElementType()
                     .getId().longValue() == 2) {
                     if (project.getCountryFS().stream()
@@ -1192,11 +1208,10 @@ public class ProjectLocationAction extends BaseAction {
                   }
                 }
               } else {
-                ProjectLocation projectLocation = this.getDBLocations().stream()
-                  .filter(
-                    pl -> pl.isActive() && pl.getLocElement() != null && pl.getLocElement().getId() == element.getId())
-                  .collect(Collectors.toList()).get(0);
-                projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                ProjectLocation projectLocation = this.getActiveDBLocation(element);
+                if (projectLocation != null) {
+                  projectLocationManager.deleteProjectLocation(projectLocation.getId());
+                }
               }
 
             }
@@ -1394,7 +1409,7 @@ public class ProjectLocationAction extends BaseAction {
 
             projectLocationSave.setLocElement(locElement);
           } else {
-            LOG.error("ERROR: projectLocation.getLocElementId() es NULL");
+            LOG.error("The project location has no location element id, so it is saved without an element");
           }
         } else {
           if (projectLocation.getLocElementTypeId() != null) {
@@ -1403,7 +1418,7 @@ public class ProjectLocationAction extends BaseAction {
 
             projectLocationSave.setLocElementType(elementType);
           } else {
-            LOG.error("ERROR: projectLocation.getLocElementTypeId() es NULL en scope");
+            LOG.error("The scope project location has no location element type id, so it is saved without a type");
           }
         }
 
