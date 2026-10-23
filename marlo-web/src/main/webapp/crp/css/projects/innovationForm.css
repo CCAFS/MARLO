@@ -1,0 +1,2028 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster innovation form (A2-2613 redesign).
+ *
+ * projectInnovation.ftl reuses the deliverable form redesign (deliverableForm.css, .dlf):
+ * header chips, title, notes, tabs, section cards, customForm fields and the save bar.
+ * This file only carries what the innovation form adds, scoped under .inf, at a weight
+ * that beats the legacy projectInnovations.css loaded before it.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.dlf.inf [hidden] { display: none !important; }
+
+/* ---------- Header ---------- */
+
+.dlf .inf-chip--bundle {
+  padding: 0 9px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 999px;
+  background: var(--dlf-info-bg);
+  color: var(--dlf-brand-dark);
+}
+
+/* projectInnovations.css pins .generalInnovationsOptions to the corner as a column of blue buttons. */
+.dlf .inf-head__actions.generalInnovationsOptions {
+  position: static;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 0;
+}
+.dlf .inf-head__actions .inf-headBtn {
+  position: static;
+  top: auto;
+  width: auto;
+  height: 34px;
+  padding: 0 12px;
+  justify-content: center;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  color: var(--dlf-ink);
+}
+.dlf .inf-head__actions #modalCounterShared { width: auto; color: var(--dlf-ink-soft); }
+.dlf .inf-head__actions #modalCounterShared.is-on { color: #fff; }
+.dlf .inf-headBtn:hover,
+.dlf .inf-headBtn:focus { border-color: var(--dlf-brand); color: var(--dlf-brand-dark); }
+.dlf .inf-headBtn__count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--dlf-chip);
+  color: var(--dlf-ink-soft);
+  font: 700 11px/18px Figtree, sans-serif;
+  text-align: center;
+}
+.dlf .inf-headBtn__count.is-on { background: var(--dlf-brand); color: #fff; }
+/* projectInnovations.js paints the copied state inline; the design's copied state is the soft green. */
+.dlf .inf-headBtn.copyButton[style*="background-color"] {
+  border-color: var(--dlf-ok-border) !important;
+  background-color: var(--dlf-ok-bg) !important;
+  color: var(--dlf-ok) !important;
+}
+.dlf .inf-head__actions .urlInput,
+.dlf .inf-head__actions .input { display: none; }
+
+/* ---------- Annual Report year + PRMS ---------- */
+
+.dlf .inf-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 0;
+  padding: 0;
+}
+.dlf .inf-strip__year {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 18px;
+  border-right: 1px solid var(--dlf-line-soft);
+}
+.dlf .inf-strip__year .form-group { margin: 0; }
+.dlf .inf-strip__year label { margin-bottom: 6px; }
+.dlf .inf-strip__year select.form-control {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 38px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 12px center no-repeat;
+  box-shadow: none;
+  font: 500 14px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-strip__year select.form-control:focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-strip__hint:empty { display: none; }
+.dlf .inf-strip__prms { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 18px; }
+.dlf .inf-strip__logo { flex: none; width: 40px; height: 40px; padding: 4px; border: 1px solid var(--dlf-line); border-radius: 8px; object-fit: contain; }
+.dlf .inf-strip__prmsText { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 2px; }
+.dlf .inf-strip__eyebrow { font: 600 11px Figtree, sans-serif; letter-spacing: .09em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .inf-strip__count { font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-strip__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid #E0E5EB;
+  border-radius: 999px;
+  background: #F1F3F6;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-strip__statusDot { width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-subtle); }
+/* projectInnovations.css pins .btnPRMSInnovations to the card corner as a filled button. */
+.dlf .inf-strip__map.btnPRMSInnovations {
+  position: static;
+  height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--dlf-brand);
+  border-radius: var(--dlf-radius-sm);
+  background: #fff;
+  color: var(--dlf-brand);
+}
+.dlf .inf-strip__map:hover,
+.dlf .inf-strip__map:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+
+/* ---------- Read-only note ---------- */
+
+.dlf .inf-readOnly {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px 11px 16px;
+  border: 1px solid #E0E5EB;
+  border-radius: var(--dlf-radius);
+  background: #F7F9FB;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-readOnly__text { flex: 1; font: 500 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-readOnly__edit { height: 32px; background: var(--dlf-brand); color: #fff; text-decoration: none; }
+.dlf .inf-readOnly__edit:hover,
+.dlf .inf-readOnly__edit:focus { background: var(--dlf-brand-dark); color: #fff; text-decoration: none; }
+
+/* ---------- Tabs: equal widths, a check or the missing-fields pill ---------- */
+
+/* projectInnovations.js sets an inline width on each tab; the row shares itself out instead (33% / 25%). */
+.dlf .inf-tabs > .nav-tabs { gap: 0; align-items: stretch; }
+.dlf .inf-tabs > .nav-tabs > li { display: flex; flex: 1 1 0; min-width: 0; width: auto !important; }
+.dlf .inf-tabs > .nav-tabs > li > a { flex: 1; }
+.dlf .inf-tabs > .nav-tabs > li > a {
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  height: 100%;
+  padding: 6px 12px !important; /* projectInnovations.css keeps 28px on the right for the old status icon */
+  border-radius: 8px 8px 0 0;
+}
+.dlf .inf-tabs > .nav-tabs > li > a:hover { background: #F7FAFC; }
+/* A long label (5 tabs in AICCRA, narrow screens) wraps instead of being cut; the tabs keep one height */
+.dlf .inf-tab__label { min-width: 0; line-height: 1.3; text-align: center; white-space: normal; overflow-wrap: anywhere; }
+.dlf .inf-tab__ok { color: var(--dlf-ok); }
+.dlf .inf-tab__missing {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 999px;
+  background: var(--dlf-warn-bg);
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .inf-tab__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dlf-warn-dot); }
+/* projectInnovations.css paints the legacy submitted / toSubmit tab states. */
+.dlf .inf-tabs > .nav-tabs > li.submitted > a,
+.dlf .inf-tabs > .nav-tabs > li.toSubmit > a { background-image: none; }
+.dlf .inf-tabs > .nav-tabs > li.submitted > a::after,
+.dlf .inf-tabs > .nav-tabs > li.toSubmit > a::after,
+.dlf .inf-tabs > .nav-tabs > li.submitted::after,
+.dlf .inf-tabs > .nav-tabs > li.toSubmit::after { display: none; content: none; }
+
+@media (max-width: 767px) {
+  .dlf .inf-strip { grid-template-columns: minmax(0, 1fr); }
+  .dlf .inf-strip__year { border-right: 0; border-bottom: 1px solid var(--dlf-line-soft); }
+  .dlf .inf-tabs > .nav-tabs { overflow-x: auto; }
+  .dlf .inf-tabs > .nav-tabs > li { flex: 1 0 auto; }
+}
+
+/* Webinar note: the presentation link sits at the note's end */
+.dlf .inf-webinar { flex: none; align-self: center; text-decoration: none; }
+.dlf .inf-webinar:hover,
+.dlf .inf-webinar:focus { text-decoration: none; }
+
+/* ══════════ General Information ══════════ */
+
+.dlf .inf-general .inf-card__lead { margin: -10px 0 0; }
+.dlf .dlf-note--compact { padding: 9px 12px; border-radius: 9px; }
+.dlf .dlf-note--compact .dlf-note__icon { width: 18px; height: 18px; font-size: 11px; }
+.dlf .dlf-note--compact .dlf-note__text { font-size: 13px; }
+.dlf .inf-general .form-group { margin-bottom: 0; }
+/* The legacy grid columns inside the cards (col-md-*) lay out as plain blocks. */
+.dlf .inf-general .dlf-card [class*="col-md-"]:not(.radioFlat-flex):not(.checkbox-list-item) { float: none; width: auto; padding-left: 0; padding-right: 0; }
+.dlf .inf-general .note--2 { margin: 2px 0 0; padding: 0; border: 0; background: none; }
+.dlf .inf-general .note--2 p { margin: 0; font: 400 12.5px/1.5 Figtree, sans-serif; font-style: normal; color: var(--dlf-muted); }
+
+/* ---- Question row: text on the left, a segmented answer on the right (Innovation/Bundle, specify countries) ---- */
+.dlf .inf-question {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-question--inline { align-items: center; margin-top: 12px; padding: 10px 14px; }
+.dlf .inf-question__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; padding-top: 4px; }
+.dlf .inf-question--inline .inf-question__text { padding-top: 0; }
+.dlf .inf-question__label { font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-question__label .requiredTag { margin-left: 4px; color: var(--dlf-required); }
+.dlf .inf-question__ask { margin-left: 6px; font-weight: 400; font-size: 13px; color: var(--dlf-ink-soft); }
+
+/* radioFlat (customForm) drawn as the design's segmented control: the radio stays in the form, the label is the pill. */
+.dlf .inf-segmented {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--dlf-chip);
+}
+.dlf .inf-segmented .radioFlat-flex,
+.dlf .inf-segmented .feedback-flex-items { display: contents; }
+.dlf .inf-segmented .radioFlat { position: relative; display: block; margin: 0; padding: 0; }
+.dlf .inf-segmented .radioFlat input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-segmented .radioFlat label {
+  display: block;
+  height: 30px;
+  margin: 0;
+  padding: 0 14px;
+  border-radius: 7px;
+  font: 500 13.5px/30px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.dlf .inf-segmented .radioFlat label::before,
+.dlf .inf-segmented .radioFlat label::after { display: none !important; }
+.dlf .inf-segmented .radioFlat input:checked + label { background: #fff; color: var(--dlf-ink); font-weight: 600; box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+.dlf .inf-segmented .radioFlat input:focus-visible + label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-segmented .commentNumberContainer { display: none; }
+/* Read-only: customForm prints the chosen answer only. */
+.dlf .inf-segmented > p,
+.dlf .inf-segmented .radioFlat > p { margin: 0; padding: 0 10px; font: 600 13.5px/30px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ---- "Other" free texts under a select ---- */
+.dlf .inf-other { margin-top: 10px; padding: 12px; border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface-alt); }
+
+/* ---- PRMS equivalence line under Innovation type ---- */
+.dlf .inf-prmsLine { margin-top: 8px; }
+.dlf .inf-prmsLine p {
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: #F7F9FB;
+  font: 400 12.5px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-prmsLine p .dlf-icon { margin-top: 2px; color: var(--dlf-muted); }
+.dlf .inf-prmsLine b { font-weight: 600; color: var(--dlf-ink); }
+.dlf .inf-prmsLine i { font-style: normal; }
+
+/* ---- Geographic scope: radio cards ---- */
+.dlf .inf-radioCards { display: flex; flex-wrap: wrap; gap: 8px; }
+.dlf .inf-radioCards .radioFlat-flex { float: none; width: auto; margin: 0 !important; padding: 0; }
+.dlf .inf-radioCards .feedback-flex-items:empty { display: none; }
+.dlf .inf-radioCards .radioFlat { position: relative; display: block; margin: 0; padding: 0; }
+.dlf .inf-radioCards .radioFlat input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-radioCards .radioFlat label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px 0 11px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-radioCards .radioFlat label::after { display: none !important; }
+.dlf .inf-radioCards .radioFlat label::before {
+  content: "" !important;
+  position: static !important;
+  flex: none;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--dlf-line-strong) !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.dlf .inf-radioCards .radioFlat label:hover { border-color: var(--dlf-brand); }
+.dlf .inf-radioCards .radioFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); font-weight: 600; }
+.dlf .inf-radioCards .radioFlat input:checked + label::before { border-color: var(--dlf-brand) !important; background: radial-gradient(circle, var(--dlf-brand) 0 4px, #fff 4.5px) !important; }
+.dlf .inf-radioCards .radioFlat input:focus-visible + label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-radioCards .commentNumberContainer { display: none; }
+.dlf .inf-radioCards > p,
+.dlf .inf-radioCards .radioFlat > p { margin: 0; font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-general .geographicScopeMessage,
+.dlf .inf-general .nationalBlock,
+.dlf .inf-general .regionalBlock { margin-top: 14px; }
+.dlf .inf-general .geographicScopeMessage label,
+.dlf .inf-general .block-hasSpecifiedOutputCountries > label { font-weight: 400; color: var(--dlf-ink-soft); }
+.dlf .inf-general .block-hasSpecifiedOutputCountries { margin-top: 12px; }
+
+/* ---- Contributing external partners: handle | number | name, the roles under the name ----
+   The deliverable list row (deliverableForm.css) is a flex row that hides .sortElement; it is restated here at a
+   higher weight (.inf-externals .panel.tertiary ...). */
+.dlf .inf-externals ul.list { counter-reset: inf-ext; }
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement {
+  display: grid;
+  grid-template-columns: 20px 22px minmax(0, 1fr);
+  grid-template-areas: "handle n name" "handle n roles";
+  column-gap: 10px;
+  row-gap: 8px;
+  align-items: start;
+  padding: 10px 40px 10px 6px;
+  counter-increment: inf-ext;
+}
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement::before {
+  content: counter(inf-ext);
+  grid-area: n;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 700 11px/22px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  text-align: center;
+}
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement > .sortElement {
+  display: block !important;
+  grid-area: handle;
+  position: static;
+  float: none;
+  width: 20px;
+  height: 22px;
+  margin: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='16' viewBox='0 0 10 16' fill='%239AA4B0'%3E%3Ccircle cx='3' cy='3' r='1.3'/%3E%3Ccircle cx='7' cy='3' r='1.3'/%3E%3Ccircle cx='3' cy='8' r='1.3'/%3E%3Ccircle cx='7' cy='8' r='1.3'/%3E%3Ccircle cx='3' cy='13' r='1.3'/%3E%3Ccircle cx='7' cy='13' r='1.3'/%3E%3C/svg%3E") center no-repeat;
+  cursor: grab;
+}
+.dlf .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+/* projectInnovations.css pins .innovationTabs .col-md-* widths with !important. */
+/* projectInnovations.css also gives .innovationTabs .col-md-4 a 15px bottom margin, under the partner name. */
+.dlf .dlf-card .inf-externals li.relationElement > span[class*="col-"] { float: none; width: auto !important; min-height: 0; margin: 0; padding: 0; }
+.dlf .dlf-card .inf-externals li.relationElement > span[class*="col-"]:first-of-type { grid-area: name; }
+.dlf .dlf-card .inf-externals li.relationElement > span[class*="col-"]:last-of-type { grid-area: roles; }
+.dlf .inf-externals li.relationElement > span > strong { display: none; }
+.dlf .inf-externals li.relationElement .elementName { margin: 0; font: 600 13.5px/22px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-externals li.relationElement > span > p:empty { display: none; }
+.dlf .inf-externals .checkbox-list { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0; }
+.dlf .inf-externals .checkbox-list > strong.col-md-12 { display: inline; flex: none; width: auto !important; margin-right: 2px; padding: 0; font: 600 12px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .dlf-card .inf-externals .checkbox-list > .checkbox-list-item { flex: none; float: none; width: auto !important; min-height: 0; margin: 0; padding: 0; }
+.dlf .inf-externals .inputsFlat { position: relative; margin: 0; padding: 0; }
+.dlf .inf-externals .inputsFlat input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-externals .inputsFlat label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 7px;
+  background: #fff;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .inf-externals .inputsFlat label::after { display: none !important; }
+.dlf .inf-externals .inputsFlat label::before {
+  content: "" !important;
+  position: static !important;
+  flex: none;
+  width: 13px !important;
+  height: 13px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--dlf-line-strong) !important;
+  border-radius: 3px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.dlf .inf-externals .inputsFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-externals .inputsFlat input:checked + label::before {
+  border-color: var(--dlf-brand) !important;
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat !important;
+}
+.dlf .inf-externals .inputsFlat label .commentNumberContainer { display: none; }
+/* sortableList.js instructions: replaced by the sort hint the script adds to the help text. */
+.dlf .inf-externals .sortableInstructions { display: none !important; }
+.dlf .inf-externals .inf-sortHint { display: inline; }
+
+@media (max-width: 767px) {
+  .dlf .inf-question { flex-direction: column; }
+}
+
+/* Layout fixes over global.css: radioFlat wrappers are full-width blocks, select--flex puts the label beside the
+   control, and the role chips keep their Bootstrap column widths. */
+.dlf .inf-radioCards > .feedback-flex-items,
+.dlf .inf-radioCards > .commentNumberContainer { display: none; }
+.dlf .inf-radioCards > .fieldReference.radioFlat { flex: none; width: auto; float: none; }
+.dlf .inf-general .select.select--flex { display: block; }
+.dlf .inf-general .select.select--flex > label { display: block; width: auto; margin-bottom: 6px; }
+.dlf .inf-general .select.select--flex > label br { display: none; }
+.dlf .inf-general .countriesControlStyle .select2-selection__rendered { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 6px; }
+.dlf .inf-general .countriesControlStyle .select2-container { margin: 0 !important; }
+/* global.css pins every .fieldReference to width: 100% !important, which stretches each radio card to the row. */
+.dlf .inf-radioCards > .fieldReference.radioFlat,
+.dlf .inf-segmented .fieldReference.radioFlat { width: auto !important; }
+
+/* ---- Read-only: the list components keep their add, remove and sort controls; the form shows only the answers ---- */
+.dlf.inf.is-readonly .elementsListComponent .removeElement,
+.dlf.inf.is-readonly .elementsListComponent .sortElement,
+.dlf.inf.is-readonly .elementsListComponent .panel-body > .select2-container,
+.dlf.inf.is-readonly .elementsListComponent .panel-body > select,
+.dlf.inf.is-readonly .elementsListComponent .select2-container,
+.dlf.inf.is-readonly .inf-externals .checkbox-list-item:not(:has(input:checked)) { display: none !important; }
+.dlf.inf.is-readonly .dlf-card .elementsListComponent li.relationElement { padding-right: 12px; }
+.dlf.inf.is-readonly .inf-externals li.relationElement { grid-template-columns: 22px minmax(0, 1fr); grid-template-areas: "n name" "n roles"; }
+.dlf.inf.is-readonly .inf-externals .inputsFlat label { pointer-events: none; }
+.dlf.inf.is-readonly .inf-externals .checkbox-list:not(:has(input:checked)),
+.dlf.inf.is-readonly .listindicators > .dlf-link { display: none !important; }
+
+/* ---- Review fixes (A2-2613) ---- */
+
+/* Hidden feedback holders (feedback-flex-items) take a flex gap while empty. */
+.dlf .inf-general .feedback-flex-items:empty { display: none; }
+
+/* Innovation/Bundle: the question box with its note row */
+.dlf .inf-questionBox { border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface-alt); overflow: hidden; }
+.dlf .inf-questionBox > .inf-question { align-items: center; border: 0; border-radius: 0; background: none; }
+.dlf .inf-questionBox .inf-question__text { padding-top: 0; }
+.dlf .inf-questionBox__note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--dlf-line);
+  background: #fff;
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
+.dlf .inf-questionBox__note .dlf-icon { color: var(--dlf-brand); }
+
+/* PRMS line: projectInnovations.js shows the line of the selected type with display: block */
+.dlf .inf-prmsLine p[style*="block"] { display: flex !important; }
+
+/* Geographic scope: field labels above their control, as in the deliverable form */
+.dlf .inf-fieldLabel { display: block; margin: -8px 0 8px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf #dlf-geographicScope .geographicScopeInput { display: flex; flex-direction: column; gap: 16px; margin-top: -10px; }
+.dlf #dlf-geographicScope .geographicScopeMessage,
+.dlf #dlf-geographicScope .nationalBlock,
+.dlf #dlf-geographicScope .regionalBlock,
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { margin: 0; }
+.dlf #dlf-geographicScope .geographicScopeMessage label { margin: 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf #dlf-geographicScope .regionalBlock { display: flex; flex-direction: column; gap: 14px; }
+.dlf #dlf-geographicScope .regionalBlock .inf-question--inline { margin: 20px 0 0; }
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { margin-top: 16px; }
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { display: flex; flex-direction: column; gap: 8px; }
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries > label { margin: 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf #dlf-geographicScope .select > label { margin: 0 0 8px; }
+/* projectInnovations.js dynamicMarginToSelectedRender pushes the chosen countries under the field with a margin */
+.dlf #dlf-geographicScope .select2-selection--multiple { margin-bottom: 0 !important; }
+/* The regional countries field drawn like the national one (deliverableForm.css .nationalBlock) */
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-container--default .select2-selection--multiple { min-height: 40px; padding: 6px; cursor: text; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-selection__rendered { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-container--default .select2-selection--multiple .select2-selection__choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  margin: 0;
+  padding: 0 4px 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice > span:not(.select2-selection__choice__remove) { display: inline-flex; align-items: center; gap: 7px; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice .flag-icon { flex: none; width: 20px; height: 14px; border-radius: 2px; background-size: cover; box-shadow: 0 0 0 1px rgba(31, 42, 55, .12); }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice__remove {
+  order: 2;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border-radius: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%234B5563' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  font-size: 0;
+  cursor: pointer;
+}
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection__choice__remove:hover { background-color: #DDE5EC; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-search--inline { flex: 1 1 150px; min-width: 150px; }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-search__field { width: 100% !important; height: 28px; margin: 0; padding: 0 6px; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-card .block-hasSpecifiedOutputCountries .select2-selection--multiple .select2-search__field::placeholder { color: var(--dlf-brand); opacity: 1; }
+
+/* Lead Centers: the design's building icon, the name centred on the row */
+.dlf .dlf-card .inf-leads .panel.tertiary .panel-body > ul.list > li.relationElement { align-items: center; padding-left: 8px; }
+.dlf .dlf-card .inf-leads .panel.tertiary .panel-body > ul.list > li.relationElement::before {
+  content: "";
+  order: 0;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 7px;
+  background: var(--dlf-info-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M2.4 13.6h11.2M3.6 13.6V6.4L8 3.2l4.4 3.2v7.2M6.6 13.6v-3.2h2.8v3.2' stroke='%230277A2' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+
+/* Performance indicators: the code pill as in the deliverable form */
+.dlf .dlf-card .inf-indicators .panel.tertiary .panel-body > ul.list > li.relationElement > .dlf-code { order: 0; }
+.dlf .inf-count { margin-left: 6px; font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+
+/* Responsible institution: three columns of name-only person cards; the helper paragraphs keep a tight rhythm */
+.dlf .inf-general #addPartnerText p { margin: 0 0 4px; }
+.dlf .inf-general #addPartnerText p:last-of-type { margin-bottom: 0; }
+/* The help's <p> swallows the "here" link; the browser leaves a second, empty anchor after the paragraph. */
+.dlf .inf-general #addPartnerText > p ~ a { display: none; }
+.dlf .inf-general #dlf-partners .usersBlock { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 6px; }
+.dlf .inf-general #dlf-partners .usersBlock .deliverableUserItem { width: auto !important; grid-template-rows: auto; min-height: 40px; padding: 6px 9px; }
+.dlf .inf-general #dlf-partners .usersBlock .deliverableUserItem::before { grid-row: 1; width: 26px; height: 26px; }
+.dlf .inf-general #dlf-partners .usersBlock .deliverableUserItem::after { display: none; }
+.dlf .inf-general #dlf-partners .deliverableUserItem label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dlf .inf-contacts { display: block; margin: 10px 0 0; font: 600 12px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .inf-contacts__count { font-weight: 400; color: var(--dlf-muted); }
+@media (max-width: 991px) {
+  .dlf .inf-general #dlf-partners .usersBlock { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---- Value chain(s) (A2-2613): checkbox chips, an "or", then the exclusive "Not value-chain specific" ---- */
+.dlf .inf-vc { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-vc__head { display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-card .inf-vc__head > .inf-vc__label { margin: 0; }
+.dlf .inf-vc__head > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-vc__help { margin: -2px 0 0; }
+.dlf .inf-vc__group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+/* fieldsValidation.js marks the group label when the value chains are missing */
+.dlf .inf-vc:has(.inf-vc__error:not([hidden])) .inf-vc__group { border-color: var(--dlf-required); background: #FFF8F6; }
+.dlf .inf-vc__error { display: flex; align-items: center; gap: 6px; margin: 0; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-required); }
+.dlf .dlf-card label.inf-vcChip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-vcChip input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-vcChip__box {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--dlf-line-strong);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .inf-vcChip--exclusive .inf-vcChip__box { border-radius: 50%; }
+.dlf .dlf-card label.inf-vcChip:hover { border-color: var(--dlf-brand); }
+.dlf .dlf-card label.inf-vcChip.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-vcChip.is-on .inf-vcChip__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-vcChip--exclusive.is-on .inf-vcChip__box { background: radial-gradient(circle, var(--dlf-brand) 0 3px, #fff 3.5px); }
+.dlf .dlf-card label.inf-vcChip.is-disabled { border-color: var(--dlf-line); background: #F7F9FB; color: var(--dlf-subtle); cursor: not-allowed; }
+.dlf .inf-vcChip.is-disabled .inf-vcChip__box { border-color: var(--dlf-line); background: #F1F3F6; }
+.dlf .inf-vcChip input:focus-visible + .inf-vcChip__box { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-vc__or {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 4px;
+  font: 500 12px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+.dlf .inf-vc__or::before { content: ""; width: 1px; height: 24px; background: #DDE3EA; }
+.dlf .inf-vc__note { margin: 0; font: 400 12px Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .inf-vc__readOnly { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.dlf .inf-vc__value { display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; background: var(--dlf-chip); font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-vc__empty { font: 400 14px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-vc > .inf-other { margin-top: 0; }
+
+/* ==== Cross-cutting alignment (A2-2613) ==== */
+/* ---- SDGs: the selected goals as numbered tiles in two columns ---- */
+.dlf .dlf-card .inf-sdgs .elementsListComponent ul.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.dlf .dlf-card .inf-sdgs .elementsListComponent ul.list:empty { display: none; }
+.dlf .dlf-card .inf-sdgs .panel.tertiary .panel-body > ul.list > li.inf-sdgItem { align-items: center; gap: 12px; padding: 6px 8px 6px 6px; }
+.dlf .dlf-card .inf-sdgs .panel.tertiary .panel-body > ul.list > li.inf-sdgItem > .removeElement { align-self: center; }
+/* The goal's official SVG icon (projectInnovations.js) */
+.dlf .dlf-card .inf-sdgs li.relationElement > .sdgImage { order: 0; flex: none; display: block; width: 44px; height: 44px; margin: 0; border-radius: 6px; }
+.dlf .dlf-card .inf-sdgs li.inf-sdgItem > .elementName { display: flex !important; flex-direction: column; }
+.dlf .inf-sdgItem__goal { font: 600 11px Figtree, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .inf-sdgItem__name { font: 600 13.5px/1.35 Figtree, sans-serif; color: var(--dlf-ink); }
+@media (max-width: 767px) {
+  .dlf .dlf-card .inf-sdgs .elementsListComponent ul.list { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Impact Area scores ---- */
+.dlf .inf-ia { display: flex; flex-direction: column; gap: 12px; }
+.dlf .inf-ia > .dlf-card__title { margin-bottom: 0; }
+.dlf .inf-iaGuide { align-items: flex-start; }
+.dlf .inf-iaGuide__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-iaGuide__body { padding-top: 10px; border-top: 1px solid #DCEEF6; font: 400 13px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-iaGuide__body p { margin: 0 0 8px; text-wrap: pretty; }
+.dlf .inf-iaGuide__body strong { font-weight: 600; }
+.dlf .inf-iaGuide__body ul { margin: -2px 0 0; padding-left: 18px; }
+.dlf .inf-iaGuide__body li { margin-bottom: 3px; }
+.dlf .inf-iaGuide__toggle {
+  flex: none;
+  height: 26px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .inf-iaGuide__toggle:hover { background: var(--dlf-info-hover); }
+.dlf .inf-iaGuide__toggle:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-iaWarn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 8px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-iaWarn[hidden] { display: none; }
+.dlf .inf-iaWarn::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+
+.dlf .inf-iaRow { display: flex; flex-direction: column; border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface-alt); }
+/* fieldsValidation.js marks the radios of a missing score; the row stays red until a score is chosen */
+.dlf .inf-iaRow:has(.radioFlat .fieldError):not(:has(input[type="radio"]:checked)) { border-color: var(--dlf-required); }
+.dlf .inf-iaRow__main { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 10px 14px; }
+.dlf .inf-iaRow__label { flex: 1; min-width: 220px; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-iaRow__label .requiredTag,
+.dlf .inf-iaRow__label .red { margin-left: 4px; }
+/* The score number before each answer, from the catalog id (1 = 0, 2 = 1, 3 = 2) */
+.dlf .inf-iaScore .radioFlat label { display: flex; align-items: center; gap: 7px; padding: 0 12px; }
+.dlf .inf-segmented.inf-iaScore .radioFlat label::before {
+  display: flex !important;
+  position: static;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 9px;
+  background: #DDE3EA;
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  box-shadow: none !important; /* the legacy radio draws its inner ring with an inset shadow */
+  transform: none;
+}
+.dlf .inf-segmented.inf-iaScore .radioFlat input[value="1"] + label::before { content: "0"; }
+.dlf .inf-segmented.inf-iaScore .radioFlat input[value="2"] + label::before { content: "1"; }
+.dlf .inf-segmented.inf-iaScore .radioFlat input[value="3"] + label::before { content: "2"; }
+.dlf .inf-segmented.inf-iaScore .radioFlat input:checked + label::before { background: var(--dlf-brand); color: #fff; }
+.dlf .inf-iaRow__principal { margin: 0; padding: 0; border: 0; border-top: 1px solid var(--dlf-line); border-radius: 0 0 10px 10px; background: var(--dlf-surface); }
+.dlf .inf-iaRow__principalInner { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 10px 14px; color: var(--dlf-brand); }
+.dlf .inf-iaRow__msg { flex: 1; min-width: 240px; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .inf-iaRow__msg strong { font-weight: 600; }
+.dlf .inf-evidence {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 999px;
+  background: var(--dlf-warn-bg);
+  font: 600 11.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .inf-evidence:empty { display: none; }
+.dlf .inf-evidence::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .inf-evidence.is-added { border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); }
+.dlf .inf-evidence.is-added::before { background: var(--dlf-ok); }
+.dlf .inf-goTab {
+  flex: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--dlf-brand);
+  border-radius: 7px;
+  background: var(--dlf-surface);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  text-decoration: none;
+}
+.dlf .inf-goTab:hover,
+.dlf .inf-goTab:focus { background: var(--dlf-info-bg); color: var(--dlf-brand); text-decoration: none; }
+.dlf .inf-goTab:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+
+/* ==== Bundle composition: Co-developing African institution(s) (A2-2613) ==== */
+.dlf .inf-codev { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.dlf .inf-codev__field { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-codev__head { display: flex; align-items: center; gap: 8px; }
+.dlf .dlf-card label.inf-codev__label { display: block; font: 600 16px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-codev__field > .dlf-hint { margin: -4px 0 0; }
+.dlf .dlf-card .inf-codev__head > .inf-codev__label { margin: 0; }
+.dlf .inf-codev__head > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-codev__new {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--dlf-info-bg);
+  font: 600 11px Figtree, sans-serif;
+  letter-spacing: .02em;
+  color: var(--dlf-brand);
+}
+.dlf .inf-codev__group[hidden] { display: none; }
+.dlf .inf-codev:has(.inf-vc__error:not([hidden])) .inf-codev__group { border-color: var(--dlf-required); background: #FFF8F6; }
+.dlf .inf-codev__notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 8px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-codev__notice[hidden] { display: none; }
+.dlf .inf-codev__notice > span { flex: 1; }
+.dlf .inf-codev__dismiss { flex: none; width: 24px; height: 24px; border: 0; border-radius: 6px; background: none; font: 400 18px/1 Figtree, sans-serif; color: #5C3D00; cursor: pointer; }
+.dlf .inf-codev__dismiss:hover { background: rgba(192, 138, 46, .14); }
+.dlf .inf-codev__empty {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-codev__empty[hidden] { display: none; }
+.dlf .inf-codev__empty > span { flex: 1; min-width: 220px; }
+.dlf .inf-codev__level { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; padding-top: 12px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-codev__level > .inf-iaRow__label { min-width: 0; font-size: 13px; }
+.dlf .inf-codev__level > .commentNumberContainer { grid-column: 2; grid-row: 1; margin: 0; }
+.dlf .inf-codev__levels { grid-column: 1 / -1; }
+.dlf .inf-chipRadios { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.dlf .inf-chipRadios .radioFlat-flex,
+.dlf .inf-chipRadios .feedback-flex-items { display: contents !important; } /* the feedback module wraps radios */
+/* The design's option chips (.inf-chipRadios): a bordered card with a ring, as the deliverable form's .dlf-chipRadios */
+.dlf .inf-chipRadios .fieldReference.radioFlat {
+  display: inline-flex;
+  align-items: center;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+}
+.dlf .inf-chipRadios .fieldReference.radioFlat:hover { border-color: var(--dlf-brand); }
+.dlf .inf-chipRadios .fieldReference.radioFlat:has(input:checked) { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .inf-chipRadios .fieldReference.radioFlat .radio-label {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px 0 11px;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-chipRadios .fieldReference.radioFlat .radio-label::before {
+  position: static;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0 9px 0 0;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf .inf-chipRadios .fieldReference.radioFlat input:checked + .radio-label::before {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand);
+  box-shadow: inset 0 0 0 3.5px #fff;
+}
+.dlf .inf-chipRadios .fieldReference.radioFlat input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); border-radius: 8px; }
+.dlf .inf-chipRadios .radioFlat > p { margin: 0; padding: 0 12px; font: 600 13.5px/36px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ==== Bundle composition: Select an innovation and Complementary innovations (A2-2613 redesign) ==== */
+.dlf .inf-bundle .dlf-card { display: flex; flex-direction: column; gap: 12px; }
+.dlf .inf-card__head { display: flex; align-items: center; gap: 10px; }
+.dlf .dlf-card .inf-card__head > .dlf-card__title { margin: 0; }
+.dlf .inf-card__head > .commentNumberContainer { margin: 0 0 0 auto; }
+.dlf .inf-card__optional { font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-inlineNote {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 9px;
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-inlineNote > .dlf-icon { flex: none; color: var(--dlf-brand); }
+
+/* ---- The innovations table (DataTables, built by projectInnovations.js) ---- */
+.dlf .inf-btable { border: 1px solid var(--dlf-line); border-radius: 10px; overflow: hidden; background: var(--dlf-surface); }
+.dlf .inf-btable .dataTables_wrapper { padding: 0; }
+.dlf .inf-btable .dataTables_wrapper > .row { margin: 0; }
+.dlf .inf-btable .dataTables_wrapper > .row:first-child {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--dlf-line);
+  background: #FBFCFD;
+}
+.dlf .inf-btable .select-container {
+  position: static !important;
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  width: auto !important;
+  margin: 0 !important;
+}
+.dlf .inf-btable .select-container > label { margin: 0 !important; font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); white-space: nowrap; }
+.dlf .inf-btable .select-container .select2-container { width: 260px !important; margin: 0 !important; }
+.dlf .inf-btable .select-container .select2-container .select2-selection--single { height: 32px !important; min-height: 32px !important; padding: 0 !important; border: 1px solid var(--dlf-line-strong); border-radius: 8px; }
+.dlf .inf-btable .select-container .select2-container .select2-selection__rendered { padding: 0 28px 0 10px !important; line-height: 30px !important; font: 500 13px/30px Figtree, sans-serif; color: var(--dlf-ink); }
+/* "All ..." is an option already: no clear button; the design's chevron, centred */
+.dlf .inf-btable .select-container .select2-selection__clear { display: none !important; }
+.dlf .inf-btable .select-container .select2-container .select2-selection__arrow {
+  top: 0 !important;
+  right: 8px !important;
+  width: 14px !important;
+  height: 30px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-btable .select-container .select2-selection__arrow b { display: none; }
+/* The page length control: the design pages by ten */
+.dlf .inf-btable .dataTables_wrapper > .row:first-child > .col-sm-6:has(.dataTables_length) { display: none; }
+.dlf .inf-btable .dataTables_wrapper > .row:first-child > .col-sm-6:has(.dataTables_filter) { flex: 0 1 300px; width: auto; margin-left: auto; padding: 0; float: none; }
+.dlf .inf-btable .iconSearch { display: none !important; } /* global.css shows it as a blue square */
+.dlf .inf-btable .dataTables_filter { float: none; margin: 0; text-align: left; }
+.dlf .inf-btable .dataTables_filter label { display: block; width: 100%; margin: 0; font-size: 0; }
+.dlf .inf-btable .dataTables_filter input {
+  width: 100% !important;
+  height: 32px;
+  margin: 0 !important;
+  padding: 0 10px 0 30px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='7' cy='7' r='4.6' stroke='%236B7280' stroke-width='1.6'/%3E%3Cpath d='m10.5 10.5 3 3' stroke='%236B7280' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") 10px center no-repeat;
+  font: 400 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  box-shadow: none;
+}
+.dlf .inf-btable .dataTables_filter input:focus { border-color: var(--dlf-brand); outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-btable .dataTables_wrapper > .row:nth-child(2) > .col-sm-12 { padding: 0; }
+.dlf .inf-btable table.dataTable { width: 100% !important; margin: 0 !important; border: 0; border-collapse: collapse; }
+.dlf .inf-btable table.dataTable thead th {
+  height: 34px;
+  padding: 0 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--dlf-line) !important;
+  background: #FBFCFD !important;
+  font: 600 10.5px Figtree, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  text-align: left !important;
+  vertical-align: middle;
+  color: var(--dlf-muted) !important;
+}
+.dlf .inf-btable table.dataTable thead th.sorting,
+.dlf .inf-btable table.dataTable thead th.sorting_asc,
+.dlf .inf-btable table.dataTable thead th.sorting_desc { background-image: none !important; cursor: pointer; }
+.dlf .inf-btable table.dataTable thead th#tb-cluster { white-space: nowrap; }
+.dlf .inf-btable table.dataTable thead th::before,
+.dlf .inf-btable table.dataTable thead th::after { display: none !important; } /* Bootstrap's glyph sort icons */
+.dlf .inf-btable table.dataTable thead th.sorting_asc,
+.dlf .inf-btable table.dataTable thead th.sorting_desc { color: var(--dlf-ink) !important; }
+.dlf .inf-btable table.dataTable tbody tr,
+.dlf .inf-btable table.dataTable tbody tr:nth-of-type(odd) { background: #fff !important; }
+.dlf .inf-btable table.dataTable tbody tr:hover { background: #FAFBFC !important; }
+.dlf .inf-btable table.dataTable tbody td {
+  height: 52px;
+  padding: 6px 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #F1F4F7 !important;
+  font: 500 12.5px/1.4 Figtree, sans-serif;
+  text-align: left !important;
+  vertical-align: middle;
+  color: var(--dlf-ink);
+}
+.dlf .inf-btable table.dataTable tbody td:first-child { font-weight: 600; color: var(--dlf-ink-soft); font-variant-numeric: tabular-nums; }
+.dlf .inf-btable table.dataTable tbody td .title-link {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font: 600 13px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  text-decoration: none;
+}
+.dlf .inf-btable table.dataTable tbody td .title-link:hover { color: var(--dlf-brand); text-decoration: underline; }
+.dlf .inf-btable table.dataTable tbody td:last-of-type:not([style]),
+.dlf .inf-btable table.dataTable tbody td:nth-last-child(2) { white-space: nowrap; }
+.dlf .inf-btable .selectInnovationBundle {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--dlf-brand);
+  border-radius: 7px;
+  background: var(--dlf-brand);
+  font: 600 12px Figtree, sans-serif;
+  color: #fff;
+  vertical-align: middle;
+  box-shadow: none;
+}
+.dlf .inf-btable .selectInnovationBundle:hover { background: var(--dlf-brand-dark); border-color: var(--dlf-brand-dark); }
+.dlf .inf-btable .selectInnovationBundle[disabled] { opacity: 1; border-color: var(--dlf-ok-border); background: var(--dlf-ok-bg); color: var(--dlf-ok); cursor: default; }
+.dlf .inf-btable table.dataTable tbody td a > img[src*="pdf"] { height: 22px; margin-left: 4px; vertical-align: middle; }
+.dlf .inf-btable td.dataTables_empty { height: 64px; text-align: center !important; font-weight: 500; color: var(--dlf-ink-soft); }
+.dlf .inf-btable .dataTables_wrapper > .row:last-child { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding: 9px 12px; }
+.dlf .inf-btable .dataTables_wrapper > .row:last-child > [class*="col-sm-"] { width: auto; padding: 0; float: none; }
+.dlf .inf-btable .dataTables_wrapper > .row:last-child > [class*="col-sm-"]:last-child { margin-left: auto; }
+.dlf .inf-btable .dataTables_info { padding: 0 !important; font: 400 12.5px Figtree, sans-serif; white-space: nowrap !important; color: var(--dlf-ink-soft); }
+.dlf .inf-btable .dataTables_paginate { margin: 0; padding: 0; }
+.dlf .inf-btable .pagination { display: flex; gap: 4px; margin: 0; }
+/* The design's 28x28 page buttons; Previous / Next as chevrons (their text stays for screen readers) */
+.dlf .inf-btable .pagination > li > a,
+.dlf .inf-btable .pagination > li > span {
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 28px;
+  height: 28px;
+  margin: 0 !important;
+  padding: 0 6px;
+  border: 1px solid #E0E5EB;
+  border-radius: 7px !important;
+  background: #fff;
+  font: 600 12.5px/1 Figtree, sans-serif;
+  text-align: center;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-btable .pagination > li > a:hover { border-color: var(--dlf-brand); background-color: var(--dlf-info-bg); color: var(--dlf-brand); }
+.dlf .inf-btable .pagination > .active > a,
+.dlf .inf-btable .pagination > .active > a:hover { border-color: var(--dlf-brand); background: var(--dlf-brand); color: #fff; }
+.dlf .inf-btable .pagination > .previous > a,
+.dlf .inf-btable .pagination > .next > a {
+  width: 28px;
+  padding: 0;
+  font-size: 0;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M7.5 2.5 4 6l3.5 3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-btable .pagination > .next > a {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M4.5 2.5 8 6l-3.5 3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.dlf .inf-btable .pagination > .disabled > a,
+.dlf .inf-btable .pagination > .disabled > a:hover { border-color: #E0E5EB; background-color: #fff; opacity: .45; cursor: default; }
+.dlf .inf-btable__self {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0 12px 10px;
+  font: 400 12px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+
+/* ---- Innovations selected ---- */
+.dlf .inf-bselected { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-bselected__head { display: flex; align-items: center; gap: 7px; }
+.dlf .inf-bselected__title { font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-bselected .inf-count { margin: 0; }
+.dlf .innovationBundleList { display: flex; flex-direction: column; gap: 6px; }
+.dlf .innovationBundleList .innovationBundleItem.grayGreenBox {
+  position: relative;
+  align-items: center;
+  margin: 0;
+  padding: 8px 40px 8px 12px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .innovationBundleList .innovationBundleItem > p { margin: 0; font: 500 13.5px/1.45 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .innovationBundleList .innovationBundleItemID { margin-right: 6px; font: 700 12.5px Figtree, sans-serif; color: var(--dlf-brand-dark); font-variant-numeric: tabular-nums; }
+.dlf .innovationBundleList .innovationBundleItemID::before { content: "I"; }
+.dlf .innovationBundleList .removeInnovationBundleItem {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .innovationBundleList .removeInnovationBundleItem:hover { background-color: var(--dlf-danger-bg); }
+.dlf .innovationBundleList > p.inf-bselected__empty {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 9px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+
+/* ---- Complementary innovations: an accordion per innovation ---- */
+.dlf .inf-comps .inf-card__head .inf-count { margin: 0; }
+.dlf .inf-comps__help { margin: -6px 0 0; }
+.dlf .complementarySolutionsList { display: flex; flex-direction: column; gap: 8px; }
+.dlf .complementarySolutionsList:empty { display: none; }
+.dlf .inf-comp { position: relative; margin: 0; padding: 0; border: 1px solid var(--dlf-line); border-radius: 10px; background: var(--dlf-surface); }
+.dlf .inf-comp:has(.inf-comp__missing:not([hidden])) { border-color: var(--dlf-warn-border); }
+.dlf .dlf-card .inf-comp__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin: 0;
+  padding: 4px 48px 4px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .dlf-card .inf-comp__head::before,
+.dlf .dlf-card .inf-comp__head::after { display: none !important; }
+.dlf .dlf-card .inf-comp__head.opened { border-radius: 10px 10px 0 0; background: var(--dlf-surface-alt); }
+.dlf .inf-comp__head:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-comp__chevron { flex: none; color: var(--dlf-muted); transition: transform .15s ease; }
+.dlf .inf-comp__head.opened .inf-comp__chevron { transform: rotate(90deg); }
+.dlf .inf-comp__n { flex: none; width: 22px; height: 22px; border-radius: 6px; background: var(--dlf-chip); font: 700 11px/22px Figtree, sans-serif; text-align: center; color: var(--dlf-ink-soft); }
+.dlf .inf-comp__title { min-width: 0; font: 600 14px Figtree, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dlf .inf-comp__type { flex: none; padding: 1px 8px; border: 1px solid var(--dlf-info-border); border-radius: 5px; background: var(--dlf-info-bg); font: 600 11.5px Figtree, sans-serif; color: var(--dlf-brand-dark); }
+.dlf .inf-comp__type[hidden],
+.dlf .inf-comp__missing[hidden] { display: none; }
+.dlf .inf-comp__missing { flex: none; display: inline-flex; align-items: center; gap: 5px; font: 600 12px Figtree, sans-serif; color: var(--dlf-warn); }
+.dlf .inf-comp__missing::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .inf-comp__functions { flex: none; margin-left: auto; font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-comp__remove {
+  position: absolute;
+  top: 11px; /* centred on the 52px head */
+  right: 5px; /* the cross sits as far from the right edge as the chevron from the left */
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--dlf-danger);
+  cursor: pointer;
+}
+.dlf .inf-comp__remove:hover { background: var(--dlf-danger-bg); }
+.dlf .inf-comp__body { padding: 16px 16px 18px; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-comp__body > .dlf-field + .dlf-field,
+.dlf .inf-comp__body > .inf-comp__row + .dlf-field { margin-top: 16px; }
+.dlf .inf-comp__row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; }
+.dlf .inf-comp__type-field { max-width: 420px; }
+.dlf .inf-comp__functionList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-comp__function .inputsFlat { margin: 0; }
+.dlf .inf-comp__function .checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13px/1.45 Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-comp__function input:checked + .checkbox-label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+/* The legacy box is the label's ::before, in its flow: the first item of the row */
+.dlf .inf-comp__function .checkbox-label::before { flex: none; margin: 2px 9px 0 0 !important; }
+.dlf .inf-addComp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  border: 1px dashed #9ACBE0;
+  border-radius: 10px;
+  background: #F7FBFD;
+  font: 600 13.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .inf-addComp:hover { border-color: var(--dlf-brand); background: #EAF4F8; }
+@media (max-width: 991px) {
+  .dlf .inf-comp__row,
+  .dlf .inf-comp__functionList { grid-template-columns: minmax(0, 1fr); }
+}
+/* Read-only: nothing to remove */
+.dlf.inf.is-readonly .innovationBundleList .removeInnovationBundleItem,
+.dlf.inf.is-readonly .inf-comp__remove { display: none; }
+.dlf.inf.is-readonly .innovationBundleList .innovationBundleItem.grayGreenBox { padding-right: 12px; }
+.dlf.inf.is-readonly .dlf-card .inf-comp__head { padding-right: 14px; }
+
+/* Contributing external partners without options: why, and where to add them */
+.dlf .inf-emptyOptions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dlf-line-strong);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .inf-emptyOptions > .dlf-icon { flex: none; color: var(--dlf-brand); }
+.dlf .inf-emptyOptions > span { flex: 1; min-width: 240px; }
+/* The "…" between page numbers is not a button */
+.dlf .inf-btable .pagination > .disabled:not(.previous):not(.next) > a { min-width: 16px; padding: 0 2px; border-color: transparent; background: none; opacity: 1; color: var(--dlf-muted); }
+
+/* ==== Knowledge & Scaling (A2-2613 redesign) ==== */
+.dlf .inf-ks .dlf-card { display: flex; flex-direction: column; gap: 14px; }
+.dlf .inf-ks .dlf-card [class*="col-md-"]:not(.radioFlat-flex):not(.checkbox-list-item) { float: none; width: auto; padding-left: 0; padding-right: 0; }
+.dlf .inf-ks .form-group { margin-bottom: 0; }
+
+/* ---- Readiness: the 0-9 stepper, the level colours of the design ---- */
+.dlf .inf-rl .scaling { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+.dlf .inf-rl .inf-card__head .dlf-card__title label { margin: 0; font: inherit; color: inherit; }
+.dlf .inf-rl .scaling__container {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 4px 0 0;
+}
+.dlf .inf-rl .scaling__line { position: absolute; top: 21px; left: 5%; right: 5%; width: auto !important; height: 2px; margin: 0; padding: 0 !important; background: #E5E9EF; }
+.dlf .inf-rl .scaling__item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; width: auto !important; margin: 0; padding: 0 !important; text-align: center; }
+.dlf .inf-rl .scaling__item .radioFlat-flex,
+.dlf .inf-rl .scaling__item .feedback-flex-items { display: contents !important; }
+.dlf .inf-rl .scaling__item .fieldReference.radioFlat { position: relative; width: auto !important; margin: 0 !important; padding: 0 !important; }
+.dlf .inf-rl .scaling__item input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-rl .scaling__item .radio-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid var(--dlf-line-strong);
+  border-radius: 50%;
+  background: #fff;
+  font: 700 14px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.dlf .inf-rl .scaling__item .radio-label::before,
+.dlf .inf-rl .scaling__item .radio-label::after { display: none !important; }
+.dlf .inf-rl .scaling__item .radio-label:hover { border-color: var(--dlf-brand); color: var(--dlf-brand); }
+.dlf .inf-rl .scaling__item input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-rl .scaling__item input:checked + .radio-label { border-color: var(--inf-rl) !important; background: var(--inf-rl) !important; color: #fff !important; box-shadow: 0 2px 6px rgba(31, 42, 55, .2); } /* projectInnovations.css paints it #7AB800 */
+.dlf .inf-rl .scaling__name { font: 500 11.5px/1.3 Figtree, sans-serif; color: var(--dlf-muted); text-wrap: balance; }
+.dlf .inf-rl .scaling__item:has(input:checked) .scaling__name { font-weight: 600; color: var(--dlf-ink); }
+.dlf .inf-rl .scaling__item > p { margin: 0; }
+.dlf .inf-rl [data-level="0"] { --inf-rl: #6B7280; }
+.dlf .inf-rl [data-level="1"] { --inf-rl: #5F6B7A; }
+.dlf .inf-rl [data-level="2"] { --inf-rl: #4F6E86; }
+.dlf .inf-rl [data-level="3"] { --inf-rl: #2F6F92; }
+.dlf .inf-rl [data-level="4"] { --inf-rl: #0277A2; }
+.dlf .inf-rl [data-level="5"] { --inf-rl: #13788A; }
+.dlf .inf-rl [data-level="6"] { --inf-rl: #1F7A6A; }
+.dlf .inf-rl [data-level="7"] { --inf-rl: #2E7D4F; }
+.dlf .inf-rl [data-level="8"] { --inf-rl: #2E6B2F; }
+.dlf .inf-rl [data-level="9"] { --inf-rl: #1F5A21; }
+/* The chosen level, described */
+.dlf .inf-rl .scaling__message.grayBox {
+  margin: 0;
+  padding: 12px 16px 12px 18px;
+  border: 1px solid var(--dlf-line);
+  border-left: 4px solid var(--inf-rl, var(--dlf-line-strong));
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-rl .scaling__message h5 { margin: 0 0 4px; font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-rl .scaling__message p { margin: 0; font: 400 13px/1.55 Figtree, sans-serif; color: var(--dlf-ink-soft); }
+@media (max-width: 991px) {
+  .dlf .inf-rl .scaling__container { grid-template-columns: repeat(5, minmax(0, 1fr)); row-gap: 14px; }
+  .dlf .inf-rl .scaling__line { display: none; }
+}
+
+/* ---- Bottlenecks: the question box of General Information, its answer below ---- */
+.dlf .inf-questionBox__answer { padding: 12px 14px 14px; border-top: 1px solid var(--dlf-line-soft); }
+
+/* ---- Likert scales: question, then "left label | 1 2 3 4 5 | right label" ---- */
+.dlf .inf-likertGroup { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-likertGroup__title { margin: 0; font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-brand-dark); }
+.dlf .inf-likert .likertScale {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: "q q q" "l s r";
+  align-items: center;
+  gap: 6px 14px;
+  width: 100% !important;
+  margin: 0;
+  padding: 10px 12px !important;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-likert .likertScale::before,
+.dlf .inf-likert .likertScale::after { display: none; }
+.dlf .inf-likert .likertScale > label:first-child { grid-area: q; width: auto !important; margin: 0; padding: 0 !important; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-likert .likertScale > label.subLabel { width: auto !important; margin: 0; padding: 0 !important; font: 400 12px/1.35 Figtree, sans-serif; font-style: normal; color: var(--dlf-muted); }
+.dlf .inf-likert .likertScale > label.subLabel.text-left { grid-area: l; text-align: right !important; }
+.dlf .inf-likert .likertScale > label.subLabel.text-right { grid-area: r; text-align: left !important; }
+.dlf .inf-likert .likertScale > div { grid-area: s; display: inline-flex; align-items: center; gap: 2px; width: auto !important; padding: 4px !important; border-radius: 10px; background: var(--dlf-chip); }
+.dlf .inf-likert .likertScale > div > div { display: block !important; width: auto !important; float: none !important; }
+.dlf .inf-likert .likertScale .radioFlat-flex,
+.dlf .inf-likert .likertScale .feedback-flex-items { display: contents !important; }
+.dlf .inf-likert .likertScale .fieldReference.radioFlat { position: relative; display: block; width: auto !important; margin: 0 !important; padding: 0 !important; }
+.dlf .inf-likert .likertScale input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-likert .likertScale .radio-label {
+  display: block;
+  min-width: 36px;
+  height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  border-radius: 7px;
+  font: 600 13px/30px Figtree, sans-serif;
+  text-align: center;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .inf-likert .likertScale .radio-label::before,
+.dlf .inf-likert .likertScale .radio-label::after { display: none !important; }
+.dlf .inf-likert .likertScale input:checked + .radio-label { background: var(--dlf-brand); color: #fff; box-shadow: 0 1px 3px rgba(31, 42, 55, .15); }
+.dlf .inf-likert .likertScale input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-likert .likertScale .radio-label.fieldError { color: var(--dlf-required); }
+@media (max-width: 767px) {
+  .dlf .inf-likert .likertScale { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "q q" "s s" "l r"; }
+  .dlf .inf-likert .likertScale > label.subLabel.text-left { text-align: left !important; }
+  .dlf .inf-likert .likertScale > label.subLabel.text-right { text-align: right !important; }
+}
+.dlf .inf-potential .inf-chipRadios { margin-top: 2px; }
+.dlf .inf-potential .inf-other { margin-top: 10px; }
+
+/* ---- Users and beneficiaries ---- */
+.dlf .inf-users .block-innovationAnticipatedUsers { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-users .block-innovationAnticipatedUsers .inf-chipRadios > div { display: contents; }
+.dlf .inf-users .block-anticipatedUsers { padding: 0 !important; }
+.dlf .inf-users .actorsBlock { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-users .actorsBlock > label { margin: 0; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-users .actorsBlock > .note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 9px;
+  background: var(--dlf-info-bg);
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-users .actorsBlock > .note > .glyphicon { display: none; }
+.dlf .inf-users .actorsBlock > .note ul { margin: 0; padding-left: 16px !important; padding-top: 0 !important; }
+.dlf .inf-users .actorsList { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-users .actorsInnovation.graySoftBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 48px 14px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .inf-users .actorsInnovation .select--flex { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px 16px; padding: 0 !important; }
+.dlf .inf-users .actorsInnovation .select--flex > div:first-child { flex: 1 1 320px; }
+.dlf .inf-users .actorsInnovation .checkbox-sexAgeNotApply { flex: 0 1 auto; padding-bottom: 8px !important; }
+/* Total, then "of which women / youth" on one row (the women / youth block carries an inline display:block) */
+.dlf .inf-users .actorsInnovation .innerOptions { display: flex !important; flex-direction: row !important; flex-wrap: wrap; align-items: flex-end; gap: 12px; padding: 0 !important; }
+.dlf .inf-users .actorsInnovation .innerOptions > div { flex: 0 0 auto; width: 160px !important; margin: 0 !important; }
+.dlf .inf-users .actorsInnovation .innerOptions > .block-sexAgeNotApply { width: auto !important; } /* its display stays jQuery's: it slides */
+.dlf .inf-users .actorsInnovation .innerOptions > .block-sexAgeNotApply > div { display: inline-block; width: 160px !important; margin: 0 12px 0 0 !important; vertical-align: bottom; }
+.dlf .inf-users .actorsInnovation .innerOptions input { width: 100%; }
+/* Total takes the width of "Of which women / youth" */
+.dlf .inf-users .actorsInnovation .innerOptions > div:not(.block-sexAgeNotApply) { flex: 0 0 160px !important; width: 160px !important; max-width: 160px !important; }
+.dlf .inf-users .actorsInnovation .innerOptions input.input-total { width: 100% !important; max-width: 160px; }
+.dlf .inf-users .actorsInnovation .otherType { max-width: 420px; }
+.dlf .inf-users .actorsInnovation .removeActor {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .inf-users .actorsInnovation .removeActor:hover { background-color: var(--dlf-danger-bg); }
+/* "Of which ..." above Total: the design's warning line under the numbers */
+.dlf .inf-users .actorsInnovation .message-overpass-total { margin-top: 12px !important; }
+.dlf .inf-users .actorsInnovation .inf-actorWarn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 8px;
+  background: var(--dlf-warn-bg);
+  font: 500 12.5px Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-users .actorsInnovation .inf-actorWarn::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-warn-dot); }
+.dlf .inf-users .addActors.bigAddButton,
+.dlf .inf-evid .addButtonReferenceReadiness.bigAddButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 1px dashed #9ACBE0;
+  border-radius: 10px;
+  background: #F7FBFD;
+  font: 600 13.5px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .inf-users .addActors.bigAddButton:hover { border-color: var(--dlf-brand); background: #EAF4F8; }
+.dlf .inf-users .addActors .glyphicon { top: 0; font-size: 11px; }
+.dlf .inf-users .organizationsBlock > br { display: none; }
+.dlf .inf-users .organizationsBlock > .form-group > label { margin: 0 0 6px; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-users .organizationsBlock > .form-group > br { display: none; }
+.dlf .inf-benef > label { margin: 0; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-benef > .dlf-hint { margin: 2px 0 6px; }
+
+/* ---- Evidence ---- */
+.dlf .inf-evid > .form-group:first-child,
+.dlf .inf-evid > label:first-child { margin: 0; }
+.dlf .inf-evid .statusEvidenceInImpactArea {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 10px;
+  background: var(--dlf-warn-bg);
+  font: 500 13px/1.5 Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-evid .statusEvidenceInImpactArea .glyphicon { top: 3px; color: var(--dlf-warn-dot); }
+.dlf .inf-evid .statusEvidenceInImpactArea p,
+.dlf .inf-evid .statusEvidenceInImpactArea ul { margin: 0; }
+.dlf .inf-evid .referenceBlock { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-evid .referenceListReadiness { display: flex; flex-direction: column; gap: 10px; }
+.dlf .inf-evid .referenceListReadiness:empty { display: none; }
+.dlf .inf-evid .evidences.grayBox {
+  position: relative;
+  margin: 0;
+  padding: 14px 48px 16px 16px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .inf-evid .evidences.grayBox::after { content: ""; display: table; clear: both; }
+.dlf .inf-evid .evidences .removeElement,
+.dlf .inf-evid .evidences [class*="removeButtonReference"] { top: 12px !important; right: 10px !important; }
+.dlf .inf-rl .inf-card__head .dlf-card__title { display: flex; align-items: baseline; gap: 4px; }
+.dlf .inf-rl .inf-card__head .dlf-card__title label { display: inline; }
+
+/* ---- One evidence ---- */
+/* Impact Area / readiness tags */
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > label { display: block; margin: 4px 0 8px !important; font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > .col-md-12 { display: flex !important; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > .col-md-12 > div { display: contents !important; } /* their inline widths carry !important */
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) .inputsFlat { margin: 0; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  margin: 0;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) .checkbox-label::before { flex: none; margin: 0 8px 0 0 !important; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) input:checked + .checkbox-label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement {
+  position: absolute;
+  top: 12px !important;
+  right: 10px !important;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  border-radius: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat !important;
+  cursor: pointer;
+}
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement:hover { background-color: var(--dlf-danger-bg) !important; }
+/* Read-only: the answer stays visible over the legacy .disabled-label (white on grey) */
+.dlf .inf-likert .likertScale input:checked + .radio-label.disabled-label { background: var(--dlf-brand) !important; color: #fff !important; }
+.dlf .inf-likert .likertScale .radio-label.disabled-label { background: none !important; cursor: default; }
+.dlf .inf-likert .likertScale > div > div,
+.dlf .inf-likert .likertScale .fieldReference.radioFlat.radio-inline { margin: 0 !important; padding: 0 !important; height: auto; }
+
+/* ==== Knowledge & Scaling: review pass (A2-2613) ==== */
+/* Readiness: the stepper keeps the height of its names (projectInnovations.css fixes it), then the chosen level as
+   "number | name and description" */
+.dlf .inf-rl .scaling__container { height: auto !important; min-height: 0 !important; }
+.dlf .inf-rl .scaling__message.grayBox { display: flex; align-items: center; gap: 14px; margin-top: 15px; padding: 12px 14px; border: 1px solid var(--dlf-line); border-left-width: 1px; }
+.dlf .inf-rl .scaling__num {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--inf-rl, var(--dlf-line-strong));
+  font: 700 18px Figtree, sans-serif;
+  color: #fff;
+}
+.dlf .inf-rl .scaling__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dlf .inf-rl .scaling__text h5 { margin: 0; }
+.dlf .inf-rl .scaling__message[data-level=""] { border-style: dashed; border-color: var(--dlf-line-strong); }
+.dlf .inf-rl .scaling__message[data-level=""] .scaling__num { display: none; }
+
+/* Long answers of the tab open at three to four rows */
+.dlf .inf-ks textarea.form-control { min-height: 96px !important; }
+
+/* Anticipated users: the feedback holder sits beside the question instead of taking a row of its own */
+.dlf .inf-users .block-innovationAnticipatedUsers { position: relative; }
+/* The question and its feedback bubble on one row, without the holder's extra height */
+.dlf .inf-users .block-innovationAnticipatedUsers > .feedback-flex-items:first-child { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100% !important; min-height: 0; margin: 0; }
+.dlf .inf-users .block-innovationAnticipatedUsers > .feedback-flex-items:first-child > label { margin: 0 !important; }
+.dlf .inf-users .block-innovationAnticipatedUsers > label,
+.dlf .inf-users .block-innovationAnticipatedUsers > .feedback-flex-items:first-child + label { margin: 0; }
+.dlf .inf-users .block-anticipatedUsers { margin-top: 4px; }
+.dlf .inf-users .organizationsBlock,
+.dlf .inf-users .organizationsBlock > .form-group { margin: 0; padding: 0 !important; }
+.dlf .inf-users .organizationsBlock > .form-group { margin-top: 10px; }
+.dlf .inf-users .organizationsBlock > .form-group > label { display: block; }
+
+/* Actors: the help note in the form's font, the cards in the design's grey, removal as a bin */
+.dlf .inf-users .actorsBlock > .note,
+.dlf .inf-users .actorsBlock > .note * { font-family: Figtree, sans-serif !important; font-size: 13px; }
+.dlf .inf-users .actorsInnovation.graySoftBox { background: var(--dlf-surface-alt); }
+.dlf .inf-users .actorsInnovation .removeActor,
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M2.8 4.4h10.4M6.4 4.4V2.8h3.2v1.6M4.4 4.4l.7 8.8h5.8l.7-8.8' stroke='%23B03028' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat !important;
+}
+.dlf .inf-users .actorsInnovation .removeActor:hover,
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement:hover { background-color: var(--dlf-danger-bg) !important; }
+
+/* Organizations (mal-multiselect, PrimeVue): the form's select, then the chosen organizations as a list of rows.
+   projectInnovations.css styles the component with !important, so these rules repeat it. */
+.dlf .inf-users mal-multiselect { display: block; width: 100%; }
+.dlf .inf-users .organizationsBlock > .form-group > label .inf-count { margin-left: 8px; }
+.dlf .inf-users mal-multiselect .p-multiselect {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+}
+.dlf .inf-users mal-multiselect .p-multiselect:hover { border-color: var(--dlf-subtle); }
+.dlf .inf-users mal-multiselect .p-multiselect.p-focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-users mal-multiselect .p-multiselect-label-container { padding: 0; }
+/* Always "Select an organization..." (the component would read "n items selected") */
+.dlf .inf-users mal-multiselect .p-multiselect-label { padding: 0 12px; font-size: 0; line-height: 38px; }
+.dlf .inf-users mal-multiselect .p-multiselect-label > * { display: none; }
+.dlf .inf-users mal-multiselect .p-multiselect-label::before {
+  content: var(--inf-select-label, "");
+  font: 400 14px/38px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-users mal-multiselect .p-multiselect-dropdown { width: 36px; color: var(--dlf-ink-soft); }
+.dlf .inf-users mal-multiselect .p-multiselect-dropdown svg { width: 11px; height: 11px; }
+/* The chosen organizations */
+.dlf .inf-users mal-multiselect .p-component > .mt-2 {
+  display: flex !important;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0 !important;
+  margin-top: 8px !important;
+  padding: 0 !important;
+  background: none !important;
+}
+.dlf .inf-users mal-multiselect .p-component > .mt-2:not(:has(.p-chip)) { display: none !important; }
+.dlf .inf-users mal-multiselect .p-chip {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: auto;
+  min-height: 46px;
+  margin: 0 !important;
+  padding: 8px 10px 8px 12px !important;
+  border: 1px solid var(--dlf-line) !important;
+  border-radius: 10px;
+  background: var(--dlf-surface-alt) !important;
+  box-shadow: none !important;
+  font: 500 13.5px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .inf-users mal-multiselect .p-chip:hover { background: var(--dlf-surface-alt) !important; }
+.dlf .inf-users mal-multiselect .p-chip::before {
+  content: "";
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--dlf-info-border);
+  border-radius: 7px;
+  background: var(--dlf-info-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M2.5 7.2 8 2.8l5.5 4.4v6H2.5v-6Z' stroke='%230277A2' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M6.4 13.2V9.6h3.2v3.6' stroke='%230277A2' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .inf-users mal-multiselect .p-chip-text {
+  flex: 1;
+  float: none;
+  width: auto;
+  min-width: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.dlf .inf-users mal-multiselect .p-chip-remove-icon {
+  position: static !important;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  margin: 0 !important;
+  border-radius: 6px;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23B03028' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat !important;
+  color: transparent !important;
+  font-size: 0;
+  opacity: 1;
+}
+.dlf .inf-users mal-multiselect .p-chip-remove-icon:hover { background-color: var(--dlf-danger-bg) !important; opacity: 1; }
+.dlf .inf-users mal-multiselect .p-chip-remove-icon::before { content: none; }
+
+/* Read-only: the list only, or "Not provided" */
+.dlf.inf.is-readonly .inf-users mal-multiselect .p-multiselect,
+.dlf.inf.is-readonly .inf-users mal-multiselect .p-chip-remove-icon { display: none; }
+.dlf.inf.is-readonly .inf-users mal-multiselect .p-component > .mt-2 { margin-top: 0 !important; }
+.dlf.inf.is-readonly .inf-users mal-multiselect #multi-select-container > .p-component:not(:has(.p-chip))::after {
+  content: var(--inf-empty-label, "");
+  font: 400 14px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+
+/* Its option list is portalled to <body>: the form's dropdown look */
+body:has(.dlf.inf) .p-multiselect-overlay {
+  min-width: 420px !important;
+  max-width: calc(100vw - 32px);
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid var(--dlf-line, #E5E9EF) !important;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(31, 42, 55, .12);
+  font-family: Figtree, sans-serif;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 0 0 6px;
+  border-bottom: 1px solid #EEF2F5 !important;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container {
+  flex: 1;
+  position: relative;
+  padding: 0;
+  border: 0;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-filter {
+  width: 100%;
+  height: 36px;
+  padding: 0 32px 0 12px;
+  border: 1px solid #CBD5DE;
+  border-radius: 8px;
+  font: 400 13.5px Figtree, sans-serif;
+  color: #1F2A37;
+  outline: none;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-filter:focus { border-color: #0277A2; box-shadow: 0 0 0 3px rgba(2, 119, 162, .12); }
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-header .p-multiselect-filter-container .p-inputicon { top: 50%; right: 11px; margin-top: -7px; color: #9AA4B0; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-option {
+  gap: 10px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font: 400 13.5px Figtree, sans-serif;
+  color: #1F2A37;
+}
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-option:hover,
+body:has(.dlf.inf) .p-multiselect-overlay .p-multiselect-option.p-focus { background-color: #F2F9FC !important; color: #1F2A37 !important; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox { width: 16px; height: 16px; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-box { width: 16px; height: 16px; border: 1.5px solid #9AA4B0; border-radius: 4px; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-checked .p-checkbox-box { border-color: #0277A2; background: #0277A2; }
+body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-box .p-checkbox-icon { width: 10px; height: 10px; color: #fff; }
+
+/* ---- Evidence: notice, numbered cards in the design's grey, the source as a segmented control ---- */
+.dlf .inf-evid .statusEvidenceInImpactArea { display: none !important; } /* replaced by the notice below */
+.dlf .inf-evid > .inf-card__head .inf-count { margin: 0; }
+.dlf .inf-evid__help { margin: -8px 0 0; }
+.dlf .inf-evidNotice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 10px 14px 10px 40px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 10px;
+  background: var(--dlf-warn-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='6.4' fill='%23C08A2E'/%3E%3Cpath d='M8 4.6v4.2' stroke='%23fff' stroke-width='1.7' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.2' r='.95' fill='%23fff'/%3E%3C/svg%3E") 14px 12px no-repeat;
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: #5C3D00;
+}
+.dlf .inf-evidNotice[hidden] { display: none; }
+.dlf .inf-evidNotice__title { font-weight: 600; }
+.dlf .inf-evidNotice__list { margin: 0; padding-left: 16px; }
+.dlf .inf-evidNotice.is-ok {
+  border-color: var(--dlf-ok-border);
+  background: var(--dlf-ok-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='6.4' fill='%232E6B2F'/%3E%3Cpath d='M5.2 8.2 7.1 10l3.7-4' stroke='%23fff' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 14px 12px no-repeat;
+  color: var(--dlf-ok);
+}
+.dlf .inf-evid .referenceListReadiness { counter-reset: inf-evid; }
+.dlf .inf-evid .evidences.grayBox { display: flex; flex-direction: column; gap: 14px; padding: 12px 14px 14px; background: var(--dlf-surface-alt); counter-increment: inf-evid; }
+.dlf .inf-evid .evidences.grayBox > * { margin: 0 !important; }
+.dlf .inf-evid .evidences.grayBox::after { display: none; }
+.dlf .inf-evid .evidence__head { display: flex; align-items: center; gap: 12px; padding-right: 36px; }
+.dlf .inf-evid .evidence__n { flex: none; width: 22px; height: 22px; border-radius: 6px; background: var(--dlf-chip); font: 700 11px/22px Figtree, sans-serif; text-align: center; color: var(--dlf-ink-soft); }
+.dlf .inf-evid .evidence__n::before { content: counter(inf-evid); }
+.dlf .inf-evid .evidence__source > .col-md-4 { display: contents; }
+.dlf .inf-evid .evidence__source .radioFlat label { height: 28px; padding: 0 12px; font-size: 13px; line-height: 28px; }
+.dlf .inf-evid .evidences .removeButtonReferenceReadiness.removeElement { top: 11px !important; right: 12px !important; }
+.dlf .inf-evid .evidences .evidenceByDeliverable label,
+.dlf .inf-evid .evidences .evidenceByLink .colTitleCenter,
+.dlf .inf-evid .evidences .evidenceType > label,
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > label,
+.dlf .inf-evid .evidences .textArea > label { font: 600 12.5px Figtree, sans-serif !important; color: var(--dlf-ink); }
+.dlf .inf-evid .evidences .evidenceByDeliverable .select2-container,
+.dlf .inf-evid .evidences .evidenceByDeliverable select { width: 100% !important; }
+.dlf .inf-evid .evidences > .col-md-12:has(.requiredTag) > .col-md-12 { margin-bottom: 0; }
+.dlf .inf-evid .evidences .form-group { margin: 0; }
+/* "Required" on a tag the notice still asks for */
+.dlf .inf-reqBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 5px;
+  background: var(--dlf-warn-bg);
+  font: 600 10.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .inf-evid .addButtonReferenceReadiness { margin-top: 0; }
+
+/* ---- Checkboxes of the redesigned tabs (customForm.checkBoxFlat): the design's 16px box with a white check ---- */
+.dlf .inf-ks .inputsFlat input[type="checkbox"] + .checkbox-label::before,
+.dlf .inf-comp__function .inputsFlat input[type="checkbox"] + .checkbox-label::before {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0 8px 0 0 !important;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff center / 10px 10px no-repeat;
+  box-shadow: none;
+  vertical-align: middle;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+.dlf .inf-ks .inputsFlat input[type="checkbox"]:hover + .checkbox-label::before,
+.dlf .inf-ks .inputsFlat .checkbox-label:hover::before,
+.dlf .inf-comp__function .inputsFlat .checkbox-label:hover::before { border-color: var(--dlf-brand); }
+.dlf .inf-ks .inputsFlat input[type="checkbox"]:checked + .checkbox-label::before,
+.dlf .inf-comp__function .inputsFlat input[type="checkbox"]:checked + .checkbox-label::before {
+  border-color: var(--dlf-brand);
+  background-color: var(--dlf-brand);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.2 5 8.5l4.5-5' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  box-shadow: none;
+}
+.dlf .inf-ks .inputsFlat input[type="checkbox"]:focus-visible + .checkbox-label::before,
+.dlf .inf-comp__function .inputsFlat input[type="checkbox"]:focus-visible + .checkbox-label::before { box-shadow: var(--dlf-focus-ring); }
+/* Sex and age disaggregation: a plain checkbox line, centred on the actor type field */
+.dlf .inf-users .actorsInnovation .checkbox-sexAgeNotApply .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .inf-users .actorsInnovation .checkbox-sexAgeNotApply { padding-bottom: 0 !important; }
+
+/* ---- Evidence through a link: the design's 2x2 grid (forms.ftl evidence macro) ---- */
+.dlf .inf-evid .evidence__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.dlf .inf-evid .evidence__field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dlf .inf-evid .evidence__label { font: 600 12.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-evid .evidence__field > .feedback-flex-items { display: contents !important; }
+.dlf .inf-evid .evidence__field .input,
+.dlf .inf-evid .evidence__field .select,
+.dlf .inf-evid .evidence__field .select2-container { width: 100% !important; margin: 0; }
+.dlf .inf-evid .evidence__field input.form-control { height: 38px; padding: 0 12px; border-radius: 8px; font: 400 13.5px Figtree, sans-serif; }
+.dlf .inf-evid .evidence__field input.form-control::placeholder { color: var(--dlf-subtle); }
+@media (max-width: 767px) {
+  .dlf .inf-evid .evidence__grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* A selected deliverable reads as its name, centred in the field; its handle and type go under it */
+.dlf .inf-evid .evidenceByDeliverable .select2-container .select2-selection--single { height: 38px !important; min-height: 38px !important; }
+.dlf .inf-evid .evidenceByDeliverable .select2-container .select2-selection__rendered { display: block !important; height: 36px; padding: 0 32px 0 12px !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis; font: 500 13.5px/36px Figtree, sans-serif !important; color: var(--dlf-ink); }
+.dlf .inf-evid .evidence__meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-evid .evidence__meta[hidden] { display: none; }
+.dlf .inf-evid .evidence__meta a { color: var(--dlf-brand); text-decoration: underline; word-break: break-all; }
+.dlf .inf-evid .evidence__meta b { font-weight: 500; color: var(--dlf-ink); }
+
+/* ══════════ Alliance alignment ══════════ */
+
+/* ---- Alliance research theme: a 3-column grid of checkbox cards, "LEVER n" over the theme name ---- */
+.dlf .inf-levers { display: flex; flex-direction: column; gap: 12px; }
+.dlf .inf-levers .inf-card__head .dlf-card__title { display: flex; align-items: baseline; gap: 4px; }
+.dlf .inf-levers .inf-card__head .inf-count { margin-left: 4px; }
+.dlf .inf-levers__help { margin: -4px 0 0; font-size: 13px; color: var(--dlf-ink-soft); }
+.dlf .inf-levers__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: var(--dlf-surface-alt);
+}
+.dlf .inf-levers.fieldError .inf-levers__grid,
+.dlf .inf-levers:has(.fieldError) .inf-levers__grid { border-color: var(--dlf-required); background: #FFFBFA; }
+.dlf .inf-lever { position: relative; display: flex; min-width: 0; margin: 0; padding: 0; float: none; width: auto; }
+.dlf .inf-lever .hiddenIdReference { display: none; }
+.dlf .dlf-card label.inf-lever__card {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 11px;
+  border: 1px solid #DDE3EA;
+  border-radius: 9px;
+  background: #fff;
+  font-weight: 400;
+  cursor: pointer;
+}
+.dlf .inf-lever__card input[type="checkbox"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .inf-lever__box {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .inf-lever__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.dlf .inf-lever__key { font: 600 11px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .inf-lever__name { font: 600 13.5px/1.4 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .dlf-card .inf-lever:not(.is-on) label.inf-lever__card:hover { border-color: var(--dlf-brand); }
+.dlf .dlf-card .inf-lever.is-on label.inf-lever__card { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .inf-lever.is-on .inf-lever__key { color: var(--dlf-brand-dark); }
+.dlf .inf-lever.is-on .inf-lever__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Lever 3 is assigned by default: a muted checked card with a lock, not a control the user can change */
+.dlf .dlf-card .inf-lever.is-locked label.inf-lever__card { position: relative; padding-right: 32px; border-color: var(--dlf-line); background: #F7F9FB; cursor: default; }
+.dlf .inf-lever.is-locked .inf-lever__key { color: var(--dlf-ink-soft); }
+.dlf .inf-lever.is-locked .inf-lever__box { border-color: var(--dlf-ink-soft); background-color: var(--dlf-ink-soft); }
+.dlf .inf-lever__locked { margin-top: 4px; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-lever__lock { position: absolute; top: 11px; right: 11px; color: var(--dlf-muted); }
+.dlf .inf-lever__card input:focus-visible + .inf-lever__box { box-shadow: var(--dlf-focus-ring); }
+.dlf .inf-levers > .inf-other { margin-top: 0; }
+/* Read-only: the chosen themes only, without the box */
+.dlf.inf.is-readonly .dlf-card label.inf-lever__card { cursor: default; }
+@media (max-width: 991px) {
+  .dlf .inf-levers__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .dlf .inf-levers__grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---- Intellectual property rights: the note, the owner, then three Yes / No questions ---- */
+.dlf .inf-ip { display: flex; flex-direction: column; gap: 16px; }
+.dlf .dlf-card.inf-ip > .dlf-card__title { margin: 0; }
+.dlf .inf-ip .dlf-note { margin: 0; }
+.dlf .inf-ip .dlf-note__text strong { font-weight: 600; }
+.dlf .inf-ip__owner > .form-group { margin-bottom: 0; }
+.dlf .inf-ip__owner .select,
+.dlf .inf-ip__owner .select2-container { width: 100% !important; }
+.dlf .inf-ip__owner .inf-other { margin-top: 10px; }
+.dlf .inf-ip__questions { display: flex; flex-direction: column; gap: 8px; }
+.dlf .inf-ip__questions .inf-question { align-items: center; padding: 10px 14px; }
+.dlf .inf-ip__questions .inf-question__text { padding-top: 0; }
+.dlf .inf-ip__questions .inf-segmented .radioFlat label { min-width: 60px; text-align: center; }
+.dlf .inf-question__empty { margin: 0; padding: 0 10px; font: 400 13.5px/30px Figtree, sans-serif; color: var(--dlf-muted); }
+/* The owner's QA bubble sits on the label row, as in the design, instead of beside the select */
+.dlf .inf-ip__owner > .feedback-flex-items { position: relative; display: block; }
+.dlf .inf-ip__owner > .feedback-flex-items > .commentNumberContainer { position: absolute; top: -4px; right: 0; margin: 0; }
+.dlf .inf-ip__owner > .feedback-flex-items > .select > label { display: block; min-height: 26px; padding-right: 40px; }
+.dlf .inf-ip__owner > label { display: block; margin: 0 0 6px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-ip__value { margin: 0; font: 400 14px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ══════════ Read-only (closed cycle or no edit permission) ══════════
+   The page reads as text: no required marks, no editing instructions, nothing that looks clickable. */
+.dlf.inf.is-readonly .requiredTag { display: none !important; }
+.dlf.inf.is-readonly #inf-partners > .dlf-note,
+.dlf.inf.is-readonly .inf-indicators .dlf-link,
+.dlf.inf.is-readonly #addPartnerText p + p,
+.dlf.inf.is-readonly #addPartnerText > a.popup,
+.dlf.inf.is-readonly .inf-externals .helpLabel,
+.dlf.inf.is-readonly .inf-externals .sortableInstructions,
+.dlf.inf.is-readonly .geographicScopeMessage,
+.dlf.inf.is-readonly .block-hasSpecifiedOutputCountries > .feedback-flex-items:has(> label[for="projectInnovations.geographicScopeTopic"]),
+.dlf.inf.is-readonly .inf-contacts__count,
+.dlf.inf.is-readonly #inf-bsel > .inf-inlineNote,
+.dlf.inf.is-readonly #inf-comps .inf-card__head + .dlf-hint,
+.dlf.inf.is-readonly #inf-rl > .scaling > .dlf-note,
+.dlf.inf.is-readonly .inf-evidNotice { display: none !important; }
+
+/* Label / value rows (actors, evidence) */
+.dlf .inf-ro { display: flex; flex-direction: column; margin: 0; }
+.dlf .inf-ro__row { display: grid; grid-template-columns: 235px minmax(0, 1fr); gap: 16px; padding: 9px 0; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-ro__row:first-child { border-top: 0; padding-top: 2px; }
+.dlf .inf-ro dt { font: 600 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-ro dd { margin: 0; min-width: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); overflow-wrap: anywhere; }
+/* One empty state for every read-only field: "Not provided", muted */
+.dlf .inf-ro__empty,
+.dlf .inf-vc__empty,
+.dlf.inf.is-readonly .fieldEmpty { display: block; margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-subtle); }
+.dlf .inf-ro__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dlf .inf-ro__link { color: var(--dlf-brand); text-decoration: underline; word-break: break-all; }
+@media (max-width: 767px) {
+  .dlf .inf-ro__row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* Geographic scope: the scope reads as a value, the countries as chips without "+ Add" or remove */
+.dlf.inf.is-readonly #dlf-geographicScope .inf-radioCards > p { margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf.inf.is-readonly #dlf-geographicScope .select2-search--inline,
+.dlf.inf.is-readonly #dlf-geographicScope .select2-selection__choice__remove { display: none !important; }
+.dlf.inf.is-readonly #dlf-geographicScope .select2-container { pointer-events: none; }
+.dlf.inf.is-readonly #dlf-geographicScope .select2-selection--multiple { min-height: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+
+/* Contact person: only the people who were chosen */
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem:not(:has(.inputsFlat > p)) { display: none !important; }
+
+/* Readiness scale and Likert answers: shown, not clickable */
+.dlf.inf.is-readonly #inf-rl .scaling__container,
+.dlf.inf.is-readonly .inf-likert .likertScale .radioFlat { pointer-events: none; }
+.dlf.inf.is-readonly #inf-rl .scaling__container * { cursor: default !important; }
+
+/* Actors: the rows sit in the card instead of the legacy columns */
+.dlf.inf.is-readonly .actorsInnovation > .inf-ro { padding: 2px 0; }
+
+/* Evidence: number and source, then the rows */
+.dlf.inf.is-readonly .inf-evid .evidence__head { padding-right: 0; margin-bottom: 8px; }
+.dlf .inf-evid .evidence__roSource { font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem .inputsFlat > p { margin: 0; font: 500 13.5px/20px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-ro__row:last-child { padding-bottom: 0; }
+/* Only the rows count in the card's gap (the legacy hidden fields and the clearfix take none) */
+.dlf.inf.is-readonly .actorsInnovation { padding-right: 14px; }
+.dlf.inf.is-readonly .actorsInnovation > :not(.inf-ro),
+.dlf.inf.is-readonly .inf-evid .evidences > .clearfix { display: none; }
+/* Impact Area scores: the "provide evidence / Go to" instruction is for editing */
+.dlf.inf.is-readonly #inf-ia .inf-iaRow__principal { display: none !important; }
+/* Legacy CSS fades an opened .blockTitle; the open complementary innovation keeps its head */
+.dlf .inf-comp__head.opened { opacity: 1; }
+/* Read-only select values read as values, not as muted placeholders */
+.dlf.inf.is-readonly .selectList > p { margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+/* Complementary innovation functions: only the chosen ones, as chips, without the "select multiple" help */
+.dlf.inf.is-readonly .inf-comp__functions-field .helpLabel,
+.dlf.inf.is-readonly .inf-comp__function:not(:has(.inputsFlat > p)) { display: none !important; }
+.dlf.inf.is-readonly .inf-comp__functionList { display: flex; flex-wrap: wrap; flex: 1 1 100%; width: 100%; gap: 6px; padding: 0; border: 0; background: none; }
+.dlf.inf.is-readonly .inf-comp__function .inputsFlat > p {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin: 0;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+/* customForm prints read-only labels muted (label.readOnly); they match the other labels of the card */
+.dlf.inf.is-readonly .dlf-card label.readOnly { color: var(--dlf-ink); }
+
+/* Radios read-only: the whole control stays, the choice shows, nothing reacts */
+.dlf.inf.is-readonly .radioFlat input:disabled + label,
+.dlf.inf.is-readonly .radioFlat input:disabled + label * { cursor: default !important; }
+.dlf.inf.is-readonly .radioFlat input:disabled + label { opacity: 1; pointer-events: none; }
+.dlf.inf.is-readonly .inf-radioCards .radioFlat,
+.dlf.inf.is-readonly .inf-segmented,
+.dlf.inf.is-readonly .inf-chipRadios { pointer-events: none; }
+
+/* Contact persons read-only: the chosen ones keep their ticked box */
+/* As in edit mode: box in the first column, then the initials, then the name; the card reads as chosen */
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem:has(.inputsFlat > p),
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem:has(.inputsFlat > p):hover { border-color: var(--dlf-brand); background: var(--dlf-info-bg); cursor: default; }
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem .inputsFlat > p::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 1.5px solid var(--dlf-brand);
+  border-radius: 4px;
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Organizations read-only empty state matches the others */
+.dlf.inf.is-readonly .inf-users mal-multiselect #multi-select-container > .p-component:not(:has(.p-chip))::after { color: var(--dlf-subtle); }
+/* Empty lists and an empty responsible institution read like every other empty field, without their box */
+.dlf.inf.is-readonly .elementsListComponent .panel-body:has(> .inf-ro__empty) { min-height: 0; margin: 0; padding: 0; border: 0; background: none; }
+.dlf.inf.is-readonly #dlf-partners .dlf-partnerBox:has(input.partnerInstitutionID[value="-1"]),
+.dlf.inf.is-readonly #dlf-partners .dlf-partnerBox:has(input.partnerInstitutionID[value="-1"]) .deliverablePartnerItem { padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+/* "Select ..." instructions are for editing */
+.dlf.inf.is-readonly .inf-vc__help { display: none; }
+/* Read-only region chips have no remove button: the same space on both sides */
+.dlf.inf.is-readonly .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement { padding-right: 10px; }

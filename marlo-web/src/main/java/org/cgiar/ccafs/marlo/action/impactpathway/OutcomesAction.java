@@ -603,7 +603,7 @@ public class OutcomesAction extends BaseAction {
                           mile.setYear(y);
                       } catch (NumberFormatException e) {
                           // Log a warning if the year format is invalid instead of silently ignoring it
-                          LOG.warn("Formato de año inválido para milestone " + j + ": " + yearRaw);
+                          LOG.warn("Invalid year format for milestone {}: {}", j, yearRaw);
                       }
                   }
                   currentOutcome.getMilestones().add(mile);
@@ -1419,11 +1419,18 @@ public class OutcomesAction extends BaseAction {
         // A milestone submitted without its unit (partial binding) must not NPE
         Long unitId =
           incomingMilestone.getSrfTargetUnit() != null ? incomingMilestone.getSrfTargetUnit().getId() : null;
+        // Resolved onto the incoming milestone, like the lookups above: copyFields() below copies
+        // srfTargetUnit from it, so a raw form id (-1 or unknown) would otherwise reach the insert
+        // and fail the target_unit_id foreign key
         if (unitId != null && unitId != -1) {
-            SrfTargetUnit unit = srfTargetUnitManager.getSrfTargetUnitById(unitId);
-            milestone.setSrfTargetUnit(unit); // Reemplaza el objeto completo
+          SrfTargetUnit unit = srfTargetUnitManager.getSrfTargetUnitById(unitId);
+          if (unit == null) {
+            LOG.warn("Target unit {} does not exist, so milestone {} is saved without a unit", unitId,
+              incomingMilestone.getComposeID());
+          }
+          incomingMilestone.setSrfTargetUnit(unit);
         } else {
-            milestone.setSrfTargetUnit(null);
+          incomingMilestone.setSrfTargetUnit(null);
         }
 
         // copyFields() copies nulls and `milestone` is the row loaded from the DB, so any

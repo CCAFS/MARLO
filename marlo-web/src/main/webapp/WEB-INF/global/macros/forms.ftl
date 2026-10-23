@@ -44,7 +44,7 @@
           [/#if]
         [/#if]
       [#else] 
-        ${requiredText}[@s.text name="form.values.fieldEmpty" /]
+        ${requiredText}<span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>
       [/#if]
       
       </p>
@@ -101,7 +101,7 @@
       <input type="hidden" name="${name}" id="${name}" value="${customValue}" class="[#if className != "-NULL"] ${className}[/#if]  ${required?string('required','optional')}" />
       [#-- Show custom value --]
       <p class="${allowTextEditor?string('decodeHTML trumbowyg-editor', '')}">
-        [#if (customValue?has_content)!false]${customValue?markup_string?replace('\n', '\\lbr\\g')}[#else]${requiredText}[@s.text name=fieldEmptyText /][/#if]
+        [#if (customValue?has_content)!false]${customValue?markup_string?replace('\n', '<br>')?no_esc}[#else]${requiredText}<span class="fieldEmpty">[@s.text name=fieldEmptyText /]</span>[/#if]
       </p>
     [/#if] 
   </div>
@@ -151,7 +151,7 @@
       [/#if]
     [#elseif keyFieldName == ""]  
       [#assign requiredText][#if required && editable]<span class="fieldError">[@s.text name="form.values.required" /]</span>[/#if][/#assign] 
-      ${requiredText}  [@s.text name="form.values.fieldEmpty" /]
+      ${requiredText}  <span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>
     [#else]
       ${customValue}
     [/#if] 
@@ -295,12 +295,12 @@
             [#assign cleanKey = (key?is_markup_output)?then(key?markup_string, key)]
             [#assign customValue][#if !stringKey][@s.property value="${listName}[${cleanKey}]"/][#else][@s.property value="${listName}['${cleanKey}']"/][/#if][/#assign]
             [#if (key?markup_string == "-1") || (customValue?markup_string == "-1")]
-              ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
+              ${requiredText}   <span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>
             [#elseif customValue?has_content]
               ${customValue}
             [#else]
               [#if !(key?has_content)]
-                ${requiredText}   [@s.text name="form.values.fieldEmpty" /]
+                ${requiredText}   <span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>
               [#else]
                 
                [#if key?markup_string!="-1"]
@@ -310,10 +310,12 @@
               [/#if]
             [/#if]
           [#else]
+            [#-- Plain assigns, not captures: under auto-escaping a capture is markup, and the path built from it below
+                 reached OGNL as something it could not resolve, so every read-only select printed "Not provided" --]
             [#if name?contains(".id")]
-              [#assign customName]${name?replace('.id','')}[/#assign]
+              [#assign customName = name?replace('.id','')]
             [#else]
-              [#assign customName]${name}[/#assign]
+              [#assign customName = name]
             [/#if]
             [#assign customValue][@s.property value="${customName}.${displayFieldName}"/][/#assign]
             [#if value=="-NULL"] 
@@ -322,13 +324,13 @@
               [#elseif forcedValue?has_content]
                 ${forcedValue}
               [#else]
-                ${requiredText} [@s.text name="form.values.fieldEmpty" /]  
+                ${requiredText} <span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>  
               [/#if]
             [#else]
               [#if customValue?has_content]
                 ${customValue}
               [#elseif value=="-1"]
-                ${requiredText} [@s.text name="form.values.fieldEmpty" /]
+                ${requiredText} <span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>
               [#else]
                 ${valueName} 
               [/#if] 
@@ -370,7 +372,7 @@
       [/#list]
     </select>
   [#else]
-    <p>[#if (element[keyFieldName]??)!false]${(element[displayFieldName])!(element.name)!'null'}[#else][@s.text name="form.values.fieldEmpty" /][/#if]</p>
+    <p>[#if (element[keyFieldName]??)!false]${(element[displayFieldName])!(element.name)!'null'}[#else]<span class="fieldEmpty">[@s.text name="form.values.fieldEmpty" /]</span>[/#if]</p>
     <input type="hidden" name="${name}" value="${valueSelected}" />
   [/#if]
 [/#macro]
@@ -676,7 +678,9 @@
   [#if editable]
   <div class="feedback-flex-items radioFlat-flex"></div>
   <div class="fieldReference radioFlat [#if columns > 1]col-md-${columns}[/#if] ${inline?string('radio-inline', '')} ${cssClassContainer} ">
-    <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] />
+    [#-- disabled arrives as a boolean or, from the Likert macro, as "true" / "false" --]
+    [#local isDisabled = (disabled?is_boolean)?then(disabled, (disabled?string == "true")) /]
+    <input id="${id}" class="radio-input ${cssClass}" type="radio" name="${name}" value="${value}" [#if checked]checked[/#if] [#if isDisabled]disabled[/#if] />
     [#local labelValue][#if i18nkey?has_content][@s.text name=i18nkey /][#else]${label}[/#if][/#local]
     <label for="${id}" class="radio-label ${cssClassLabel}">
       [#-- Si labelValue es markup_output, convertirlo a texto plano --]
@@ -1288,13 +1292,19 @@
 
 
     [#if editable]
-      <label for="${customName}.reference" class="col-md-12">[@s.text name="projectInnovations.evidence.title" /]</label>
-
-      <div class="col-md-4">
-        [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
-      </div>
-      <div class="col-md-4">
-        [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /] 
+      [#-- A2-2613 redesign: the evidence number, then its source as a segmented control (the radios keep their names
+           and classes: projectInnovations.js reindexes them) --]
+      <div class="evidence__head">
+        <span class="evidence__n" aria-hidden="true"></span>
+        <label for="${customName}.reference" class="sr-only">[@s.text name="projectInnovations.evidence.title" /]</label>
+        <div class="inf-segmented evidence__source" role="radiogroup" aria-label="[@s.text name="projectInnovations.evidence.title" /]">
+          <div class="col-md-4">
+            [@customForm.radioFlat id="${customName}.evidenceByDeliverable.true" name="${customName}.evidenceByDeliverable" i18nkey=labelName value="true" checked=((element.evidenceByDeliverable??) && (evidenceByDeliverable)) cssClass="radioType-${class}[${index}]" editable=true /]
+          </div>
+          <div class="col-md-4">
+            [@customForm.radioFlat id="${customName}.evidenceByDeliverable.false" name="${customName}.evidenceByDeliverable" i18nkey="projectInnovations.evidence.evidenceByLink" value="false" checked=((element.evidenceByDeliverable??) && (!evidenceByDeliverable)) cssClass="radioType-${class}_${index}" editable=true /]
+          </div>
+        </div>
       </div>
       
       [#if isDeliverable]
@@ -1306,36 +1316,25 @@
           [@customForm.select name="${customName}.innovation.id" i18nkey="projectInnovations.evidence.innovation" editable=true required=true listName="innovationList" keyFieldName="id" displayFieldName="InnovationsComposedName" className="evidence evidenceInnovation${class}" /]
         </div>
       [/#if]
+      [#-- A2-2613 redesign: Evidence/Reference | URL, then Evidence type: Category | Sub-category, in two columns.
+           .evidenceType holds both selects: projectInnovations.js loads the sub-categories of the chosen category. --]
       <div class="evidenceByLink col-md-12 ${blockNoName}" style="display:${(((element.evidenceByDeliverable??) && (!evidenceByDeliverable)))?then('block','none')}">
-        <div class="col-md-12 row">
-          <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">Evidence/Reference[@customForm.req required=true  /]
+        <div class="evidence__grid evidenceType">
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.redesign.evidence.reference" /][@customForm.req required=true /]</span>
+            [@customForm.input name="${customName}.reference" placeholder="" showTitle=false i18nkey=""  editable=editable required=true /]
           </div>
-          <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">URL[@customForm.req required=true  /]
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.redesign.evidence.url" /][@customForm.req required=true /]</span>
+            [@customForm.input name="${customName}.link" placeholder="projectInnovations.redesign.evidence.urlPlaceholder" showTitle=false i18nkey="" editable=editable required=true /]
           </div>
-        </div>
-        <div class="col-md-12">
-          <div class="col-md-6">
-            [@customForm.input name="${customName}.reference" placeholder="projectInnovations.evidence.reference" showTitle=false i18nkey=""  editable=editable required=true /]
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.redesign.evidence.category" /][@customForm.req required=true /]</span>
+            [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
           </div>
-          <div class="col-md-6">
-            [@customForm.input name="${customName}.link" placeholder="projectInnovations.evidence.link" showTitle=false i18nkey="" editable=editable required=true /]
-          </div>
-        </div>
-        <div class="col-md-12">
-          <div class="col-md-12 evidenceType">
-            <label for="${customName}.evidenceType" class="col-md-12">[@s.text name="projectInnovations.evidence.evidenceType" /]</label>
-              <div class="col-md-12 row">
-              <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.category" /][@customForm.req required=true  /]
-              </div>
-              <div class="col-sm-6 colTitleCenter" style="font-weight: 600; text-align: center;">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true  /]
-              </div>
-            </div>
-            <div class="col-md-6">
-              [@customForm.select name="${customName}.deliverableType.deliverableCategory.id" label="projectInnovations.evidence.category" showTitle=false editable=true required=true listName="deliverableTypeParent" keyFieldName="id" displayFieldName="name" className=" form-control input-sm typeSelect" /]
-            </div>
-            <div class="col-md-6">
-              [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
-            </div>            
+          <div class="evidence__field">
+            <span class="evidence__label">[@s.text name="projectInnovations.evidence.subCategory" /][@customForm.req required=true /]</span>
+            [@customForm.select name="${customName}.deliverableType.id" label="projectInnovations.evidence.subCategory" showTitle=false editable=true required=true listName="deliverableSubTypes" keyFieldName="id" displayFieldName="name" className=" form-control input-sm subTypeSelect" /]
           </div>
         </div>
       </div>
@@ -1370,97 +1369,53 @@
         [@customForm.textArea name="${customName}.evidenceSource"  i18nkey="projectInnovations.evidence.provideEvidence" placeholder="" className="limitWords-80" isNote=true helpIcon=false required=false editable=editable isMainTitle=false isWidthFull=true /]         
       </div>
     [#else]
-      [#-- Evidence source--]
-      <div class="col-md-12 margin-top-10">
-        <div class="col-md-12 margin-buttom-10">
-          <label class="col-md-12">Source of evidence:</label>
-          <span class="col-md-12">
-            <span class="evidenceSource">${evidenceByDeliverable?then('Deliverable', 'Link')}</span>
-          </span>
-        </div>
-
-        [#-- Evidence Type --]
-        [#if evidenceByDeliverable]
-          [#if isDeliverable]
-            <div class="col-md-12 margin-buttom-10">
-              <label class="col-md-12">
-                Deliverable Name:
-              </label> 
-              <span class="col-md-12">
-                <span class="evidenceDeliverable">${(element.deliverable.composedName)!}</span>
-              </span>
-            </div>
-          [#else]
-            <div class="col-md-12 margin-buttom-10">
-              <label class="col-md-12">
-                Innovation Name:
-              </label> 
-              <span class="col-md-12">
-                <span class="evidenceDeliverable">${(element.innovation.composedName)!}</span>
-              </span>
-            </div>
-          [/#if]
-        [#else]
-            <div class="col-md-12 margin-buttom-10">
-              <label class="col-md-12">
-                Link information:
-              </label> 
-              <span class="col-md-12">
-                <b>Evidence/Reference: </b><span class="evidenceDeliverable">${(element.reference)!}</span>
-              </span>
-              <span class="col-md-12">
-                <b>URL: </b><a href="${element.link!''}" class="evidenceDeliverable" style="word-break: break-all;">${(element.link)!}</a>
-              </span>
-              <span class="col-md-12">
-                <b>Evidence Type: </b>
-                <span class="evidenceType">
-                  <span class="evidenceCategory">${(element.deliverableType.deliverableCategory.name)!}</span> /
-                  <span class="evidenceSubCategory">${(element.deliverableType.name)!}</span>
-                </span>
-              </span>
-            </div>
-        [/#if]
-
-        [#-- Evidence Impact Area Tags --]
-        <div class="col-md-12 margin-buttom-10">
-          <label class="col-md-12">
-            Impact Area Tags / Innovation Readiness:
-          </label>
-
-          <ul class="col-md-12">
-            [#if isGender]
-              <li class="col-md-12" style="margin-left: 24px;">Gender</li>
-            [/#if]
-            [#if isClimateChange]
-              <li class="col-md-12" style="margin-left: 24px;">Climate Change</li> 
-            [/#if]
-            [#if isNutrition]
-              <li class="col-md-12" style="margin-left: 24px;">Nutrition</li>
-            [/#if]
-            [#if isEnvironmental]
-              <li class="col-md-12" style="margin-left: 24px;">Environmental</li>
-            [/#if]
-            [#if isPoverty]
-              <li class="col-md-12" style="margin-left: 24px;">Poverty</li>
-            [/#if]
-            [#if isInnovationReadiness]
-              <li class="col-md-12" style="margin-left: 24px;">Innovation Readiness</li>
-            [/#if]
-          </ul>
-        </div>
-
-        [#-- Evidence Source --]
-        <div class="col-md-12 margin-buttom-10">
-          <label class="col-md-12">
-            Details of where evidence can be found within the source link (e.g. page number, slide number, table number)::
-          </label>
-          <span class="col-md-12">
-            <span class="evidenceSource">${(element.evidenceSource)!"No provided"}</span>
-          </span>
-        </div>
-
+      [#-- Read-only (A2-2613 redesign): the evidence number and its source, then label / value rows --]
+      [#local notProvided][@s.text name="projectInnovations.redesign.notProvided" /][/#local]
+      <div class="evidence__head">
+        <span class="evidence__n" aria-hidden="true"></span>
+        <span class="evidence__roSource">[#if evidenceByDeliverable][@s.text name=isDeliverable?then("projectInnovations.redesign.ro.sourceDeliverable", "projectInnovations.redesign.ro.sourceInnovation") /][#else][@s.text name="projectInnovations.redesign.ro.sourceLink" /][/#if]</span>
       </div>
-        
+      <dl class="inf-ro">
+        [#if evidenceByDeliverable]
+          [#local evidenceName = isDeliverable?then((element.deliverable.composedName)!"", (element.innovation.composedName)!"") /]
+          <div class="inf-ro__row">
+            <dt>[@s.text name=isDeliverable?then("projectInnovations.redesign.ro.deliverable", "projectInnovations.redesign.ro.innovation") /]</dt>
+            <dd>[#if evidenceName?has_content]${evidenceName}[#else]<span class="inf-ro__empty">${notProvided}</span>[/#if]</dd>
+          </div>
+        [#else]
+          <div class="inf-ro__row">
+            <dt>[@s.text name="projectInnovations.redesign.evidence.reference" /]</dt>
+            <dd>[#if (element.reference)?has_content]${element.reference}[#else]<span class="inf-ro__empty">${notProvided}</span>[/#if]</dd>
+          </div>
+          <div class="inf-ro__row">
+            <dt>[@s.text name="projectInnovations.redesign.evidence.url" /]</dt>
+            <dd>[#if (element.link)?has_content]<a href="${element.link}" target="_blank" rel="noopener" class="inf-ro__link">${element.link}</a>[#else]<span class="inf-ro__empty">${notProvided}</span>[/#if]</dd>
+          </div>
+          <div class="inf-ro__row">
+            <dt>[@s.text name="projectInnovations.redesign.ro.evidenceType" /]</dt>
+            <dd>[#if (element.deliverableType.name)?has_content]${(element.deliverableType.deliverableCategory.name)!}[#if (element.deliverableType.deliverableCategory.name)?has_content] / [/#if]${element.deliverableType.name}[#else]<span class="inf-ro__empty">${notProvided}</span>[/#if]</dd>
+          </div>
+        [/#if]
+        <div class="inf-ro__row">
+          <dt>[@s.text name="projectInnovations.redesign.ro.tags" /]</dt>
+          <dd>
+            [#if isGender || isClimateChange || isNutrition || isEnvironmental || isPoverty || isInnovationReadiness]
+              <span class="inf-ro__chips">
+                [#if isGender]<span class="inf-vc__value">[@s.text name="projectInnovations.evidence.gender" /]</span>[/#if]
+                [#if isClimateChange]<span class="inf-vc__value">[@s.text name="projectInnovations.evidence.climateChange" /]</span>[/#if]
+                [#if isNutrition]<span class="inf-vc__value">[@s.text name="projectInnovations.evidence.nutrition" /]</span>[/#if]
+                [#if isEnvironmental]<span class="inf-vc__value">[@s.text name="projectInnovations.evidence.environmental" /]</span>[/#if]
+                [#if isPoverty]<span class="inf-vc__value">[@s.text name="projectInnovations.evidence.poverty" /]</span>[/#if]
+                [#if isInnovationReadiness]<span class="inf-vc__value">[@s.text name="projectInnovations.evidence.innovationReadiness" /]</span>[/#if]
+              </span>
+            [#else]<span class="inf-ro__empty">${notProvided}</span>[/#if]
+          </dd>
+        </div>
+        <div class="inf-ro__row">
+          <dt>[@s.text name="projectInnovations.redesign.ro.details" /]</dt>
+          <dd>[#if (element.evidenceSource)?has_content]${element.evidenceSource}[#else]<span class="inf-ro__empty">${notProvided}</span>[/#if]</dd>
+        </div>
+      </dl>
     [/#if]
 
     [#if editable]<div class="removeElement sm removeIcon removeButtonReference${class}" title="Remove"></div>[/#if]

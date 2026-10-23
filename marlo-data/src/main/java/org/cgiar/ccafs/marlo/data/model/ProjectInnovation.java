@@ -82,6 +82,12 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   private List<ProjectInnovationPartnership> partnerships;
   private Set<ProjectInnovationAllianceLevers> projectInnovationAllianceLevers = new HashSet<>(0);
   private List<ProjectInnovationAllianceLevers> allianceLevers;
+  // A2-2613: value chains of the innovation, all phases, and the ones of the phase being edited
+  private Set<ProjectInnovationValueChain> projectInnovationValueChains = new HashSet<>(0);
+  private List<ProjectInnovationValueChain> valueChains;
+  // A2-2613: institutions that co-developed the bundle, all phases, and the ones of the phase being edited
+  private Set<ProjectInnovationCoDeveloper> projectInnovationCoDevelopers = new HashSet<>(0);
+  private List<ProjectInnovationCoDeveloper> coDevelopers;
   private Set<ProjectInnovationSDG> projectInnovationSDGs = new HashSet<>(0);
   private List<ProjectInnovationSDG> sdgs;
 
@@ -476,6 +482,18 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
       .collect(Collectors.toList()));
   }
 
+  public List<ProjectInnovationCoDeveloper> getCoDevelopers() {
+    return coDevelopers;
+  }
+
+  public Set<ProjectInnovationCoDeveloper> getProjectInnovationCoDevelopers() {
+    return projectInnovationCoDevelopers;
+  }
+
+  public Set<ProjectInnovationValueChain> getProjectInnovationValueChains() {
+    return projectInnovationValueChains;
+  }
+
   public List<ProjectInnovationToolCategory> getToolCategories() {
     return toolCategories;
   }
@@ -757,5 +775,25 @@ public class ProjectInnovation extends MarloAuditableEntity implements java.io.S
   @Override
   public String toString() {
     return "ProjectInnovation [id=" + this.getId() + ", isActive=" + this.isActive() + "]";
+  }
+
+  public List<ProjectInnovationValueChain> getValueChains() {
+    return valueChains;
+  }
+
+  public void setCoDevelopers(List<ProjectInnovationCoDeveloper> coDevelopers) {
+    this.coDevelopers = coDevelopers;
+  }
+
+  public void setProjectInnovationCoDevelopers(Set<ProjectInnovationCoDeveloper> projectInnovationCoDevelopers) {
+    this.projectInnovationCoDevelopers = projectInnovationCoDevelopers;
+  }
+
+  public void setProjectInnovationValueChains(Set<ProjectInnovationValueChain> projectInnovationValueChains) {
+    this.projectInnovationValueChains = projectInnovationValueChains;
+  }
+
+  public void setValueChains(List<ProjectInnovationValueChain> valueChains) {
+    this.valueChains = valueChains;
   }
 }

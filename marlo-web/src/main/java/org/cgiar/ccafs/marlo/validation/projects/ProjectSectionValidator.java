@@ -130,7 +130,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -701,6 +700,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
       if (innovation.getProjectInnovationAllianceLevers() != null) {
         innovation.setAllianceLevers(new ArrayList<>(innovation.getProjectInnovationAllianceLevers().stream()
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Innovation value chains (A2-2613)
+      if (innovation.getProjectInnovationValueChains() != null) {
+        innovation.setValueChains(new ArrayList<>(innovation.getProjectInnovationValueChains().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Institutions that co-developed the bundle (A2-2613)
+      if (innovation.getProjectInnovationCoDevelopers() != null) {
+        innovation.setCoDevelopers(new ArrayList<>(innovation.getProjectInnovationCoDevelopers().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
       // Innovations SDGs
@@ -1694,7 +1705,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           }
         }
       } catch (Exception e) {
-        Log.error("error trying to set expected study alliance lever " + e);
+        logger.error("error trying to set expected study alliance lever", e);
       }
 
       // Expected Study allianceLeversOutcomes List

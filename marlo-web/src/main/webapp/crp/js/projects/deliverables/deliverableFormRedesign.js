@@ -31,24 +31,38 @@ $(document).ready(function() {
   // The state compares the form with the one the page loaded, so undoing an edit brings "All changes saved"
   // back. The snapshot waits for every ready handler: the deliverable scripts rewrite some values on load
   // (select2, the trainees totals, the remainingPending flag), and loading alone must not read as an edit.
+  // Read-only, with no last edit to report and no button to show, the bar would be an empty white strip
+  if(!$.trim($saveBar.text()) && !$saveBar.find('button:visible, a.button-save:visible').length) {
+    $saveBar.hide();
+  }
+
   var $form = $saveBar.closest('form');
   var $state = $saveBar.find('[data-dlf-save-state]');
   var loadedForm = null;
+
+  // Left out of the comparison: #indexTab (the open tab, not an edit) and the fields inside [data-dlf-dirty-ignore],
+  // which fill in after the snapshot (an AJAX component). The page compares those itself and answers through the
+  // dlfExtraDirty function on the form, then triggers dlf:refresh.
+  function formState() {
+    return $form.find(':input').not('#indexTab, [data-dlf-dirty-ignore] :input').serialize();
+  }
 
   function refreshSaveState() {
     if(loadedForm === null || !$state.length) {
       return;
     }
-    var dirty = $form.serialize() !== loadedForm;
+    var extraDirty = $form.data('dlfExtraDirty');
+    var dirty = formState() !== loadedForm || (typeof extraDirty === 'function' && extraDirty());
     $saveBar.toggleClass('is-dirty', dirty);
     $state.text($state.attr(dirty ? 'data-unsaved' : 'data-saved'));
   }
 
   if($state.length && $form.length) {
     setTimeout(function() {
-      loadedForm = $form.serialize();
+      loadedForm = formState();
     }, 0);
     $form.on('input change', 'input, textarea, select', refreshSaveState);
+    $form.on('dlf:refresh', refreshSaveState);
     // List components and the yes/no switches change hidden inputs without firing change on them.
     $form.on('click', '.button-label, .removeElement, .removeActivity, .removeFundingSource, .removePartnerItem',
         function() {
@@ -167,7 +181,7 @@ $(document).ready(function() {
   // label is kept on the select (data-dlf-add-label, also on the empty option for clones) and re-applied to the
   // rendered text whenever the form changes.
   function applyAddLabels() {
-    $root.find('select[data-dlf-add-label]').each(function() {
+    $root.find('select[data-dlf-add-label]').not('[multiple]').each(function() {
       var value = $(this).val();
       if(value && value !== '-1') {
         return;
@@ -413,7 +427,9 @@ $(document).ready(function() {
       }
     });
   }
-  setAddLabel($root.find('.regionalBlock select'), text('add-region'));
+  // Only the single region selects: on a multi-select (the countries under a regional scope) the rendered element
+  // is the list of chips and the search box, and writing the label into it wiped them out.
+  setAddLabel($root.find('.regionalBlock select').not('[multiple]'), text('add-region'));
 
   // The countries multi-select reads as the region field: its search box is the "+ Add country..." prompt after
   // the chips. select2 clears the placeholder whenever a country is chosen and redraws the choices on every

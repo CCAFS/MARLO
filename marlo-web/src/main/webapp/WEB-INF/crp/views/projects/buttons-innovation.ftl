@@ -29,7 +29,8 @@
       
       [#-- Save Button --]
       [@s.submit type="button" name="save" cssClass="button-save"]<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> <span class="saveText">[@s.text name="form.buttons.save" /]</span> [/@s.submit]
-    [#elseif canEdit]
+    [#-- In a closed phase only a super admin can edit (EditInnovationInterceptor) --]
+    [#elseif canEdit && (((action.getActualPhase().editable)!false) || action.canAccessSuperAdmin())]
       [#-- Edit Button --]
       <a href="[@s.url][@s.param name="innovationID" value=innovationID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" class="form-button button-edit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> [@s.text name="form.buttons.edit" /]</a>
     [/#if]

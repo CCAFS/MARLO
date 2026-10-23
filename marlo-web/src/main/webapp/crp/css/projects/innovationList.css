@@ -1,0 +1,151 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster innovations list (A2-2613 redesign).
+ * projectInnovationList.ftl reuses the deliverables list (deliverableList.css,
+ * .dlv-*); this file only carries what the innovations list adds: the readiness
+ * badge, the shared-from tag, the status line, the inline delete confirm with its
+ * justification and the empty state. Scoped under .inv.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* The search lives in the filter row here, not in the toolbar */
+.inv .dlv-search { min-width: 220px; max-width: 320px; }
+.inv .inv-search { height: 32px; }
+.inv .inv-select--type select { min-width: 130px; max-width: 220px; text-overflow: ellipsis; }
+
+.inv .dlv-tag.inv-tag--new { background: var(--dlv-ok-bg); border-color: var(--dlv-ok-border); color: var(--dlv-ok); font-weight: 700; }
+
+.inv-shared {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 19px;
+  padding: 0 7px;
+  border-radius: 5px;
+  background: var(--dlv-info-bg);
+  border: 1px solid var(--dlv-info-border);
+  font: 600 11.5px Figtree, sans-serif;
+  color: var(--dlv-primary-dark);
+  white-space: nowrap;
+}
+
+.inv-td--type { padding-right: 8px; font: 500 12.5px/1.4 Figtree, sans-serif; color: var(--dlv-ink); text-wrap: pretty; }
+.inv-td--type.is-empty { color: var(--dlv-subtle); }
+.inv-td--year { font: 500 13px Figtree, sans-serif; color: var(--dlv-ink); font-variant-numeric: tabular-nums; }
+
+/* ---------- Readiness badge: slate at 0, brand blue mid-scale, green at 9 ---------- */
+
+.inv-td--rl { display: flex; align-items: center; gap: 8px; }
+.inv-rl {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #6B7280;
+  color: #fff;
+  font: 700 12px Figtree, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.inv-rl--1 { background: #5F6B7A; }
+.inv-rl--2 { background: #4F6E86; }
+.inv-rl--3 { background: #2F6F92; }
+.inv-rl--4 { background: #0277A2; }
+.inv-rl--5 { background: #13788A; }
+.inv-rl--6 { background: #1F7A6A; }
+.inv-rl--7 { background: #2E7D4F; }
+.inv-rl--8 { background: #2E6B2F; }
+.inv-rl--9 { background: #1F5A21; }
+.inv-rl__name { font: 500 12.5px/1.3 Figtree, sans-serif; color: var(--dlv-ink); text-wrap: pretty; }
+
+/* ---------- Status ---------- */
+
+.inv-status { display: flex; align-items: center; gap: 7px; font: 600 12.5px Figtree, sans-serif; }
+.inv-status--ok { color: var(--dlv-ok); }
+.inv-status--warn { color: var(--dlv-warn); }
+.inv-status--none { color: var(--dlv-subtle); }
+
+/* ---------- Actions: PDF plus delete, right-aligned ---------- */
+
+.inv .inv-th--actions { justify-content: flex-end; }
+.inv .inv-td--actions { display: flex; justify-content: flex-end; gap: 2px; padding: 0; }
+.inv .inv-td--actions a.dlv-iconBtn:hover { background: var(--dlv-info-bg); }
+
+/* ---------- Inline delete confirm with justification ---------- */
+
+.inv-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 12px 12px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--dlv-danger-bg);
+  border: 1px solid var(--dlv-danger-border);
+}
+.inv-confirm__head { display: flex; flex-direction: column; gap: 2px; }
+.inv-confirm__title { font: 600 13.5px Figtree, sans-serif; color: var(--dlv-ink); }
+.inv-confirm__note { font: 400 12.5px Figtree, sans-serif; color: var(--dlv-ink-soft); }
+.inv .inv-confirm__field { display: flex; flex-direction: column; gap: 5px; margin: 0; font-weight: normal; }
+.inv-confirm__label { font: 600 12.5px Figtree, sans-serif; color: var(--dlv-ink); }
+.inv-confirm__optional { font-weight: 400; color: var(--dlv-muted); }
+.inv .inv-confirm__textarea {
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1px solid #DCC4BF;
+  border-radius: 7px;
+  background: #fff;
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlv-ink);
+  box-shadow: none;
+}
+.inv .inv-confirm__textarea:focus { outline: none; border-color: var(--dlv-primary); box-shadow: var(--dlv-focus-ring); }
+.inv .inv-confirm__textarea::placeholder { color: var(--dlv-subtle); }
+.inv-confirm__actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.inv-confirm .dlv-btn { height: 30px; padding: 0 12px; font-size: 12.5px; border-radius: 7px; }
+.inv-confirm .dlv-btn--ghost { color: var(--dlv-ink-soft); }
+
+/* ---------- Empty set ---------- */
+
+.inv-none {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+  text-align: center;
+}
+.inv-none__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--dlv-info-bg);
+  border: 1px solid var(--dlv-info-border);
+  color: var(--dlv-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.inv-none__title { font: 600 14.5px Figtree, sans-serif; color: var(--dlv-ink); }
+.inv-none__text { max-width: 440px; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlv-muted); text-wrap: pretty; }
+.inv-none__add { margin-top: 6px; }
+
+/* ---------- Narrow table: labelled cards, as in the deliverables list ---------- */
+
+@container (max-width: 820px) {
+  .inv .inv-td--actions { grid-column: 2; grid-row: 1; }
+  .inv .inv-td--rl[data-label],
+  .inv .inv-td--status[data-label] { align-items: center; }
+}
+
+/* Webinar note: the presentation link sits at the note's end */
+.inv .inv-webinar { flex: none; align-self: center; }
+
+/* Meta line (nature, owner): each item after the first carries its "·". The line is shifted left by the width of a
+   separator and clipped there, so an item that wraps to the start of a new line loses its separator instead of the
+   previous line ending in a dangling one. */
+.inv .dlv-meta { column-gap: 0; margin-left: -14px; clip-path: inset(0 0 0 14px); }
+.inv .dlv-meta > span { position: relative; padding-left: 14px; }
+.inv .dlv-meta > span::before { content: "\00B7"; position: absolute; left: 4px; color: var(--dlv-border-strong); }

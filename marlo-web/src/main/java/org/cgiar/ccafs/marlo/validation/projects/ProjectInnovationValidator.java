@@ -16,8 +16,10 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.projects.ProjectInnovationAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.ValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -26,18 +28,26 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationActor;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCoDeveloper;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.ValueChain;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -59,12 +69,15 @@ public class ProjectInnovationValidator extends BaseValidator {
   private boolean struts = true;
   private Boolean clearLead = false;
   private InstitutionManager institutionManager;
+  private ValueChainManager valueChainManager;
 
   @Inject
-  public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager) {
+  public ProjectInnovationValidator(GlobalUnitManager crpManager, InstitutionManager institutionManager,
+    ValueChainManager valueChainManager) {
     super();
     this.crpManager = crpManager;
     this.institutionManager = institutionManager;
+    this.valueChainManager = valueChainManager;
   }
 
   private Path getAutoSaveFilePath(ProjectInnovation innovation, long crpID, BaseAction action) {
@@ -106,6 +119,26 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
     return false;
+  }
+
+  /**
+   * Number of missing fields a tab added after startIndex, for the tab's missing-fields pill in the innovation form.
+   *
+   * @param action the action collecting the missing fields
+   * @param tab the tab key read by projectInnovation.ftl
+   * @param startIndex length of the missing fields before the tab was validated
+   */
+  private void recordTabMissingCount(BaseAction action, String tab, int startIndex) {
+    if (!(action instanceof ProjectInnovationAction)) {
+      return;
+    }
+    int count = 0;
+    for (String field : action.getMissingFields().substring(startIndex).split(";")) {
+      if (!field.trim().isEmpty()) {
+        count++;
+      }
+    }
+    ((ProjectInnovationAction) action).getTabMissingCounts().put(tab, count);
   }
 
   private void updateAllianceAlignmentStatus(BaseAction action, ProjectInnovation projectInnovation, int startIndex,
@@ -200,22 +233,39 @@ public class ProjectInnovationValidator extends BaseValidator {
     int innovationGeneralStart = action.getMissingFields().length();
     this.validateGeneralInformation(action, project, projectInnovation, saving);
     this.updateGeneralInformationStatus(action, projectInnovation, innovationGeneralStart, saving);
+    this.recordTabMissingCount(action, "general", innovationGeneralStart);
 
-    int innovationAllianceStart = action.getMissingFields().length();
-    this.validateAllianceAlignment(action, project, projectInnovation, saving);
-    this.updateAllianceAlignmentStatus(action, projectInnovation, innovationAllianceStart, saving);
+    // A2-2613: without innovation_alliance_alignment_active (off for every global unit, see its migration) the form
+    // has no Alliance Alignment tab, so its fields are not validated; the stored answers stay untouched.
+    if (!action.hasSpecificities(APConstants.INNOVATION_ALLIANCE_ALIGNMENT_ACTIVE)) {
+      action.setInnovationAllianceAlignmentComplete(true);
+    } else {
+      int innovationAllianceStart = action.getMissingFields().length();
+      this.validateAllianceAlignment(action, project, projectInnovation, saving);
+      this.updateAllianceAlignmentStatus(action, projectInnovation, innovationAllianceStart, saving);
+      this.recordTabMissingCount(action, "alliance", innovationAllianceStart);
+    }
 
-    int innovationOneCgiarStart = action.getMissingFields().length();
-    this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
-    this.updateOneCgiarAlignmentStatus(action, projectInnovation, innovationOneCgiarStart, saving);
+    // A2-2613: without innovation_cross_cutting_alignment_active the form has no Cross-cutting alignment (One CGIAR
+    // Alignment) tab, so its SDGs and scores are not validated; the stored ones stay untouched.
+    if (!action.hasSpecificities(APConstants.INNOVATION_CROSS_CUTTING_ALIGNMENT_ACTIVE)) {
+      action.setInnovationOneCgiarAlignmentComplete(true);
+    } else {
+      int innovationOneCgiarStart = action.getMissingFields().length();
+      this.validateOneCgiarAlignment(action, project, projectInnovation, saving);
+      this.updateOneCgiarAlignmentStatus(action, projectInnovation, innovationOneCgiarStart, saving);
+      this.recordTabMissingCount(action, "crossCutting", innovationOneCgiarStart);
+    }
 
     int innovationBundleStart = action.getMissingFields().length();
     this.validateInnovationBundle(action, project, projectInnovation, saving);
     this.updateBundleStatus(action, projectInnovation, innovationBundleStart, saving);
+    this.recordTabMissingCount(action, "bundle", innovationBundleStart);
 
     int innovationRightsStart = action.getMissingFields().length();
     this.validateInnovationRights(action, project, projectInnovation, saving);
     this.updateRightsStatus(action, projectInnovation, innovationRightsStart, saving);
+    this.recordTabMissingCount(action, "knowledge", innovationRightsStart);
 
     // The validator is called by Struts
     if (struts) {
@@ -255,6 +305,90 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
+  }
+
+  /**
+   * Validate the co-developing institutions of a bundle (A2-2613): at least one of the innovation's contributing
+   * external partners, and the institutional level.
+   *
+   * @param action base action
+   * @param projectInnovation the innovation, with the co-developers and partners of the phase (posted or loaded)
+   * @param innovationInfo the innovation info of the phase
+   */
+  private void validateCoDevelopers(BaseAction action, ProjectInnovation projectInnovation,
+    ProjectInnovationInfo innovationInfo) {
+    Set<Long> partnerIds = new HashSet<>();
+    if (projectInnovation.getContributingOrganizations() != null) {
+      for (ProjectInnovationContributingOrganization partner : projectInnovation.getContributingOrganizations()) {
+        if (partner != null && partner.getInstitution() != null && partner.getInstitution().getId() != null) {
+          partnerIds.add(partner.getInstitution().getId());
+        }
+      }
+    }
+    boolean hasCoDeveloper = false;
+    if (projectInnovation.getCoDevelopers() != null) {
+      for (ProjectInnovationCoDeveloper coDeveloper : projectInnovation.getCoDevelopers()) {
+        if (coDeveloper != null && coDeveloper.getInstitution() != null
+          && partnerIds.contains(coDeveloper.getInstitution().getId())) {
+          hasCoDeveloper = true;
+          break;
+        }
+      }
+    }
+    if (!hasCoDeveloper) {
+      action.addMessage(action.getText("projectInnovations.coDevelopers.missing"));
+      action.addMissingField("projectInnovations.coDevelopers");
+      action.getInvalidFields().put("list-innovation.coDevelopers",
+        action.getText("projectInnovations.coDevelopers.missing"));
+    }
+
+    String level = innovationInfo.getInstitutionalLevel();
+    if (level == null || !ProjectInnovationAction.INSTITUTIONAL_LEVELS.contains(level)) {
+      action.addMessage(action.getText("projectInnovations.institutionalLevel"));
+      action.addMissingField("projectInnovations.institutionalLevel");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.institutionalLevel",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
+  }
+
+  /**
+   * Validate the value chains of an innovation (A2-2613): at least one, and the other value chain (up to 10 words)
+   * when "Other" is one of them.
+   *
+   * @param action base action
+   * @param projectInnovation the innovation, with the value chains of the phase (posted or loaded)
+   * @param innovationInfo the innovation info of the phase
+   */
+  private void validateValueChains(BaseAction action, ProjectInnovation projectInnovation,
+    ProjectInnovationInfo innovationInfo) {
+    List<ValueChain> valueChains = new ArrayList<>();
+    if (projectInnovation.getValueChains() != null) {
+      for (ProjectInnovationValueChain item : projectInnovation.getValueChains()) {
+        if (item != null && item.getValueChain() != null && item.getValueChain().getId() != null) {
+          ValueChain valueChain = valueChainManager.getValueChainById(item.getValueChain().getId());
+          if (valueChain != null) {
+            valueChains.add(valueChain);
+          }
+        }
+      }
+    }
+
+    if (valueChains.isEmpty()) {
+      action.addMessage(action.getText("projectInnovations.valueChains.missing"));
+      action.addMissingField("projectInnovations.valueChains");
+      action.getInvalidFields().put("list-innovation.valueChains",
+        action.getText("projectInnovations.valueChains.missing"));
+      return;
+    }
+
+    boolean hasOther = valueChains.stream().anyMatch(ValueChain::isOther);
+    String otherValueChain = innovationInfo != null ? innovationInfo.getOtherValueChain() : null;
+    if (hasOther && !(this.isValidString(otherValueChain) && this.wordCount(otherValueChain) <= 10)) {
+      action.addMessage(action.getText("projectInnovations.otherValueChain"));
+      action.addMissingField("projectInnovations.otherValueChain");
+      action.getInvalidFields().put("input-innovation.projectInnovationInfo.otherValueChain",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
   /**
@@ -465,6 +599,11 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
     }
 
+    // A2-2613: behind innovation_value_chains_active (on for AICCRA-FSRP IV only, see its migration)
+    if (action.hasSpecificities(APConstants.INNOVATION_VALUE_CHAINS_ACTIVE)) {
+      this.validateValueChains(action, projectInnovation, innovationInfo);
+    }
+
     // Validate contributing organizations
     // NOTE -> FOR SOME REASON "CLEAR LEAD" MEANS "NOT A CLEAR LEAD", SO WE HAVE TO REVERSE THE CONDITIONAL
     if (clearLead != null && /* NO */clearLead == true) {
@@ -557,6 +696,13 @@ public class ProjectInnovationValidator extends BaseValidator {
        * action.getInvalidFields().put("list-innovation.bundles", InvalidFieldsMessages.EMPTYLIST);
        * }
        */
+      // A2-2613: co-developing institutions and institutional level (IRI 1.5), for a bundle and behind
+      // innovation_co_developing_institutions_active (on for AICCRA-FSRP IV only, see its migration)
+      if (Boolean.TRUE.equals(innovationInfo.getInnovationBundle())
+        && action.hasSpecificities(APConstants.INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE)) {
+        this.validateCoDevelopers(action, projectInnovation, innovationInfo);
+      }
+
       // Validate Complementary Solutions
       if (projectInnovation.getComplementarySolutions() != null
         && !projectInnovation.getComplementarySolutions().isEmpty()) {
@@ -648,26 +794,33 @@ public class ProjectInnovationValidator extends BaseValidator {
             InvalidFieldsMessages.EMPTYFIELD);
         }
 
-        // Validate scores
+        // Validate scores: a score of 2 asks for evidence, unless the global unit has no Cross-cutting alignment tab
+        // to see the scores in (A2-2613)
+        boolean scoresShown = action.hasSpecificities(APConstants.INNOVATION_CROSS_CUTTING_ALIGNMENT_ACTIVE);
         boolean needsGender = false;
         boolean needsClimateChange = false;
         boolean needsFoodSecurity = false;
         boolean needsEnvironmentalScore = false;
         boolean needsPovertyScore = false;
         boolean markMissingScore = false;
-        if (innovationInfo.getGenderScore() != null && innovationInfo.getGenderScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getGenderScore() != null
+          && innovationInfo.getGenderScore().getId() == 3) {
           needsGender = true;
         }
-        if (innovationInfo.getClimateChangeScore() != null && innovationInfo.getClimateChangeScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getClimateChangeScore() != null
+          && innovationInfo.getClimateChangeScore().getId() == 3) {
           needsClimateChange = true;
         }
-        if (innovationInfo.getFoodSecurityScore() != null && innovationInfo.getFoodSecurityScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getFoodSecurityScore() != null
+          && innovationInfo.getFoodSecurityScore().getId() == 3) {
           needsFoodSecurity = true;
         }
-        if (innovationInfo.getEnvironmentalScore() != null && innovationInfo.getEnvironmentalScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getEnvironmentalScore() != null
+          && innovationInfo.getEnvironmentalScore().getId() == 3) {
           needsEnvironmentalScore = true;
         }
-        if (innovationInfo.getPovertyScore() != null && innovationInfo.getPovertyScore().getId() == 3) {
+        if (scoresShown && innovationInfo.getPovertyScore() != null
+          && innovationInfo.getPovertyScore().getId() == 3) {
           needsPovertyScore = true;
         }
 
@@ -751,10 +904,11 @@ public class ProjectInnovationValidator extends BaseValidator {
                   action.getInvalidFields().put("input-innovation.references[" + i + "].deliverableType.id",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
+                // A2-2613: grouped so a reference without type (reported just above) no longer throws a
+                // NullPointerException, which skipped the rest of this tab's validation
                 if (reference.getDeliverableType() != null
-                  && reference.getDeliverableType().getDeliverableCategory() == null
-                  || (reference.getDeliverableType().getDeliverableCategory() != null
-                    && reference.getDeliverableType().getDeliverableCategory().getId() == null
+                  && (reference.getDeliverableType().getDeliverableCategory() == null
+                    || reference.getDeliverableType().getDeliverableCategory().getId() == null
                     || reference.getDeliverableType().getDeliverableCategory().getId() == -1)) {
                   action.addMessage("References type");
                   action.getInvalidFields().put(

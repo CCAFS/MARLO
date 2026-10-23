@@ -1039,8 +1039,9 @@ function onSelectElement() {
   var counted = $list.find('li').length;
   var className = $list.attr('class');
 
-  // Select an option
-  if ($option.val() == "-1") {
+  // Select an option. A select cleared with .val(null) has no selected option at all: nothing to add then, or an
+  // empty row is appended and select2 is initialised a second time over the live instance.
+  if (!$option.length || $option.val() == "-1") {
     return;
   }
 

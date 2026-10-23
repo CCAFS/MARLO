@@ -987,12 +987,18 @@ function updateWidthTab() {
 function addImageToSelectSDGTargets() {
 
   const $listRender = $('div[listname="innovation.sdgs"] .panel-body li.relationElement');
+  // A2-2613: the goal's official SVG icon (global/images/sdg/svg/goal-NN.svg), found by the number in "Goal N: ..."
+  const iconsUrl = $('[data-inf-sdgs]').attr('data-icons');
 
   $listRender.each(function (index, element) {
     const $elementVisualization = $(element);
     const $elementId = $(element).find('input[type="hidden"].elementRelationID').val();
+    const goal = $elementVisualization.find('.elementName').text().match(/Goal\s+(\d+)/);
 
-    if ($elementVisualization.find('.sdgImage').length == 0) {
+    if ($elementVisualization.find('.sdgImage').length == 0 && iconsUrl && goal) {
+      const number = (goal[1].length < 2 ? '0' : '') + goal[1];
+      $elementVisualization.find('.elementName').before(`<img src="${iconsUrl}goal-${number}.svg" class="sdgImage" alt="" aria-hidden="true">`);
+    } else if ($elementVisualization.find('.sdgImage').length == 0) {
 
       $.ajax({
         url: baseURL + '/getSdgImage.do',
@@ -1338,7 +1344,12 @@ const evidencesModule = function () {
 
     trackOptionsSelectedInAllInstances();
 
-    $(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", trackOptionsSelectedInAllInstances);
+    // Deferred: it rebuilds select2 on every evidence select, the one being changed included. Run inside the change
+    // dispatch, the old instance's own change handler still fires after it on a cloned evidence and throws
+    // "Cannot read properties of null (reading 'current')", which stops every listener after it.
+    $(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", function () {
+      setTimeout(trackOptionsSelectedInAllInstances, 0);
+    });
 
     updateIndexes();
   }
@@ -1691,7 +1702,8 @@ function initDropdownOrganization() {
     success: function (data) {
       //console.log('Data received:', data);
       const options = data.institutions.map(item => {
-        return { label: item.name, value: item.id };
+        // "ACRONYM - Name (Institution type)", as the other institution lists show them
+        return { label: item.composedName || item.name, value: item.id };
       });
 
       dropdown.data = options;
@@ -1760,7 +1772,8 @@ function addDataTableAllInnovations() {
         "iDisplayLength": 10,
         "language": {
           "searchPlaceholder": "Search...",
-          "emptyTable": "No innovation entries entered into the system yet."
+          "emptyTable": $(table).attr('data-empty-table') || "No innovation entries entered into the system yet.",
+          "zeroRecords": $(table).attr('data-zero-records') || "No matching records found"
         },
         "order": columns > 1 ? [[1, 'desc']] : [],
         "columnDefs": [
@@ -1798,7 +1811,7 @@ function addDataTableAllInnovations() {
       const $firstChildren = $wrapper.children().first();
       if ($firstChildren.length) {
         const $selectContainer = $('<div class="select-container"></div>');
-        const $selectLabel = $('<label for="filter-select">Cluster:</label>');
+        const $selectLabel = $('<label for="filter-select"></label>').text($table.attr('data-filter-label') || 'Cluster:');
         const $select = $('<select class="form-control select2"></select>');
 
         ajaxAllClusters($select, $table);
@@ -1852,17 +1865,20 @@ function ajaxAllClusters(selectElement, table) {
     },
     success: function (data) {
 
-      $(selectElement).append('<option value="">All Clusters</option>');
+      $(selectElement).append($('<option value=""></option>').text(table.attr('data-filter-all') || 'All Clusters'));
 
+      // A cluster reads as its acronym, or C<id> when it has none, as in the table column (A2-2613)
       data.projectList.forEach(function (cluster) {
-        $(selectElement).append(`<option value="${cluster.acronym}">${cluster.acronym}</option>`);
+        const label = cluster.acronym || ('C' + cluster.id);
+        $(selectElement).append($('<option></option>').val(label).text(label));
       });
 
       // Initialize select2 on the new select element
       $(selectElement).select2({
         width: '100%',
         height: '30px',
-        placeholder: "Select a cluster",
+        // The empty value is "All ...": select2 shows it as the placeholder, so the placeholder reads the same
+        placeholder: table.attr('data-filter-all') || table.attr('data-filter-placeholder') || "Select a cluster",
         allowClear: true
       });
 
@@ -1903,49 +1919,43 @@ function limitedValueFillInput(reference, input) {
   applyNumericSanitization($(reference));
   applyNumericSanitization($(input));
 
-  const initialMaxValue = parseInt($(reference).val(), 10) || 0;
   const $input = $(input);
-  $input.attr('max', initialMaxValue);
-  // If the current value exceeds the initial max, adjust it
-  const currentValue = parseInt($input.val(), 10) || 0;
-  if (currentValue > initialMaxValue) {
-    $input.val(initialMaxValue);
-    displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'));
+
+  // Caps the value at Total. An empty Total caps nothing (A2-2613): it is not a 0 the user entered.
+  function capAtTotal() {
+    const rawMax = $.trim($(reference).val());
+    if (rawMax === '') {
+      $input.removeAttr('max');
+      return;
+    }
+    const maxValue = parseInt(rawMax, 10) || 0;
+    $input.attr('max', maxValue);
+    const rawValue = $.trim($input.val());
+    if (rawValue !== '' && (parseInt(rawValue, 10) || 0) > maxValue) {
+      $input.val(maxValue);
+      displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'), $input, maxValue);
+    }
   }
 
-  $(reference).on('change', function () {
-    const maxValue = parseInt($(reference).val(), 10) || 0;
-
-    // Set max attribute for number inputs
-    $input.attr('max', maxValue);
-
-    // If the current value exceeds the new max, adjust it
-    const currentValue = parseInt($input.val(), 10) || 0;
-    if (currentValue > maxValue) {
-      displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'));
-      $input.val(maxValue);
-    }
-  });
-
-  $(input).on('change', function () {
-    const maxValue = parseInt($(reference).val(), 10) || 0;
-
-    // If the current value exceeds the new max, adjust it
-    const currentValue = parseInt($(input).val(), 10) || 0;
-    if (currentValue > maxValue) {
-      displayWarningMessage($input.closest('.actorsInnovation'), $('.message-overpass-total'));
-      $(input).val(maxValue);
-    }
-  });
+  capAtTotal();
+  $(reference).on('change', capAtTotal);
+  $input.on('change', capAtTotal);
 }
 
-function displayWarningMessage(container, customName) {
+function displayWarningMessage(container, customName, $input, value) {
   if(container.length === 0){
     console.warn('Invalid container element passed to displayWarningMessage');
     return;
   }
 
-  container.find(customName).fadeIn().delay(8000).fadeOut();
+  const $message = container.find(customName);
+  // "“Of which women” cannot be higher than Total. It was adjusted to 20."
+  const template = $message.attr('data-template');
+  if (template && $input && $input.length) {
+    const label = $.trim($input.closest('.input').find('label').first().text()).replace(/[\s?:*]+$/, '');
+    $message.find('[data-message]').text(template.replace('{0}', label).replace('{1}', value));
+  }
+  $message.stop(true, true).fadeIn().delay(8000).fadeOut();
 }
 
 function changeInformativeTextPRMSEquivalence() {
@@ -2017,7 +2027,8 @@ function addDataTablePRMSInnovations() {
         "iDisplayLength": 10,
         "language": {
           "searchPlaceholder": "Search...",
-          "emptyTable": "No innovation entries entered into the system yet."
+          "emptyTable": $(table).attr('data-empty-table') || "No innovation entries entered into the system yet.",
+          "zeroRecords": $(table).attr('data-zero-records') || "No matching records found"
         },
         "order": columns > 1 ? [[1, 'desc']] : [],
         "columnDefs": [
