@@ -22,6 +22,7 @@ import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectExpectedStudyInnovationManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCoDeveloperManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionFunctionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationComplementarySolutionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationContributingOrganizationManager;
@@ -33,6 +34,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationMilestoneManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationRegionManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RepIndInnovationTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
@@ -51,6 +53,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceLevers;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationAllianceOrganization;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationBundle;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCoDeveloper;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolutionFunction;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
@@ -72,6 +75,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.RepIndDegreeInnovation;
@@ -82,6 +86,7 @@ import org.cgiar.ccafs.marlo.data.model.RepIndRegion;
 import org.cgiar.ccafs.marlo.data.model.RepIndStageInnovation;
 import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
+import org.cgiar.ccafs.marlo.data.model.ValueChain;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
@@ -112,6 +117,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
@@ -169,6 +175,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager;
   private final ProjectInnovationFunctionManager projectInnovationFunctionManager;
   private final ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager;
+  private final ProjectInnovationValueChainManager projectInnovationValueChainManager;
+  private final ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager;
 
   private final MicroserviceReportAction microserviceReportAction;
   // Parameters
@@ -202,7 +210,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     RepIndInnovationTypeManager repIndInnovationTypeManager, ScalingReadinessManager scalingReadinessManager,
     ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager,
     ProjectInnovationFunctionManager projectInnovationFunctionManager,
-    ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager) {
+    ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager,
+    ProjectInnovationValueChainManager projectInnovationValueChainManager,
+    ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager) {
     super(config, crpManager, phaseManager, projectManager);
     this.projectInnovationManager = projectInnovationManager;
     this.resourceManager = resourceManager;
@@ -223,6 +233,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.projectInnovationComplementarySolutionManager = projectInnovationComplementarySolutionManager;
     this.projectInnovationFunctionManager = projectInnovationFunctionManager;
     this.projectInnovationComplementarySolutionFunctionManager = projectInnovationComplementarySolutionFunctionManager;
+    this.projectInnovationValueChainManager = projectInnovationValueChainManager;
+    this.projectInnovationCoDeveloperManager = projectInnovationCoDeveloperManager;
   }
 
 
@@ -1563,12 +1575,19 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       jsonData.put("innovationSupported", innovationSupported);
       jsonData.put("evidenceUptake", evidenceUptake);
       jsonData.put("foreseeBarriers", foreseeBarriers);
+      // A2-2613: AICCRA-FSRP IV fields, each behind the specificity that shows it in the form
+      jsonData.put("valueChains", this.getValueChainsJson(objectMapper, innovation, phase));
+      jsonData.put("coDevelopers", this.getCoDevelopersJson(objectMapper, innovation, phase));
+      jsonData.put("institutionalLevel", this.getInstitutionalLevelLabel());
 
       jsonData.put("repIndPhaseResearchPartnership",
         repIndPhaseResearchPartnership != null ? repIndPhaseResearchPartnership.getName() : null);
       jsonData.put("repIndStageInnovation", repIndStageInnovation != null ? repIndStageInnovation.getName() : null);
       jsonData.put("repIndRegion", repIndRegion != null ? repIndRegion.getName() : null);
-      jsonData.put("repIndInnovationType", repIndInnovationType != null ? repIndInnovationType.getName() : null);
+      // The name this global unit shows for the type (projectInnovations.innovationType.displayName.{id})
+      jsonData.put("repIndInnovationType", repIndInnovationType != null ? this.getText(
+        "projectInnovations.innovationType.displayName." + repIndInnovationType.getId(), repIndInnovationType.getName())
+        : null);
       jsonData.put("repIndInnovationTypePRMS",
         repIndInnovationType != null ? repIndInnovationType.getPrmsNameEquivalent() : null);
       jsonData.put("repIndInnovationNature", repIndInnovationNature != null ? repIndInnovationNature.getName() : null);
@@ -1662,6 +1681,67 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
 
     return SUCCESS;
+  }
+
+  /**
+   * A2-2613: the co-developing African institutions of a bundle, for the AICCRA-FSRP IV summary.
+   *
+   * @return a JSON list of institution names, or null when there is none or the global unit does not use the field
+   */
+  private String getCoDevelopersJson(ObjectMapper objectMapper, ProjectInnovation innovation, Phase phase)
+    throws JsonProcessingException {
+    if (innovation == null || !this.hasSpecificities(APConstants.INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE)
+      || !Boolean.TRUE.equals(projectInnovationInfo.getInnovationBundle())) {
+      return null;
+    }
+    List<String> names = new ArrayList<>();
+    for (ProjectInnovationCoDeveloper coDeveloper : projectInnovationCoDeveloperManager
+      .getByInnovationAndPhase(innovation.getId(), phase.getId())) {
+      if (coDeveloper != null && coDeveloper.getInstitution() != null) {
+        names.add(coDeveloper.getInstitution().getComposedName());
+      }
+    }
+    return this.normalizeJson(objectMapper.writeValueAsString(names));
+  }
+
+  /**
+   * A2-2613: the institutional level of a bundle's co-developing institutions, for the AICCRA-FSRP IV summary.
+   *
+   * @return its label, or null when there is none or the global unit does not use the field
+   */
+  private String getInstitutionalLevelLabel() {
+    String level = projectInnovationInfo.getInstitutionalLevel();
+    if (StringUtils.isBlank(level) || !this.hasSpecificities(APConstants.INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE)
+      || !Boolean.TRUE.equals(projectInnovationInfo.getInnovationBundle())) {
+      return null;
+    }
+    return this.getText("projectInnovations.institutionalLevel." + level);
+  }
+
+  /**
+   * A2-2613: the value chains of the innovation, for the AICCRA-FSRP IV summary; "Other" carries its text.
+   *
+   * @return a JSON list of value chain names, or null when there is none or the global unit does not use the field
+   */
+  private String getValueChainsJson(ObjectMapper objectMapper, ProjectInnovation innovation, Phase phase)
+    throws JsonProcessingException {
+    if (innovation == null || !this.hasSpecificities(APConstants.INNOVATION_VALUE_CHAINS_ACTIVE)) {
+      return null;
+    }
+    List<String> names = new ArrayList<>();
+    for (ProjectInnovationValueChain innovationValueChain : projectInnovationValueChainManager
+      .getByInnovationAndPhase(innovation.getId(), phase.getId())) {
+      ValueChain valueChain = innovationValueChain != null ? innovationValueChain.getValueChain() : null;
+      if (valueChain == null) {
+        continue;
+      }
+      if (valueChain.isOther() && StringUtils.isNotBlank(projectInnovationInfo.getOtherValueChain())) {
+        names.add(valueChain.getName() + ": " + projectInnovationInfo.getOtherValueChain().trim());
+      } else {
+        names.add(valueChain.getName());
+      }
+    }
+    return this.normalizeJson(objectMapper.writeValueAsString(names));
   }
 
   public byte[] getBytesPDF() {
