@@ -1344,7 +1344,12 @@ const evidencesModule = function () {
 
     trackOptionsSelectedInAllInstances();
 
-    $(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", trackOptionsSelectedInAllInstances);
+    // Deferred: it rebuilds select2 on every evidence select, the one being changed included. Run inside the change
+    // dispatch, the old instance's own change handler still fires after it on a cloned evidence and throws
+    // "Cannot read properties of null (reading 'current')", which stops every listener after it.
+    $(`.evidenceInnovation${nameReference} , .evidenceDeliverable${nameReference}`).on("change", function () {
+      setTimeout(trackOptionsSelectedInAllInstances, 0);
+    });
 
     updateIndexes();
   }
