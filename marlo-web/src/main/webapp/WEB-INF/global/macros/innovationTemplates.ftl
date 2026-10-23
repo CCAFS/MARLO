@@ -203,8 +203,8 @@
       [#-- Innovation Type --]
       <div class="dlf-field dlf-divided">
         [#local typeSelect][@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /][/#local]
-        [#-- Read-only, customForm.select reads the name off the stored type and gets nothing ("Not provided"); the
-             name comes from innovationTypeList instead, which also carries this unit's name for it --]
+        [#-- Read-only, customForm.select prints the stored type's catalog name; innovationTypeList carries the name this
+             global unit shows for it (projectInnovations.innovationType.displayName.{id}) --]
         [#local storedTypeId = (element.projectInnovationInfo.repIndInnovationType.id)!-1 /]
         [#local storedType = ((innovationTypeList)![])?filter(type -> type.id == storedTypeId) /]
         [#if !editable && storedType?has_content]
@@ -579,7 +579,8 @@
         [#if editable]
           [@customForm.select name="${customName}.projectInnovationInfo.intellectualPropertyInstitution.id" i18nkey="projectInnovations.alliance.intellectualProperty.description" listName="intellectualInstitutionsList" keyFieldName="id" className="innovationPropertyRightsSelect" displayFieldName="customName" required=false editable=editable /]
         [#else]
-          [#-- customForm.select reads customName off the stored institution, which does not carry it: take it from the list --]
+          [#-- ProjectInnovationInfo maps this id onto Institution, not onto IntellectualPropertyRightsInstitution, so
+               customForm.select would read the name of an unrelated institution: take it from the list --]
           [#local ownerId = (element.projectInnovationInfo.intellectualPropertyInstitution.id)!-1 /]
           [#local owner = ((intellectualInstitutionsList)![])?filter(i -> i.id == ownerId) /]
           <label>[@s.text name="projectInnovations.alliance.intellectualProperty.description" /]</label>
