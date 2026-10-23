@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
+import org.cgiar.ccafs.marlo.data.model.DeliverableType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -65,6 +66,16 @@ public class ProjectInnovationValidator extends BaseValidator {
     super();
     this.crpManager = crpManager;
     this.institutionManager = institutionManager;
+  }
+
+  /**
+   * Tell whether the type of a reference has no category. A reference without a type is already reported by the type
+   * check, so it is not reported a second time here; reading its category used to throw a NullPointerException that
+   * stopped the validation of the whole innovation.
+   */
+  static boolean isTypeWithoutCategory(DeliverableType type) {
+    return type != null && (type.getDeliverableCategory() == null || type.getDeliverableCategory().getId() == null
+      || type.getDeliverableCategory().getId().longValue() == -1);
   }
 
   private Path getAutoSaveFilePath(ProjectInnovation innovation, long crpID, BaseAction action) {
@@ -751,11 +762,7 @@ public class ProjectInnovationValidator extends BaseValidator {
                   action.getInvalidFields().put("input-innovation.references[" + i + "].deliverableType.id",
                     InvalidFieldsMessages.EMPTYFIELD);
                 }
-                if (reference.getDeliverableType() != null
-                  && reference.getDeliverableType().getDeliverableCategory() == null
-                  || (reference.getDeliverableType().getDeliverableCategory() != null
-                    && reference.getDeliverableType().getDeliverableCategory().getId() == null
-                    || reference.getDeliverableType().getDeliverableCategory().getId() == -1)) {
+                if (isTypeWithoutCategory(reference.getDeliverableType())) {
                   action.addMessage("References type");
                   action.getInvalidFields().put(
                     "input-innovation.references[" + i + "].deliverableType.deliverableCategory.id",
