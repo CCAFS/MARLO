@@ -196,10 +196,13 @@
             <div class="inf-readOnly" role="note">
               <svg class="dlf-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3.2" y="7" width="9.6" height="6.6" rx="1.6" stroke="currentColor" stroke-width="1.5"></rect><path d="M5.6 7V5.2a2.4 2.4 0 0 1 4.8 0V7" stroke="currentColor" stroke-width="1.5"></path></svg>
               <span class="inf-readOnly__text">[@s.text name="projectInnovations.redesign.readOnly" /]</span>
+              [#-- In a closed phase only a super admin can edit (EditInnovationInterceptor); nobody else gets the button --]
+              [#if ((action.getActualPhase().editable)!false) || action.canAccessSuperAdmin()]
               <a class="dlf-btn inf-readOnly__edit" href="[@s.url][@s.param name="innovationID" value=innovationID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
                 <svg class="dlf-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10.6 2.8 13.2 5.4 5.6 13H3v-2.6l7.6-7.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg>
                 [@s.text name="form.buttons.edit" /]
               </a>
+              [/#if]
             </div>
           [/#if]
 
