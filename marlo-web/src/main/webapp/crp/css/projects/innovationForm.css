@@ -478,7 +478,8 @@
 .dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { margin: 0; }
 .dlf #dlf-geographicScope .geographicScopeMessage label { margin: 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
 .dlf #dlf-geographicScope .regionalBlock { display: flex; flex-direction: column; gap: 14px; }
-.dlf #dlf-geographicScope .regionalBlock .inf-question--inline { margin: 0; }
+.dlf #dlf-geographicScope .regionalBlock .inf-question--inline { margin: 20px 0 0; }
+.dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { margin-top: 16px; }
 .dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries { display: flex; flex-direction: column; gap: 8px; }
 .dlf #dlf-geographicScope .block-hasSpecifiedOutputCountries > label { margin: 0; font: 400 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
 .dlf #dlf-geographicScope .select > label { margin: 0 0 8px; }
@@ -1903,3 +1904,122 @@ body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-box .p-checkbox-icon { wid
 .dlf .inf-ip__owner > .feedback-flex-items > .select > label { display: block; min-height: 26px; padding-right: 40px; }
 .dlf .inf-ip__owner > label { display: block; margin: 0 0 6px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
 .dlf .inf-ip__value { margin: 0; font: 400 14px Figtree, sans-serif; color: var(--dlf-ink); }
+
+/* ══════════ Read-only (closed cycle or no edit permission) ══════════
+   The page reads as text: no required marks, no editing instructions, nothing that looks clickable. */
+.dlf.inf.is-readonly .requiredTag { display: none !important; }
+.dlf.inf.is-readonly #inf-partners > .dlf-note,
+.dlf.inf.is-readonly .inf-indicators .dlf-link,
+.dlf.inf.is-readonly #addPartnerText p + p,
+.dlf.inf.is-readonly #addPartnerText > a.popup,
+.dlf.inf.is-readonly .inf-externals .helpLabel,
+.dlf.inf.is-readonly .inf-externals .sortableInstructions,
+.dlf.inf.is-readonly .geographicScopeMessage,
+.dlf.inf.is-readonly .block-hasSpecifiedOutputCountries > .feedback-flex-items:has(> label[for="projectInnovations.geographicScopeTopic"]),
+.dlf.inf.is-readonly .inf-contacts__count,
+.dlf.inf.is-readonly #inf-bsel > .inf-inlineNote,
+.dlf.inf.is-readonly #inf-comps .inf-card__head + .dlf-hint,
+.dlf.inf.is-readonly #inf-rl > .scaling > .dlf-note,
+.dlf.inf.is-readonly .inf-evidNotice { display: none !important; }
+
+/* Label / value rows (actors, evidence) */
+.dlf .inf-ro { display: flex; flex-direction: column; margin: 0; }
+.dlf .inf-ro__row { display: grid; grid-template-columns: 235px minmax(0, 1fr); gap: 16px; padding: 9px 0; border-top: 1px solid var(--dlf-line-soft); }
+.dlf .inf-ro__row:first-child { border-top: 0; padding-top: 2px; }
+.dlf .inf-ro dt { font: 600 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .inf-ro dd { margin: 0; min-width: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); overflow-wrap: anywhere; }
+/* One empty state for every read-only field: "Not provided", muted */
+.dlf .inf-ro__empty,
+.dlf .inf-vc__empty,
+.dlf.inf.is-readonly .fieldEmpty { display: block; margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-subtle); }
+.dlf .inf-ro__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dlf .inf-ro__link { color: var(--dlf-brand); text-decoration: underline; word-break: break-all; }
+@media (max-width: 767px) {
+  .dlf .inf-ro__row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* Geographic scope: the scope reads as a value, the countries as chips without "+ Add" or remove */
+.dlf.inf.is-readonly #dlf-geographicScope .inf-radioCards > p { margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf.inf.is-readonly #dlf-geographicScope .select2-search--inline,
+.dlf.inf.is-readonly #dlf-geographicScope .select2-selection__choice__remove { display: none !important; }
+.dlf.inf.is-readonly #dlf-geographicScope .select2-container { pointer-events: none; }
+.dlf.inf.is-readonly #dlf-geographicScope .select2-selection--multiple { min-height: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+
+/* Contact person: only the people who were chosen */
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem:not(:has(.inputsFlat > p)) { display: none !important; }
+
+/* Readiness scale and Likert answers: shown, not clickable */
+.dlf.inf.is-readonly #inf-rl .scaling__container,
+.dlf.inf.is-readonly .inf-likert .likertScale .radioFlat { pointer-events: none; }
+.dlf.inf.is-readonly #inf-rl .scaling__container * { cursor: default !important; }
+
+/* Actors: the rows sit in the card instead of the legacy columns */
+.dlf.inf.is-readonly .actorsInnovation > .inf-ro { padding: 2px 0; }
+
+/* Evidence: number and source, then the rows */
+.dlf.inf.is-readonly .inf-evid .evidence__head { padding-right: 0; margin-bottom: 8px; }
+.dlf .inf-evid .evidence__roSource { font: 600 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem .inputsFlat > p { margin: 0; font: 500 13.5px/20px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .inf-ro__row:last-child { padding-bottom: 0; }
+/* Only the rows count in the card's gap (the legacy hidden fields and the clearfix take none) */
+.dlf.inf.is-readonly .actorsInnovation { padding-right: 14px; }
+.dlf.inf.is-readonly .actorsInnovation > :not(.inf-ro),
+.dlf.inf.is-readonly .inf-evid .evidences > .clearfix { display: none; }
+/* Impact Area scores: the "provide evidence / Go to" instruction is for editing */
+.dlf.inf.is-readonly #inf-ia .inf-iaRow__principal { display: none !important; }
+/* Legacy CSS fades an opened .blockTitle; the open complementary innovation keeps its head */
+.dlf .inf-comp__head.opened { opacity: 1; }
+/* Read-only select values read as values, not as muted placeholders */
+.dlf.inf.is-readonly .selectList > p { margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+/* Complementary innovation functions: only the chosen ones, as chips, without the "select multiple" help */
+.dlf.inf.is-readonly .inf-comp__functions-field .helpLabel,
+.dlf.inf.is-readonly .inf-comp__function:not(:has(.inputsFlat > p)) { display: none !important; }
+.dlf.inf.is-readonly .inf-comp__functionList { display: flex; flex-wrap: wrap; flex: 1 1 100%; width: 100%; gap: 6px; padding: 0; border: 0; background: none; }
+.dlf.inf.is-readonly .inf-comp__function .inputsFlat > p {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin: 0;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: var(--dlf-chip);
+  font: 600 12.5px/1.4 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+/* customForm prints read-only labels muted (label.readOnly); they match the other labels of the card */
+.dlf.inf.is-readonly .dlf-card label.readOnly { color: var(--dlf-ink); }
+
+/* Radios read-only: the whole control stays, the choice shows, nothing reacts */
+.dlf.inf.is-readonly .radioFlat input:disabled + label,
+.dlf.inf.is-readonly .radioFlat input:disabled + label * { cursor: default !important; }
+.dlf.inf.is-readonly .radioFlat input:disabled + label { opacity: 1; pointer-events: none; }
+.dlf.inf.is-readonly .inf-radioCards .radioFlat,
+.dlf.inf.is-readonly .inf-segmented,
+.dlf.inf.is-readonly .inf-chipRadios { pointer-events: none; }
+
+/* Contact persons read-only: the chosen ones keep their ticked box */
+/* As in edit mode: box in the first column, then the initials, then the name; the card reads as chosen */
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem:has(.inputsFlat > p),
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem:has(.inputsFlat > p):hover { border-color: var(--dlf-brand); background: var(--dlf-info-bg); cursor: default; }
+.dlf.inf.is-readonly #dlf-partners .deliverableUserItem .inputsFlat > p::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 1.5px solid var(--dlf-brand);
+  border-radius: 4px;
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+/* Organizations read-only empty state matches the others */
+.dlf.inf.is-readonly .inf-users mal-multiselect #multi-select-container > .p-component:not(:has(.p-chip))::after { color: var(--dlf-subtle); }
+/* Empty lists and an empty responsible institution read like every other empty field, without their box */
+.dlf.inf.is-readonly .elementsListComponent .panel-body:has(> .inf-ro__empty) { min-height: 0; margin: 0; padding: 0; border: 0; background: none; }
+.dlf.inf.is-readonly #dlf-partners .dlf-partnerBox:has(input.partnerInstitutionID[value="-1"]),
+.dlf.inf.is-readonly #dlf-partners .dlf-partnerBox:has(input.partnerInstitutionID[value="-1"]) .deliverablePartnerItem { padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+/* "Select ..." instructions are for editing */
+.dlf.inf.is-readonly .inf-vc__help { display: none; }
+/* Read-only region chips have no remove button: the same space on both sides */
+.dlf.inf.is-readonly .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement { padding-right: 10px; }

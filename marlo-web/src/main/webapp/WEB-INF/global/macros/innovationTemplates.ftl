@@ -132,6 +132,7 @@
       data-add-external="[@s.text name="projectInnovations.redesign.add.external" /]"
       data-add-indicator="[@s.text name="projectInnovations.redesign.add.indicator" /]"
       data-of-max="[@s.text name="projectInnovations.redesign.ofMax" /]"
+      data-not-provided="[@s.text name="projectInnovations.redesign.notProvided" /]"
       data-contacts="[@s.text name="projectInnovations.redesign.contacts" /]"
       data-selected="[@s.text name="projectInnovations.redesign.selected" /]"></span>
 
@@ -174,8 +175,8 @@
           [/#if]
         </div>
         <div class="inf-segmented" role="radiogroup" aria-label="[@s.text name="projectInnovations.innovationBundle" /]">
-          [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
-          [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=editable /]
+          [@customForm.radioFlat id="isInnovationBundle-determined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.innovationOption" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.innovationBundle??)&&(!isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=true disabled=!editable /]
+          [@customForm.radioFlat id="isInnovationBundle-undetermined" name="innovation.projectInnovationInfo.innovationBundle" i18nkey="projectInnovations.innovationBundle.bundleOption" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.innovationBundle??)&&(isInnovationBundle)) cssClass="radioType-isInnovationBundle" cssClassLabel="radio-label" editable=true disabled=!editable /]
         </div>
       </div>
       [#-- innovationFormRedesign.js shows it once Bundled innovation is chosen in this visit --]
@@ -350,7 +351,7 @@
         <div class="inf-radioCards" role="radiogroup" aria-label="[@s.text name="projectInnovations.geographicScope" /]">
           [#list geographicScopeList as geoScope]
             [#local isChecked = ((existGeographicScope) && (element.geographicScopes[0].repIndGeographicScope??) && (geoScope.id == element.geographicScopes[0].repIndGeographicScope.id)) /]
-            [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=editable disabled=!editable /]
+            [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=true disabled=!editable /]
           [/#list]
         </div>
 
@@ -373,8 +374,8 @@
               <span class="inf-question__label">[@s.text name="projectInnovations.geographicCountrySpecific" /][@customForm.req required=editable /]</span>
             </div>
             <div class="inf-segmented" role="radiogroup" aria-label="[@s.text name="projectInnovations.geographicCountrySpecific" /]">
-              [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=editable /]
-              [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=editable /]
+              [@customForm.radioFlat id="hasSpecifiedOutputCountries-yes" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.yes" value="true" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (hasSpecifiedOutputCountries))  cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-yes" editable=true disabled=!editable /]
+              [@customForm.radioFlat id="hasSpecifiedOutputCountries-no" name="innovation.projectInnovationInfo.hasSpecifiedOutputCountries" i18nkey="projectInnovations.hasSpecifiedOutputCountries.no" value="false" checked=((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??) && (!hasSpecifiedOutputCountries)) cssClass="radioType-hasSpecifiedOutputCountries" cssClassLabel="radio-label-no" editable=true disabled=!editable /]
             </div>
           </div>
           <div class="block-hasSpecifiedOutputCountries" style="display:${(geographicCountrySpecific)?string('block','none')}">
@@ -542,8 +543,9 @@
               <label class="inputsFlat inf-lever__card"[#if editable] for="lever-${lever.id}"[/#if]>
                 [#if editable]
                   <input id="lever-${lever.id}" type="checkbox" name="${customName}.allianceLevers[${lever_index}].allianceLever.id" value="${lever.id}"[#if isChecked] checked[/#if][#if isLocked] readonly onclick="this.checked=!this.checked;" aria-disabled="true"[/#if] />
-                  <span class="inf-lever__box" aria-hidden="true"></span>
                 [/#if]
+                [#-- Read-only, the chosen themes still show their ticked box --]
+                <span class="inf-lever__box" aria-hidden="true"></span>
                 <span class="inf-lever__text">
                   <span class="inf-lever__key">${lever.name}</span>
                   <span class="inf-lever__name">[#if isOther][@s.text name="projectInnovations.redesign.alliance.otherTheme" /][#else]${(lever.description)!}[/#if]</span>
@@ -611,8 +613,8 @@
       <span class="inf-question__label">[@s.text name=labelKey /]</span>
     </div>
     <div class="inf-segmented" role="radiogroup" aria-label="[@s.text name=labelKey /]">
-      [@customForm.radioFlat id="${radioType}-yes" name="${customName}.projectInnovationInfo.${field}" label="Yes" value="true" checked=(answered && answer) cssClass="radioType-${radioType}" cssClassLabel="radio-label-yes" editable=editable /]
-      [@customForm.radioFlat id="${radioType}-no" name="${customName}.projectInnovationInfo.${field}" label="No" value="false" checked=(answered && !answer) cssClass="radioType-${radioType}" cssClassLabel="radio-label-no" editable=editable /]
+      [@customForm.radioFlat id="${radioType}-yes" name="${customName}.projectInnovationInfo.${field}" label="Yes" value="true" checked=(answered && answer) cssClass="radioType-${radioType}" cssClassLabel="radio-label-yes" editable=true disabled=!editable /]
+      [@customForm.radioFlat id="${radioType}-no" name="${customName}.projectInnovationInfo.${field}" label="No" value="false" checked=(answered && !answer) cssClass="radioType-${radioType}" cssClassLabel="radio-label-no" editable=true disabled=!editable /]
       [#if !editable && !answered]<p class="inf-question__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</p>[/#if]
     </div>
   </div>
@@ -632,10 +634,10 @@
       <div class="form-group col-md-12">
       
         <div class="col-md-1">
-          [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARYes" value="true" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
+          [@customForm.radioFlat id="optionOneCGIAR-Yes" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARYes" value="true" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=true disabled=!editable /]
         </div>
         <div class="col-md-1">
-          [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=editable /]
+          [@customForm.radioFlat id="optionOneCGIAR-No" name="${customName}.projectInnovationInfo.hasCgiarContribution" i18nkey="projectInnovations.oneCGIARAligment.contributionToCGIARNo" value="false" checked=(((element.projectInnovationInfo.hasCgiarContribution??) && (!hasContributionToCGIAR))!false) cssClass="radioType-contributionToCGIAR" cssClassLabel="font-normal" editable=true disabled=!editable /]
         </div>
       </div>
     </div>
@@ -767,7 +769,7 @@
           <span class="inf-bselected__title">[@s.text name="projectInnovations.bundle.selectInnovation.selected" /]</span>
           <span class="inf-count" data-inf-bsel-count></span>
         </div>
-        <div class="innovationBundleList" data-inf-bsel-list data-empty="[@s.text name="projectInnovations.redesign.bundle.noneSelected" /]">
+        <div class="innovationBundleList" data-inf-bsel-list data-empty="[@s.text name=editable?then("projectInnovations.redesign.bundle.noneSelected", "projectInnovations.redesign.notProvided") /]">
           [#if element.bundles?has_content]
             [#list element.bundles as innovation]
               [@innovationSelectedMacro element=innovation name="innovation.bundles" index=innovation_index template=false editable=editable /]
@@ -798,6 +800,8 @@
             [#list element.complementarySolutions as solution]
               [@complementarySolutionsMacro name="innovation.complementarySolutions" element=solution index=solution_index template=false editable=editable /]
             [/#list]
+          [#elseif !editable]
+            <p class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</p>
           [/#if]
         </div>
         [#if editable]
@@ -823,7 +827,7 @@
 
     [#-- ─── Innovation Scaling Readiness ──────────────────────────────────── --]
     <section class="dlf-card inf-rl" id="inf-rl">
-      [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=true label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
+      [@scalingMacro name="innovation.projectInnovationInfo.readinessScale" element=(innovation.projectInnovationInfo.readinessScale)!-1 editable=editable label="projectInnovations.readiness.scale" helpLabel="projectInnovations.readiness.scale.help" listName=scalingReadinessList class="innovationScaling" /]
     </section>
 
     [#-- ─── Bottlenecks and results ───────────────────────────────────────── --]
@@ -839,11 +843,11 @@
             <span class="inf-question__label">[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /][@customForm.req required=editable /]</span>
           </div>
           <div class="inf-segmented" role="radiogroup" aria-label="[@s.text name="projectInnovations.sharing.aboutTheTool.foreseeBarriers" /]">
-            [@customForm.radioFlat id="${foreseeBarriersText}-yes" name="${customName}.projectInnovationInfo.foreseeBarriers" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label" editable=editable /]
-            [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label" editable=editable /]
+            [@customForm.radioFlat id="${foreseeBarriersText}-yes" name="${customName}.projectInnovationInfo.foreseeBarriers" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label" editable=true disabled=!editable /]
+            [@customForm.radioFlat id="${foreseeBarriersText}-no" name="${customName}.projectInnovationInfo.foreseeBarriers" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??) &&(!foreseeBarriers)) cssClass="radioType-${foreseeBarriersText}" cssClassLabel="radio-label" editable=true disabled=!editable /]
           </div>
         </div>
-        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(foreseeBarriers)) || ((!editable)) /]
+        [#local isDisplayKnowledgeToolUsesNarrative = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.foreseeBarriers??)&&(foreseeBarriers)) /]
         [#-- knowledgeToolUsesNarrative --]
         <div class="inf-questionBox__answer block-foreseeBarriers" style="display:${(isDisplayKnowledgeToolUsesNarrative)?then('block','none')};">
           [@customForm.textArea name="${customName}.projectInnovationInfo.knowledgeToolUsesNarrative" i18nkey="projectInnovations.sharing.aboutTheTool.uses" helpIcon=false className="limitWords-500" required=editable editable=editable /]
@@ -902,12 +906,12 @@
         [#local hasKnowledgePotentialText = "hasKnowledgePotential" /]
         [#local hasKnowledgePotential = (element.projectInnovationInfo.hasKnowledgePotential.id)!-1 /]
         <div class="inf-chipRadios" role="radiogroup" aria-label="[@s.text name="projectInnovations.sharing.aboutTheTool.potential" /]">
-          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes" value="1" checked=(hasKnowledgePotential == 1) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yesW" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes with adaptations" value="2" checked=(hasKnowledgePotential == 2) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=editable /]
-          [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="No" value="3" checked=(hasKnowledgePotential == 3) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=editable /]
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yes" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes" value="1" checked=(hasKnowledgePotential == 1) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=true disabled=!editable /]
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-yesW" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="Yes with adaptations" value="2" checked=(hasKnowledgePotential == 2) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-yes" editable=true disabled=!editable /]
+          [@customForm.radioFlat id="${hasKnowledgePotentialText}-no" name="${customName}.projectInnovationInfo.hasKnowledgePotential.id" label="No" value="3" checked=(hasKnowledgePotential == 3) cssClass="radioType-${hasKnowledgePotentialText}" cssClassLabel="radio-label-no" editable=true disabled=!editable /]
         </div>
 
-        [#local isDisplayReasonKnowledgePotential = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&((hasKnowledgePotential == 2))) || ((!editable)) /]
+        [#local isDisplayReasonKnowledgePotential = ((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasKnowledgePotential??)&&((hasKnowledgePotential == 2))) /]
 
         [#-- reasonKnowledgePotential --]
         <div class="inf-other block-w-${hasKnowledgePotentialText}" style="display:${(isDisplayReasonKnowledgePotential)?then('block','none')};">
@@ -945,10 +949,10 @@
         [#local areUsersDetermined = (innovation.projectInnovationInfo.areUsersDetermined)! /]
         <div class="inf-chipRadios" role="radiogroup" aria-label="[@s.text name="projectInnovations.anticipatedUsers" /]">
           <div>
-            [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="anticipatedUsers-determined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.determined" value="true" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-yes" editable=true disabled=!editable /]
           </div>
           <div>
-            [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=editable /]
+            [@customForm.radioFlat id="anticipatedUsers-undetermined" name="innovation.projectInnovationInfo.areUsersDetermined" i18nkey="projectInnovations.anticipatedUsers.undetermined" value="false" checked=((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(!areUsersDetermined)) cssClass="radioType-anticipatedUsers" cssClassLabel="radio-label-no" editable=true disabled=!editable /]
           </div>
         </div>
         <div class="col-md-12 block-anticipatedUsers" style="display: ${((innovation.projectInnovationInfo??)&&(innovation.projectInnovationInfo.areUsersDetermined??)&&(areUsersDetermined))?then('block','none')}">
@@ -1036,10 +1040,10 @@
           [#local hasToolUrl = (element.projectInnovationInfo.hasToolUrl)! /]    
 
           <div class="col-md-1">
-            [@customForm.radioFlat id="${hasToolUrlText}-yes" name="${customName}.projectInnovationInfo.hasToolUrl" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) &&(hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-yes" editable=editable /]
+            [@customForm.radioFlat id="${hasToolUrlText}-yes" name="${customName}.projectInnovationInfo.hasToolUrl" label="Yes" value="true" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) &&(hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-yes" editable=true disabled=!editable /]
           </div>
           <div class="col-md-1">
-            [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.hasToolUrl" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=editable /]
+            [@customForm.radioFlat id="${hasToolUrlText}-no" name="${customName}.projectInnovationInfo.hasToolUrl" label="No" value="false" checked=((element.projectInnovationInfo??)&&(element.projectInnovationInfo.hasToolUrl??) &&(!hasToolUrl)) cssClass="radioType-${hasToolUrlText}" cssClassLabel="radio-label-no" editable=true disabled=!editable /]
           </div>
 
           #-- If yes - Evidence/Reference --
@@ -1145,6 +1149,8 @@
             [#list element.references as reference]
               [@customForm.evidence name="innovation.references" element=reference index=reference_index template=false class="Readiness" editable=editable /]
             [/#list]
+          [#elseif !editable]
+            <p class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</p>
           [/#if]
         </div>
         [#if editable]
@@ -1222,7 +1228,7 @@
       <span class="inf-iaRow__label">[@s.text name="projectInnovations.institutionalLevel" /][@customForm.req required=editable /]</span>
       <div class="inf-codev__levels inf-chipRadios" role="radiogroup" aria-label="[@s.text name="projectInnovations.institutionalLevel" /]">
         [#list ["regional", "national", "joint"] as option]
-          [@customForm.radioFlat id="institutionalLevel-${option}" name="innovation.projectInnovationInfo.institutionalLevel" i18nkey="projectInnovations.institutionalLevel.${option}" value=option checked=(level == option) cssClass="radioType-institutionalLevel" cssClassLabel="radio-label" editable=editable canComment=false /]
+          [@customForm.radioFlat id="institutionalLevel-${option}" name="innovation.projectInnovationInfo.institutionalLevel" i18nkey="projectInnovations.institutionalLevel.${option}" value=option checked=(level == option) cssClass="radioType-institutionalLevel" cssClassLabel="radio-label" editable=true disabled=!editable canComment=false /]
         [/#list]
         [#if !editable && !level?has_content]<p class="inf-vc__empty">[@s.text name="projectInnovations.valueChains.none" /]</p>[/#if]
       </div>
@@ -1276,22 +1282,31 @@
       </div>
     </div>
     [#else]
-    <div class="col-md-12 select--flex padding-bottom-1">
-      <div class="col-md-6">
-        [#local actorName = (element.actor.name)!"No provided" /]
-        
-        <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.typeActor" /]:</span>
-        <span class="col-md-12"><b>${actorName}</b></span>
+    [#-- Read-only: the actor as label / value rows (A2-2613 redesign) --]
+    <dl class="inf-ro">
+      <div class="inf-ro__row">
+        <dt>[@s.text name="projectInnovations.anticipatedUsers.actors.typeActor" /]</dt>
+        <dd>[#if (element.actor.name)?has_content]${element.actor.name}[#if element.actor.name == "Other" && (element.other)?has_content]: ${element.other}[/#if][#else]<span class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</span>[/#if]</dd>
       </div>
-      <div class="col-md-6 checkbox-sexAgeNotApply align-content-end">
-        <span class="label--2">Does sex and age disaggregation apply?</span>
-        [#if sexAgeNotApply]
-          <span class="col-md-12"><b>No</b></span>
-        [#else]
-          <span class="col-md-12"><b>Yes</b></span>
-        [/#if]
+      <div class="inf-ro__row">
+        <dt>[@s.text name="projectInnovations.redesign.ro.sexAge" /]</dt>
+        <dd>${sexAgeNotApply?then('No', 'Yes')}</dd>
       </div>
-    </div>
+      <div class="inf-ro__row">
+        <dt>[@s.text name="projectInnovations.anticipatedUsers.actors.total" /]</dt>
+        <dd>[#if (element.total)??]${element.total?c}[#else]<span class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</span>[/#if]</dd>
+      </div>
+      [#if !sexAgeNotApply]
+      <div class="inf-ro__row">
+        <dt>[@s.text name="projectInnovations.anticipatedUsers.actors.whichWomen" /]</dt>
+        <dd>[#if (element.womenYouthNumber)??]${element.womenYouthNumber?c}[#else]<span class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</span>[/#if]</dd>
+      </div>
+      <div class="inf-ro__row">
+        <dt>[@s.text name="projectInnovations.anticipatedUsers.actors.whichYouth" /]</dt>
+        <dd>[#if (element.womenNonYouthNumber)??]${element.womenNonYouthNumber?c}[#else]<span class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</span>[/#if]</dd>
+      </div>
+      [/#if]
+    </dl>
     [/#if]
 
     [#local isActorOther = ((element.actor??) && (element.actor.name == "Other"))!false /]
@@ -1326,21 +1341,6 @@
              and the value it was adjusted to into the message (A2-2613 redesign) --]
         <div class="col-md-12 message-overpass-total" style="display: none;" data-template="[@s.text name="projectInnovations.redesign.actors.overTotal" /]">
           <p class="inf-actorWarn" role="status" data-message></p>
-        </div>
-        [#else]
-        <div class="col-md-12">
-          <div class="col-md-3">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.total" /]:</span>
-            <span class="col-md-12"><b>[#if (element.total)??]${element.total?c}[#else][@s.text name="projectInnovations.valueChains.none" /][/#if]</b></span>
-          </div>
-          <div class="col-md-3">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichWomen" /]:</span>
-            <span class="col-md-12"><b>[#if (element.womenYouthNumber)??]${element.womenYouthNumber?c}[#else][@s.text name="projectInnovations.valueChains.none" /][/#if]</b></span>
-          </div>
-          <div class="col-md-3">
-            <span class="label--2">[@s.text name="projectInnovations.anticipatedUsers.actors.whichYouth" /]:</span>
-            <span class="col-md-12"><b>[#if (element.womenNonYouthNumber)??]${element.womenNonYouthNumber?c}[#else][@s.text name="projectInnovations.valueChains.none" /][/#if]</b></span>
-          </div>
         </div>
         [/#if]
       </div>
@@ -1466,7 +1466,7 @@
       [#if listName?has_content]
         [#list listName as item]
           <div class="scaling__item" data-level="${(item.id - 1)?c}">
-            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=editable cssClass="scalingInnovation__item__value" canComment=false /]
+            [@customForm.radioFlat id="${customName}_${item_index}" name="${customName}" label="${item.id-1}" value="${item.id}" checked=((element??) && (element == (item.id)))!false editable=true disabled=!editable cssClass="scalingInnovation__item__value" canComment=false /]
             <span class="scaling__name">${(item.name!"")?replace("^\\d+\\s*-\\s*", "", "r")}</span>
           </div>
         [/#list]
@@ -1478,6 +1478,10 @@
       [#if elemInformation?size > 0][#local selectedLevel = (elemInformation[0].id - 1)?c /][/#if]
     [/#if]
     [#-- The chosen level: its number on the left, its name and description beside it --]
+    [#-- Read-only with no level chosen: the same "Not provided" as every other empty field --]
+    [#if element == -1 && !editable]
+    <p class="inf-ro__empty">[@s.text name="projectInnovations.redesign.notProvided" /]</p>
+    [#else]
     <div class="scaling__message grayBox" data-level="${selectedLevel}">
       <span class="scaling__num" aria-hidden="true">${selectedLevel}</span>
       <div class="scaling__text">
@@ -1492,6 +1496,7 @@
         [/#if]
       </div>
     </div>
+    [/#if]
     <div class="scaling__hiddenInfo" style="display: none">
       [#if listName?has_content]
         [#list listName as item]
@@ -1522,7 +1527,7 @@
       <div class="inf-segmented inf-iaScore" role="radiogroup" aria-label="[@s.text name=fieldLabel /]">
         [#list (impactAreaScores)![] as option]
           [#local optionLabel = editable?then((option.completeDescription)!option.description, option.description) /]
-          [@customForm.radioFlat id="${fieldName}-${option.id}" name=inputName value="${option.id}" label=optionLabel checked=(fieldValue.id?? && fieldValue.id == option.id) cssClass="radioType-contributionToCGIAR" cssClassLabel="radio-label" editable=editable /]
+          [@customForm.radioFlat id="${fieldName}-${option.id}" name=inputName value="${option.id}" label=optionLabel checked=(fieldValue.id?? && fieldValue.id == option.id) cssClass="radioType-contributionToCGIAR" cssClassLabel="radio-label" editable=true disabled=!editable /]
         [#else]
           <p class="text-muted">No options available.</p>
         [/#list]
@@ -1547,9 +1552,11 @@
 
   <div id="complementaryInnovation-${template?string('template',index)}" class="complementaryInnovation inf-comp" style="display:${template?string('none','block')}">
     [#-- Remove Button --]
+    [#if editable || template]
     <button type="button" class="removeComplementaryInnovation inf-comp__remove" title="Remove" aria-label="Remove">
       <svg class="dlf-icon" width="11" height="11" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
     </button>
+    [/#if]
 
     [#-- Head: opens the fields --]
     <div class="blockTitle closed inf-comp__head" role="button" tabindex="0" data-new="[@s.text name="projectInnovations.redesign.bundle.newComp" /]"
@@ -1568,24 +1575,24 @@
       <div class="inf-comp__row">
         [#-- Title  --]
         <div class="dlf-field">
-          [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-30" required=true /]
+          [@customForm.input name="${customName}.title" i18nkey="projectInnovations.bundle.complementaryInnovations.title" className="description limitWords-30" required=true editable=(editable || template) /]
         </div>
         [#-- Short title  --]
         <div class="dlf-field">
-          [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-15" required=true /]
+          [@customForm.input name="${customName}.shortTitle" i18nkey="projectInnovations.bundle.complementaryInnovations.shortTitle" className="description limitWords-15" required=true editable=(editable || template) /]
         </div>
       </div>
       [#-- Short description  --]
       <div class="dlf-field">
-        [@customForm.textArea name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-80" required=true /]
+        [@customForm.textArea name="${customName}.shortDescription" i18nkey="projectInnovations.bundle.complementaryInnovations.shortDescription" className="description limitWords-80" required=true editable=(editable || template) /]
       </div>
       [#-- Innovation type select --]
       <div class="dlf-field inf-comp__type-field" listname="${customName}.projectInnovationType.id">
-        [@customForm.select name="${customName}.projectInnovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=true /]
+        [@customForm.select name="${customName}.projectInnovationType.id" i18nkey="projectInnovations.bundle.complementaryInnovations.type" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true editable=(editable || template) /]
       </div>
       [#-- Function  --]
       <div class="dlf-field inf-comp__functions-field" listname="${customName}.complementarySolutionFunctions">
-        [@customForm.labelText name="${customName}.function" text="projectInnovations.bundle.complementaryInnovations.function" required=true helpText="projectInnovations.bundle.complementaryInnovations.function.helpText" /]
+        [@customForm.labelText name="${customName}.function" text="projectInnovations.bundle.complementaryInnovations.function" required=(editable || template) helpText="projectInnovations.bundle.complementaryInnovations.function.helpText" /]
         <div class="inf-comp__functionList">
         [#if projectInnovationFunctionList?has_content]
           [#list projectInnovationFunctionList as function]
@@ -1610,7 +1617,7 @@
               [/#if]
 
               [#-- Checkbox Function --]
-              [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=true value=function.id checked=isChecked cssClass="check-function" /]
+              [@customForm.checkBoxFlat id="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" isLabelDB=true name="${customName}.complementarySolutionFunctions[${function.id}].projectInnovationFunction.id" label=cleanedLabel editable=(editable || template) value=function.id checked=isChecked cssClass="check-function" /]
             </div>
           [/#list]
         [/#if]

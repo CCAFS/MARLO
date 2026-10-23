@@ -31,6 +31,11 @@ $(document).ready(function() {
   // The state compares the form with the one the page loaded, so undoing an edit brings "All changes saved"
   // back. The snapshot waits for every ready handler: the deliverable scripts rewrite some values on load
   // (select2, the trainees totals, the remainingPending flag), and loading alone must not read as an edit.
+  // Read-only, with no last edit to report and no button to show, the bar would be an empty white strip
+  if(!$.trim($saveBar.text()) && !$saveBar.find('button:visible, a.button-save:visible').length) {
+    $saveBar.hide();
+  }
+
   var $form = $saveBar.closest('form');
   var $state = $saveBar.find('[data-dlf-save-state]');
   var loadedForm = null;
@@ -176,7 +181,7 @@ $(document).ready(function() {
   // label is kept on the select (data-dlf-add-label, also on the empty option for clones) and re-applied to the
   // rendered text whenever the form changes.
   function applyAddLabels() {
-    $root.find('select[data-dlf-add-label]').each(function() {
+    $root.find('select[data-dlf-add-label]').not('[multiple]').each(function() {
       var value = $(this).val();
       if(value && value !== '-1') {
         return;
@@ -422,7 +427,9 @@ $(document).ready(function() {
       }
     });
   }
-  setAddLabel($root.find('.regionalBlock select'), text('add-region'));
+  // Only the single region selects: on a multi-select (the countries under a regional scope) the rendered element
+  // is the list of chips and the search box, and writing the label into it wiped them out.
+  setAddLabel($root.find('.regionalBlock select').not('[multiple]'), text('add-region'));
 
   // The countries multi-select reads as the region field: its search box is the "+ Add country..." prompt after
   // the chips. select2 clears the placeholder whenever a country is chosen and redraws the choices on every

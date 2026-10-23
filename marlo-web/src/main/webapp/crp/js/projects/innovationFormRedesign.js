@@ -10,6 +10,7 @@ $(document).ready(function() {
   if(!$root.length) {
     return;
   }
+  var readOnly = $root.hasClass('is-readonly');
 
   // ---- Header chip and General Information note follow the Innovation/Bundle answer ----
   // The note only tells what this visit changed: it shows once Bundled innovation is chosen here.
@@ -228,10 +229,31 @@ $(document).ready(function() {
     $orgs.closest('form').trigger('dlf:refresh');
   });
 
-  // Regional countries: deliverableFormRedesign.js labels every select of .regionalBlock "+ Add region..."; the
-  // countries field under "specify countries" is a multi-select and reads "+ Add country..." instead.
+  // ---- Read-only: every field with nothing saved reads "Not provided", in the same muted style ----
+  // customForm prints its own empty text (.fieldEmpty, worded per global unit) and an empty list prints nothing.
+  if(readOnly) {
+    var notProvided = text('not-provided');
+    $root.find('.fieldEmpty').each(function() {
+      $(this).addClass('inf-ro__empty').text(notProvided);
+    });
+    // An empty list prints its own italic "No entries added yet."
+    $root.find('.elementsListComponent').each(function() {
+      var $list = $(this);
+      if($list.find('li.relationElement').not('.relationElement-template').length) {
+        return;
+      }
+      var $own = $list.find('.panel-body > p.font-italic').first();
+      if($own.length) {
+        $own.removeClass('font-italic').addClass('inf-ro__empty').text(notProvided);
+      } else if(!$list.find('.inf-ro__empty').length) {
+        $list.append($('<p class="inf-ro__empty"></p>').text(notProvided));
+      }
+    });
+  }
+
+  // Regional countries: the countries field under "specify countries" is a multi-select; its search box reads
+  // "+ Add country..." after the chips.
   var $specifiedCountries = $root.find('.block-hasSpecifiedOutputCountries');
-  $specifiedCountries.find('select').removeAttr('data-dlf-add-label');
   watch($specifiedCountries, function() {
     $specifiedCountries.find('.select2-search__field').each(function() {
       if(this.getAttribute('placeholder') !== text('add-country')) {
@@ -277,7 +299,11 @@ $(document).ready(function() {
         $label.append($count);
       }
     }
-    $count.text(format(text('of-max'), [$externalsList.find('ul.list > li.relationElement').length, externalsMax]));
+    var externalsCount = $externalsList.find('ul.list > li.relationElement').length;
+    // Read-only, the count reads alone and an empty list says so
+    $count.text(readOnly ? (externalsCount ? String(externalsCount) : '')
+        : format(text('of-max'), [externalsCount, externalsMax]));
+
   });
 
   // Responsible institution: "Contact person(s) at this institution  n selected" above the people of each partner.
@@ -391,7 +417,7 @@ $(document).ready(function() {
   watch($bselList, function() {
     var count = $bselList.children('.innovationBundleItem').length;
     $root.find('[data-inf-bsel-count]').text(count ? String(count) : '');
-    $bselList.children('p').addClass('inf-bselected__empty').text($bselList.attr('data-empty'));
+    $bselList.children('p').addClass(readOnly ? 'inf-ro__empty' : 'inf-bselected__empty').text($bselList.attr('data-empty'));
   });
 
   var $compList = $root.find('.complementarySolutionsList');
@@ -401,13 +427,19 @@ $(document).ready(function() {
     $items.each(function(index) {
       var $item = $(this);
       var $head = $item.find('.inf-comp__head');
+      // Read-only, the fields are hidden inputs with the value printed beside them, and only the chosen functions print
       var title = $.trim($item.find('input[name$=".title"]').val() || '');
-      var $type = $item.find('select[name$=".projectInnovationType.id"]');
+      var $type = $item.find('[name$=".projectInnovationType.id"]');
       var typeValue = $type.val();
-      var typeName = typeValue && typeValue !== '-1' ? $.trim($type.find('option:selected').text()) : '';
-      var functions = $item.find('input.check-function:checked').length;
-      var missing = !title || !$.trim($item.find('input[name$=".shortTitle"]').val() || '')
-          || !$.trim($item.find('textarea[name$=".shortDescription"]').val() || '') || !typeName || !functions;
+      var typeName = '';
+      if(typeValue && typeValue !== '-1') {
+        typeName = $.trim($type.is('select') ? $type.find('option:selected').text()
+            : $type.closest('.selectList').find('p').text());
+      }
+      var functions = readOnly ? $item.find('.inf-comp__function .inputsFlat > p').length
+          : $item.find('input.check-function:checked').length;
+      var missing = !title || !$.trim($item.find('[name$=".shortTitle"]').val() || '')
+          || !$.trim($item.find('[name$=".shortDescription"]').val() || '') || !typeName || !functions;
       $head.find('[data-inf-comp-n]').text(index + 1);
       $head.find('[data-inf-comp-title]').text(title || $head.attr('data-new'));
       $head.find('[data-inf-comp-type]').text(typeName).prop('hidden', !typeName);
