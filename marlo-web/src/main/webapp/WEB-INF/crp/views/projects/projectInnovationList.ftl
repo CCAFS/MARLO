@@ -244,7 +244,7 @@
   [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${id}[/@s.param][@s.param name='projectID']${(innovation.project.id?c)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
   [#local pdfUrl][@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${id}[/@s.param][@s.param name='phaseID']${(info.phase.id)!''}[/@s.param][/@s.url][/#local]
 
-  [#local type = (info.repIndInnovationType.name)!"" /]
+  [#local type = utils.innovationTypeName((info.repIndInnovationType)!{}) /]
   [#local nature = (info.repIndInnovationNature.name)!"" /]
   [#local year = (info.year?c)!"" /]
   [#local feedback = (innovation.commentStatus)!"0/0" /]

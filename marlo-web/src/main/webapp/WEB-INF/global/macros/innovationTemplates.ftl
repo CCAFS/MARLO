@@ -202,7 +202,17 @@
 
       [#-- Innovation Type --]
       <div class="dlf-field dlf-divided">
-        [@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /]
+        [#local typeSelect][@customForm.select name="innovation.projectInnovationInfo.repIndInnovationType.id" label="" i18nkey="projectInnovations.innovationType" listName="innovationTypeList" keyFieldName="id" displayFieldName="name" required=true help="projectInnovations.innovationType.helpText" helpIcon=false className="innovationTypeSelect" editable=editable isMainTitle=true isWidthFull=true /][/#local]
+        [#-- Read-only, customForm.select reads the name off the stored type and gets nothing ("Not provided"); the
+             name comes from innovationTypeList instead, which also carries this unit's name for it --]
+        [#local storedTypeId = (element.projectInnovationInfo.repIndInnovationType.id)!-1 /]
+        [#local storedType = ((innovationTypeList)![])?filter(type -> type.id == storedTypeId) /]
+        [#if !editable && storedType?has_content]
+          [#local storedTypeName]${storedType[0].name}[/#local]
+          ${typeSelect?markup_string?replace(r'(<div class="selectList">[\s\S]*?<p>)[\s\S]*?(</p>)', '$1' + storedTypeName?markup_string + '$2', 'r')?no_esc}
+        [#else]
+          ${typeSelect}
+        [/#if]
 
         [#-- Informative text - Compatibility with PRMS (projectInnovations.js shows the line of the selected type) --]
         [#local innovationTypeValue = (element.projectInnovationInfo?has_content && element.projectInnovationInfo.repIndInnovationType?has_content)?then(element.projectInnovationInfo.repIndInnovationType.id, -1) /]
@@ -1671,7 +1681,7 @@
             [#-- Type of Innovation --]
             <td class="text-center">
               [#if innovation.projectInnovationInfo?? && innovation.projectInnovationInfo.repIndInnovationType?? ]
-                ${innovation.projectInnovationInfo.repIndInnovationType.name!''}
+                ${utilities.innovationTypeName(innovation.projectInnovationInfo.repIndInnovationType)}
               [/#if]
             </td>
             [#-- Readiness Level --]

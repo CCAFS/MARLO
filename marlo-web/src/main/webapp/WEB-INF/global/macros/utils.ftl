@@ -148,5 +148,9 @@
   [/#if]
 [/#macro]
 
-
-
+[#-- A2-2613: the name an innovation type shows in this global unit. projectInnovations.innovationType.displayName.{id}
+     in the unit's custom properties renames it there without touching the shared catalog. --]
+[#function innovationTypeName type]
+  [#if !(type?has_content) || !(type.id??)][#return ""][/#if]
+  [#return action.getText("projectInnovations.innovationType.displayName." + type.id?c, (type.name)!"")]
+[/#function]

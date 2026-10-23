@@ -1919,6 +1919,7 @@ public class ProjectInnovationAction extends BaseAction {
       } catch (Exception e) {
         logger.error("error getting list", e);
       }
+      innovationTypeList = this.withDisplayNames(innovationTypeList);
 
       // Innovation Nature
       innovationNatureList = repIndInnovationNatureManager.findAll().stream().filter(t -> t != null && !t.getOldType())
@@ -2958,6 +2959,34 @@ public class ProjectInnovationAction extends BaseAction {
   private boolean isCoDevelopersEditable() {
     return this.isCoDevelopersActive() && innovation.getProjectInnovationInfo() != null
         && Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getInnovationBundle());
+  }
+
+  /**
+   * A2-2613: a global unit can show an innovation type under another name without renaming the shared catalog
+   * (projectInnovations.innovationType.displayName.{id} in its custom properties). The renamed ones are detached
+   * copies, so the new name never reaches the database.
+   */
+  private List<RepIndInnovationType> withDisplayNames(List<RepIndInnovationType> types) {
+    List<RepIndInnovationType> displayed = new ArrayList<>();
+    if (types == null) {
+      return displayed;
+    }
+    for (RepIndInnovationType type : types) {
+      String displayName =
+        this.getText("projectInnovations.innovationType.displayName." + type.getId(), type.getName());
+      if (displayName == null || displayName.equals(type.getName())) {
+        displayed.add(type);
+      } else {
+        RepIndInnovationType renamed = new RepIndInnovationType();
+        renamed.setId(type.getId());
+        renamed.setName(displayName);
+        renamed.setDefinition(type.getDefinition());
+        renamed.setOldType(type.getOldType());
+        renamed.setPrmsNameEquivalent(type.getPrmsNameEquivalent());
+        displayed.add(renamed);
+      }
+    }
+    return displayed;
   }
 
   /**
