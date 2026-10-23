@@ -24,8 +24,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The deliverables the section answer reports are exactly the ones the validation checks: those required to be
- * completed in the phase. Phase 2026 below, as the Planning phase where the local copy showed the problem.
+ * The deliverables the section answer reports are the ones the menu counts: required to be completed in the phase, or
+ * completed for it or a later one. Phase 2026 below, as the Planning phase where the local copy showed the problem.
  */
 public class ValidateProjectSectionActionDeliverablesTest {
 
@@ -56,6 +56,16 @@ public class ValidateProjectSectionActionDeliverablesTest {
   @Test
   public void aDeliverableCompletedThisYearIsReported() {
     assertTrue(ValidateProjectSectionAction.isValidatedDeliverable(info(3, PHASE_YEAR, -1)));
+  }
+
+  @Test
+  public void aDeliverableCompletedForALaterYearIsReportedLikeTheMenuDoes() {
+    assertTrue(ValidateProjectSectionAction.isValidatedDeliverable(info(3, 2024, 2027)));
+  }
+
+  @Test
+  public void aDeliverableCompletedForAnEarlierExpectedYearIsNotReported() {
+    assertFalse(ValidateProjectSectionAction.isValidatedDeliverable(info(3, 2024, 2025)));
   }
 
   @Test
