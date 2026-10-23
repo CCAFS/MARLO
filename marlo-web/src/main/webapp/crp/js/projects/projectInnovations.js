@@ -1697,7 +1697,8 @@ function initDropdownOrganization() {
     success: function (data) {
       //console.log('Data received:', data);
       const options = data.institutions.map(item => {
-        return { label: item.name, value: item.id };
+        // "ACRONYM - Name (Institution type)", as the other institution lists show them
+        return { label: item.composedName || item.name, value: item.id };
       });
 
       dropdown.data = options;

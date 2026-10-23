@@ -182,13 +182,50 @@ $(document).ready(function() {
   });
 
   // ---- Organizations (mal-multiselect): "n selected" beside the label, kept in step with the list Vue draws ----
+  // Its inputs fill in by AJAX after the save bar took its snapshot, so the save bar leaves them out
+  // (data-dlf-dirty-ignore) and asks here: the chosen institutions against the stored ones (data-value).
   var $orgsCount = $root.find('[data-inf-orgs-count]');
-  watch($root.find('.inf-users mal-multiselect'), function() {
-    var selected = $root.find('.inf-users mal-multiselect .p-chip').length;
-    var label = selected ? format($orgsCount.attr('data-selected'), [selected]) : '';
+  var $orgs = $root.find('.inf-users mal-multiselect');
+  var storedOrgs = '';
+  var storedOrgIds = {};
+  var orgsLoaded = false;
+  function orgsKey($chips) {
+    return $chips.map(function() {
+      return $(this).find('input[name$=".institution.id"]').val();
+    }).get().sort().join(',');
+  }
+  try {
+    storedOrgs = $.map(JSON.parse($orgs.attr('data-value') || '[]'), function(item) {
+      storedOrgIds[String(item.value)] = String(item.id || '');
+      return String(item.value);
+    }).sort().join(',');
+  } catch(e) {
+    storedOrgs = '';
+  }
+  $orgs.closest('form').data('dlfExtraDirty', function() {
+    return orgsLoaded && orgsKey($orgs.find('.p-chip')) !== storedOrgs;
+  });
+  watch($orgs, function() {
+    var $chips = $orgs.find('.p-chip');
+    // Each chip carries the record id of its institution, so saving updates a stored organization instead of
+    // deleting and adding it again. projectInnovations.js sets the ids once, after a 100 ms wait, by position; Vue
+    // keys the chips by position too, so removing one shifts the institutions under ids that no longer match.
+    $chips.each(function() {
+      var $id = $(this).find('input[name$="].id"]').not('[name$=".institution.id"]');
+      var storedId = storedOrgIds[$(this).find('input[name$=".institution.id"]').val()] || '';
+      if($id.val() !== storedId) {
+        $id.val(storedId);
+      }
+    });
+    var label = $chips.length ? format($orgsCount.attr('data-selected'), [$chips.length]) : '';
     if($orgsCount.text() !== label) {
       $orgsCount.text(label);
     }
+    // The stored organizations count as loaded once the component draws them
+    if(!orgsLoaded && orgsKey($chips) === storedOrgs) {
+      orgsLoaded = true;
+    }
+    $orgs.closest('form').trigger('dlf:refresh');
   });
 
   // Regional countries: deliverableFormRedesign.js labels every select of .regionalBlock "+ Add region..."; the

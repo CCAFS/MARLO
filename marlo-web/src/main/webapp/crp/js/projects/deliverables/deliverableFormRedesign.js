@@ -35,20 +35,29 @@ $(document).ready(function() {
   var $state = $saveBar.find('[data-dlf-save-state]');
   var loadedForm = null;
 
+  // Left out of the comparison: #indexTab (the open tab, not an edit) and the fields inside [data-dlf-dirty-ignore],
+  // which fill in after the snapshot (an AJAX component). The page compares those itself and answers through the
+  // dlfExtraDirty function on the form, then triggers dlf:refresh.
+  function formState() {
+    return $form.find(':input').not('#indexTab, [data-dlf-dirty-ignore] :input').serialize();
+  }
+
   function refreshSaveState() {
     if(loadedForm === null || !$state.length) {
       return;
     }
-    var dirty = $form.serialize() !== loadedForm;
+    var extraDirty = $form.data('dlfExtraDirty');
+    var dirty = formState() !== loadedForm || (typeof extraDirty === 'function' && extraDirty());
     $saveBar.toggleClass('is-dirty', dirty);
     $state.text($state.attr(dirty ? 'data-unsaved' : 'data-saved'));
   }
 
   if($state.length && $form.length) {
     setTimeout(function() {
-      loadedForm = $form.serialize();
+      loadedForm = formState();
     }, 0);
     $form.on('input change', 'input, textarea, select', refreshSaveState);
+    $form.on('dlf:refresh', refreshSaveState);
     // List components and the yes/no switches change hidden inputs without firing change on them.
     $form.on('click', '.button-label, .removeElement, .removeActivity, .removeFundingSource, .removePartnerItem',
         function() {

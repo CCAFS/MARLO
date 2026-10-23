@@ -992,7 +992,7 @@
             <div class="form-group">
               <label for="innovation.allianceOrganizations">[@s.text name="projectInnovations.anticipatedUsers.organizations" /][@customForm.req required=false /]<span class="inf-count" data-inf-orgs-count data-selected="[@s.text name="projectInnovations.redesign.selected" /]"></span></label>
               [#-- innovationForm.css draws the select and the chosen organizations as a list under it --]
-              <mal-multiselect name="${customName}.allianceOrganizations" id="${customName}.allianceOrganizations" class="allianceOrganizations-institutions" show-selected-container="true" reference="institution.id" data-value='${customValueOrganizations}'
+              <mal-multiselect data-dlf-dirty-ignore name="${customName}.allianceOrganizations" id="${customName}.allianceOrganizations" class="allianceOrganizations-institutions" show-selected-container="true" reference="institution.id" data-value='${customValueOrganizations}'
                 style="--inf-select-label: '[@s.text name="projectInnovations.redesign.select.organization" /]'; --inf-empty-label: '[@s.text name="projectInnovations.redesign.notProvided" /]'">
               </mal-multiselect>
             </div>
