@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.validation;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
@@ -14,6 +15,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
@@ -75,6 +77,25 @@ public class BaseValidator {
       }
       this.missingFields.append(field);
     }
+  }
+
+  /**
+   * The Global Unit whose acronym names a section's autosave file. When it is the unit of the session, that object is
+   * used instead of reading it again: a read through a manager opens a transaction, and its commit flushes whatever
+   * the request has changed in memory, in the middle of a validation. Any other unit, or a call without a session (a
+   * service), is read from the database as before.
+   *
+   * @param action the action being validated.
+   * @param crpID the id of the Global Unit to name the file after.
+   * @param crpManager the manager to read the unit with when it is not the session one.
+   * @return the Global Unit, or null if it does not exist.
+   */
+  protected GlobalUnit getAutoSaveGlobalUnit(BaseAction action, long crpID, GlobalUnitManager crpManager) {
+    GlobalUnit sessionUnit = action == null ? null : action.getCurrentCrp();
+    if (sessionUnit != null && sessionUnit.getId() != null && sessionUnit.getId().longValue() == crpID) {
+      return sessionUnit;
+    }
+    return crpManager.getGlobalUnitById(crpID);
   }
 
   public StringBuilder getMissingFields() {

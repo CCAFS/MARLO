@@ -149,6 +149,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
+          break;
 
         case BUDGET:
           if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
