@@ -1,0 +1,61 @@
+CHG-OTP-LOGIN-001-T17 — step 3 method choice (UI-006), browser walkthrough record
+Date: 2026-10-14. Branch: A2-2631-Implement-Center-Email-OTP-Authentication, working tree = HEAD 750333128f + the T17 diff.
+Stack: scripts/run-marlo-java17.sh clean build (2415 / 1062 / 71 files compiled), app on localhost:8080.
+Environment only: MYSQL_DATABASE=aiccradb_otp_probe (throwaway copy of aiccradb_actsave), EMAIL_HOST/PORT and
+the backup pair = 127.0.0.1:2525 (local SMTP sink, nothing relayed), a fresh OTP_HMAC_SECRET. Confirmed with
+`ps eww` of the JVM on 8080 before any write.
+Fixtures (copy only): AICCRA (45) allow-list "example.com,outlook.com"; cognito_auth_active=true for 45;
+  CGIAR user  demo.user@cgiar.org      is_cgiar_user=1, member of 45
+  external    ext.nocode@example.org   is_cgiar_user=0, member of 45, domain not on the allow-list, test password
+  external    <ext.user>@outlook.com   is_cgiar_user=0, member of 45, domain allowed, test password
+Driving: claude-in-chrome. Steps 1-6 by real clicks; the re-request path (7) by the page's own jQuery handlers
+(see "Automation note").
+
+1. CGIAR user, Cognito unit (FN-019, unchanged)
+   step 3 shows only "Sign in with CGIAR"; input[name="user.password"] count in DOM = 0; no method choice.   PASS
+2. External user, unit without the code for that domain (FN-019, unchanged)
+   password field shown directly, focus on user.password; visible buttons: "Log in", "Go back"; no choice.  PASS
+3. External user, code enabled: the choice (UI-006)
+   heading "How do you want to sign in?"; buttons "Email me a sign-in code", "Continue with your password";
+   password input hidden; focus on "Email me a sign-in code".                                               PASS
+4. Choice -> "Continue with your password" -> password panel
+   focus on user.password; buttons "Log in", "Choose another way to sign in", "Go back";
+   test password + Enter -> validateUser.do, login.do, 302 -> /AICCRA/crpDashboard.do ("User ... logged in").  PASS
+5. Choice -> "Email me a sign-in code" -> code panel
+   text "We will email a one-time code to k***@outlook.com. No password needed."; focus on "Send code";
+   password input hidden. "Send code" -> one POST otpRequestCode.do (200) -> code step "Enter your sign-in
+   code", focus on the code input.                                                                         PASS
+6. "Use a different email" from the code step -> step 1; Log in again -> step 3 reopens on the choice
+   (methodView=choice, focus on "Email me a sign-in code").                                               PASS
+7. Re-request path, page handlers: Log in -> choice -> code panel -> Send -> code step -> "Use a different
+   email" -> Log in -> choice -> code panel -> Send (second challenge, within 30 s of the first) -> code
+   step held for 59 s (past the first countdown, step stayed login-step-otp) -> code from the sink ->
+   Verify -> /AICCRA/crpDashboard.do.                                                                      PASS
+8. Enter guard (UI-006 "Enter never submits a method that is not open"), synthetic keydown Enter
+   (bubbles, cancelable) dispatched on the focused element; defaultPrevented reported:
+     choice view,    terms checkbox      -> true   (cancelled)
+     code panel,     terms checkbox      -> true   (cancelled)
+     code panel,     "Send code" button  -> false  (a button keeps its own Enter activation, by design)
+     password panel, password input      -> false  (Enter still submits the password)               PASS
+   Falsifier: $('.loginForm').off('keydown') (guard removed), back to the choice view,
+     choice view,    terms checkbox      -> false  (not cancelled: the guard is what cancels it)    RED as expected
+
+Server log (auth.otp.* lines during the walkthrough): request outcome=sent / delivery outcome=delivered per
+"Send code"; verify outcome=ok for steps 7 and the earlier single-request run.
+
+Automation note (recorded so the evidence is read correctly)
+- One verify in an early run answered "mismatch" with an empty gu/domain, i.e. no pending challenge in the
+  session. The server log shows why: between that run's second request (16:43:43Z) and its verify
+  (16:44:01Z) a logout.do (16:43:56Z) that the walkthrough did not issue, preceded by a superadmin (user 1082)
+  session on superadmin/marloParameters.do (16:42:43Z-16:43:06Z). The user was using the same local app in the
+  same browser profile at the same time; the shared localhost cookie made that logout end the walkthrough's
+  session. Not a T17 defect. Repeated afterwards with curl (two sequences), with fetch from the page, and
+  with the page handlers (step 7): all ok.
+- Later in the session the automation's key events stopped reaching the page (a capturing keydown listener
+  recorded 0 events after a Return), so Enter results taken by real key presses in that window were
+  discarded and step 8 was re-measured with dispatched events instead. A dispatched event proves the guard
+  cancels the keydown; it does not trigger the browser's implicit form submission, so the end-to-end
+  "Enter on the checkbox does not POST login.do" remains proven by the guard plus the code review, not by a
+  trusted key press. Recorded as a limit, not a pass.
+
+Not covered here: screen-reader behaviour (accepted gap, requirements section 6).

@@ -1,0 +1,20 @@
+# CHG-PWD-SWITCH-001 /akili-test Suite 2 (non-author) -- AC-8 falsifier B (added by this suite): the DAO keeps the first switch values it reads for the JVM's life (suite2-ac8.FALSIFIER-B.patch)
+# 2026-10-18 09:35 -05, HEAD 6a0c65e5e4 + patch B, JVM pid 90364 (fresh start, no lookup before this run), clean build 2415/1066 BUILD SUCCESS, javap shows FALSIFIER_MEMO
+$ probes/ac-live.sh ac8
+
+== ac8: FN-002 / AC-8 (a change of the switch is live: raw SQL, no restart)
+  (JVM pid 90364; unit 45: password switch false, code switch true, no exclusion)
+  => PASS [AC-8] off: crpByEmail offers the code only (otpEnabled true, passwordEnabled false)   ((True, False))
+  => PASS [AC-8] off: validateUser.do refuses the correct password
+  => FAIL [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both)   ((True, False))
+  => FAIL [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password
+  => FAIL [AC-8] UPDATE ... 'true': the next login.do signs in
+  => PASS [AC-8] UPDATE ... 'false' with no restart: the next lookup is code only again   ((True, False))
+  => PASS [AC-8] UPDATE ... 'false': the next validateUser.do refuses again
+  => PASS [AC-8] no restart: the JVM pid is the same before and after   (90364 -> 90364)
+
+SUMMARY: 8 checks, 3 failed: [AC-8] UPDATE ... 'true' with no restart: the next lookup offers today's methods (both); [AC-8] UPDATE ... 'true': the next validateUser.do accepts the password; [AC-8] UPDATE ... 'true': the next login.do signs in
+EXIT=1
+# errors in this JVM's log during the run: 0
+# Reading: the signature of a stale value. The first state is read correctly (checks 1-2 pass), the off->on change is missed (3 fail).
+# The on->off checks pass only because the memo still holds 'off': this probe order cannot falsify the on->off direction on its own.

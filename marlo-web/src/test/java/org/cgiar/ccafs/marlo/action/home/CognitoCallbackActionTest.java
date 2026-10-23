@@ -38,6 +38,7 @@ import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
 import org.cgiar.ccafs.marlo.security.impl.CognitoIdentityMapperImpl;
 import org.cgiar.ccafs.marlo.security.impl.CognitoTokenValidatorImpl;
 import org.cgiar.ccafs.marlo.security.impl.CognitoTokenValidatorImpl.JwksSource;
+import org.cgiar.ccafs.marlo.security.otp.UnconfiguredOtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.Serializable;
@@ -1829,7 +1830,7 @@ public class CognitoCallbackActionTest {
       ParameterManager parameterManager, CognitoTokenValidator tokenValidator, CognitoIdentityMapper identityMapper,
       TokenExchangeClient tokenExchangeClient) {
       super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager,
-        tokenValidator, identityMapper, tokenExchangeClient);
+        UnconfiguredOtpEligibility.create(), tokenValidator, identityMapper, tokenExchangeClient);
     }
 
     @Override

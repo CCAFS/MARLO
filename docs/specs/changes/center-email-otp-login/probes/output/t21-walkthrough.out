@@ -1,0 +1,40 @@
+CHG-OTP-LOGIN-001-T21 -- step 3 of the login page after the per-unit switch and the domain exclusion (UI-006, AC-13, AC-16), browser walkthrough record
+Date: 2026-10-15. Branch: A2-2631-Implement-Center-Email-OTP-Authentication, working tree = HEAD ac4dcc50fd + the T21 diff.
+Stack: a clean build of the tree (marlo-data, marlo-web, 2415 / 1064 / 78 files compiled), app on localhost:8080, login.js?20261015.
+Environment only: MYSQL_DATABASE=aiccradb_otp_probe (throwaway copy of aiccradb_actsave; Flyway applied the T21 migration to it at
+start), EMAIL_HOST/PORT and the backup pair = 127.0.0.1:2525 (local SMTP sink, nothing relayed), EMAIL_NOTIFICATION=support.probe@sink.test,
+a fresh OTP_HMAC_SECRET. Confirmed with `ps eww` of the JVM on 8080 before any write.
+Fixtures (copy only): AICCRA (45), type 3, cognito_auth_active=true; system_otp_login_active=true; system_otp_excluded_email_domains
+changed between branches through the database, with NO restart:
+  external    probe.user@outlook.com   is_cgiar_user=0, member of 45, test password
+  CGIAR       otp.staff@cgiar.org      is_cgiar_user=1, member of 45
+Driving: claude-in-chrome, real clicks and typing; DOM state read with the page's own variables (methodView, otpEnabled, cognitoEnabled,
+isCgiarUser) and offsetParent for visibility. The Cognito redirect itself was NOT followed (it leaves for the identity provider): the
+"Sign in with CGIAR" control of the choice was activated with the terms unticked and the terms gate answered, with no navigation.
+
+1. External user (is_cgiar_user=0), exclusion "excluded.test": the choice
+   caption "External user"; buttons "Email me a sign-in code", "Continue with your password", "Go back";
+   focus on "Email me a sign-in code"; the password input is in the document but hidden.                    PASS
+   1a. "Continue with your password": password panel; focus user.password; buttons "Log in", "Choose another way to sign in", "Go back".   PASS
+   1b. "Choose another way to sign in": back on the choice, focus on "Email me a sign-in code".                                          PASS
+   1c. "Email me a sign-in code": code panel "We will email a one-time code to p***@outlook.com. No password needed."; focus on
+       "Send code". "Send code": code step, focus on the code input, "Resend in 29 s"; the code from the sink signs in -> /AICCRA/crpDashboard.do.   PASS
+2. CGIAR account on the Cognito unit, switch on, exclusion "excluded.test" (SEC-009, AC-13): the NEW choice
+   isCgiarUser=true, cognitoEnabled=true, otpEnabled=true. Heading "How do you want to sign in?"; buttons "Email me a sign-in code"
+   (primary), "Sign in with CGIAR", "Go back"; no "External user" caption; no password control: input[type=password] in the form = 0,
+   #login-password absent, "Log in" hidden; focus on "Email me a sign-in code".                                                    PASS
+   2a. "Sign in with CGIAR" with the terms unticked: "Please accept the terms and conditions to continue." shown, location unchanged
+       (/marlo-web/login.do), one click handler bound on the control (the Cognito handler).                                        PASS
+   2b. "Email me a sign-in code": code panel "We will email a one-time code to o***@cgiar.org. No password needed."; "Send code" focused;
+       "Choose another way to sign in" returns to the choice with focus on "Email me a sign-in code".                              PASS
+   2c. "Send code": code step, focus on the code input; the code from the sink signs the CGIAR account in -> /AICCRA/crpDashboard.do.   PASS
+   2d. Enter guard, synthetic keydown Enter (bubbles, cancelable) on the terms checkbox: choice view defaultPrevented=true, code panel
+       defaultPrevented=true; the page stayed on /marlo-web/login.do.                                                               PASS
+3. Same CGIAR account after `UPDATE custom_parameters SET value='cgiar.org'` on the exclusion of unit 45, no restart (FN-002, AC-13):
+   next login page: isCgiarUser=true, cognitoEnabled=true, otpEnabled=false. Step 3 is the single-method Cognito view: the only button
+   is "Sign in with CGIAR" (#login-cgiar-button), focused, plus "Go back"; no choice; input[type=password] in the form = 0.   PASS
+   (a direct request-code call for that account answers domainNotEnabled: ac-probe.t21-enum.out, AC-13/FN-006.)
+4. Switch turned off (`value='false'`), external user, no restart (AC-1, FN-019, unchanged):
+   password field shown directly, focus on user.password; visible buttons "Log in", "Go back"; no choice; otpEnabled=false.       PASS
+
+Restored afterwards: switch true, exclusion "excluded.test". `aiccradb_actsave` and `aiccradb1`-`4` were never written to.

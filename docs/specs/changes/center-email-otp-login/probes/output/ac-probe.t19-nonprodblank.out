@@ -1,0 +1,16 @@
+# CHG-OTP-LOGIN-001-T19, 2026-10-15: ac-probe.sh nonprodblank, the blank half of AC-19. The application was restarted on the same copy with
+# EMAIL_NOTIFICATION= (empty, environment only) and marlo.production=false. Paths shortened.
+
+
+== nonprodblank: AC-19, blank email.notification (the application was started with EMAIL_NOTIFICATION= empty)
+  (guard: the first challenge row landed in aiccradb_otp_probe, the application is on the probe copy)
+   [WARN ] [MARLO] [dev] [OtpMailSender] environment=DEV request_id=e6cf61e33e94ffec controller_affected=/marlo-web/otpRequestCode.do: auth.otp.mail outcome=send_failed cause=AddressException
+   [WARN ] [MARLO] [dev] [OtpLog] environment=DEV request_id=e6cf61e33e94ffec controller_affected=/marlo-web/otpRequestCode.do: auth.otp.delivery outcome=email_failed gu=aiccra domain=outlook.com ms=1
+   [INFO ] [MARLO] [dev] [OtpLog] environment=DEV request_id=e6cf61e33e94ffec controller_affected=/marlo-web/otpRequestCode.do: auth.otp.request outcome=sent gu=aiccra domain=outlook.com ms=95
+  response {"status":"sent","destination":"p***@outlook.com"} ; messages at the sink: 0 ; email_logs rows: 0
+  => PASS [AC-19] with email.notification blank the response is still the neutral sent   ({"status":"sent","destination":"p***@outlook.com"})
+  => PASS [AC-19] with email.notification blank nothing is sent: no message at the sink, none for the submitted address   (0 message(s))
+  => PASS [AC-19] with email.notification blank no email_logs row is written   (0 row(s))
+  => PASS [AC-19] the delivery line says email_failed, at WARN, and no auth.otp.code line is written   (1 delivery line(s))
+
+SUMMARY: 4 checks, 0 failed

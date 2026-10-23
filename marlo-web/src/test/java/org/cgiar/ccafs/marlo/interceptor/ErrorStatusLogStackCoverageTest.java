@@ -178,6 +178,40 @@ public class ErrorStatusLogStackCoverageTest {
     assertTrue("the configuration must still contain the actions this test protects", checkedActions >= 440);
   }
 
+  /**
+   * CHG-OTP-LOGIN-001-T12 (P-21): the two homeOtp actions and their stack are enumerated by the generic tests, which
+   * pin no action list, so this only guards that they stay inside the loop: declared in struts-home.xml, on a stack
+   * that starts with logErrorStatus, and not exempted from it.
+   */
+  @Test
+  public void theHomeOtpActionsRunOtpUnloggedStackThatStartsWithLogErrorStatus() throws Exception {
+    Document home = load("/struts-home.xml");
+    Map<String, List<String>> stacks = new HashMap<>();
+    NodeList stackNodes = home.getElementsByTagName("interceptor-stack");
+    for (int i = 0; i < stackNodes.getLength(); i++) {
+      Element stack = (Element) stackNodes.item(i);
+      stacks.put(stack.getAttribute("name"), childRefs(stack));
+    }
+    assertEquals(LOG_ERROR_STATUS, stacks.get("otpUnloggedStack").get(0));
+    int found = 0;
+    NodeList packages = home.getElementsByTagName("package");
+    for (int i = 0; i < packages.getLength(); i++) {
+      Element pack = (Element) packages.item(i);
+      if (!"homeOtp".equals(pack.getAttribute("name"))) {
+        continue;
+      }
+      NodeList actions = pack.getElementsByTagName("action");
+      for (int j = 0; j < actions.getLength(); j++) {
+        Element action = (Element) actions.item(j);
+        assertEquals("homeOtp/" + action.getAttribute("name") + " must use otpUnloggedStack",
+          Arrays.asList("otpUnloggedStack"), childRefs(action));
+        assertTrue(!WITHOUT_LOG_ERROR_STATUS.contains("homeOtp/" + action.getAttribute("name")));
+        found++;
+      }
+    }
+    assertEquals("homeOtp must declare exactly otpRequestCode and otpVerifyCode", 2, found);
+  }
+
   @Test
   public void everyStackStartsWithLogErrorStatus() throws Exception {
     int checkedStacks = 0;

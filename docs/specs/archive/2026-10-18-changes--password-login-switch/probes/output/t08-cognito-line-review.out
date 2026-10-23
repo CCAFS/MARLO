@@ -1,0 +1,83 @@
+T08 attempt 3: Cognito/CGIAR line review. Method: every added line (center-email-otp-login, git diff) and every line (password-login-switch runbook, probes/README) matching cognito|cgiar|sign in with was READ in its sentence context and judged against design.md section 1 (Code row) / FN-005: a Cognito account is never refused for being Cognito; the override does not admit it, it keeps the code switch and the exclusion.
+Judgment key: ok = states the rule, or is unrelated; FIXED = defective, corrected in this attempt.
+
+## Step 2a: center-email-otp-login added lines
+center-email-otp-login/requirements.md:17  ok
+center-email-otp-login/requirements.md:23  ok
+center-email-otp-login/requirements.md:28  ok
+center-email-otp-login/requirements.md:34  ok
+center-email-otp-login/requirements.md:43  ok
+center-email-otp-login/requirements.md:91  ok
+center-email-otp-login/requirements.md:101  ok
+center-email-otp-login/requirements.md:111  ok
+center-email-otp-login/requirements.md:123  ok
+center-email-otp-login/requirements.md:156  ok
+center-email-otp-login/requirements.md:194  ok
+center-email-otp-login/requirements.md:206  ok
+center-email-otp-login/requirements.md:243  ok
+center-email-otp-login/requirements.md:244  ok
+center-email-otp-login/requirements.md:247  ok
+center-email-otp-login/requirements.md:248  ok
+center-email-otp-login/requirements.md:253  ok
+center-email-otp-login/requirements.md:275  ok
+center-email-otp-login/requirements.md:309  ok
+center-email-otp-login/requirements.md:384  ok
+center-email-otp-login/requirements.md:462  FIXED (was: is refused the code)
+center-email-otp-login/requirements.md:464  ok
+center-email-otp-login/requirements.md:465  ok
+center-email-otp-login/requirements.md:467  ok
+center-email-otp-login/requirements.md:470  ok
+center-email-otp-login/design.md:31  ok
+center-email-otp-login/design.md:240  ok
+center-email-otp-login/design.md:246  ok
+center-email-otp-login/design.md:278  ok
+center-email-otp-login/design.md:320  ok
+center-email-otp-login/design.md:321  ok
+center-email-otp-login/design.md:322  ok
+center-email-otp-login/design.md:394  ok
+center-email-otp-login/design.md:491  ok
+center-email-otp-login/design.md:494  ok
+center-email-otp-login/design.md:511  ok
+center-email-otp-login/runbook.md:14  ok
+center-email-otp-login/runbook.md:38  ok
+center-email-otp-login/runbook.md:39  ok
+center-email-otp-login/runbook.md:180  ok
+center-email-otp-login/runbook.md:184  ok
+center-email-otp-login/runbook.md:189  ok
+center-email-otp-login/runbook.md:208  ok
+center-email-otp-login/runbook.md:248  ok
+center-email-otp-login/runbook.md:364  ok
+
+## Step 2b: password-login-switch runbook.md and probes/README.md
+password-login-switch/runbook.md:7  ok
+password-login-switch/runbook.md:27  ok
+password-login-switch/runbook.md:28  ok
+password-login-switch/runbook.md:49  ok
+password-login-switch/runbook.md:50  ok
+password-login-switch/runbook.md:55  ok
+password-login-switch/runbook.md:56  FIXED (ambiguous: said such accounts do not move to the code; now says the override does not move them, the code only under switch and exclusion)
+password-login-switch/runbook.md:63  ok
+password-login-switch/runbook.md:64  ok
+password-login-switch/runbook.md:69  ok
+password-login-switch/runbook.md:78  ok
+password-login-switch/runbook.md:122  ok
+password-login-switch/runbook.md:125  FIXED (was: Correct: such accounts keep Sign in with CGIAR)
+password-login-switch/runbook.md:132  ok
+password-login-switch/runbook.md:136  ok
+password-login-switch/runbook.md:137  ok
+password-login-switch/runbook.md:150  ok
+password-login-switch/runbook.md:153  ok
+password-login-switch/probes/README.md:14  ok (fixture or directory-outage text, no code-eligibility claim)
+password-login-switch/probes/README.md:40  ok (fixture or directory-outage text, no code-eligibility claim)
+password-login-switch/probes/README.md:49  ok (fixture or directory-outage text, no code-eligibility claim)
+
+## Step 3: widened regex hits
+center requirements.md (FN-005 line): ok, historical clause text, the CGIAR refusal of SEC-009 is gone
+center requirements.md (Executive Summary bullet quote in Decision Log): ok, quotes the reversed original sentence
+center requirements.md (Correction line): ok, the new sentence quotes the patterns
+password-login-switch/runbook.md:50: ok, CGIAR mail gateway refuses relay, unrelated
+password-login-switch/runbook.md:125: FIXED, now qualified
+password-login-switch/runbook.md:136: ok, directory outage text, unrelated
+password-login-switch/probes/README.md:49: ok, Active Directory refusal of a wrong password, unrelated
+
+## Opposite error (Cognito admitted by the override): none found. Every note says it keeps the code switch and the exclusion.

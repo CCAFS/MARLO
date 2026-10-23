@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.security.APCustomRealm;
 import org.cgiar.ccafs.marlo.security.CognitoAssertion;
 import org.cgiar.ccafs.marlo.security.CognitoAuthenticationToken;
 import org.cgiar.ccafs.marlo.security.authentication.Authenticator;
+import org.cgiar.ccafs.marlo.security.otp.UnconfiguredOtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.Serializable;
@@ -539,7 +540,8 @@ public class LoginActionLogoutTest {
     TestableLoginAction(APConfig config, UserManager userManager, GlobalUnitManager crpManager,
       CrpUserManager crpUserManager, CustomParameterManager customParameterManager,
       ParameterManager parameterManager) {
-      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager);
+      super(config, userManager, crpManager, crpUserManager, customParameterManager, parameterManager,
+        UnconfiguredOtpEligibility.create());
     }
 
     @Override

@@ -1,0 +1,31 @@
+# CHG-PWD-SWITCH-001-T08 ac10
+# date 2026-10-18T02:30Z; HEAD 9b2448578d; database aiccradb_otp_probe (throwaway copy); application built clean from the working tree, code key valid, JDWP agent on; command: probes/ac-live.sh ac10
+
+== ac10: SEC-001 / SEC-002 / OPS-001 / AC-10 (the password is refused where the switch is off)
+  (unit 45 AICCRA: switch off; unit 47 AICCRA_III: switch on by default; fixture account, last_login before: 2026-10-17 21:30:00)
+  => PASS [AC-10] validateUser.do: the CORRECT password for the switch-off unit is refused   ({"agree": true, "userEmail": "probe.user@outlook.com", "userFound": {"loginSuccess": false}})
+  => PASS [OPS-001] validateUser.do: exactly one INFO line names the gate and the unit   (1 line(s))
+  => PASS [OPS-001] that line holds neither the password nor the address
+  => PASS [SEC-001] validateUser.do: no credential check ran (no 'Trying to log in' line, no LDAP line)   (65 log lines in the window)
+  => PASS [OPS-001] the password and the address appear nowhere in that request's log window
+  => PASS [SEC-002] validateUser.do: the refusal equals a wrong password on a unit with the switch on (body, ignoring the echoed unit id)   (refused={"agree": true, "userEmail": "probe.user@outlook.com", "userFound": {"loginSuccess": false}} control={"agree": true, "userEmail": "probe.user@outlook.com", "userFound": {"loginSuccess": false}})
+  => PASS [SEC-002] validateUser.do: same Set-Cookie headers (including rememberMe=deleteMe), session id and date masked   (['JSESSIONID=<sid>; Path=/marlo-web; HttpOnly; SameSite=lax', 'rememberMe=deleteMe; Path=/marlo-web; Max-Age=0; Expires=<t>; SameSite=lax'])
+  => PASS [SEC-002] validateUser.do: same HTTP status   (200 / 200)
+  => PASS [SEC-001] control: the wrong password on the switch-on unit DID run the credential check (the probe can see one)
+  => PASS [AC-10] login.do: the CORRECT password for the switch-off unit is refused (HTTP 200, the login page, no redirect)   (HTTP 200)
+  => PASS [OPS-001] login.do: exactly one INFO line names the gate and the unit, without password or address   (1 line(s))
+  => PASS [SEC-001] login.do: no credential check ran
+  => PASS [OPS-001] login.do: the password and the address appear nowhere in that request's log window
+  => PASS [SEC-002] login.do: the refusal equals a wrong password on a unit with the switch on (status, page byte for byte)   (22835 bytes / 22835 bytes)
+  => PASS [SEC-002] login.do: same Set-Cookie headers   (['JSESSIONID=<sid>; Path=/marlo-web; HttpOnly; SameSite=lax', 'rememberMe=deleteMe; Path=/marlo-web; Max-Age=0; Expires=<t>; SameSite=lax'])
+  => PASS [SEC-001] last_login did not move: no sign-in happened   (2026-10-17 21:30:00)
+  => PASS [SEC-001] the session of the refused validateUser.do holds no authenticated principal (read from the JVM)
+  => PASS [SEC-001] the session of the refused login.do holds no authenticated principal (read from the JVM)
+  => PASS [SEC-001] CGIAR account, switch off: NO LDAP call is made before the refusal (no directory connection attempt in the log)   (0 LDAP line(s), 1 gate line(s))
+  => PASS [SEC-001] control: with the switch on the same request DOES try the directory (the probe can see an LDAP attempt)   (10 LDAP line(s))
+  => PASS [AC-10] control: with the switch back on, the same correct password signs in (so the refusal came from the switch)
+  => PASS [AC-10] control: login.do with the switch on redirects to the dashboard   (/marlo-web/AICCRA/crpDashboard.do)
+  => PASS [SEC-001] control: that login.do session IS authenticated, so the probe can tell a signed-in session from a refused one
+
+SUMMARY: 23 checks, 0 failed
+# exit 0

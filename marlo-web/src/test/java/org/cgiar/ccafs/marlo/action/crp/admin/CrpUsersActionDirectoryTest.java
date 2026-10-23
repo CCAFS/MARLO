@@ -36,8 +36,10 @@ import org.cgiar.ccafs.marlo.security.directory.DirectoryPerson;
 import org.cgiar.ccafs.marlo.security.directory.DirectoryService;
 import org.cgiar.ccafs.marlo.security.directory.DirectorySource;
 import org.cgiar.ccafs.marlo.security.directory.FakeDirectoryService;
+import org.cgiar.ccafs.marlo.security.otp.UnconfiguredOtpEligibility;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.WelcomeSignInText;
 import org.cgiar.ccafs.marlo.validation.superadmin.GuestUsersValidator;
 
 import java.lang.reflect.Field;
@@ -780,7 +782,9 @@ public class CrpUsersActionDirectoryTest {
       DirectoryService directoryService) {
       super(config, globalUnitManager, crpUserManager, userManager, projectManager, phaseManager, roleManager,
         userRoleManager, sendMailS, validator, directoryService,
-        unconfiguredManager(CustomParameterManager.class), unconfiguredManager(ParameterManager.class));
+        unconfiguredManager(CustomParameterManager.class), unconfiguredManager(ParameterManager.class),
+        new WelcomeSignInText(UnconfiguredOtpEligibility.create(), unconfiguredManager(CustomParameterManager.class),
+          unconfiguredManager(ParameterManager.class)));
     }
 
     @Override
