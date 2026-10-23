@@ -37,7 +37,7 @@
   "${baseUrlCdn}/global/css/customDataTable.css?20250825",
   [#-- A2-2613: the deliverable form redesign (.dlf) plus what the innovation form adds (.inf) --]
   "${baseUrl}/crp/css/projects/deliverableForm.css?20261021-1",
-  "${baseUrlMedia}/css/projects/innovationForm.css?20261023-8"
+  "${baseUrlMedia}/css/projects/innovationForm.css?20261023-9"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
