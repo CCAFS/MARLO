@@ -21,7 +21,7 @@
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#-- The form redesign reuses the deliverable form's (A2-2607): save state, labels and word counters --]
   "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261023-3",
-  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261023-5"
+  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261023-6"
 ] /]
 
 [#assign moduleJS = [

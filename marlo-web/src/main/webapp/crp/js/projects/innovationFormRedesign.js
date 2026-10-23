@@ -262,7 +262,8 @@ $(document).ready(function() {
     });
   });
 
-  // Performance indicators: "IPI 1.1" / "PDO Indicator 3" pulled out of the label into the design's code pill.
+  // Performance indicators: "IPI 1.1" (AICCRA), "IRI 1.1" (AICCRA-FSRP IV) / "PDO Indicator 3" pulled out of the label
+  // into the design's code pill.
   var $indicators = $root.find('.inf-indicators .elementsListComponent');
   watch($indicators.find('ul.list'), function() {
     $indicators.find('ul.list > li.relationElement').each(function() {
@@ -270,7 +271,7 @@ $(document).ready(function() {
         return;
       }
       var $name = $(this).find('.elementName');
-      var match = $name.text().match(/(IPI\s?\d+(?:\.\d+)*|PDO Indicator\s?\d+)/);
+      var match = $name.text().match(/((?:IPI|IRI)\s?\d+(?:\.\d+)*|PDO Indicator\s?\d+)/);
       if(match) {
         $name.before($('<span class="dlf-code"></span>').text(match[1].replace(/^PDO Indicator\s?/, 'PDO ')));
       }

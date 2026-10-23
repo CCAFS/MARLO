@@ -1526,7 +1526,8 @@
       <span class="inf-iaRow__label">[@s.text name=fieldLabel /][@customForm.req required=editable /]</span>
       <div class="inf-segmented inf-iaScore" role="radiogroup" aria-label="[@s.text name=fieldLabel /]">
         [#list (impactAreaScores)![] as option]
-          [#local optionLabel = editable?then((option.completeDescription)!option.description, option.description) /]
+          [#-- The full name in both modes: description repeats the number the option's badge already shows ("(0) Not Targeted") --]
+          [#local optionLabel = (option.completeDescription)!option.description /]
           [@customForm.radioFlat id="${fieldName}-${option.id}" name=inputName value="${option.id}" label=optionLabel checked=(fieldValue.id?? && fieldValue.id == option.id) cssClass="radioType-contributionToCGIAR" cssClassLabel="radio-label" editable=true disabled=!editable /]
         [#else]
           <p class="text-muted">No options available.</p>

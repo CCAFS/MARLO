@@ -8,7 +8,7 @@
 ] /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/deliverableList.css?20261019-4",
-  "${baseUrlMedia}/css/projects/innovationList.css?20261021-1"
+  "${baseUrlMedia}/css/projects/innovationList.css?20261023"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]
@@ -277,9 +277,9 @@
           [#if invTitle?has_content]${invTitle}[#else]<span class="dlv-title__none">[@s.text name="projectsList.title.none" /]</span>[/#if]
         </a>
         <span class="dlv-meta">
+          [#-- innovationList.css draws the "·" between the items, so none is left at the end of a wrapped line --]
           [#if nature?has_content]
             <span>${nature}</span>
-            <span class="dlv-meta__sep" aria-hidden="true">·</span>
           [/#if]
           [#if isOwner]
             <span>[@s.text name="project.deliverableList.owner" /]: <span class="dlv-meta__strong">${owner}</span></span>

@@ -9,7 +9,7 @@
 /* The search lives in the filter row here, not in the toolbar */
 .inv .dlv-search { min-width: 220px; max-width: 320px; }
 .inv .inv-search { height: 32px; }
-.inv .inv-select--type select { max-width: 220px; text-overflow: ellipsis; }
+.inv .inv-select--type select { min-width: 130px; max-width: 220px; text-overflow: ellipsis; }
 
 .inv .dlv-tag.inv-tag--new { background: var(--dlv-ok-bg); border-color: var(--dlv-ok-border); color: var(--dlv-ok); font-weight: 700; }
 
@@ -142,3 +142,10 @@
 
 /* Webinar note: the presentation link sits at the note's end */
 .inv .inv-webinar { flex: none; align-self: center; }
+
+/* Meta line (nature, owner): each item after the first carries its "·". The line is shifted left by the width of a
+   separator and clipped there, so an item that wraps to the start of a new line loses its separator instead of the
+   previous line ending in a dangling one. */
+.inv .dlv-meta { column-gap: 0; margin-left: -14px; clip-path: inset(0 0 0 14px); }
+.inv .dlv-meta > span { position: relative; padding-left: 14px; }
+.inv .dlv-meta > span::before { content: "\00B7"; position: absolute; left: 4px; color: var(--dlv-border-strong); }
