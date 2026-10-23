@@ -198,4 +198,10 @@ public class SectionStatusManagerImpl implements SectionStatusManager {
     return sectionStatusDAO.save(sectionStatus);
   }
 
+  @Override
+  public int updateMissingFieldsInOwnSession(long sectionStatusId, String missingFields) {
+    // Not @Transactional on purpose: the DAO opens its own session and transaction
+    return sectionStatusDAO.updateMissingFieldsInOwnSession(sectionStatusId, missingFields);
+  }
+
 }

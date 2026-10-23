@@ -833,9 +833,32 @@ public class BaseValidator {
     } else {
       status.setMissingFields("");
     }
+    // A new status is inserted right away with these missing fields; an existing one may need storing apart
+    boolean existingStatus = status.getId() != null;
     sectionStatusManager.saveSectionStatus(status);
+    if (existingStatus) {
+      this.storeValidationResult(status, sectionName, action);
+    }
 
     action.getMissingFields().setLength(0);
+  }
+
+  /**
+   * Store the missing fields an action that only validates has computed for an existing section status. Without it the
+   * update stays in the request session, which such an action never flushes, and the menu keeps reading the old
+   * status. The update runs in a session of its own, so nothing else the request changed is written. A failure is
+   * logged and leaves the stored status as it was: the validation answer itself does not depend on it.
+   */
+  private void storeValidationResult(SectionStatus status, String sectionName, BaseAction action) {
+    if (status.getId() == null || !action.isSectionStatusStoredOnValidation(sectionName)) {
+      return;
+    }
+    try {
+      sectionStatusManager.updateMissingFieldsInOwnSession(status.getId().longValue(), status.getMissingFields());
+    } catch (RuntimeException e) {
+      LOG.warn("Could not store the result of validating the section {}, so its status {} keeps the stored one",
+        sectionName, status.getId(), e);
+    }
   }
 
   /**

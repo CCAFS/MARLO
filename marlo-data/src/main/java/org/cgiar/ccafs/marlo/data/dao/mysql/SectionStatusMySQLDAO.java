@@ -26,7 +26,9 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 @Named
 public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long> implements SectionStatusDAO {
@@ -360,5 +362,23 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
 
 
     return sectionStatus;
+  }
+
+  @Override
+  public int updateMissingFieldsInOwnSession(long sectionStatusId, String missingFields) {
+    // A bulk update in a new session: the request session is not flushed, and no entity listener runs
+    try (Session session = this.getSessionFactory().openSession()) {
+      Transaction transaction = session.beginTransaction();
+      try {
+        int updated = session
+          .createQuery("update " + SectionStatus.class.getName() + " set missingFields = :missingFields where id = :id")
+          .setParameter("missingFields", missingFields).setParameter("id", sectionStatusId).executeUpdate();
+        transaction.commit();
+        return updated;
+      } catch (RuntimeException e) {
+        transaction.rollback();
+        throw e;
+      }
+    }
   }
 }

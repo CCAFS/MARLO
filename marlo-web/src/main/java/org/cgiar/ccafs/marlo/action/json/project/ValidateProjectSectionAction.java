@@ -47,11 +47,14 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -76,6 +79,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
+
+  /** The project sections whose validation result this action stores, see isSectionStatusStoredOnValidation. */
+  private static final Set<String> STORED_SECTIONS = Collections.unmodifiableSet(new HashSet<>(
+    Arrays.asList(ProjectSectionStatusEnum.DESCRIPTION.getStatus(), ProjectSectionStatusEnum.PARTNERS.getStatus(),
+      ProjectSectionStatusEnum.LOCATIONS.getStatus(), ProjectSectionStatusEnum.ACTIVITIES.getStatus())));
 
   // Model
   private boolean existProject;
@@ -126,6 +134,17 @@ public class ValidateProjectSectionAction extends BaseAction {
    */
   static boolean isValidatedDeliverable(DeliverableInfo deliverableInfo) {
     return deliverableInfo != null && Boolean.TRUE.equals(deliverableInfo.isRequiredToComplete());
+  }
+
+  /**
+   * The validation result is stored for the project sections whose answer here is computed the same way as when their
+   * page is saved: checked on a local run against the menu of every project in three phases. The other sections keep
+   * the status their page save stores.
+   */
+  @Override
+  public boolean isSectionStatusStoredOnValidation(String statusSectionName) {
+    return statusSectionName != null && statusSectionName.equals(this.sectionName)
+      && STORED_SECTIONS.contains(statusSectionName);
   }
 
   @Override

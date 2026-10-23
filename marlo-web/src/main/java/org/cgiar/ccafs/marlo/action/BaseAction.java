@@ -8178,6 +8178,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.switchSession;
   }
 
+  /**
+   * Tell whether a validator has to store the result it computes for an existing section status itself. A page save
+   * stores it through its own transaction, so the answer is false; an action that only validates overrides it.
+   *
+   * @param sectionName the name of the section whose status is being saved.
+   * @return true when the validator has to store the missing fields of an existing status.
+   */
+  public boolean isSectionStatusStoredOnValidation(String sectionName) {
+    return false;
+  }
+
   public boolean isUpKeepActive() {
 
     return this.getActualPhase().getUpkeep();
