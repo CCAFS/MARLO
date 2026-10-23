@@ -3,12 +3,12 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectBudgetByFlagships.js", 
+  "${baseUrlMedia}/js/projects/projectBudgetByFlagships.js?20261023",
   "${baseUrlCdn}/global/js/autoSave.js",
   "${baseUrlCdn}/global/js/fieldsValidation.js"
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByFlagships.css"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectBudgetByFlagships.css?20261023"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "budgetByFlagships" /]
 [#assign hideJustification = true /]
