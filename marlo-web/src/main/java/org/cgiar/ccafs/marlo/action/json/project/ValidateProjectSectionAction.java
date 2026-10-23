@@ -137,6 +137,14 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
   /**
+   * @return true when the project has information in the phase being validated.
+   */
+  private boolean isProjectInPhase() {
+    Project project = projectManager.getProjectById(projectID);
+    return project != null && project.getProjecInfoPhase(this.getActualPhase()) != null;
+  }
+
+  /**
    * The validation result is stored for the project sections whose answer here is computed the same way as when their
    * page is saved: checked on a local run against the menu of every project in three phases. The other sections keep
    * the status their page save stores.
@@ -149,6 +157,14 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   @Override
   public String execute() throws Exception {
+    if (existProject && validSection && !this.isProjectInPhase()) {
+      // A project without information in the phase does not exist in it, so there is nothing to validate: the
+      // validators read that information and used to fail with an HTTP 500. The section stays incomplete.
+      section = new HashMap<String, Object>();
+      section.put("sectionName", sectionName);
+      section.put("missingFields", "empty");
+      return SUCCESS;
+    }
     if (existProject && validSection) {
       this.loadProvider(this.getSession());
       // getting the current section status.
