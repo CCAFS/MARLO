@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
@@ -123,6 +124,22 @@ public class ValidateProjectSectionAction extends BaseAction {
     this.expectedStudyProjectManager = expectedStudyProjectManager;
   }
 
+
+  /**
+   * Tell whether an innovation counts for the completeness of the section, with the rule the menu applies in
+   * BaseAction.getProjectSectionStatus: it has information in the phase, of the year of the cycle. An innovation
+   * without information in the phase is never validated and has no section status, so reporting it would add
+   * "No section" and keep the section incomplete for good. One without a year is still counted, so nothing the
+   * validation checked is left out unless the menu leaves it out too.
+   *
+   * @param innovationInfo the information of the innovation in the phase being validated.
+   * @param cycleYear the year of the cycle being validated.
+   * @return true when the innovation counts for the completeness of the section.
+   */
+  static boolean isCountedInnovation(ProjectInnovationInfo innovationInfo, int cycleYear) {
+    return innovationInfo != null
+      && (innovationInfo.getYear() == null || innovationInfo.getYear().longValue() == cycleYear);
+  }
 
   /**
    * Tell whether a deliverable counts for the completeness of the section, with the same rule the menu applies in
@@ -516,6 +533,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           List<ProjectInnovation> innovations =
             project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
           for (ProjectInnovation projectInnovation : innovations) {
+            if (!isCountedInnovation(projectInnovation.getProjectInnovationInfo(this.getActualPhase()),
+              this.getCurrentCycleYear())) {
+              continue;
+            }
             sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
             if (sectionStatus != null && sectionStatus.getSectionName() != null) {
