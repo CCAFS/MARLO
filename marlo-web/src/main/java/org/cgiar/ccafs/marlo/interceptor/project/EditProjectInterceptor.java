@@ -238,8 +238,6 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         if (phaseInfo != null && phaseInfo.getEndDate() != null && phaseInfo.getStatus() != null) {
           Calendar cal = Calendar.getInstance();
           cal.setTime(phaseInfo.getEndDate());
-          System.out.println(cal.get(Calendar.YEAR));
-          System.out.println(baseAction.getActualPhase().getYear());
           if (phaseInfo.getStatus().longValue() == Long
             .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
             if (baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
