@@ -83,7 +83,8 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
         BaseAction action = (BaseAction) invocation.getAction();
         return action.PRIVATE;
       }
-    } catch (NullPointerException e) {
+    } catch (NullPointerException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+      // A study id, cycle or year that is missing or is not a number is a bad request: the study is not found
       BaseAction action = (BaseAction) invocation.getAction();
       return action.NOT_FOUND;
     }

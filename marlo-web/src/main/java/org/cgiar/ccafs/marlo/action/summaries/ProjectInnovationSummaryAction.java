@@ -2245,12 +2245,37 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return "[]".equals(json) ? null : json;
   }
 
+  /**
+   * Read the innovation id of the request. This report is public, so the value comes from anyone: a missing value or
+   * one that is not a number is answered as an innovation that does not exist, never as a server error.
+   *
+   * @param parameter the innovationID parameter of the request, or null.
+   * @return the id, or null when it is missing or is not a number.
+   */
+  static Long readInnovationID(Parameter parameter) {
+    if (parameter == null || !parameter.isDefined()) {
+      return null;
+    }
+    String value = StringUtils.trim(parameter.getValue());
+    if (value == null || value.isEmpty()) {
+      return null;
+    }
+    try {
+      return Long.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     this.setPublicAccessParameters();
-    projectInnovationID =
-      Long.parseLong(StringUtils.trim(parameters.get(APConstants.INNOVATION_REQUEST_ID).getMultipleValues()[0]));
+    projectInnovationID = readInnovationID(parameters.get(APConstants.INNOVATION_REQUEST_ID));
+    if (projectInnovationID == null) {
+      // A bad request, not a failure: execute() answers it as not found, without an error report
+      LOG.warn("The {} parameter is missing or is not a number", APConstants.INNOVATION_REQUEST_ID);
+    }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
