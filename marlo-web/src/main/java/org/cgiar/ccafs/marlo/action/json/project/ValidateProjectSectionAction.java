@@ -672,7 +672,10 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     Locale locale = new Locale(language);
     if (aTextName != null && locale != null) {
-      return localizedTextProvider.findDefaultText(aTextName, locale);
+      // A key without a text answers the key itself, as the page actions do: an empty answer made the validators
+      // drop the missing field, so this action reported complete a section the page save reports incomplete
+      String text = localizedTextProvider.findDefaultText(aTextName, locale);
+      return text != null ? text : aTextName;
     } else {
       return "";
     }
@@ -685,7 +688,8 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     Locale locale = new Locale(language);
 
-    return localizedTextProvider.findDefaultText(key, locale, args);
+    String text = localizedTextProvider.findDefaultText(key, locale, args);
+    return text != null ? text : key;
 
   }
 
