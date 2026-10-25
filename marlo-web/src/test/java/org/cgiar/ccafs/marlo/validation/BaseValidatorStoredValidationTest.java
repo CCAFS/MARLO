@@ -147,4 +147,34 @@ public class BaseValidatorStoredValidationTest {
     assertEquals(1, this.storedApart.size());
     assertEquals("113515=", this.storedApart.get(0));
   }
+
+  @Test
+  public void aDraftAloneIsStoredAsComplete() {
+    // The autosave of the page validates after every draft: the stored status must not turn red for every user
+    this.foundStatus = existingStatus("");
+    this.storedOnValidation = true;
+
+    this.validateWith("draft");
+
+    assertEquals("113515=", this.storedApart.get(0));
+    assertEquals("the answer still tells the editor about the draft", "draft", this.foundStatus.getMissingFields());
+  }
+
+  @Test
+  public void theDraftMarkerIsRemovedFromTheOtherMissingFields() {
+    this.foundStatus = existingStatus("");
+    this.storedOnValidation = true;
+
+    this.validateWith("draft;Lessons Learned;Cluster Type");
+
+    assertEquals("113515=Lessons Learned;Cluster Type", this.storedApart.get(0));
+  }
+
+  @Test
+  public void withoutDraftMarkerKeepsEverythingElse() {
+    assertEquals(null, BaseValidator.withoutDraftMarker(null));
+    assertEquals("", BaseValidator.withoutDraftMarker(""));
+    assertEquals("A;B", BaseValidator.withoutDraftMarker("A;draft;B"));
+    assertEquals("draft text;drafts", BaseValidator.withoutDraftMarker("draft text;drafts"));
+  }
 }

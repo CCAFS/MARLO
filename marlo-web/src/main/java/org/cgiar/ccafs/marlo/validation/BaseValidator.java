@@ -31,6 +31,9 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
@@ -45,6 +48,9 @@ import org.slf4j.LoggerFactory;
 public class BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(BaseValidator.class);
+
+  // Missing field a validation adds when the section has an unsaved autosave draft
+  static final String DRAFT_MISSING_FIELD = "draft";
 
   /**
    * Setter injection is ok here as this class is extended. TODO look into making this class abstract.
@@ -844,6 +850,23 @@ public class BaseValidator {
   }
 
   /**
+   * Remove the draft marker from the missing fields of a section. A validation that does not save adds "draft" when
+   * the section has an autosave file; the autosave of the page runs that validation after every draft it writes. The
+   * marker belongs to the person editing, who sees it in the answer; the stored status, which the menu of every user
+   * reads, keeps only what the saved data misses.
+   *
+   * @param missingFields the missing fields separated by ";", or null.
+   * @return the same fields without the draft marker, or null when the input is null.
+   */
+  static String withoutDraftMarker(String missingFields) {
+    if (missingFields == null) {
+      return null;
+    }
+    return Arrays.stream(missingFields.split(";")).filter(field -> !DRAFT_MISSING_FIELD.equals(field))
+      .collect(Collectors.joining(";"));
+  }
+
+  /**
    * Store the missing fields an action that only validates has computed for an existing section status. Without it the
    * update stays in the request session, which such an action never flushes, and the menu keeps reading the old
    * status. The update runs in a session of its own, so nothing else the request changed is written. A failure is
@@ -854,7 +877,8 @@ public class BaseValidator {
       return;
     }
     try {
-      sectionStatusManager.updateMissingFieldsInOwnSession(status.getId().longValue(), status.getMissingFields());
+      sectionStatusManager.updateMissingFieldsInOwnSession(status.getId().longValue(),
+        withoutDraftMarker(status.getMissingFields()));
     } catch (RuntimeException e) {
       LOG.warn("Could not store the result of validating the section {}, so its status {} keeps the stored one",
         sectionName, status.getId(), e);
