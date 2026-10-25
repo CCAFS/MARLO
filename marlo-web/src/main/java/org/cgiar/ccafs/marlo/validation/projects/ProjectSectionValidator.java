@@ -448,8 +448,10 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     Project projectDB = projectManager.getProjectById(projectID);
     List<ProjectLocation> locElements = projectDB
-      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
-        && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
+      .getProjectLocations().stream()
+      .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId() != null
+        && c.getLocElement().getId().longValue() == locElementID && c.getPhase() != null
+        && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
     return !locElements.isEmpty();
@@ -462,8 +464,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     Project projectDB = projectManager.getProjectById(projectID);
     List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
-      .filter(c -> c.isActive() && c.getLocElementType() != null
-        && c.getLocElementType().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
+      .filter(c -> c.isActive() && c.getLocElementType() != null && c.getLocElementType().getId() != null
+        && c.getLocElementType().getId().longValue() == locElementID && c.getPhase() != null
+        && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
     return !locElements.isEmpty();
@@ -509,7 +512,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           if (fundingSourceLocation.getLocElement() != null && fundingSourceLocation.getLocElement().getId() != null) {
             locElements.add(fundingSourceLocation.getLocElement());
           }
-        } else {
+        } else if (fundingSourceLocation.getLocElementType().getId() != null) {
           locElementTypes.add(fundingSourceLocation.getLocElementType());
         }
       }

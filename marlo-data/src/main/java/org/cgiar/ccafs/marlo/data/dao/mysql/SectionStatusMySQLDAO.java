@@ -376,7 +376,12 @@ public class SectionStatusMySQLDAO extends AbstractMarloDAO<SectionStatus, Long>
         transaction.commit();
         return updated;
       } catch (RuntimeException e) {
-        transaction.rollback();
+        // A failed rollback must not replace the cause of the failure
+        try {
+          transaction.rollback();
+        } catch (RuntimeException rollbackFailure) {
+          e.addSuppressed(rollbackFailure);
+        }
         throw e;
       }
     }
