@@ -103,7 +103,7 @@ public class MicroserviceReportAction extends BaseAction {
           fileReady = true;
           break;
         } else {
-          System.out.println("PDF not available. Tried " + (attempt + 1) + " of " + maxRetries);
+          LOG.debug("The PDF is not available yet, attempt {} of {}", attempt + 1, maxRetries);
           Thread.sleep(waitTime);
         }
       }
@@ -137,7 +137,7 @@ public class MicroserviceReportAction extends BaseAction {
         response.sendError(connection.getResponseCode(), "Failed to download PDF");
       }
     } catch (Exception e) {
-      System.out.println("Error downloading PDF: " + e);
+      LOG.error("Could not download the PDF", e);
       throw new RuntimeException("Error downloading PDF: " + e.getMessage(), e);
     }
   }
@@ -145,8 +145,7 @@ public class MicroserviceReportAction extends BaseAction {
   public String fetchPDF() {
     this.loadData();
     try {
-      System.out.println("Error downloading PDF: " + "Fetching PDF from File Management: {} in {} bucket S3" + " "
-        + OICRsReportName + " " + bucketName);
+      LOG.debug("Fetching the PDF {} from the {} bucket", OICRsReportName, bucketName);
 
       URL url = new URL(OICRs_MS_FM_URL + "file-management/validation");
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -171,14 +170,14 @@ public class MicroserviceReportAction extends BaseAction {
             response.append(responseLine.trim());
           }
           String pdfUrl = this.parseResponse(response.toString());
-          System.out.println("PDF URL obtained successfully: {}" + pdfUrl);
+          LOG.debug("Got the PDF URL from File Management");
           return pdfUrl;
         }
       } else {
         throw new RuntimeException("Failed to fetch PDF, response code: " + responseCode);
       }
     } catch (Exception e) {
-      System.out.println("Error fetching PDF: " + e);
+      LOG.error("Could not fetch the PDF from File Management", e);
       throw new RuntimeException("Error fetching PDF", e);
     }
   }
@@ -229,7 +228,7 @@ public class MicroserviceReportAction extends BaseAction {
       CLUSTER_REPORT_MS_FM_URL = reportingUrl;
       s3URL = config.getMicroserviceS3Url();
     } catch (Exception e) {
-      System.out.println("error getting report configuration data " + e);
+      LOG.error("Could not read the report configuration", e);
     }
   }
 
@@ -294,20 +293,20 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         try {
-          System.out.println("s3URL " + s3URL);
+          LOG.debug("Downloading the {} PDF from S3", innovationsReportName);
 
           this.downloadPDFByURL(innovationsReportName, s3URL);
         } catch (Exception e) {
-          System.out.println("error getting pdf by URL " + e);
+          LOG.error("Could not download the {} PDF from S3", innovationsReportName, e);
         }
       }
     } catch (URISyntaxException | NoSuchAlgorithmException |
 
       KeyManagementException e) {
-      System.out.println("Queue connection error: " + e.getMessage());
+      LOG.error("Could not connect to the report queue", e);
       return ERROR;
     } catch (Exception e) {
-      System.out.println("Message sending error: " + e.getMessage());
+      LOG.error("Could not send the message to the report queue", e);
       return ERROR;
     }
     return SUCCESS;
@@ -319,7 +318,7 @@ public class MicroserviceReportAction extends BaseAction {
       this.setJsonData(json);
       this.sendInnovationsQueueMessage();
     } catch (Exception e) {
-      System.out.println("error in sendInnovationsQueueMessage " + e);
+      LOG.error("Could not send the innovations report message", e);
     }
   }
 
@@ -355,11 +354,11 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         try {
-          System.out.println("s3URL " + s3URL);
+          LOG.debug("Downloading the {} PDF from S3", OICRsReportName);
 
           this.downloadPDFByURL(OICRsReportName, s3URL);
         } catch (Exception e) {
-          System.out.println("error getting pdf by URL " + e);
+          LOG.error("Could not download the {} PDF from S3", OICRsReportName, e);
         }
       }
     } catch (URISyntaxException | NoSuchAlgorithmException |
@@ -450,20 +449,20 @@ public class MicroserviceReportAction extends BaseAction {
         // Publish the message to the queue
         channel.basicPublish("", queueName, null, message.getBytes());
         try {
-          System.out.println("s3URL " + s3URL);
+          LOG.debug("Downloading the {} PDF from S3", clusterReportName);
 
           this.downloadPDFByURL(clusterReportName, s3URL);
         } catch (Exception e) {
-          System.out.println("error getting pdf by URL " + e);
+          LOG.error("Could not download the {} PDF from S3", clusterReportName, e);
         }
       }
     } catch (URISyntaxException | NoSuchAlgorithmException |
 
       KeyManagementException e) {
-      System.out.println("Queue connection error: " + e.getMessage());
+      LOG.error("Could not connect to the report queue", e);
       return ERROR;
     } catch (Exception e) {
-      System.out.println("Message sending error: " + e.getMessage());
+      LOG.error("Could not send the message to the report queue", e);
       return ERROR;
     }
     return SUCCESS;

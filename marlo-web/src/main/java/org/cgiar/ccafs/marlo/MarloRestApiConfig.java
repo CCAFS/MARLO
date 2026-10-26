@@ -15,8 +15,6 @@
 
 package org.cgiar.ccafs.marlo;
 
-import org.cgiar.ccafs.marlo.logging.LoggingAspect;
-
 import java.util.Arrays;
 
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -72,12 +70,6 @@ public class MarloRestApiConfig {
     DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
     proxyCreator.setProxyTargetClass(true);
     return proxyCreator;
-  }
-
-
-  @Bean
-  public LoggingAspect loggingAspect() {
-    return new LoggingAspect();
   }
 
 }
