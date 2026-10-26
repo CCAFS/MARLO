@@ -15,6 +15,7 @@ $(document).ready(function() {
 
   // Event for validate button inside each project
   $('.projectValidateButton, .validateButton').on('click', validateButtonEvent);
+  $('.clusterMenu-status__check').on('keydown', validateButtonKeyEvent);
 
   // Refresh event when table is reloaded in project list section
   $('table.projectsList').on('draw.dt', function() {
@@ -116,7 +117,9 @@ $(document).ready(function() {
 
 function submitButtonEvent(e) {
   e.preventDefault();
-  var message = 'Are you sure you want to submit the cluster now?';
+  // Read up front: the redesigned link nests an icon, so e.target can be the <svg>.
+  var href = $(this).attr('href');
+  var message = 'Are you sure you want to submit the cluster now? ';
   message += 'Once submitted, you will no longer have editing rights.';
   noty({
       text: message,
@@ -132,7 +135,7 @@ function submitButtonEvent(e) {
               onClick: function($noty) {
                 $noty.close();
                 $('.projectSubmitButton').hide();
-                window.location.href = $(e.target).attr('href');
+                window.location.href = href;
               }
           }, {
               addClass: 'btn btn-danger',
@@ -148,17 +151,101 @@ function submitButtonEvent(e) {
 function validateButtonEvent(e) {
   e.stopImmediatePropagation();
   e.preventDefault();
-  var pID = $(e.target).attr('id').split('-')[1];
+  // currentTarget, not target: the redesigned button nests an icon and a label.
+  var pID = $(this).attr('id').split('-')[1];
   // Execute Ajax process for each section
   processTasks(sections, pID, $(this));
 }
 
+/**
+ * Sections can add their own rows to the check results, e.g. the Partners page lists
+ * each incomplete partner instead of a single "Partners" row. A provider returns an
+ * array of {title, detail, onPick} or nothing to fall back to the default row.
+ */
+var clusterMenuSectionDetails = {};
+
+function clusterMenuText(template, values) {
+  return String(template || '').replace(/\{(\d+)\}/g, function(match, i) {
+    return values[i] !== undefined ? values[i] : match;
+  });
+}
+
+/** Recount the tracked menu rows and refresh the completeness bar and the submit note. */
+function updateClusterCompleteness() {
+  var $card = $('.clusterMenu-status');
+  if(!$card.length) {
+    return;
+  }
+  var $tracked = $('#secondaryMenu li[data-tracked]');
+  var total = $tracked.length;
+  var done = $tracked.filter('.submitted').length;
+  var $count = $card.find('[data-cluster-done]');
+  $count.text(clusterMenuText($count.attr('data-template'), [done, total]));
+  $card.find('[data-cluster-bar]').css('width', (total ? Math.round(done * 100 / total) : 0) + '%');
+  $card.find('.clusterMenu-status__bar').attr('aria-valuenow', done);
+  var $note = $card.find('[data-cluster-submit-note]');
+  if($note.length) {
+    $note.text(done === total ? $note.attr('data-text-ready') : clusterMenuText($note.attr('data-text-pending'), [
+      total - done
+    ]));
+  }
+}
+
+/** Write what the check found into the results panel under the button. */
+function renderClusterCheckResults(missing) {
+  var $results = $('[data-cluster-results]');
+  if(!$results.length) {
+    return;
+  }
+  $results.empty();
+  if(!missing.length) {
+    $('<p class="clusterMenu-results__ok"></p>').text($results.attr('data-text-ok')).appendTo($results);
+    return;
+  }
+  $.each(missing, function(i, sectionName) {
+    var $link = $('#menu-' + sectionName + ' > a');
+    var rows = null;
+    if(typeof clusterMenuSectionDetails[sectionName] === 'function') {
+      rows = clusterMenuSectionDetails[sectionName]();
+    }
+    if(!rows || !rows.length) {
+      rows = [
+        {
+            title: $.trim($link.text()) || sectionName,
+            detail: $results.attr('data-text-missing'),
+            href: $link.attr('href')
+        }
+      ];
+    }
+    $.each(rows, function(j, row) {
+      var $row = row.href ? $('<a class="clusterMenu-results__row"></a>').attr('href', row.href) : $(
+          '<button type="button" class="clusterMenu-results__row"></button>');
+      $('<span class="clusterMenu-results__title"></span>').text(row.title).appendTo($row);
+      $('<span class="clusterMenu-results__detail"></span>').text(row.detail).appendTo($row);
+      if(row.onPick) {
+        $row.on('click', function(e) {
+          e.preventDefault();
+          row.onPick();
+        });
+      }
+      $row.appendTo($results);
+    });
+  });
+}
+
 function processTasks(tasks,id,button) {
-  $(button).unbind('click');
+  $(button).off('click keydown');
   var completed = 0;
   var index = 0;
+  var missing = [];
+  // Looked up by id: the results panel now sits between the button and the submit link.
+  var $progress = $('#progressbar-' + id);
+  if(!$progress.length) {
+    $progress = $(button).next();
+  }
+  $('[data-cluster-results]').empty();
   $(button).fadeOut(function() {
-    $(button).next().fadeIn();
+    $progress.fadeIn();
   });
   function nextTask() {
     if(index < tasksLength) {
@@ -185,8 +272,10 @@ function processTasks(tasks,id,button) {
                     completed++;
                   } else {
                     $sectionMenu.removeClass('submitted').addClass('toSubmit');
-                    // Show missingFields
-                    console.log(sectionName + ": " + data.section.missingFields);
+                    // Only the rows with a status badge are reported as missing.
+                    if($sectionMenu.is('[data-tracked]')) {
+                      missing.push(sectionName);
+                    }
                   }
                 }
                 $sectionMenu.removeClass('loadingSection');
@@ -194,17 +283,27 @@ function processTasks(tasks,id,button) {
               complete: function(data) {
                 $sectionMenu.addClass('animated flipInX');
                 // Do next Ajax call
-                $(button).next().progressbar("value", index + 1);
+                $progress.progressbar("value", index + 1);
                 index++;
                 if(index == tasksLength) {
+                  updateClusterCompleteness();
+                  renderClusterCheckResults(missing);
+                  var againLabel = $(button).attr('data-label-again');
+                  if(againLabel) {
+                    $(button).find('.clusterMenu-status__checkLabel').text(againLabel);
+                  }
                   if(completed == tasksLength) {
-                    var notyOptions = jQuery.extend({}, notyDefaultOptions);
-                    notyOptions.text = 'The cluster can be submmited now';
-                    notyOptions.type = 'success';
-                    notyOptions.layout = 'center';
-                    noty(notyOptions);
-                    $(button).next().fadeOut(function() {
-                      $(this).next().fadeIn("slow");
+                    // The results panel says it in words; the old toast stays for the
+                    // menus that do not have one.
+                    if(!$('[data-cluster-results]').length) {
+                      var notyOptions = jQuery.extend({}, notyDefaultOptions);
+                      notyOptions.text = 'The cluster can be submitted now';
+                      notyOptions.type = 'success';
+                      notyOptions.layout = 'center';
+                      noty(notyOptions);
+                    }
+                    $progress.fadeOut(function() {
+                      $('#submitProject-' + id + '.projectSubmitButton').css('display', 'flex').hide().fadeIn("slow");
                     });
                   } else {
                     var notyOptions = jQuery.extend({}, notyDefaultOptions);
@@ -223,14 +322,20 @@ function processTasks(tasks,id,button) {
                       }
                     ];
                     noty(notyOptions);
-                    $(button).next().fadeOut(function() {
-                      $(button).fadeIn("slow").on('click', validateButtonEvent);
+                    $progress.fadeOut(function() {
+                      $(button).fadeIn("slow").on('click', validateButtonEvent).on('keydown', validateButtonKeyEvent);
                     });
                   }
                 }
                 nextTask();
               },
               error: function(error) {
+                // A section the server failed to validate cannot be called complete:
+                // stop its spinner and report it with the ones still to fill.
+                $sectionMenu.removeClass('loadingSection submitted').addClass('toSubmit');
+                if($sectionMenu.is('[data-tracked]')) {
+                  missing.push(sectionName);
+                }
                 console.log(error)
               }
           });
@@ -238,6 +343,13 @@ function processTasks(tasks,id,button) {
   }
   // Start first Ajax call
   nextTask();
+}
+
+/** The check button is a div with role=button: Enter and Space run it like a click. */
+function validateButtonKeyEvent(e) {
+  if(e.which === 13 || e.which === 32) {
+    validateButtonEvent.call(this, e);
+  }
 }
 
 function unSubmitButtonEvent(e) {
