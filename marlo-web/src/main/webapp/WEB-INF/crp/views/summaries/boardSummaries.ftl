@@ -4,11 +4,11 @@
 [#assign pageLibs = ["select2","font-awesome","jsUri", "caret", "jquery-tag-editor", "trumbowyg"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/utils.js", 
-  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20261006"
+  "${baseUrlMedia}/js/summaries/boardSummaries_v2.js?20261021-1"
   ] 
 /]
 
-[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20250717-1"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/summaries/summaries.css?20261021"] /]
 [#assign currentSection = "summaries" /]
 
 [#assign breadCrumb = [
@@ -542,9 +542,16 @@
         <div class="col-md-8">
         [#if !action.isAiccra()]
           [@customForm.select name="projectID"   label=""  i18nkey="Select a project"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+          [#local projectKeyPrefix = "summaries.board.report.project" /]
         [#else]
           [@customForm.select name="projectID"   label=""  i18nkey="Select a cluster"  listName=""  keyFieldName="id"  displayFieldName="composedName" className="allProjectsSelect" /]
+          [#local projectKeyPrefix = "summaries.board.report.cluster" /]
         [/#if]
+          [#-- Filled by the summaries script with why Generate cannot be used; aria-live reads it to screen readers --]
+          <small class="projectSelectionMessage" aria-live="polite"
+            data-message-required="[@s.text name="${projectKeyPrefix}Required" /]"
+            data-message-empty="[@s.text name="${projectKeyPrefix}ListEmpty" /]"
+            data-message-error="[@s.text name="${projectKeyPrefix}ListError" /]"></small>
         </div>
       </div>
       [/#if]
