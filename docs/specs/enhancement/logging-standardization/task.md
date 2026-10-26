@@ -109,6 +109,11 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T03 — Fix the shipped `log.folder` defaults
 
+- **Status:** Done, 2026-10-26: the tracked `marlo-test.properties` now has `log.folder=${user.home}/marlo/logs`
+  instead of `/home/julianrodriguez/logs`. The deployed environments run the `dev` and `pro` profiles with their
+  own untracked files, so no deployment reads this template; only `logback.xml` reads `log.folder`. A probe with
+  logback 1.2.13 confirmed a system property inside the value resolves and the missing folders are created.
+  `marlo-dev.properties` is gitignored, so it is each developer's own file and is not changed here.
 - **Depends on:** —
 - **Module:** marlo-web (resources)
 - **Files touched:**
