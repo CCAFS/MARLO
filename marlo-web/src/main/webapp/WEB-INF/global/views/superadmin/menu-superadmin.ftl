@@ -53,7 +53,7 @@
 
 [#-- `adminMenu` gives the superadmin side nav the same redesigned card styling as the CRP admin
      menu (marlo-redesign.css section 7): each group title is an eyebrow over its own card. --]
-<nav id="secondaryMenu" class="adminMenu">
+<nav id="secondaryMenu" class="adminMenu superadminMenu">
   [#if srfHasVisibleItems]
     <p>[@s.text name="menu.superadmin.srfMenuTitle"/]</p>
     <ul>
