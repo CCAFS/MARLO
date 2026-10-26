@@ -110,7 +110,7 @@
 }
 
 /************* 0. LAYOUT ***************/
-/* Every page is capped at a fixed 1400px and centred. Below the cap the
+/* Every page is capped at a fixed 1500px and centred. Below the cap the
    container keeps the design's 32px gutters: Bootstrap holds 15px of inner
    padding on .container, so the border box must be 34px narrower than the
    viewport for the content edge to land at 32px.
@@ -119,7 +119,7 @@
    already beats Bootstrap's .container (0,1,0). */
 .container:not(.loginPage) {
   width: calc(100% - 34px) !important;
-  max-width: 1400px;
+  max-width: 1500px;
 }
 
 /* Sticky footer. MARLO had no full-height chain and no page-level flex layout:
