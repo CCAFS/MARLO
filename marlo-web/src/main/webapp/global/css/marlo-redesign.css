@@ -1721,6 +1721,13 @@ body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
   color: var(--marlo-text-muted);
 }
 
+/* The superadmin screens have no phase bar above the side nav, so it keeps the
+   20px top margin of the old look and lines up with the page title instead of
+   sitting against the breadcrumb. */
+#secondaryMenu.adminMenu.superadminMenu {
+  margin-top: 20px;
+}
+
 /* A group after the first (the superadmin nav has several) starts clear of the
    card above it. */
 #secondaryMenu.adminMenu > ul + p {
