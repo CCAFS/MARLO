@@ -84,9 +84,10 @@ public class ProjectActivitiesValidator extends BaseValidator {
 
         if (activity != null && activity.getActivityStatus() != null) {
           if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
-            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))
-            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId()))) {
+            || (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId()))) {
             this.validateActivity(activity, i, "projectActivities", action);
+          } else if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
+            this.validateCancelledActivity(activity, i, "projectActivities", action);
           }
 
         }
@@ -146,6 +147,32 @@ public class ProjectActivitiesValidator extends BaseValidator {
     this.saveMissingFields(project, action.getActualPhase().getDescription(), action.getActualPhase().getYear(),
       action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.ACTIVITIES.getStatus(), action);
 
+  }
+
+  /**
+   * A cancelled activity is closed, so the only thing it owes is the reason it was cancelled, asked in the reporting
+   * cycle. Its other fields are not required.
+   */
+  public void validateCancelledActivity(Activity activity, int index, String listName, BaseAction action) {
+    if (activity == null || !action.isReportingActive()) {
+      return;
+    }
+    List<String> params = new ArrayList<>();
+    params.add(String.valueOf(activity.getId()));
+    this.validateActivityProgress(activity, index, listName, action, params);
+  }
+
+  /**
+   * The progress (or the justification of the status) is required and limited to 150 words.
+   */
+  private void validateActivityProgress(Activity activity, int index, String listName, BaseAction action,
+    List<String> params) {
+    String progress = activity.getActivityProgress();
+    if (!(this.isValidString(progress) && this.wordCount(progress) <= 150)) {
+      action.addMessage(action.getText("activity.statusProgress", params));
+      action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityProgress",
+        InvalidFieldsMessages.EMPTYFIELD);
+    }
   }
 
   public void validateActivity(Activity activity, int index, String listName, BaseAction action) {
@@ -234,12 +261,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
           || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())
           || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Cancelled.getStatusId())) {
 
-          if (!(this.isValidString(activity.getActivityProgress())
-            && this.wordCount(activity.getActivityProgress()) <= 150)) {
-            action.addMessage(action.getText("activity.statusProgress", params));
-            action.getInvalidFields().put("input-project." + listName + "[" + index + "].activityProgress",
-              InvalidFieldsMessages.EMPTYFIELD);
-          }
+          this.validateActivityProgress(activity, index, listName, action, params);
 
         }
       }

@@ -57,13 +57,6 @@ public class ProjectInnovationSDG extends MarloAuditableEntity implements java.i
     return "";
   }
 
-  @Override
-  public User getModifiedBy() {
-    User u = new User();
-    u.setId(new Long(3));
-    return u;
-  }
-
   public Phase getPhase() {
     return phase;
   }
@@ -87,11 +80,6 @@ public class ProjectInnovationSDG extends MarloAuditableEntity implements java.i
   @Override
   public boolean isActive() {
     return true;
-  }
-
-  @Override
-  public void setModifiedBy(User modifiedBy) {
-
   }
 
   public void setPhase(Phase phase) {

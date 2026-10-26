@@ -68,6 +68,7 @@ import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceLocation;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
@@ -130,7 +131,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -316,12 +316,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     List<ProjectLocationElementType> locationsElementType = new ArrayList<>(
       project.getProjectLocationElementTypes().stream().filter(pl -> pl.getIsGlobal()).collect(Collectors.toList()));
 
-    project
-      .setLocations(
-        new ArrayList<ProjectLocation>(project
-          .getProjectLocations().stream().filter(p -> p.isActive() && p.getLocElementType() == null
-            && p.getLocElement() != null && p.getPhase().equals(action.getActualPhase()))
-          .collect(Collectors.toList())));
+    // Regions (type 1) are left out, as the Locations page does: it posts them apart and the validator ignores them
+    project.setLocations(new ArrayList<ProjectLocation>(project.getProjectLocations().stream()
+      .filter(p -> p.isActive() && p.getLocElementType() == null && p.getLocElement() != null
+        && p.getLocElement().getLocElementType() != null && p.getLocElement().getLocElementType().getId() != null
+        && p.getLocElement().getLocElementType().getId().longValue() != 1 && p.getPhase() != null
+        && p.getPhase().equals(action.getActualPhase()))
+      .collect(Collectors.toList())));
     Map<String, Object> locationParent;
     if (!project.getLocations().isEmpty()) {
 
@@ -423,13 +424,34 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
     return locationLevels;
   }
 
+  /**
+   * Tell whether a project partner is a PPA partner of the session Global Unit, with the rule the Partners page uses
+   * to choose the partners it shows outside edit-leader mode.
+   *
+   * @param projectPartner the project partner.
+   * @param action the action being validated.
+   * @return true when the partner's institution has an active PPA entry for the Global Unit.
+   */
+  boolean isPpaPartner(ProjectPartner projectPartner, BaseAction action) {
+    if (projectPartner == null || projectPartner.getInstitution() == null
+      || projectPartner.getInstitution().getCrpPpaPartners() == null || action.getCrpID() == null) {
+      return false;
+    }
+    long crpID = action.getCrpID().longValue();
+    return projectPartner.getInstitution().getCrpPpaPartners().stream()
+      .anyMatch(ppa -> ppa != null && ppa.isActive() && ppa.getCrp() != null && ppa.getCrp().getId() != null
+        && ppa.getCrp().getId().longValue() == crpID);
+  }
+
   public boolean locElementSelected(long locElementID, long projectID, BaseAction action) {
 
 
     Project projectDB = projectManager.getProjectById(projectID);
     List<ProjectLocation> locElements = projectDB
-      .getProjectLocations().stream().filter(c -> c.isActive() && c.getLocElement() != null
-        && c.getLocElement().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
+      .getProjectLocations().stream()
+      .filter(c -> c.isActive() && c.getLocElement() != null && c.getLocElement().getId() != null
+        && c.getLocElement().getId().longValue() == locElementID && c.getPhase() != null
+        && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
     return !locElements.isEmpty();
@@ -442,8 +464,9 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
     Project projectDB = projectManager.getProjectById(projectID);
     List<ProjectLocation> locElements = projectDB.getProjectLocations().stream()
-      .filter(c -> c.isActive() && c.getLocElementType() != null
-        && c.getLocElementType().getId().longValue() == locElementID && c.getPhase().equals(action.getActualPhase()))
+      .filter(c -> c.isActive() && c.getLocElementType() != null && c.getLocElementType().getId() != null
+        && c.getLocElementType().getId().longValue() == locElementID && c.getPhase() != null
+        && c.getPhase().equals(action.getActualPhase()))
       .collect(Collectors.toList());
 
     return !locElements.isEmpty();
@@ -452,66 +475,70 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
   }
 
 
+  /**
+   * Fill the locations the project's funding sources suggest, as the Locations page does: the page posts every
+   * suggested country into countryFS and every other suggested element or element type into regionFS, and the
+   * validator accepts the section when either list has content.
+   */
   public void prepareFundingList(Project project, BaseAction action) {
 
     Project projectDB = projectManager.getProjectById(project.getId());
 
+    List<ProjectBudget> projectBudgets = new ArrayList<>(projectDB.getProjectBudgets().stream()
+      .filter(pb -> pb.isActive() && pb.getPhase() != null && pb.getPhase().equals(action.getActualPhase()))
+      .collect(Collectors.toList()));
 
-    List<ProjectBudget> projectBudgets =
-      new ArrayList<>(projectDB.getProjectBudgets().stream().filter(pb -> pb.isActive()
-        && pb.getYear() == action.getActualPhase().getYear() && pb.getPhase().equals(action.getActualPhase()))
-        .collect(Collectors.toList()));
-
-    List<FundingSource> fundingSources = new ArrayList<>();
+    HashSet<FundingSource> fundingSources = new HashSet<>();
     for (ProjectBudget projectBudget : projectBudgets) {
-
-      fundingSources.add(projectBudget.getFundingSource());
-
+      if (projectBudget.getFundingSource() != null) {
+        fundingSources.add(projectBudget.getFundingSource());
+      }
     }
 
-    HashSet<FundingSource> fuHashSet = new HashSet<>();
-    fuHashSet.addAll(fundingSources);
-
-    fundingSources = new ArrayList<>(fuHashSet);
-
-    List<LocElement> locElements = new ArrayList<>();
-    List<LocElementType> locElementTypes = new ArrayList<>();
+    HashSet<LocElement> locElements = new HashSet<>();
+    HashSet<LocElementType> locElementTypes = new HashSet<>();
 
     for (FundingSource fundingSource : fundingSources) {
-
-      List<FundingSourceLocation> fundingSourceLocations = new ArrayList<>(
-        fundingSource.getFundingSourceLocations().stream().filter(fs -> fs.isActive()).collect(Collectors.toList()));
-
-      for (FundingSourceLocation fundingSourceLocation : fundingSourceLocations) {
-        if (fundingSourceLocation.getLocElementType() == null) {
-          locElements.add(fundingSourceLocation.getLocElement());
-
-        } else {
-          locElementTypes.add(fundingSourceLocation.getLocElementType());
-
-        }
+      FundingSourceInfo fundingSourceInfo = fundingSource.getFundingSourceInfo(action.getActualPhase());
+      if (fundingSourceInfo == null || fundingSourceInfo.getPhase() == null) {
+        continue;
       }
 
-
+      // The page only suggests the locations of the phase the funding source information belongs to
+      for (FundingSourceLocation fundingSourceLocation : fundingSource.getFundingSourceLocations().stream()
+        .filter(fs -> fs.isActive() && fundingSourceInfo.getPhase().equals(fs.getPhase()))
+        .collect(Collectors.toList())) {
+        if (fundingSourceLocation.getLocElementType() == null) {
+          if (fundingSourceLocation.getLocElement() != null && fundingSourceLocation.getLocElement().getId() != null) {
+            locElements.add(fundingSourceLocation.getLocElement());
+          }
+        } else if (fundingSourceLocation.getLocElementType().getId() != null) {
+          locElementTypes.add(fundingSourceLocation.getLocElementType());
+        }
+      }
     }
 
-
-    HashSet<LocElement> hashElements = new HashSet<>();
-    hashElements.addAll(locElements);
-    locElements = new ArrayList<>(hashElements);
-
-    for (LocElement locElement : hashElements) {
+    List<CountryFundingSources> countryFS = new ArrayList<>();
+    List<CountryFundingSources> regionFS = new ArrayList<>();
+    for (LocElement locElement : locElements) {
       CountryFundingSources countryFundingSources = new CountryFundingSources();
       countryFundingSources.setLocElement(locElement);
-
-
+      boolean country = locElement.getLocElementType() != null && locElement.getLocElementType().getId() != null
+        && locElement.getLocElementType().getId().longValue() == 2;
+      if (country) {
+        countryFS.add(countryFundingSources);
+      } else {
+        regionFS.add(countryFundingSources);
+      }
+    }
+    for (LocElementType locElementType : locElementTypes) {
+      CountryFundingSources countryFundingSources = new CountryFundingSources();
+      countryFundingSources.setLocElementType(locElementType);
+      regionFS.add(countryFundingSources);
     }
 
-    HashSet<LocElementType> hashElementTypes = new HashSet<>();
-    hashElementTypes.addAll(locElementTypes);
-    locElementTypes = new ArrayList<>(hashElementTypes);
-
-
+    project.setCountryFS(countryFS);
+    project.setRegionFS(regionFS);
   }
 
 
@@ -981,6 +1008,13 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           closedActivity.getDeliverableActivities().stream().filter(da -> da.isActive()).collect(Collectors.toList())));
       }
     }
+
+    // The Activities page posts the open and the closed activities in one list, and the validator checks them all
+    List<Activity> postedActivities = new ArrayList<>(project.getProjectActivities());
+    if (project.getClosedProjectActivities() != null) {
+      postedActivities.addAll(project.getClosedProjectActivities());
+    }
+    project.setProjectActivities(postedActivities);
     projectActivitiesValidator.validate(action, project, false);
   }
 
@@ -1694,7 +1728,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           }
         }
       } catch (Exception e) {
-        Log.error("error trying to set expected study alliance lever " + e);
+        logger.error("Could not set the alliance lever of the expected study {}", expectedStudy.getId(), e);
       }
 
       // Expected Study allianceLeversOutcomes List
@@ -1895,8 +1929,15 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
   public void validateProjectParnters(BaseAction action, Long projectID, GlobalUnit crp) {
     Project project = projectManager.getProjectById(projectID);
-    project.setPartners(project.getProjectPartners().stream()
-      .filter(c -> c.isActive() && c.getPhase().equals(action.getActualPhase())).collect(Collectors.toList()));
+    List<ProjectPartner> phasePartners = project.getProjectPartners().stream()
+      .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+      .collect(Collectors.toList());
+    ProjectInfo partnersInfo = project.getProjecInfoPhase(action.getActualPhase());
+    if (partnersInfo != null && !Boolean.TRUE.equals(partnersInfo.isProjectEditLeader())) {
+      // Outside edit-leader mode the Partners page only shows and posts the PPA partners of the Global Unit
+      phasePartners = phasePartners.stream().filter(c -> this.isPpaPartner(c, action)).collect(Collectors.toList());
+    }
+    project.setPartners(phasePartners);
     for (ProjectPartner projectPartner : project.getPartners()) {
       List<ProjectPartnerContribution> contributors = new ArrayList<>();
 

@@ -34,7 +34,7 @@
   <div style="display:none" class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">
-      [#if project.projectInfo.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
+      [#if (project.projectInfo.projectEditLeader)!false] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
     </p>
   </div> 
   <div style="display:none" class="viewMore closed"></div>
@@ -50,7 +50,7 @@
     </div>
     <div class="containerText col-md-12">
       <p class="alertText">
-        [#if project.projectInfo.projectEditLeader] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
+        [#if (project.projectInfo.projectEditLeader)!false] [@s.text name="projectBudgets.help2" /] [#else] [@s.text name="projectBudgets.help1" /] [/#if]
       </p>
     </div>
     <div  class="viewMoreCollapse closed"></div>
@@ -73,7 +73,7 @@
           [#-- Section Title --]
           <h3 class="headTitle">[@s.text name="projectBudgetByPartners.title" /]</h3>
           
-          [#if project.projectInfo.startDate?? && project.projectInfo.endDate??]
+          [#if (project.projectInfo.startDate)?? && (project.projectInfo.endDate)??]
           
             [#assign startYear = (project.projectInfo.startDate?string.yyyy)?number /]
             [#assign endYear = (project.projectInfo.endDate?string.yyyy)?number /]

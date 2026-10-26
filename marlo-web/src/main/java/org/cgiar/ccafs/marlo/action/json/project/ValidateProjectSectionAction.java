@@ -36,6 +36,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectHighlight;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectLp6Contribution;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPolicy;
@@ -47,11 +48,14 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectSectionValidator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -76,6 +80,11 @@ public class ValidateProjectSectionAction extends BaseAction {
 
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(ValidateProjectSectionAction.class);
+
+  /** The project sections whose validation result this action stores, see isSectionStatusStoredOnValidation. */
+  private static final Set<String> STORED_SECTIONS = Collections.unmodifiableSet(new HashSet<>(
+    Arrays.asList(ProjectSectionStatusEnum.DESCRIPTION.getStatus(), ProjectSectionStatusEnum.PARTNERS.getStatus(),
+      ProjectSectionStatusEnum.LOCATIONS.getStatus(), ProjectSectionStatusEnum.ACTIVITIES.getStatus())));
 
   // Model
   private boolean existProject;
@@ -116,8 +125,66 @@ public class ValidateProjectSectionAction extends BaseAction {
   }
 
 
+  /**
+   * Tell whether an innovation counts for the completeness of the section, with the rule the menu applies in
+   * BaseAction.getProjectSectionStatus: it has information in the phase, of the year of the cycle. An innovation
+   * without information in the phase is never validated and has no section status, so reporting it would add
+   * "No section" and keep the section incomplete for good. One without a year is still counted, so nothing the
+   * validation checked is left out unless the menu leaves it out too.
+   *
+   * @param innovationInfo the information of the innovation in the phase being validated.
+   * @param cycleYear the year of the cycle being validated.
+   * @return true when the innovation counts for the completeness of the section.
+   */
+  static boolean isCountedInnovation(ProjectInnovationInfo innovationInfo, int cycleYear) {
+    return innovationInfo != null
+      && (innovationInfo.getYear() == null || innovationInfo.getYear().longValue() == cycleYear);
+  }
+
+  /**
+   * Tell whether a deliverable counts for the completeness of the section, with the same rule the menu applies in
+   * BaseAction.isDeliverableComplete: it is required to be completed in the phase, or it was completed for this phase
+   * or a later one. Any other deliverable, completed in an earlier year, extended to another year or cancelled, is
+   * never validated and has no section status, so reporting it would add "No section" and keep the section
+   * incomplete for good.
+   *
+   * @param deliverableInfo the information of the deliverable in the phase being validated.
+   * @return true when the deliverable counts for the completeness of the section.
+   */
+  static boolean isValidatedDeliverable(DeliverableInfo deliverableInfo) {
+    return deliverableInfo != null && (Boolean.TRUE.equals(deliverableInfo.isRequiredToComplete())
+      || Boolean.TRUE.equals(deliverableInfo.isStatusCompleteInNextPhases()));
+  }
+
+  /**
+   * @return true when the project has information in the phase being validated.
+   */
+  private boolean isProjectInPhase() {
+    Project project = projectManager.getProjectById(projectID);
+    return project != null && project.getProjecInfoPhase(this.getActualPhase()) != null;
+  }
+
+  /**
+   * The validation result is stored for the project sections whose answer here is computed the same way as when their
+   * page is saved: checked on a local run against the menu of every project in three phases. The other sections keep
+   * the status their page save stores.
+   */
+  @Override
+  public boolean isSectionStatusStoredOnValidation(String statusSectionName) {
+    return statusSectionName != null && statusSectionName.equals(this.sectionName)
+      && STORED_SECTIONS.contains(statusSectionName);
+  }
+
   @Override
   public String execute() throws Exception {
+    if (existProject && validSection && !this.isProjectInPhase()) {
+      // A project without information in the phase does not exist in it, so there is nothing to validate: the
+      // validators read that information and used to fail with an HTTP 500. The section stays incomplete.
+      section = new HashMap<String, Object>();
+      section.put("sectionName", sectionName);
+      section.put("missingFields", "empty");
+      return SUCCESS;
+    }
     if (existProject && validSection) {
       this.loadProvider(this.getSession());
       // getting the current section status.
@@ -149,6 +216,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
         case PARTNERS:
           this.projectSectionValidator.validateProjectParnters(this, this.getProjectID(), this.loggedCrp);
+          break;
 
         case BUDGET:
           if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
@@ -312,6 +380,9 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
           for (Deliverable deliverable : deliverables) {
+            if (!isValidatedDeliverable(deliverable.getDeliverableInfo())) {
+              continue;
+            }
             sectionStatus = sectionStatusManager.getSectionStatusByDeliverable(deliverable.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
             if (sectionStatus == null) {
@@ -462,6 +533,10 @@ public class ValidateProjectSectionAction extends BaseAction {
           List<ProjectInnovation> innovations =
             project.getProjectInnovations().stream().filter(c -> c.isActive()).collect(Collectors.toList());
           for (ProjectInnovation projectInnovation : innovations) {
+            if (!isCountedInnovation(projectInnovation.getProjectInnovationInfo(this.getActualPhase()),
+              this.getCurrentCycleYear())) {
+              continue;
+            }
             sectionStatus = sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(), cycle,
               this.getActualPhase().getYear(), this.getActualPhase().getUpkeep(), sectionName);
             if (sectionStatus != null && sectionStatus.getSectionName() != null) {
@@ -597,7 +672,10 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     Locale locale = new Locale(language);
     if (aTextName != null && locale != null) {
-      return localizedTextProvider.findDefaultText(aTextName, locale);
+      // A key without a text answers the key itself, as the page actions do: an empty answer made the validators
+      // drop the missing field, so this action reported complete a section the page save reports incomplete
+      String text = localizedTextProvider.findDefaultText(aTextName, locale);
+      return text != null ? text : aTextName;
     } else {
       return "";
     }
@@ -610,7 +688,8 @@ public class ValidateProjectSectionAction extends BaseAction {
 
     Locale locale = new Locale(language);
 
-    return localizedTextProvider.findDefaultText(key, locale, args);
+    String text = localizedTextProvider.findDefaultText(key, locale, args);
+    return text != null ? text : key;
 
   }
 

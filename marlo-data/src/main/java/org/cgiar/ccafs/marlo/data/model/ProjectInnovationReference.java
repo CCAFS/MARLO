@@ -122,13 +122,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
     return "";
   }
 
-  @Override
-  public User getModifiedBy() {
-    User u = new User();
-    u.setId(new Long(3));
-    return u;
-  }
-
   public Boolean getNutrition() {
     return nutrition;
   }
@@ -200,11 +193,6 @@ public class ProjectInnovationReference extends MarloAuditableEntity implements 
 
   public void setLink(String link) {
     this.link = link;
-  }
-
-  @Override
-  public void setModifiedBy(User modifiedBy) {
-
   }
 
   public void setNutrition(Boolean nutrition) {
