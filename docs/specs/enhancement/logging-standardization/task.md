@@ -291,6 +291,17 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T11 — Cleanup: filters and the REST layer
 
+- **Status:** Done, 2026-10-26: the 60 `printStackTrace()` / `System.out` occurrences in `web/filter`,
+  `rest/controller/v2/controllist` and `rest/services/deliverables` are gone. Caught exceptions are passed to
+  `LOG.error` as the last argument; the metadata clients keep one log line per failure instead of two. The
+  field error dumps before each `MARLOFieldValidationException` are DEBUG, null-safe per element, because
+  `ExceptionTranslator` already logs the 400. The WOS response dump is DEBUG; an unknown GeoIP address is
+  DEBUG and any other GeoIP failure WARN with the exception class only, since it runs on every REST request.
+  The new messages carry no request-supplied text (entity acronym, outcome id, link), only numeric ids, so a
+  crafted value cannot forge a log line. A debug print in `PolicyItem` that re-ran
+  `policyMilestoneManager.findAll()` was removed, and four commented-out prints deleted. Seven `*Item`
+  classes got an SLF4J `LOG`. No `return`, `throw` or condition changed; the controllers that swallow an
+  exception still swallow it. The JSON check of the verification waits for T08.
 - **Depends on:** T09
 - **Module:** marlo-web
 - **Files touched:**

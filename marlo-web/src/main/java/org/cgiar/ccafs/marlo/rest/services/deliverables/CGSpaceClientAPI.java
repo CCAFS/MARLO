@@ -368,8 +368,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       metadataModel.setAuthors(authorsArr);
 
     } catch (RuntimeException | IOException e) {
-      e.printStackTrace();
-      LOG.error("Error parsing metadata from CGSpace: {}", e.getMessage());
+      LOG.error("Error parsing metadata from CGSpace", e);
     }
 
     return metadataModel;
@@ -512,7 +511,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   /**
    * Tries to extract a DOI from various keys/values and stores it in the JSON object.
    * It saves the DOI in two ways:
-   * - "doiPlain": only the 10.xxxx/... part (útil para usos internos)
+   * - "doiPlain": only the 10.xxxx/... part (useful for internal use)
    * - "doi": always as a full URL https://doi.org/10.xxxx/... (esto activa setDoi(...) para enriquecer)
    */
   private void trySetDoi(String key, String value, JSONObject jo) {
