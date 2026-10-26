@@ -1690,11 +1690,12 @@ body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
    current section.
 
    Scoped to `.adminMenu`, never to `#secondaryMenu` alone: that id is also the
-   project, POWB, Annual Report, Impact Pathway, CapDev, Superadmin and Center
-   side navs, all of which keep the old look. `crp/views/admin/menu-admin.ftl` is
-   the only template that adds the class, which is what puts this on all 19 CRP
-   admin screens at once. The Center admin menu is a separate template and is
-   not affected.
+   project, POWB, Annual Report, Impact Pathway, CapDev and Center side navs,
+   which keep their own look. `crp/views/admin/menu-admin.ftl` adds the class to
+   all 19 CRP admin screens at once, and `global/views/superadmin/menu-superadmin.ftl`
+   to the superadmin screens, whose nav has several groups: each group title is
+   an eyebrow over its own card. The Center admin menu is a separate template and
+   is not affected.
 
    global.css builds the old look out of `#secondaryMenu ...` descendant
    selectors, several of them carrying `!important` on the anchor padding, so
@@ -1718,6 +1719,12 @@ body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
   text-align: left;
   text-transform: uppercase;
   color: var(--marlo-text-muted);
+}
+
+/* A group after the first (the superadmin nav has several) starts clear of the
+   card above it. */
+#secondaryMenu.adminMenu > ul + p {
+  margin-top: 22px;
 }
 
 /* The card. */
