@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.json.superadmin;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.downloads.DownloadGlobalUnitLogoAction;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.File;
@@ -69,6 +70,12 @@ public class UploadGlobalUnitLogoAction extends BaseAction {
     }
 
     String normalizedAcronym = StringUtils.upperCase(StringUtils.trim(acronym), Locale.ROOT);
+    // The acronym becomes the file name, so a path separator or a dot segment must not reach new File(...)
+    if (!DownloadGlobalUnitLogoAction.VALID_ACRONYM_PATTERN.matcher(normalizedAcronym).matches()) {
+      LOG.warn("globalUnitLogoUpload: the acronym is not a valid Global Unit acronym, so no logo was saved");
+      message = this.getText("globalUnitManagement.logo.upload.acronymInvalid");
+      return SUCCESS;
+    }
     String uploadsBase = config.getUploadsBaseFolder();
     if (StringUtils.isBlank(uploadsBase)) {
       LOG.error("globalUnitLogoUpload: uploads base folder not configured");

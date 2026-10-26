@@ -41,9 +41,10 @@ public class DownloadGlobalUnitLogoAction extends BaseAction {
   /**
    * The acronym arrives from an anonymous request and is turned into a file name, so anything that could step
    * outside the logos folder -- a path separator, a dot segment -- is rejected instead of sanitized. Every
-   * acronym in global_units is covered by this pattern, including the ones that carry a space.
+   * acronym in global_units is covered by this pattern, including the ones that carry a space. The logo upload
+   * checks the acronym against it too, so a logo is never saved under a name this action would not serve.
    */
-  private static final Pattern VALID_ACRONYM_PATTERN = Pattern.compile("[A-Z0-9 _-]{1,50}");
+  public static final Pattern VALID_ACRONYM_PATTERN = Pattern.compile("[A-Z0-9 _-]{1,50}");
   private static final int MAX_LOGGED_ACRONYM_LENGTH = 50;
 
   private transient InputStream fileInputStream;
