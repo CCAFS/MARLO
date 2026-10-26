@@ -176,7 +176,7 @@ public class FundingSource extends MarloAuditableEntity implements java.io.Seria
     } else {
       List<FundingSourceInfo> infos = fundingSourceInfos
         .stream().filter(c -> c.getPhase() != null && c.getPhase().getId() != null
-          && phase.getYear() > c.getPhase().getYear() && c.getPhase().getDescription().equals(APConstants.PLANNING))
+          && phase.getYear() > c.getPhase().getYear() && APConstants.PLANNING.equals(c.getPhase().getDescription()))
         .collect(Collectors.toList());
 
 

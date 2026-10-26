@@ -2,6 +2,7 @@ package org.cgiar.ccafs.marlo.validation;
 
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ICenterSectionStatusManager;
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
@@ -14,6 +15,7 @@ import org.cgiar.ccafs.marlo.data.model.CenterSectionStatus;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.IpLiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
@@ -29,6 +31,9 @@ import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.internet.InternetAddress;
@@ -43,6 +48,9 @@ import org.slf4j.LoggerFactory;
 public class BaseValidator {
 
   private static final Logger LOG = LoggerFactory.getLogger(BaseValidator.class);
+
+  // Missing field a validation adds when the section has an unsaved autosave draft
+  static final String DRAFT_MISSING_FIELD = "draft";
 
   /**
    * Setter injection is ok here as this class is extended. TODO look into making this class abstract.
@@ -75,6 +83,25 @@ public class BaseValidator {
       }
       this.missingFields.append(field);
     }
+  }
+
+  /**
+   * The Global Unit whose acronym names a section's autosave file. When it is the unit of the session, that object is
+   * used instead of reading it again: a read through a manager opens a transaction, and its commit flushes whatever
+   * the request has changed in memory, in the middle of a validation. Any other unit, or a call without a session (a
+   * service), is read from the database as before.
+   *
+   * @param action the action being validated.
+   * @param crpID the id of the Global Unit to name the file after.
+   * @param crpManager the manager to read the unit with when it is not the session one.
+   * @return the Global Unit, or null if it does not exist.
+   */
+  protected GlobalUnit getAutoSaveGlobalUnit(BaseAction action, long crpID, GlobalUnitManager crpManager) {
+    GlobalUnit sessionUnit = action == null ? null : action.getCurrentCrp();
+    if (sessionUnit != null && sessionUnit.getId() != null && sessionUnit.getId().longValue() == crpID) {
+      return sessionUnit;
+    }
+    return crpManager.getGlobalUnitById(crpID);
   }
 
   public StringBuilder getMissingFields() {
@@ -812,9 +839,50 @@ public class BaseValidator {
     } else {
       status.setMissingFields("");
     }
+    // A new status is inserted right away with these missing fields; an existing one may need storing apart
+    boolean existingStatus = status.getId() != null;
     sectionStatusManager.saveSectionStatus(status);
+    if (existingStatus) {
+      this.storeValidationResult(status, sectionName, action);
+    }
 
     action.getMissingFields().setLength(0);
+  }
+
+  /**
+   * Remove the draft marker from the missing fields of a section. A validation that does not save adds "draft" when
+   * the section has an autosave file; the autosave of the page runs that validation after every draft it writes. The
+   * marker belongs to the person editing, who sees it in the answer; the stored status, which the menu of every user
+   * reads, keeps only what the saved data misses.
+   *
+   * @param missingFields the missing fields separated by ";", or null.
+   * @return the same fields without the draft marker, or null when the input is null.
+   */
+  static String withoutDraftMarker(String missingFields) {
+    if (missingFields == null) {
+      return null;
+    }
+    return Arrays.stream(missingFields.split(";")).filter(field -> !DRAFT_MISSING_FIELD.equals(field))
+      .collect(Collectors.joining(";"));
+  }
+
+  /**
+   * Store the missing fields an action that only validates has computed for an existing section status. Without it the
+   * update stays in the request session, which such an action never flushes, and the menu keeps reading the old
+   * status. The update runs in a session of its own, so nothing else the request changed is written. A failure is
+   * logged and leaves the stored status as it was: the validation answer itself does not depend on it.
+   */
+  private void storeValidationResult(SectionStatus status, String sectionName, BaseAction action) {
+    if (status.getId() == null || !action.isSectionStatusStoredOnValidation(sectionName)) {
+      return;
+    }
+    try {
+      sectionStatusManager.updateMissingFieldsInOwnSession(status.getId().longValue(),
+        withoutDraftMarker(status.getMissingFields()));
+    } catch (RuntimeException e) {
+      LOG.warn("Could not store the result of validating the section {}, so its status {} keeps the stored one",
+        sectionName, status.getId(), e);
+    }
   }
 
   /**

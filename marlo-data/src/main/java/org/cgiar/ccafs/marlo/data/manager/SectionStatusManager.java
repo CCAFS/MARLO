@@ -211,5 +211,16 @@ public interface SectionStatusManager {
    */
   public SectionStatus saveSectionStatus(SectionStatus sectionStatus);
 
+  /**
+   * Store the missing fields of an existing section status without writing anything else the request holds. A
+   * validation answered by a JSON action has no transaction that would store them, and committing one would also
+   * write every entity the validation changed in memory.
+   *
+   * @param sectionStatusId the id of the section status.
+   * @param missingFields the missing fields to store.
+   * @return the number of rows updated: 1, or 0 when the section status does not exist.
+   */
+  public int updateMissingFieldsInOwnSession(long sectionStatusId, String missingFields);
+
 
 }

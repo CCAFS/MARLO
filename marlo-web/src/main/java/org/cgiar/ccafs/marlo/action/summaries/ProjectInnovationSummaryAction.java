@@ -93,7 +93,6 @@ import org.cgiar.ccafs.marlo.utils.URLShortener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -321,7 +320,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     if (projectInnovationID == null || projectInnovationManager.getProjectInnovationById(projectInnovationID) == null
       || projectInnovationManager.getProjectInnovationById(projectInnovationID)
         .getProjectInnovationInfo(this.getSelectedPhase()) == null) {
-      LOG.error("Project Innovation " + projectInnovationID + " Not found");
+      // A request for an innovation that does not exist is not a failure of the server: the client gets a 404
+      LOG.warn("The innovation {} was not found in the phase", projectInnovationID);
       return NOT_FOUND;
     } else {
       projectInnovationInfo = projectInnovationManager.getProjectInnovationById(projectInnovationID)
@@ -1191,8 +1191,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
             // Evidence by deliverable
             if (Boolean.TRUE.equals(ref.getEvidenceByDeliverable())) {
-              String link =
-                this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?deliverableID="
+              // A reference marked as evidence by deliverable may have no deliverable: it then gets no link
+              String link = ref.getDeliverable() == null ? null
+                : this.getBaseUrl() + "/clusters/" + this.getLoggedCrp().getAcronym() + "/deliverable.do?deliverableID="
                   + ref.getDeliverable().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
               refMap.put("url", link);
 
@@ -1252,8 +1253,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
             // Evidence by deliverable
             if (Boolean.TRUE.equals(refUrl.getEvidenceByDeliverable())) {
-              String link =
-                this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?deliverableID="
+              // A reference marked as evidence by deliverable may have no deliverable: it then gets no link
+              String link = refUrl.getDeliverable() == null ? null
+                : this.getBaseUrl() + "/clusters/" + this.getLoggedCrp().getAcronym() + "/deliverable.do?deliverableID="
                   + refUrl.getDeliverable().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
               refMap.put("url", link);
               refMap.put("reference",
@@ -1305,8 +1307,9 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
 
             // Evidence by deliverable
             if (Boolean.TRUE.equals(ref.getEvidenceByDeliverable())) {
-              String link =
-                this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/deliverable.do?deliverableID="
+              // A reference marked as evidence by deliverable may have no deliverable: it then gets no link
+              String link = ref.getDeliverable() == null ? null
+                : this.getBaseUrl() + "/clusters/" + this.getLoggedCrp().getAcronym() + "/deliverable.do?deliverableID="
                   + ref.getDeliverable().getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
               refMap.put("url", link);
 
@@ -1402,7 +1405,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
             dto.put("projectReadinessLevel", selProjectReadinessLevel);
 
             String link =
-            this.getBaseUrl() + "/clusters/" + this.getCurrentCrp().getAcronym() + "/innovation.do?innovationID="
+            this.getBaseUrl() + "/clusters/" + this.getLoggedCrp().getAcronym() + "/innovation.do?innovationID="
             + sel.getId() + "&edit=true&phaseID=" + this.getSelectedPhase().getId();
             dto.put("url", link);
 
@@ -1665,13 +1668,6 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     try {
       objectMapper = new ObjectMapper();
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-      try {
-        final FileWriter fileWriter = new FileWriter(new File("D:/innovations_Report.json"));
-        fileWriter.write(jsonOutput);
-        fileWriter.close();
-      } catch (Exception e) {
-        LOG.debug("The local report dump was not written, which is expected outside a local environment", e);
-      }
 
       LOG.info("Sending the innovations report {} to the microservice queue", this.innovationsReportName);
       this.microserviceReportAction.sendInnovationsQueueMessage(jsonOutput, this.innovationsReportName);
@@ -2325,12 +2321,37 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     return "[]".equals(json) ? null : json;
   }
 
+  /**
+   * Read the innovation id of the request. This report is public, so the value comes from anyone: a missing value or
+   * one that is not a number is answered as an innovation that does not exist, never as a server error.
+   *
+   * @param parameter the innovationID parameter of the request, or null.
+   * @return the id, or null when it is missing or is not a number.
+   */
+  static Long readInnovationID(Parameter parameter) {
+    if (parameter == null || !parameter.isDefined()) {
+      return null;
+    }
+    String value = StringUtils.trim(parameter.getValue());
+    if (value == null || value.isEmpty()) {
+      return null;
+    }
+    try {
+      return Long.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
     this.setPublicAccessParameters();
-    projectInnovationID =
-      Long.parseLong(StringUtils.trim(parameters.get(APConstants.INNOVATION_REQUEST_ID).getMultipleValues()[0]));
+    projectInnovationID = readInnovationID(parameters.get(APConstants.INNOVATION_REQUEST_ID));
+    if (projectInnovationID == null) {
+      // A bad request, not a failure: execute() answers it as not found, without an error report
+      LOG.warn("The {} parameter is missing or is not a number", APConstants.INNOVATION_REQUEST_ID);
+    }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "

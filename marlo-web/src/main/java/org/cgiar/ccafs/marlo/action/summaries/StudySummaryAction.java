@@ -136,7 +136,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID) == null
       || projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)
         .getProjectExpectedStudyInfo(this.getSelectedPhase()) == null) {
-      System.out.println("ProjectExpectedStudy " + projectExpectedStudyID + " Not found");
+      LOG.warn("The expected study {} was not found in the phase", projectExpectedStudyID);
       return NOT_FOUND;
     } else {
       projectExpectedStudyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(projectExpectedStudyID)
@@ -344,7 +344,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
       projectExpectedStudyID =
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.STUDY_REQUEST_ID).getMultipleValues()[0]));
     } catch (Exception e) {
-      System.out.println("Error getting project: expected study " + projectExpectedStudyID);
+      // A missing id, or one that is not a number, is a bad request: execute() answers it as not found
+      LOG.warn("The {} parameter is missing or is not a number", APConstants.STUDY_REQUEST_ID);
 
       if (projectExpectedStudyID == null) {
         projectExpectedStudyID = (long) -1;
