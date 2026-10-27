@@ -259,59 +259,56 @@ public class PartnersSaveAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     super.prepare();
+    String userEmail = this.getCurrentUser() != null ? this.getCurrentUser().getEmail() : null;
     // Take the project id only the first time the page loads
-    if (this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID) != null
-      && Integer.parseInt(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)) != 0) {
-      projectID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
+    int requestProjectID = readRequestId(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
+    if (requestProjectID != 0) {
+      projectID = requestProjectID;
       pageRequestName = "projects";
-      LOG.info("The user {} load the request partner section related to the project {}.",
-        this.getCurrentUser().getEmail(), projectID);
+      LOG.info("The user {} load the request partner section related to the project {}.", userEmail, projectID);
     }
+
     // Take the fundingSource id only the first time the page loads
-    if (this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID) != null
-      && Integer.parseInt(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)) != 0) {
-      fundingSourceID =
-        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID)));
+    int requestFundingSourceID = readRequestId(this.getRequest().getParameter(APConstants.FUNDING_SOURCE_REQUEST_ID));
+    if (requestFundingSourceID != 0) {
+      fundingSourceID = requestFundingSourceID;
       pageRequestName = "fundingSources";
       LOG.info("The user {} load the request partner section related to the funding source {}.",
-        this.getCurrentUser().getEmail(), fundingSourceID);
+        userEmail, fundingSourceID);
     }
 
     // Take the Expected Study id only the first time the page loads
-    if (this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID) != null
-      && Integer.parseInt(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID)) != 0) {
-      expectedID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID)));
+    int requestExpectedID = readRequestId(this.getRequest().getParameter(APConstants.EXPECTED_REQUEST_ID));
+    if (requestExpectedID != 0) {
+      expectedID = requestExpectedID;
       pageRequestName = "studies";
-      LOG.info("The user {} load the request partner section related to the Study {}.",
-        this.getCurrentUser().getEmail(), expectedID);
+      LOG.info("The user {} load the request partner section related to the Study {}.", userEmail, expectedID);
     }
 
     // Take the CapDev id only the first time the page loads
-    if (this.getRequest().getParameter(APConstants.CAPDEV_ID) != null
-      && Integer.parseInt(this.getRequest().getParameter(APConstants.CAPDEV_ID)) != 0) {
-      capdevID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.CAPDEV_ID)));
+    int requestCapdevID = readRequestId(this.getRequest().getParameter(APConstants.CAPDEV_ID));
+    if (requestCapdevID != 0) {
+      capdevID = requestCapdevID;
       pageRequestName = "capdev";
-      LOG.info("The user {} load the request partner section related to the Capdev {}.",
-        this.getCurrentUser().getEmail(), capdevID);
+      LOG.info("The user {} load the request partner section related to the Capdev {}.", userEmail, capdevID);
     }
 
     // Take the POWB Synthesis id only the first time the page loads
-    if (this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID) != null
-      && Integer.parseInt(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)) != 0) {
-      powbSynthesisID =
-        Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID)));
+    int requestPowbSynthesisID = readRequestId(this.getRequest().getParameter(APConstants.POWB_SYNTHESIS_ID));
+    if (requestPowbSynthesisID != 0) {
+      powbSynthesisID = requestPowbSynthesisID;
       pageRequestName = "powbSynthesis";
       LOG.info("The user {} load the request partner section related to the powbSynthesis {}.",
-        this.getCurrentUser().getEmail(), powbSynthesisID);
+        userEmail, powbSynthesisID);
     }
 
     // Take the AR Synthesis id only the first time the page loads
-    if (this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID) != null
-      && Integer.parseInt(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)) != 0) {
-      synthesisID = Integer.parseInt(StringUtils.trim(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID)));
+    int requestSynthesisID = readRequestId(this.getRequest().getParameter(APConstants.REPORT_SYNTHESIS_ID));
+    if (requestSynthesisID != 0) {
+      synthesisID = requestSynthesisID;
       pageRequestName = "reportSynthesis";
       LOG.info("The user {} load the request partner section related to the reportSynthesis {}.",
-        this.getCurrentUser().getEmail(), synthesisID);
+        userEmail, synthesisID);
     }
 
     this.countriesList = locationManager.findAll().stream()
@@ -328,6 +325,24 @@ public class PartnersSaveAction extends BaseAction {
       loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
       LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+    }
+  }
+
+  /**
+   * Read an id the page was opened with. A missing, blank or non-numeric value means the page was not opened for
+   * that kind of item, the same as 0, instead of failing the whole page.
+   *
+   * @param value the request parameter, or null
+   * @return the id, or 0
+   */
+  static int readRequestId(String value) {
+    if (StringUtils.isBlank(value)) {
+      return 0;
+    }
+    try {
+      return Integer.parseInt(StringUtils.trim(value));
+    } catch (NumberFormatException e) {
+      return 0;
     }
   }
 

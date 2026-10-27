@@ -72,7 +72,7 @@
         [#if powbSynthesisID??]<input type="hidden" name="powbSynthesisID" value="${(powbSynthesisID)!}"/>[/#if]
         [#if synthesisID??]<input type="hidden" name="synthesisID" value="${(synthesisID)!}"/>[/#if]
         <input type="hidden" name="context" value="${(context)!}" />
-        <input type="hidden" name="phaseID" value="${actualPhase.id}"/>
+        <input type="hidden" name="phaseID" value="${(actualPhase.id)!}"/>
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">

@@ -180,8 +180,7 @@ public abstract class MetadataClientApi {
 
             }
           } catch (JsonParseException | RuntimeException e) {
-            e.printStackTrace();
-            LOG.error(e.getLocalizedMessage());
+            LOG.error("Could not read the deliverable metadata", e);
 
           }
 

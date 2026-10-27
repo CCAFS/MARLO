@@ -330,7 +330,7 @@ public class KeyExternalPartnershipItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      fieldErrors.forEach(e -> LOG.debug("Field validation error: {}", e == null ? null : e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -444,7 +444,7 @@ public class KeyExternalPartnershipItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      fieldErrors.forEach(e -> LOG.debug("Field validation error: {}", e == null ? null : e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -495,7 +495,7 @@ public class KeyExternalPartnershipItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      fieldErrors.forEach(e -> LOG.debug("Field validation error: {}", e == null ? null : e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -577,7 +577,7 @@ public class KeyExternalPartnershipItem<T> {
 
     // Validate all fields
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      fieldErrors.forEach(e -> LOG.debug("Field validation error: {}", e == null ? null : e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -813,7 +813,7 @@ public class KeyExternalPartnershipItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.forEach(e -> System.out.println(e.getMessage()));
+      fieldErrors.forEach(e -> LOG.debug("Field validation error: {}", e == null ? null : e.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))

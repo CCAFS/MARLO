@@ -110,7 +110,7 @@
 }
 
 /************* 0. LAYOUT ***************/
-/* Every page is capped at a fixed 1400px and centred. Below the cap the
+/* Every page is capped at a fixed 1500px and centred. Below the cap the
    container keeps the design's 32px gutters: Bootstrap holds 15px of inner
    padding on .container, so the border box must be 34px narrower than the
    viewport for the content edge to land at 32px.
@@ -119,7 +119,7 @@
    already beats Bootstrap's .container (0,1,0). */
 .container:not(.loginPage) {
   width: calc(100% - 34px) !important;
-  max-width: 1400px;
+  max-width: 1500px;
 }
 
 /* Sticky footer. MARLO had no full-height chain and no page-level flex layout:
@@ -1690,11 +1690,12 @@ body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
    current section.
 
    Scoped to `.adminMenu`, never to `#secondaryMenu` alone: that id is also the
-   project, POWB, Annual Report, Impact Pathway, CapDev, Superadmin and Center
-   side navs, all of which keep the old look. `crp/views/admin/menu-admin.ftl` is
-   the only template that adds the class, which is what puts this on all 19 CRP
-   admin screens at once. The Center admin menu is a separate template and is
-   not affected.
+   project, POWB, Annual Report, Impact Pathway, CapDev and Center side navs,
+   which keep their own look. `crp/views/admin/menu-admin.ftl` adds the class to
+   all 19 CRP admin screens at once, and `global/views/superadmin/menu-superadmin.ftl`
+   to the superadmin screens, whose nav has several groups: each group title is
+   an eyebrow over its own card. The Center admin menu is a separate template and
+   is not affected.
 
    global.css builds the old look out of `#secondaryMenu ...` descendant
    selectors, several of them carrying `!important` on the anchor padding, so
@@ -1718,6 +1719,19 @@ body:has(:where(.opi-saveBar, .buttons-content button[name="save"])) {
   text-align: left;
   text-transform: uppercase;
   color: var(--marlo-text-muted);
+}
+
+/* The superadmin screens have no phase bar above the side nav, so it keeps the
+   20px top margin of the old look and lines up with the page title instead of
+   sitting against the breadcrumb. */
+#secondaryMenu.adminMenu.superadminMenu {
+  margin-top: 20px;
+}
+
+/* A group after the first (the superadmin nav has several) starts clear of the
+   card above it. */
+#secondaryMenu.adminMenu > ul + p {
+  margin-top: 22px;
 }
 
 /* The card. */

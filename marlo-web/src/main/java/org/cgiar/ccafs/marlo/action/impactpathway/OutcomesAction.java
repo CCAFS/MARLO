@@ -87,7 +87,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.GregorianCalendar;
 import com.opensymphony.xwork2.util.CreateIfNull;
 import com.opensymphony.xwork2.util.Element;
 import com.opensymphony.xwork2.util.KeyProperty;
@@ -109,8 +108,9 @@ public class OutcomesAction extends BaseAction {
   private static final Logger LOG = LoggerFactory.getLogger(OutcomesAction.class);
 
 
-  // FIXME remove this variable. create an specificity for each crp/platform
-  private static final Integer END_YEAR = 2030;
+  // The years every unit can pick in the year selects; widen them when a program runs past the last one
+  private static final int FIRST_TARGET_YEAR = 2021;
+  private static final int LAST_TARGET_YEAR = 2031;
 
 
   private AuditLogManager auditLogManager;
@@ -392,44 +392,16 @@ public class OutcomesAction extends BaseAction {
     return targetUnitList;
   }
 
+  /**
+   * The years offered in the year selects of the indicators and their period targets.
+   *
+   * @return the years 2021 to 2031, in order
+   */
   public List<Integer> getTargetYears() {
     List<Integer> targetYears = new ArrayList<>();
-
-    Date date = new Date();
-
-    Calendar calendarStart = new GregorianCalendar(2017, 0, 10, 01, 10, 30);
-
-    Calendar calendarEnd = Calendar.getInstance();
-    calendarEnd.set(Calendar.YEAR, END_YEAR);
-
-    if (this.isAiccra()) {
-
-      // Adding the year to the list.
-      targetYears.add(2021);
-      targetYears.add(2022);
-      targetYears.add(2023);
-      targetYears.add(2024);
-      targetYears.add(2025);
-      targetYears.add(2026);
-      targetYears.add(2027);
-      targetYears.add(2028);
-      targetYears.add(2029);
-      targetYears.add(2030);
-      targetYears.add(2031);
-
-    } else {
-      while (calendarStart.get(Calendar.YEAR) <= calendarEnd.get(Calendar.YEAR)) {
-
-        // Adding the year to the list.
-        // if (calendarStart.get(Calendar.YEAR) >= this.getActualPhase().getYear()) {
-        targetYears.add(calendarStart.get(Calendar.YEAR));
-        // }
-
-        // Adding a year (365 days) to the start date.
-        calendarStart.add(Calendar.YEAR, 1);
-      }
+    for (int year = FIRST_TARGET_YEAR; year <= LAST_TARGET_YEAR; year++) {
+      targetYears.add(year);
     }
-
     return targetYears;
   }
 

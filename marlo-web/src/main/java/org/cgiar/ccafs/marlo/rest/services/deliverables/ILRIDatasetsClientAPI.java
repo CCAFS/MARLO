@@ -80,8 +80,7 @@ public class ILRIDatasetsClientAPI extends MetadataClientApi {
       authorsArr = authors.toArray(authorsArr);
       metadataModel.setAuthors(authorsArr);
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
+      LOG.error("Could not read the ILRI datasets metadata", e);
       jo = null;
     }
 

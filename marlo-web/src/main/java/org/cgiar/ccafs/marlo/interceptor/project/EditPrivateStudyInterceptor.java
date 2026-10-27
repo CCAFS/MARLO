@@ -80,9 +80,10 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
     try {
       this.setPermissionParameters(invocation);
-    } catch (NullPointerException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
-      // A study id, cycle or year that is missing or is not a number is a bad request: the study is not found.
-      // Only the reading of the request is covered, so a failure of the action itself is not hidden as a 404.
+    } catch (NullPointerException | NumberFormatException | IndexOutOfBoundsException e) {
+      // A study id, cycle or year that is missing or is not a number is a bad request, and so is a study whose project
+      // has no active origin unit: the study is not found. Only the reading of the request is covered, so a failure of
+      // the action itself is not hidden as a 404.
       LOG.warn("The study requested could not be read from the request: {}", e.getClass().getSimpleName());
       BaseAction action = (BaseAction) invocation.getAction();
       return action.NOT_FOUND;

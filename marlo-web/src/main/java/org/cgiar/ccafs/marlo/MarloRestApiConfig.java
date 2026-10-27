@@ -15,7 +15,6 @@
 
 package org.cgiar.ccafs.marlo;
 
-import org.cgiar.ccafs.marlo.logging.LoggingAspect;
 import org.cgiar.ccafs.marlo.rest.helldots.HelldotsUploadValidator;
 
 import java.util.Arrays;
@@ -76,11 +75,6 @@ public class MarloRestApiConfig {
     return proxyCreator;
   }
 
-
-  @Bean
-  public LoggingAspect loggingAspect() {
-    return new LoggingAspect();
-  }
 
   /**
    * Required for {@code @RequestPart}/{@code MultipartFile} binding (HellDots screenshot upload). The bean
