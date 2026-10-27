@@ -105,6 +105,8 @@ public class PartnersSaveAction extends BaseAction {
   private long locationId;
   private GlobalUnit loggedCrp;
   private boolean messageSent;
+  // True when the partner request could not be sent to CLARISA, so the page shows the form again with an error
+  private boolean requestFailed;
   private String partnerWebPage;
   private String context;
   private int projectID;
@@ -253,6 +255,10 @@ public class PartnersSaveAction extends BaseAction {
 
   public boolean isMessageSent() {
     return messageSent;
+  }
+
+  public boolean isRequestFailed() {
+    return requestFailed;
   }
 
   @Override
@@ -475,10 +481,10 @@ public class PartnersSaveAction extends BaseAction {
       } else if (project != null && project.getProjectInfo() != null && project.getProjectInfo().getTitle() != null) {
         requestSource = project.getProjectInfo().getTitle() + " Cluster";
       } else {
-        requestSource = "Request made from AICCRA";
+        requestSource = "Request made from MARLO";
       }
 
-      this.sendPartnerRequest(partnerRequestModifications, requestSource, postFailed);
+      postFailed = !this.sendPartnerRequest(partnerRequestModifications, requestSource);
 
     } else {
       partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
@@ -505,6 +511,13 @@ public class PartnersSaveAction extends BaseAction {
        * continue processing or re-throw the exception.
        */
     }
+    if (postFailed) {
+      // The form is shown again, with an error, instead of the "sent" message
+      messageSent = false;
+      requestFailed = true;
+      return INPUT;
+    }
+
     messageSent = true;
 
     if (projectID != 0) {
@@ -514,14 +527,10 @@ public class PartnersSaveAction extends BaseAction {
       LOG.info("A partner request was sent for the funding source {}", fundingSourceID);
     }
 
-    if (postFailed) {
-      return INPUT;
-    } else {
-      Collection<String> messages = this.getActionMessages();
-      this.addActionMessage("message:" + this.getText("saving.saved"));
-      messages = this.getActionMessages();
-      return SUCCESS;
-    }
+    Collection<String> messages = this.getActionMessages();
+    this.addActionMessage("message:" + this.getText("saving.saved"));
+    messages = this.getActionMessages();
+    return SUCCESS;
   }
 
   /**
@@ -529,10 +538,10 @@ public class PartnersSaveAction extends BaseAction {
    *
    * @param PartnerRequest partnerRequest
    * @param String requestSource
-   * @param boolean postFailed
+   * @return true when CLARISA accepted the request (status 2xx); false when it rejected it or could not be reached
    * @author IBD
    */
-  public void sendPartnerRequest(PartnerRequest partnerRequest, String requestSource, boolean postFailed) {
+  public boolean sendPartnerRequest(PartnerRequest partnerRequest, String requestSource) {
 
     try {
 
@@ -554,7 +563,7 @@ public class PartnersSaveAction extends BaseAction {
       jsonObject.put("userId", this.getCurrentUser().getId());
       jsonObject.put("externalUserMail", this.getCurrentUser().getEmail());
       jsonObject.put("externalUserName", this.getCurrentUser().getUsername());
-      jsonObject.put("externalUserComments", "Request made from AICCRA");
+      jsonObject.put("externalUserComments", "Request made from MARLO");
 
       HttpPost httpPost = new HttpPost(config.getClarisaAPIHost() + "/api/partner-requests/create");
 
@@ -572,15 +581,15 @@ public class PartnersSaveAction extends BaseAction {
         int statusCode = response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : -1;
         if (statusCode >= 200 && statusCode < 300) {
           LOG.info("CLARISA accepted the partner request with status {}", statusCode);
-        } else {
-          LOG.warn("CLARISA did not accept the partner request, status {}", statusCode);
+          return true;
         }
+        LOG.warn("CLARISA did not accept the partner request, status {}", statusCode);
+        return false;
       }
     } catch (Exception e) {
-      postFailed = true;
       LOG.error("Could not send the partner request to CLARISA", e);
+      return false;
     }
-
   }
 
   public void setActivityID(int activityID) {
