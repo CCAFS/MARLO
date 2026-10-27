@@ -27,7 +27,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -1800,9 +1799,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             try {
               projectExpectedStudyCenter.getInstitution().setLocations(projectExpectedStudyCenter.getInstitution()
                 .getInstitutionsLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-              projectExpectedStudyCenter.getInstitution().getLocations()
-                .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
-                  .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
             } catch (final Exception e) {
               LOG.debug("Could not set the locations of a study center: {}", e.toString());
             }
