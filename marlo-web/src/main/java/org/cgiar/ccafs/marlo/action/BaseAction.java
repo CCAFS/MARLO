@@ -4319,6 +4319,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
+    // A section with no saved record yet has no history: the empty list it always got, without an ERROR per page view
+    if (object == null || object.getId() == null) {
+      return new ArrayList<Auditlog>();
+    }
     try {
       return this.auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName(), this.getActualPhase().getId());
