@@ -174,24 +174,28 @@ public class FundingSourceListAction extends BaseAction {
   public String add() {
     FundingSource fundingSource = new FundingSource();
     Map<String, Parameter> parameters = this.getParameters();
-    try {
-      financeCode = StringUtils.trim(parameters.get(APConstants.FINANCE_CODE).getMultipleValues()[0]);
-      agreementStatusValue = StringUtils.trim(parameters.get(APConstants.AGREEMENT_STATUS).getMultipleValues()[0]);
-      institutionLead = StringUtils.trim(parameters.get(APConstants.INSTITUTION_LEAD).getMultipleValues()[0]);
-      // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
-      partnerIDs = StringUtils.trim(parameters.get(APConstants.PARTNERS_ID).getMultipleValues()[0]);
-      budgetTypeID =
-        Long.parseLong(StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID).getMultipleValues()[0]));
+    // Each parameter is read on its own, so that a missing one does not leave the next ones unread
+    financeCode = this.firstParameterValue(parameters, APConstants.FINANCE_CODE);
+    agreementStatusValue = this.firstParameterValue(parameters, APConstants.AGREEMENT_STATUS);
+    institutionLead = this.firstParameterValue(parameters, APConstants.INSTITUTION_LEAD);
+    // centerID = Long.parseLong(parameters.get(APConstants.CRP_ID).getMultipleValues()[0]);
+    partnerIDs = this.firstParameterValue(parameters, APConstants.PARTNERS_ID);
+    budgetTypeID = this.parseLongOrNull(this.firstParameterValue(parameters, APConstants.BUDGET_TYPE_REQUEST_ID));
 
-    } catch (Exception e) {
-      logger.debug("Could not read the funding source parameters: {}", e.getClass().getSimpleName());
+    // Validated before anything is saved: these used to be parsed after the funding source was stored, so an
+    // invalid value left a funding source without info behind a 500
+    Integer institutionLeadID = this.parseIntegerOrNull(institutionLead);
+    Integer agreementStatus = this.parseIntegerOrNull(agreementStatusValue);
+    if (institutionLeadID == null || agreementStatus == null || budgetTypeID == null || budgetTypeID <= 0) {
+      logger.debug("The new funding source request is missing the lead institution, the status or the budget type");
+      return INPUT;
     }
 
     if (partnerIDs != null) {
       this.getPartnertsIDs();
     }
 
-    if (financeCode != null && institutionLead != null) {
+    if (financeCode != null) {
 
       FundingSource fundingSourceSearch = new FundingSource();
       List<FundingSource> fundingSourceSearchTemp = new ArrayList<FundingSource>();
@@ -213,7 +217,7 @@ public class FundingSourceListAction extends BaseAction {
       Phase phase = this.getActualPhase();
       boolean hasNext = true;
       Institution leadInstitution = new Institution();
-      leadInstitution = institutionManager.getInstitutionById(Integer.parseInt(institutionLead));
+      leadInstitution = institutionManager.getInstitutionById(institutionLeadID);
       while (hasNext) {
 
         FundingSourceInfo fundingSourceInfo = new FundingSourceInfo();
@@ -221,7 +225,7 @@ public class FundingSourceListAction extends BaseAction {
         fundingSourceInfo.setPhase(phase);
         fundingSourceInfo.setFinanceCode(financeCode);
         fundingSourceInfo.setLeadCenter(leadInstitution);
-        fundingSourceInfo.setStatus(Integer.parseInt(agreementStatusValue));
+        fundingSourceInfo.setStatus(agreementStatus);
         fundingSourceInfo.setFundingSource(fundingSourceManager.getFundingSourceById(fundingSourceID));
         fundingSourceInfoID = fundingSourceInfoManager.saveFundingSourceInfo(fundingSourceInfo).getId();
         if (budgetTypeID != null) {
@@ -834,6 +838,43 @@ public class FundingSourceListAction extends BaseAction {
     return myProjects;
   }
 
+
+  /**
+   * Returns the trimmed first value of a request parameter, or null when the request does not carry it.
+   */
+  private String firstParameterValue(Map<String, Parameter> parameters, String name) {
+    Parameter parameter = parameters != null ? parameters.get(name) : null;
+    if (parameter == null) {
+      return null;
+    }
+    String[] values = parameter.getMultipleValues();
+    if (values == null || values.length == 0) {
+      return null;
+    }
+    return StringUtils.trim(values[0]);
+  }
+
+  private Integer parseIntegerOrNull(String value) {
+    if (value == null) {
+      return null;
+    }
+    try {
+      return Integer.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  private Long parseLongOrNull(String value) {
+    if (value == null) {
+      return null;
+    }
+    try {
+      return Long.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
 
   public void getPartnertsIDs() {
     // Separate institutions partner Managing ids from institutions apConstans filters into arrayList
