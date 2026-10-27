@@ -1258,11 +1258,15 @@ public class POWBPOISummary2019Action extends BaseSummariesAction implements Sum
       }
 
       try {
-        // Sort institutions ppaPartners list by acronym
-        ppaPartnerReview = ppaPartnerReview.stream()
-          .sorted(
-            (ppa1, ppa2) -> ppa1.getInstitution().getAcronymName().compareTo(ppa2.getInstitution().getAcronymName()))
-          .collect(Collectors.toList());
+        // Sort institutions ppaPartners list by acronym; one without an institution or acronym sorts last instead of
+        // leaving the whole list unsorted
+        if (ppaPartnerReview != null) {
+          ppaPartnerReview = ppaPartnerReview.stream()
+            .sorted(Comparator.comparing(
+              (CrpPpaPartner ppa) -> ppa.getInstitution() != null ? ppa.getInstitution().getAcronymName() : null,
+              Comparator.nullsLast(Comparator.naturalOrder())))
+            .collect(Collectors.toList());
+        }
       } catch (Exception e) {
         LOG.error("Failed to sort ppaPartners institutions by acronyms", e);
       }

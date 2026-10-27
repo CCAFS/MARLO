@@ -153,14 +153,20 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
     Phase phase = phaseDAO.find(next.getId());
     DeliverableShfrmPriorityAction deliverableShfrmPriorityActionPhase = null;
     try {
-      deliverableShfrmPriorityActionPhase = deliverableShfrmPriorityActionDAO
-        .findByDeliverableAndPhase(deliverableId, phase.getId()).stream()
-        .filter(d -> d != null && deliverableShfrmPriorityAction != null
-          && deliverableShfrmPriorityAction.getShfrmPriorityAction() != null
-          && deliverableShfrmPriorityAction.getShfrmPriorityAction().getId() != null
-          && d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
-          && d.getShfrmPriorityAction().getId().equals(deliverableShfrmPriorityAction.getShfrmPriorityAction().getId()))
-        .collect(Collectors.toList()).get(0);
+      // A phase with no action yet is the normal case when replicating: the DAO answers null or no match, which used
+      // to throw here and log an error; the result is the same null
+      List<DeliverableShfrmPriorityAction> phaseActions =
+        deliverableShfrmPriorityActionDAO.findByDeliverableAndPhase(deliverableId, phase.getId());
+      if (phaseActions != null) {
+        deliverableShfrmPriorityActionPhase = phaseActions.stream()
+          .filter(d -> d != null && deliverableShfrmPriorityAction != null
+            && deliverableShfrmPriorityAction.getShfrmPriorityAction() != null
+            && deliverableShfrmPriorityAction.getShfrmPriorityAction().getId() != null
+            && d.getShfrmPriorityAction() != null && d.getShfrmPriorityAction().getId() != null
+            && d.getShfrmPriorityAction().getId()
+              .equals(deliverableShfrmPriorityAction.getShfrmPriorityAction().getId()))
+          .findFirst().orElse(null);
+      }
     } catch (Exception e) {
       logger.error("error getting deliverableShfrmPriorityActionPhase", e);
     }

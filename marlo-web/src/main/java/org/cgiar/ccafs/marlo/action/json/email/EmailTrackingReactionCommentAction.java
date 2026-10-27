@@ -138,7 +138,12 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     }
 
     try {
-      feedbackResponse = StringUtils.trim(parameters.get(APConstants.FEEDBACK_RESPONSE).getMultipleValues()[0]);
+      // The feedback response is optional: a request without it leaves the response empty instead of throwing
+      Parameter feedbackParameter = parameters.get(APConstants.FEEDBACK_RESPONSE);
+      if (feedbackParameter != null && feedbackParameter.getMultipleValues() != null
+        && feedbackParameter.getMultipleValues().length > 0) {
+        feedbackResponse = StringUtils.trim(feedbackParameter.getMultipleValues()[0]);
+      }
     } catch (Exception e) {
       LOG.error("error getting feedback response", e);
     }
