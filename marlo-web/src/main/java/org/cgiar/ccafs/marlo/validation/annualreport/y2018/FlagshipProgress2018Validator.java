@@ -433,7 +433,7 @@ public class FlagshipProgress2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.FLAGSHIP_PROGRESS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting Flagships progress validators: " + e.getMessage());
+        LOG.error("Error getting Flagships progress validators", e);
 
       }
     }

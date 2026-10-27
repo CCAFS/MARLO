@@ -689,7 +689,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
     } catch (Exception e) {
-      LOG.error("Failed to createFooter. Exception: " + e.getMessage());
+      LOG.error("Failed to createFooter", e);
     }
   }
 

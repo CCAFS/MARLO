@@ -659,13 +659,14 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_ID)));
     } catch (final Exception e) {
       projectID = -1;
-      LOG.error("Failed to get parameter" + APConstants.PROJECT_ID + ". Exception: " + e.getMessage());
+      // Rethrown and logged with its stack where it is handled; its message repeats the value the request sent
+      LOG.warn("The {} parameter is missing or not a number", APConstants.PROJECT_ID);
       throw e;
     }
     try {
       project = projectService.getCenterProjectById(projectID);
     } catch (final Exception e) {
-      LOG.error("Failed to get project from Database. Exception: " + e.getMessage());
+      LOG.error("Failed to get project from Database", e);
       throw e;
     }
     // Calculate time to generate report

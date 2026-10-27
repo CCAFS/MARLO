@@ -573,7 +573,7 @@ public class FundingSourceListAction extends BaseAction {
         "message:" + this.getText("deleting.success", new String[] {this.getText("fundingSource").toLowerCase()}));
     } catch (Exception e) {
 
-      logger.error("Unable to delete fundingSource with id: " + fundingSource + " , with exception " + e);
+      logger.error("Unable to delete fundingSource with id: {}", fundingSourceID, e);
       this.addActionError(this.getText("deleting.problem", new String[] {this.getText("fundingSource").toLowerCase()}));
     }
 

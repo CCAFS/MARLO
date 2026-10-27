@@ -291,7 +291,9 @@ public class BaseSummariesAction extends BaseAction implements ValidationWorkflo
       this.setLoggedCrp((GlobalUnit) this.getSession().get(APConstants.SESSION_CRP));
       this.setLoggedCrp(crpManager.getGlobalUnitById(loggedCrp.getId()));
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+      // A download without a session is covered by the CRP of the action name below
+      LOG.warn("Failed to get {} from the session, the CRP is taken from the action name: {}",
+        APConstants.SESSION_CRP, e.toString());
       // Get CRP by action name
       String[] actionParts = this.getActionName().split("/");
       if (actionParts.length > 0) {
@@ -303,15 +305,22 @@ public class BaseSummariesAction extends BaseAction implements ValidationWorkflo
     // Get Phase
     if (parameters.get(APConstants.PHASE_ID).isDefined()) {
       try {
-        this.setSelectedPhase(phaseManager.getPhaseById(
-          Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
-        this.setSelectedYear(selectedPhase.getYear());
-        this.setSelectedCycle(this.selectedPhase.getDescription());
+        Phase phase = phaseManager.getPhaseById(
+          Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]))));
+        this.setSelectedPhase(phase);
+        if (phase != null) {
+          this.setSelectedYear(phase.getYear());
+          this.setSelectedCycle(phase.getDescription());
+        } else {
+          // A phase that does not exist is a bad request, not a failure: the report answers it as not found
+          LOG.warn("No phase found for the {} parameter", APConstants.PHASE_ID);
+        }
       } catch (NumberFormatException e) {
-        // A value that is not a number is a bad request, not a failure: the report answers it as not found
-        LOG.warn("The {} parameter is not a number: {}", APConstants.PHASE_ID, e.getMessage());
+        // A value that is not a number is a bad request, not a failure: the report answers it as not found. The
+        // exception is not logged because its message repeats the value the request sent
+        LOG.warn("The {} parameter is not a number", APConstants.PHASE_ID);
       } catch (Exception e) {
-        LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+        LOG.error("Failed to get the phase of the {} parameter", APConstants.PHASE_ID, e);
       }
 
     } else {
@@ -321,10 +330,20 @@ public class BaseSummariesAction extends BaseAction implements ValidationWorkflo
           this.setSelectedYear(
             Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
           this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
-          this.setSelectedPhase(phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false,
-            loggedCrp.getId().longValue()));
+          if (loggedCrp != null && loggedCrp.getId() != null) {
+            this.setSelectedPhase(phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false,
+              loggedCrp.getId().longValue()));
+          } else {
+            // Without a CRP the phase cannot be looked up; it stays unset, as it did when this threw
+            LOG.warn("No CRP to find the phase of the {} and {} parameters", APConstants.YEAR_REQUEST,
+              APConstants.CYCLE);
+          }
+        } catch (NumberFormatException e) {
+          // The exception is not logged because its message repeats the value the request sent
+          LOG.warn("The {} parameter is not a number", APConstants.YEAR_REQUEST);
         } catch (Exception e) {
-          LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+          LOG.error("Failed to find the phase of the {} and {} parameters", APConstants.YEAR_REQUEST,
+            APConstants.CYCLE, e);
         }
       }
     }
@@ -354,22 +373,28 @@ public class BaseSummariesAction extends BaseAction implements ValidationWorkflo
         this.setLoggedCrp(crpManager.findGlobalUnitByAcronym(crpAcronym));
       }
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
-
+      LOG.error("Failed to get the CRP from the action name", e);
     }
 
     // Get Phase
     if (parameters.get(APConstants.PHASE_ID).isDefined()) {
       try {
-        this.setSelectedPhase(phaseManager.getPhaseById(
-          Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0])))));
-        this.setSelectedYear(selectedPhase.getYear());
-        this.setSelectedCycle(this.selectedPhase.getDescription());
+        Phase phase = phaseManager.getPhaseById(
+          Long.parseLong((StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]))));
+        this.setSelectedPhase(phase);
+        if (phase != null) {
+          this.setSelectedYear(phase.getYear());
+          this.setSelectedCycle(phase.getDescription());
+        } else {
+          // A phase that does not exist is a bad request, not a failure: the report answers it as not found
+          LOG.warn("No phase found for the {} parameter", APConstants.PHASE_ID);
+        }
       } catch (NumberFormatException e) {
-        // A value that is not a number is a bad request, not a failure: the report answers it as not found
-        LOG.warn("The {} parameter is not a number: {}", APConstants.PHASE_ID, e.getMessage());
+        // A value that is not a number is a bad request, not a failure: the report answers it as not found. The
+        // exception is not logged because its message repeats the value the request sent
+        LOG.warn("The {} parameter is not a number", APConstants.PHASE_ID);
       } catch (Exception e) {
-        LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+        LOG.error("Failed to get the phase of the {} parameter", APConstants.PHASE_ID, e);
       }
 
     } else {
@@ -379,10 +404,20 @@ public class BaseSummariesAction extends BaseAction implements ValidationWorkflo
           this.setSelectedYear(
             Integer.parseInt((StringUtils.trim(parameters.get(APConstants.YEAR_REQUEST).getMultipleValues()[0]))));
           this.setSelectedCycle((StringUtils.trim(parameters.get(APConstants.CYCLE).getMultipleValues()[0])));
-          this.setSelectedPhase(phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false,
-            loggedCrp.getId().longValue()));
+          if (loggedCrp != null && loggedCrp.getId() != null) {
+            this.setSelectedPhase(phaseManager.findCycle(this.getSelectedCycle(), this.getSelectedYear(), false,
+              loggedCrp.getId().longValue()));
+          } else {
+            // Without a CRP the phase cannot be looked up; it stays unset, as it did when this threw
+            LOG.warn("No CRP to find the phase of the {} and {} parameters", APConstants.YEAR_REQUEST,
+              APConstants.CYCLE);
+          }
+        } catch (NumberFormatException e) {
+          // The exception is not logged because its message repeats the value the request sent
+          LOG.warn("The {} parameter is not a number", APConstants.YEAR_REQUEST);
         } catch (Exception e) {
-          LOG.error("Failed to get " + APConstants.PHASE_ID + " parameter. Exception: " + e.getMessage());
+          LOG.error("Failed to find the phase of the {} and {} parameters", APConstants.YEAR_REQUEST,
+            APConstants.CYCLE, e);
         }
       }
     }

@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.rest.services.deliverables.model.WOSInstitutionToHa
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.RestConnectionUtil;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -360,7 +361,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
         try {
           response = this.readWOSDataFromClarisa();
         } catch (Exception e) {
-          LOG.error("Error reading WOS data with DOI method: " + e.getMessage());
+          LOG.error("Error reading WOS data with DOI method", e);
         }
 
         // Fallback to handle-based method if DOI fetch failed
@@ -369,7 +370,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
             response = this.readWOSDataFromClarisa2();
             hasHandle = true;
           } catch (Exception e) {
-            LOG.error("Error in fallback using handle/link: " + e.getMessage());
+            LOG.error("Error in fallback using handle/link", e);
           }
         }
 
@@ -379,7 +380,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
           response = this.readWOSDataFromClarisa2();
           hasHandle = true;
         } catch (Exception e) {
-          LOG.error("Error reading WOS data using handle-based method: " + e.getMessage());
+          LOG.error("Error reading WOS data using handle-based method", e);
         }
 
       } else {
@@ -387,20 +388,20 @@ public class DeliverableMetadataByWOS extends BaseAction {
         try {
           response = this.readWOSDataFromClarisa2();
         } catch (Exception e) {
-          LOG.error("Error reading WOS data using default fallback method: " + e.getMessage());
+          LOG.error("Error reading WOS data using default fallback method", e);
         }
       }
 
     } catch (Exception outer) {
       // Catch any unexpected exception in the entire process
-      LOG.error("Unexpected error during WOS metadata fetch: " + outer.getMessage());
+      LOG.error("Unexpected error during WOS metadata fetch", outer);
     }
 
     // Convert to JSON string (even if response is null)
     try {
       this.jsonStringResponse = StringUtils.stripToNull(new GsonBuilder().serializeNulls().create().toJson(response));
     } catch (Exception e) {
-      LOG.error("Error serializing JSON response: " + e.getMessage());
+      LOG.error("Error serializing JSON response", e);
       this.jsonStringResponse = null;
     }
 
@@ -489,7 +490,7 @@ public class DeliverableMetadataByWOS extends BaseAction {
         return parsed != null ? parsed : JsonNull.INSTANCE;
 
       } catch (Exception e) {
-        LOG.error("Clarisa WOS fetch failed for [{}]: {}", raw, e.getMessage());
+        LOG.error("Clarisa WOS fetch failed for [{}]", LogSanitizer.sanitizeForLog(raw), e);
       }
     }
     return JsonNull.INSTANCE;

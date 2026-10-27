@@ -921,10 +921,11 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       DeliverableUserPartnership partnership = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-        .collect(Collectors.toList()).get(0);
+        .findFirst().orElse(null);
+      // A deliverable without a responsible partner answers null, as before, without throwing
       return partnership;
     } catch (Exception e) {
-      LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
+      LOG.warn("Error getting DeliverablePartnership", e);
       return null;
     }
   }

@@ -1385,9 +1385,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
   } else {
     // Specificity false - use microservice for report generation
     try {
@@ -3197,7 +3196,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 .collect(Collectors.toList()).get(0);
             }
           } catch (Exception e) {
-            LOG.error("Error getting Deliverable Disseminations: " + e.getMessage());
+            LOG.error("Error getting Deliverable Disseminations", e);
           }
           if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
@@ -4219,7 +4218,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 .collect(Collectors.toList()).get(0);
             }
           } catch (Exception e) {
-            LOG.error("Error getting Deliverable Disseminations: " + e.getMessage());
+            LOG.error("Error getting Deliverable Disseminations", e);
           }
           if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
@@ -10797,7 +10796,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
             }
           } catch (Exception e) {
-            LOG.error("Error getting repository channel for deliverable " + deliverable.getId() + ": " + e);
+            LOG.error("Error getting repository channel for deliverable {}", deliverable.getId(), e);
             data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
           }
         }
@@ -10893,7 +10892,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           handle = this.getSanitizedText(handleElement.getElementValue());
         }
       } catch (Exception e) {
-        LOG.error("Error getting Handle for deliverable " + deliverable.getId() + ": " + e);
+        LOG.error("Error getting Handle for deliverable {}", deliverable.getId(), e);
       }
 
       // Get DOI (metadata element ID 36)
@@ -10907,7 +10906,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           doi = this.getSanitizedText(doiElement.getElementValue());
         }
       } catch (Exception e) {
-        LOG.error("Error getting DOI for deliverable " + deliverable.getId() + ": " + e);
+        LOG.error("Error getting DOI for deliverable {}", deliverable.getId(), e);
       }
 
       // Build metadata elements list (excluding Handle and DOI as they are shown separately)
@@ -11056,7 +11055,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
       } catch (Exception e) {
-        LOG.error("Error getting shfrm actions and subactions for deliverable " + deliverable.getId() + ": " + e);
+        LOG.error("Error getting shfrm actions and subactions for deliverable {}", deliverable.getId(), e);
       }
 
       if (!shfrmPriorityActionsList.isEmpty()) {
@@ -11520,14 +11519,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
       this.setCrpSession(this.getLoggedCrp().getAcronym());
+    } catch (NumberFormatException e) {
+      // A missing or non-numeric projectID is a bad request; the exception is not logged because its message repeats
+      // the value the request sent
+      LOG.warn("The {} parameter is missing or not a number", APConstants.PROJECT_REQUEST_ID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the CRP of the project {}", this.getProjectID(), e);
     }
     // Get project from DB
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
-      LOG.error("Failed to get project. Exception: " + e.getMessage());
+      LOG.error("Failed to get project", e);
     }
     if (this.getSelectedPhase() != null && project != null
       && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
