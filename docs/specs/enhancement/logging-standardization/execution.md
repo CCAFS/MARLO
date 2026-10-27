@@ -177,3 +177,54 @@ plus 535 in three new Java files, 2 Reviewer verdicts in one round.
 - The `service_affected` row of the document could cite ADR-9.
 
 - **Final verification:** PASS — the document is accurate against the code and self-contained.
+
+### ENH-LOGGING-STANDARDIZATION-001-T09 — Cleanup: the save chain
+
+- **Final status:** PASS (attempt 1 of this run; the task was partly done on 2026-10-26, outside `/akili-execute`)
+- **Date:** 2026-10-27
+- **Implementer attempts:** 1
+- **Requirements covered:** FN-006, FN-009 (save chain).
+- **Skills:** `marlo-verify`. Effort `low`.
+
+#### Attempt 1
+
+- **Leader scan before the spawn:** all 35 files of the task's list (`AbstractMarloDAO`, `AuditLogMySQLDao`,
+  `HibernateAuditLogListener` and the 32 `ProjectInnovation*ManagerImpl`): 0 prints, 0 concatenated log messages,
+  and two `catch` blocks that logged without the exception, both in `ProjectInnovationPartnershipManagerImpl`.
+- **Files changed:** `marlo-data/.../manager/impl/ProjectInnovationPartnershipManagerImpl.java` (two log lines, LF
+  file); new test `marlo-web/.../logging/SaveChainFailureLoggingTest.java`.
+  - `getUserList`: `logger.error("unable to get partners")` → `"Unable to get the partners of project {} and
+    institution {}", projectID, institutionId, e`.
+  - `saveProjectInnovationPartnership`: `logger.error(e.getMessage())` → `"Unable to find the partnerships of the
+    innovation being saved", e` (no id: the getter chain is what may have thrown).
+- **Implementer verification:** compile 6 / 2415 / 1063 / 113; full suite with `-am` 1123 tests, 0 failures;
+  Checkstyle delta 0 (3 → 3); hygiene no findings. Save-failure evidence: a JUnit test builds a context from the
+  shipped `logback.xml` with `log.json=true` in a temporary folder, makes `getUserList` fail through a `Proxy` stub of
+  `ProjectPartnerManager`, and asserts an ERROR line with the ids, a `stack_trace` carrying the exception, an empty
+  `System.err`, and the unchanged empty-list result. The running server was not used: it predates the change, and a
+  real forced save failure would risk the local database.
+- **Evidence re-run (Leader-inline):** VERIFIED. The 35-file scan reports 0 offenders; the diff is the two lines only;
+  same compile counts and 1123 / 0 in a clean worktree. Falsifier run by the Leader: with the old `getUserList` line
+  restored, the new test fails ("the failure must be in the JSON log"), so it detects the defect.
+- **Reviewer verdict:** **PASS**. Control flow unchanged (the empty list and the `null` are kept); both statements pass
+  the exception last, use placeholders and log no request value. The JSON-appender test satisfies the task's
+  save-failure check together with T08's started-app evidence; the second line needs no test of its own.
+- **runtime events:** none.
+- **spawns:** implementer 11 calls, 80836 tokens, ended complete; reviewer 8 calls, 44796 tokens, ended complete.
+
+#### Decisions made
+
+- The task's status line said the `ProjectInnovation*ManagerImpl` files "had no offender left"; this run found the two
+  above. The status line is corrected in `task.md`.
+- "Force a save failure" is met by the JUnit test plus T08's runtime evidence that stack traces reach `stack_trace`,
+  instead of a forced failure on the local database.
+
+#### ADVISORY (recorded, not acted on)
+
+- `SaveChainFailureLoggingTest`: `context.stop()` runs only when the `try` succeeds; moving it into `finally` would
+  release the file handle on a failed assertion. `java.io.File` is written in full instead of imported, and a
+  missing `logback.xml` would surface as a bare NPE rather than an assertion message.
+- `getUserList` is a lookup inside a save-chain manager rather than a save; the integration item for "a code path
+  fixed in T09–T12" covers it.
+
+- **Final verification:** PASS.

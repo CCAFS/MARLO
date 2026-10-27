@@ -257,10 +257,12 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T09 — Cleanup: the save chain
 
-- **Status:** Partly done, 2026-10-26: the four `printStackTrace()` of `AbstractMarloDAO` now log through `LOG.error`
-  with the exception as the last argument, and its log lines use `{}` placeholders. `AuditLogMySQLDao`,
-  `HibernateAuditLogListener` and the `ProjectInnovation*ManagerImpl` files had no offender left. No
-  `return`, `throw` or condition changed. The JSON check of the verification waits for T08.
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`). On 2026-10-26 the four
+  `printStackTrace()` of `AbstractMarloDAO` were moved to `LOG.error` with the exception as the last argument and
+  `{}` placeholders; `AuditLogMySQLDao` and `HibernateAuditLogListener` had no offender left. On 2026-10-27 the two
+  remaining offenders, both in `ProjectInnovationPartnershipManagerImpl` (a log without the exception and an
+  `e.getMessage()`-only log), now pass the exception. No `return`, `throw` or condition changed. The save-failure
+  check is `SaveChainFailureLoggingTest`. Reviewer PASS; see `execution.md`.
 - **Depends on:** T08 (so the effect is visible in the JSON log)
 - **Module:** marlo-data
 - **Files touched:**
