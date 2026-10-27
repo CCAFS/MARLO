@@ -691,13 +691,18 @@ public class PartnersSaveAction extends BaseAction {
     // If the page is loading don't validate
     if (this.getRequest().getMethod().equalsIgnoreCase("post")) {
 
+      // A form without the partner fields leaves the partner, its name or its type null; they are missing values,
+      // reported like an empty field instead of throwing
+      Institution partner = activityPartner != null ? activityPartner.getPartner() : null;
+
       // Check the partner name
-      if (activityPartner.getPartner().getName().isEmpty()) {
+      if (partner == null || partner.getName() == null || partner.getName().isEmpty()) {
         this.addFieldError("activityPartner.partner.name", this.getText("validation.field.required"));
         anyError = true;
       }
       // Check the institution type
-      if (activityPartner.getPartner().getInstitutionType().getId() == -1) {
+      if (partner == null || partner.getInstitutionType() == null || partner.getInstitutionType().getId() == null
+        || partner.getInstitutionType().getId() == -1) {
         this.addFieldError("activityPartner.partner.institutionType.id", this.getText("validation.field.required"));
         anyError = true;
       }
