@@ -292,8 +292,9 @@ decision by another team. It is listed here to stay traceable, not because it is
 - [x] **Migrations:** Not applicable — no schema change (see §3 Data).
 - [x] **i18n:** Not applicable — no user-facing string. Log messages are English-only per `AGENTS.md` and are
       not user-visible; the support notification is internal.
-- [x] **License header:** The one new Java file (`LoggingContextFilter.java`) carries the GPL header from
-      `AGENTS.md`.
+- [x] **License header:** The new Java files of `logging/` (`LogContext`, `LogEnvironmentDefiner`,
+      `ErrorNotificationThrottle`, `ExceptionEmail`, `MarloMdcJsonProvider`) carry the GPL header from
+      `AGENTS.md`. The `LoggingContextFilter.java` first planned was never created (§9, 2026-10-06).
 - [x] **Code style:** Checkstyle passes with no new violations; 2-space indent, 120-char lines. Verified with
       `~/.claude/skills/marlo-verify/scripts/checkstyle.sh --baseline`, since `mvn checkstyle:check` cannot run
       in this checkout (§4).

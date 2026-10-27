@@ -403,6 +403,8 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T15 — ai-context document
 
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`):
+  `reports/ai-context/logging-standard.md`. Reviewer PASS on attempt 2; see `execution.md`.
 - **Depends on:** T08, T13
 - **Module:** docs
 - **Files touched:**
@@ -432,7 +434,7 @@
 T01 (delete aspect) ────┐
 T02 (REST handlers) ────┼──────────────────────────► T13 (notification)
 T03 (log.folder) ───────┤                                  ▲
-T04 (environment) ──────┴─► T05 (LoggingContextFilter)      │
+T04 (environment) ──────┴─► T05 (LogContext listener)       │
                                 └─► T06 (user_id)           │
                                       └─► T07 (name/email)  │
                                             └─► T08 (JSON appender) ──┘
@@ -456,7 +458,8 @@ T08 must come after T05–T07, or the JSON ships with empty context fields and r
 
 - `LogEnvironmentDefiner.resolve()`: each profile maps to its environment; unknown profile yields a safe
   default, never null (T04).
-- `LoggingContextFilter`: `MDC.clear()` runs even when the downstream chain throws (T05).
+- `LogContext`: the context is cleared at the end of every request, even when the chain throws (T05; the
+  `LoggingContextFilter` first planned was replaced by this listener on 2026-10-06).
 - `MarloMdcJsonProvider`: `status_code` and `user_id` are written as numbers; `user_name`/`user_email` are
   written when `status_code` is 400 or above and omitted otherwise, including when `status_code` is absent
   entirely; an unparseable `status_code` is treated as absent and does not throw (T08).

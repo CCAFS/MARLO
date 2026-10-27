@@ -29,12 +29,12 @@ One JSON object per line, written by the `FILE-JSON` appender to
 | `level` | str | call site | always |
 | `request_id` | str | `LogContext` request listener, random; already `request_id=` in the text log | every event inside a request |
 | `environment` | str | `LogEnvironmentDefiner` (logback `<define>`) ← Spring active profile, `marlo.environment` override; already `environment=` in the text log | always |
-| `tool_name` | str | `BaseAction.getCurrentCrp()` / `SESSION_CRP`; REST: `AddSessionToRestRequestFilter.addCrpToSession()` | once the global unit is known |
+| `tool_name` | str | `LogContext.putGlobalUnit()` from `RequireUserInterceptor` (`SESSION_CRP`); REST: `AddSessionToRestRequestFilter` | once the global unit is known |
 | `module_section` | str | logger name (the emitting class) | always |
-| `controller_affected` | str | request path **without query string**, `LoggingContextFilter` | every event inside a request |
+| `controller_affected` | str | request path **without query string**, `LogContext` request listener (`putRoute`) | every event inside a request |
 | `message` | str | call site | always |
-| `status_code` | **num** | `ExceptionTranslator` per handler; 500 from `UnhandledExceptionAction` | error events only |
-| `user_id` | **num** | `AddUserIdFilter`, Shiro principal | authenticated requests |
+| `status_code` | **num** | `LogContext.putStatusCode()`: `ExceptionTranslator` per handler; 401/403/404 from `ErrorStatusLogInterceptor`; 500 from `UnhandledExceptionAction` | error events only |
+| `user_id` | **num** | `LogContext.putUserId()` from `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter`, Shiro principal | authenticated requests |
 | `user_name`, `user_email` | str | `LogContext.putUserName()` from `RequireUserInterceptor`; REST: `AddSessionToRestRequestFilter`; already in the text log | **only** when `status_code >= 400` |
 | `stack_trace` | str | Logback throwable provider, truncated | when an exception is passed |
 | `payload` | obj | call site, allow-list only | rarely, explicitly |
@@ -55,21 +55,21 @@ three behaviours, that file is the one to open — not `logback.xml`, not the fi
 
 ## 3. Where The Context Comes From, And Why It's Split
 
-Two insertion points, because the Shiro subject does not exist before the Shiro filter runs. That is also why
-`AddUserIdFilter` already exists in the chain.
+Two insertion points, because the user is not known when the request starts. As built (2026-10-06), the
+request-scoped part is a `ServletRequestListener`, not a filter: the web.xml Struts filter ends the chain, so a
+filter registered in `WebAppInitializer` never sees a `.do` request (`requirements.md` §9).
 
 ```
-RemoveSessionFromUrlFilter → CORSFilter
-  → LoggingContextFilter   [owns MDC: request_id, tool_name, controller_affected; clear() in finally]
-    → MARLOCustomPersistFilter   (AuditLogContext push/pop + tx — the pattern this copies)
-    → Shiro filter
-    → AddUserIdFilter      [user_id — subject available only from here on]
-      → Struts: RequireUserInterceptor  [user_name/user_email from session]
-      → REST:   AddSessionToRestRequestFilter  [user_name/user_email + tool_name]
+LogContext (@WebListener)   [requestInitialized: clear(), request_id, controller_affected; requestDestroyed: clear()]
+  → RemoveSessionFromUrlFilter → CORSFilter → MARLOCustomPersistFilter (AuditLogContext + tx)
+  → Shiro filter → AddUserIdFilter   (AuditLogContext only; it writes nothing to the log context)
+    → Struts: RequireUserInterceptor         [user_id, user_name/user_email, tool_name from the session]
+              ErrorStatusLogInterceptor      [status_code of the 401/403/404 pages]
+    → REST:   AddSessionToRestRequestFilter  [user_id, user_name/user_email, tool_name]
 ```
 
-Nothing here issues a database query. Every value already exists in the request: the Shiro principal
-`AddUserIdFilter` reads, the `User` in the Struts session, the `User` the REST filter already resolves through
+Nothing here issues a database query. Every value already exists in the request: the `User` and the global unit
+in the Struts session, and the principal and `User` the REST filter already resolves through
 `UserManager.getUser(id)`. **Keep it that way** — adding a lookup puts a query on every request.
 
 ## 4. The Trap: MDC Leaks Across Pooled Threads
@@ -77,8 +77,9 @@ Nothing here issues a database query. Every value already exists in the request:
 Tomcat reuses worker threads. An MDC left populated attributes one user's `user_id` to the next request served
 by that thread. It is a privacy defect and **it does not reproduce under single-user testing.**
 
-- `MDC.clear()` belongs in the `finally` of `LoggingContextFilter`, the outermost MARLO filter.
-- Any new `MDC.put` must be inside a scope that filter already covers.
+- `LogContext.clear()` runs in `requestInitialized` and `requestDestroyed`, which wrap every request; do not
+  move it into a filter, which would miss the `.do` requests.
+- Any new per-request key goes through a `LogContext.put*` method and is removed in `LogContext.clear()`.
 - Verify by driving the app as two different users in sequence and grepping the JSON log for crossover.
 
 ## 5. Conventions For Any Log Statement
@@ -198,7 +199,8 @@ Settle which is live before cleaning the `marlo-utils` copy.
 appender picks them up.
 
 **Adding a new field to the schema:** put it in the `<providers>` block in `logback.xml` and, if it is
-per-request, populate it in `LoggingContextFilter`. Check §4 before adding any `MDC.put`. If the field must be
+per-request, populate it through `LogContext` and remove it in `LogContext.clear()`. Check §4 before adding any
+`MDC.put`. If the field must be
 a number, must be conditional on another field, or must be omitted when empty, it goes through
 `MarloMdcJsonProvider` instead — `logback.xml` alone cannot express any of those.
 

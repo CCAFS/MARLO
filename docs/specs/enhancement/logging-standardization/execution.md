@@ -118,3 +118,62 @@ plus 535 in three new Java files, 2 Reviewer verdicts in one round.
 
 - **Final verification:** PASS — compile, full suite, Checkstyle delta 0, and a parsed JSON file from a started
   application.
+
+### ENH-LOGGING-STANDARDIZATION-001-T15 — ai-context document
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-10-27
+- **Implementer attempts:** 2
+- **Requirements covered:** OPS-005.
+- **Skills:** `cognitive-doc-design`. Effort `medium`, raised to `high` for the rework.
+
+#### Attempt 1
+
+- **Files changed:** `reports/ai-context/logging-standard.md` (new).
+- **Implementer verification:** every MARLO class, method, `LogContext` key constant, logback element and property
+  the document names exists in the working tree; `LoggingAspect.java` and `LoggingContextFilter.java` are absent, as
+  the document states.
+- **Evidence re-run (Leader-inline):** VERIFIED. The only names without a class file are log levels, JDK or library
+  classes, and the two classes the document itself declares absent.
+- **Reviewer verdict:** **FAIL**. One issue: the Statement Rules row on null-safe log arguments was marked
+  `UNVERIFIED` and credited to a private memory note, although the repository states the rule in
+  `.claude/skills/marlo-verify/SKILL.md` Gate `LOG-NULL`, checked by
+  `.claude/skills/marlo-verify/scripts/java-hygiene-check.sh`. Violated: T15 Verification ("using only this
+  document") and OPS-005. Everything else was confirmed accurate against the code and complete on the Done-when list.
+
+#### Attempt 2
+
+- **Files changed:** the same file; only that row.
+- **Implementer verification:** `grep -n "memory note\|UNVERIFIED"` on the document returns nothing (exit 1); both
+  cited paths exist.
+- **Evidence re-run (Leader-inline):** VERIFIED (same grep exit 1, both paths listed, only that file untracked).
+- **Reviewer verdict:** **PASS**. The row matches the skill line by line, including the receivers the checker skips
+  (`e`, `ex`, `*Exception`, static utilities); the rest of the document, the Done-when list and the T08 encoder check
+  still hold.
+- **runtime events:** none.
+- **spawns:** implementer 16 calls, 126396 tokens, ended complete; reviewer 11 calls, 60027 tokens, ended fail;
+  implementer 4 calls, 65330 tokens, ended complete; reviewer 4 calls, 41476 tokens, ended complete.
+
+#### Decisions made
+
+- **Spec correction approved by the user (2026-10-27), shipped with T15.** The Implementer and the attempt-1 Reviewer
+  found the spec stale against the code: `design.md` §1 diagram, §2, §8, §11 schema table, §12, ADR-5 and §16, and
+  `agent-context.md` §2 and §3, still described the `LoggingContextFilter` T05 replaced on 2026-10-06 and credited
+  `user_id` to `AddUserIdFilter`. They now describe what exists: the `LogContext` `@WebListener` clears the context
+  when a request starts and ends and sets `request_id` and `controller_affected`; `RequireUserInterceptor` (Struts)
+  and `AddSessionToRestRequestFilter` (REST) set `user_id`, `user_name`, `user_email` and `tool_name`;
+  `ErrorStatusLogInterceptor`, `UnhandledExceptionAction` and `ExceptionTranslator` set `status_code`.
+  `requirements.md` §7 (license-header row) and two `task.md` references (the dependency graph label and the testing
+  line for T05) were aligned. No requirement changes meaning. Closure sweep: forward, every remaining
+  `LoggingContextFilter` / `AddUserIdFilter` mention in the spec and in `logging-standard.md` either explains the
+  replacement or describes `AddUserIdFilter` as it is; backward, `logging-standard.md` already follows the code.
+- The T05 and T06 task blocks keep their original file lists as history; their status lines already record the
+  shape that shipped.
+
+#### ADVISORY (recorded, not acted on)
+
+- `ExceptionTranslator:86` logs the REST 401 of `AuthorizationException` at ERROR, while the shared handler logs
+  401 at INFO; the document states INFO. Code inconsistency outside T15.
+- The `service_affected` row of the document could cite ADR-9.
+
+- **Final verification:** PASS — the document is accurate against the code and self-contained.

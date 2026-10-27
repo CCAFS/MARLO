@@ -24,24 +24,22 @@ Nothing about the text log changes beyond the `key=value` context fields NF-001 
 ```
 HTTP request
   │
-  ├─ RemoveSessionFromUrlFilter ─ CORSFilter
-  │
-  ├─ LoggingContextFilter            [NEW]  MDC.put request_id, tool_name,
-  │    │                                    controller_affected  ·  MDC.clear() in finally
-  │    ├─ MARLOCustomPersistFilter          (existing: AuditLogContext push/pop, tx)
-  │    ├─ Shiro filter
-  │    ├─ AddUserIdFilter            [MOD]  MDC.put user_id   (subject available from here on)
+  ├─ LogContext (@WebListener, ServletRequestListener)   [NEW]  requestInitialized: clear(), then
+  │    │                                     request_id + controller_affected  ·  requestDestroyed: clear()
+  │    ├─ RemoveSessionFromUrlFilter ─ CORSFilter ─ MARLOCustomPersistFilter (AuditLogContext, tx)
+  │    ├─ Shiro filter ─ AddUserIdFilter     (existing: AuditLogContext only, no log context)
   │    │
-  │    ├── Struts path ──► RequireUserInterceptor  [MOD]  user_name / user_email from session
+  │    ├── Struts path ──► RequireUserInterceptor  [MOD]  user_id, user_name / user_email, tool_name
+  │    │                        ├─ ErrorStatusLogInterceptor [NEW]  status_code of the 401/403/404 pages
   │    │                        └─► Action ──► Manager ──► DAO
-  │    │                              └─ UnhandledExceptionAction [MOD] request_id + status_code, dedup
+  │    │                              └─ UnhandledExceptionAction [MOD] status_code 500, request_id, dedup
   │    │
-  │    └── REST path  ──► AddSessionToRestRequestFilter [MOD]  user_name / user_email + tool_name
+  │    └── REST path  ──► AddSessionToRestRequestFilter [MOD]  user_id, user_name / user_email, tool_name
   │                            └─► @RestController
   │                                  ├─ LoggingAspect        [DEL] advised nothing; see ADR-8
   │                                  └─ ExceptionTranslator  [MOD] one log per handler, with status_code
   │
-  └─ MDC.clear()
+  └─ LogContext.requestDestroyed: clear()
                         │
    SLF4J ──► Logback ───┼──► FILE-TEST / FILE-PRODUCTION / CONSOLE-*   text, + key=value fields (NF-001)
                         └──► FILE-JSON                        [NEW]    one JSON object per line
@@ -56,22 +54,26 @@ first (§15, ADR-2).
 
 ### marlo-web
 
-- New: `web/filter/LoggingContextFilter.java` — `OncePerRequestFilter`, `@Named`, owns the MDC lifecycle.
-- Modified: `WebAppInitializer.java` — register the new filter on `/*`, immediately after `CORSFilter`.
-- Modified: `web/filter/AddUserIdFilter.java` — put `user_id` into MDC (already reads the Shiro principal at
-  `:50-53`).
-- Modified: `web/filter/AddSessionToRestRequestFilter.java` — put `user_name`, `user_email` and `tool_name`
-  into MDC (already resolves the user at `:180-183` and the global unit at `:94-115`).
-- Modified: `interceptor/RequireUserInterceptor.java` — put `user_name`, `user_email` into MDC on the Struts
-  path (already holds the `User` from the session at `:47-76`).
+- As built, the per-request context is owned by `logging/LogContext.java` (listed below), not by the
+  `LoggingContextFilter` this section first planned: the web.xml Struts filter ends the chain, so a filter
+  registered in `WebAppInitializer` never sees a `.do` request, while a `ServletRequestListener` wraps every
+  request (`requirements.md` §9, 2026-10-06). `WebAppInitializer.java` and `AddUserIdFilter.java` are therefore
+  not modified; `AddUserIdFilter` keeps feeding only the `AuditLogContext`.
+- Modified: `web/filter/AddSessionToRestRequestFilter.java` — puts `user_id`, `user_name`, `user_email` and
+  `tool_name` into the log context on the REST path, through `LogContext.putUserId`, `putUserName` and
+  `putGlobalUnit` (it already resolves the principal, the user and the global unit).
+- Modified: `interceptor/RequireUserInterceptor.java` — puts `user_id`, `user_name`, `user_email` and
+  `tool_name` into the log context on the Struts path, from the `User` and the global unit in the session.
+- New: `interceptor/ErrorStatusLogInterceptor.java` — puts the `status_code` of the Struts 401, 403 and 404
+  pages, which Struts renders with HTTP 200 (A2-2677).
 - Removed: `logging/LoggingAspect.java` and its `@Bean` in `MarloRestApiConfig.java:78-81` — the pointcut has
   matched nothing since 2018 and repairing it would duplicate `ExceptionTranslator` (§15, ADR-8).
 - New: `logging/MarloMdcJsonProvider.java` — the single `JsonProvider` that writes the context fields, types
   `status_code` and `user_id` as numbers (NF-006), suppresses `user_name`/`user_email` unless the status is
   400 or above (SEC-001) and omits `service_affected` (§15, ADR-9).
 - Modified: `rest/errors/ExceptionTranslator.java` — one log call per `@ExceptionHandler`, carrying the status.
-- New: `logging/LogContext.java` — the request listener that carries the per-request context in place of
-  `LoggingContextFilter`, and holds `user_name`/`user_email` back until a status of 400 or more is recorded
+- New: `logging/LogContext.java` — the `@WebListener` request listener that owns the per-request context: it
+  clears it when a request starts and when it ends, generates `request_id`, records `controller_affected`, and holds `user_name`/`user_email` back until a status of 400 or more is recorded
   (`requirements.md` §9, 2026-10-06 and 2026-10-08).
 - New: `logging/LogEnvironmentDefiner.java` — computes `environment` once, from the Spring profile and the
   optional `marlo.environment` override, as a logback context property; not an MDC value.
@@ -161,11 +163,11 @@ happen after the existing session read so a request without a user still behaves
 
 Not applicable as a change; relevant as a constraint.
 
-- `LoggingContextFilter` is registered on `/*` and makes **no** authorization decision. It runs before the
-  Shiro filter, so no subject is available to it and none is required.
-- The `user_id` enrichment lives in `AddUserIdFilter`, which is already registered after the Shiro filter on
-  `*.do, *.json, /, /api/*, /swagger/*`, precisely because the principal is not available earlier. This split
-  is why the design uses two insertion points instead of one.
+- `LogContext` is a request listener and makes **no** authorization decision. It runs before every filter, so
+  no subject is available to it and none is required.
+- The user keys are written after authentication, by `RequireUserInterceptor` (Struts) and
+  `AddSessionToRestRequestFilter` (REST), precisely because the user is not known earlier. This split is why the
+  design uses two insertion points instead of one.
 - No interceptor is added to or removed from any Struts stack, and no `canEdit*` gate changes.
 
 ## 9. Specificity / Feature-Flag Strategy
@@ -195,15 +197,15 @@ This section is the substance of the spec.
 |---|---|---|---|---|
 | `timestamp` | string | Logback | always, ISO 8601 UTC with milliseconds | — |
 | `level` | string | call site | always | — |
-| `request_id` | string | `LoggingContextFilter`, generated per request | every event inside a request | `request_id` |
+| `request_id` | string | `LogContext.requestInitialized`, 16 random hex characters per request | every event inside a request | `request_id` |
 | `environment` | string | `LogEnvironmentDefiner` (logback `<define>`), from the Spring active profile | always | `environment` |
-| `tool_name` | string | `BaseAction.getCurrentCrp()` / `SESSION_CRP` (Struts); `AddSessionToRestRequestFilter.addCrpToSession()` (REST) | once the global unit is known | `tool_name` |
+| `tool_name` | string | `LogContext.putGlobalUnit`, called by `RequireUserInterceptor` from `SESSION_CRP` (Struts) and by `AddSessionToRestRequestFilter` (REST) | once the global unit is known | `tool_name` |
 | `module_section` | string | logger name, i.e. the emitting class | always | — |
-| `controller_affected` | string | request URI **without the query string**, from `LoggingContextFilter` | every event inside a request | `controller_affected` |
+| `controller_affected` | string | request URI **without the query string**, `LogContext.putRoute` from `requestInitialized` | every event inside a request | `controller_affected` |
 | `message` | string | call site | always | — |
-| `status_code` | **number** | `ExceptionTranslator` per handler; 500 from `UnhandledExceptionAction` | error events only | `status_code` |
-| `user_id` | **number** | `AddUserIdFilter`, Shiro principal | authenticated requests | `user_id` |
-| `user_name`, `user_email` | string | `RequireUserInterceptor` (Struts); `AddSessionToRestRequestFilter` (REST) | only when `status_code >= 400` (SEC-001) | `user_name`, `user_email` |
+| `status_code` | **number** | `LogContext.putStatusCode`: `ExceptionTranslator` per handler (REST); 401/403/404 from `ErrorStatusLogInterceptor` and 500 from `UnhandledExceptionAction` (Struts) | error events only | `status_code` |
+| `user_id` | **number** | `LogContext.putUserId`, called by `RequireUserInterceptor` (Struts) and by `AddSessionToRestRequestFilter` from the Shiro principal (REST) | authenticated requests | `user_id` |
+| `user_name`, `user_email` | string | `LogContext.putUserName`, called by `RequireUserInterceptor` (Struts) and `AddSessionToRestRequestFilter` (REST); held back until `putStatusCode` records 400 or more | only when `status_code >= 400` (SEC-001) | `user_name`, `user_email` |
 | `stack_trace` | string | Logback throwable provider, truncated (SEC-003) | when an exception is passed | — |
 | `payload` | object | call site, allow-list only (SEC-002) | rarely, explicitly | — |
 | `service_affected` | — | — | **omitted**; no meaning for a monolith (`requirements.md` §8.3) | — |
@@ -288,10 +290,10 @@ A2-2435 Part 1 already removed its false ERROR on the login path, so the two con
 
 ## 12. Performance & Scalability
 
-- **Per request:** one UUID generation, a handful of `MDC.put` calls (a `ThreadLocal` map) and one
-  `MDC.clear()`. No additional database query (NF-002) — every value comes from data the request already
-  holds: the Shiro principal `AddUserIdFilter` already reads, the `User` already in the Struts session, and
-  the `User` `AddSessionToRestRequestFilter` already resolves.
+- **Per request:** one random request id, a handful of `MDC.put` calls (a `ThreadLocal` map) and two clears
+  of the context, at the start and the end of the request. No additional database query (NF-002) — every value
+  comes from data the request already holds: the `User` and the global unit already in the Struts session, and
+  the principal and `User` that `AddSessionToRestRequestFilter` already resolves.
 - **Per event:** JSON serialization of a small flat object. The dominant cost is the second file write, since
   every event is now rendered twice. Acceptable because the volume is already dominated by what A2-2435 Part 1
   removed; if it becomes a concern, `AsyncAppender` around `FILE-JSON` is the mitigation and does not change
@@ -404,12 +406,14 @@ A2-2435 Part 1 already removed its false ERROR on the login path, so the two con
 
 ### ADR-ENH-LOGGING-STANDARDIZATION-001-5 — Two MDC insertion points, not one
 
-- **Decision:** `LoggingContextFilter` owns the request-scoped keys and the `MDC.clear()`; the user keys are
-  written later, by `AddUserIdFilter`, `RequireUserInterceptor` and `AddSessionToRestRequestFilter`.
-- **Rationale:** The Shiro subject does not exist before the Shiro filter runs, which is exactly why
-  `AddUserIdFilter` exists in the chain today. A single filter would either run too early to know the user or
-  too late to own the lifecycle. Reusing the three places that already read the user satisfies NF-002 with no
-  additional query.
+- **Decision:** The `LogContext` request listener owns the request-scoped keys (`request_id`,
+  `controller_affected`) and clears the context when a request starts and when it ends; the user keys and
+  `tool_name` are written later, by `RequireUserInterceptor` (Struts) and `AddSessionToRestRequestFilter` (REST).
+  Amended 2026-10-06 from a `LoggingContextFilter`: no filter registered in `WebAppInitializer` sees a `.do`
+  request, because the web.xml Struts filter ends the chain (`requirements.md` §9).
+- **Rationale:** The Shiro subject and the session user do not exist when the request starts. A single insertion
+  point would either run too early to know the user or too late to own the lifecycle. Reusing the two places that
+  already read the user satisfies NF-002 with no additional query.
 - **Status:** Accepted.
 
 ### ADR-ENH-LOGGING-STANDARDIZATION-001-6 — `detailed-design.md` §9 left unchanged
@@ -488,7 +492,8 @@ A2-2435 Part 1 already removed its false ERROR on the login path, so the two con
 - **Risk: MDC leaks across pooled threads.** A missing or misplaced `MDC.clear()` attributes one user's
   `user_id` to the next request on that worker. It is a privacy defect, not a cosmetic one, and it does not
   reproduce under single-user testing.
-  *Mitigation:* `clear()` in the `finally` of the outermost filter; the paired two-user verification in
+  *Mitigation:* `LogContext` clears the context in `requestInitialized` and `requestDestroyed`, which wrap
+  every request; the paired two-user verification in
   `task.md` is a required step, not an optional one.
 - **Risk: removing `LoggingAspect` drops logging someone relies on.** It has advised nothing since 2018, so
   there is nothing to lose, but the claim must be demonstrated rather than asserted.
