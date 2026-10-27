@@ -95,6 +95,11 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   @Override
   public String execute() throws Exception {
+    // These reports require a logged user. A request without one used to fail in prepare() on the user lookup; the
+    // check is explicit so that a later change to that log line, or a program bound from the request, cannot open them
+    if (this.getCurrentUser() == null) {
+      return NOT_LOGGED;
+    }
     // A missing or unknown programID left the program null and the report failed with a NullPointerException
     if (researchProgram == null) {
       LOG.warn("No research program for the {} parameter, answered as not found", APConstants.CRP_PROGRAM_ID);
@@ -461,8 +466,11 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName());
+    // A missing or unknown program has no report: execute() answers it as not found
+    if (researchProgram != null) {
+      LOG.info(
+        "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName());
+    }
   }
 
   public void setBytesPDF(byte[] bytesPDF) {

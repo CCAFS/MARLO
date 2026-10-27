@@ -727,6 +727,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
+    // The selected cluster report needs its project; the all clusters report does not use it
+    if (!"true".equals(showAllYears) && project == null) {
+      LOG.warn("No project for the {} parameter, answered as not found", APConstants.PROJECT_REQUEST_ID);
+      return NOT_FOUND;
+    }
 
     projects = new ArrayList<>();
     if (showAllYears.equals("true")) {
@@ -1639,8 +1644,14 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
       this.setCrpSession(this.getLoggedCrp().getAcronym());
 
+      // showAllYears is optional: the cluster menu link does not send it, and that link is the selected cluster report.
+      // Reading it unchecked threw and logged an error on every download from that link
       Map<String, Parameter> parameters = this.getParameters();
-      showAllYears = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS).getMultipleValues()[0]);
+      Parameter allYearsParameter = parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS);
+      String allYears = allYearsParameter != null && allYearsParameter.getMultipleValues() != null
+        && allYearsParameter.getMultipleValues().length > 0
+          ? StringUtils.trim(allYearsParameter.getMultipleValues()[0]) : null;
+      showAllYears = allYears != null ? allYears : "false";
 
     } catch (NumberFormatException e) {
       // A missing or non-numeric projectID is a bad request; the exception is not logged because its message repeats
@@ -1658,7 +1669,9 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
     } catch (Exception e) {
       LOG.error("Failed to get project", e);
     }
-    if (this.getSelectedPhase() != null && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
+    // A missing or unknown projectID leaves the project null: execute() answers it as not found
+    if (this.getSelectedPhase() != null && project != null
+      && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {
       this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
     }
     /*
@@ -1668,8 +1681,11 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
-      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
+    // The file name needs the phase; without one execute() answers the request as not found
+    if (this.getSelectedPhase() != null) {
+      LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+        this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
+    }
   }
 
   public void setInputStream(InputStream inputStream) {

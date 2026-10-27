@@ -468,6 +468,11 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
+    // A missing or unknown projectID has no project to report on
+    if (project == null) {
+      LOG.warn("No project for the {} parameter, answered as not found", APConstants.PROJECT_REQUEST_ID);
+      return NOT_FOUND;
+    }
 
     try {
       hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
@@ -1312,7 +1317,10 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     } catch (Exception e) {
       LOG.error("Failed to get project", e);
     }
-    this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    // A missing or unknown projectID leaves the project null: execute() answers it as not found
+    if (project != null) {
+      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    }
   }
 
 
