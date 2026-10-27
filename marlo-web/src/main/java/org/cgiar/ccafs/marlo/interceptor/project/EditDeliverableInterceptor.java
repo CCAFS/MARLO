@@ -50,7 +50,8 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -58,6 +59,8 @@ import org.jfree.util.Log;
 public class EditDeliverableInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 7287623847333177230L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(EditDeliverableInterceptor.class);
 
 
   private Map<String, Parameter> parameters;
@@ -133,15 +136,17 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
   public DeliverableInfo deliverableInfoByPhase(Deliverable deliverable, Phase phase) {
     DeliverableInfo deliverableInfoPhase = new DeliverableInfo();
     try {
-      List<DeliverableInfo> deliverableInfos =
-        deliverableInfoManager.getDeliverablesInfoByDeliverableId(deliverable.getId());
-      if (deliverableInfos != null) {
-        deliverableInfoPhase =
-          deliverableInfos.stream().filter(di -> di != null && di.getPhase() != null && di.getPhase().getId() != null
-            && di.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()).get(0);
+      if (deliverable != null && deliverable.getId() != null && phase != null && phase.getId() != null) {
+        List<DeliverableInfo> deliverableInfos =
+          deliverableInfoManager.getDeliverablesInfoByDeliverableId(deliverable.getId());
+        if (deliverableInfos != null) {
+          deliverableInfoPhase =
+            deliverableInfos.stream().filter(di -> di != null && di.getPhase() != null && di.getPhase().getId() != null
+              && di.getPhase().getId().equals(phase.getId())).findFirst().orElse(deliverableInfoPhase);
+        }
       }
     } catch (Exception e) {
-      Log.error(e + " error getting deliverable info by phase");
+      LOG.debug("No deliverable info for the phase: {}", e.toString());
     }
     return deliverableInfoPhase;
   }

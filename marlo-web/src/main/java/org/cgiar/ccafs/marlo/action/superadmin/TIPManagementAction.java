@@ -24,12 +24,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class TIPManagementAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(TIPManagementAction.class);
   private TipParametersManager tipParameterManager;
   private TipParameters tipParameter;
 
@@ -46,9 +49,14 @@ public class TIPManagementAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     try {
-      tipParameter = tipParameterManager.findAll().get(0);
+      List<TipParameters> tipParameters = tipParameterManager.findAll();
+      if (tipParameters != null && !tipParameters.isEmpty()) {
+        tipParameter = tipParameters.get(0);
+      } else {
+        LOG.warn("No TIP parameters are configured");
+      }
     } catch (Exception e) {
-      Log.error("error getting tip parameters " + e);
+      LOG.warn("Could not load the TIP parameters", e);
     }
   }
 

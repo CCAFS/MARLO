@@ -44,7 +44,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -280,7 +279,7 @@ public class SendNotificationEmailAction extends BaseAction {
       sentTo = StringUtils.trim(parameters.get(APConstants.OUTLOOK_EMAIL).getMultipleValues()[0]);
     } catch (Exception e) {
       projectID = null;
-      Log.info(e);
+      LOG.warn("Could not read the notification email parameters: {}", e.getClass().getSimpleName());
     }
   }
 

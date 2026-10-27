@@ -74,7 +74,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,7 +184,7 @@ public class FundingSourceListAction extends BaseAction {
         Long.parseLong(StringUtils.trim(parameters.get(APConstants.BUDGET_TYPE_REQUEST_ID).getMultipleValues()[0]));
 
     } catch (Exception e) {
-      Log.error(e);
+      logger.debug("Could not read the funding source parameters: {}", e.getClass().getSimpleName());
     }
 
     if (partnerIDs != null) {

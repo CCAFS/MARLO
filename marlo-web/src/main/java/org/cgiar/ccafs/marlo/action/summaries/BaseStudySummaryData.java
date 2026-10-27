@@ -55,6 +55,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -89,7 +90,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.slf4j.Logger;
@@ -991,10 +991,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Lead Person
         try {
-          leadPerson = projectExpectedStudy.getProject().getLeaderPerson(this.getActualPhase()).getUser()
-            .getComposedNameWithoutEmail();
+          final ProjectPartnerPerson leader =
+            projectExpectedStudy.getProject().getLeaderPerson(this.getActualPhase());
+          if ((leader != null) && (leader.getUser() != null)) {
+            leadPerson = leader.getUser().getComposedNameWithoutEmail();
+          }
         } catch (Exception e) {
-          Log.error("error getting leader " + e);
+          LOG.debug("Could not get the leader of the study project: {}", e.toString());
         }
 
         // Is Alliance Contribution
@@ -1253,7 +1256,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
         } catch (Exception e) {
-          Log.error("Unexpected error while getting Impact Areas", e);
+          LOG.error("Unexpected error while getting Impact Areas", e);
         }
 
         /*
@@ -1801,7 +1804,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                 .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
                   .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
             } catch (final Exception e) {
-              Log.error("Error setting locations " + e);
+              LOG.debug("Could not set the locations of a study center: {}", e.toString());
             }
             final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
               .flatMap(locations -> locations.stream()
@@ -2170,7 +2173,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setSdgAllianceLevers(null);
           }
         } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+          LOG.debug("Could not get the primary alliance lever: {}", e.toString());
         }
 
         // Primary SDG contribution
@@ -2217,7 +2220,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+          LOG.debug("Could not get the primary alliance lever: {}", e.toString());
         }
 
 
@@ -2291,9 +2294,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             + (globalTargetsResult.isEmpty() ? "" : globalTargetsResult);
 
         } catch (final NullPointerException e) {
-          Log.error("NullPointerException while getting Impact Areas", e);
+          LOG.error("NullPointerException while getting Impact Areas", e);
         } catch (final Exception e) {
-          Log.error("Unexpected error while getting Impact Areas", e);
+          LOG.error("Unexpected error while getting Impact Areas", e);
         }
 
         /*
@@ -2519,7 +2522,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
         }
       } catch (final Exception e) {
-        Log.error("error in isAllianceSelected " + e);
+        LOG.debug("Could not check the Alliance center selection: {}", e.toString());
       }
     }
     return false;

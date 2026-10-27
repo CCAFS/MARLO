@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1102,7 +1101,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } catch (Exception e) {
-      Log.error("error getting quantification number");
+      LOG.warn("Could not validate the quantification number: {}", e.toString());
     }
 
     // Validate cero Number
@@ -1114,7 +1113,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
     } catch (Exception e) {
-      Log.error("error getting quantification number");
+      LOG.warn("Could not validate the quantification number: {}", e.toString());
     }
 
     // Validate Unit
