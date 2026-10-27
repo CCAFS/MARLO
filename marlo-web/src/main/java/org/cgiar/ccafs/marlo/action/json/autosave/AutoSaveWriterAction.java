@@ -264,11 +264,11 @@ public class AutoSaveWriterAction extends BaseAction {
         status.put("activeSince", dt.format(generatedDate));
       } catch (IOException e) {
         status.put("status", false);
-        e.printStackTrace();
+        LOG.error("Could not write the autosave file", e);
         file.delete();
       } catch (Exception e) {
         status.put("status", false);
-        e.printStackTrace();
+        LOG.error("Could not write the autosave file", e);
         file.delete();
       }
 

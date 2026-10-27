@@ -721,7 +721,6 @@ public class ProjectsFundingSourcesSummaryAction extends BaseSummariesAction imp
 
     // Get projects with the status defined
     List<Project> activeProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
-    System.out.println("active projects " + activeProjects.size());
     for (Project project : activeProjects) {
       Long projectId = project.getId();
       String projectTitle = project.getProjectInfo().getTitle();

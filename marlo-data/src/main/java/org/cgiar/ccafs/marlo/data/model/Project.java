@@ -34,6 +34,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 */
 import com.google.gson.annotations.Expose;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -44,6 +46,8 @@ import com.google.gson.annotations.Expose;
 @Table(name = "project")
 */
 public class Project extends MarloAuditableEntity implements java.io.Serializable, IAuditLog {
+
+  private static final Logger LOG = LoggerFactory.getLogger(Project.class);
 /* 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -779,8 +783,7 @@ public class Project extends MarloAuditableEntity implements java.io.Serializabl
       }
 
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.warn("Could not get the project leader: {}", e.toString());
     }
     return null;
   }

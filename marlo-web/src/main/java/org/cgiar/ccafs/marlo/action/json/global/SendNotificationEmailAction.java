@@ -227,8 +227,7 @@ public class SendNotificationEmailAction extends BaseAction {
       contentType = "application/pdf";
       //
     } catch (Exception e) {
-      e.printStackTrace();
-      // // Do nothing.
+      LOG.warn("Could not prepare the notification email attachment", e);
     }
 
     if (this.validateEmailNotification()) {

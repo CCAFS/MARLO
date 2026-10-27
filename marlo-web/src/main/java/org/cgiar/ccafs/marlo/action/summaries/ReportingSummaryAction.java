@@ -1395,16 +1395,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       bytesPDF = os.toByteArray();
     } catch (Exception e) {
       if (e.getClass().getName().contains("ClientAbortException")) {
-        System.out.println("Client aborted the connection: " + e.getMessage());
+        LOG.debug("Client aborted the connection: {}", e.toString());
       } else {
-        System.out.println("Exception while generating JSON: " + e.getMessage());
+        // Rethrown and logged where it is handled; this only marks where it happened
+        LOG.debug("Exception while generating the reporting summary JSON: {}", e.toString());
         throw e;
       }
     } finally {
       try {
         os.close();
       } catch (Exception e) {
-        System.out.println("Error closing output stream: " + e.getMessage());
+        LOG.debug("Could not close the output stream: {}", e.toString());
       }
     }
   }
@@ -2914,7 +2915,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          LOG.warn("Could not read the CRP outcomes of a deliverable: {}", e.toString());
         }
 
         // Deliverable Cluster participants
@@ -3941,7 +3942,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
             }
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          LOG.warn("Could not read the CRP outcomes of a deliverable: {}", e.toString());
         }
 
         // Deliverable Cluster participants
@@ -6598,11 +6599,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           imageurl = null;
         }
         if (url != null && url.exists()) {
-          // System.out.println("Project: " + projectHighlight.getProject().getId() + " PH: " +
-          // projectHighlight.getId());
           try {
             imageFile = Image.getInstance(FileManager.readURL(url));
-            // System.out.println("W: " + imageFile.getWidth() + " \nH: " + imageFile.getHeight());
             if (imageFile.getWidth() >= imageFile.getHeight()) {
               imageWidth = pageWidth;
               imageHeigth = imageFile.getHeight() * (((pageWidth * 100) / imageFile.getWidth()) / 100);
@@ -6610,7 +6608,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               imageHeigth = pageHeigth;
               imageWidth = imageFile.getWidth() * (((pageHeigth * 100) / imageFile.getHeight()) / 100);
             }
-            // System.out.println("New W: " + imageWidth + " \nH: " + imageHeigth);
             width = (int) imageWidth;
             heigth = (int) imageHeigth;
             // If successful, process the message
@@ -7732,7 +7729,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       }
       this.bucketName = this.config.getMicroserviceBucketname();
     } catch (final Exception e) {
-      System.out.println("error getting report configuration data " + e);
+      LOG.warn("Could not get the report configuration data", e);
     }
   }
 
@@ -7806,7 +7803,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       String crossCuttingValue = this.buildCrossCuttingSummary();
       jsonData.put("crossCutting", crossCuttingValue);
     } catch (Exception e) {
-      System.out.println("Error setting reporting summary JSON data: " + e.getMessage());
+      LOG.error("Could not set the reporting summary JSON data", e);
     }
     
     // Set PDF options
@@ -7821,14 +7818,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       jsonOptions.put("footer", footerMap);
       jsonOptions.put("timeout", "300000");
     } catch (Exception e) {
-      System.out.println("Error setting jsonOptions: " + e.getMessage());
+      LOG.error("Could not set the reporting summary JSON options", e);
     }
     
     try {
       jsonRoot.put("data", jsonData);
       jsonRoot.put("options", jsonOptions);
     } catch (Exception e) {
-      System.out.println("Error setting jsonRoot info: " + e.getMessage());
+      LOG.error("Could not set the reporting summary JSON root", e);
     }
     
     // Load microservice configuration and cluster template data
@@ -7846,14 +7843,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       jsonRoot.put("bucketName", bucketName);
       jsonRoot.put("templateData", this.clusterReportTemplateData);
     } catch (Exception e) {
-      System.out.println("Error setting report name and bucket: " + e.getMessage());
+      LOG.error("Could not set the reporting summary report name and bucket", e);
     }
     
     String apiKey = null;
     try {
       apiKey = this.config.getMicroserviceApiKey();
     } catch (final Exception e) {
-      System.out.println("Error getting microservice apiKey: " + e);
+      LOG.error("Could not get the microservice API key", e);
     }
 
     try {
@@ -7862,18 +7859,18 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       jsonMainRoot.put("data", jsonRoot);
       jsonMainRoot.put("pattern", "pdf.generate");
     } catch (Exception e) {
-      System.out.println("Error setting jsonRoot and jsonMainRoot information: " + e);
+      LOG.error("Could not set the reporting summary JSON main root", e);
     }
     
     try {
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
       
-      System.out.println("Sending cluster report to microservice: " + reportName);
+      LOG.info("Sending the cluster report {} to the microservice", reportName);
       // Using sendClusterReportQueueMessage for cluster/project summary reports
       this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
       
     } catch (final java.io.IOException e) {
-      System.out.println("Error generating JSON: " + e);
+      LOG.error("Could not generate the reporting summary JSON", e);
     }
     
     return SUCCESS;
@@ -10206,7 +10203,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           .sorted((s1, s2) -> s1.getId().compareTo(s2.getId()))
           .collect(Collectors.toList());
       } catch (Exception e) {
-        e.printStackTrace();
+        LOG.warn("Could not sort the deliverables of the report", e);
         safeList = new ArrayList<>();
       }
       for (Deliverable deliverable : safeList) {
@@ -10218,7 +10215,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           try {
             deliverableData = this.buildDeliverableData(deliverable);
           } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.warn("Could not build the data of a deliverable: {}", ex.toString());
             continue;
           }
           if (deliverableData == null) {
@@ -10232,7 +10229,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
           deliverables.add(deliverableData);
         } catch (Exception exAll) {
-          exAll.printStackTrace();
+          LOG.warn("Could not add a deliverable to the report: {}", exAll.toString());
         }
       }
     }
@@ -10294,8 +10291,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       } else {
       }
     } catch (Exception e) {
-      System.err.println("[buildActivitiesList] ERROR building activities list: " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not build the activities list", e);
     }
 
     return activities;

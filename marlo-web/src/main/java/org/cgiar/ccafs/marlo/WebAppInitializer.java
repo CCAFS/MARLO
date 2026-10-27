@@ -144,8 +144,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     }
     // End Check Spring Profile filters
     } catch (Exception e) {
-      e.printStackTrace();
-      throw new ServletException("Error en WebAppInitializer", e);
+      throw new ServletException("Error in WebAppInitializer", e);
     }
 
   }

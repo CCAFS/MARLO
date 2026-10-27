@@ -378,7 +378,7 @@ public class ProjectPartnersValidator extends BaseValidator {
       }
     } catch (Exception e) {
 
-      e.printStackTrace();
+      LOG.warn("Could not validate a partner person: {}", e.toString());
     }
   }
 

@@ -57,10 +57,14 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParticipantsAction extends BaseAction implements ServletRequestAware {
 
   private static final long serialVersionUID = 1L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(ParticipantsAction.class);
 
 
   private InputStream inputStream;
@@ -187,9 +191,9 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       inputStream = new ByteArrayInputStream(fileOut.toByteArray());
 
     } catch (FileNotFoundException e) {
-      e.printStackTrace();
+      LOG.warn("Could not find the participants template", e);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.warn("Could not read the participants template", e);
     }
 
     return SUCCESS;
@@ -237,7 +241,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
 
     } catch (IOException | EncryptedDocumentException | InvalidFormatException e) {
-      e.printStackTrace();
+      LOG.warn("Could not read the uploaded participants file", e);
     }
 
 
