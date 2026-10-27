@@ -303,7 +303,7 @@ public class StudiesOICR2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.OICR.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting studies list: " + e.getMessage());
+        LOG.error("Error getting studies list", e);
       }
     }
 

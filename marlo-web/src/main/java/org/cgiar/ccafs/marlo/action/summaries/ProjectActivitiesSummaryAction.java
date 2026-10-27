@@ -1727,7 +1727,7 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
-      LOG.error("Failed to get project. Exception: " + e.getMessage());
+      LOG.error("Failed to get project", e);
     }
     if (this.getSelectedPhase() != null && project != null) {
       this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));

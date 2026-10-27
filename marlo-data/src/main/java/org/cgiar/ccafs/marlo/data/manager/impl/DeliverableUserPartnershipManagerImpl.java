@@ -288,7 +288,7 @@ public class DeliverableUserPartnershipManagerImpl implements DeliverableUserPar
 
       } catch (Exception e) {
         // TODO: handle exception
-        logger.error(e.getMessage());
+        logger.error(e.getMessage(), e);
       }
 
       if (userPartnership.getPhase().getDescription().equals(APConstants.PLANNING)

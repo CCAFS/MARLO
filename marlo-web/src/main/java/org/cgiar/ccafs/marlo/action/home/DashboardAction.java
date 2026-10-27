@@ -214,7 +214,7 @@ public class DashboardAction extends BaseAction {
         .comparing(Timeline::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Timeline::getId, Comparator.nullsLast(Comparator.naturalOrder())));
     } catch (Exception e) {
-      LOG.error("unable to load the timeline activities for the Schedule card: " + e.getMessage());
+      LOG.error("unable to load the timeline activities for the Schedule card", e);
       scheduleActivities = new ArrayList<>();
     }
   }

@@ -162,7 +162,7 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
           && d.getShfrmPriorityAction().getId().equals(deliverableShfrmPriorityAction.getShfrmPriorityAction().getId()))
         .collect(Collectors.toList()).get(0);
     } catch (Exception e) {
-      logger.error("error getting deliverableShfrmPriorityActionPhase: " + e);
+      logger.error("error getting deliverableShfrmPriorityActionPhase", e);
     }
 
     try {
@@ -182,7 +182,7 @@ public class DeliverableShfrmPriorityActionManagerImpl implements DeliverableShf
         deliverableShfrmPriorityActionDAO.save(deliverableShfrmPriorityActionAdd);
       }
     } catch (Exception e) {
-      logger.error("error saving replication in  DeliverableShfrmPriorityActionManagerImpl " + e);
+      logger.error("error saving replication in  DeliverableShfrmPriorityActionManagerImpl", e);
     }
     if (phase.getNext() != null) {
       this.saveDeliverableShfrmPriorityActionPhase(phase.getNext(), deliverableId, deliverableShfrmPriorityAction);

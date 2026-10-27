@@ -469,7 +469,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
 
     } catch (Exception e) {
-      LOG.error(" error in validateCommunications function " + e.getMessage());
+      LOG.error("error in validateCommunications function", e);
     }
 
   }
@@ -486,7 +486,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       }
       return false;
     } catch (Exception e) {
-      LOG.error(" error in validateCommunicationsFields function " + e.getMessage());
+      LOG.error("error in validateCommunicationsFields function", e);
       return false;
     }
   }

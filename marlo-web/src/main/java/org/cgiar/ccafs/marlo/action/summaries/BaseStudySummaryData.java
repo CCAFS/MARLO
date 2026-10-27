@@ -682,7 +682,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             try {
               scopeComments = urlShortener.detectAndShortenLinks(scopeComments);
             } catch (Exception e) {
-              LOG.error("Error shortening URL: " + e.getMessage());
+              LOG.error("Error shortening URL", e);
             }
           }
 
@@ -874,7 +874,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
               try {
                 referenceText = urlShortener.detectAndShortenLinks(studiesReference);
               } catch (final Exception e) {
-                LOG.error("Failed to shorten URL: " + e.getMessage());
+                LOG.error("Failed to shorten URL", e);
               }
             } else {
               // If not using short URL, clean the HTML
@@ -882,7 +882,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (final Exception e) {
-          LOG.error("Failed to get new reference information: " + e.getMessage());
+          LOG.error("Failed to get new reference information", e);
         }
 
         // References cited
@@ -899,7 +899,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (final Exception e) {
-          LOG.error("Failed to get reference text: " + e.getMessage());
+          LOG.error("Failed to get reference text", e);
         }
 
         // MELIA publications
@@ -1959,7 +1959,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             referenceText = urlShortener.detectAndShortenLinks(studiesReference);
           }
         } catch (final Exception e) {
-          LOG.error("Failed to get new reference information: " + e.getMessage());
+          LOG.error("Failed to get new reference information", e);
         }
 
         // References cited
@@ -1972,7 +1972,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (final Exception e) {
-          LOG.error("Failed to get reference text: " + e.getMessage());
+          LOG.error("Failed to get reference text", e);
         }
 
         // MELIA publications

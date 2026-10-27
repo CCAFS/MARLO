@@ -924,7 +924,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {
-      LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
+      LOG.warn("Error getting DeliverablePartnership", e);
       return null;
     }
   }

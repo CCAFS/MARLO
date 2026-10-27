@@ -130,7 +130,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
     try {
       projectExpectedStudyInfo.setTag(this.projectExpectedStudyTagManager.getProjectExpectedStudyTagById(1));
     } catch (Exception e) {
-      logger.error("Error getting tag " + e);
+      logger.error("Error getting tag", e);
     }
     // when a project expected study is created, it is assigned by default status 2 = On going
     GeneralStatus status = new GeneralStatus();

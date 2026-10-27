@@ -140,7 +140,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     try {
       feedbackResponse = StringUtils.trim(parameters.get(APConstants.FEEDBACK_RESPONSE).getMultipleValues()[0]);
     } catch (Exception e) {
-      LOG.error("error getting feedback response " + e);
+      LOG.error("error getting feedback response", e);
     }
   }
 
@@ -174,7 +174,7 @@ public class EmailTrackingReactionCommentAction extends BaseAction {
     try {
       projectOutcome = projectOutcomeManager.getProjectOutcomeById(sectionID);
     } catch (Exception e) {
-      LOG.error("error getting project outcome " + e);
+      LOG.error("error getting project outcome", e);
     }
     /*
      * if (projectOutcome != null && projectOutcome.getCrpProgramOutcome() != null

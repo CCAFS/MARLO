@@ -440,7 +440,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
         }
       } catch (RuntimeException e) {
-        LOG.warn("DSpace 8 pid/find API failed for handle '{}': {}", this.getId(), e.getMessage());
+        LOG.warn("DSpace 8 pid/find API failed for handle '{}'", this.getId(), e);
       }
 
       // 2. DSpace 7 fallback: /server/api/core/handles/{handle} → _links.resource.href
@@ -463,7 +463,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
         }
       } catch (RuntimeException e) {
-        LOG.warn("DSpace 7/8 handle API failed for handle '{}': {}", this.getId(), e.getMessage());
+        LOG.warn("DSpace 7/8 handle API failed for handle '{}'", this.getId(), e);
       }
 
       // 3. DSpace 6 legacy fallback: /rest/handle/{handle} → XML UUID
@@ -478,7 +478,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
         }
       } catch (RuntimeException e) {
-        LOG.warn("Legacy DSpace 6 handle resolution also failed for handle '{}': {}", this.getId(), e.getMessage());
+        LOG.warn("Legacy DSpace 6 handle resolution also failed for handle '{}'", this.getId(), e);
       }
     }
 

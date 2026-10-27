@@ -2986,7 +2986,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
     } catch (Exception e) {
-      logger.error(" error in saveCenters function " + e.getMessage());
+      logger.error("error in saveCenters function", e);
     }
 
   }
@@ -3505,7 +3505,7 @@ public class ProjectExpectedStudiesAction extends BaseAction {
 
       }
     } catch (Exception e) {
-      logger.error(" error in saveInstitutions function " + e.getMessage());
+      logger.error("error in saveInstitutions function", e);
     }
   }
 

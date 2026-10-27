@@ -137,7 +137,7 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
         }
       }
     } catch (Exception e) {
-      logger.error("error getting deliverableShfrmPriorityActionPhase in subActionsavePhase: " + e);
+      logger.error("error getting deliverableShfrmPriorityActionPhase in subActionsavePhase", e);
     }
     return deliverableshfrmPriorityActionPhase;
   }
@@ -173,7 +173,7 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
       deliverableShfrmPriorityActionPhase =
         this.findDeliverablePriorityActionByDeliverablePriorityActionAndPhase(deliverableShfrmSubAction, phase);
     } catch (Exception e) {
-      logger.error("error getting deliverable priority action " + e);
+      logger.error("error getting deliverable priority action", e);
     }
 
     try {
@@ -186,7 +186,7 @@ public class DeliverableShfrmSubActionManagerImpl implements DeliverableShfrmSub
         }
       }
     } catch (Exception e) {
-      logger.error("error getting deliverableShfrmSubActionPhase: " + e);
+      logger.error("error getting deliverableShfrmSubActionPhase", e);
     }
 
     if (deliverableShfrmPriorityActionPhase != null) {

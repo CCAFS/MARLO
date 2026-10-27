@@ -3197,7 +3197,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 .collect(Collectors.toList()).get(0);
             }
           } catch (Exception e) {
-            LOG.error("Error getting Deliverable Disseminations: " + e.getMessage());
+            LOG.error("Error getting Deliverable Disseminations", e);
           }
           if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
@@ -4219,7 +4219,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 .collect(Collectors.toList()).get(0);
             }
           } catch (Exception e) {
-            LOG.error("Error getting Deliverable Disseminations: " + e.getMessage());
+            LOG.error("Error getting Deliverable Disseminations", e);
           }
           if (deliverableDissemination != null && deliverableDissemination.getAlreadyDisseminated() != null
             && deliverableDissemination.getAlreadyDisseminated() == true) {
@@ -10797,7 +10797,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
               data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
             }
           } catch (Exception e) {
-            LOG.error("Error getting repository channel for deliverable " + deliverable.getId() + ": " + e);
+            LOG.error("Error getting repository channel for deliverable {}", deliverable.getId(), e);
             data.put("disseminationChannel", this.getSanitizedText(dissemination.getDisseminationChannel()));
           }
         }
@@ -10893,7 +10893,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           handle = this.getSanitizedText(handleElement.getElementValue());
         }
       } catch (Exception e) {
-        LOG.error("Error getting Handle for deliverable " + deliverable.getId() + ": " + e);
+        LOG.error("Error getting Handle for deliverable {}", deliverable.getId(), e);
       }
 
       // Get DOI (metadata element ID 36)
@@ -10907,7 +10907,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           doi = this.getSanitizedText(doiElement.getElementValue());
         }
       } catch (Exception e) {
-        LOG.error("Error getting DOI for deliverable " + deliverable.getId() + ": " + e);
+        LOG.error("Error getting DOI for deliverable {}", deliverable.getId(), e);
       }
 
       // Build metadata elements list (excluding Handle and DOI as they are shown separately)
@@ -11056,7 +11056,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           }
         }
       } catch (Exception e) {
-        LOG.error("Error getting shfrm actions and subactions for deliverable " + deliverable.getId() + ": " + e);
+        LOG.error("Error getting shfrm actions and subactions for deliverable {}", deliverable.getId(), e);
       }
 
       if (!shfrmPriorityActionsList.isEmpty()) {
@@ -11527,7 +11527,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
-      LOG.error("Failed to get project. Exception: " + e.getMessage());
+      LOG.error("Failed to get project", e);
     }
     if (this.getSelectedPhase() != null && project != null
       && project.getProjecInfoPhase(this.getSelectedPhase()) != null) {

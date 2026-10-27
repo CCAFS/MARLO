@@ -138,7 +138,7 @@ public class ProjectInnovationSDGManagerImpl implements ProjectInnovationSDGMana
         projectInnovationSDGDAO.getProjectInnovationSDGByInnovationAndPhase(innovationID, phase.getId()).stream()
           .filter(c -> c.getSdg().getId().equals(projectInnovationSDG.getSdg().getId())).collect(Collectors.toList());
     } catch (Exception e) {
-      logger.error("error getting project InnovationSDGs " + e);
+      logger.error("error getting project InnovationSDGs", e);
     }
     // }
     if (projectInnovationSDGs.isEmpty()) {

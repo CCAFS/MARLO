@@ -1306,7 +1306,7 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
-      LOG.error("Failed to get project. Exception: " + e.getMessage());
+      LOG.error("Failed to get project", e);
     }
     this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
   }

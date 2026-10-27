@@ -60,7 +60,7 @@ public class SubActionsByPriorityAction extends BaseAction {
           && s.getShfrmPriorityAction().getId() != null && s.getShfrmPriorityAction().getId().equals(priorityActionID))
         .collect(Collectors.toList());
     } catch (Exception e) {
-      logger.error("error getting sub actions " + e);
+      logger.error("error getting sub actions", e);
     }
 
     if (shfrmSubActions != null && !shfrmSubActions.isEmpty()) {

@@ -1153,7 +1153,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           } catch (Exception e) {
-            LOG.warn("Error getting isI(Deliverable). Exception: " + e.getMessage());
+            LOG.warn("Error getting isI(Deliverable)", e);
             I += "X";
           }
 
@@ -2235,7 +2235,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           } catch (Exception e) {
-            LOG.warn("Error getting isI(Deliverable). Exception: " + e.getMessage());
+            LOG.warn("Error getting isI(Deliverable)", e);
             I = "X";
           }
 
@@ -2685,7 +2685,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
         .collect(Collectors.toList()).get(0);
       return partnership;
     } catch (Exception e) {
-      LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
+      LOG.warn("Error getting DeliverablePartnership", e);
       return null;
     }
 

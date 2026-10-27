@@ -665,7 +665,7 @@ public class ProjectSummaryAction extends BaseAction implements Summary {
     try {
       project = projectService.getCenterProjectById(projectID);
     } catch (final Exception e) {
-      LOG.error("Failed to get project from Database. Exception: " + e.getMessage());
+      LOG.error("Failed to get project from Database", e);
       throw e;
     }
     // Calculate time to generate report

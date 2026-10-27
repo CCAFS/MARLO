@@ -66,7 +66,7 @@ public class MarloFlywayConfiguration {
       st.executeUpdate("CREATE DATABASE IF NOT EXISTS " + databaseSchema + ";");
       st.close();
     } catch (SQLException e) {
-      log.error("Error " + e.getLocalizedMessage());
+      log.error("Error", e);
     }
 
     flyway.setDataSource(dataSource);

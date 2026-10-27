@@ -821,7 +821,7 @@ public class CrpUsersAction extends BaseAction {
 
               } catch (NoSuchAlgorithmException e) {
                 LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
-                LOG.error(e.getMessage());
+                LOG.error(e.getMessage(), e);
               }
 
               // Add Crp Users

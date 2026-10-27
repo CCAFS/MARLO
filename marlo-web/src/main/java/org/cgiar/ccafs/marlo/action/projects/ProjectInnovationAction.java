@@ -2004,7 +2004,7 @@ public class ProjectInnovationAction extends BaseAction {
           infos = this.deliverableInfoManager.getDeliverablesInfoByPhaseProjectAndStatus(phase, project.getId(), 5L)
               .stream().filter(c -> c != null).collect(Collectors.toList());
         } catch (Exception e) {
-          logger.error(" unable to get deliverable info " + e.getMessage());
+          logger.error("unable to get deliverable info", e);
         }
 
         deliverableList = new ArrayList<>();
