@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.LogSanitizer;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -263,24 +264,19 @@ public class UserSummaryAction extends BaseSummariesAction implements Summary {
               personCoordinators = StringUtils.join(noRepeatPersonCoordinators, ',');
             }
 
-            if (hasResponsabilities) {
-              System.out.println("Global Unit: " + globalUnit.getAcronym());
-              System.out.println("User ID: " + user.getId());
-              System.out.println("Name: " + user.getComposedCompleteName());
-              System.out.println("Email: " + user.getEmail());
-              System.out.println("Last Login (Coordinated Universal Time): " + user.getLastLogin());
-              System.out.println("Role(s): " + roles);
-              System.out.println("Flagship(s) Leader: " + flagshipLeaders);
-              System.out.println("Flagship(s) Manager: " + flagshipManagers);
-              System.out.println("Region(s) Leader: " + regionLeaders);
-              System.out.println("Region(s) Manager: " + regionManagers);
-              System.out.println("Cluster Leader: " + clusterActivityLeaders);
-              System.out.println("Project(s) leader: " + personLeaders);
-              System.out.println("Project(s) coordinator: " + personCoordinators);
+            // This summary is a manual lookup whose only output is this line; it carries personal data, so it is
+            // DEBUG: printed in development and test, never in production
+            if (hasResponsabilities && LOG.isDebugEnabled()) {
+              LOG.debug("Global Unit: {}. User ID: {}. Name: {}. Email: {}. Last Login (UTC): {}."
+                + " Role(s): {}. Flagship(s) Leader: {}. Flagship(s) Manager: {}. Region(s) Leader: {}."
+                + " Region(s) Manager: {}. Cluster Leader: {}. Project(s) leader: {}. Project(s) coordinator: {}",
+                globalUnit.getAcronym(), user.getId(), user.getComposedCompleteName(), user.getEmail(),
+                user.getLastLogin(), roles, flagshipLeaders, flagshipManagers, regionLeaders, regionManagers,
+                clusterActivityLeaders, personLeaders, personCoordinators);
             }
 
           } else {
-            System.out.println("User not found for email " + key);
+            LOG.debug("User not found for email {}", LogSanitizer.sanitizeForLog(key));
           }
 
 
@@ -288,7 +284,7 @@ public class UserSummaryAction extends BaseSummariesAction implements Summary {
       }
 
     } else {
-      System.out.println("No email added");
+      LOG.debug("No email added");
     }
 
 
