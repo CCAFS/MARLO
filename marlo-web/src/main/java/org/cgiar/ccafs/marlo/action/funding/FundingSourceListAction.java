@@ -188,7 +188,9 @@ public class FundingSourceListAction extends BaseAction {
     Integer agreementStatus = this.parseIntegerOrNull(agreementStatusValue);
     if (institutionLeadID == null || agreementStatus == null || budgetTypeID == null || budgetTypeID <= 0) {
       logger.debug("The new funding source request is missing the lead institution, the status or the budget type");
-      return INPUT;
+      // The input result renders the funding source page, which fails without a funding source; a request the form
+      // cannot send gets the not-found page instead
+      return NOT_FOUND;
     }
 
     if (partnerIDs != null) {
@@ -310,9 +312,11 @@ public class FundingSourceListAction extends BaseAction {
 
 
     } else {
-      return ERROR;
+      // Like the input result, the error result renders the funding source page, which fails without a funding
+      // source; a request without a finance code, which the form always sends, gets the not-found page
+      return NOT_FOUND;
     }
-    return INPUT;
+    return NOT_FOUND;
   }
 
 
