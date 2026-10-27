@@ -257,8 +257,13 @@ public class FundingSourceListAction extends BaseAction {
        * }
        */
 
-      if (fundingSourceTemp.getInstitutions() != null) {
+      if (fundingSourceTemp != null && fundingSourceTemp.getInstitutions() != null) {
         for (FundingSourceInstitution partner : fundingSourceTemp.getInstitutions()) {
+          // A gap in the posted list, or a row without an institution, has nothing to link and used to throw after
+          // the funding source was saved; a missing list is treated like an empty one, as before
+          if (partner == null || partner.getInstitution() == null || partner.getInstitution().getId() == null) {
+            continue;
+          }
           if (partner.getId() == null || partner.getId().longValue() == -1 && partner.getInstitution().getId() == null
             || partner.getInstitution().getId().longValue() == -1) {
             FundingSourceInstitution fundingSourceInstitution = new FundingSourceInstitution();

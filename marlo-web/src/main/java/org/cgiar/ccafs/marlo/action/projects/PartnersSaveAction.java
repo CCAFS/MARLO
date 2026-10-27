@@ -49,7 +49,9 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.ExternalPostUtils;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -333,14 +335,23 @@ public class PartnersSaveAction extends BaseAction {
       LOG.info("The request partner section was loaded for the report synthesis {}", synthesisID);
     }
 
-    this.countriesList = locationManager.findAll().stream()
-      .filter(c -> c.isActive() && c.getLocElementType().getId().longValue() == 2).collect(Collectors.toList());
-    this.institutionTypesList =
-      institutionManager.findAll().stream().filter(c -> c.isActive() && !c.getOld()).collect(Collectors.toList());;
-    institutions = institutionsManager.findAll().stream().filter(c -> c.isActive()).collect(Collectors.toList());
+    // findAll() returns null on an empty table, and a row can miss its type or its old flag
+    List<LocElement> allLocations = locationManager.findAll();
+    this.countriesList = allLocations == null ? new ArrayList<>()
+      : allLocations.stream().filter(c -> c != null && c.isActive() && c.getLocElementType() != null
+        && c.getLocElementType().getId() != null && c.getLocElementType().getId().longValue() == 2)
+        .collect(Collectors.toList());
+    List<InstitutionType> allInstitutionTypes = institutionManager.findAll();
+    this.institutionTypesList = allInstitutionTypes == null ? new ArrayList<>()
+      : allInstitutionTypes.stream().filter(c -> c != null && c.isActive() && !Boolean.TRUE.equals(c.getOld()))
+        .collect(Collectors.toList());
+    List<Institution> allInstitutions = institutionsManager.findAll();
+    institutions = allInstitutions == null ? new ArrayList<>()
+      : allInstitutions.stream().filter(c -> c != null && c.isActive()).collect(Collectors.toList());
 
-    institutions.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
-    countriesList.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
+    // Same order as before; a missing name sorts last instead of throwing
+    institutions.sort(Comparator.comparing(Institution::getName, Comparator.nullsLast(Comparator.naturalOrder())));
+    countriesList.sort(Comparator.comparing(LocElement::getName, Comparator.nullsLast(Comparator.naturalOrder())));
     // Get loggerCrp
     try {
       loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);

@@ -1787,11 +1787,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         }
         // Centers(s)
         final List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudy.getProjectExpectedStudyCenters()
-          .stream().filter(c -> c.isActive() && (c.getPhase() != null) && c.getPhase().equals(this.getSelectedPhase()))
+          .stream().filter(c -> (c != null) && c.isActive() && (c.getPhase() != null)
+            && c.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList());
         if ((studyCenters != null) && !studyCenters.isEmpty()) {
           final Set<String> centersSet = new HashSet<>();
           for (final ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
+            // A center without an institution has nothing to list, and reading it outside any try stopped the report
+            if (projectExpectedStudyCenter.getInstitution() == null) {
+              continue;
+            }
 
             final String institutionType =
               Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getInstitutionType())
@@ -1804,7 +1809,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
             final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
               .flatMap(locations -> locations.stream()
-                .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
+                .filter(location -> (location != null) && location.isHeadquater() && (location.getLocElement() != null)
                   && (location.getLocElement().getName() != null))
                 .map(location -> " | headquarter: " + location.getLocElement().getName()).findFirst())
               .orElse("");
