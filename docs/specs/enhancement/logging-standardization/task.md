@@ -215,6 +215,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T08 — JSON appender
 
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`): `FILE-JSON` writes one JSON
+  object per line behind `log.json`, and `MarloMdcJsonProvider` types the numbers and gates the personal data. Reviewer
+  PASS on attempt 1; see `execution.md`.
 - **Depends on:** T04, T05, T06, T07
 - **Module:** marlo-web, repository root
 - **Files touched:**

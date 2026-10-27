@@ -16,6 +16,8 @@
 		<org.springframework-version>5.3.39</org.springframework-version>
 		<junit.version>4.13.2</junit.version>
 		<logback-classic.version>1.2.13</logback-classic.version>
+		<!-- 6.6 is the last release for logback 1.2 and SLF4J 1.7: 7.x requires logback 1.3+ (ENH-LOGGING-STANDARDIZATION-001, ADR-4) -->
+		<logstash-logback-encoder.version>6.6</logstash-logback-encoder.version>
 		<janino.version>2.7.8</janino.version>
 		<javax.inject.version>1</javax.inject.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
@@ -329,6 +331,11 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback-classic.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.logstash.logback</groupId>
+				<artifactId>logstash-logback-encoder</artifactId>
+				<version>${logstash-logback-encoder.version}</version>
 			</dependency>
 			<!-- This dependency allows conditions in logger configuration -->
 			<!-- Spring dependencies -->

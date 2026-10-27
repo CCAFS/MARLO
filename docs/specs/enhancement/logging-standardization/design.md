@@ -251,9 +251,11 @@ NestJS console format MARLO does not produce; the same fields are carried by the
 
 ### Appender
 
-`FILE-JSON`, a `RollingFileAppender` with `LogstashEncoder`, writing
+`FILE-JSON`, a `RollingFileAppender` with `LoggingEventCompositeJsonEncoder`, writing
 `${log.folder}/marlo-json-${log.instance}.log` with a `TimeBasedRollingPolicy` and 30-day history — the same
-shape as the four existing appenders. Wired into the existing conditional `<root>` block behind a new
+shape as the four existing appenders. The composite encoder is the one with the `<providers>` block NF-004 needs.
+`LogstashEncoder` must not replace it: it writes every MDC entry by default, so `user_name` and `user_email` would
+reach every line and break SEC-001 (corrected during T08, 2026-10-27). Wired into the existing conditional `<root>` block behind a new
 `log.json` property (OPS-002). The four text appenders and their pattern
 `%d{yyyy-MM-dd_HH:mm:ss.SSS} - [%thread]%logger{0} [%-5level]: %msg%n` are untouched (NF-001).
 
