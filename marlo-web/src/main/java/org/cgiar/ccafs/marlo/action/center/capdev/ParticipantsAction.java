@@ -88,16 +88,16 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
 
   /*
-   * Este metodo permite crear cada lista de datos que se mostraran en los drop down list
-   * @ wb template de la lista de participantes
-   * @ sheet hoja en la que se desea cargar la data para crear el data validator
-   * @ dataValidationName nombre que se le desea dar al data validator
+   * This method creates each data list shown in the drop-down lists
+   * @ wb template of the participants list
+   * @ sheet sheet where the data for the data validator is loaded
+   * @ dataValidationName name given to the data validator
    */
   public void createDataValidator(Workbook wb, Sheet sheet, String[] data, String dataValidationName) {
     String reference = null;
 
     /*
-     * se escriben las listas con los datos en cada sheet deseada
+     * the data lists are written to each target sheet
      */
     for (int i = 0; i < data.length; i++) {
       final Row fila = sheet.createRow(i);
@@ -105,12 +105,12 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       celda.setCellValue(data[i]);
     }
 
-    // se protege el sheet para evitar que el usuario lo modifique
+    // the sheet is protected so that the user cannot modify it
     sheet.protectSheet("marlo-ciat");
 
 
     /*
-     * se crea referencia la lista de datos con el que se creara el data validator
+     * a reference is created to the data list the data validator is built from
      */
     final Name namedCountry = wb.createName();
     namedCountry.setNameName(dataValidationName);
@@ -142,14 +142,14 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
       String dataValidationCountryName = "countriesLis";
 
 
-      // se traen los datos desde la DB con los que se desean crear las listas para los data validator y se rellenan los
-      // arreglos que permitaran escribir los datos en el template
+      // the data for the data validator lists is read from the DB and fills the
+      // arrays used to write the data into the template
       List<LocElement> countryList = new ArrayList<>(locElementService.findAll().stream()
         .filter(le -> le.isActive() && (le.getLocElementType() != null) && (le.getLocElementType().getId() == 2))
         .collect(Collectors.toList()));
       Collections.sort(countryList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-      // arreglo usado para escribir la data de countries al template
+      // array used to write the countries data into the template
       String[] countries = new String[countryList.size()];
       for (int i = 0; i < countryList.size(); i++) {
         countries[i] = countryList.get(i).getName() + " - " + countryList.get(i).getIsoAlpha2();
@@ -159,7 +159,7 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
         capdevHighestDegreeService.findAll().stream().filter(h -> h.getName() != null).collect(Collectors.toList()));
       Collections.sort(highestDegreeList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
 
-      // arreglo usado para escribir la data de highest degree al template
+      // array used to write the highest degree data into the template
       String[] highestDegree = new String[highestDegreeList.size()];
       for (int i = 0; i < highestDegreeList.size(); i++) {
         highestDegree[i] = highestDegreeList.get(i).getId() + "- " + highestDegreeList.get(i).getName() + " ("
@@ -169,19 +169,19 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
       validationHelper = sheet1.getDataValidationHelper();
 
-      // se configuran las coordenas donde se desea pegar el data validator en la sheet1 del template
+      // the coordinates where the data validator is pasted in sheet1 of the template
       CellRangeAddressList addressListCountry = new CellRangeAddressList(10, 1000, 3, 3);
       CellRangeAddressList addressListHighestDegree = new CellRangeAddressList(10, 1000, 4, 4);
 
-      // se crean cada uno de los data validator
+      // each data validator is created
       this.createDataValidator(wb, sheet2, countries, dataValidationCountryName);
 
 
-      // se configuran y pegan cada uno de los data validator
+      // each data validator is configured and pasted
       DataValidation dataValidationCountry =
         this.setDataValidator(dataValidationCountryName, validationHelper, addressListCountry, constraintCountries);
 
-      // set de cada data davilidator al sheet1 del template
+      // each data validator is set on sheet1 of the template
       sheet1.addValidationData(dataValidationCountry);
 
       ByteArrayOutputStream fileOut = new ByteArrayOutputStream();
@@ -221,8 +221,8 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
 
   /*
-   * Este metodo hace la carga previa del archivo de participantes,
-   * antes de enviar el formulario completo
+   * This method preloads the participants file,
+   * before the whole form is submitted
    */
   public String preLoadExcelFile() {
     request = ServletActionContext.getRequest();
@@ -250,9 +250,9 @@ public class ParticipantsAction extends BaseAction implements ServletRequestAwar
 
 
   /*
-   * Este metodo permite configurar el data validador
-   * @dataValidationName nombre que se le dara al data validator
-   * @addressList coordenadas para aplicar el data validator
+   * This method configures the data validator
+   * @dataValidationName name given to the data validator
+   * @addressList coordinates where the data validator is applied
    */
   public DataValidation setDataValidator(String dataValidationName, DataValidationHelper validationHelper,
     CellRangeAddressList addressList, DataValidationConstraint constraint) {
