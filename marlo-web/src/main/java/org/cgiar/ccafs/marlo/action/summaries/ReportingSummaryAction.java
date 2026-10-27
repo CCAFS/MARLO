@@ -1385,9 +1385,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
   } else {
     // Specificity false - use microservice for report generation
     try {
