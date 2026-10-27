@@ -47,7 +47,6 @@ import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -581,7 +580,7 @@ public class PartnersSaveAction extends BaseAction {
         + "] - function [sendPartnerRequest] - variable [response] " + response);
     } catch (Exception e) {
       postFailed = true;
-      java.util.logging.Logger.getLogger(PartnersSaveAction.class.getName()).log(Level.SEVERE, null, e);
+      LOG.error("Could not send the partner request to CLARISA", e);
     }
 
   }
