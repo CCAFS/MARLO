@@ -3219,7 +3219,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (deliverableDissemination != null && deliverableDissemination.getConfidentialUrl() != null
             && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
             delivConfidentialUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
-            System.out.println("confidential " + delivConfidentialUrl);
           }
           if (deliverableDissemination != null && deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
@@ -4242,7 +4241,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (deliverableDissemination != null && deliverableDissemination.getConfidentialUrl() != null
             && !deliverableDissemination.getConfidentialUrl().isEmpty()) {
             delivConfidentialUrl = deliverableDissemination.getConfidentialUrl().replace(" ", "%20");
-            System.out.println("confidential " + delivConfidentialUrl);
           }
           if (deliverableDissemination != null && deliverableDissemination.getIsOpenAccess() != null) {
             if (deliverableDissemination.getIsOpenAccess() == true) {
@@ -8228,10 +8226,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         if (locElement != null && locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
           String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
           locationData.put("isoAlpha2", isoAlpha2);
-          String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
-          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
-        } else {
-          System.out.println("[buildPartnerLocations] Country Flag - Name: " + (locElement != null && locElement.getName() != null ? locElement.getName() : "N/A") + ", ISO Alpha2: NULL or empty - Flag URL not generated");
         }
         locationData.put("city",
           institutionLocation != null ? institutionLocation.getCity() : null);
@@ -8835,10 +8829,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (c.getLocElement().getIsoAlpha2() != null && !c.getLocElement().getIsoAlpha2().trim().isEmpty()) {
             String isoAlpha2 = c.getLocElement().getIsoAlpha2().toLowerCase();
             countryData.put("isoAlpha2", isoAlpha2);
-            String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
-            System.out.println("[buildOICRData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
-          } else {
-            System.out.println("[buildOICRData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
           }
           return countryData;
         })
@@ -9558,10 +9548,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
                 if (locElement.getIsoAlpha2() != null && !locElement.getIsoAlpha2().trim().isEmpty()) {
                   String isoAlpha2 = locElement.getIsoAlpha2().toLowerCase();
                   countryData.put("isoAlpha2", isoAlpha2);
-                  String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
-                  System.out.println("[buildInnovationData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
-                } else {
-                  System.out.println("[buildInnovationData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
                 }
                 countries.add(countryData);
               }
@@ -10518,10 +10504,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
           if (l.getLocElement().getIsoAlpha2() != null && !l.getLocElement().getIsoAlpha2().trim().isEmpty()) {
             String isoAlpha2 = l.getLocElement().getIsoAlpha2().toLowerCase();
             countryData.put("isoAlpha2", isoAlpha2);
-            String flagUrl = "https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/flags/" + isoAlpha2 + ".svg";
-            System.out.println("[buildDeliverableData] Country Flag - Name: " + countryName + ", ISO Alpha2: " + isoAlpha2 + ", Flag URL: " + flagUrl);
-          } else {
-            System.out.println("[buildDeliverableData] Country Flag - Name: " + countryName + ", ISO Alpha2: NULL or empty - Flag URL not generated");
           }
           return countryData;
         })
