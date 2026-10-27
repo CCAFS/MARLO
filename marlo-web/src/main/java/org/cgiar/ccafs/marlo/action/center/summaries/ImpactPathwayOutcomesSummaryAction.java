@@ -355,8 +355,12 @@ public class ImpactPathwayOutcomesSummaryAction extends BaseAction implements Su
     try {
       programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       researchProgram = programService.getProgramById(programID);
+    } catch (NumberFormatException e) {
+      // A missing or non-numeric program id is a bad request; the exception is not logged because its message
+      // repeats the value the request sent
+      LOG.warn("The {} parameter is missing or not a number", APConstants.CRP_PROGRAM_ID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.CRP_PROGRAM_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the research program {}", programID, e);
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();

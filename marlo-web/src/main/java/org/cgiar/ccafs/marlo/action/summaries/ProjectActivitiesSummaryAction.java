@@ -1719,9 +1719,9 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       this.setCrpSession(this.getLoggedCrp().getAcronym());
     } catch (NumberFormatException e) {
       // A missing or non-numeric projectID is a bad request, not a failure: execute() answers it as not found
-      LOG.warn("The {} parameter is missing or not a number: {}", APConstants.PROJECT_REQUEST_ID, e.getMessage());
+      LOG.warn("The {} parameter is missing or not a number", APConstants.PROJECT_REQUEST_ID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the CRP of the project {}", this.getProjectID(), e);
     }
     // Get project from DB
     try {

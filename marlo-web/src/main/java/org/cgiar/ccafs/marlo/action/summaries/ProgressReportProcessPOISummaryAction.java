@@ -772,7 +772,7 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
         projects.add(project);
 
       } catch (Exception e) {
-        LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+        LOG.error("Failed to add the project to the report", e);
         showAllYears = "false";
 
       }
@@ -1642,8 +1642,13 @@ public class ProgressReportProcessPOISummaryAction extends BaseSummariesAction i
       Map<String, Parameter> parameters = this.getParameters();
       showAllYears = StringUtils.trim(parameters.get(APConstants.SUMMARY_DELIVERABLE_ALL_YEARS).getMultipleValues()[0]);
 
+    } catch (NumberFormatException e) {
+      // A missing or non-numeric projectID is a bad request; the exception is not logged because its message repeats
+      // the value the request sent
+      LOG.warn("The {} parameter is missing or not a number", APConstants.PROJECT_REQUEST_ID);
+      showAllYears = "false";
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the CRP of the project {}", this.getProjectID(), e);
       showAllYears = "false";
 
     }
