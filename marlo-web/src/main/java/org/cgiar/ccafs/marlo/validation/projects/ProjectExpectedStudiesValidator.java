@@ -1086,8 +1086,10 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
     // Validate Type of Quantification
+    // A type that arrives without an id is as empty as the -1 placeholder; comparing a null id with -1 threw
     if (projectExpectedStudyQuantification.getQuantificationType() != null
-      && projectExpectedStudyQuantification.getQuantificationType().getId() == -1) {
+      && (projectExpectedStudyQuantification.getQuantificationType().getId() == null
+        || projectExpectedStudyQuantification.getQuantificationType().getId() == -1)) {
       action.addMessage(this.getTextCustom(action, "Type Quantification"));
       action.getInvalidFields().put("input-expectedStudy.quantifications[" + i + "].quantificationType.id",
         InvalidFieldsMessages.EMPTYFIELD);
