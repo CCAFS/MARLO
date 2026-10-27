@@ -258,13 +258,12 @@ public class PartnersSaveAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     super.prepare();
-    String userEmail = this.getCurrentUser() != null ? this.getCurrentUser().getEmail() : null;
     // Take the project id only the first time the page loads
     int requestProjectID = readRequestId(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID));
     if (requestProjectID != 0) {
       projectID = requestProjectID;
       pageRequestName = "projects";
-      LOG.info("The user {} load the request partner section related to the project {}.", userEmail, projectID);
+      LOG.info("The request partner section was loaded for the project {}", projectID);
     }
 
     // Take the fundingSource id only the first time the page loads
@@ -272,8 +271,7 @@ public class PartnersSaveAction extends BaseAction {
     if (requestFundingSourceID != 0) {
       fundingSourceID = requestFundingSourceID;
       pageRequestName = "fundingSources";
-      LOG.info("The user {} load the request partner section related to the funding source {}.",
-        userEmail, fundingSourceID);
+      LOG.info("The request partner section was loaded for the funding source {}", fundingSourceID);
     }
 
     // Take the Expected Study id only the first time the page loads
@@ -281,7 +279,7 @@ public class PartnersSaveAction extends BaseAction {
     if (requestExpectedID != 0) {
       expectedID = requestExpectedID;
       pageRequestName = "studies";
-      LOG.info("The user {} load the request partner section related to the Study {}.", userEmail, expectedID);
+      LOG.info("The request partner section was loaded for the study {}", expectedID);
     }
 
     // Take the CapDev id only the first time the page loads
@@ -289,7 +287,7 @@ public class PartnersSaveAction extends BaseAction {
     if (requestCapdevID != 0) {
       capdevID = requestCapdevID;
       pageRequestName = "capdev";
-      LOG.info("The user {} load the request partner section related to the Capdev {}.", userEmail, capdevID);
+      LOG.info("The request partner section was loaded for the CapDev {}", capdevID);
     }
 
     // Take the POWB Synthesis id only the first time the page loads
@@ -297,8 +295,7 @@ public class PartnersSaveAction extends BaseAction {
     if (requestPowbSynthesisID != 0) {
       powbSynthesisID = requestPowbSynthesisID;
       pageRequestName = "powbSynthesis";
-      LOG.info("The user {} load the request partner section related to the powbSynthesis {}.",
-        userEmail, powbSynthesisID);
+      LOG.info("The request partner section was loaded for the POWB synthesis {}", powbSynthesisID);
     }
 
     // Take the AR Synthesis id only the first time the page loads
@@ -306,8 +303,7 @@ public class PartnersSaveAction extends BaseAction {
     if (requestSynthesisID != 0) {
       synthesisID = requestSynthesisID;
       pageRequestName = "reportSynthesis";
-      LOG.info("The user {} load the request partner section related to the reportSynthesis {}.",
-        userEmail, synthesisID);
+      LOG.info("The request partner section was loaded for the report synthesis {}", synthesisID);
     }
 
     this.countriesList = locationManager.findAll().stream()
@@ -512,12 +508,10 @@ public class PartnersSaveAction extends BaseAction {
     messageSent = true;
 
     if (projectID != 0) {
-      LOG.info("The user {} send a message requesting add partners to the project {}", this.getCurrentUser().getEmail(),
-        projectID);
+      LOG.info("A partner request was sent for the project {}", projectID);
     }
     if (fundingSourceID != 0) {
-      LOG.info("The user {} send a message requesting add partners to the funding source {}",
-        this.getCurrentUser().getEmail(), fundingSourceID);
+      LOG.info("A partner request was sent for the funding source {}", fundingSourceID);
     }
 
     if (postFailed) {
@@ -572,12 +566,16 @@ public class PartnersSaveAction extends BaseAction {
       httpPost.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(epu.getUsername(), epu.getPassword()),
         "UTF-8", false));
 
-      CloseableHttpClient httpClient = HttpClients.createDefault();
-
-      CloseableHttpResponse response = httpClient.execute(httpPost);
-
-      LOG.info(" Class [" + PartnersSaveAction.class.getName()
-        + "] - function [sendPartnerRequest] - variable [response] " + response);
+      // Closing the response and the client releases the connection; only the status is logged, never the headers
+      try (CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = httpClient.execute(httpPost)) {
+        int statusCode = response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : -1;
+        if (statusCode >= 200 && statusCode < 300) {
+          LOG.info("CLARISA accepted the partner request with status {}", statusCode);
+        } else {
+          LOG.warn("CLARISA did not accept the partner request, status {}", statusCode);
+        }
+      }
     } catch (Exception e) {
       postFailed = true;
       LOG.error("Could not send the partner request to CLARISA", e);
