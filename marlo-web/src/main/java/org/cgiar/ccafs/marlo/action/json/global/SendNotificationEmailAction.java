@@ -94,7 +94,7 @@ public class SendNotificationEmailAction extends BaseAction {
       try {
         project = projectManager.getProjectById(Long.parseLong(projectID));
       } catch (NumberFormatException e) {
-        LOG.warn("Unable to send notification email: invalid projectID={}", projectID);
+        LOG.warn("Unable to send notification email: the project id is not a number");
         return SUCCESS;
       }
     }
@@ -265,10 +265,21 @@ public class SendNotificationEmailAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     Map<String, Parameter> parameters = this.getParameters();
-    type = Integer.parseInt(StringUtils.trim(parameters.get("type").getMultipleValues()[0]));
+    try {
+      type = Integer.parseInt(StringUtils.trim(parameters.get("type").getMultipleValues()[0]));
+    } catch (Exception e) {
+      LOG.debug("No valid type parameter in the notification email request");
+    }
 
+    // The project id is the only parameter execute() needs, so the optional ones below cannot cancel it
     try {
       projectID = StringUtils.trim(parameters.get(APConstants.PROJECT_ID).getMultipleValues()[0]);
+    } catch (Exception e) {
+      projectID = null;
+      LOG.warn("Could not read the project id of the notification email: {}", e.getClass().getSimpleName());
+    }
+
+    try {
       commentID = StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST_ID).getMultipleValues()[0]);
       sectionName = StringUtils.trim(parameters.get(APConstants.SECTION_NAME).getMultipleValues()[0]);
       commentText = StringUtils.trim(parameters.get(APConstants.COMMENT_REQUEST).getMultipleValues()[0]);
@@ -278,8 +289,7 @@ public class SendNotificationEmailAction extends BaseAction {
       userEmail = StringUtils.trim(parameters.get(APConstants.USER_EMAIL).getMultipleValues()[0]);
       sentTo = StringUtils.trim(parameters.get(APConstants.OUTLOOK_EMAIL).getMultipleValues()[0]);
     } catch (Exception e) {
-      projectID = null;
-      LOG.warn("Could not read the notification email parameters: {}", e.getClass().getSimpleName());
+      LOG.debug("Could not read the optional notification email parameters: {}", e.getClass().getSimpleName());
     }
   }
 
