@@ -362,15 +362,13 @@ public class ClusterActivitiesAction extends BaseAction {
           buffer = readFully(inputStream);
         }
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("Could not read the user manual {} attached to the new user email", fileName, e);
       } finally {
         if (inputStream != null) {
           try {
             inputStream.close();
           } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.warn("Could not close the user manual stream", e);
           }
         }
       }
@@ -739,8 +737,7 @@ public class ClusterActivitiesAction extends BaseAction {
               }
             }
           } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.warn("Could not load the key outputs of a cluster of activities: {}", e.toString());
           }
 
 

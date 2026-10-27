@@ -258,9 +258,8 @@ public class ProjectsFundingSourcesSummaryAction extends BaseSummariesAction imp
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
     return SUCCESS;
 
   }
@@ -722,7 +721,6 @@ public class ProjectsFundingSourcesSummaryAction extends BaseSummariesAction imp
 
     // Get projects with the status defined
     List<Project> activeProjects = this.getActiveProjectsByPhase(this.getSelectedPhase(), 0, statuses);
-    System.out.println("active projects " + activeProjects.size());
     for (Project project : activeProjects) {
       Long projectId = project.getId();
       String projectTitle = project.getProjectInfo().getTitle();
@@ -1234,9 +1232,8 @@ public class ProjectsFundingSourcesSummaryAction extends BaseSummariesAction imp
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
   }
 
   public void setShowSheet3(Boolean showSheet3) {

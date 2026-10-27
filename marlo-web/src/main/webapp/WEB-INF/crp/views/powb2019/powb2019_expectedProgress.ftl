@@ -273,7 +273,7 @@
                     [#if (contribution.expectedUnit.name??)!false]${(contribution.expectedValue)!}[#else]<i>N/A</i>[/#if]
                   </td>
                   [/#if]
-                  <td> ${contribution.narrativeTarget?replace('\n', '<br>')} </td>
+                  <td> ${(contribution.narrativeTarget!'')?replace('\n', '<br>')} </td>
                   <td> <a href="${poURL}" target="_blank"><span class="glyphicon glyphicon-new-window"></span></a>  </td>
                 </tr>
               [/#list]

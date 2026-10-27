@@ -565,7 +565,6 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       && rl.getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()).collect(Collectors.toList());
     Collections.sort(researchPrograms, (r1, r2) -> r1.getName().compareTo(r2.getName()));
 
-    System.out.println(researchPrograms.size() + " research program size");
 
 
     participantList = new ArrayList<>();
@@ -819,7 +818,7 @@ public class CapacityDevelopmentDetailAction extends BaseAction {
       this.saveParticipant(capdev.getParticipant());
 
       if (capdevParicipantService.findAll() != null) {
-        // verifica si la capdev tiene algun participante registrado, sino registra el capdevParticipant
+        // checks whether the capdev has a registered participant; if not, it registers the capdevParticipant
         List<CapdevParticipant> participants = capdevParicipantService.findAll().stream()
           .filter(p -> p.isActive() && (p.getCapacityDevelopment().getId() == capdevID)).collect(Collectors.toList());
         if (participants != null) {

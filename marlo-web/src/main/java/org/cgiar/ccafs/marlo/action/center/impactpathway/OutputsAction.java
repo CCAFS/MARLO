@@ -60,6 +60,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -70,6 +72,8 @@ public class OutputsAction extends BaseAction {
 
 
   private static final long serialVersionUID = 4999336618747960173L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(OutputsAction.class);
 
 
   // Services - Managers
@@ -279,7 +283,7 @@ public class OutputsAction extends BaseAction {
     try {
       outputID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTPUT_ID)));
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.debug("No valid output id parameter in the request");
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {

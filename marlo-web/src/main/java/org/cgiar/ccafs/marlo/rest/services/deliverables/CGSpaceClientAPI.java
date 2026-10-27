@@ -512,7 +512,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
    * Tries to extract a DOI from various keys/values and stores it in the JSON object.
    * It saves the DOI in two ways:
    * - "doiPlain": only the 10.xxxx/... part (useful for internal use)
-   * - "doi": always as a full URL https://doi.org/10.xxxx/... (esto activa setDoi(...) para enriquecer)
+   * - "doi": always as a full URL https://doi.org/10.xxxx/... (this triggers setDoi(...) to enrich the metadata)
    */
   private void trySetDoi(String key, String value, JSONObject jo) {
     if (StringUtils.isBlank(value)) {

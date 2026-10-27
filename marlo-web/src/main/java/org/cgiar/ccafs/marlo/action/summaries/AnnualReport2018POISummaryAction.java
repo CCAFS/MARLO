@@ -1155,7 +1155,7 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
       poiSummary.textTable(document, headers, datas, true, "table13AnnualReport2018");
     } catch (Exception e) {
-      System.out.println(e);
+      LOG.error("Could not build table 13 of the annual report", e);
     }
   }
 
@@ -1552,7 +1552,6 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     if (flagships != null && !flagships.isEmpty()) {
       flagships.sort((p1, p2) -> p1.getAcronym().compareTo(p2.getAcronym()));
       for (CrpProgram flagship : flagships) {
-        System.out.println(flagship.getAcronym());
 
         int outcome_index = 0;
         if (flagship.getOutcomes() != null) {
@@ -3105,9 +3104,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
     return SUCCESS;
   }
 
@@ -3667,9 +3665,8 @@ public class AnnualReport2018POISummaryAction extends BaseSummariesAction implem
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
   }
 
   public void setInputStream(InputStream inputStream) {

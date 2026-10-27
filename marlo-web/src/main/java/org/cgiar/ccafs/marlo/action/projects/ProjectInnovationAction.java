@@ -2918,7 +2918,6 @@ public class ProjectInnovationAction extends BaseAction {
              * }
              */
 
-            System.out.println("IMPR innovationActorSave ID: " + innovationActorSave.getId());
 
             innovationActorSave.setWomenYouth(innovationActor.getWomenYouth());
             innovationActorSave.setWomenNotYouth(innovationActor.getWomenNotYouth());

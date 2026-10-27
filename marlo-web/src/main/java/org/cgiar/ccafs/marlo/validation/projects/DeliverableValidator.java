@@ -64,7 +64,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -593,7 +592,7 @@ public class DeliverableValidator extends BaseValidator {
                         indicator.getCrpProgramOutcome().setAcronym(outcome.getAcronym());
                       }
                     } catch (Exception e) {
-                      Log.error("error getting crp program outcome " + e);
+                      LOG.warn("Could not get the CRP program outcome of a deliverable indicator: {}", e.toString());
                     }
                   }
                   if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null

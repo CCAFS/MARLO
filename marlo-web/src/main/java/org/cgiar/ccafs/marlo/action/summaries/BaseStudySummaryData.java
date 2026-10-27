@@ -27,7 +27,6 @@ import org.cgiar.ccafs.marlo.data.manager.ReportConfigurationManager;
 import org.cgiar.ccafs.marlo.data.model.ExpectedStudyProject;
 import org.cgiar.ccafs.marlo.data.model.ImpactArea;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Phase;
@@ -55,14 +54,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyRegion;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySdgAllianceLever;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySrfTarget;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudySubIdo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -89,7 +87,6 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import org.jfree.util.Log;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.slf4j.Logger;
@@ -599,7 +596,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
                     }
                   }
                 } catch (Exception e) {
-                  System.out.println("Error setting locations: " + e);
+                  LOG.warn("Could not set the locations of a study partner: {}", e.toString());
                 }
 
                 String headquarter = Optional.ofNullable(institution.getLocations()).flatMap(locations -> locations
@@ -620,7 +617,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             studyCenters = null;
           }
         } catch (Exception e) {
-          System.out.println("Error generating centers JSON: " + e.getMessage());
+          LOG.warn("Could not generate the centers JSON: {}", e.toString());
         }
 
         // Expected Study Center List
@@ -669,7 +666,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (Exception e) {
-          System.out.println("Error generating expected study centers JSON: " + e.getMessage());
+          LOG.warn("Could not generate the expected study centers JSON: {}", e.toString());
         }
 
         // Geographic Scope comment
@@ -767,7 +764,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             final String institutionsJson = objectMapper.writeValueAsString(institutionList);
             institutions = institutionsJson;
           } catch (final JsonProcessingException e) {
-            e.printStackTrace();
+            LOG.warn("Could not serialize the study institutions", e);
           }
         }
         // cgiarInnovations
@@ -819,7 +816,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         try {
           cgiarInnovations = objectMapper.writeValueAsString(innovationList);
         } catch (JsonProcessingException e) {
-          e.printStackTrace();
+          LOG.warn("Could not serialize the CGIAR innovations", e);
         }
 
         // otherCrossCuttingSelection
@@ -868,7 +865,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             try {
               studiesReference = objectMapper.writeValueAsString(referenceList);
             } catch (final JsonProcessingException e) {
-              e.printStackTrace();
+              LOG.warn("Could not serialize the study references", e);
             }
             /*
              * Get short url calling tinyURL service
@@ -977,7 +974,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
 
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.warn("Could not read the quantifications of a study: {}", e.toString());
           }
         }
 
@@ -991,10 +988,13 @@ public class BaseStudySummaryData extends BaseSummariesAction {
 
         // Lead Person
         try {
-          leadPerson = projectExpectedStudy.getProject().getLeaderPerson(this.getActualPhase()).getUser()
-            .getComposedNameWithoutEmail();
+          final ProjectPartnerPerson leader =
+            projectExpectedStudy.getProject().getLeaderPerson(this.getActualPhase());
+          if ((leader != null) && (leader.getUser() != null)) {
+            leadPerson = leader.getUser().getComposedNameWithoutEmail();
+          }
         } catch (Exception e) {
-          Log.error("error getting leader " + e);
+          LOG.debug("Could not get the leader of the study project: {}", e.toString());
         }
 
         // Is Alliance Contribution
@@ -1062,7 +1062,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           objectMapper = new ObjectMapper();
           performanceIndicator = objectMapper.writeValueAsString(crpOutcomeList);
         } catch (Exception e) {
-          System.out.println("Error getting performance indicators: " + e.getMessage());
+          LOG.warn("Could not get the performance indicators: {}", e.toString());
         }
 
 
@@ -1186,7 +1186,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (Exception e) {
-          System.out.println("Error processing SDG Alliance Levers: " + e);
+          LOG.warn("Could not process the SDG alliance levers: {}", e.toString());
         }
 
 
@@ -1253,7 +1253,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
 
         } catch (Exception e) {
-          Log.error("Unexpected error while getting Impact Areas", e);
+          LOG.error("Unexpected error while getting Impact Areas", e);
         }
 
         /*
@@ -1282,7 +1282,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           links = objectMapper.writeValueAsString(shortLinks);
 
         } catch (Exception e) {
-          System.out.println("Error processing links: " + e.getMessage());
+          LOG.warn("Could not process the links: {}", e.toString());
         }
 
         // Expected Study Publications List
@@ -1316,7 +1316,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             publications.append("").append(publicationsJson);
 
           } catch (Exception e) {
-            e.printStackTrace();
+            LOG.warn("Could not serialize the publications", e);
           }
         }
 
@@ -1347,7 +1347,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (Exception e) {
-          System.out.println("error in Partners persons" + e);
+          LOG.warn("Could not read the partner persons: {}", e.toString());
         }
 
 
@@ -1375,7 +1375,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
           contacts += persons.toString().replace("null", "");
         } catch (Exception e) {
-          System.out.println("Error in partnerships " + e);
+          LOG.warn("Could not read the partnerships: {}", e.toString());
         }
 
         // Shared clusters
@@ -1402,7 +1402,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           objectMapper = new ObjectMapper();
           studyProjects = objectMapper.writeValueAsString(studyProjectListJson);
         } catch (Exception e) {
-          System.out.println("Error in study projects " + e);
+          LOG.warn("Could not serialize the study projects: {}", e.toString());
         }
 
         if (relatedLever.isEmpty()) {
@@ -1483,7 +1483,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonData.put("otherCrossCuttingSelection", otherCrossCuttingSelection);
           jsonData.put("timeCreation", this.getCurrentDatev2());
         } catch (Exception e) {
-          System.out.println("error setting jsonData " + e);
+          LOG.error("Could not set the OICR summary JSON data", e);
         }
 
         headerMap.put("height", "40mm");
@@ -1499,14 +1499,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonOptions.put("footer", footerMap);
           jsonOptions.put("timeout", "300000");
         } catch (Exception e) {
-          System.out.println("error setting jsonOptions " + e);
+          LOG.error("Could not set the OICR summary JSON options", e);
         }
 
         try {
           jsonRoot.put("data", jsonData);
           jsonRoot.put("options", jsonOptions);
         } catch (Exception e) {
-          System.out.println("Error setting jsonRoot info " + e);
+          LOG.error("Could not set the OICR summary JSON root", e);
         }
         this.loadData();
 
@@ -1518,14 +1518,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonRoot.put("fileName", this.OICRsReportName);
           jsonRoot.put("bucketName", this.bucketName);
         } catch (Exception e) {
-          System.out.println("Error setting other json root information");
+          LOG.error("Could not set the OICR summary report name and bucket", e);
         }
 
         String apiKey = null;
         try {
           apiKey = this.config.getMicroserviceApiKey();
         } catch (final Exception e) {
-          System.out.println("error getting conf apiKey " + e);
+          LOG.error("Could not get the microservice API key", e);
         }
 
         try {
@@ -1534,26 +1534,18 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           jsonMainRoot.put("data", jsonRoot);
           jsonMainRoot.put("pattern", "pdf.generate");
         } catch (Exception e) {
-          System.out.println("Error setting jsonRoot and jsonMainRoot information " + e);
+          LOG.error("Could not set the OICR summary JSON main root", e);
         }
 
         try {
           objectMapper = new ObjectMapper();
           final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-          try {
-            final FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
-            fileWriter.write(jsonOutput);
-            fileWriter.close();
-          } catch (Exception e) {
-            System.out.println("Generated just for local environments");
-          }
-
-          System.out.println("send microservice class: " + this.OICRsReportName);
+          LOG.info("Sending the OICR summary {} to the microservice", this.OICRsReportName);
           this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
 
           return jsonOutput;
         } catch (final IOException e) {
-          System.out.println("error generating json " + e);
+          LOG.error("Could not generate the OICR summary JSON", e);
           return "{}";
         }
 
@@ -1785,11 +1777,16 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         }
         // Centers(s)
         final List<ProjectExpectedStudyCenter> studyCenters = projectExpectedStudy.getProjectExpectedStudyCenters()
-          .stream().filter(c -> c.isActive() && (c.getPhase() != null) && c.getPhase().equals(this.getSelectedPhase()))
+          .stream().filter(c -> (c != null) && c.isActive() && (c.getPhase() != null)
+            && c.getPhase().equals(this.getSelectedPhase()))
           .collect(Collectors.toList());
         if ((studyCenters != null) && !studyCenters.isEmpty()) {
           final Set<String> centersSet = new HashSet<>();
           for (final ProjectExpectedStudyCenter projectExpectedStudyCenter : studyCenters) {
+            // A center without an institution has nothing to list, and reading it outside any try stopped the report
+            if (projectExpectedStudyCenter.getInstitution() == null) {
+              continue;
+            }
 
             final String institutionType =
               Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getInstitutionType())
@@ -1797,15 +1794,12 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             try {
               projectExpectedStudyCenter.getInstitution().setLocations(projectExpectedStudyCenter.getInstitution()
                 .getInstitutionsLocations().stream().filter(c -> c.isActive()).collect(Collectors.toList()));
-              projectExpectedStudyCenter.getInstitution().getLocations()
-                .addAll(projectExpectedStudyCenter.getInstitution().getInstitutionsLocations().stream()
-                  .filter(InstitutionLocation::isActive).collect(Collectors.toList()));
             } catch (final Exception e) {
-              Log.error("Error setting locations " + e);
+              LOG.debug("Could not set the locations of a study center: {}", e.toString());
             }
             final String headquarter = Optional.ofNullable(projectExpectedStudyCenter.getInstitution().getLocations())
               .flatMap(locations -> locations.stream()
-                .filter(location -> location.isHeadquater() && (location.getLocElement() != null)
+                .filter(location -> (location != null) && location.isHeadquater() && (location.getLocElement() != null)
                   && (location.getLocElement().getName() != null))
                 .map(location -> " | headquarter: " + location.getLocElement().getName()).findFirst())
               .orElse("");
@@ -2170,7 +2164,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             projectExpectedStudy.setSdgAllianceLevers(null);
           }
         } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+          LOG.debug("Could not get the primary alliance lever: {}", e.toString());
         }
 
         // Primary SDG contribution
@@ -2217,7 +2211,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             }
           }
         } catch (final Exception e) {
-          Log.error("error getting primary alliance lever");
+          LOG.debug("Could not get the primary alliance lever: {}", e.toString());
         }
 
 
@@ -2291,9 +2285,9 @@ public class BaseStudySummaryData extends BaseSummariesAction {
             + (globalTargetsResult.isEmpty() ? "" : globalTargetsResult);
 
         } catch (final NullPointerException e) {
-          Log.error("NullPointerException while getting Impact Areas", e);
+          LOG.error("NullPointerException while getting Impact Areas", e);
         } catch (final Exception e) {
-          Log.error("Unexpected error while getting Impact Areas", e);
+          LOG.error("Unexpected error while getting Impact Areas", e);
         }
 
         /*
@@ -2519,7 +2513,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
           }
         }
       } catch (final Exception e) {
-        Log.error("error in isAllianceSelected " + e);
+        LOG.debug("Could not check the Alliance center selection: {}", e.toString());
       }
     }
     return false;
@@ -2541,7 +2535,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
       this.bucketName = this.config.getMicroserviceBucketname();
 
     } catch (final Exception e) {
-      System.out.println("error getting report configuration data " + e);
+      LOG.warn("Could not get the report configuration data", e);
     }
   }
 }

@@ -104,7 +104,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
       // struts2Filter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
       FilterRegistration.Dynamic strutsFilter = 
         servletContext.addFilter("StrutsFilter", new StrutsPrepareAndExecuteFilter());
-      // En Struts 6, se recomienda usar scanning de anotaciones en struts.xml
+      // In Struts 6, annotation scanning in struts.xml is recommended
       strutsFilter.setInitParameter("targetFilterLifecycle", "true");
       strutsFilter.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, STRUTS2_REQUESTS);
     }
@@ -145,8 +145,7 @@ public class WebAppInitializer implements WebApplicationInitializer {
     }
     // End Check Spring Profile filters
     } catch (Exception e) {
-      e.printStackTrace();
-      throw new ServletException("Error en WebAppInitializer", e);
+      throw new ServletException("Error in WebAppInitializer", e);
     }
 
   }

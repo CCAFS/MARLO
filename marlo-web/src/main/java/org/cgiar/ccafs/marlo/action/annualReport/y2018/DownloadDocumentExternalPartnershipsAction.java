@@ -87,7 +87,7 @@ public class DownloadDocumentExternalPartnershipsAction extends BaseAction {
           out.close();
           in.close();
         } catch (Exception e) {
-          System.out.println(e);
+          LOG.warn("Could not copy the external partnerships document", e);
         }
         /*** fin test **/
 
@@ -102,13 +102,13 @@ public class DownloadDocumentExternalPartnershipsAction extends BaseAction {
             fileOutputStream.write(dataBuffer, 0, bytesRead);
           }
         } catch (IOException e) {
-          System.out.println(e);
+          LOG.warn("Could not download the external partnerships document", e);
         }
 
       } catch (FileNotFoundException e) {
-        e.printStackTrace();
+        LOG.warn("Could not find the external partnerships document", e);
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.warn("Could not read the external partnerships document", e);
       }
     }
     return SUCCESS;

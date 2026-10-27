@@ -191,8 +191,6 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
         HashMap<String, Element> hm = new HashMap<String, Element>();
         // method to get all the subreports in the prpt and store in the HashMap
         this.getAllSubreports(hm, masteritemBand);
-        // Uncomment to see which Subreports are detecting the method getAllSubreports
-        // System.out.println("Pentaho SubReports: " + hm);
 
         this.fillSubreport((SubReport) hm.get("case_studies"), "case_studies");
 
@@ -200,30 +198,30 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
         bytesPDF = os.toByteArray();
         os.close();
       } catch (Exception e) {
-        System.out.println("Error generating Study Summary: " + e.getMessage());
+        // The exception is rethrown and logged where it is handled; this only marks where it happened
+        LOG.debug("Error generating the Study Summary: {}", e.toString());
         throw e;
       }
       // Calculate time of generation
       long stopTime = System.currentTimeMillis();
       stopTime = stopTime - startTime;
-      System.out.println("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+      LOG.info("Downloaded successfully: {}. Time to generate: {}ms.", this.getFileName(), stopTime);
     } else {
       try {
         this.generateAndSendJson(projectExpectedStudyInfos);
         bytesPDF = os.toByteArray();
       } catch (Exception e) {
         if (e.getClass().getName().contains("ClientAbortException")) {
-          System.out.println("Client aborted the connection: " + e.getMessage());
+          LOG.debug("Client aborted the connection: {}", e.toString());
         } else {
-          System.out.println("Exception while generating JSON: " + e.getMessage());
+          LOG.debug("Exception while generating the Study Summary JSON: {}", e.toString());
           throw e;
         }
       } finally {
         try {
           os.close();
         } catch (Exception e) {
-          System.out.println("Error closing output stream: " + e.getMessage());
+          LOG.debug("Could not close the output stream: {}", e.toString());
         }
       }
 
@@ -292,7 +290,7 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
           .getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER) + "-");
       }
     } catch (Exception e) {
-      System.out.println("Error getting project(s) for study: " + projectExpectedStudyID);
+      LOG.debug("Could not get the project(s) of study {}: {}", projectExpectedStudyID, e.toString());
     }
     fileName.append("OICR" + projectExpectedStudyID + "-");
     fileName.append(this.getSelectedCycle() + "-");
@@ -355,8 +353,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
+    LOG.info("Start report download: {}. CRP: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null);
 
   }
 
