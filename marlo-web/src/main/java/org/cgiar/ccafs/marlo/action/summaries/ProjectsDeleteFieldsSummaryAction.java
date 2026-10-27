@@ -194,9 +194,8 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, stopTime);
     return SUCCESS;
 
   }
@@ -821,8 +820,8 @@ public class ProjectsDeleteFieldsSummaryAction extends BaseSummariesAction imple
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
+    LOG.info("Start report download: {}. CRP: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null);
   }
 
 }

@@ -1200,9 +1200,8 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
     try {
-      LOG.info(
-        "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-          + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+      LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+        this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
     } catch (Exception e) {
       LOG.error("Error generating LOG info " + e.getMessage());
     }
@@ -8972,7 +8971,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
 
-      // Agregamos los centers de partnerships si aún no están en la lista final
+      // Add the partnership centers that are not in the final list yet
       for (String cName : partnershipCenters) {
         if (!centers.contains(cName)) {
           centers.add(cName);

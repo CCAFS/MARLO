@@ -353,8 +353,8 @@ public class StudySummaryAction extends BaseStudySummaryData implements Summary 
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
+    LOG.info("Start report download: {}. CRP: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null);
 
   }
 
