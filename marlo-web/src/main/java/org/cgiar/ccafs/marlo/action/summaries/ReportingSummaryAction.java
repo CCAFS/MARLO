@@ -73,7 +73,6 @@ import org.cgiar.ccafs.marlo.utils.URLShortener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -7868,10 +7867,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     
     try {
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-      // Only generate JSON file in non-production environments (local/test)
-      if (!this.config.isProduction()) {
-        this.persistPayload(objectMapper, jsonMainRoot);
-      }
       
       System.out.println("Sending cluster report to microservice: " + reportName);
       // Using sendClusterReportQueueMessage for cluster/project summary reports
@@ -11489,25 +11484,6 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     
     // Add back the .png extension if it was present
     return hasPngExtension ? baseName + ".png" : baseName;
-  }
-
-  private void persistPayload(com.fasterxml.jackson.databind.ObjectMapper objectMapper, Object jsonRoot) {
-    FileWriter writer = null;
-    try {
-      File payloadFile = new File(System.getProperty("user.dir"),
-        "reporting-summary-payload-" + System.currentTimeMillis() + ".json");
-      writer = new FileWriter(payloadFile);
-      objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, jsonRoot);
-    } catch (Exception e) {
-      LOG.warn("Unable to persist reporting summary payload", e);
-    } finally {
-      if (writer != null) {
-        try {
-          writer.close();
-        } catch (IOException ignored) {
-        }
-      }
-    }
   }
 
   /**

@@ -61,8 +61,6 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -1542,14 +1540,6 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         try {
           objectMapper = new ObjectMapper();
           final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-          try {
-            final FileWriter fileWriter = new FileWriter(new File("D:/OICRs_Report.json"));
-            fileWriter.write(jsonOutput);
-            fileWriter.close();
-          } catch (Exception e) {
-            System.out.println("Generated just for local environments");
-          }
-
           System.out.println("send microservice class: " + this.OICRsReportName);
           this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
 
