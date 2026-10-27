@@ -30,14 +30,18 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
+import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
+import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.PowbSynthesis;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
@@ -107,6 +111,8 @@ public class PartnersSaveAction extends BaseAction {
   private boolean messageSent;
   // True when the partner request could not be sent to CLARISA, so the page shows the form again with an error
   private boolean requestFailed;
+  // True when the form arrived without the institution type or the country, so it is shown again with an error
+  private boolean missingRequiredFields;
   private String partnerWebPage;
   private String context;
   private int projectID;
@@ -144,7 +150,8 @@ public class PartnersSaveAction extends BaseAction {
   public void addCapDevMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     CapacityDevelopment capacityDevelopment = capacityDevelopmentManager.getCapacityDevelopmentById(capdevID);
-    String sourceMessage = "" + context + " Capdev: (" + capdevID + ") - " + capacityDevelopment.getTitle();
+    String sourceMessage = "" + context + " Capdev: (" + capdevID + ") - "
+      + (capacityDevelopment != null ? capacityDevelopment.getTitle() : "");
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -152,9 +159,12 @@ public class PartnersSaveAction extends BaseAction {
 
   public void addFunginMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    FundingSourceInfo fsInfo =
-      fundingSourceManager.getFundingSourceById(fundingSourceID).getFundingSourceInfo(this.getActualPhase());
-    String sourceMessage = "" + context + " Funding Source: (" + fundingSourceID + ") - " + fsInfo.getTitle();
+    FundingSource fundingSource = fundingSourceManager.getFundingSourceById(fundingSourceID);
+    Phase phase = this.getActualPhase();
+    FundingSourceInfo fsInfo = (fundingSource != null && phase != null && phase.getId() != null)
+      ? fundingSource.getFundingSourceInfo(phase) : null;
+    String sourceMessage = "" + context + " Funding Source: (" + fundingSourceID + ") - "
+      + (fsInfo != null ? fsInfo.getTitle() : "");
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -163,8 +173,9 @@ public class PartnersSaveAction extends BaseAction {
   public void addPowbSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     PowbSynthesis powbSynthesis = powbSynthesisManager.getPowbSynthesisById(powbSynthesisID);
+    LiaisonInstitution liaisonInstitution = powbSynthesis != null ? powbSynthesis.getLiaisonInstitution() : null;
     String sourceMessage = "" + context + " PowbSynthesis: (" + powbSynthesisID + ") - "
-      + powbSynthesis.getLiaisonInstitution().getComposedName();
+      + (liaisonInstitution != null ? liaisonInstitution.getComposedName() : "");
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -173,9 +184,11 @@ public class PartnersSaveAction extends BaseAction {
   public void addProjectMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     if (projectInfo == null) {
-      projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+      Project requestProject = projectManager.getProjectById(projectID);
+      projectInfo = requestProject != null ? requestProject.getProjecInfoPhase(this.getActualPhase()) : null;
     }
-    String sourceMessage = "" + context + " Cluster: (" + projectID + ") - " + projectInfo.getTitle();
+    String sourceMessage =
+      "" + context + " Cluster: (" + projectID + ") - " + (projectInfo != null ? projectInfo.getTitle() : "");
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -184,8 +197,9 @@ public class PartnersSaveAction extends BaseAction {
   public void addReportSynthesisMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
     ReportSynthesis reportSynthesis = reportSynthesisManager.getReportSynthesisById(synthesisID);
+    LiaisonInstitution liaisonInstitution = reportSynthesis != null ? reportSynthesis.getLiaisonInstitution() : null;
     String sourceMessage = "" + context + " Report Synthesis: (" + synthesisID + ") - "
-      + reportSynthesis.getLiaisonInstitution().getComposedName();
+      + (liaisonInstitution != null ? liaisonInstitution.getComposedName() : "");
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -193,9 +207,12 @@ public class PartnersSaveAction extends BaseAction {
 
   public void addStudyMessage(StringBuilder message, PartnerRequest partnerRequest,
     PartnerRequest partnerRequestModifications) {
-    ProjectExpectedStudyInfo studyInfo = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID)
-      .getProjectExpectedStudyInfo(this.getActualPhase());
-    String sourceMessage = "" + context + " Study: (" + expectedID + ") - " + studyInfo.getTitle();
+    ProjectExpectedStudy study = projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
+    Phase phase = this.getActualPhase();
+    ProjectExpectedStudyInfo studyInfo = (study != null && phase != null && phase.getId() != null)
+      ? study.getProjectExpectedStudyInfo(phase) : null;
+    String sourceMessage =
+      "" + context + " Study: (" + expectedID + ") - " + (studyInfo != null ? studyInfo.getTitle() : "");
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);
@@ -255,6 +272,10 @@ public class PartnersSaveAction extends BaseAction {
 
   public boolean isMessageSent() {
     return messageSent;
+  }
+
+  public boolean isMissingRequiredFields() {
+    return missingRequiredFields;
   }
 
   public boolean isRequestFailed() {
@@ -349,25 +370,35 @@ public class PartnersSaveAction extends BaseAction {
 
   @Override
   public String save() {
-    String institutionName, institutionAcronym, institutionTypeName, countryId, countryName, partnerWebPage;
+    String institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage;
     String subject;
     StringBuilder message = new StringBuilder();
+
+    // The request needs a partner with a type and a country: without them the form is shown again with an error
+    InstitutionType requestedType = (activityPartner != null && activityPartner.getPartner() != null)
+      ? activityPartner.getPartner().getInstitutionType() : null;
+    LocElement country = locationId > 0 ? locationManager.getLocElementById(locationId) : null;
+    if (requestedType == null || requestedType.getId() == null || requestedType.getId() <= 0 || country == null) {
+      missingRequiredFields = true;
+      return INPUT;
+    }
 
     long partnerTypeId;
     // Take the values to create the message
     institutionName = activityPartner.getPartner().getName();
     institutionAcronym = activityPartner.getPartner().getAcronym();
-    partnerTypeId = activityPartner.getPartner().getInstitutionType().getId();
-    countryId = String.valueOf(locationId);
+    partnerTypeId = requestedType.getId();
     partnerWebPage = activityPartner.getPartner().getWebsiteLink();
 
     // Get the partner type name
-    countryName = locationManager.getLocElementById(Long.parseLong(countryId)).getName();
+    countryName = country.getName();
 
     institutionTypeName = "";
-    for (InstitutionType pt : institutionTypesList) {
-      if (pt.getId() == partnerTypeId) {
-        institutionTypeName = pt.getName();
+    if (institutionTypesList != null) {
+      for (InstitutionType pt : institutionTypesList) {
+        if (pt != null && pt.getId() != null && pt.getId() == partnerTypeId) {
+          institutionTypeName = pt.getName();
+        }
       }
     }
 
@@ -383,8 +414,8 @@ public class PartnersSaveAction extends BaseAction {
     partnerRequest.setCrp(loggedCrp);
     partnerRequestModifications.setCrp(loggedCrp);
 
-    partnerRequest.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
-    partnerRequestModifications.setLocElement(locationManager.getLocElementById(Long.parseLong(countryId)));
+    partnerRequest.setLocElement(country);
+    partnerRequestModifications.setLocElement(country);
     partnerRequest.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
     partnerRequestModifications.setInstitutionType(institutionManager.getInstitutionTypeById(partnerTypeId));
     partnerRequest.setOffice(false);
@@ -427,7 +458,8 @@ public class PartnersSaveAction extends BaseAction {
     }
     message.append(" </br>");
 
-    switch (pageRequestName) {
+    // A page opened without any id has no request name; switching on null would throw
+    switch (pageRequestName != null ? pageRequestName : "") {
       case "projects":
         try {
           projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
@@ -465,7 +497,8 @@ public class PartnersSaveAction extends BaseAction {
     }
 
     if (projectInfo == null && projectID != 0) {
-      projectInfo = projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase());
+      Project requestProject = projectManager.getProjectById(projectID);
+      projectInfo = requestProject != null ? requestProject.getProjecInfoPhase(this.getActualPhase()) : null;
     }
 
     // Get project information
