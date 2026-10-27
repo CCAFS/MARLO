@@ -59,14 +59,22 @@ public class GetInstitutions extends BaseAction {
     public String execute() throws Exception {
         List<Institution> institutionList = institutionManager.findAll();
         institutions = new ArrayList<>();
-        
+        if (institutionList == null) {
+            return SUCCESS;
+        }
+
         for (Institution institution : institutionList) {
+            if (institution == null) {
+                continue;
+            }
             Map<String, Object> institutionMap = new HashMap<>();
             institutionMap.put("id", institution.getId());
             institutionMap.put("name", institution.getName());
             institutionMap.put("acronym", institution.getAcronym());
             institutionMap.put("composedName", institution.getComposedNameType());
-            institutionMap.put("type", institution.getInstitutionType().getName());
+            // An institution without a type is still listed, with a null type
+            institutionMap.put("type",
+                institution.getInstitutionType() != null ? institution.getInstitutionType().getName() : null);
             institutions.add(institutionMap);
         }
         
