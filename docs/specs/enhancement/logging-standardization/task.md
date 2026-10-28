@@ -262,7 +262,9 @@
   `{}` placeholders; `AuditLogMySQLDao` and `HibernateAuditLogListener` had no offender left. On 2026-10-27 the two
   remaining offenders, both in `ProjectInnovationPartnershipManagerImpl` (a log without the exception and an
   `e.getMessage()`-only log), now pass the exception. No `return`, `throw` or condition changed. The save-failure
-  check is `SaveChainFailureLoggingTest`. Reviewer PASS; see `execution.md`.
+  check is `SaveChainFailureLoggingTest`. Reopened the same day: a `System.out` split over two lines in
+  `ProjectInnovationContributingOrganizationManagerImpl` had escaped the closing scan; the print-only loop is removed.
+  Reviewer PASS on both; see `execution.md`.
 - **Depends on:** T08 (so the effect is visible in the JSON log)
 - **Module:** marlo-data
 - **Files touched:**

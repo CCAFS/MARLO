@@ -97,10 +97,6 @@ public class ProjectInnovationContributingOrganizationManagerImpl
     List<Long> projectInnovationContributingOrganizationIds = projectInnovationContributingOrganizationDAO
         .getProjectInnovationContributingOrganizationByInnovationAndInstitutionAndPhase(innovationID,
             projectInnovationContributingOrganization.getInstitution().getId(), phase.getId());
-    for (Long projectInnovationContributingOrganizationId : projectInnovationContributingOrganizationIds) {
-      System.out
-          .println("projectInnovationContributingOrganizationId db: " + projectInnovationContributingOrganizationId);
-    }
 
     for (Long projectInnovationContributingOrganizationIdDBId : projectInnovationContributingOrganizationIds) {
       projectInnovationContributingOrganizationDAO

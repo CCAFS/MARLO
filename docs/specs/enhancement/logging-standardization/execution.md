@@ -228,3 +228,35 @@ plus 535 in three new Java files, 2 Reviewer verdicts in one round.
   fixed in T09–T12" covers it.
 
 - **Final verification:** PASS.
+
+### ENH-LOGGING-STANDARDIZATION-001-T09 — Cleanup: the save chain (reopened)
+
+- **Final status:** PASS (attempt 2 overall)
+- **Date:** 2026-10-27
+- **Why reopened:** the T14 rework widened the console rule to `System\.(out|err)\b` and found a `System.out` /
+  `.println` statement split over two lines in `ProjectInnovationContributingOrganizationManagerImpl`, a T09 file.
+  The T09 closing scan had used `System\.(out|err)\.print` on single lines and missed it, so T09's Done-when did not
+  hold. The task was reopened rather than suppressing the hit in T14.
+
+#### Attempt 2
+
+- **Files changed:** `marlo-data/.../manager/impl/ProjectInnovationContributingOrganizationManagerImpl.java`: the
+  four-line loop that only printed each id before the deletion loop is removed (a per-iteration development trace,
+  removed rather than migrated per `.claude/skills/marlo-verify/SKILL.md`). The deletion loop and the next-phase
+  recursion are unchanged; LF endings kept.
+- **Implementer verification:** 35-file scan with multi-line patterns `System\.(out|err)\b` and
+  `printStackTrace\(\s*(\)|System\b)` outside comments: 0 and 0; Checkstyle delta 0 (2 → 2); `LoggingSystemOut` on
+  the file with its suppression entry removed: 0; hygiene ok. Its full-suite run was inconclusive: a `cargo:run`
+  server was running in the same checkout.
+- **Evidence re-run (Leader-inline):** VERIFIED in a clean worktree with the diff applied: compile 6 / 2415 / 1063 /
+  113, 1123 tests, 0 failures.
+- **Reviewer verdict:** **PASS**. The removed loop had no side effect; removal follows the project's convention for
+  development traces; the Reviewer's own scan (`System\s*\.\s*(out|err)\b|printStackTrace\s*\(`, comments included)
+  found 0 matches in the 35 files.
+- **runtime events:** none (the inconclusive suite run was environment contention, recovered by the Leader's
+  worktree re-run).
+- **spawns:** implementer 11 calls, 83444 tokens, ended complete; reviewer 6 calls, 36292 tokens, ended complete.
+
+#### Decisions made
+
+- Closing scans now use multi-line patterns; a single-line regex is not evidence that a file holds no print.
