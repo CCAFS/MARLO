@@ -13,7 +13,7 @@
 | Requirement Source | No Jira ticket. Findings of the 2026-10-28 working session: code sweeps plus the local DB copies `aiccradb_actsave`, `aiccradb1`–`aiccradb4` |
 | Visual Reference | None (see §8) |
 | Owner | IBD Team — Kenji Tanaka |
-| Status | Proposed |
+| Status | Approved — specified. Where this proposal's figures differ from `requirements.md` / `design.md` (site counts, `9 Java sites`, migration row counts, the M2 naming families), the spec documents win; Judgment Day round 1 corrected them (`judgment.md`) |
 | Last Updated | 2026-10-28 |
 | Depends on | none |
 | Parallel-safe | no — touches `BaseAction.java`, ~70 FTL files and `phases` data, shared with `epic/phase-topology` (Draft) |
@@ -87,7 +87,7 @@ AICCRA's screens, produces exactly the same result as today. The REST v2 API (`r
 | B2 | Add to `Phase`: `isPlanningPhase()`, `isProgressPhase()`, `isReportingPhase()`. The existing `isReporting()` delegates to `isReportingPhase()` | Equivalence test: old result equals new result for every row |
 | B3 | Old `BaseAction` methods delegate to `getActualPhase().isXxxPhase()` and are marked `@Deprecated` | B1 stays green |
 | B4 | Migrate every use, in batches, with the exact replacement table (§5, B4 table). Includes the name-literal sites: `ProjectOutcomeValidator:193`, `OutcomesMilestonesAction:427` (its `current.getName() != null` loop guard is kept), the 3 summaries (`FundingSources…:498, 697, 1004`, `ProjectsFundingSources…:611`, `ExpectedDeliverables…:354`), and the 6 `PROJECT_INDICATOR_PHASE_PREVIOUS_NAME` sites in `BaseAction`. Nothing under `rest/` | Per batch: clean compile, Checkstyle delta, tests with `-am`, token counts, **rendered-HTML diff** (§11) |
-| B5 | Remove the old methods, the write-only fields `planningActive` / `reportingActive` and their public setters (`BaseAction:471, 487, 8924, 8928`, no callers), and `POWB_ACRONYM` / `PROJECT_INDICATOR_PHASE_PREVIOUS_NAME` from both `APConstants.java` once nothing references them (any use left under `rest/` keeps them). Add a Checkstyle rule against reintroducing them, as `0a17b19671` did for console printing | Old-token count is 0; compile fails on any missed Java use |
+| B5 | Remove the old methods, the write-only fields `planningActive` / `reportingActive` and their public setters (`BaseAction:471, 487, 8924, 8928`, no callers), and `PROJECT_INDICATOR_PHASE_PREVIOUS_NAME` from both `APConstants.java` (amended at specify, 2026-10-28: `POWB_ACRONYM` stays because `ProgressReportProcessPOISummaryAction:1498` builds a report file name with it; see `design.md` P-9). Add a Checkstyle rule against reintroducing them, as `0a17b19671` did for console printing | Old-token count is 0; compile fails on any missed Java use |
 
 **B4 replacement table (whole-word, closed list):**
 
@@ -207,6 +207,8 @@ Option A, delivered in this order. Each step is releasable and leaves behavior u
    would stop recognizing AICCRA_III's plan phase, so planning would be validated as reporting.
 
 ### Migration safety (dry run on a throwaway schema, 2026-10-28, `global_units` + `phases` with both FKs re-added)
+
+> **Superseded (RJ-8):** the counts below were taken before unit 50 existed and before M2 covered the `AWPB` family. The current scenario table, with counts computed before each run, is in `requirements.md` §6 (AC for DA-001, MIG-001, MIG-002).
 
 | # | Scenario | M1 rows | M2 rows | Result |
 |---|---|---|---|---|
