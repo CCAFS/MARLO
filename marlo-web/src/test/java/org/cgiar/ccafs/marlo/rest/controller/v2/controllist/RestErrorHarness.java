@@ -100,13 +100,23 @@ final class RestErrorHarness extends ExternalResource {
   private static final Long PRINCIPAL = 4711L;
 
   /**
-   * Sets a field the Spring container would inject ({@code @Autowired Environment env}).
+   * Sets a field the Spring container would inject ({@code @Autowired Environment env}). The field may be declared by
+   * a superclass of the target, as it is when the test overrides one method of an item.
    */
   static void inject(Object target, String fieldName, Object value) {
     try {
-      Field field = target.getClass().getDeclaredField(fieldName);
-      field.setAccessible(true);
-      field.set(target, value);
+      Class<?> declaring = target.getClass();
+      while (declaring != null) {
+        try {
+          Field field = declaring.getDeclaredField(fieldName);
+          field.setAccessible(true);
+          field.set(target, value);
+          return;
+        } catch (NoSuchFieldException e) {
+          declaring = declaring.getSuperclass();
+        }
+      }
+      throw new NoSuchFieldException(fieldName);
     } catch (ReflectiveOperationException e) {
       throw new AssertionError("Cannot inject " + fieldName + " into " + target.getClass().getName(), e);
     }

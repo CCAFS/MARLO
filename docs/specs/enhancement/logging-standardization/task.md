@@ -439,7 +439,7 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T17 — REST v2 controllers propagate their errors
 
-- **Status:** Batch 1 done, 2026-10-28 (Reviewer PASS, attempt 2; see `execution.md`). Batch 2 pending.
+- **Status:** Done, 2026-10-28. Batch 1 and batch 2 each closed on Reviewer PASS at attempt 2 (see `execution.md`).
 - **Added:** 2026-10-27, from the T16 QA pass; approved by the user (`requirements.md` §9).
 - **Depends on:** T02, T11
 - **Module:** marlo-web

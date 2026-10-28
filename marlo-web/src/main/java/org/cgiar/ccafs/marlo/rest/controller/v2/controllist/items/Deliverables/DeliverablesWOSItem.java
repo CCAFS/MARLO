@@ -44,15 +44,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Named
 public class DeliverablesWOSItem<T> {
-
-  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesWOSItem.class);
 
   private PublicationWOSMapper publicationWOSMapper;
 
@@ -90,9 +86,9 @@ public class DeliverablesWOSItem<T> {
           publicationDTO.setUrl(url);
         }
       } catch (Exception e) {
-        LOG.error("Could not read the WOS data of the requested link", e);
-        fieldErrors.add(
-          new FieldErrorDTO("getServiceWOS", "JSON element", "Error trying to get data from WOS " + e.getMessage()));
+        // An upstream failure is not a client error: ExceptionTranslator answers 500 and logs it once. The message is
+        // fixed because the cause can carry the internal address of the WOS service.
+        throw new IllegalStateException("The WOS service did not answer for the requested link", e);
       }
     } else {
       fieldErrors.add(new FieldErrorDTO("getServiceWOS", "URL", "URL is missing"));

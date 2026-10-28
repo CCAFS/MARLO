@@ -438,3 +438,83 @@ performance).
   `createProgressTowards` saves before it validates.
 
 - **Final verification:** PASS (batch 1).
+
+### ENH-LOGGING-STANDARDIZATION-001-T17 — REST v2 controllers propagate their errors (batch 2)
+
+- **Final status:** PASS (attempt 2). With batch 1, T17 is complete.
+- **Date:** 2026-10-28
+- **Implementer attempts:** 2
+- **Requirements covered:** FN-006, FN-009 (third clause), ADR-8.
+- **Skills:** `marlo-verify`, `error-handling-patterns`, `api-design-principles`. Effort `high`, raised to `xhigh` for
+  the rework.
+
+#### Classification of the six catch blocks
+
+| Catch | Classification | Evidence |
+|---|---|---|
+| `DeliverablesItem`: WOS metadata in `createDeliverable`, `createDeliverableOther`, `putDeliverableById`, `putDeliverableOtherById` | Legitimate fallback, kept and documented in place | `saveDeliverable` (`@Transactional`) and the info save run before each `try`; no enclosing transaction exists in the REST layer, so nothing in the `try` can roll them back; only `return id` follows. Propagating would answer 500 for a record that exists, and a client retry would duplicate it |
+| `DeliverablesItem.getAllDeliverables` | Wrong: re-labelled its own "No data found" 400 and turned server failures into a 400, logging twice | Fixed (attempt 2) |
+| `DeliverablesWOSItem.validateDeliverable` | Wrong: an upstream failure answered 400 echoing `e.getMessage()`, which can carry the upstream address | Fixed |
+
+#### Attempt 1
+
+- **Files changed:** `DeliverablesItem` (the four fallbacks get an in-place comment and the deliverable id in the log
+  line; the `getAllDeliverables` try/catch removed); `DeliverablesWOSItem` (upstream failure → `IllegalStateException`
+  with a fixed message; unused logger removed); test `RestErrorHarness.inject` searches superclasses; new
+  `DeliverablesItemErrorHandlingTest`, `DeliverablesWOSItemErrorHandlingTest`.
+- **Evidence re-run (Leader, worktree):** VERIFIED. Clean compile 6 / 2415 / 1063 / 133; 1227 tests, 0 failures;
+  Checkstyle 6 → 6; hygiene 0 FIX; falsifier 5 of 10 new tests fail against HEAD.
+- **Reviewer verdicts:** reliability **PASS**; security **FAIL**: with the catch gone, every non-validation failure
+  of `getAllDeliverables` reached the `ExceptionTranslator` 500 handlers, which echo `ex.getMessage()`; unguarded reads
+  in the loop would put Java 17 NPE text or Hibernate entity role names in the body, where HEAD answered a fixed
+  message. Leader adjudication: remediation (b), wrap with a fixed message; (a), skipping bad rows, would turn a
+  failure into a partial 200, a policy change.
+
+#### Attempt 2
+
+- **Files changed:** `getAllDeliverables` keeps HEAD's `try` and body byte for byte; the catch is now
+  `MARLOFieldValidationException` rethrown unchanged, then any `RuntimeException` wrapped in
+  `IllegalStateException("Could not read the deliverables of the requested phase", e)`, with no log in the item. The
+  500 tests assert the body carries only the fixed message and none of the cause (Hibernate role name, NPE text, a
+  JDBC URL).
+- **Evidence re-run (Leader, worktree):** VERIFIED. Clean compile 6 / 2415 / 1063 / 133; 1229 tests, 0 failures;
+  Checkstyle 6 → 6; hygiene 0 FIX; falsifier 3 of 8 `DeliverablesItemErrorHandlingTest` fail against attempt 1 (the
+  three body assertions).
+- **Reviewer verdict (security and reliability):** **PASS**. Only the fixed message reaches the body (Spring matches
+  the `IllegalStateException` handler on the thrown type, the cause goes to the log and the support email only); the
+  400 is unchanged; no new exception on success paths; the tests assert status and body.
+- **runtime events:** none.
+- **spawns:** implementer 44 calls, 190055 tokens, ended complete; reviewer (reliability) 20 calls, 84930 tokens, ended
+  complete; reviewer (security) 16 calls, 84879 tokens, ended fail; implementer 40 calls, 155961 tokens, ended
+  complete; reviewer (both lenses) 11 calls, 69771 tokens, ended complete.
+
+#### Client-visible changes (for the release notes)
+
+| Endpoint / case | Before | After |
+|---|---|---|
+| Deliverables list, valid phase with data | 200 | unchanged |
+| Deliverables list, phase without publications | 400, field errors "No data found" and "ERROR Creating info" | 400, "No data found" only |
+| Deliverables list, server failure (NPE, Hibernate, any runtime error) | 400 "ERROR Creating info" | 500, fixed message, one log event and support email |
+| WOS validation, valid link | 200 | unchanged |
+| WOS validation, link unknown to WOS | 404 | unchanged |
+| WOS validation, missing link | 400 | unchanged |
+| WOS validation, upstream failure (including a link WOS rejects with a 4xx) | 400 echoing the exception text | 500, fixed message |
+| Create or update a deliverable, WOS metadata step fails | id returned, ERROR log | unchanged; the log now names the deliverable id |
+
+#### ADVISORY (recorded, not acted on)
+
+- The support-mail throttle keys on the exception class and top frame, so after wrapping every failure of one route
+  shares a key: different root causes collapse into one mail per hour (the log still records each). A follow-up
+  could key on the root cause when the top exception is a wrapper.
+- Unguarded reads before the `try` of `getAllDeliverables` (`c.getCrp().getAcronym()`, `c.getName()` in the phase
+  filter) still answer a 500 whose body carries Java 17 NPE text. Pre-existing; belongs with the central fix of
+  `ExceptionTranslator` echoing `ex.getMessage()` in 4xx/5xx bodies.
+- `ExceptionTranslator.processRemainingExceptions` passes the `ErrorDTO` arguments out of order (message and severity
+  swapped). Pre-existing.
+- Out of scope, for a separate security task: `getServiceWOS` (both classes) hardcodes an `Authorization` token, calls
+  the WOS service over `http`, and concatenates the client's link into the query unencoded;
+  `createDeliverable` / `createDeliverableOther` call `.findFirst().get()` on the phase, so the `phase == null` check
+  after it is dead; `DeliverablesItem` ~347 compares a `Long` with a `Phase` (always false); `putDeliverableById` saves
+  the info without `@Transactional` in the chain.
+
+- **Final verification:** PASS (batch 2). T17 complete.
