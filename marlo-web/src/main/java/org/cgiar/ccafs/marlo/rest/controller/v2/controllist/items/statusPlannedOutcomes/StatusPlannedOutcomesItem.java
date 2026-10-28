@@ -50,6 +50,7 @@ import org.cgiar.ccafs.marlo.rest.errors.MARLOFieldValidationException;
 import org.cgiar.ccafs.marlo.rest.mappers.StatusPlannedOutcomesMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -349,7 +350,7 @@ public class StatusPlannedOutcomesItem<T> {
 
     String strippedRepoPhase = StringUtils.stripToNull(repoPhase);
     Phase phase = this.phaseManager.findAll().stream()
-      .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+      .filter(p -> p.getCrp() != null && StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
         && p.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && p.getYear() == repoYear
         && StringUtils.equalsIgnoreCase(p.getName(), strippedRepoPhase) && p.isActive())
       .findFirst().orElse(null);
@@ -358,7 +359,7 @@ public class StatusPlannedOutcomesItem<T> {
         repoPhase + ' ' + repoYear + " is an invalid phase"));
     }
 
-    Set<CrpUser> lstUser = user.getCrpUsers();
+    Set<CrpUser> lstUser = user != null ? user.getCrpUsers() : Collections.<CrpUser>emptySet();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), CGIARentityAcronym))) {
       fieldErrors

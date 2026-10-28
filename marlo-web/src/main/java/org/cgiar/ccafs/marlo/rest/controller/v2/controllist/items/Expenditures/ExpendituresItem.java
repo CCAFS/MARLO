@@ -227,7 +227,7 @@ public class ExpendituresItem<T> {
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
     Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+      .filter(c -> c.getCrp() != null && c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
         && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == year
         && c.getName().equalsIgnoreCase(stringPhase))
       .findFirst().orElse(null);

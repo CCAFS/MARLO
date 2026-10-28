@@ -229,14 +229,16 @@ public class ParticipantsCapDevItem<T> {
         cGIAREntity + " is an invalid CGIAR entity acronym"));
     }
 
-    Phase phase = this.phaseManager.findAll().stream().filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(cGIAREntity)
-      && c.getYear() == year && c.getName().equalsIgnoreCase(strphase)).findFirst().orElse(null);
+    Phase phase = this.phaseManager.findAll().stream()
+      .filter(c -> c.getCrp() != null && c.getCrp().getAcronym().equalsIgnoreCase(cGIAREntity)
+        && c.getYear() == year && c.getName().equalsIgnoreCase(strphase))
+      .findFirst().orElse(null);
 
 
     if (phase == null) {
       fieldErrors.add(new FieldErrorDTO("deleteParticipantsCapDev", "phase",
         year + " / " + strphase + " is an invalid year or name phase"));
-    } else {
+    } else if (globalUnitEntity != null) {
 
       LiaisonInstitution liaisonInstitution =
         this.liaisonInstitutionManager.findByAcronymAndCrp(APConstants.CLARISA_ACRONYM_PMU, globalUnitEntity.getId());

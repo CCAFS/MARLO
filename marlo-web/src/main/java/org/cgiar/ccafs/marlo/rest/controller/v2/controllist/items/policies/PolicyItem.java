@@ -80,6 +80,7 @@ import org.cgiar.ccafs.marlo.rest.dto.NewCrosscuttingMarkersDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewMilestonesDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewProjectPolicyDTO;
 import org.cgiar.ccafs.marlo.rest.dto.NewSrfSubIdoDTO;
+import org.cgiar.ccafs.marlo.rest.dto.PhaseDTO;
 import org.cgiar.ccafs.marlo.rest.dto.PolicyOwnerTypeDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyARDTO;
 import org.cgiar.ccafs.marlo.rest.dto.ProjectPolicyDTO;
@@ -208,26 +209,30 @@ public class PolicyItem<T> {
       fieldErrors.add(new FieldErrorDTO("createInnovation", "GlobalUnitEntity",
         entityAcronym + " is an invalid CGIAR entity acronym"));
     }
-    Phase phase =
-      this.phaseManager.findAll().stream()
-        .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
-          && c.getYear() == newPolicyDTO.getPhase().getYear()
-          && c.getName().equalsIgnoreCase(newPolicyDTO.getPhase().getName()))
-        .findFirst().get();
-
-    if (phase == null) {
-      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
-        new NewProjectPolicyDTO().getPhase().getYear() + " is an invalid year"));
+    Phase phase = null;
+    PhaseDTO phaseDTO = newPolicyDTO.getPhase();
+    if (phaseDTO == null || phaseDTO.getYear() == null || phaseDTO.getName() == null) {
+      fieldErrors.add(new FieldErrorDTO("createPolicy", "phase", "The phase name and year are required"));
+    } else {
+      phase = this.phaseManager.findAll().stream()
+        .filter(c -> c.getCrp() != null && c.getCrp().getAcronym().equalsIgnoreCase(entityAcronym)
+          && c.getYear() == phaseDTO.getYear() && c.getName().equalsIgnoreCase(phaseDTO.getName()))
+        .findFirst().orElse(null);
+      if (phase == null) {
+        fieldErrors.add(new FieldErrorDTO("createPolicy", "phase",
+          phaseDTO.getName() + ' ' + phaseDTO.getYear() + " is an invalid phase"));
+      }
     }
     if (newPolicyDTO.getProjectPoliciesInfo() != null) {
       // policy investiment type
-      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType() != null) {
+      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType() != null
+        && newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode() != null) {
         RepIndPolicyInvestimentType repIndPolicyInvestimentType =
           this.repIndPolicyInvestimentTypeManager.getRepIndPolicyInvestimentTypeById(
             newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode().longValue());
         if (repIndPolicyInvestimentType == null) {
           fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType",
-            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndPolicyInvestimentType().getCode()
               + " is an invalid investiment type code"));
         } else {
           projectPolicyInfo.setRepIndPolicyInvestimentType(repIndPolicyInvestimentType);
@@ -237,12 +242,13 @@ public class PolicyItem<T> {
           .add(new FieldErrorDTO("createPolicy", "repIndPolicyInvestimentType", "policy investiment type is need it"));
       }
       // policy info maturity level
-      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null) {
+      if (newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess() != null
+        && newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode() != null) {
         RepIndStageProcess repIndStageProcess = repIndStageProcessManager.getRepIndStageProcessById(
           newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode().longValue());
         if (repIndStageProcess == null) {
           fieldErrors.add(new FieldErrorDTO("createPolicy", "repIndStageProcess",
-            new NewProjectPolicyDTO().getProjectPoliciesInfo().getRepIndStageProcess().getCode()
+            newPolicyDTO.getProjectPoliciesInfo().getRepIndStageProcess().getCode()
               + " is an invalid maturity level code"));
         } else {
           projectPolicyInfo.setRepIndStageProcess(repIndStageProcess);
@@ -252,7 +258,8 @@ public class PolicyItem<T> {
       }
 
       // validate generic project id
-      Project project = this.projectManager.getProjectById(newPolicyDTO.getProject());
+      Project project =
+        newPolicyDTO.getProject() == null ? null : this.projectManager.getProjectById(newPolicyDTO.getProject());
       if (project == null) {
         fieldErrors.add(
           new FieldErrorDTO("createPolicy", "Project id", newPolicyDTO.getProject() + " is an invalid project id"));
@@ -262,6 +269,11 @@ public class PolicyItem<T> {
         // validate crp contributing
         if (newPolicyDTO.getProjectPolicyCrpDTO() != null && newPolicyDTO.getProjectPolicyCrpDTO().size() > 0) {
           for (CGIAREntityDTO contributingCRP : newPolicyDTO.getProjectPolicyCrpDTO()) {
+            if (contributingCRP == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "ContributingCGIAREntities",
+                "A contributing CGIAR entity can not be null"));
+              continue;
+            }
             GlobalUnit crp = this.globalUnitManager.findGlobalUnitBySMOCode(contributingCRP.getCode());
             if (crp == null) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "ContributingCGIAREntities",
@@ -278,6 +290,10 @@ public class PolicyItem<T> {
         // validate sub-IDO
         if (newPolicyDTO.getSrfSubIdoList() != null && newPolicyDTO.getSrfSubIdoList().size() > 0) {
           for (NewSrfSubIdoDTO subIdos : newPolicyDTO.getSrfSubIdoList()) {
+            if (subIdos == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "SrfSubIdo", "A Sub-IDO can not be null"));
+              continue;
+            }
             SrfSubIdo srfSubIdo = srfSubIdoManager.getSrfSubIdoByCode(subIdos.getSubIdo());
             if (srfSubIdo == null) {
               fieldErrors.add(
@@ -299,7 +315,8 @@ public class PolicyItem<T> {
         // validate milestones
         if (newPolicyDTO.getMilestonesCodeList() != null && !newPolicyDTO.getMilestonesCodeList().isEmpty()) {
           for (NewMilestonesDTO milestones : newPolicyDTO.getMilestonesCodeList()) {
-            if (milestones != null && !milestones.getMilestone().trim().isEmpty()) {
+            if (milestones != null && milestones.getMilestone() != null
+              && !milestones.getMilestone().trim().isEmpty()) {
               CrpMilestone crpMilestone =
                 crpMilestoneManager.getCrpMilestoneByPhase(milestones.getMilestone().trim(), phase.getId());
               if (crpMilestone != null) {
@@ -322,6 +339,11 @@ public class PolicyItem<T> {
         // validate geographic scope
         if (newPolicyDTO.getGeographicScopes() != null && newPolicyDTO.getGeographicScopes().size() > 0) {
           for (GeographicScopeDTO geographicScope : newPolicyDTO.getGeographicScopes()) {
+            if (geographicScope == null || geographicScope.getCode() == null) {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "geographicScope", "A geographic scope code is required"));
+              continue;
+            }
             RepIndGeographicScope geoScope =
               this.repIndGeographicScopeManager.getRepIndGeographicScopeById(geographicScope.getCode());
             if (geoScope == null) {
@@ -341,9 +363,9 @@ public class PolicyItem<T> {
         if (newPolicyDTO.getInnovationCodeList() != null && newPolicyDTO.getInnovationCodeList().size() > 0) {
           for (String innovation : newPolicyDTO.getInnovationCodeList()) {
             if (innovation != null && !innovation.trim().isEmpty()) {
-              if (this.tryParseLong(innovation.trim(), fieldErrors, "createPolicy", "Innovation") != null) {
-                ProjectInnovation projectInnovation =
-                  projectInnovationManager.getProjectInnovationById(Long.valueOf(innovation));
+              Long innovationId = this.tryParseLong(innovation.trim(), fieldErrors, "createPolicy", "Innovation");
+              if (innovationId != null) {
+                ProjectInnovation projectInnovation = projectInnovationManager.getProjectInnovationById(innovationId);
                 if (projectInnovation != null) {
                   ProjectPolicyInnovation projectPolicyInnovation = new ProjectPolicyInnovation();
                   projectPolicyInnovation.setPhase(phase);
@@ -366,11 +388,16 @@ public class PolicyItem<T> {
         // validate countries
         if (newPolicyDTO.getCountries() != null && newPolicyDTO.getCountries().size() > 0) {
           for (CountryDTO iso : newPolicyDTO.getCountries()) {
+            if (iso == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", "A country can not be null"));
+              continue;
+            }
             LocElement country = this.locElementManager.getLocElementByNumericISOCode(iso.getCode());
             if (country == null) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", iso + " is an invalid country ISO Code"));
 
-            } else if (country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
+            } else if (country.getLocElementType() == null
+              || country.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_COUNTRY) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "Countries", iso + " is not a Country ISO code"));
             } else {
               ProjectPolicyCountry projectPolicyCountry = new ProjectPolicyCountry();
@@ -384,11 +411,16 @@ public class PolicyItem<T> {
         // validate regions
         if (newPolicyDTO.getRegions() != null && newPolicyDTO.getRegions().size() > 0) {
           for (RegionDTO iso : newPolicyDTO.getRegions()) {
+            if (iso == null) {
+              fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", "A region can not be null"));
+              continue;
+            }
             LocElement region = this.locElementManager.getLocElementByNumericISOCode(iso.getUM49Code());
             if (region == null) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is an invalid region ISO Code"));
 
-            } else if (region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
+            } else if (region.getLocElementType() == null
+              || region.getLocElementType().getId() != APConstants.LOC_ELEMENT_TYPE_REGION) {
               fieldErrors.add(new FieldErrorDTO("createPolicy", "Regions", iso + " is not a region ISO code"));
             } else {
               ProjectPolicyRegion projectPolicyRegion = new ProjectPolicyRegion();
@@ -403,6 +435,11 @@ public class PolicyItem<T> {
         Long id = null;
         if (newPolicyDTO.getCrossCuttingMarkers() != null && newPolicyDTO.getCrossCuttingMarkers().size() > 0) {
           for (NewCrosscuttingMarkersDTO crosscuttingmarker : newPolicyDTO.getCrossCuttingMarkers()) {
+            if (crosscuttingmarker == null) {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "Crosscuttingmarker", "A Crosscuttingmarker can not be null"));
+              continue;
+            }
             strippedId = StringUtils.stripToNull(crosscuttingmarker.getCrossCuttingmarker());
             id = this.tryParseLong(strippedId, fieldErrors, "createPolicy", "Crosscuttingmarker");
             if (id != null) {
@@ -437,6 +474,11 @@ public class PolicyItem<T> {
 
         if (newPolicyDTO.getOwners() != null && newPolicyDTO.getOwners().size() > 0) {
           for (PolicyOwnerTypeDTO policyOwnerTypeDTO : newPolicyDTO.getOwners()) {
+            if (policyOwnerTypeDTO == null || policyOwnerTypeDTO.getCode() == null) {
+              fieldErrors
+                .add(new FieldErrorDTO("createPolicy", "PolicyOwnerType", "A PolicyOwnerType code is required"));
+              continue;
+            }
             RepIndPolicyType repIndPolicyType =
               repIndPolicyTypeManager.getRepIndPolicyTypeById(policyOwnerTypeDTO.getCode());
             if (repIndPolicyType == null) {

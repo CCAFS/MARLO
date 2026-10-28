@@ -369,3 +369,72 @@ known", or populate `tool_name` earlier in code; (2) whether `ProjectPage` becom
 response from an empty 200 to a 404); (3) whether the legacy `centerSummaries` gap is accepted as a known limit; (4)
 who runs the checks that are not demonstrable locally (REST credential, `test`/`pro` startup, QA regression,
 performance).
+
+### ENH-LOGGING-STANDARDIZATION-001-T17 — REST v2 controllers propagate their errors (batch 1)
+
+- **Final status:** PASS (attempt 2) for batch 1; batch 2 (`DeliverablesItem` ×4, `DeliverablesWOSItem`) pending
+- **Date:** 2026-10-27 / 2026-10-28
+- **Implementer attempts:** 2
+- **Requirements covered:** FN-006, FN-009 (third clause), ADR-8.
+- **Skills:** `marlo-verify`, `api-design-principles`, `error-handling-patterns`. Effort `high`, raised to `xhigh` for
+  the rework.
+
+#### Attempt 1
+
+- **Files changed:** the 8 controllers of `rest/controller/v2/controllist/` (`ProjectPage`, `Expenditures`,
+  `ExpectedStudies`, `ExpectedStudiesOther` ×2, `ParticipantsCapDev`, `Policies`, `ProgressTowards`,
+  `StatusPlannedOutcomes`): the 9 swallowing `catch` blocks and the loggers they left unused were removed, CRLF kept.
+  The item classes their requests reach were guarded so that every failure a `catch` used to hide is classified:
+  (a) client error → 400 / 404; (b) data gap the code meant to tolerate → validated and skipped (rows with a null
+  status or phase); (c) server failure → 500. New tests: `RestErrorHarness`, `Fakes`, 8 `*ErrorPropagationTest`,
+  8 `*ItemValidationTest`.
+- **Evidence re-run (Leader, worktree):** VERIFIED.
+- **Reviewer verdicts (security and reliability, in parallel):** **FAIL**. (1) `ProjectPageItem.isProjectPageEnabled`
+  read a missing `crp_project_page` row as disabled; at HEAD it is enabled. The rule change came from the Leader's own
+  brief and is a policy change outside T17. (2) A year of `-1` gave the list a 200 of `[null, …]`. (3) A new WARN
+  dropped the exception.
+
+#### Attempt 2
+
+- **Files changed:** `ProjectPageItem` only. `isProjectPageEnabled` keeps the HEAD rule (no row means enabled); the
+  only addition is a null-safe filter on `getParameter()`. `getProjectPageYear` throws `IllegalStateException` for a
+  missing, null, empty or non-numeric `project_website_year_value`, with the Global Unit acronym and the parameter key
+  in the message and the `NumberFormatException` as cause: one log event and a 500. The WARN and its logger removed;
+  no `trim()` added.
+- **Evidence re-run (Leader, worktree):** VERIFIED. Clean compile (6 / 2415 / 1063 / 131 files); full suite with `-am`,
+  1217 tests, 0 failures; the new tests fail against the old code (falsifier); Checkstyle 30 → 30 on the changed files;
+  hygiene check 0 FIX.
+- **Reviewer verdicts:** **PASS** (security): no authorization change, no successful response changed, the 500 message
+  carries only the acronym from the database and the parameter key. **PASS** (reliability): all three attempt-1
+  issues fixed, every value the changed code reads is validated, the tests assert the answers.
+- **runtime events:** none.
+- **spawns:** implementer ×2 (attempt 1, attempt 2), each ended complete; reviewer ×4 (security and reliability per
+  attempt), FAIL ×2 then PASS ×2. Call and token counts were not captured.
+
+#### Client-visible changes (for the release notes)
+
+| Endpoint / case | Before | After |
+|---|---|---|
+| Any batch-1 endpoint, valid request | 200 with data | unchanged |
+| Unknown identifier | 200 empty or `null` | 404 |
+| Malformed identifier or field | 200 empty or `null` | 400 |
+| Project page by id, year missing or non-numeric | 200 empty | 500, one log event |
+| Project page list, year missing | 500 | 500 |
+| Project page list, year non-numeric | 400 | 500 (deliberate: a server configuration error, not a client error) |
+
+#### ADVISORY (recorded, not acted on)
+
+- The 500 body names the parameter key `project_website_year_value` (low risk).
+- The project page list still answers 200 with `null` elements when the year is valid but no Planning phase exists.
+  Pre-existing, no `catch` involved; noted for T16.
+- Unchanged lines of `ProjectPageItem` (the partner comparator, `getContactType().equals("PL")`,
+  `c.getCrpProgram()`) can still throw an NPE; it now surfaces as a logged 500 instead of an empty 200. Candidates for
+  batch 2 or T16.
+- Outside this spec, for a separate security task: HQL built by concatenation in `GlobalUnitMySQLDAO`
+  (`findGlobalUnitByAcronym`, `findGlobalUnitBySMOCode`), `LiaisonInstitutionMySQLDAO.findByAcronymAndCrp` and
+  possibly `CrpMilestoneMySQLDAO` / `SrfSubIdoMySQLDAO`; `ExceptionTranslator` echoes `ex.getMessage()` in 400/500
+  bodies; `ParticipantsCapDevItem.deleteParticipantsCapDevById` has no user or CRP check;
+  `ExpectedStudiesItem` compares `Long.equals(Integer)` in its institution filter (always false);
+  `createProgressTowards` saves before it validates.
+
+- **Final verification:** PASS (batch 1).

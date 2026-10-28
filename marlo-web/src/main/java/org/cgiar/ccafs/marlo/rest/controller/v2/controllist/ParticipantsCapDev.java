@@ -32,8 +32,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -50,7 +48,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 7 - Participants in CapDev Activities")
 public class ParticipantsCapDev {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ParticipantsCapDev.class);
   @Autowired
   private Environment env;
 
@@ -108,13 +105,8 @@ public class ParticipantsCapDev {
     @ApiParam(value = "${ParticipantsCapDev.participantscapdev.DELETE.id.param.phase}",
       required = true) @RequestParam String phase) {
 
-    Long idcapdev = null;
-    try {
-      idcapdev =
-        this.participantsCapDevItem.deleteParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      LOG.error("Could not delete the CapDev participants {}", id, e);
-    }
+    Long idcapdev =
+      this.participantsCapDevItem.deleteParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
     ResponseEntity<Long> response = new ResponseEntity<Long>(idcapdev, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("ParticipantsCapDev.participantscapdev.DELETE.id.404"));

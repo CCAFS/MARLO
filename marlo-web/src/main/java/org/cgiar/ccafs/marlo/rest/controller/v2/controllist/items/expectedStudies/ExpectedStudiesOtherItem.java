@@ -637,7 +637,7 @@ public class ExpectedStudiesOtherItem<T> {
         new FieldErrorDTO("allMelia", "GlobalUnitEntity", CGIARentityAcronym + " is an invalid CGIAR entity acronym"));
     }
     Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+      .filter(c -> c.getCrp() != null && c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
         && c.getName().equalsIgnoreCase(repoPhase))
       .findFirst().orElse(null);
@@ -652,8 +652,10 @@ public class ExpectedStudiesOtherItem<T> {
           .collect(Collectors.toList()));
     } else {
       List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = phase
-        .getProjectExpectedStudyInfos().stream().filter(c -> c.getPhase().getId().equals(phase.getId())
-          && c.getYear().longValue() == repoYear && c.getStudyType() != null && c.getStudyType().getId() != 1)
+        .getProjectExpectedStudyInfos().stream()
+        .filter(c -> c.getPhase() != null && c.getPhase().getId().equals(phase.getId()) && c.getYear() != null
+          && c.getYear().longValue() == repoYear && c.getProjectExpectedStudy() != null && c.getStudyType() != null
+          && c.getStudyType().getId() != 1)
         .collect(Collectors.toList());
       for (ProjectExpectedStudyInfo projectExpectedStudyInfo : projectExpectedStudyInfoList) {
         ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager
@@ -662,19 +664,23 @@ public class ExpectedStudiesOtherItem<T> {
           && projectExpectedStudyManager.isStudyExcluded(projectExpectedStudy.getId(), phase.getId(), new Long(2))) {
           projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
           projectExpectedStudy.setCountries(projectExpectedStudyCountryManager
-            .findAll().stream().filter(c -> c.isActive()
-              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+            .findAll().stream()
+            .filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+              && phase.equals(c.getPhase()))
             .collect(Collectors.toList()));
           projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionManager
-            .findAll().stream().filter(c -> c.isActive()
-              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+            .findAll().stream()
+            .filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+              && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId())
+              && phase.equals(c.getPhase()))
             .collect(Collectors.toList()));
           projectExpectedStudy.setGeographicScopes(projectExpectedStudy.getProjectExpectedStudyGeographicScopes()
-            .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+            .stream().filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList()));
           projectExpectedStudy.setSrfTargets(projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+            .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList()));
           projectExpectedStudy.setSubIdos(projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList()));
+            .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList()));
           projectExpectedStudyList.add(projectExpectedStudy);
         }
       }
@@ -703,7 +709,7 @@ public class ExpectedStudiesOtherItem<T> {
       }
     }
     Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+      .filter(c -> c.getCrp() != null && c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
         && c.getName().equalsIgnoreCase(repoPhase))
       .findFirst().orElse(null);
@@ -715,17 +721,21 @@ public class ExpectedStudiesOtherItem<T> {
     ProjectExpectedStudy projectExpectedStudy = projectExpectedStudyManager.getProjectExpectedStudyById(id.longValue());
     if (projectExpectedStudy != null && fieldErrors.isEmpty()) {
       ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      if (projectExpectedStudyInfo == null) {
+        // The study exists, but it has no information in the requested phase
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
       // SubIDOs
       List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
         projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
       if (projectExpectedStudyInfo.getIsSrfTarget() != null
         && projectExpectedStudyInfo.getIsSrfTarget().equals("targetsOptionYes")) {
         // SrfSlo
         List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
           projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+            .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
         projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
       } else {
         List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
@@ -735,18 +745,18 @@ public class ExpectedStudiesOtherItem<T> {
       // GeographicScope
       List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
         projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
       // Regions
       List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
-        .findAll().stream().filter(c -> c.isActive()
-          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .findAll().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && phase.equals(c.getPhase()))
         .collect(Collectors.toList());
       projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
       // Countries
       List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
-        .findAll().stream().filter(c -> c.isActive()
-          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .findAll().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && phase.equals(c.getPhase()))
         .collect(Collectors.toList());
       projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
     } else {

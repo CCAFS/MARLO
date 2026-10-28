@@ -39,8 +39,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -57,7 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 2 - CRP Policies")
 public class Policies {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Policies.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
@@ -79,12 +76,7 @@ public class Policies {
     @ApiParam(value = "${Policy.policies.POST.param.CGIAR}", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${Policy.policies.POST.param.policy}",
       required = true) @Valid @RequestBody NewProjectPolicyDTO newProjectPolicyDTO) {
-    Long policyId = null;
-    try {
-      policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
-    } catch (Exception e) {
-      LOG.error("Could not create the policy", e);
-    }
+    Long policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
 
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(policyId, HttpStatus.OK);

@@ -27,8 +27,6 @@ import javax.inject.Inject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class ProjectPage {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ProjectPage.class);
   private ProjectPageItem<ProjectPage> projectPageItem;
 
 
@@ -75,18 +72,12 @@ public class ProjectPage {
     @ApiParam(value = "CGIAR entity", required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "Project Id", required = true) @PathVariable Long id) {
 
-    try {
-      ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(id, CGIAREntity);
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        // TODO add correctly documentation
-        LOG.error("Not Found");
-        throw new NotFoundException("404", "Not Found");
-      }
-      return response;
-    } catch (Exception e) {
-      LOG.error("Could not get the project page {}", id, e);
-      return null;
+    ResponseEntity<ProjectPageDTO> response = projectPageItem.findProjectPageById(id, CGIAREntity);
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      // TODO add correctly documentation
+      throw new NotFoundException("404", "Not Found");
     }
+    return response;
 
   }
 

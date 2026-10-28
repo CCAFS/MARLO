@@ -39,8 +39,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -57,7 +55,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 5 - Status of Planned Outcomes and Milestones")
 public class StatusPlannedOutcomes {
 
-  private static final Logger LOG = LoggerFactory.getLogger(StatusPlannedOutcomes.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
@@ -157,15 +154,11 @@ public class StatusPlannedOutcomes {
       required = true) @RequestParam Integer year,
     @ApiParam(value = "${StatusPlannedOutcomes.outcomes.GET.id.param.phase}",
       required = true) @RequestParam String phase) {
-    ResponseEntity<StatusPlannedOutcomesDTO> response = null;
-    try {
-      response = this.statusPlannedOutcomesItem.findStatusPlannedOutcome(outcomeID, CGIAREntity, year, phase,
-        this.getCurrentUser());
-    } catch (Exception e) {
-      LOG.error("Could not get the planned outcome status", e);
-    }
+    ResponseEntity<StatusPlannedOutcomesDTO> response = this.statusPlannedOutcomesItem
+      .findStatusPlannedOutcome(outcomeID, CGIAREntity, year, phase, this.getCurrentUser());
 
-    if (response != null && response.getStatusCode() == HttpStatus.NOT_FOUND) {
+    // The item always answers; a missing answer is treated as "not found", never as an empty 200
+    if (response == null || response.getStatusCode() == HttpStatus.NOT_FOUND) {
       throw new NotFoundException("404", this.env.getProperty("StatusPlannedOutcomes.outcomes.GET.id.404"));
     }
     return response;

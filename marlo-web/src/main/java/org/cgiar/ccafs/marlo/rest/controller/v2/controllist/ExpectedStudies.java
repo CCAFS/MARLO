@@ -40,8 +40,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -58,7 +56,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 3 - Outcome/ Impact Case Reports")
 public class ExpectedStudies {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ExpectedStudies.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
@@ -136,14 +133,10 @@ public class ExpectedStudies {
     @ApiParam(value = "${ExpectedStudies.OICR.GET.id.param.phase}", required = true) @RequestParam String phase) {
 
 
-    ResponseEntity<ProjectExpectedStudyDTO> response = null;
-    try {
-      response = this.expectedStudiesItem.findExpectedStudyById(id, CGIAREntity, year, phase, this.getCurrentUser());
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
-      }
-    } catch (Exception e) {
-      LOG.error("Could not get the expected study {}", id, e);
+    ResponseEntity<ProjectExpectedStudyDTO> response =
+      this.expectedStudiesItem.findExpectedStudyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
     }
 
     return response;

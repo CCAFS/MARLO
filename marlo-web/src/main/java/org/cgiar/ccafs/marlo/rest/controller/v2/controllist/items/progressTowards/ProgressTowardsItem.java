@@ -59,6 +59,7 @@ import org.cgiar.ccafs.marlo.rest.mappers.SrfProgressTowardsTargetMapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -148,7 +149,7 @@ public class ProgressTowardsItem<T> {
 
     }
 
-    Set<CrpUser> lstUser = user.getCrpUsers();
+    Set<CrpUser> lstUser = user != null ? user.getCrpUsers() : Collections.<CrpUser>emptySet();
     if (!lstUser.stream()
       .anyMatch(crp -> StringUtils.equalsIgnoreCase(crp.getCrp().getAcronym(), strippedEntityAcronym))) {
       fieldErrors.add(new FieldErrorDTO("createProgressTowards", "GlobalUnitEntity", "CGIAR entity not autorized"));
@@ -164,7 +165,8 @@ public class ProgressTowardsItem<T> {
         fieldErrors.add(new FieldErrorDTO("createProgressTowards", "PhaseEntity", "Phase is invalid"));
       } else {
         phase = phaseManager.findAll().stream()
-          .filter(p -> StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
+          .filter(p -> p.getCrp() != null
+            && StringUtils.equalsIgnoreCase(p.getCrp().getAcronym(), strippedEntityAcronym)
             && p.getYear() == newSrfProgressTowardsTargetDTO.getPhase().getYear()
             && StringUtils.equalsIgnoreCase(p.getName(), strippedPhaseName) && p.isActive())
           .findFirst().orElse(null);
@@ -223,7 +225,8 @@ public class ProgressTowardsItem<T> {
           Long sloIndicatorId = id;
 
           reportSynthesisSrfProgressTarget = reportSynthesisSrfProgressTargetCasesManager.findAll().stream()
-            .filter(pt -> pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
+            .filter(pt -> pt.getReportSynthesisSrfProgress() != null && pt.getSrfSloIndicatorTarget() != null
+              && pt.getReportSynthesisSrfProgress().getReportSynthesis().getPhase().getId() == phaseId
               && StringUtils.equalsIgnoreCase(
                 pt.getReportSynthesisSrfProgress().getReportSynthesis().getLiaisonInstitution().getAcronym(),
                 APConstants.CLARISA_ACRONYM_PMU)
@@ -315,8 +318,10 @@ public class ProgressTowardsItem<T> {
 
         // AR2020 changes
         List<ProgressTargetCaseGeographicScope> scopeList = new ArrayList<ProgressTargetCaseGeographicScope>();
-        for (GeographicScopeDTO geographicScope : newSrfProgressTowardsTargetDTO.getGeographicScope()) {
-          if (geographicScope.getCode() != null) {
+        List<GeographicScopeDTO> geographicScopes = newSrfProgressTowardsTargetDTO.getGeographicScope() != null
+          ? newSrfProgressTowardsTargetDTO.getGeographicScope() : Collections.<GeographicScopeDTO>emptyList();
+        for (GeographicScopeDTO geographicScope : geographicScopes) {
+          if (geographicScope != null && geographicScope.getCode() != null) {
             RepIndGeographicScope repIndGeographicScope =
               repIndGeographicScopeManager.getRepIndGeographicScopeById(geographicScope.getCode().longValue());
             if (repIndGeographicScope != null) {
@@ -335,10 +340,13 @@ public class ProgressTowardsItem<T> {
         }
         // regions
         List<ProgressTargetCaseGeographicRegion> regionList = new ArrayList<ProgressTargetCaseGeographicRegion>();
-        for (RegionDTO regions : newSrfProgressTowardsTargetDTO.getRegions()) {
-          if (regions.getUM49Code() != null) {
+        List<RegionDTO> regionDTOs = newSrfProgressTowardsTargetDTO.getRegions() != null
+          ? newSrfProgressTowardsTargetDTO.getRegions() : Collections.<RegionDTO>emptyList();
+        for (RegionDTO regions : regionDTOs) {
+          if (regions != null && regions.getUM49Code() != null) {
             LocElement location = locElementManager.getLocElementByNumericISOCode(regions.getUM49Code());
-            if (location != null && location.getLocElementType().getId().longValue() == 1) {
+            if (location != null && location.getLocElementType() != null
+              && location.getLocElementType().getId().longValue() == 1) {
               ProgressTargetCaseGeographicRegion region = new ProgressTargetCaseGeographicRegion();
               region.setLocElement(location);
               regionList.add(region);
@@ -352,10 +360,13 @@ public class ProgressTowardsItem<T> {
         }
         // countries
         List<ProgressTargetCaseGeographicCountry> countryList = new ArrayList<ProgressTargetCaseGeographicCountry>();
-        for (CountryDTO countries : newSrfProgressTowardsTargetDTO.getCountries()) {
-          if (countries.getCode() != null) {
+        List<CountryDTO> countryDTOs = newSrfProgressTowardsTargetDTO.getCountries() != null
+          ? newSrfProgressTowardsTargetDTO.getCountries() : Collections.<CountryDTO>emptyList();
+        for (CountryDTO countries : countryDTOs) {
+          if (countries != null && countries.getCode() != null) {
             LocElement location = locElementManager.getLocElementByNumericISOCode(countries.getCode());
-            if (location != null && location.getLocElementType().getId().longValue() == 2) {
+            if (location != null && location.getLocElementType() != null
+              && location.getLocElementType().getId().longValue() == 2) {
               ProgressTargetCaseGeographicCountry country = new ProgressTargetCaseGeographicCountry();
               country.setLocElement(location);
               countryList.add(country);
