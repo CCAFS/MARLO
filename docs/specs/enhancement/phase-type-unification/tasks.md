@@ -84,7 +84,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** none (the owner runs it).
 
 ### T01 — M1: fix the `Planing` typo (DA-001, INT-4, OPS-004)
-- **Status:** pending · **Size:** S · **Depends on:** none · **Module:** marlo-web (migrations)
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T01) · **Size:** S · **Depends on:** none · **Module:** marlo-web (migrations)
 - **Requirements:** DA-001, MIG-001, MIG-002, OPS-004, INT-4; AC DA-001/MIG-001/MIG-002 (M1 column); AC OPS-004 (M1 part).
 - **Design refs:** §3 M1; §14 S1; P-6.
 - **Files touched:** `marlo-web/src/main/resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__FixPlaningPhaseDescription.sql`, new, named by the `marlo-migration` script.
@@ -93,8 +93,8 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
   - A header comment stating: no ids, DML only, the reason, and that the pre-run capture SELECT belongs in the release notes.
 - **Tests:** throwaway-schema dry run of the 8 scenarios with expected = pre-run SELECT, using the harness from design §3; second run = 0.
 - **Verification:** the harness output quoted in `execution.md`; `grep -E "[0-9]{2,}" <file>` shows no id literal.
-- **Falsifier:** change the WHERE to `description LIKE 'Plan%'` → scenario 1 actual exceeds expected (the 360+ `Planning` rows match too) → red.
-- **Red run:** `predicted — greenfield artifact (observed in T01)`.
+- **Falsifier:** add a decoy row (`description = 'Plan B'`) to the real-copy scenario and change the WHERE to `description LIKE 'Plan%'` → actual 13 exceeds expected 12, collateral 1 → red. (Amended 2026-10-28: the first wording, "scenario 1 actual exceeds expected", could not go red, because the mysql CLI's `ROW_COUNT()` counts changed rows and `Planning`→`Planning` changes nothing. Through Flyway/JDBC the count is matched rows, so release-log counts are not comparable with the harness.)
+- **Red run:** observed in T01 (`execution.md` T01): `9 extra: decoy 'Plan B' row  expected=12  actual=13 … collateral=1  FAIL`.
 - **Disqualifier:** a dry run against `aiccradb1`–`4` or `aiccradb_actsave` instead of a `zz_*` schema is not evidence, and it is forbidden.
 - **Consumers:** the 97 planning-gated managers and `findCycle` callers start recognizing the repaired rows (INT-4).
 - **Review:** full — data migration on production data.

@@ -1,0 +1,21 @@
+-- ENH-PHASE-TYPE-UNIFICATION-001-T01 (DA-001, INT-4, OPS-004): corrects the misspelled phase description
+-- 'Planing' to 'Planning'.
+--
+-- The misspelling sits on the plan and progress phases of AICCRA and spreads to every Global Unit created from the
+-- AICCRA template, so code that tells a plan phase from a reporting phase by its description never recognized those
+-- rows. Repairing the text makes them recognized (INT-4).
+--
+-- Matches by text only: no id of any kind, so it does the same thing on every database, including one with no
+-- phases at all (it then matches no row and succeeds). DML only, so Flyway's transaction covers it and a failure
+-- leaves nothing half applied. Idempotent: after the first run no row matches, and a second run changes 0 rows.
+-- No foreign-key column is touched, and `name`, `upkeep` and every other column keep their values.
+--
+-- OPS-004: before this migration runs on a real database, capture the rows it will change and record them in the
+-- release notes, in case a targeted reversal is ever needed:
+--
+--   SELECT id, description FROM phases WHERE description = 'Planing';
+--
+-- A rollback must not be attempted by text alone: 'Planning' rows that were always correct are indistinguishable
+-- from the repaired ones.
+
+UPDATE phases SET description = 'Planning' WHERE description = 'Planing';
