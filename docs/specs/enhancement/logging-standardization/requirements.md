@@ -210,7 +210,8 @@ decision by another team. It is listed here to stay traceable, not because it is
 - Given the application running under the `dev` profile with `log.json=true`,
 - When a user logs in and opens a project section,
 - Then every line of the JSON log MUST parse as a JSON object (`jq -e .` succeeds on each),
-- And each line MUST carry non-empty `level`, `timestamp`, `environment`, `tool_name` and `controller_affected`,
+- And each line MUST carry non-empty `level`, `timestamp`, `environment` and `controller_affected`, and a
+  non-empty `tool_name` once the Global Unit of the request is known (amended 2026-10-27, §9),
 - And the existing text log MUST be unchanged in format from the same run before this change, except for the
   `key=value` context fields NF-001 permits after the logger name.
 
@@ -475,3 +476,16 @@ Questions that do not block this spec but shape its successor. Each belongs to t
   prescribes exactly what this spec implements. Editing it would make the work a constitutional event under
   `CLAUDE.md`, requiring an epic spec and external review, for no change in content. The conventions land in
   `reports/ai-context/logging-standard.md` instead (OPS-005).
+- 2026-10-27 — **`tool_name` is required once the Global Unit is known, not on every line.** — Rationale: the
+  T16 QA pass found 244 of 283 lines without `tool_name`: the lines a request writes before
+  `RequireUserInterceptor` runs, `login.do`, anonymous requests and legacy routes. Design §11 already populates
+  the field "once the global unit is known"; the FN-001/FN-003 acceptance criterion required it on every line,
+  which no request can meet before it knows its Global Unit. The criterion now follows the design. Approved by
+  the user. Alternative considered: deriving the Global Unit from the URL at the start of every request
+  (rejected: new code in the logging context for a field the design already scopes).
+- 2026-10-27 — **T17 added: the REST v2 controllers propagate their errors.** — Rationale: the T16 QA pass
+  found that `ProjectPage.findProjectById` catches its own validation and not-found exceptions, logs an ERROR
+  without a status and returns `null`, so the client gets an empty 200; 14 `catch` blocks in 10 files of the
+  REST v2 layer log and do not propagate. The FN-006/FN-009 criterion forbids a `catch` that logs an error and
+  returns without the caller being able to tell "empty" from "failed". Approved by the user, in two batches:
+  the controllers first, then the item classes, where a `catch` may be a legitimate fallback.

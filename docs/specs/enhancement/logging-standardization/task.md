@@ -426,7 +426,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T16 — QA pass against the acceptance criteria
 
-- **Depends on:** T01 … T15
+- **Status:** Open, 2026-10-27 — QA pass run through `/akili-execute`: 20 of 31 rows demonstrated, 3 product
+  findings and 8 checks not demonstrable locally; blocked on user decisions recorded in `execution.md`.
+- **Depends on:** T01 … T15, T17
 - **Module:** —
 - **Files touched:** None; `task.md` updated with verification notes.
 - **Constitutional checks:** Full checklist from `requirements.md` §7 confirmed in the PR.
@@ -434,6 +436,34 @@
 - **Done when:** Every acceptance criterion in `requirements.md` §6 is demonstrated, including the negative
   ones (no `user_email` on success, no MDC crossover, no notification duplicate).
 - **Verification:** Recorded per criterion in this file.
+
+### ENH-LOGGING-STANDARDIZATION-001-T17 — REST v2 controllers propagate their errors
+
+- **Added:** 2026-10-27, from the T16 QA pass; approved by the user (`requirements.md` §9).
+- **Depends on:** T02, T11
+- **Module:** marlo-web
+- **Files touched:** the `catch` blocks of `rest/controller/v2/controllist/` that log an error and do not propagate
+  it. Batch 1, the controllers: `ProjectPage`, `Expenditures`, `ExpectedStudies`, `ExpectedStudiesOther` (×2),
+  `ParticipantsCapDev`, `Policies`, `ProgressTowards`, `StatusPlannedOutcomes`, plus the item classes their requests
+  reach where a hidden failure needed validating (`ProjectPageItem`, `ExpendituresItem`, `ExpectedStudiesItem`,
+  `ExpectedStudiesOtherItem`, `ParticipantsCapDevItem`, `PolicyItem`, `ProgressTowardsItem`,
+  `StatusPlannedOutcomesItem`; added 2026-10-27 during batch 1). Batch 2, the item classes:
+  `items/Deliverables/DeliverablesItem` (×4), `items/Deliverables/DeliverablesWOSItem`.
+- **Constitutional checks:** REST error handling stays centralized in `rest/errors/ExceptionTranslator` (ADR-8); never
+  expose a stack trace to the client; the `ErrorDTO` shape is unchanged. A successful response MUST NOT change. No
+  change may introduce an exception that is not already thrown today: every value the changed code reads is
+  validated (null receivers, `get(0)` on an empty list, unboxing of a null `Long`), and a `catch` is removed only
+  after reading what its method returns on failure and what its callers expect.
+- **Tests:**
+  - Unit, per changed endpoint: a valid request returns the same status and body as before; an invalid or unknown
+    identifier now reaches `ExceptionTranslator` and answers its status (400 for a field validation error, 404 for
+    not found, 500 for anything else) with exactly one log event carrying `status_code`.
+- **Done when:**
+  - No `catch` in the REST v2 layer logs an error and returns `null` or an empty answer the caller cannot tell from
+    "no data" (FN-006/FN-009 criterion), except fallbacks that are legitimate by design, each documented in place.
+  - Successful responses are unchanged, verified per endpoint.
+- **Verification:** clean compile and full suite with `-am`; Checkstyle delta 0; for each changed endpoint, the
+  unit test above, and a falsifier run showing the test fails against the old `catch`.
 
 ## 4. Dependency Graph
 
@@ -451,7 +481,7 @@ T04 (environment) ──────┴─► T05 (LogContext listener)       �
                                                         └─► T12 (MicroserviceReportAction)
                                                               └─► T14 (Checkstyle + suppressions)
                                                                     └─► T15 (ai-context)
-                                                                          └─► T16 (QA pass)
+                                                                          └─► T16 (QA pass) ◄── T17 (REST errors)
 ```
 
 T03 and T04 are independent and can run in parallel with anything. T01 and T02 are formally independent but

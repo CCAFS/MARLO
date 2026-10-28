@@ -322,3 +322,50 @@ plus 535 in three new Java files, 2 Reviewer verdicts in one round.
 - The logging block in `marlo-checkstyle.xml` is indented one tab deeper than its neighbours.
 
 - **Final verification:** PASS.
+
+### ENH-LOGGING-STANDARDIZATION-001-T16 — QA pass against the acceptance criteria
+
+- **Final status:** open — blocked on user decisions (not closable: Done-when not met)
+- **Date:** 2026-10-27
+- **Worker:** `akili-tester` (`opus`, effort high), 53 calls, 176586 tokens, ended complete.
+- **Environment:** local app from HEAD `0a17b19671` under `dev`, `log.json=true`, mail and CLARISA pointed at a
+  dead address during startup; unit suite in a throwaway worktree (1123 tests, 0 failures); only one local account.
+
+#### Result (31 rows: 12 acceptance-criteria rows and every Testing Plan item)
+
+- **Demonstrated (20, after the Leader re-run below):** every JSON line parses (283/283 and 4641/4641);
+  `status_code` and `user_id` are JSON numbers; no `user_name`/`user_email` on a successful request (0 lines);
+  no context crossover in 480 interleaved logged-in and anonymous requests over all 10 Tomcat threads; the same 500
+  twice gives one mail hand-off and one "already reported" suppression; `controller_affected` carries no query
+  string; `stack_trace` is bounded; `log.json=false` writes no JSON file and keeps the text log; the text log keeps
+  its format; `LoggingAspect` is gone; the Checkstyle guardrail reports a new print; `environment` follows the
+  profile (unit test).
+- **Leader re-run (non-author):** a logged-in Struts 500 on `summaries/AICCRA/POWBSummaryPLT2019.do` carries
+  `status_code` 500, `user_id`, `tool_name`, `user_name` and `user_email` (7 lines), with 0 personal-data lines
+  below 400. SEC-001's positive case and Integration 5 are therefore demonstrated on a normal route; the Tester's
+  failing case used `centerSummaries/centerOutcomes.do`, a legacy route whose stack has no `RequireUserInterceptor`
+  and so never publishes the user.
+- **Not demonstrated (product findings):**
+  1. AC FN-001/FN-003 and Integration 2: "each line MUST carry non-empty `tool_name`" — 244 of 283 lines have none:
+     the lines a request writes before `RequireUserInterceptor` runs, `login.do`, anonymous requests and the legacy
+     `centerSummaries` routes. The design says `tool_name` is populated "once the global unit is known", so the AC
+     and the design disagree (spec tension).
+  2. AC FN-006/FN-009, third clause ("no `catch` … MUST log an error and return `null`"):
+     `rest/controller/v2/controllist/ProjectPage.findProjectById` throws `NotFoundException` inside its own `try`,
+     catches it, logs ERROR without a status and returns `null`, so the client gets an empty 200 instead of a 404.
+     The `return null` predates this spec; T11 (`5568058c22`) changed only the log line.
+  3. Legacy `centerSummaries` routes publish no user context (no `user_id`, `tool_name`, `user_name`,
+     `user_email`), so their errors cannot name the affected user.
+- **Not demonstrable locally (8):** REST runtime checks FN-004, FN-005, Integration 1 and 4 (a session is redirected
+  away from `/api/*` and there is no local REST credential); OPS-001 under the `test` and `pro` profiles with a
+  started app (unit test only); the QA team's manual regression; both before/after performance comparisons.
+- **Also found (code reading):** `ExceptionTranslator` logs the REST 401 of `AuthorizationException` at ERROR while
+  every other 401 is INFO; an anonymous `/api/*` call is refused by Shiro with no log event.
+
+#### Escalation
+
+T16 stays open. The user decides: (1) amend the FN-003 acceptance criterion to the design's "once the global unit is
+known", or populate `tool_name` earlier in code; (2) whether `ProjectPage` becomes its own task (it changes a REST
+response from an empty 200 to a 404); (3) whether the legacy `centerSummaries` gap is accepted as a known limit; (4)
+who runs the checks that are not demonstrable locally (REST credential, `test`/`pro` startup, QA regression,
+performance).
