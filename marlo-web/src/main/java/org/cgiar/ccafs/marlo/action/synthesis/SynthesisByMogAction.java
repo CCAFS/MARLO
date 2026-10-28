@@ -32,6 +32,7 @@ import org.cgiar.ccafs.marlo.data.model.IpLiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.IpProgram;
 import org.cgiar.ccafs.marlo.data.model.IpProjectContributionOverview;
 import org.cgiar.ccafs.marlo.data.model.MogSynthesy;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -201,8 +202,13 @@ public class SynthesisByMogAction extends BaseAction {
       case 2:
       case 3:
       case 4:
+        Phase phase = this.getActualPhase();
+        if (phase == null || phase.getId() == null) {
+          lst = new ArrayList<>();
+          break;
+        }
         lst = overviewManager.getProjectContributionOverviewsSytnhesisGlobal(mogId, this.getCurrentCycleYear(),
-          program.getId());
+          program.getId(), phase.getId());
         break;
 
       default:
