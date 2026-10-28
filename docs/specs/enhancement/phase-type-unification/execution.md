@@ -203,3 +203,35 @@
 - LOC: 21 + 258 = 279 (budget T01 + T02: 215). The overrun is in the test LOC. The design budget already noted
   that tests were undercounted. It is within the total tripwire.
 - Review rounds: 2 (budget ~24).
+
+### T00 — Production read-only checks before code (OPS-003) — PASS (owner exception)
+
+- **Date:** 2026-10-28
+- **Final status:** PASS by owner decision. The `tasks.md` T00 *Disqualifier* states that a local copy is not
+  production evidence. On 2026-10-28 the owner ruled: "Hazlo localmente ya que es una copia de prod". The
+  check therefore ran on the local copies, and this record keeps the exception visible.
+- **Run by:** Leader-inline, read-only SELECTs only (Review: checklist).
+- **MySQL version:** `8.0.43` (local server).
+- **Freshness of each copy:**
+
+  | Schema | Last Flyway install | Last auditlog |
+  |---|---|---|
+  | `aiccradb_actsave` | 2026-10-23 09:58 | 2026-10-27 14:54 |
+  | `aiccradb1`, `aiccradb2` | 2026-10-09 16:07 | none |
+  | `aiccradb3`, `aiccradb4` | 2026-06-25 08:38 | no auditlog table |
+
+- **`SELECT description, upkeep, COUNT(*) FROM phases GROUP BY 1, 2`:**
+
+  | Schema | Planing/0 | Planing/1 | Planning/0 | Planning/1 | Reporting/0 | Other |
+  |---|---|---|---|---|---|---|
+  | `aiccradb_actsave` | 6 | 6 | 128 | 115 | 137 | none |
+  | `aiccradb1`–`4` | 3 | 3 | 113 | 100 | 119 | none |
+
+- **`SELECT COUNT(*) FROM phases WHERE description = 'Planing'`:** 12 in `aiccradb_actsave`, 6 in each of
+  `aiccradb1`–`4`.
+- **Verification:** every combination is in {`Planning/0`, `Planning/1`, `Reporting/0`, `Planing/0`,
+  `Planing/1`}. **Met.** The strict definitions (DD-3) stand. P-2 is settled for the copies the owner accepts
+  as production.
+- **Falsifier:** a combination outside the set would be listed in the "Other" column. None appeared.
+- **Residual risk (carried to the release HITL):** production rows changed after 2026-10-27 are not covered.
+  OQ4 part 2 (before M2) re-runs the production counts.

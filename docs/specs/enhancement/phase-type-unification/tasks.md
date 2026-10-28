@@ -64,7 +64,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 ---
 
 ### T00 — Production read-only checks before code (OPS-003, OQ4 part 1)
-- **Status:** pending · **Size:** XS · **Depends on:** none · **Module:** none (DB read)
+- **Status:** [x] done (2026-10-28, on the local copies by owner decision; `execution.md` T00) · **Size:** XS · **Depends on:** none · **Module:** none (DB read)
 - **Requirements:** OPS-003; settles P-2 for production.
 - **Design refs:** §14 S0; P-2.
 - **Scope:** run against production, read-only:
