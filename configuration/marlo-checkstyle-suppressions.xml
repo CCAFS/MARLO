@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+<!--
+  Suppressions for the logging guardrail (OPS-004), see marlo-checkstyle.xml.
+  Generated 2026-10-27 by running the two rules over src/main/java and src/test/java of marlo-utils,
+  marlo-data and marlo-web after T09-T12: only the files below still carry a hit. Remove an entry when
+  its file is cleaned; never add one for new code.
+  Notes: "id" is matched literally in Checkstyle 8.18 (no alternation, hence one entry per rule id), and
+  "files" must match the whole absolute path, hence the leading and trailing .*
+-->
+<suppressions>
+  <!-- marlo-utils: remaining printStackTrace() calls. -->
+  <suppress id="LoggingPrintStackTrace" files=".*[\\/]marlo-utils[\\/]src[\\/]main[\\/]java[\\/].*[\\/]utils[\\/](ExternalPostUtils|AESConvert|SendMail)\.java"/>
+  <!-- marlo-utils: ExternalPostUtils still prints the request line to System.out. -->
+  <suppress id="LoggingSystemOut" files=".*[\\/]marlo-utils[\\/]src[\\/]main[\\/]java[\\/].*[\\/]utils[\\/]ExternalPostUtils\.java"/>
+  <!-- marlo-web tests: ClientIpResolverTest prints diagnostics; SaveChainFailureLoggingTest redirects System.err. -->
+  <suppress id="LoggingSystemOut" files=".*[\\/]marlo-web[\\/]src[\\/]test[\\/]java[\\/].*[\\/](ClientIpResolverTest|SaveChainFailureLoggingTest)\.java"/>
+</suppressions>

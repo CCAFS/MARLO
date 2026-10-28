@@ -388,6 +388,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T14 — Checkstyle guardrail
 
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`): rules
+  `LoggingPrintStackTrace` and `LoggingSystemOut`, and explicit suppressions for the 5 files that still carry one.
+  Reviewer PASS on attempt 2; see `execution.md`.
 - **Depends on:** T09, T10, T11, T12 (so the suppressions file is not stale on arrival)
 - **Module:** repository root
 - **Files touched:**

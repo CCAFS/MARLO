@@ -260,3 +260,65 @@ plus 535 in three new Java files, 2 Reviewer verdicts in one round.
 #### Decisions made
 
 - Closing scans now use multi-line patterns; a single-line regex is not evidence that a file holds no print.
+
+### ENH-LOGGING-STANDARDIZATION-001-T14 — Checkstyle guardrail
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-10-27
+- **Implementer attempts:** 2, plus one continuation (the suppressions regenerated after the reopened T09)
+- **Requirements covered:** OPS-004, FN-009.
+- **Skills:** `marlo-verify`. Effort `medium`, raised to `high` for the rework.
+
+#### Attempt 1
+
+- **Files changed:** `configuration/marlo-checkstyle.xml`, new `configuration/marlo-checkstyle-suppressions.xml`.
+- **Implementer verification:** rules `LoggingPrintStackTrace` (`\.printStackTrace\(\s*\)`) and `LoggingSystemOut`
+  (`System\.(out|err)\.print`), both `ignoreComments=true`; `SuppressionFilter` relative to the repository root,
+  `optional=true`; 6 hits in 3 marlo-utils files suppressed and `src/test` excluded entirely; red probe 3 hits, green 0.
+- **Evidence re-run (Leader-inline):** VERIFIED (own probe 3 hits; `ExternalPostUtils` 0; 3484 main files 0).
+- **Reviewer verdict:** **FAIL**. (1) `printStackTrace(System.err)`, `printStackTrace(System.out)` and
+  `System.err.write/append/format` passed both rules (OPS-004, FN-009, TRD §9.1). (2) The blanket `src/test`
+  exclusion broke "existing occurrences MUST be suppressed explicitly" and the OPS-004 acceptance criterion. Leader
+  adjudication: remediation (a), explicit suppression of the test files with occurrences; option (b), narrowing
+  OPS-004 to production code, would change the spec and was not taken.
+
+#### Attempt 2
+
+- **Files changed:** the same two files. `LoggingPrintStackTrace` = `\.printStackTrace\(\s*(\)|System\b)`;
+  `LoggingSystemOut` = `System\.(out|err)\b`. The wider rule surfaced a split `System.out` in a T09 file; T09 was
+  reopened and fixed (entry above), and a continuation regenerated the suppressions from the result.
+- **Suppressions (explicit, by file and rule id):** marlo-utils `ExternalPostUtils` (2 + 2), `AESConvert` (1),
+  `SendMail` (1); marlo-web tests `ClientIpResolverTest` (3, `System.out`) and `SaveChainFailureLoggingTest` (1, the
+  `System.err` capture it asserts on). 11 hits in 5 files without suppressions, 0 with them.
+- **Implementer verification:** red probe reports `printStackTrace()`, `printStackTrace(System.err)` and
+  `(System.out)`, `System.out.println`, `System.err.write`, `System.out.format`; comments and
+  `printStackTrace(new PrintWriter(w))` are not reported; existing rules unchanged (delta 0).
+- **Evidence re-run (Leader-inline):** VERIFIED. Own probe: every console form reported, including a `System.out` /
+  `.println` split over two lines; the comment and the writer form not reported. All 3597 Java files under
+  `src/main` and `src/test` of the three modules: 0 `Logging*` hits with the suppressions.
+- **Reviewer verdict:** **PASS**. Both attempt-1 issues resolved; the Reviewer's own search found the same 11 hits
+  in the same 5 files, each suppressed by name and id; the `SaveChainFailureLoggingTest` entry is a legitimate use.
+- **runtime events:** none.
+- **spawns:** implementer 22 calls, 92515 tokens, ended complete; reviewer 11 calls, 49540 tokens, ended fail;
+  implementer 10 calls, 85013 tokens, ended complete; implementer (continuation) 8 calls, 72410 tokens, ended
+  complete; reviewer 4 calls, 40370 tokens, ended complete.
+- **continuations:** 1 (suppressions regenerated after the T09 fix).
+
+#### Decisions made
+
+- `reports/ai-context/logging-standard.md` (T15's deliverable) said the console rule was not yet enforced because T14
+  was open. With T14 closed that was false; the Leader updated its two statements: the rules now apply to every file,
+  run through `checkstyle.sh` from the repository root, and a cleaned file leaves the suppressions list.
+
+#### ADVISORY (recorded, not acted on)
+
+- The suppressions path is relative to the working directory and `optional=true`: a repaired
+  `maven-checkstyle-plugin` would skip it silently and report the 11 known hits; switch to `${config_loc}` then.
+- `checkstyle.sh` does not change to the repository root, so running it from a subdirectory drops the suppressions on
+  both sides of the delta; it always exits 0, so the gate holds only if the delta is read.
+- `System\.(out|err)\b` also matches inside string literals; acceptable for a guardrail.
+- The whole-file suppressions of the three marlo-utils files would hide a new print added to them; `ExternalPostUtils`
+  (POST bodies on stdout) is the first to clean.
+- The logging block in `marlo-checkstyle.xml` is indented one tab deeper than its neighbours.
+
+- **Final verification:** PASS.

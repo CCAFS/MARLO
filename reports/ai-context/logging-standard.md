@@ -24,7 +24,7 @@ Production appenders (`FILE-PRODUCTION`, `CONSOLE-PRODUCTION`, and `FILE-JSON` w
 | Rule | Source |
 |---|---|
 | Exception is the last argument, never `e.getMessage()` concatenated | FN-006 (`requirements.md` §3) |
-| No `System.out`, `System.err`, `printStackTrace()` on the save chain, authentication path, filters, REST layer | FN-009; not yet a Checkstyle rule (T14 is open): nothing stops a new one, so a reviewer must |
+| No `System.out`, `System.err`, `printStackTrace()` on the save chain, authentication path, filters, REST layer | FN-009; enforced since T14 by the Checkstyle rules `LoggingPrintStackTrace` and `LoggingSystemOut` (OPS-004) in `configuration/marlo-checkstyle.xml`, for every file; the few existing offenders are listed in `configuration/marlo-checkstyle-suppressions.xml` |
 | Name a user by id in message text, never by email or name | `design.md` §13; email and name are fields that SEC-001 publishes on failed requests only, and text bypasses that rule |
 | Never write a credential, or a login form value before the account is verified | SEC-004 |
 | A value that came from the request is not written into the log text of a 4xx; log the exception class instead | `ExceptionTranslator.logHandledError` javadoc (the message "can echo back the values the client sent") |
@@ -87,7 +87,7 @@ Tomcat reuses worker threads, so a value left in the MDC is attributed to the ne
 
 ## Known Limits
 - `payload` has no producer yet; `SEC-002` governs the first one.
-- The Checkstyle guardrail for `System.out`/`printStackTrace()` (OPS-004, T14) was not done when this file was written, and `mvn checkstyle:check` cannot run in this checkout.
+- The Checkstyle guardrail for `System.out`/`System.err`/`printStackTrace()` (OPS-004, T14) runs only through `.claude/skills/marlo-verify/scripts/checkstyle.sh` from the repository root: `mvn checkstyle:check` cannot run in this checkout, and the suppressions path is relative to the root. Remove a file from the suppressions once it is cleaned.
 - Field naming against the cross-tool agreement (`tool`/`module` vs `tool_name`/`module_section`) is an open question owned by the DevOps group (`requirements.md` §8); keep any rename a single edit in the `<providers>` block.
 
 ## Source References
