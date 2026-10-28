@@ -99,9 +99,10 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-001 — The phase type MUST be answerable for any phase object through exactly
   three questions: is it the plan phase, the progress phase, or the reporting phase. The planning cycle MUST be
   expressed as "plan phase or progress phase", not as a fourth question.
-- ENH-PHASE-TYPE-UNIFICATION-001-FN-002 — For every phase whose `description` is `Planning` or `Reporting` and
-  whose `upkeep` is not null (`phases.upkeep` is `NOT NULL`), the three answers MUST equal what the old type
-  methods answer today:
+- ENH-PHASE-TYPE-UNIFICATION-001-FN-002 — For every phase on record whose `description` is `Planning` or
+  `Reporting`, whose `upkeep` is not null (`phases.upkeep` is `NOT NULL`), and whose `name` agrees with its
+  `description` and `upkeep` (P-2, settled by OPS-003), the three answers MUST equal what the old type methods
+  answer today. The old plan methods read the `name`; the new ones never do. (Amended 2026-10-28 at the T03 gate.)
   - plan phase = today's `isPOWB()`;
   - progress phase = today's `isProgressActive()`;
   - reporting phase = today's `isReportingActive()`;
@@ -242,8 +243,11 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
 **AC for FN-003, FN-004, INT-3:**
 - Given the empty phase, a phase with `upkeep = null`, and a phase with `description = null`,
 - When the plan, progress and reporting answers and the planning cycle are evaluated,
-- Then each MUST return `false`,
+- Then the empty phase MUST return `false` on all four, and a phase with a null `description` or `upkeep` MUST
+  answer per DD-3 (for example, `AR/Reporting/null` is a reporting phase, as `isReportingActive()` answers today),
 - And no exception MUST be thrown,
+- (Amended 2026-10-28 at the T03 gate. The first wording, "each MUST return `false`", contradicted DD-3 and
+  today's `isProgressActive()` / `isReportingActive()` on null-field phases.)
 - BUT a page rendered with no session or no global unit MUST NOT change its output (NF-002 includes such a page).
 
 **AC for FN-005, NF-003:**
@@ -426,3 +430,8 @@ command in this repo can see it. It is asked of the BI owner (§8 OQ2) before DA
   Closure sweep: the superseded values (`6 rows`, `54`, `~420`, `9 Java sites`, `INT-1..INT-3`) were grepped across
   this folder and updated in `design.md`, `requirements.md` and `call-sites.md`. `proposal.md` keeps its committed
   intent, annotated where it is superseded.
+- 2026-10-28 — T03 gate (owner): FN-002 is scoped to phases whose name agrees with their type. The AC for FN-003
+  and FN-004 now requires DD-3 values on null-field phases, `false` only for the empty phase. DD-3 names its domain.
+  The code is unchanged; the three spec tensions are recorded in `execution.md` T03. Closure sweep: `each MUST
+  return` and `for every phase whose` were grepped across this folder. The only hit left is the amendment note
+  itself, which quotes the old wording.

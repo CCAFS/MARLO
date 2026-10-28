@@ -235,3 +235,99 @@
 - **Falsifier:** a combination outside the set would be listed in the "Other" column. None appeared.
 - **Residual risk (carried to the release HITL):** production rows changed after 2026-10-27 are not covered.
   OQ4 part 2 (before M2) re-runs the production counts.
+
+### T03 — `Phase` type methods + equivalence — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1)
+- **Requirements covered:**
+  - FN-001, FN-003, FN-004;
+  - FN-002 on the real data and the FN-002 rows of the test table;
+  - INT-3 (`Phase.isReporting()` with a null description);
+  - AC FN-001/002, including the real-data clause.
+- **Effort / skills:** `high`; `tdd`, `marlo-verify`.
+- **Isolation:** worktree. The Implementer found a stale base (`9a2cf412ef`) and ran `git reset --hard 87b57f4c20`
+  before any work, as its brief required.
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-data/src/main/java/org/cgiar/ccafs/marlo/data/model/Phase.java` (+26; CRLF kept):
+    - `isPlanningPhase()` = `APConstants.PLANNING.equals(description) && Boolean.FALSE.equals(upkeep)`;
+    - `isProgressPhase()` = `Boolean.TRUE.equals(upkeep)`;
+    - `isReportingPhase()` = `APConstants.REPORTING.equals(description)`;
+    - `isReporting()` (still `Boolean`) delegates to `isReportingPhase()`.
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/data/model/PhaseTypeEquivalenceTest.java` (new, 15 tests, GPL
+    header). Old answers come from the real `BaseAction` methods through `getActualPhase()`. New answers are
+    pinned as DD-3 literals.
+  - `BaseActionPhaseTypeCharacterizationTest.java`: only the `Phase.isReporting()` null-description row changes,
+    from throws to `false` (INT-3). That is a consequence of the delegation T03 orders, though the file is not
+    in T03's file list (Reviewer advisory). No other T02 expectation changed.
+- **Mapping:** `Phases.hbm.xml` lists its properties explicitly (property access), so the new getters are
+  unmapped. `@Expose` is field-level, so Gson is unaffected.
+- **Evidence re-run (non-author, Leader-inline, in the worktree at `fc0777c253`):**
+  - The diff covers 3 files.
+  - Clean compile: 2415 + 1062 + 112 test sources.
+  - `mvn -o -pl marlo-data,marlo-web -am test -Dtest=PhaseTypeEquivalenceTest,BaseActionPhaseTypeCharacterizationTest,BaseActionGlobalUnitRulesTest,ProjectActivitiesValidatorCancelledTest`
+    → `Tests run: 43, Failures: 0, Errors: 0`.
+  - SQL comparison (`cmp.sql`, SELECT only): old rules translated from the old bodies (`BINARY name IN ('POWB','AWPB')`,
+    `upkeep = 1`, BINARY description) versus DD-3, with M1 simulated. Results per schema:
+
+    | Schema | Rows | Differ after M1 | Differ on raw data (the `Planing` rows) | Null or empty fields |
+    |---|---|---|---|---|
+    | `aiccradb1`–`4` (each) | 338 | **0** | 6 | 0 |
+    | `aiccradb_actsave` | 392 | **0** | 12 | 0 |
+
+    The columns are NOT NULL, so the empty phase and null-field cases are covered by the unit test only.
+  - Falsifier: the test's cycle (line 90) was changed to `!phase.isReportingPhase()`. Result:
+    `Tests run: 15, Failures: 5`, for example `empty phase cycle vs isPlanningActive expected:<false> but was:<true>`
+    and `POWB/Planing/0 planning cycle expected:<false> but was:<true>`. The edit was reverted.
+
+  **VERIFIED.**
+- **Red run:** no red was observed against a missing implementation, because the methods were written before
+  the test ran. The falsifier is the only observed red.
+- **Checkstyle:** delta 0 (HEAD 0, tree 0) on the 3 files.
+- **Reviewer verdict:** PASS (`opus`, checklist mode). It checked:
+  - the methods match DD-3 word for word and are null-safe;
+  - the delegation changes only the null-description case;
+  - expected values are DD-3 literals and old-code results, never values from the new methods;
+  - the SQL translation of the old methods is faithful.
+
+  ISSUES: none.
+- **ADVISORY (recorded, no rework):**
+  - SCOPE: the characterization-test edit sits outside T03's file list, but is necessary. It is recorded above.
+  - RISK: serializing `Phase` through its getters (Struts JSON or Jackson) would now emit `planningPhase`,
+    `progressPhase` and `reportingPhase`, as it already emits `reporting`. Grep for direct `Phase`
+    serialization before T04. Forward pointer to T04.
+  - READABILITY: once the DD-3 domain note is settled, add one comment in `Phase` pointing to it.
+- **runtime events:** none.
+- **spawns:**
+  - implementer 41 calls, 124,724 tokens, ended complete;
+  - reviewer 12 calls, 61,080 tokens, ended complete.
+
+#### Spec tensions (raised at the T03 gate; the code follows DD-3, which matches today's old methods)
+
+1. AC FN-003/004 says "each MUST return false" for `description = null`. DD-3 and today's `isProgressActive`
+   give progress = true on `UpKeep/null/1`. The Reviewer classes this as a wording defect, with a design note:
+   - DD-3 classifies by `upkeep` alone for progress. So `Reporting/1`, impossible today under OPS-003, would be
+     both reporting and progress.
+   - On `UpKeep/null/1` the new cycle is `true` where the old `isPlanningActive` is `false`.
+   - Proposal: DD-3 names its domain as the OPS-003 combinations.
+2. AC FN-003/004 says "each false" for `upkeep = null`. DD-3 and today's `isReportingActive` give
+   `AR/Reporting/null` reporting = true. This is a wording defect.
+3. FN-002 says "for every phase … plan = `isPOWB()`", but `isPOWB()` reads the name and DD-3 never does. The
+   equivalence holds only where the name agrees with the type (P-2 / OPS-003). This is a wording defect; the
+   AC already scopes it to the table plus the real data.
+
+#### Forward pointers
+
+- **T04:** grep for direct `Phase` bean serialization.
+- **T04:** the `getCurrentCycle()` null branch is uncovered (from T02).
+- **T04:** the empty-session row is a unit-test path (from T02).
+
+#### Running totals vs budget (design §17)
+
+- Tasks closed: 4 of 16 (T00–T03).
+- LOC: 279 + 235 = 514 (budget T01–T03: 335). The overrun is in test LOC; the total of ~1,270 still holds a
+  margin of about 760 for 12 tasks. Watch it at T05 and T06.
+- Review rounds: 3.

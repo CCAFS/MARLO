@@ -229,6 +229,11 @@ because no non-REST logic reads `name` after S3.
 
   Alternative: cycle = "not reporting". Rejected because it is true for the empty phase (FN-003). Typo
   tolerance is replaced by M1. Requirements FN-002, FN-003; P-2, P-6.
+
+  **Domain (added 2026-10-28 at the T03 gate):** the definitions are exact on the combinations OPS-003 allows:
+  `Planning/0`, `Planning/1`, `Reporting/0`, and `Planing/*` before M1. Outside that domain they are null-safe but
+  not exclusive. A `Reporting/1` row would be both a reporting and a progress phase, and `UpKeep/null/1` is in the
+  cycle where the old `isPlanningActive()` is not. No such row exists (T00, T03 SQL comparison).
 - **DD-4 — No fourth "planning cycle" method.** The cycle is written as plan-or-progress at each of its ~40 call
   sites. Alternative: a cycle method. Rejected by the owner, because a second "planning" name would be confused
   with the plan phase (requirements §9).

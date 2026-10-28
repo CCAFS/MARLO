@@ -221,11 +221,11 @@ public class BaseActionPhaseTypeCharacterizationTest {
   }
 
   @Test
-  public void thePhaseReportingQuestionComparesTheDescriptionAndThrowsOnANullOne() {
+  public void thePhaseReportingQuestionComparesTheDescriptionAndAnswersFalseOnANullOne() {
     assertEquals(true, phase("AR", "Reporting", Boolean.FALSE).isReporting().booleanValue());
     assertEquals(false, phase("POWB", "Planning", Boolean.FALSE).isReporting().booleanValue());
     assertEquals(false, new Phase(null, "", -1).isReporting().booleanValue());
-    assertThrows("Phase.isReporting() with a null description", NullPointerException.class,
-      () -> phase("AR", null, Boolean.FALSE).isReporting());
+    assertEquals("Phase.isReporting() with a null description (INT-3: it threw before)", false,
+      phase("AR", null, Boolean.FALSE).isReporting().booleanValue());
   }
 }

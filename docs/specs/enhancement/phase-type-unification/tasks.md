@@ -131,7 +131,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `tdd`, `marlo-verify`, `marlo-commit`.
 
 ### T03 — `Phase` type methods + equivalence (B2)
-- **Status:** pending · **Size:** S · **Depends on:** T00, T01 (strict definitions need M1, DD-3), T02 · **Module:** marlo-data + marlo-web tests
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T03) · **Size:** S · **Depends on:** T00, T01 (strict definitions need M1, DD-3), T02 · **Module:** marlo-data + marlo-web tests
 - **Requirements:** FN-001, FN-002, FN-003, FN-004; AC FN-001/002 (all clauses), AC FN-003/004 (Phase part).
 - **Design refs:** §1; DD-1; DD-3; P-2, P-3.
 - **Files touched:**
