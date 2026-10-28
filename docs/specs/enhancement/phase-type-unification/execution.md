@@ -108,3 +108,98 @@
 - LOC: 21 (budget for T01: 15; total ~1,270).
 - Review rounds: 1 (budget ~24).
 - Within the tripwire.
+
+### T02 — Characterization tests of today's phase-type behavior — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1)
+- **Requirements covered:** FN-002 and FN-009 (the old results are pinned); NF-001 baseline. INT-3 throw rows
+  pinned as throws.
+- **Effort / skills:** `high`. This pins the contract every later task relies on. Skills: `tdd`, `marlo-verify`.
+- **Isolation:** the Implementer ran in a git worktree (`isolation: worktree`), because another session's
+  `cargo:run` holds this checkout's `target/` (owner chose "seguir" at the T01 gate).
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/BaseActionPhaseTypeCharacterizationTest.java` (new, 14 tests, GPL header);
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/BaseActionGlobalUnitRulesTest.java`: the `isUpKeepActive` override is removed; the session carries a POWB/Planning/0 phase plus `setPhaseID`;
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/validation/projects/ProjectActivitiesValidatorCancelledTest.java`: the `isReportingActive` override is removed; an AR/Reporting or POWB/Planning phase is set from the `reporting` flag; the assertions are unchanged.
+  - No `src/main` change.
+- **Asserted table.** Every input resolves through the real `getActualPhase()`. Columns are `isPOWB` /
+  `isAWPBActive` / `isPlanningActive` / `isProgressActive` / `isUpKeepActive` / `isReportingActive` /
+  `getCurrentCycle`.
+
+  | Input (name/description/upkeep) | Answers |
+  |---|---|
+  | POWB/Planning/0, AWPB/Planning/0 | T/T/T/F/F/F/Planning |
+  | UpKeep/Planning/1, Progress/Planning/1 | F/F/T/T/T/F/Planning |
+  | AR/Reporting/0 | F/F/F/F/F/T/Reporting |
+  | POWB/Planing/0 | T/T/F/F/F/F/Planning |
+  | empty phase | F/F/F/F/throws NPE/F/Planning |
+  | null actual phase | F/F/F/F/throws NPE/F/Planning |
+  | no / empty session | same as the empty phase |
+  | UpKeep/Planning/null | F/F/T/F/throws NPE/F/Planning |
+  | POWB/null/0 | T/T/F/F/F/F/Planning |
+  | UpKeep/null/1 | F/F/F/T/T/F/Planning |
+  | null/Planning/0 | F/F/T/F/F/F/Planning |
+  | null/Reporting/0 | F/F/F/F/F/T/Reporting |
+
+  `Phase.isReporting()` is pinned too: it throws an NPE on a null description. That goes beyond the brief, and
+  INT-3 names it.
+- **Implementer verification (deviation):** the worktree was created from `9a2cf412ef`, an older staging
+  merge, not from `2441a8e0f6`. The Implementer's own compile, test and falsifier runs therefore covered
+  different code (`BaseAction.java` differs by 15 lines) and are **not evidence for the spec base**. They
+  reported: compile 2415 + 1064 + 110 files, 28 tests green, `isPOWB` flip red, Checkstyle delta 0.
+- **Evidence re-run (non-author, Leader-inline), on the spec base.** The commit `75f5cda2f8` was cherry-picked
+  onto `2441a8e0f6` in the worktree as `574f5d1cca` (branch `t02-on-spec`). The pick was clean and touched 3
+  files only.
+  - Clean compile: 2415 (marlo-data) + 1062 (marlo-web) + 111 test sources.
+  - `mvn -o -pl marlo-data,marlo-web -am test -Dtest=BaseActionPhaseTypeCharacterizationTest,BaseActionGlobalUnitRulesTest,ProjectActivitiesValidatorCancelledTest`
+    → `Tests run: 28, Failures: 0, Errors: 0, Skipped: 0`, BUILD SUCCESS.
+  - Falsifier as specified: `isPOWB()` was made to also accept `"UpKeep"`, anchored to `BaseAction.java:7742`.
+    It went red at assertion level, then the edit was reverted and the tree was clean:
+    ```
+    java.lang.AssertionError: UpKeep/Planning/null isPOWB expected:<false> but was:<true>
+    java.lang.AssertionError: UpKeep/null/1 isPOWB expected:<false> but was:<true>
+    java.lang.AssertionError: UpKeep/Planning/1 isPOWB expected:<false> but was:<true>
+    ```
+    An earlier unanchored edit hit `isAWPBActive()` instead (its body is identical) and also went red on its
+    assertions.
+
+  **VERIFIED.**
+- **Reviewer verdict:** PASS (`opus`, checklist mode). It checked:
+  - every expected value against the old bodies at `2441a8e0f6`;
+  - that the doubles assert exactly what they asserted before;
+  - that no fixture supplies the value its assertion checks;
+  - the GPL header and code style.
+- **ADVISORY (recorded, no rework):**
+  - RELIABILITY: record the falsifier deviation as it happened. Done above, and the specified `isPOWB` flip was
+    re-observed on the spec base.
+  - READABILITY: the empty-session row reaches the empty phase only because `ActionContext.getContext()` is
+    null in a unit test (`BaseAction:2161-2163` catch). With a real ActionContext the path differs. T03/T04
+    should not read this row as the production path.
+  - RELIABILITY: `getCurrentCycle()`'s `catch → null` branch is never exercised, because `isReportingActive()`
+    cannot throw. T04 must not assume a null cycle is covered. Carry this into the T04 brief.
+- **runtime events:** none.
+- **spawns:**
+  - implementer 36 calls, 125,735 tokens, ended complete (wrong worktree base; see the deviation above);
+  - reviewer 13 calls, 63,799 tokens, ended complete.
+
+#### Decisions made
+
+- 2026-10-28 — The worktree-base deviation was resolved by cherry-picking onto the spec base and re-running all
+  evidence there. No rework attempt was consumed: the code was correct, and only where it had been measured was
+  wrong.
+- **Forward pointers (copy them into the T04 brief):**
+  - the `getCurrentCycle()` null branch is not covered;
+  - the empty-session row is a unit-test path.
+- **Process note:** a worktree-isolated Implementer must be told to verify `git log -1` equals the spec HEAD
+  before working. Its base can differ from the Leader's HEAD.
+
+#### Running totals vs budget (design §17)
+
+- Tasks closed: 2 of 16.
+- LOC: 21 + 258 = 279 (budget T01 + T02: 215). The overrun is in the test LOC. The design budget already noted
+  that tests were undercounted. It is within the total tripwire.
+- Review rounds: 2 (budget ~24).

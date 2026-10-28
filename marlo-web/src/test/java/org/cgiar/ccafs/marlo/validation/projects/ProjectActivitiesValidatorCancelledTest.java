@@ -16,10 +16,14 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.model.Activity;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -29,6 +33,8 @@ import static org.junit.Assert.assertEquals;
  * A cancelled activity only owes the justification of its cancellation, and only in the reporting cycle.
  */
 public class ProjectActivitiesValidatorCancelledTest {
+
+  private static final Long PHASE_ID = Long.valueOf(7L);
 
   private final ProjectActivitiesValidator validator = new ProjectActivitiesValidator(null);
 
@@ -41,12 +47,14 @@ public class ProjectActivitiesValidatorCancelledTest {
       public String getText(String aTextName, List<?> args) {
         return aTextName.replace("activity.", "Activity " + args.get(0) + " ");
       }
-
-      @Override
-      public boolean isReportingActive() {
-        return reporting;
-      }
     };
+    Phase actualPhase = new Phase(null, reporting ? APConstants.REPORTING : APConstants.PLANNING, 2026);
+    actualPhase.setName(reporting ? "AR" : "POWB");
+    actualPhase.setUpkeep(Boolean.FALSE);
+    Map<String, Object> session = new HashMap<>();
+    session.put(APConstants.ALL_PHASES, Collections.singletonMap(PHASE_ID, actualPhase));
+    action.setSession(session);
+    action.setPhaseID(PHASE_ID);
     action.setInvalidFields(new HashMap<>());
     return action;
   }

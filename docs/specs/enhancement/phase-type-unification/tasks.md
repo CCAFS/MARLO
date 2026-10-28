@@ -106,7 +106,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `marlo-migration`, `marlo-commit`.
 
 ### T02 — Characterization tests of today's phase-type behavior (B1)
-- **Status:** pending · **Size:** M · **Depends on:** none · **Module:** marlo-web (tests)
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T02) · **Size:** M · **Depends on:** none · **Module:** marlo-web (tests)
 - **Requirements:** FN-002, FN-009 (pins the old results); NF-001 baseline.
 - **Design refs:** §14 S2; DD-5; P-1, P-10.
 - **Files touched:**

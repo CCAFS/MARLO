@@ -21,10 +21,12 @@ import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitType;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +46,8 @@ public class BaseActionGlobalUnitRulesTest {
 
   private static final int YEAR = 2026;
 
+  private static final Long PHASE_ID = Long.valueOf(7L);
+
   private BaseAction action;
 
   private Map<String, Object> session;
@@ -60,6 +64,14 @@ public class BaseActionGlobalUnitRulesTest {
     unit.setId(Long.valueOf(45L));
     unit.setAcronym("AICCRA");
     return unit;
+  }
+
+  /** The actual phase of the session: a planning phase that is not a progress phase (upkeep off). */
+  private static Phase planningPhase() {
+    Phase phase = new Phase(null, APConstants.PLANNING, YEAR);
+    phase.setName("POWB");
+    phase.setUpkeep(Boolean.FALSE);
+    return phase;
   }
 
   private static GlobalUnitProject originOfType(long typeId) {
@@ -99,15 +111,12 @@ public class BaseActionGlobalUnitRulesTest {
       public int getCurrentCycleYear() {
         return YEAR;
       }
-
-      @Override
-      public boolean isUpKeepActive() {
-        return false;
-      }
     };
     this.session = new HashMap<>();
     this.session.put(APConstants.SESSION_CRP, aiccra());
+    this.session.put(APConstants.ALL_PHASES, Collections.singletonMap(PHASE_ID, planningPhase()));
     this.action.setSession(this.session);
+    this.action.setPhaseID(PHASE_ID);
 
     GlobalUnitProjectManager globalUnitProjectManager = (GlobalUnitProjectManager) Proxy.newProxyInstance(
       GlobalUnitProjectManager.class.getClassLoader(), new Class<?>[] {GlobalUnitProjectManager.class},
