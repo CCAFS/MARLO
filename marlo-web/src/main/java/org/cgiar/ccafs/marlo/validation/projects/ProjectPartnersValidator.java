@@ -227,7 +227,7 @@ public class ProjectPartnersValidator extends BaseValidator {
   }
 
   private void validatePartnership(BaseAction action, Project project, ProjectPartner partner, int c) {
-    if (action.isReportingActive()) {
+    if (action.isReportingPhase()) {
       try {
         ProjectPartnerPartnership projectPartnerPartnership = partner.getProjectPartnerPartnership();
 
@@ -346,7 +346,7 @@ public class ProjectPartnersValidator extends BaseValidator {
 
   private void validateReportingOverall(BaseAction action, Project project) {
     if (project.getPartners() != null && !project.getPartners().isEmpty()) {
-      if (action.isReportingActive() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
+      if (action.isReportingPhase() && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
         if (!this.isValidString(project.getProjectInfo().getPartnerOverall())) {
           action.addMessage("Please provide Partnerships overall performance over the last reporting period");
           action.addMissingField("project.projectInfo.partnerOverall");

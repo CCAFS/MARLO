@@ -48,7 +48,7 @@ public class ProgressActiveValidationAction extends BaseAction {
 
     status = new HashMap<>();
 
-    if (this.isUpKeepActive()) {
+    if (this.isProgressPhase()) {
       status.put("isProgress", "true");
     } else {
       status.put("isProgress", "false");

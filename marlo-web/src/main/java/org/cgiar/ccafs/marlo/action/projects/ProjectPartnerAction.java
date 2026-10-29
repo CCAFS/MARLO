@@ -1558,7 +1558,7 @@ public class ProjectPartnerAction extends BaseAction {
 
     // Getting all partner types
     intitutionTypes = institutionTypeManager.findAll();
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       allRepIndResearchPhases = repIndPhaseResearchPartnershipManager.findAll();
       allRepIndGeographicScope = repIndGeographicScopeManager.findAll();
       allRepIndRegions = repIndRegionManager.findAll();
@@ -2306,7 +2306,7 @@ public class ProjectPartnerAction extends BaseAction {
 
         }
       }
-      if (this.isLessonsActive() && this.isReportingActive()) {
+      if (this.isLessonsActive() && this.isReportingPhase()) {
         this.saveLessons(loggedCrp, project);
       }
 
@@ -2324,7 +2324,7 @@ public class ProjectPartnerAction extends BaseAction {
       relationsName.add(APConstants.PROJECT_LESSONS_RELATION);
       relationsName.add(APConstants.PROJECT_INFO_RELATION);
 
-      if (this.isReportingActive() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
+      if (this.isReportingPhase() && projectDB.getProjectInfo() != null && project.getProjectInfo() != null
         && project.getProjectInfo().getPartnerOverall() != null) {
         projectDB.getProjectInfo().setPartnerOverall(project.getProjectInfo().getPartnerOverall());
       }

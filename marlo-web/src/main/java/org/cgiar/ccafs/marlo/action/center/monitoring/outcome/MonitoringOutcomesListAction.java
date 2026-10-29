@@ -174,7 +174,7 @@ public class MonitoringOutcomesListAction extends BaseAction {
     CenterOutcome outcome = outcomeService.getResearchOutcomeById(outcomeID);
 
     // String cycle = "";
-    // if (this.isPlanningActive()) {
+    // if (this.isPlanningPhase() || this.isProgressPhase()) {
     // cycle = APConstants.PLANNING;
     // } else {
     // cycle = APConstants.REPORTING;

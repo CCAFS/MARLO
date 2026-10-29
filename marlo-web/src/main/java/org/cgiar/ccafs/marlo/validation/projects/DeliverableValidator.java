@@ -170,7 +170,7 @@ public class DeliverableValidator extends BaseValidator {
 
 
 
-    if (action.isPlanningActive()) {
+    if (action.isPlanningPhase() || action.isProgressPhase()) {
       if (deliverable.getDeliverableInfo().getStatus() != null
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
         validate = deliverable.getDeliverableInfo(action.getActualPhase()).getYear() >= action.getCurrentCycleYear();
@@ -384,9 +384,9 @@ public class DeliverableValidator extends BaseValidator {
           }
         }
 
-        if ((action.isReportingActive())) {
+        if ((action.isReportingPhase())) {
 
-          if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
+          if (action.isReportingPhase() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
             && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
             action.addMessage(action.getText("project.deliverable.generalInformation.status"));
@@ -491,7 +491,7 @@ public class DeliverableValidator extends BaseValidator {
          * this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action);
          * }
          */
-        if (!action.isPOWB()) {
+        if (!action.isPlanningPhase()) {
           if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
             this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
           } else {
@@ -614,7 +614,7 @@ public class DeliverableValidator extends BaseValidator {
           }
 
           // Validate contribution narrative
-          if (action.isReportingActive()) {
+          if (action.isReportingPhase()) {
             if (!(this.isValidString(dInfo.getShfrmContributionNarrativeAR()) && this.wordCount(
               deliverable.getDeliverableInfo(action.getActualPhase()).getShfrmContributionNarrativeAR()) <= 200)) {
               action.addMessage(action.getText("deliverable.deliverableInfo.shfrmContributionNarrativeAR"));
@@ -635,7 +635,7 @@ public class DeliverableValidator extends BaseValidator {
           // [start] 2024/06/24 cgamboa Add functionality to give a search for the actions and subaction, when it is
           // detected to be null. This is done because the general validator does not load it
           try {
-            if (action.isProgressActive() && deliverable.getShfrmPriorityActions() == null) {
+            if (action.isProgressPhase() && deliverable.getShfrmPriorityActions() == null) {
               deliverable.setShfrmPriorityActions(deliverableShfrmPriorityActionManager
                 .findByDeliverableAndPhase(deliverable.getId(), action.getActualPhase().getId()));
 
@@ -803,7 +803,7 @@ public class DeliverableValidator extends BaseValidator {
 
       // [start]2024/06/26 cgamboa changes to validate metadata
 
-      if (!action.isPOWB()) {
+      if (!action.isPlanningPhase()) {
         if (deliverable.getDeliverableParticipant() != null && deliverable.getDeliverableParticipant() != null) {
           this.validateDeliverableParticipant(deliverable.getDeliverableParticipant(), action, resultProgessValidate);
         } else {
@@ -1322,7 +1322,7 @@ public class DeliverableValidator extends BaseValidator {
     boolean result = false;
     try {
 
-      if (action.isProgressActive()
+      if (action.isProgressPhase()
         && deliverable.getDeliverableInfo().getStatus() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         result = true;
       }
@@ -1344,7 +1344,7 @@ public class DeliverableValidator extends BaseValidator {
     boolean result = false;
     try {
 
-      if (action.isProgressActive()
+      if (action.isProgressPhase()
         && deliverable.getDeliverableInfo().getStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         result = true;
       }

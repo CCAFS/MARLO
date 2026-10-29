@@ -259,7 +259,7 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
           }
 
           String actionName = baseAction.getActionName().replaceAll(crp.getAcronym() + "/", "");
-          if (baseAction.isReportingActive()
+          if (baseAction.isReportingPhase()
             && actionName.equalsIgnoreCase(ProjectSectionStatusEnum.BUDGET.getStatus())) {
             canEdit = false;
           }

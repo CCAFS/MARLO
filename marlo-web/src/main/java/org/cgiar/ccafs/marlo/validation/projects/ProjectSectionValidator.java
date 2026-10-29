@@ -1028,7 +1028,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           || c.getFundingSource().getFundingSourceInfo(action.getActualPhase()).getStatus() != 5))
       .collect(Collectors.toList()));
 
-    if ((action.isReportingActive() || action.isUpKeepActive())
+    if ((action.isReportingPhase() || action.isProgressPhase())
       && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
       project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
@@ -1134,7 +1134,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
 
       List<DeliverableInfo> infos = new ArrayList<DeliverableInfo>();
 
-      if (action.isProgressActive()) {
+      if (action.isProgressPhase()) {
         infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhaseWithSharedProjects(phase, project);
       } else {
         infos = deliverableInfoManager.getDeliverablesInfoByProjectAndPhase(phase, project);
@@ -1318,7 +1318,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         }
 
 
-        if (action.isReportingActive() || action.isUpKeepActive()) {
+        if (action.isReportingPhase() || action.isProgressPhase()) {
 
           DeliverableQualityCheck deliverableQualityCheck =
             deliverableQualityCheckManager.getDeliverableQualityCheckByDeliverable(deliverable.getId(), phase.getId());
@@ -1505,7 +1505,7 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
         .collect(Collectors.toList());
 
       // 2024/07/06 cgamboa add shared expetec studies
-      if (action.isProgressActive()) {
+      if (action.isProgressPhase()) {
         List<ExpectedStudyProject> expectedStudyProject = this.expectedStudyProjectManager
           .getByProjectAndPhase(project.getId(), action.getActualPhase().getId()) != null
             ? this.expectedStudyProjectManager.getByProjectAndPhase(project.getId(), action.getActualPhase().getId())

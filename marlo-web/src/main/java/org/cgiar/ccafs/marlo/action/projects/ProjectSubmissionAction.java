@@ -301,14 +301,14 @@ public class ProjectSubmissionAction extends BaseAction {
     values[4] = String.valueOf(this.getActualPhase().getYear());
     values[5] = this.getActualPhase().getDescription().toLowerCase();
     // Message to download the pdf
-    if (!this.isPlanningActive()) {
+    if (!(this.isPlanningPhase() || this.isProgressPhase())) {
       values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
         + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.PHASE_ID + "="
         + this.getActualPhase().getId();
     }
 
 
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       message.append(this.getText("submit.email.message", values));
     } else {
       message.append(this.getText("submit.email.message.noPDF", values));
@@ -324,7 +324,7 @@ public class ProjectSubmissionAction extends BaseAction {
     String fileName = null;
     String contentType = null;
     // Allow for Reporting when Reporting-PDF is completed
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       try {
         // Set the parameters that are assigned in the prepare by reportingSummaryAction
         reportingSummaryAction.setSession(this.getSession());

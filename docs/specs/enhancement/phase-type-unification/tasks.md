@@ -207,7 +207,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `tdd`, `error-handling-patterns`, `marlo-verify`, `marlo-commit`.
 
 ### T06 — Java call sites of the old methods (§A1 Java)
-- **Status:** pending · **Size:** L · **Depends on:** T05 · **Module:** marlo-web
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T06) · **Size:** L · **Depends on:** T05 · **Module:** marlo-web
 - **Requirements:** FN-005 (Java part), NF-001, NF-005 (DD-11 rule 1 negations), INT-3 (`CanEditPowbSynthesisInterceptor:112`).
 - **Design refs:** §5 replacement table (Java column); DD-11; §7; §8.
 - **Files touched:** the 42 non-test Java files in `call-sites.md` §A1 (159 lines). Each use becomes the same-named `BaseAction` method or, for a phase other than the actual one, the `Phase` method:

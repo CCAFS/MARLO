@@ -196,7 +196,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           this.projectSectionValidator.validateProjectDescription(this, this.getProjectID());
           break;
         case SAFEGUARDS:
-          if (this.isUpKeepActive() || this.isReportingActive()) {
+          if (this.isProgressPhase() || this.isReportingPhase()) {
             this.projectSectionValidator.validateSafeguards(this, this.getProjectID());
           }
           break;
@@ -219,7 +219,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           break;
 
         case BUDGET:
-          if (this.isPlanningActive() || ((this.isReportingActive() || this.isUpKeepActive())
+          if (this.isPlanningPhase() || this.isProgressPhase() || ((this.isReportingPhase() || this.isProgressPhase())
             && this.hasSpecificities(this.getCrpEnableBudgetExecution()))) {
             this.projectSectionValidator.validateProjectBudgets(this, this.getProjectID());
           }
@@ -295,7 +295,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
 
     String cycle = "";
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       cycle = APConstants.PLANNING;
     } else {
       cycle = APConstants.REPORTING;
@@ -311,7 +311,7 @@ public class ValidateProjectSectionAction extends BaseAction {
           section.put("missingFields", "");
 
           // Validate LP6 Contribution question
-          if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
+          if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingPhase()) {
 
             List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
               .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
@@ -403,7 +403,7 @@ public class ValidateProjectSectionAction extends BaseAction {
               }
 
 
-              if (this.isPlanningActive() && this.isUpKeepActive()) {
+              if (this.isProgressPhase()) {
                 if (deliverable.getDeliverableInfo(phase).getStatus() != null && deliverable.getDeliverableInfo(phase)
                   .getStatus().intValue() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
                   sectionStatus.setMissingFields("");
@@ -548,7 +548,7 @@ public class ValidateProjectSectionAction extends BaseAction {
             }
 
             //
-            if (this.isAWPBActive()) {
+            if (this.isPlanningPhase()) {
               sectionStatus.setMissingFields("");
             }
 
@@ -584,7 +584,7 @@ public class ValidateProjectSectionAction extends BaseAction {
 
         /*
          * case BUDGET:
-         * if (this.isReportingActive() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+         * if (this.isReportingPhase() && !this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
          * section = new HashMap<String, Object>();
          * section.put("sectionName", ProjectSectionStatusEnum.BUDGET);
          * section.put("missingFields", "");

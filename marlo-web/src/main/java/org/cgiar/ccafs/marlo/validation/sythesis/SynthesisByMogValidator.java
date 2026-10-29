@@ -108,7 +108,7 @@ public class SynthesisByMogValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-    if (action.isReportingActive()) {
+    if (action.isReportingPhase()) {
       this.saveMissingFields(ipProgram, APConstants.REPORTING, action.getActualPhase().getYear(),
         action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.SYNTHESISMOG.getStatus(), action);
     } else {

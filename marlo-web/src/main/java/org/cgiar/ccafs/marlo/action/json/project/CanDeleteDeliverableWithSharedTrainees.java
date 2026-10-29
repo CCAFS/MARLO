@@ -59,7 +59,7 @@ public class CanDeleteDeliverableWithSharedTrainees extends BaseAction {
       // Check if the shared cluster trainees specificity is active
       if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
         // Check if there is no submission in progress phase
-        if (!this.isProgressActive() && deliverableID != 0 && phaseID != 0) {
+        if (!this.isProgressPhase() && deliverableID != 0 && phaseID != 0) {
           // Retrieve deliverable cluster participants
           List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
             .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);

@@ -592,3 +592,65 @@
   - T12 text path: the name decides the type even when the line carries an explicit third column. This is
     accepted as the owner's decision, closing the spec gap the Reviewer raised.
   - Commit T12 and T05 as separate commits.
+
+### T06 — Java call sites of the old methods (§A1 Java) — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1).
+- **Requirements covered:** FN-005 (Java part), NF-001, NF-005 (DD-11 rule 1 negations), INT-3
+  (`CanEditPowbSynthesisInterceptor:112`).
+- **Effort / skills:** default (`medium`); `marlo-verify`, `error-handling-patterns`.
+- **Review mode:** full, one Reviewer (`opus`).
+- **Isolation:** worktree. STEP 0 confirmed the base `6730a71f52`.
+
+#### Attempt 1
+
+- **Files changed (43, +280 / −144):** the 42 §A1 main-source files, each a 1:1 line replacement (no line-ending
+  churn), plus `PhaseNameSiteTruthTableTest.java` (+136, 8 new tests). Mapping applied:
+  - `isPOWB()`, `isAWPBActive()` → `isPlanningPhase()`; `!isPOWB()` → `!isPlanningPhase()` (DD-11 rule 1) at
+    `DeliverableValidator:494, 806` and `ProjectExpectedStudiesValidator:755`;
+  - `isProgressActive()`, `isUpKeepActive()` → `isProgressPhase()`, negations alike;
+  - `isReportingActive()` → `isReportingPhase()`, negations alike;
+  - `isPlanningActive() && !isUpKeepActive()` → `isPlanningPhase()` at `DeliverableAction:2087, 5594`,
+    `DeliverableListAction:166, 300`, `DeliverableStatusAction:76`, `EditDeliverableInterceptor:350, 370`;
+  - `CanEditPowbSynthesisInterceptor:112` (`isPlanningActive() && !getActualPhase().getUpkeep()`) → `isPlanningPhase()`;
+  - `ValidateProjectSectionAction:406` (`isPlanningActive() && isUpKeepActive()`) → `isProgressPhase()`;
+  - bare `isPlanningActive()` → `isPlanningPhase() || isProgressPhase()` (including `CanEditPowbSynthesisInterceptor:165`);
+    `ProjectSubmissionAction:304` → `!(isPlanningPhase() || isProgressPhase())`; `ValidateProjectSectionAction:222`
+    expanded in place, inner parentheses kept.
+  - Five commented-out occurrences renamed so the word grep is clean (`MonitoringOutcomesListAction:177`,
+    `BaseAction:5158`, `ValidateProjectSectionAction:587`, `ProjectExpectedStudiesValidator:711`,
+    `ProjectOutcomeValidator:152`).
+  - `getCurrentCycle` untouched: §A1 lists it only as an argument next to `isUpKeepActive()`.
+- **Evidence re-run (non-author, Leader-inline, in the worktree at `0fd8a49423`):**
+  - clean compile 2415 + 1062 + 114, Maven exit 0;
+  - full suite (`-am`): surefire **run 1159, fail 0, err 0, skip 0** (1151 + 8);
+  - grep of the six old names in `marlo-web/src/main/java` → only the 6 `BaseAction` declarations
+    (6345, 7691, 7744, 7823, 8074, 8218);
+  - `git diff --numstat`: every main-source file has equal added and removed counts.
+
+  **VERIFIED.**
+- **Checkstyle (Implementer):** 74 → 74, delta 0.
+- **Falsifier (Implementer, observed):** `isPlanningActive() && !isUpKeepActive()` mapped to
+  `isPlanningPhase() || isProgressPhase()` → the UpKeep and Progress rows went red (expected NO, was YES). Reverted.
+- **Reviewer:** PASS. Every replacement equals the old expression on Planning/0, Planning/1 and Reporting/0; the only
+  differences are INT-3 throws on the empty or null phase becoming `false`. Precedence correct at the two embedded
+  expansions (:222, :304); no site reads a phase other than the actual one; the test's old side is a copy at
+  `9e2a9ed838` and its new side runs the real `BaseAction` methods; no scope creep. ISSUES: none.
+- **ADVISORY (recorded, no rework):**
+  - RELIABILITY: the T06 truth tables evaluate written-out copies of the new expressions against the real
+    `BaseAction` methods, but never read or run the production lines themselves. A later wrong mapping at one site
+    would stay green. The class Javadoc (`PhaseNameSiteTruthTableTest.java:66-71`) claims real code or a
+    shipped-source read. Fix later with a source-read pin (as T05 did) or narrow the Javadoc.
+  - READABILITY: the `:222` table leaves out the `hasSpecificities(...)` term and tests only with it true; with it
+    false both sides reduce to the cycle expression. A comment would make that explicit.
+  - Existing Spanish comments in untouched lines of `DeliverableListAction`, `ProjectOutcomeAction` and others were
+    left alone (outside scope).
+- **runtime events:** none.
+- **spawns:** implementer 37 calls, 150,066 tokens, ended complete; reviewer 11 calls, 112,760 tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T06
+
+- Tasks closed: 8 of 16 (T00–T06, T12).
+- LOC: ~1,735 + 424 (T06: +280 / −144) = **~2,159, against the raised budget of ~2,800**.
+- Review rounds: 8.

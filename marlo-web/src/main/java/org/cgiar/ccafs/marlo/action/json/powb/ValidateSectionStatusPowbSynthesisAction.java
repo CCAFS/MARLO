@@ -134,7 +134,7 @@ public class ValidateSectionStatusPowbSynthesisAction extends BaseAction {
     }
 
     String cycle = "";
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       cycle = APConstants.PLANNING;
     } else {
       cycle = APConstants.REPORTING;

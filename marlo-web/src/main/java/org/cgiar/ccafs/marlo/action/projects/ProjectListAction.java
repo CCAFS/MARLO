@@ -261,7 +261,7 @@ public class ProjectListAction extends BaseAction {
       status = new SectionStatus();
       status.setCycle(this.getCurrentCycle());
       status.setYear(this.getCurrentCycleYear());
-      status.setUpkeep(this.isUpKeepActive());
+      status.setUpkeep(this.isProgressPhase());
       status.setProject(project);
       status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
 
@@ -401,7 +401,7 @@ public class ProjectListAction extends BaseAction {
         status = new SectionStatus();
         status.setCycle(this.getCurrentCycle());
         status.setYear(this.getCurrentCycleYear());
-        status.setUpkeep(this.isUpKeepActive());
+        status.setUpkeep(this.isProgressPhase());
         status.setProject(project);
         status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
 
@@ -634,7 +634,7 @@ public class ProjectListAction extends BaseAction {
     }
 
     // Skip closed projects for Reporting
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       if (completedProjects != null) {
         for (Project project : completedProjects) {
           closedProjects.add(project);
@@ -684,7 +684,7 @@ public class ProjectListAction extends BaseAction {
     }
 
     // AR 2018 Filter by End Date
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("y");
 

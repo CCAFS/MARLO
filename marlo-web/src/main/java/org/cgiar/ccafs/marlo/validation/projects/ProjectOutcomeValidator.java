@@ -149,7 +149,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
 
       List<String> params = new ArrayList<>();
       params.add(String.valueOf(i + 1));
-      // if (action.isPlanningActive()) {
+      // if (action.isPlanningPhase() || action.isProgressPhase()) {
       if (projectOutcomeIndicator.getNarrative() != null) {
         if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
           && this.wordCount(projectOutcomeIndicator.getNarrative()) <= 150)) {
@@ -197,7 +197,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-        if (!action.isReportingActive()) {
+        if (!action.isReportingPhase()) {
           if (!(this.isValidString(projectMilestone.getNarrativeTarget())
             && this.wordCount(projectMilestone.getNarrativeTarget()) <= 200)) {
             action.addMessage(action.getText("projectOutcomeMilestone.requeried.expectedNarrative", params));
@@ -206,7 +206,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
           }
         }
 
-        if (action.isReportingActive() && projectMilestone.getYear() == action.getActualPhase().getYear()) {
+        if (action.isReportingPhase() && projectMilestone.getYear() == action.getActualPhase().getYear()) {
           if (!(this.isValidString(projectMilestone.getNarrativeAchieved())
             && this.wordCount(projectMilestone.getNarrativeAchieved()) <= 200)) {
             action.addMessage(action.getText("projectOutcomeMilestone.achievedNarrative", params));
@@ -253,7 +253,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.nextUsers[" + i + "].strategies",
         InvalidFieldsMessages.EMPTYFIELD);
     }
-    if (action.isReportingActive()) {
+    if (action.isReportingPhase()) {
       if (!(this.isValidString(projectNextuser.getKnowledgeReport())
         && this.wordCount(projectNextuser.getKnowledgeReport()) <= 200)) {
         action.addMessage(action.getText("projectOutcomeNextUser.reportOnProgress.readText"));
@@ -300,7 +300,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       action.getInvalidFields().put("input-projectOutcome.narrativeTarget", InvalidFieldsMessages.EMPTYFIELD);
     }
     if (projectOutcome.getMilestones() != null && projectOutcome.getMilestones().size() > 0) {
-      if (action.isPlanningActive()) {
+      if (action.isPlanningPhase() || action.isProgressPhase()) {
         // Keep the posted index: the invalid-field key names the form input milestones[i], so an index taken
         // from a filtered list flagged a field of another year (and painted that year's tab red).
         for (int i = 0; i < projectOutcome.getMilestones().size(); i++) {
@@ -350,7 +350,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
       }
     }
 
-    if (action.isReportingActive()) {
+    if (action.isReportingPhase()) {
       if (!action.isProjectNew(project.getId())) {
 
         if (projectOutcome.getProjectComponentLesson() != null) {
@@ -412,7 +412,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
     List<String> params = new ArrayList<String>();
     params.add(String.valueOf(i + 1));
 
-    if (action.isPlanningActive()) {
+    if (action.isPlanningPhase() || action.isProgressPhase()) {
       if (!(this.isValidString(projectOutcomeIndicator.getNarrative())
         && this.wordCount(projectOutcomeIndicator.getNarrative()) > 150)) {
         action.addMessage(action.getText("projectOutcomeIndicator.requeried.narrative", params));
@@ -427,7 +427,7 @@ public class ProjectOutcomeValidator extends BaseValidator {
         InvalidFieldsMessages.EMPTYFIELD);
     }
 
-    if (action.isReportingActive()) {
+    if (action.isReportingPhase()) {
       if (!(this.isValidString(projectOutcomeIndicator.getAchievedNarrative())
         && this.wordCount(projectOutcomeIndicator.getAchievedNarrative()) > 100)) {
         /*

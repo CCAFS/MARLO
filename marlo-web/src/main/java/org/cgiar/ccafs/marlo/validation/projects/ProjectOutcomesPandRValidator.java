@@ -117,7 +117,7 @@ public class ProjectOutcomesPandRValidator extends BaseValidator {
           " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
       }
 
-      if (action.isReportingActive()) {
+      if (action.isReportingPhase()) {
         this.saveMissingFields(project, APConstants.REPORTING, action.getActualPhase().getYear(),
           action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.OUTCOMES_PANDR.getStatus(), action);
       } else {

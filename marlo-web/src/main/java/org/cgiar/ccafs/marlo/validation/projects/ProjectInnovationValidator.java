@@ -1049,7 +1049,7 @@ public class ProjectInnovationValidator extends BaseValidator {
   public boolean validateIsProgress(BaseAction action) {
     boolean result = false;
     try {
-      if (action.isProgressActive()) {
+      if (action.isProgressPhase()) {
         result = true;
       }
       return result;

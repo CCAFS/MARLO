@@ -350,7 +350,7 @@ public class EditProjectOutcomeInterceptor extends AbstractInterceptor implement
         baseAction.setEditStatus(true);
 
       }
-      if (baseAction.isPlanningActive()) {
+      if (baseAction.isPlanningPhase() || baseAction.isProgressPhase()) {
         if (project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
           .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
           || project.getProject().getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
