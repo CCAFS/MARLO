@@ -468,7 +468,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   protected boolean next;
   private Map<String, Parameter> parameters;
-  private boolean planningActive;
   @Autowired
   private ProjectComponentLessonManager projectComponentLessonManager;
   @Autowired
@@ -484,7 +483,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private LiaisonInstitutionManager liaisonInstitutionManager;
   @Autowired
   private DeliverableTypeManager deliverableTypeManager;
-  private boolean reportingActive;
 
   protected HttpServletRequest request;
 
@@ -6338,14 +6336,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.availabePhase;
   }
 
-  /**
-   * @deprecated use {@link #isPlanningPhase()}, which reads the type of the phase and not its name.
-   */
-  @Deprecated
-  public boolean isAWPBActive() {
-    return this.isPlanningPhase();
-  }
-
   public boolean isCanEdit() {
     return this.canEdit;
   }
@@ -7684,15 +7674,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * @deprecated the planning cycle is the plan phase or the progress phase: ask {@link #isPlanningPhase()} and
-   *             {@link #isProgressPhase()}.
-   */
-  @Deprecated
-  public boolean isPlanningActive() {
-    return this.isPlanningPhase() || this.isProgressPhase();
-  }
-
-  /**
    * Tells whether the actual phase is the plan phase. It is false when there is no actual phase.
    */
   public boolean isPlanningPhase() {
@@ -7735,14 +7716,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-  }
-
-  /**
-   * @deprecated use {@link #isPlanningPhase()}, which reads the type of the phase and not its name.
-   */
-  @Deprecated
-  public boolean isPOWB() {
-    return this.isPlanningPhase();
   }
 
   public boolean isPowb2019() {
@@ -7814,14 +7787,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
 
     return false;
-  }
-
-  /**
-   * @deprecated use {@link #isProgressPhase()}.
-   */
-  @Deprecated
-  public boolean isProgressActive() {
-    return this.isProgressPhase();
   }
 
   /**
@@ -8068,14 +8033,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   /**
-   * @deprecated use {@link #isReportingPhase()}.
-   */
-  @Deprecated
-  public boolean isReportingActive() {
-    return this.isReportingPhase();
-  }
-
-  /**
    * Tells whether the actual phase is the reporting phase. It is false when there is no actual phase.
    */
   public boolean isReportingPhase() {
@@ -8209,14 +8166,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean isSectionStatusStoredOnValidation(String sectionName) {
     return false;
-  }
-
-  /**
-   * @deprecated use {@link #isProgressPhase()}.
-   */
-  @Deprecated
-  public boolean isUpKeepActive() {
-    return this.isProgressPhase();
   }
 
   /**
@@ -8932,14 +8881,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setPhaseID(Long phaseID) {
     this.phaseID = phaseID;
-  }
-
-  public void setPlanningActive(boolean planningActive) {
-    this.planningActive = planningActive;
-  }
-
-  public void setReportingActive(boolean reportingActive) {
-    this.reportingActive = reportingActive;
   }
 
   public void setSave(boolean save) {

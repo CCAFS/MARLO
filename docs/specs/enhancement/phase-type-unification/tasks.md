@@ -308,7 +308,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `playwright-cli`, `marlo-verify`, `marlo-commit`.
 
 ### T11 — Remove the old methods, fields and setters; Checkstyle rule (B5)
-- **Status:** pending · **Size:** S · **Depends on:** T06, T10 · **Module:** marlo-web + `configuration/`
+- **Status:** [x] done (2026-10-29, PASS attempt 2; `execution.md` T11) · **Size:** S · **Depends on:** T06, T10 · **Module:** marlo-web + `configuration/`
 - **Requirements:** FN-005, NF-003; AC FN-005/NF-003 (all clauses including "AND IT MUST be shown that no phase-name literal decides a type…").
 - **Design refs:** DD-9; §13; P-8, P-11, P-12.
 - **Files touched:**

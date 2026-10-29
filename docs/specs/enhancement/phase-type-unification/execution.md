@@ -909,3 +909,85 @@ The Leader classified every exception in the app log for T07–T10 (`scratchpad/
 - Local environment left by this run: `marlo-dev.properties` restored to `aiccradb_actsave` (backup of the T07 state
   in the scratchpad); the throwaway schema `zz_t07_actsave` is kept for T15 and the harness; the app started at T07
   may still be running on port 8080 against `zz_t07_actsave` until someone restarts it.
+
+### Run resumed (2026-10-29)
+
+- The main checkout is back on `phase-type-unification`, but another session's `cargo:run` (port 8080) runs from it.
+  T11 therefore ran in the worktree `../MARLO-t11` on the temporary branch `phase-type-unification-t11` (from
+  `6ddbbf8d9a`), fast-forwarded into `phase-type-unification` after the commit. No server was started.
+
+### T11 — Remove the old methods, fields and setters; Checkstyle rule (B5) — PASS
+
+- **Date:** 2026-10-29
+- **Final status:** PASS (attempt 2).
+- **Requirements covered:** FN-005, NF-003 (AC FN-005/NF-003, all clauses); P-11 settled.
+- **Review mode:** full, one Reviewer (`opus`).
+- **Isolation:** worktree `../MARLO-t11`; Maven only there; no app, no DB.
+
+#### Attempt 1
+
+- **Files changed (5, +31 / −81):** `BaseAction.java` −59 (the six deprecated delegates `isPOWB`, `isAWPBActive`,
+  `isPlanningActive`, `isProgressActive`, `isUpKeepActive`, `isReportingActive`; the `planningActive` /
+  `reportingActive` fields and their setters; file stays LF); `configuration/marlo-checkstyle.xml` +9: one
+  `RegexpSinglelineJava` (`ignoreComments=true`) with format
+  `\b(isPOWB|isAWPBActive|isPlanningActive|isProgressActive|isUpKeepActive|isReportingActive|setPlanningActive|setReportingActive)\s*\(`
+  and message "Removed phase type method: use isPlanningPhase(), isProgressPhase() or isReportingPhase()
+  (ENH-PHASE-TYPE-UNIFICATION-001, FN-005)."; the three tests that used the delegates rewritten
+  (`BaseActionPhaseTypeCharacterizationTest`, `PhaseTypeEquivalenceTest`, `PhaseNameSiteTruthTableTest` labels).
+- **Scope-first step (P-11, observed):** rule added, scratch file with `public boolean isPOWB()` and a call →
+  ```
+  [WARN] .../ScratchSeed.java:5: Removed phase type method: use isPlanningPhase(), isProgressPhase() or isReportingPhase() (ENH-PHASE-TYPE-UNIFICATION-001, FN-005). [RegexpSinglelineJava]
+  [WARN] .../ScratchSeed.java:10: Removed phase type method: ... [RegexpSinglelineJava]
+  ```
+  Seed removed. P-11 holds: Checkstyle 8.18 rejects the names by rule.
+- **Falsifier (Implementer, observed):** `isPOWB()` and a call re-added in `BaseAction` → `BaseAction.java:7679` and
+  `:7684` flagged `[RegexpSinglelineJava]` (11 violations); rule removed from the XML → 0 `RegexpSingleline`, 9 (the
+  pre-existing baseline). The rule is the gate. Everything restored.
+- **Evidence re-run (non-author, Leader-inline):** clean compile exit 0 (2415 data + 1062 web + 114 test); full suite
+  `-am` 1159 run / 0 fail / 0 err / 0 skip; `checkstyle.sh --baseline` on the 4 changed Java files HEAD=35 → 9
+  (delta −26, none `RegexpSinglelineJava`); rule over all 3597 Java files of `marlo-web`, `marlo-data`, `marlo-utils`
+  `src` → 0 hits; a Leader seed `a.isUpKeepActive()` → `Seed.java:6: Removed phase type method: … [RegexpSinglelineJava]`
+  (the scan is real). Runtime references a compile cannot catch: `struts-json.xml:74` action `isProgressActive` maps to
+  `ProgressActiveValidationAction` (own `execute()` on `isProgressPhase()`); its JSON result has no `root`, but the only
+  reader (`global.js` `validatePhase`) reads `data.status.isProgress`, so the vanished `is*` getters reach no reader.
+  **VERIFIED.**
+- **Reviewer:** FAIL. Production side and rule correct; the AC grep (`grep -w`, `src/main` **and** `src/test`) still
+  had 32 test hits outside §A3: `Answers` fields `planningActive` / `upKeepActive` / `reportingActive` in the
+  characterization test, and Javadoc, comments and assertion labels in `PhaseNameSiteTruthTableTest` (dropping `()`
+  silenced Checkstyle, not `grep -w`). Violated rule: requirements.md §6 AC FN-005/NF-003.
+- **Leader adjudication:** remediation (a), rename in the tests; no spec amendment. Effort bumped one level.
+
+#### Attempt 2
+
+- **Changes (tests only):** `Answers` reduced to `planningPhase, planningCycle, progressPhase, reportingPhase,
+  currentCycle` (dead awpb / upkeep fields dropped: they always equalled powb / progress); truth-table comments and
+  labels reworded ("old POWB check", "old upkeep check", "old planning-or-progress check"); `assertEquivalent`
+  Javadoc now says it proves the delegation through `getActualPhase()` and that old-vs-new evidence lives in
+  `PhaseNameSiteTruthTableTest`. Final diff: 5 files, +72 / −122.
+- **Evidence re-run (non-author, Leader-inline):** `grep -rnw` of the old method and field names over
+  `marlo-web/src/test` → 0; over `src/main` → only `javascript-constants.ftl:30-31` and the 7 JS readers of those
+  globals (`safeguards.js`, `projectDescription.js`, `projectStudy.js`, `deliverableInfo.js` ×3, `outcomes.js`),
+  `struts-json.xml:74` + `global.js:39, 210` (action name and URL, not the method), and the comment in
+  `V2_6_0_20260930_0948__RemoveCrpPlanningAndReportingActiveParameters.sql:3` — all accepted as §A3 by the Reviewer.
+  Clean compile exit 0 (2415 / 1062 / 114); full suite `-am` 1159 run / 0 fail / 0 err. **VERIFIED.**
+- **Phase-name literal grep (AC clause "no phase-name literal decides a type"):** Java `getName()` on phases is used
+  for autosave file names, summary file names, maps and REST identifier lookups (display / identity); `FTL`
+  `crpPhases.ftl:227` (`phase.name == "POWB"`) is the sanctioned survivor; **T12 exception:**
+  `GlobalUnitCreateAction.java:499` `"Progress".equals(input.getName())` seeds `description` / `upkeep` from the
+  admin-typed name of a new phase (FN-007), it never decides the type of an existing phase.
+- **Reviewer:** PASS. Every expected boolean preserved through the field change (9-row old→new table checked);
+  truth-table `Outcome[]` arrays and lambdas byte-identical; ISSUES: none.
+- **ADVISORY (recorded, not taken):**
+  - Rule severity follows the Checker-wide `warning`; the delta-vs-HEAD gate counts warnings, so it gates here. A CI
+    with `failOnViolation` at `error` would treat it as advisory; consider `severity=error` on this module.
+  - The regex cannot catch method references (`this::isPOWB`), reflective / OGNL strings, or a call split before the
+    name.
+  - `aMisspelledPlaningDescriptionIsNotAPlanningPhaseButStillAPlanningCycle` asserts `planningCycle = false`, against
+    its own name (pre-existing; the literal is right under DD-3). Naming fix for a later task.
+- **spawns:** implementer 37 calls (30 + 7), ~280,000 tokens, ended complete; reviewer 18 calls (16 + 2), ~199,000
+  tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T11
+
+- Tasks closed: 13 of 16 (T00–T12).
+- LOC: ~3,018 + 194 (T11) = **~3,212, against ~3,500**. Remaining: T13 (M2; needs OQ2/OQ3), T14 (docs), T15 (HITL).

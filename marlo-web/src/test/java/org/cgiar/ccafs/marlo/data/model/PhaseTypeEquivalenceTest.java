@@ -26,9 +26,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * The phase type answered by {@link Phase} against the old type methods of {@link BaseAction}.
+ * The phase type answered by {@link Phase} against the type methods of {@link BaseAction}.
  * <p>
- * The old answers come from the real {@code BaseAction} methods, resolved through the real {@code getActualPhase()}.
+ * The action answers come from the real {@code BaseAction} methods, resolved through the real {@code getActualPhase()}.
  * The new answers come from {@link Phase} and are also pinned as literals taken from the strict definitions (design
  * DD-3), so an equivalence that holds only because both sides share a bug cannot pass.
  */
@@ -97,13 +97,18 @@ public class PhaseTypeEquivalenceTest {
     assertEquals(input + " planning cycle", expected.cycle, cycle(phase));
   }
 
-  /** Old and new on the same phase (FN-002), then the new answers against the literals. */
+  /**
+   * The {@link Phase} answers against the {@link BaseAction} answers on the same phase, which proves that BaseAction
+   * delegates through {@code getActualPhase()}, then the new answers against the literals. The old-versus-new evidence
+   * lives in {@code PhaseNameSiteTruthTableTest}.
+   */
   private static void assertEquivalent(String input, Phase phase, Expected expected) {
-    BaseAction old = actionOn(phase);
-    assertEquals(input + " plan phase vs isPOWB", old.isPOWB(), phase.isPlanningPhase());
-    assertEquals(input + " progress phase vs isProgressActive", old.isProgressActive(), phase.isProgressPhase());
-    assertEquals(input + " reporting phase vs isReportingActive", old.isReportingActive(), phase.isReportingPhase());
-    assertEquals(input + " cycle vs isPlanningActive", old.isPlanningActive(), cycle(phase));
+    BaseAction action = actionOn(phase);
+    assertEquals(input + " plan phase vs isPlanningPhase", action.isPlanningPhase(), phase.isPlanningPhase());
+    assertEquals(input + " progress phase vs isProgressPhase", action.isProgressPhase(), phase.isProgressPhase());
+    assertEquals(input + " reporting phase vs isReportingPhase", action.isReportingPhase(), phase.isReportingPhase());
+    assertEquals(input + " cycle vs isPlanningPhase or isProgressPhase",
+      action.isPlanningPhase() || action.isProgressPhase(), cycle(phase));
     assertNewAnswers(input, phase, expected);
   }
 
@@ -183,7 +188,7 @@ public class PhaseTypeEquivalenceTest {
 
   /**
    * DD-3 never reads the name. FN-002 lists no name, yet today's plan phase answer needs the name POWB or AWPB, so a
-   * Planning/0 phase with another or a null name is a plan phase by DD-3 and not by {@code isPOWB()}.
+   * Planning/0 phase with another or a null name is a plan phase by DD-3 and not by the old name based check.
    */
   @Test
   public void theNameIsNeverReadSoANullNameKeepsTheTypeOfItsDescriptionAndUpkeep() {

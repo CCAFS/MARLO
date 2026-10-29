@@ -41,44 +41,38 @@ public class BaseActionPhaseTypeCharacterizationTest {
 
   private static final Long PHASE_ID = Long.valueOf(7L);
 
-  /** The answers of the six old type methods and of the cycle for one input. */
+  /** The answers of the phase type methods, of the planning cycle and of the current cycle for one input. */
   private static final class Answers {
 
-    private final boolean powb;
+    private final boolean planningPhase;
 
-    private final boolean awpbActive;
+    private final boolean planningCycle;
 
-    private final boolean planningActive;
+    private final boolean progressPhase;
 
-    private final boolean progressActive;
-
-    private final boolean upKeepActive;
-
-    private final boolean reportingActive;
+    private final boolean reportingPhase;
 
     private final String currentCycle;
 
-    private Answers(boolean powb, boolean awpbActive, boolean planningActive, boolean progressActive,
-      boolean upKeepActive, boolean reportingActive, String currentCycle) {
-      this.powb = powb;
-      this.awpbActive = awpbActive;
-      this.planningActive = planningActive;
-      this.progressActive = progressActive;
-      this.upKeepActive = upKeepActive;
-      this.reportingActive = reportingActive;
+    private Answers(boolean planningPhase, boolean planningCycle, boolean progressPhase, boolean reportingPhase,
+      String currentCycle) {
+      this.planningPhase = planningPhase;
+      this.planningCycle = planningCycle;
+      this.progressPhase = progressPhase;
+      this.reportingPhase = reportingPhase;
       this.currentCycle = currentCycle;
     }
   }
 
   private static final Answers PLAN_NAME_NO_UPKEEP =
-    new Answers(true, true, true, false, false, false, "Planning");
+    new Answers(true, true, false, false, "Planning");
 
-  private static final Answers UPKEEP_FLAGGED = new Answers(false, false, true, true, true, false, "Planning");
+  private static final Answers UPKEEP_FLAGGED = new Answers(false, true, true, false, "Planning");
 
-  private static final Answers REPORTING = new Answers(false, false, false, false, false, true, "Reporting");
+  private static final Answers REPORTING = new Answers(false, false, false, true, "Reporting");
 
   /** The empty phase and every input that reads as "no usable phase" for the type methods. */
-  private static final Answers NO_PHASE = new Answers(false, false, false, false, false, false, "Planning");
+  private static final Answers NO_PHASE = new Answers(false, false, false, false, "Planning");
 
   private static Phase phase(String name, String description, Boolean upkeep) {
     Phase phase = new Phase(null, description, 2026);
@@ -103,12 +97,11 @@ public class BaseActionPhaseTypeCharacterizationTest {
   }
 
   private static void assertAnswers(String input, BaseAction action, Answers expected) {
-    assertEquals(input + " isPOWB", expected.powb, action.isPOWB());
-    assertEquals(input + " isAWPBActive", expected.awpbActive, action.isAWPBActive());
-    assertEquals(input + " isPlanningActive", expected.planningActive, action.isPlanningActive());
-    assertEquals(input + " isProgressActive", expected.progressActive, action.isProgressActive());
-    assertEquals(input + " isUpKeepActive", expected.upKeepActive, action.isUpKeepActive());
-    assertEquals(input + " isReportingActive", expected.reportingActive, action.isReportingActive());
+    assertEquals(input + " isPlanningPhase", expected.planningPhase, action.isPlanningPhase());
+    assertEquals(input + " planning cycle", expected.planningCycle,
+      action.isPlanningPhase() || action.isProgressPhase());
+    assertEquals(input + " isProgressPhase", expected.progressPhase, action.isProgressPhase());
+    assertEquals(input + " isReportingPhase", expected.reportingPhase, action.isReportingPhase());
     assertEquals(input + " getCurrentCycle", expected.currentCycle, action.getCurrentCycle());
   }
 
@@ -161,7 +154,7 @@ public class BaseActionPhaseTypeCharacterizationTest {
   @Test
   public void aMisspelledPlaningDescriptionIsNotAPlanningPhaseButStillAPlanningCycle() {
     assertAnswers("POWB/Planing/0", actionOn(phase("POWB", "Planing", Boolean.FALSE)),
-      new Answers(false, false, false, false, false, false, "Planning"));
+      new Answers(false, false, false, false, "Planning"));
   }
 
   @Test
@@ -202,21 +195,21 @@ public class BaseActionPhaseTypeCharacterizationTest {
   @Test
   public void aNullUpkeepIsNotProgressAndItsUpkeepQuestionAnswersFalse() {
     assertAnswers("UpKeep/Planning/null", actionOn(phase("UpKeep", "Planning", null)),
-      new Answers(false, false, false, false, false, false, "Planning"));
+      new Answers(false, false, false, false, "Planning"));
   }
 
   @Test
   public void aNullDescriptionIsNeitherPlanningNorReportingButKeepsItsNameAndUpkeep() {
     assertAnswers("POWB/null/0", actionOn(phase("POWB", null, Boolean.FALSE)),
-      new Answers(false, false, false, false, false, false, "Planning"));
+      new Answers(false, false, false, false, "Planning"));
     assertAnswers("UpKeep/null/1", actionOn(phase("UpKeep", null, Boolean.TRUE)),
-      new Answers(false, false, true, true, true, false, "Planning"));
+      new Answers(false, true, true, false, "Planning"));
   }
 
   @Test
   public void aNullNameIsNoPlanNameButKeepsItsDescriptionAndUpkeep() {
     assertAnswers("null/Planning/0", actionOn(phase(null, "Planning", Boolean.FALSE)),
-      new Answers(true, true, true, false, false, false, "Planning"));
+      new Answers(true, true, false, false, "Planning"));
     assertAnswers("null/Reporting/0", actionOn(phase(null, "Reporting", Boolean.FALSE)), REPORTING);
   }
 

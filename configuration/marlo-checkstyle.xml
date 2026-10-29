@@ -64,6 +64,15 @@
 			<module name="MethodParamPad">
 			</module>
 
+			<!-- ENH-PHASE-TYPE-UNIFICATION-001 FN-005: the phase type is read from Phase#isPlanningPhase(),
+			isProgressPhase() and isReportingPhase() (and the same methods on BaseAction), never from a phase name.
+			The old name-based methods and their setters were removed and must not be declared or called again. -->
+			<module name="RegexpSinglelineJava">
+				<property name="format" value="\b(isPOWB|isAWPBActive|isPlanningActive|isProgressActive|isUpKeepActive|isReportingActive|setPlanningActive|setReportingActive)\s*\("/>
+				<property name="ignoreComments" value="true"/>
+				<property name="message" value="Removed phase type method: use isPlanningPhase(), isProgressPhase() or isReportingPhase() (ENH-PHASE-TYPE-UNIFICATION-001, FN-005)."/>
+			</module>
+
 		</module>
 		
 	</module>  

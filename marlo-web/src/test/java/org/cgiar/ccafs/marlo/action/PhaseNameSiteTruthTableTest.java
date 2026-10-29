@@ -616,17 +616,17 @@ public class PhaseNameSiteTruthTableTest {
 
   private static final Outcome T = Outcome.THROWS;
 
-  /** BaseAction.isPlanningActive() at 9e2a9ed838. */
+  /** The old planning-or-progress check of BaseAction at 9e2a9ed838. */
   private static boolean oldPlanningActive(Phase actual) {
     return actual != null && actual.getDescription() != null && actual.getDescription().equals("Planning");
   }
 
-  /** BaseAction.isUpKeepActive() at 9e2a9ed838: throws on a null phase and on a null flag. */
+  /** The old upkeep check of BaseAction at 9e2a9ed838: throws on a null phase and on a null flag. */
   private static boolean oldUpKeepActive(Phase actual) {
     return actual.getUpkeep();
   }
 
-  /** BaseAction.isProgressActive() at 9e2a9ed838: the throw is caught and answered false. */
+  /** The old progress check of BaseAction at 9e2a9ed838: the throw is caught and answered false. */
   private static boolean oldProgressActive(Phase actual) {
     try {
       return actual.getUpkeep();
@@ -635,12 +635,12 @@ public class PhaseNameSiteTruthTableTest {
     }
   }
 
-  /** BaseAction.isReportingActive() at 9e2a9ed838. */
+  /** The old reporting check of BaseAction at 9e2a9ed838. */
   private static boolean oldReportingActive(Phase actual) {
     return actual != null && actual.getDescription() != null && actual.getDescription().equals("Reporting");
   }
 
-  /** BaseAction.isPOWB() and isAWPBActive() at 9e2a9ed838. */
+  /** The old POWB and AWPB checks of BaseAction at 9e2a9ed838. */
   private static boolean oldPowbActive(Phase actual) {
     return actual != null && actual.getName() != null
       && (actual.getName().equals("POWB") || actual.getName().equals("AWPB"));
@@ -661,18 +661,18 @@ public class PhaseNameSiteTruthTableTest {
   @Test
   public void thePlanPhaseCombinationsAskThePlanningPhase() throws ReflectiveOperationException {
     // DeliverableAction:2087, 5594; DeliverableListAction:166, 300; DeliverableStatusAction:76;
-    // EditDeliverableInterceptor:350, 370: isPlanningActive() && !isUpKeepActive().
+    // EditDeliverableInterceptor:350, 370: old planning-or-progress check && !old upkeep check.
     Outcome[] literals = {Y, Y, N, N, N, N, N};
-    assertRows("isPlanningActive() && !isUpKeepActive() (seven sites)", literals, literals,
+    assertRows("old planning-or-progress check && !old upkeep check, seven sites", literals, literals,
       oldSide(p -> oldPlanningActive(p) && !oldUpKeepActive(p)), newSide(a -> a.isPlanningPhase()));
-    // CanEditPowbSynthesisInterceptor:112: isPlanningActive() && !getActualPhase().getUpkeep().
+    // CanEditPowbSynthesisInterceptor:112: old planning-or-progress check && !getActualPhase().getUpkeep().
     assertRows("CanEditPowbSynthesisInterceptor:112", literals, literals,
       oldSide(p -> oldPlanningActive(p) && !p.getUpkeep()), newSide(a -> a.isPlanningPhase()));
   }
 
   @Test
   public void theProgressCombinationOfTheSectionValidatorAsksTheProgressPhase() throws ReflectiveOperationException {
-    // ValidateProjectSectionAction:406: isPlanningActive() && isUpKeepActive().
+    // ValidateProjectSectionAction:406: old planning-or-progress check && old upkeep check.
     Outcome[] literals = {N, N, Y, Y, N, N, N};
     assertRows("ValidateProjectSectionAction:406", literals, literals,
       oldSide(p -> oldPlanningActive(p) && oldUpKeepActive(p)), newSide(a -> a.isProgressPhase()));
@@ -680,16 +680,16 @@ public class PhaseNameSiteTruthTableTest {
 
   @Test
   public void thePlanningCycleIsThePlanOrTheProgressPhase() throws ReflectiveOperationException {
-    // CanEditPowbSynthesisInterceptor:165 and the bare isPlanningActive() sites.
+    // CanEditPowbSynthesisInterceptor:165 and the bare old planning-or-progress check sites.
     Outcome[] literals = {Y, Y, Y, Y, N, N, N};
-    assertRows("isPlanningActive() (CanEditPowbSynthesisInterceptor:165)", literals, literals,
+    assertRows("old planning-or-progress check at CanEditPowbSynthesisInterceptor:165", literals, literals,
       oldSide(p -> oldPlanningActive(p)), newSide(a -> a.isPlanningPhase() || a.isProgressPhase()));
   }
 
   @Test
   public void theNegatedPlanningCycleOfTheSubmissionActionIsTheComplementOfBothTypes()
     throws ReflectiveOperationException {
-    // ProjectSubmissionAction:304: !isPlanningActive().
+    // ProjectSubmissionAction:304: !old planning-or-progress check.
     Outcome[] literals = {N, N, N, N, Y, Y, Y};
     assertRows("ProjectSubmissionAction:304", literals, literals, oldSide(p -> !oldPlanningActive(p)),
       newSide(a -> !(a.isPlanningPhase() || a.isProgressPhase())));
@@ -709,34 +709,36 @@ public class PhaseNameSiteTruthTableTest {
   public void theReportingOrProgressSitesStopThrowingWithoutAPhase() throws ReflectiveOperationException {
     Outcome[] oldLiterals = {N, N, Y, Y, Y, T, T};
     Outcome[] newLiterals = {N, N, Y, Y, Y, N, N};
-    assertRows("isReportingActive() || isUpKeepActive()", oldLiterals, newLiterals,
+    assertRows("old reporting check || old upkeep check", oldLiterals, newLiterals,
       oldSide(p -> oldReportingActive(p) || oldUpKeepActive(p)),
       newSide(a -> a.isReportingPhase() || a.isProgressPhase()));
-    assertRows("isUpKeepActive() || isReportingActive()", oldLiterals, newLiterals,
+    assertRows("old upkeep check || old reporting check", oldLiterals, newLiterals,
       oldSide(p -> oldUpKeepActive(p) || oldReportingActive(p)),
       newSide(a -> a.isProgressPhase() || a.isReportingPhase()));
   }
 
   @Test
   public void theNegationsOfTheNullSafeOldMethodsStayBareNegations() throws ReflectiveOperationException {
-    // DD-11 rule 1. !isPOWB() / !isAWPBActive() (DeliverableValidator:494, 806, ProjectExpectedStudiesValidator:755).
+    // DD-11 rule 1. !old POWB check / !old AWPB check (DeliverableValidator:494, 806,
+    // ProjectExpectedStudiesValidator:755).
     Outcome[] notPowb = {N, N, Y, Y, Y, Y, Y};
-    assertRows("!isPOWB()", notPowb, notPowb, oldSide(p -> !oldPowbActive(p)), newSide(a -> !a.isPlanningPhase()));
-    // !isReportingActive() (FundingSourceAction:219, 302; FundingSourceListAction:366; ProjectOutcomeValidator:200;
+    assertRows("!old POWB check", notPowb, notPowb, oldSide(p -> !oldPowbActive(p)),
+      newSide(a -> !a.isPlanningPhase()));
+    // !old reporting check (FundingSourceAction:219, 302; FundingSourceListAction:366; ProjectOutcomeValidator:200;
     // ProjectActivitiesValidator:157).
     Outcome[] notReporting = {Y, Y, Y, Y, N, Y, Y};
-    assertRows("!isReportingActive()", notReporting, notReporting, oldSide(p -> !oldReportingActive(p)),
+    assertRows("!old reporting check", notReporting, notReporting, oldSide(p -> !oldReportingActive(p)),
       newSide(a -> !a.isReportingPhase()));
-    // !isProgressActive() (BaseAction:1273, CanDeleteDeliverableWithSharedTrainees:62).
+    // !old progress check (BaseAction:1273, CanDeleteDeliverableWithSharedTrainees:62).
     Outcome[] notProgress = {Y, Y, N, N, Y, Y, Y};
-    assertRows("!isProgressActive()", notProgress, notProgress, oldSide(p -> !oldProgressActive(p)),
+    assertRows("!old progress check", notProgress, notProgress, oldSide(p -> !oldProgressActive(p)),
       newSide(a -> !a.isProgressPhase()));
   }
 
   @Test
   public void theNegatedUpKeepSiteStopsThrowingWithoutAPhase() throws ReflectiveOperationException {
-    // INT-3: EditDeliverableInterceptor:307, !isUpKeepActive().
-    assertRows("!isUpKeepActive()", new Outcome[] {Y, Y, N, N, Y, T, T}, new Outcome[] {Y, Y, N, N, Y, Y, Y},
+    // INT-3: EditDeliverableInterceptor:307, !old upkeep check.
+    assertRows("!old upkeep check", new Outcome[] {Y, Y, N, N, Y, T, T}, new Outcome[] {Y, Y, N, N, Y, Y, Y},
       oldSide(p -> !oldUpKeepActive(p)), newSide(a -> !a.isProgressPhase()));
   }
 
