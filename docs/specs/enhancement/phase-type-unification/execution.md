@@ -716,3 +716,58 @@
 
 - Tasks closed: 9 of 16 (T00–T07, T12).
 - LOC: ~2,159 + ~159 (harness, tooling) = **~2,318, against ~2,800**.
+
+### T08 — FTL batch 1: `global/macros` (incl. §A2 renames and INT-2) — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1), with one open item (INT-2 not observable locally).
+- **Requirements covered:** FN-005 (part), FN-008 (code part), INT-2, INT-3 (`deliverableMacros`), NF-001, NF-002.
+- **Review mode:** full, one Reviewer (`opus`).
+- **Isolation:** main checkout; the app from T07 stays up on `zz_t07_actsave`. Edited source FTL was copied to the
+  deployed exploded dir (`marlo-web/target/cargo/configurations/tomcat9x/webapps/marlo-web/`) so the running app
+  renders it without a rebuild.
+
+#### Attempt 1
+
+- **Files changed (8 FTL, all LF, every file equal +/− counts):** `global/macros/studiesTemplates.ftl` (42),
+  `innovationTemplates.ftl` (17), `deliverableListTemplate.ftl` (10), `deliverableMacros.ftl` (9),
+  `homeDashboard.ftl` (8), `forms.ftl` (2); §A2 callers/locals `crp/views/projects/deliverableList.ftl` (3) and
+  `projectInnovation.ftl` (1).
+- **Mapping:** `reportingActive` → `reportingPhase` (36); `action.isPOWB()` / `action.isAWPBActive()` →
+  `action.isPlanningPhase()`, negations per DD-11 rule 1 (`forms.ftl:1256-1257`, `studiesTemplates`); §A2 local
+  `isProgressActive` → `isProgressPhase` (`innovationTemplates.ftl:136` + 16 reads, `projectInnovation.ftl:113`);
+  macro parameter `isReportingActive` → `isReportingPhase` in the 7 definitions, the reads at
+  `deliverableListTemplate.ftl:14, 121, 280, 350` and the callers `deliverableList.ftl:188, 191, 226`;
+  `deliverableMacros.ftl:367, 411` `actualPhase.name != 'Progress'` → `!progressPhase` (FJ-3, INT-2/INT-3).
+- **Evidence re-run (non-author, Leader-inline):**
+  - grep of every old name and `actualPhase.name` in `global/macros` → 0;
+  - deployed copies `cmp`-equal to the source for all 8 files;
+  - fresh T07-set capture vs baseline → `IDENTICAL: 43 files compared`;
+  - 9 extra list pages (AICCRA `deliverableList` on 429/430/431; AICCRA_III `deliverableList` and `innovationsList`
+    on 444/445/446; script and list in the scratchpad `h-extra/`), added because the T07 set renders none of the
+    list macros: re-capture identical to the Implementer's before-capture (original FTL deployed); all 200.
+
+  **VERIFIED.**
+- **Falsifier (Implementer, observed):** parameter renamed in the definition only (`deliverableListTemplate.ftl:4`,
+  deployed copy) → the T07 set stayed identical (no page renders that macro), the 6 `deliverableList` pages went red
+  (sizes e.g. 516,867 → 109,909 bytes on AICCRA progress). Reverted; `cmp` equal to source.
+- **Reviewer:** PASS. Equivalence on Planning/0, Planning/1, Reporting/0, empty and null phase (the old methods
+  already delegate); `!progressPhase` reads only `upkeep`, so AICCRA ("Progress"-named) pages do not change and only
+  an `UpKeep`-named progress phase changes (INT-2), still behind the `deliverable_shared_clusters_trainees_active`
+  specificity; precedence unchanged; every macro caller in the FTL tree updated; no FTL assign shadows the new
+  property names; scope matches §A2. ISSUES: none.
+- **Open item (INT-2 unobserved):** all 103 `UpKeep`-named progress phases in the local copy have 0 deliverables, so
+  the lock/label/note removal cannot be seen in an HTML diff. It is proven by code reading only. The covering check is
+  D8: a human look at an AICCRA_III progress deliverable page at the T15 HITL pause, on a throwaway DB.
+- **ADVISORY (recorded):**
+  - the 3 `deliverableList.ftl` callers still pass the value `=reportingActive` (§A2 gives the full form
+    `isReportingPhase=reportingPhase`); T09 (`crp/views/projects`) must convert those three values.
+  - Fold the 9 `h-extra` list pages into `harness/pages.txt` (with a fresh baseline) so T09/T10 diffs cover the list
+    macros by default.
+- **runtime events:** none.
+- **spawns:** implementer 20 calls, 112,856 tokens, ended complete; reviewer 20 calls, 101,267 tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T08
+
+- Tasks closed: 10 of 16 (T00–T08, T12).
+- LOC: ~2,318 + 184 (T08: +92 / −92) = **~2,502, against ~2,800**.

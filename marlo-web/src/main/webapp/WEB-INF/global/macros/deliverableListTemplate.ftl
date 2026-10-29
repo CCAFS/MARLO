@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
-[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/" defaultAction="" currentTable=true projectID=0]
+[#macro deliverablesList deliverables={} owned=true canValidate=false canEdit=false isReportingPhase=false namespace="/" defaultAction="" currentTable=true projectID=0]
   <table class="deliverableList table table-striped table-hover" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -11,7 +11,7 @@
         <th id="deliverableEDY">[@s.text name="project.deliverableList.deliveryYear" /]</th>
         <th id="deliverableEDY">[@s.text name="project.deliverableList.owner" /]</th>
         <th id="deliverableEDY">[@s.text name="project.deliverableList.sharedWith" /]</th>
-        [#if isReportingActive]
+        [#if isReportingPhase]
           <th id="deliverableFC">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
         [#if action.hasSpecificities('feedback_active') ]
@@ -48,7 +48,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = reportingActive && (deliverable.deliverableInfo.isRequiredToBeReported())]
+        [#local toReport = reportingPhase && (deliverable.deliverableInfo.isRequiredToBeReported())]
 
         <tr>
           [#-- ID --]
@@ -118,7 +118,7 @@
           <td class="owner text-center vertical-align-middle">
             [#if deliverable.sharedWithProjects?has_content]${deliverable.sharedWithProjects}[#else]Not shared[/#if]
           </td>
-          [#if isReportingActive]
+          [#if isReportingPhase]
             [#-- Deliverable FAIR compliance --]
             <td class="fair text-center vertical-align-middle">
             [#if deliverable.deliverableInfo.requeriedFair()]
@@ -203,7 +203,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablesSummaryList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
+[#macro deliverablesSummaryList deliverables={} owned=true canValidate=false canEdit=false isReportingPhase=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -222,7 +222,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = reportingActive && (deliverable.deliverableInfo.isRequiredToBeReported()) ]
+        [#local toReport = reportingPhase && (deliverable.deliverableInfo.isRequiredToBeReported()) ]
 
         <tr>
           [#-- ID --]
@@ -269,7 +269,7 @@
   </table>
 [/#macro]
 
-[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false FAIRColumn=true namespace="/" defaultAction=""]
+[#macro deliverablesListExtended deliverables={} owned=true canValidate=false canEdit=false isReportingPhase=false FAIRColumn=true namespace="/" defaultAction=""]
   <table class="deliverableList" id="deliverables" width="100%">
     <thead>
       <tr class="subHeader">
@@ -277,7 +277,7 @@
         <th id="deliverableTitles" width="30%">[@s.text name="project.deliverableList.deliverableName" /]</th>
         <th id="deliverableType" width="0%">[@s.text name="project.deliverableList.subtype" /]</th>
         <th id="deliverableEDY" width="0%">[@s.text name="project.deliverableList.deliveryYear" /]</th>
-        [#if isReportingActive || FAIRColumn]
+        [#if isReportingPhase || FAIRColumn]
           <th id="deliverableFC" width="0%">[@s.text name="project.deliverableList.fairCompliance" /]</th>
         [/#if]
         [#if action.hasSpecificities('feedback_active') ]
@@ -298,7 +298,7 @@
         [#-- isDeliverableComplete --]
         [#assign isDeliverableComplete = action.isDeliverableComplete(deliverable.id, actualPhase.id) /]
         [#-- To Report --]
-        [#local toReport = reportingActive && (deliverable.deliverableInfo.isRequiredToBeReported()) ]
+        [#local toReport = reportingPhase && (deliverable.deliverableInfo.isRequiredToBeReported()) ]
 
         <tr>
           [#-- ID --]
@@ -347,7 +347,7 @@
 
           </td>
           [#-- Deliverable FAIR compliance --]
-          [#if isReportingActive || FAIRColumn]
+          [#if isReportingPhase || FAIRColumn]
             <td class="fair text-center">
             [#if deliverable.deliverableInfo.requeriedFair()]
               <span class="[#attempt][#if action.isF(deliverable.id)??][#if action.isF(deliverable.id)] achieved [#else] notAchieved [/#if][/#if][#recover][/#attempt]">F</span>

@@ -110,7 +110,7 @@
 
       [@s.form action=actionName cssClass="pure-form" enctype="multipart/form-data" ]
         
-        [#assign isProgressActive = action.isProgressActive() /]
+        [#assign isProgressPhase = action.isProgressPhase() /]
 
         [#-- Validate if it's required the tab of "Alliance Alignment" --]
         [#assign isAllianceContribution = false /]

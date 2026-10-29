@@ -364,7 +364,7 @@
   </span>
   <div class="simpleBox">
   
-  [#if actualPhase.name != 'Progress']
+  [#if !progressPhase]
     <div class="note--2 text-center">
       <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
     </div>
@@ -381,25 +381,25 @@
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [@customForm.text name="involveParticipants.sharedClusters.participants" /][@customForm.req required=(reportingPhase && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [@customForm.text name="involveParticipants.sharedClusters.females" /][@customForm.req required=(reportingPhase && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [@customForm.text name="involveParticipants.sharedClusters.africans" /][@customForm.req required=(reportingPhase && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
             <div class="col-md-2 col-sm-2 col-xs-3 femaleNumbers">
               <div class="text-area-container">
-              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=(reportingActive && validateIsProgressWithStatus!true) /]
+              [@customForm.text name="involveParticipants.sharedClusters.youth" /][@customForm.req required=(reportingPhase && validateIsProgressWithStatus!true) /]
               </div>
               <br>
             </div>
@@ -408,7 +408,7 @@
         [#assign index = 0]
         [#list list as cluster]
 
-          [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (actualPhase.name != 'Progress') /]
+          [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (!progressPhase) /]
 
           <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
           <input type="hidden" name="${customName}[${index}].project.id" value="${(cluster.project.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}"/>
@@ -581,7 +581,7 @@
       <hr />
       [#-- Is this deliverable confidential and/or a management/internal deliverable? --]
       <div class="form-group">
-        <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]? [@customForm.req required=(reportingActive && validateIsProgressWithStatus!true!true) /]</label> <br />
+        <label for="">[@s.text name="project.deliverable.dissemination.confidential" /]? [@customForm.req required=(reportingPhase && validateIsProgressWithStatus!true!true) /]</label> <br />
         [#assign isConfidential = (deliverable.dissemination.confidential?string)!""]
         [@customForm.radioFlat id="confidetial-yes" name="${name}.confidential" label="Yes" value="true"  checked=(isConfidential == "true")  cssClass="radioType-confidential" cssClassLabel="radio-label-yes" editable=editable /]
         [@customForm.radioFlat id="confidetial-no"  name="${name}.confidential" label="No"  value="false" checked=(isConfidential == "false") cssClass="radioType-confidential" cssClassLabel="radio-label-no"  editable=editable /]
@@ -1539,7 +1539,7 @@
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-      [#if reportingActive]
+      [#if reportingPhase]
         <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>
       [#else]
         <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.planning" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>
@@ -1555,7 +1555,7 @@
       <hr />
       
       [#-- Shfrm Contribution Narrative --]
-      [#if reportingActive]
+      [#if reportingPhase]
         [#-- Previous narrative --]
         [#if deliverable.deliverableInfo.shfrmContributionNarrative?has_content]       
           <div class="form-group">

@@ -133,7 +133,7 @@
 [/#macro]
 
 [#macro innovationGeneral element name index=-1 template=false ]
-        [#local isProgressActive = action.isProgressActive() ]
+        [#local isProgressPhase = action.isProgressPhase() ]
         
         <div id="general" class="borderBox clearfix">   
 
@@ -189,7 +189,7 @@
             [#-- Phase of research and Stage of innovation - DEPRECIATED --] 
             [#-- <div class="form-group row">
               <div class="col-md-6 ">
-                [@customForm.select name="innovation.projectInnovationInfo.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"   required=!isProgressActive  className="stageInnovationSelect" editable=editable/]
+                [@customForm.select name="innovation.projectInnovationInfo.repIndStageInnovation.id" label=""  i18nkey="projectInnovations.stage" listName="stageInnovationList" keyFieldName="id"  displayFieldName="name"   required=!isProgressPhase  className="stageInnovationSelect" editable=editable/]
                 [#local isStageFour = (innovation.projectInnovationInfo.repIndStageInnovation.id == 4)!false]
               </div>
               <div class="col-md-6 ">
@@ -206,7 +206,7 @@
               [#local isNatureFour = (innovation.projectInnovationInfo.repIndInnovationNature.id == 4)!false]
               <div class="col-md-12">
                 <div class="form-group natureFourBlock" style="display:${isNatureFour?string('block','none')}">              
-                  [@customForm.input name="innovation.projectInnovationInfo.otherInnovationNature"  type="text" i18nkey="projectInnovations.otherInnovationNature" helpIcon=false required=!isProgressActive editable=editable  /]
+                  [@customForm.input name="innovation.projectInnovationInfo.otherInnovationNature"  type="text" i18nkey="projectInnovations.otherInnovationNature" helpIcon=false required=!isProgressPhase editable=editable  /]
                 </div>
               </div>
             </div>
@@ -276,7 +276,7 @@
               [#local isTypeSix = (innovation.projectInnovationInfo.repIndInnovationType.id == 6)!false]
               <div class="col-md-12">
                 <div class="form-group typeSixBlock" style="display:${isTypeSix?string('block','none')}">              
-                  [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation" helpIcon=false required=!isProgressActive editable=editable  /]
+                  [@customForm.input name="innovation.projectInnovationInfo.otherInnovationType"  type="text" i18nkey="projectInnovations.otherInnovation" helpIcon=false required=!isProgressPhase editable=editable  /]
                 </div>
               </div>
             </div> 
@@ -305,14 +305,14 @@
               <div class="form-group">
                 <div class="row">
                   <div class="col-md-6">
-                    [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive /]
+                    [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressPhase /]
                   </div>
                 </div>
                 <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
                   [@customForm.elementsListComponent name="innovation.regions" elementType="locElement" elementList=innovation.regions label="projectInnovations.region"  listName="regions" keyFieldName="id" displayFieldName="composedName" required=false /]
                 </div>
                 <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
-                  [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable/]
+                  [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressPhase className="countriesSelect" disabled=!editable/]
                 </div>
               </div>
             </div>
@@ -328,7 +328,7 @@
               
               [#local hasSpecifiedOutputCountries = ((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??))?then(element.projectInnovationInfo.hasSpecifiedOutputCountries,"") /]
 
-              [@customForm.labelText name="projectInnovations.geographicScope" text="projectInnovations.geographicScope" required=(editable && reportingActive) isMainTitle=true /]
+              [@customForm.labelText name="projectInnovations.geographicScope" text="projectInnovations.geographicScope" required=(editable && reportingPhase) isMainTitle=true /]
               [@customForm.labelText name="projectInnovations.geographicImpact" text="projectInnovations.geographicImpact"  /]
               <div class="form-group ('','simpleBox') geographicScopeInput">
                 <div class="form-group">
@@ -351,7 +351,7 @@
                         [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=editable disabled=!editable /]
                       </div>
                     [/#list]
-                    [#-- [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressActive orderById=true /] --]
+                    [#-- [@customForm.elementsListComponent name="innovation.geographicScopes" elementType="repIndGeographicScope" elementList=innovation.geographicScopes maxLimit=1 label="projectInnovations.geographicScope" listName="geographicScopeList" keyFieldName="id" displayFieldName="name" required=!isProgressPhase orderById=true /] --]
                   </div>
 
                   <div class="geographicScopeMessage" style="display:${(isNational)?string('block','none')}">
@@ -360,7 +360,7 @@
 
                   <div class="form-group nationalBlock col-md-12" style="display:${(isNational)?string('block','none')}">
                     [#-- Multinational, National and Subnational scope --]
-                    [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-12 countriesControlStyle" isFlex=true /]
+                    [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressPhase className="countriesSelect" disabled=!editable cssClassContainer="col-md-12 countriesControlStyle" isFlex=true /]
                   </div>
                   <div class="form-group regionalBlock col-md-12" style="display:${(isRegional)?string('block','none')}">
                     [#local geographicCountrySpecific = (element.projectInnovationInfo?? && element.projectInnovationInfo.hasSpecifiedOutputCountries??)?then(element.projectInnovationInfo.hasSpecifiedOutputCountries, false) /]
@@ -380,7 +380,7 @@
                       [#-- Multinational, National and Subnational scope --]
                       [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
                       [#-- Multinational, National and Subnational scope --]
-                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable cssClassContainer="col-md-12 countriesControlStyle" isFlex=true /]
+                      [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressPhase className="countriesSelect" disabled=!editable cssClassContainer="col-md-12 countriesControlStyle" isFlex=true /]
                     </div>
                       
                   </div>
@@ -403,7 +403,7 @@
               
               [#-- Contributing Centers --]
               <div class="col-md-12">
-                [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive /]
+                [@customForm.elementsListComponent name="innovation.centers" i18nkey="innovation.centers" elementType="institution" elementList=innovation.centers label="projectInnovations.contributingCenters"  listName="centers" keyFieldName="id" displayFieldName="composedName" required=!isProgressPhase /]
               </div>
 
               [#-- Define organizationRoles list for checkbox options --]
@@ -423,7 +423,7 @@
             
             [#-- Description of Stage reached - DEPRECIATED --] 
             [#-- <div class="form-group">
-              [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=!isProgressActive editable=editable /]
+              [@customForm.textArea name="innovation.projectInnovationInfo.descriptionStage" i18nkey="projectInnovations.stageDescription" help="projectInnovations.stageDescription.help" helpIcon=false placeholder="" className="limitWords-50" required=!isProgressPhase editable=editable /]
             </div> --]
             
 
@@ -436,7 +436,7 @@
                 [@customForm.checkmark id="isClearLeadToAddRequired" name="clearLead" i18nkey="projectInnovations.clearLead" help="" paramText="" value="true" helpIcon=true disabled=false editable=editable checked=(innovation.projectInnovationInfo.clearLead)!false cssClass="isClearLead" cssClassLabel=""  /]
               </div>
               <div class="form-group lead-organization" style="display:${isClearLead?string('none','block')}">
-                [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" editable=editable required=!isProgressActive /]
+                [@customForm.select name="innovation.projectInnovationInfo.leadOrganization.id" label=""  i18nkey="projectInnovations.leadOrganization" listName="institutions" keyFieldName="id"  displayFieldName="composedName" className="" editable=editable required=!isProgressPhase /]
               </div>
             </div>  --]
             
@@ -449,12 +449,12 @@
           
             [#-- Specify an Outcome Case Study (Only if stage 4) - DEPRECIATED --]
             [#-- <div class="form-group stageFourBlock-true">
-              [@customForm.elementsListComponent name="innovation.studies" elementType="projectExpectedStudy" elementList=innovation.studies label="projectInnovations.outcomeCaseStudy" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedNameAlternative" required=(isEvidenceRequired!false && !isProgressActive)/]
+              [@customForm.elementsListComponent name="innovation.studies" elementType="projectExpectedStudy" elementList=innovation.studies label="projectInnovations.outcomeCaseStudy" helpIcon=false listName="expectedStudyList" keyFieldName="id" displayFieldName="composedNameAlternative" required=(isEvidenceRequired!false && !isProgressPhase)/]
             </div> --]
                   
             [#-- Evidence Link - DEPRECIATED --] 
             [#-- <div class="form-group stageFourBlock-false" >
-              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=!isProgressActive editable=editable /]
+              [@customForm.input name="innovation.projectInnovationInfo.evidenceLink"  type="text" i18nkey="projectInnovations.evidenceLink"  placeholder="marloRequestCreation.webSiteLink.placeholder" className="" required=!isProgressPhase editable=editable /]
             </div> --]
           
             [#-- Or Deliverable ID (optional) - DEPRECIATED --]
@@ -465,7 +465,7 @@
             
             [#-- Link to Performance Indicators --]
             <div class="form-group col-md-12">
-              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressActive isMainTitle=true cssClassContainer="margin-buttom-0" /]
+              [@customForm.elementsListComponent name="innovation.crpOutcomes" elementType="crpOutcome" elementList=(innovation.crpOutcomes)![] label="innovation.outcomes" helpIcon=false listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" required=!isProgressPhase isMainTitle=true cssClassContainer="margin-buttom-0" /]
               <div class="note left">
                 <span class="glyphicon glyphicon-question-sign"></span>
                 [@s.text name="project.deliverable.generalInformation.keyOutputNotice2"][@s.param] <a href="[@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@] [/@]  
@@ -491,7 +491,7 @@
             [#if !action.isAiccra()]
             [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      
             <div class="form-group simpleBox">
-              [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=!isProgressActive hasPrimary=true/]
+              [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=!isProgressPhase hasPrimary=true/]
             [#--  <div class="buttonSubIdo-content"><br> <div class="selectSubIDO" ><span class=""></span>View sub-IDOs</div></div> --]
               [#-- [@customForm.primaryListComponent name="innovation.subIdos" checkName="subIdoPrimaryId" elementType="srfSubIdo" elementList=(innovation.subIdos)!"" label="innovation.subIDOs" labelPrimary="policy.primarySubIdo" listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=false /]
               --]

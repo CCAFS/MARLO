@@ -257,7 +257,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `playwright-cli`, `marlo-verify`.
 
 ### T08 — FTL batch 1: `global/macros` (incl. §A2 renames and INT-2)
-- **Status:** pending · **Size:** M · **Depends on:** T07 · **Module:** marlo-web (FTL)
+- **Status:** [x] done (2026-10-28, PASS attempt 1; INT-2 unobserved locally, see `execution.md` T08) · **Size:** M · **Depends on:** T07 · **Module:** marlo-web (FTL)
 - **Requirements:** FN-005 (part), FN-008, INT-2, INT-3 (`deliverableMacros`), NF-001, NF-002; AC FN-008 (code part).
 - **Design refs:** §5 (table, §A2 rule, exclusions); DD-6; DD-11 rule 1 and FJ-3.
 - **Files touched:** every `global/macros/*.ftl` in §A1:
