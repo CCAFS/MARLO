@@ -1029,3 +1029,108 @@ The Leader classified every exception in the app log for T07–T10 (`scratchpad/
 
 - Tasks closed: 14 of 16 (T00–T12, T14).
 - LOC: ~3,212 + 15 (docs) = **~3,227, against ~3,500**. Remaining: T13 (M2; needs OQ2/OQ3), T15 (HITL).
+
+### Open questions answered (2026-10-29, before T13)
+
+- **OQ2 — external readers of `phases.name`:** answered by the owner: no consumer outside the repo (Power BI,
+  CLARISA, scripts) filters or groups phases by `phases.name`. M2 may proceed.
+- **OQ3 — `qa_innovations`:** closed as **no change needed**, on evidence (local copies, SELECT only, all five
+  schemas `aiccradb1`–`4`, `aiccradb_actsave`):
+  - the view does not join `phases`; it reads `qa_innovations_data`, a table filled outside the repo that holds a
+    text copy `phase_name` plus `phase_year`, with no `phase_id`, `description` or `upkeep`;
+  - its definition filters `phase_name = 'AR' AND phase_year = '2019'`;
+  - the table holds 808 rows, all `AR` / 2019, from 14 pre-AICCRA units (`CRP-11` … `PTF-32`), identical in every
+    schema.
+
+  M2 rewrites `phases.name` only, never `qa_innovations_data`; and any future row written as `Reporting` would fall
+  outside the 2019 filter anyway. If QA ever needs the type, the filler must store `phase_id` or `description`
+  (QA-owned, out of scope). **Residual risk:** production was not read. The T13 release checklist carries a read-only
+  `SELECT phase_name, phase_year, COUNT(*) FROM qa_innovations_data GROUP BY 1, 2` to confirm the same shape there.
+
+### T13 — M2: change stored phase names — PASS
+
+- **Date:** 2026-10-29
+- **Final status:** PASS (attempt 1).
+- **Requirements covered:** FN-006, DA-002, MIG-001, MIG-002, OPS-001, OPS-002, OPS-004, INT-1.
+- **Review mode:** full (production data), one Reviewer (`opus`).
+- **Isolation:** main checkout, no Maven, no server; every write on `zz_t13_*` throwaway schemas (all dropped);
+  real schemas read only.
+
+#### Attempt 1
+
+- **File (new):** `marlo-web/src/main/resources/database/migrations/V2_6_0_20261029_0834__RenamePhasesAfterAiccra.sql`
+  (timestamp from `date +%Y%m%d_%H%M`; sorts after M1 `V2_6_0_20261028_1817`). One `UPDATE` on `phases`: cutoff =
+  `MIN(id)` of `global_units` with acronym `AICCRA`, computed in SQL; units with acronym `AICCRA` excluded; `POWB` /
+  `AWPB` → `Planning`, `UpKeep` → `Progress`, `AR` → `Reporting`, each only when `description` + `upkeep` match the
+  name's type (`Planing` counted as `Planning`, requirements :303-304); `BINARY` on `name`; rows already named
+  `Progress` are at target and not matched. Header: T11 and M1 dependencies, semantics, safety, the OPS-004 capture
+  SELECT.
+- **Harness (Implementer, `scratchpad/m2_harness.sh`, `m2-green.log`):** 8 scenarios (requirements :308-317),
+  expected = actual: 66 / 0 / 0 / 0 / 0 / 48 / 0 / 65; 0 wrong-name rows; 0 other columns changed; second run on
+  scenario 1 → 0.
+- **Falsifier (observed, `m2-falsifier.log`):** type guard removed →
+  ```
+  8 inconsistent row (445 upkeep=0)  expected=65  actual=66  rows_with_wrong_name=1 other_cols_changed=0  FAIL
+  phase 445 name after: Progress
+  ```
+- **Evidence re-run (non-author, Leader-inline; this is the JD-2 independence, since the harness's expected values
+  reuse the migration's own cutoff and `Planing` checks):** fresh `zz_t13_leader` with copies of `aiccradb_actsave`
+  `global_units` and `phases`; expected computed per row from DD-3; the repo file applied as is → expected 66,
+  actual 66, per-row mismatches 0, other columns changed 0, second run 0; unit 45 untouched (`AR` / `AWPB` /
+  `Progress` 12 each), units 47–50 `Planning` / `Progress` / `Reporting` 6 each. Real-copy combinations after
+  AICCRA: `AR/Reporting/0` 24, `AWPB/Planing/0` 3, `AWPB/Planning/0` 3, `POWB/Planning/0` 18, `Progress/Planing/1` 3,
+  `Progress/Planning/1` 3, `UpKeep/Planning/1` 18. Schema dropped. **VERIFIED.**
+- **`marlo-migration` checklist (Implementer):** real-clock filename; neighbour style; no id literal (grep of
+  non-comment SQL for numbers → none); no assumed rows (no AICCRA → NULL cutoff → no-op, scenarios 3–5); idempotent;
+  DML only, `name` only; no FK touched; no backfill; tested on throwaway copies with both FKs; real data read only.
+- **Reviewer:** PASS. Semantics match design §3 M2 and the ACs; the stricter guard (`upkeep = 0` for `AR`,
+  Planning description for `UpKeep`) differs from DD-3 only on combinations OPS-003 forbids; no MySQL 1093; NULL
+  cutoff, orphan phase and NULL description all fail safe; the capture SELECT uses the same join and `WHERE` as the
+  `UPDATE`; no later migration, so Flyway order holds. ISSUES: none.
+- **ADVISORY (recorded, not taken):** `description` is compared with the table collation (case- and
+  trailing-space-insensitive) while Java compares exactly; `BINARY p.description` would align them. Not taken: no
+  such row exists, OPS-003 catches one, and after T11 a row's name no longer decides its type.
+- **spawns:** implementer 13 calls, ~103,000 tokens, ended complete; reviewer 16 calls, ~66,000 tokens, ended
+  complete.
+
+#### Release checklist for M2 (OPS-001, OPS-002, OPS-004, OQ3)
+
+Run in this order, in the release window, with T04–T11 deployed in the same release as or before M2 (OPS-001):
+
+1. **Capture (OPS-004), before M2.** Record the output in the release notes; it is the only rollback source (S5).
+   ```sql
+   SELECT p.id, p.name
+   FROM phases p
+   JOIN (SELECT MIN(id) AS cutoff FROM global_units WHERE acronym = 'AICCRA') c ON p.global_unit_id > c.cutoff
+   WHERE p.global_unit_id NOT IN (SELECT id FROM global_units WHERE acronym = 'AICCRA')
+     AND ((BINARY p.name IN ('POWB', 'AWPB') AND p.description IN ('Planning', 'Planing') AND p.upkeep = 0)
+       OR (BINARY p.name = 'UpKeep' AND p.description IN ('Planning', 'Planing') AND p.upkeep = 1)
+       OR (BINARY p.name = 'AR' AND p.description = 'Reporting' AND p.upkeep = 0))
+   ORDER BY p.id;
+   ```
+   Local copy: 66 rows.
+2. **Autosave drafts (OPS-002), before M2.** Compute the acronyms after AICCRA from production, longest first:
+   ```sql
+   SELECT acronym FROM global_units
+   WHERE id > (SELECT MIN(id) FROM global_units WHERE acronym = 'AICCRA') AND acronym <> 'AICCRA'
+   ORDER BY LENGTH(acronym) DESC;
+   ```
+   then list the drafts that M2 would orphan (local list shown):
+   ```bash
+   ls <autosave.folder> | grep -E '_(POWB|AWPB|UpKeep|AR)_[0-9]{4}_(AICCRA_III|Alliance|QATEST|TEST|KT)_'
+   ```
+   Each hit must be renamed to the new phase name (or its user told to re-enter) before users resume. Local:
+   `102093_Project_POWB_2026_AICCRA_III_description.json`, `102102_Project_AWPB_2026_QATEST_description.json`.
+3. **OQ3 residual check (read-only, production):**
+   ```sql
+   SELECT phase_name, phase_year, COUNT(*) FROM qa_innovations_data GROUP BY 1, 2;
+   ```
+   Expected shape: `AR | 2019 | 808` only. Anything newer than 2019 → stop and ask the QA lead.
+4. **Apply M2** (Flyway on deploy). **Verify:** re-run the capture SELECT → 0 rows.
+5. **Rollback:** restore each `(id, name)` from step 1; never reverse by type (the family `POWB`/`AWPB` cannot be
+   recovered otherwise).
+
+#### Running totals vs budget (design §17), after T13
+
+- Tasks closed: 15 of 16 (T00–T14).
+- LOC: ~3,227 + ~60 (migration) = **~3,287, against ~3,500**. Remaining: T15 (manual QA and release HITL).

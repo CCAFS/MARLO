@@ -29,7 +29,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - [x] Feature branch `phase-type-unification` exists, from `staging` `575a1c7aff`.
 - [ ] `575a1c7aff` (template fix from another session) pushed to `origin/staging`, or removed from this branch before the PR (owner).
 - [ ] T00 production check done before T03 (OPS-003).
-- [ ] OQ2 (external `phases.name` readers) and OQ3 (QA view) answered before T13.
+- [x] OQ2 (external `phases.name` readers) and OQ3 (QA view) answered before T13 (2026-10-29; `execution.md` "Open questions answered").
 
 ## 3. Task List
 
@@ -346,7 +346,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `tdd`, `marlo-verify`, `marlo-commit`.
 
 ### T13 — M2: change stored phase names (DA-002, OPS-001, OPS-002, OPS-004)
-- **Status:** pending · **Size:** S · **Depends on:** T11, T12, OQ2, OQ3 · **Module:** marlo-web (migrations) + release checklist
+- **Status:** [x] done (2026-10-29, PASS attempt 1; `execution.md` T13) · **Size:** S · **Depends on:** T11, T12, OQ2, OQ3 · **Module:** marlo-web (migrations) + release checklist
 - **Requirements:** FN-006, DA-002, MIG-001, MIG-002, OPS-001, OPS-002, OPS-004, INT-1; AC FN-006/DA-002 (including "BUT inconsistent row keeps its name"), AC DA-001/MIG (M2 column), AC OPS-001, AC OPS-002, AC OPS-004.
 - **Design refs:** §3 M2; DD-10; §14 S5 and the rollback paragraph; proposal R10.
 - **Files touched:**
