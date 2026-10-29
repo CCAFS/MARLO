@@ -363,8 +363,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       // Calculate time of generation
       long stopTime = System.currentTimeMillis();
       stopTime = stopTime - startTime;
-      LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-        + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+      LOG.info("Downloaded successfully: {}. CRP: {}. Time to generate: {}ms.", this.getFileName(),
+        this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, stopTime);
     } else {
       // Specificity false
       try {
@@ -2274,8 +2274,8 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
+    LOG.info("Start report download: {}. CRP: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null);
   }
 
   public void setBytesPDF(byte[] bytesPDF) {

@@ -2115,8 +2115,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         // An absent or empty value is the everyday case: the templates still render the param with no value
         // when the phase they were given has no id. A value that is present and does not resolve is not.
         if (StringUtils.isNotBlank(phaseIDParam)) {
-          LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
-            APConstants.PHASE_ID, phaseIDParam);
+          // Only the parsed number is logged: the raw value comes from the request and can carry line breaks that
+          // forge log lines
+          if (requestedPhaseID != 0L) {
+            LOG.debug("The {} parameter {} does not resolve to a phase, so the current phase param is used",
+              APConstants.PHASE_ID, requestedPhaseID);
+          } else {
+            LOG.debug("The {} parameter is not a valid phase id, so the current phase param is used",
+              APConstants.PHASE_ID);
+          }
         }
         Phase phase = this.getPhaseFromCurrentPhaseParam();
 
@@ -4319,6 +4326,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
+    // A section with no saved record yet has no history: the empty list it always got, without an ERROR per page view
+    if (object == null || object.getId() == null) {
+      return new ArrayList<Auditlog>();
+    }
     try {
       return this.auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName(), this.getActualPhase().getId());

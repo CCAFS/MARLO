@@ -156,9 +156,9 @@ public class SendMail {
 
     } catch (MessagingException e) {
       e.printStackTrace();
-      LOG.error("There was an error sending a message", e.getMessage());
+      LOG.error("There was an error sending a message", e);
     } catch (UnsupportedEncodingException e) {
-      LOG.error("There was an error setting up the FROM Email when trying to send a message", e.getMessage());
+      LOG.error("There was an error setting up the FROM Email when trying to send a message", e);
     }
   }
 

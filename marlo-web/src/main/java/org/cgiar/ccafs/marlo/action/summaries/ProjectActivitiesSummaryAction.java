@@ -491,9 +491,8 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
 
     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       String masterQueryName = "Main_Query";
@@ -578,9 +577,8 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
     return SUCCESS;
   }
 
@@ -1721,15 +1719,15 @@ public class ProjectActivitiesSummaryAction extends BaseSummariesAction implemen
       this.setCrpSession(this.getLoggedCrp().getAcronym());
     } catch (NumberFormatException e) {
       // A missing or non-numeric projectID is a bad request, not a failure: execute() answers it as not found
-      LOG.warn("The {} parameter is missing or not a number: {}", APConstants.PROJECT_REQUEST_ID, e.getMessage());
+      LOG.warn("The {} parameter is missing or not a number", APConstants.PROJECT_REQUEST_ID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the CRP of the project {}", this.getProjectID(), e);
     }
     // Get project from DB
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
-      LOG.error("Failed to get project. Exception: " + e.getMessage());
+      LOG.error("Failed to get project", e);
     }
     if (this.getSelectedPhase() != null && project != null) {
       this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));

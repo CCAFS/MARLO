@@ -26,10 +26,14 @@ import java.net.URL;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AIReportService extends BaseAction {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger LOG = LoggerFactory.getLogger(AIReportService.class);
 
 	private static String AI_API_URL = "";
 
@@ -118,7 +122,7 @@ public class AIReportService extends BaseAction {
 
 			// Get response status code
 			int status = conn.getResponseCode();
-			System.out.println("[AI Report] HTTP response status: " + status);
+			LOG.debug("[AI Report] HTTP response status: {}", status);
 
 			// Read response body
 			StringBuilder response = new StringBuilder();
@@ -135,12 +139,12 @@ public class AIReportService extends BaseAction {
 
 			// Try to parse the response into AIIndicatorReport
 			report = mapper.readValue(rawJson, AIIndicatorReport.class);
-			System.out.println("[AI Report] JSON parsed successfully.");
+			LOG.debug("[AI Report] JSON parsed successfully.");
 			return report;
 
 		} catch (Exception e) {
 			// Log and build fallback error response
-			System.err.println("[AI Report] Error generating report: " + e.getMessage());
+			LOG.error("[AI Report] Could not generate the report", e);
 
 			report.setIndicator(indicator);
 			report.setYear(year);

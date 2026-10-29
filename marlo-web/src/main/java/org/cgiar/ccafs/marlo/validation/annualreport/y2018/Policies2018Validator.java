@@ -410,7 +410,7 @@ public class Policies2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.POLICIES.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting policies validator: " + e.getMessage());
+        LOG.error("Error getting policies validator", e);
       }
     }
 

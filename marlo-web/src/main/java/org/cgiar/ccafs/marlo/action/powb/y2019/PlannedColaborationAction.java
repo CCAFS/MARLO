@@ -1070,8 +1070,7 @@ public class PlannedColaborationAction extends BaseAction {
         }
 
       } catch (Exception e) {
-        e.printStackTrace();
-        LOG.error("Error getting partnerships list: " + e.getMessage());
+        LOG.error("Error getting partnerships list", e);
       }
 
     }

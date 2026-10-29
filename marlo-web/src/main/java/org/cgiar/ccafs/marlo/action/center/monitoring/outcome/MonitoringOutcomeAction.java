@@ -65,6 +65,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -73,6 +75,8 @@ public class MonitoringOutcomeAction extends BaseAction {
 
 
   private static final long serialVersionUID = 8641483319512138926L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(MonitoringOutcomeAction.class);
 
 
   // GlobalUnit Manager
@@ -335,7 +339,7 @@ public class MonitoringOutcomeAction extends BaseAction {
     try {
       outcomeID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.OUTCOME_ID)));
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.debug("No valid outcome id parameter in the request");
     }
 
     if (this.getRequest().getParameter(APConstants.TRANSACTION_ID) != null) {

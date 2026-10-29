@@ -48,6 +48,8 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andres Valencia - CIAT/CCAFS
@@ -55,6 +57,8 @@ import org.apache.struts2.dispatcher.Parameter;
 public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 4178469256964398247L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(EditProjectLp6ContributionInterceptor.class);
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
@@ -90,7 +94,7 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.warn("Answering not found after an exception in the action or its permission check", e);
       return BaseAction.NOT_FOUND;
     }
   }
@@ -243,8 +247,6 @@ public class EditProjectLp6ContributionInterceptor extends AbstractInterceptor i
           if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
-            System.out.println(cal.get(Calendar.YEAR));
-            System.out.println(baseAction.getActualPhase().getYear());
             if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
               .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
               if (baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {

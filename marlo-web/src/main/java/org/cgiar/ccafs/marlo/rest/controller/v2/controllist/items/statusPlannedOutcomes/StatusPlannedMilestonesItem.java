@@ -67,9 +67,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 public class StatusPlannedMilestonesItem<T> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(StatusPlannedMilestonesItem.class);
 
   private PhaseManager phaseManager;
   private GlobalUnitManager globalUnitManager;
@@ -384,7 +388,7 @@ public class StatusPlannedMilestonesItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
+      fieldErrors.stream().forEach(f -> LOG.debug("Field validation error: {}", f == null ? null : f.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -547,7 +551,7 @@ public class StatusPlannedMilestonesItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
+      fieldErrors.stream().forEach(f -> LOG.debug("Field validation error: {}", f == null ? null : f.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
@@ -803,7 +807,7 @@ public class StatusPlannedMilestonesItem<T> {
     }
 
     if (!fieldErrors.isEmpty()) {
-      fieldErrors.stream().forEach(f -> System.out.println(f.getMessage()));
+      fieldErrors.stream().forEach(f -> LOG.debug("Field validation error: {}", f == null ? null : f.getMessage()));
       throw new MARLOFieldValidationException("Field Validation errors", "",
         fieldErrors.stream()
           .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))

@@ -360,9 +360,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info(
-      "Downloaded successfully: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, stopTime);
     return SUCCESS;
   }
 
@@ -1154,7 +1153,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           } catch (Exception e) {
-            LOG.warn("Error getting isI(Deliverable). Exception: " + e.getMessage());
+            LOG.warn("Error getting isI(Deliverable)", e);
             I += "X";
           }
 
@@ -2236,7 +2235,7 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
               }
             }
           } catch (Exception e) {
-            LOG.warn("Error getting isI(Deliverable). Exception: " + e.getMessage());
+            LOG.warn("Error getting isI(Deliverable)", e);
             I = "X";
           }
 
@@ -2674,8 +2673,8 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
     this.setGeneralParameters();
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym());
+    LOG.info("Start report download: {}. CRP: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null);
   }
 
   private DeliverableUserPartnership responsiblePartner(Deliverable deliverable) {
@@ -2683,10 +2682,11 @@ public class DeliverablesReportingExcelSummaryAction extends BaseSummariesAction
       DeliverableUserPartnership partnership = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-        .collect(Collectors.toList()).get(0);
+        .findFirst().orElse(null);
+      // A deliverable without a responsible partner answers null, as before, without throwing
       return partnership;
     } catch (Exception e) {
-      LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
+      LOG.warn("Error getting DeliverablePartnership", e);
       return null;
     }
 

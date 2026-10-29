@@ -162,7 +162,7 @@ public class StatusPlannedOutcomes {
       response = this.statusPlannedOutcomesItem.findStatusPlannedOutcome(outcomeID, CGIAREntity, year, phase,
         this.getCurrentUser());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the planned outcome status", e);
     }
 
     if (response != null && response.getStatusCode() == HttpStatus.NOT_FOUND) {

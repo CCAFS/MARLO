@@ -15,8 +15,6 @@
 
 package org.cgiar.ccafs.marlo.action.json.global;
 
-import java.util.logging.Logger;
-
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionManager;
 import org.cgiar.ccafs.marlo.data.model.Institution;
@@ -28,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.opensymphony.xwork2.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Kenji Tanaka - CIAT/CCAFS
@@ -40,7 +40,7 @@ public class GetInstitutions extends BaseAction {
    */
   private static final long serialVersionUID = 4342324441648979508L;
 
-  private static Logger LOG = Logger.getLogger(GetInstitutions.class.getName());
+  private static final Logger LOG = LoggerFactory.getLogger(GetInstitutions.class);
 
     // Managers
     private InstitutionManager institutionManager;
@@ -59,14 +59,22 @@ public class GetInstitutions extends BaseAction {
     public String execute() throws Exception {
         List<Institution> institutionList = institutionManager.findAll();
         institutions = new ArrayList<>();
-        
+        if (institutionList == null) {
+            return SUCCESS;
+        }
+
         for (Institution institution : institutionList) {
+            if (institution == null) {
+                continue;
+            }
             Map<String, Object> institutionMap = new HashMap<>();
             institutionMap.put("id", institution.getId());
             institutionMap.put("name", institution.getName());
             institutionMap.put("acronym", institution.getAcronym());
             institutionMap.put("composedName", institution.getComposedNameType());
-            institutionMap.put("type", institution.getInstitutionType().getName());
+            // An institution without a type is still listed, with a null type
+            institutionMap.put("type",
+                institution.getInstitutionType() != null ? institution.getInstitutionType().getName() : null);
             institutions.add(institutionMap);
         }
         

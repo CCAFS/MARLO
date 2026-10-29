@@ -83,7 +83,7 @@ public class Policies {
     try {
       policyId = this.policyItem.createPolicy(newProjectPolicyDTO, CGIAREntity, this.getCurrentUser());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not create the policy", e);
     }
 
 

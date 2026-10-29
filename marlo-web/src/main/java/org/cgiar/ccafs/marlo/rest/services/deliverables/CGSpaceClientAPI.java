@@ -368,8 +368,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
       metadataModel.setAuthors(authorsArr);
 
     } catch (RuntimeException | IOException e) {
-      e.printStackTrace();
-      LOG.error("Error parsing metadata from CGSpace: {}", e.getMessage());
+      LOG.error("Error parsing metadata from CGSpace", e);
     }
 
     return metadataModel;
@@ -441,7 +440,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
         }
       } catch (RuntimeException e) {
-        LOG.warn("DSpace 8 pid/find API failed for handle '{}': {}", this.getId(), e.getMessage());
+        LOG.warn("DSpace 8 pid/find API failed for handle '{}'", this.getId(), e);
       }
 
       // 2. DSpace 7 fallback: /server/api/core/handles/{handle} → _links.resource.href
@@ -464,7 +463,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
         }
       } catch (RuntimeException e) {
-        LOG.warn("DSpace 7/8 handle API failed for handle '{}': {}", this.getId(), e.getMessage());
+        LOG.warn("DSpace 7/8 handle API failed for handle '{}'", this.getId(), e);
       }
 
       // 3. DSpace 6 legacy fallback: /rest/handle/{handle} → XML UUID
@@ -479,7 +478,7 @@ public class CGSpaceClientAPI extends MetadataClientApi {
           }
         }
       } catch (RuntimeException e) {
-        LOG.warn("Legacy DSpace 6 handle resolution also failed for handle '{}': {}", this.getId(), e.getMessage());
+        LOG.warn("Legacy DSpace 6 handle resolution also failed for handle '{}'", this.getId(), e);
       }
     }
 
@@ -512,8 +511,8 @@ public class CGSpaceClientAPI extends MetadataClientApi {
   /**
    * Tries to extract a DOI from various keys/values and stores it in the JSON object.
    * It saves the DOI in two ways:
-   * - "doiPlain": only the 10.xxxx/... part (útil para usos internos)
-   * - "doi": always as a full URL https://doi.org/10.xxxx/... (esto activa setDoi(...) para enriquecer)
+   * - "doiPlain": only the 10.xxxx/... part (useful for internal use)
+   * - "doi": always as a full URL https://doi.org/10.xxxx/... (this triggers setDoi(...) to enrich the metadata)
    */
   private void trySetDoi(String key, String value, JSONObject jo) {
     if (StringUtils.isBlank(value)) {

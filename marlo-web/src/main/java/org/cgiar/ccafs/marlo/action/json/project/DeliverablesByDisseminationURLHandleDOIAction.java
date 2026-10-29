@@ -23,11 +23,13 @@ import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectDeliverableSharedManager;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
+import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnership;
 import org.cgiar.ccafs.marlo.data.model.DeliverableUserPartnershipPerson;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.utils.APConfig;
@@ -42,12 +44,15 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
   private static final long serialVersionUID = 6304226585314276677L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(DeliverablesByDisseminationURLHandleDOIAction.class);
 
   List<Map<String, Object>> sources;
 
@@ -81,7 +86,8 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
     List<Deliverable> deliverables = null;
 
 
-    if ((disseminationURL != null || handle != null || DOI != null) && phaseID != 0 && deliverableID != 0) {
+    if ((disseminationURL != null || handle != null || DOI != null) && phase != null && phaseID != 0
+      && deliverableID != 0) {
       // cgamboa 30/04/2024 the query to get duplicate records has been modified
       // deliverables = deliverableManager.getDeliverablesByPhase(phaseID);
       deliverables =
@@ -101,6 +107,9 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
         for (Deliverable deliverable : deliverables) {
 
           deliverable = deliverableManager.getDeliverableById(deliverable.getId());
+          if (deliverable == null) {
+            continue;
+          }
 
           DeliverableDissemination deliverableDissemination = new DeliverableDissemination();
           boolean isDOIDuplicated = false;
@@ -114,7 +123,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
           try {
             deliverableDissemination = deliverable.getDissemination(phase);
           } catch (Exception e) {
-            Log.info(e);
+            LOG.debug("Could not read the dissemination of a candidate duplicate deliverable", e);
           }
           // Dissemination URL
           if (deliverableDissemination != null && deliverableDissemination.getDisseminationUrl() != null
@@ -164,7 +173,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               }
 
             } catch (Exception e) {
-              Log.info(e);
+              LOG.debug("Could not compare the DOI of a candidate duplicate deliverable", e);
             }
 
             try {
@@ -184,7 +193,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               }
 
             } catch (Exception e) {
-              Log.info(e);
+              LOG.debug("Could not compare the handle of a candidate duplicate deliverable", e);
             }
           }
 
@@ -231,8 +240,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               .collect(Collectors.toList());
             if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
               if (deliverablePartnershipResponsibles.size() > 1) {
-                Log.warn("There are more than 1 deliverable responsibles for D" + deliverable.getId() + " "
-                  + phase.toString());
+                LOG.warn("There are more than 1 deliverable responsibles for D{} {}", deliverable.getId(), phase);
               }
               DeliverableUserPartnership responisble = deliverablePartnershipResponsibles.get(0);
 
@@ -270,28 +278,30 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
             }
             deliverableDTO.setClusterLeader(projectLeaderName);
 
+            DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
+
             // Set subCategory
-            if (deliverable.getDeliverableInfo(phase).getDeliverableType() != null
-              && deliverable.getDeliverableInfo(phase).getDeliverableType().getName() != null) {
-              deliverableDTO.setSubCategory(deliverable.getDeliverableInfo(phase).getDeliverableType().getName());
+            if (deliverableInfo != null && deliverableInfo.getDeliverableType() != null
+              && deliverableInfo.getDeliverableType().getName() != null) {
+              deliverableDTO.setSubCategory(deliverableInfo.getDeliverableType().getName());
             }
 
             // Set title
-            if (deliverable.getDeliverableInfo(phase).getTitle() != null) {
-              deliverableDTO.setTitle(deliverable.getDeliverableInfo(phase).getTitle());
+            if (deliverableInfo != null && deliverableInfo.getTitle() != null) {
+              deliverableDTO.setTitle(deliverableInfo.getTitle());
             }
 
             // Set status
             String year = "-";
-            if (deliverable.getDeliverableInfo(phase).getStatus() != null) {
-              deliverableDTO.setStatus(
-                ProjectStatusEnum.getValue(deliverable.getDeliverableInfo(phase).getStatus().intValue()).getStatus());
-              if (deliverable.getDeliverableInfo(phase).getNewExpectedYear() != null
-                && deliverable.getDeliverableInfo(phase).getNewExpectedYear() != -1) {
-                year = deliverable.getDeliverableInfo(phase).getNewExpectedYear() + " extended from "
-                  + deliverable.getDeliverableInfo(phase).getYear();
+            if (deliverableInfo != null && deliverableInfo.getStatus() != null) {
+              ProjectStatusEnum statusEnum = ProjectStatusEnum.getValue(deliverableInfo.getStatus().intValue());
+              if (statusEnum != null) {
+                deliverableDTO.setStatus(statusEnum.getStatus());
+              }
+              if (deliverableInfo.getNewExpectedYear() != null && deliverableInfo.getNewExpectedYear() != -1) {
+                year = deliverableInfo.getNewExpectedYear() + " extended from " + deliverableInfo.getYear();
               } else {
-                year = deliverable.getDeliverableInfo(phase).getYear() + "";
+                year = deliverableInfo.getYear() + "";
               }
             }
 
@@ -326,8 +336,11 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
                 deliverablesShared = projectDeliverableSharedManager.getByPhase(this.getActualPhase().getId());
                 if (deliverablesShared != null && !deliverablesShared.isEmpty()) {
                   deliverablesShared =
-                    deliverablesShared.stream().filter(ds -> ds.isActive() && ds.getDeliverable() != null
-                      && ds.getDeliverable().getProject().getId().equals(projectID)).collect(Collectors.toList());
+                    deliverablesShared.stream()
+                      .filter(ds -> ds != null && ds.isActive() && ds.getDeliverable() != null
+                        && ds.getDeliverable().getProject() != null
+                        && Long.valueOf(projectID).equals(ds.getDeliverable().getProject().getId()))
+                      .collect(Collectors.toList());
                 }
 
                 // Owner
@@ -342,19 +355,25 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
 
                 // Shared with others
                 for (ProjectDeliverableShared deliverableShared : deliverablesShared) {
+                  // A shared project with no info in the actual phase has no acronym to list
+                  if (deliverableShared.getProject() == null) {
+                    continue;
+                  }
+                  ProjectInfo sharedProjectInfo =
+                    deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase());
+                  if (sharedProjectInfo == null) {
+                    continue;
+                  }
+                  String sharedAcronym = sharedProjectInfo.getAcronym();
                   // String projectsSharedText = null;
                   if (deliverableShared.getDeliverable().getSharedWithProjects() == null) {
-                    deliverableShared.getDeliverable().setSharedWithProjects(
-                      "" + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                    deliverableShared.getDeliverable().setSharedWithProjects("" + sharedAcronym);
                   } else {
-                    if (deliverableShared.getDeliverable() != null
-                      && deliverableShared.getDeliverable().getSharedWithProjects() != null
-                      && deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym() != null
-                      && !deliverableShared.getDeliverable().getSharedWithProjects().contains(
-                        deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym())) {
+                    if (sharedAcronym != null
+                      && !deliverableShared.getDeliverable().getSharedWithProjects().contains(sharedAcronym)) {
                       deliverableShared.getDeliverable()
                         .setSharedWithProjects(deliverableShared.getDeliverable().getSharedWithProjects() + "; "
-                          + deliverableShared.getProject().getProjecInfoPhase(this.getActualPhase()).getAcronym());
+                          + sharedAcronym);
                     }
                   }
                   // deliverableShared.getDeliverable().setSharedWithProjects(projectsSharedText);
@@ -364,7 +383,7 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
               }
 
             } catch (Exception e) {
-              Log.error("unable to get shared deliverables", e);
+              LOG.error("Unable to get the shared deliverables", e);
             }
 
             if (deliverable.getSharedWithProjects() != null) {
@@ -430,32 +449,32 @@ public class DeliverablesByDisseminationURLHandleDOIAction extends BaseAction {
       disseminationURL = StringUtils.trim(parameters.get(APConstants.DISSEMINATION_URL).getMultipleValues()[0]);
     } catch (Exception e) {
       disseminationURL = null;
-      Log.info(e);
+      LOG.debug("No dissemination URL parameter in the request");
     }
     try {
       handle = StringUtils.trim(parameters.get(APConstants.HANDLE).getMultipleValues()[0]);
     } catch (Exception e) {
       handle = null;
-      Log.info(e);
+      LOG.debug("No handle parameter in the request");
     }
     try {
       DOI = StringUtils.trim(parameters.get(APConstants.DOI).getMultipleValues()[0]);
     } catch (Exception e) {
       DOI = null;
-      Log.info(e);
+      LOG.debug("No DOI parameter in the request");
     }
     try {
       phaseID = Long.valueOf(StringUtils.trim(parameters.get(APConstants.PHASE_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       phaseID = 0;
-      Log.info(e);
+      LOG.debug("No valid phase id parameter in the request");
     }
     try {
       deliverableID = Long
         .valueOf(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
     } catch (Exception e) {
       deliverableID = 0;
-      Log.info(e);
+      LOG.debug("No valid deliverable id parameter in the request");
     }
   }
 
