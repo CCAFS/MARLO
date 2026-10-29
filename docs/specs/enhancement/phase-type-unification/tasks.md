@@ -388,7 +388,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `cognitive-doc-design`, `marlo-commit`.
 
 ### T15 — Manual QA and release HITL
-- **Status:** pending · **Size:** S · **Depends on:** T08, T13 · **Module:** none
+- **Status:** [x] done (2026-10-29, owner-confirmed; `execution.md` T15) · **Size:** S · **Depends on:** T08, T13 · **Module:** none
 - **Requirements:** AC FN-008 (human part), AC OPS-002 (record), OQ1, OQ4 (part 2); defect class D8 / D10.
 - **Design refs:** §16; §14 S5.
 - **Scope:**

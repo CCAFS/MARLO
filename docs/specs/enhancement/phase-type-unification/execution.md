@@ -1134,3 +1134,95 @@ Run in this order, in the release window, with T04–T11 deployed in the same re
 
 - Tasks closed: 15 of 16 (T00–T14).
 - LOC: ~3,227 + ~60 (migration) = **~3,287, against ~3,500**. Remaining: T15 (manual QA and release HITL).
+
+### T15 — Manual QA and release HITL — PASS (owner-confirmed)
+
+- **Date:** 2026-10-29
+- **Status:** `[~]`, waiting on owner items (screenshot confirmation, OQ1, OQ4 part 2 on production).
+- **Isolation:** worktree `../MARLO-t15` (detached at `6e6df17d0c`), not committed; local-only edits: `marlo-web/pom.xml`
+  ports 8081 / 8444 / RMI 8206 / AJP 8010, and its `marlo-dev.properties` on `zz_t07_actsave`, URLs on 8081, autosave
+  folder in the scratchpad. Built with `package` (no `install`, `~/.m2` untouched); started with `cargo:run` directly
+  (never the run script, which kills every `cargo:run`). The other session's server on 8080 was not touched.
+
+#### M2 applied by Flyway at startup (release rehearsal)
+
+- Before: `schema_version` last = `2.6.0.20261028.1817` (M1); the OPS-004 capture SELECT → 66 rows (saved in
+  `scratchpad/t15_capture_before.tsv`).
+- Log: `Migrating schema zz_t07_actsave to version 2.6.0.20261029.0834 - RenamePhasesAfterAiccra` →
+  `Successfully applied 1 migration … (execution time 00:00.122s)`.
+- After: capture SELECT → 0; unit 45 unchanged (`AR` / `AWPB` / `Progress` 12 each); units 47–50 `Planning` /
+  `Progress` / `Reporting` 6 each.
+
+#### INT-2 (D8) browser check
+
+- **Finding on the task wording:** the plan-phase falsifier cannot run. The "Dissemination & Metadata" tab that holds
+  `deliverableClusterParticipantsMacro` renders only when `(reportingPhase || actualPhase.upkeep)`
+  (`projectDeliverable.ftl:280, 299`), so in a plan phase (444, and AICCRA's 429) the section is absent from the HTML.
+  The rendered "not progress" case is the reporting phase, used as the falsifier instead (446).
+- **Data (all on `zz_t07_actsave`, scripts in `scratchpad/t15/writes*.sql`):** phases 445 and 446 opened
+  (`editable=1, visible=1`); deliverable 27310 on AICCRA_III project 102093 (info for 444, 445, 446, cloned from
+  AICCRA row 299904); shared with project 102095 (`project_deliverable_shared`); cluster participants for 102093 and
+  102095; submissions Planning 2026 and Reporting 2026 for 102093 and 102095, Planning 2026 for 102076.
+  `isSubmit` matches on the current cycle (Planning for 444/445, Reporting for 446) and year, so the submitted
+  clusters are submitted in both 445 and 446 (Leader checked `BaseAction.isSubmit` and the `submissions` rows).
+- **Observed (Implementer, Playwright; Leader re-counted the saved section HTML):**
+
+  | Case | Note | "Cluster submitted." | `disabled` | Expected |
+  |---|---|---|---|---|
+  | AICCRA_III 445, progress | 0 | 0 | 0 | unlocked, no note, no label |
+  | AICCRA_III 446, reporting (falsifier) | 1 | 2 | 18 | note, label, locked |
+  | AICCRA 430, progress (control) | 0 | 0 | 0 | unchanged: unlocked |
+  | AICCRA_III 444 / AICCRA 429, plan | section not rendered | — | — | tab absent by design |
+
+  Screenshots: `scratchpad/t15/crp47_phase445_progress.png`, `crp47_phase446_reporting.png`,
+  `crp45_phase430_progress.png`. The lock follows `!progressPhase`, not the name.
+- **Server log after the run start:** no `ERROR`, `Exception` or `WARN`; the only ERROR is the JVM AgentLoader line at
+  startup.
+- **Cosmetic, out of scope:** the cluster cell shows `\n` (seeded projects have a NULL acronym); the label text
+  "Cluster submitted." is hardcoded in the FTL, so AICCRA_III shows "Cluster" next to a note that says "Technical
+  Implementation Team".
+
+#### Owner confirmations (2026-10-29)
+
+- **INT-2 screenshots:** confirmed by the owner ("si solo cambiaste eso están bien"), after the Leader showed the
+  exact `deliverableMacros.ftl` diff of T08 (`:367`, `:411` name check → `!progressPhase`; `reportingActive` →
+  `reportingPhase` elsewhere).
+- **`\n` in the cluster name cell (owner question):** pre-existing, not from this branch. The control page on real
+  AICCRA data (projects `Senegal`, `Theme 2`) shows it too; the cell is `[@customForm.text name=(list[index].project.acronym)!"" /]`
+  (commits `a04f1f18e8`, `cd6e73e203`, `53b0e86395`), which passes the acronym to `@s.text` as an i18n key; neither
+  that line nor the `text` macro in `forms.ftl` is changed on this branch, and the hidden sibling `<p>` carries
+  `name="Senegal"`. Proposed as a separate bugfix after this PR (render `${(list[index].project.acronym)!''}`).
+- **OQ1:** confirmed by the owner: CRP Admin keeps showing the stored name, so after M2 units after AICCRA show
+  `Planning` / `Progress` / `Reporting` plus the year, and AICCRA keeps `AWPB` / `Progress` / `AR`.
+
+#### OQ4 part 2 (before DA-002) — run on the local copies by owner decision
+
+Same exception as T00 ("Hazlo localmente ya que es una copia de prod"); read-only SELECTs on `aiccradb_actsave` and
+`aiccradb1`–`4`:
+
+| Check | `aiccradb_actsave` | `aiccradb1`–`4` |
+|---|---|---|
+| Q1 `description = 'Planing'` (M1 rows) | 12 | 6 each |
+| Q2 rows whose name does not match their type (any name outside its family's `description` / `upkeep`) | 0 | 0 |
+| Q3 units after AICCRA holding `AWPB` / `Progress` | QATEST (50): `AWPB` 6, `Progress` 6 | none |
+| Q4 (R7) `project_budget_executions` in progress phases of the same year | 0 | 0 |
+
+- Units after AICCRA: `aiccradb_actsave` Alliance (0 phases), AICCRA_III, TEST, KT, QATEST (18 each);
+  `aiccradb1`–`4` Alliance (0), AICCRA_III (18). So Q3 is empty there because only AICCRA_III exists, with the
+  `POWB` / `UpKeep` / `AR` family.
+- Q2 = 0 means the inconsistent-row guard of M2 (scenario 8) has no real target today; it stays as protection.
+- Q4 = 0: R7 holds.
+- **Carried to release day (production, not local):** the OPS-004 capture, the autosave draft listing, and the
+  `qa_innovations_data` check, as steps 1–3 of the T13 release checklist.
+
+#### Close
+
+- **Final status:** done. Every T15 item recorded; INT-2, OQ1 and OQ4 part 2 confirmed by the owner.
+- **Environment:** the 8081 app and the `../MARLO-t15` worktree are removed at close; `zz_t07_actsave` now holds M2
+  plus the T15 seed rows (deliverable 27310, phases 445 and 446 open).
+- **spawns:** implementer (browser check) 70 calls, ~150,000 tokens, ended complete.
+
+#### Running totals vs budget (design §17), at close
+
+- Tasks closed: 16 of 16.
+- LOC: **~3,287, against ~3,500**.
