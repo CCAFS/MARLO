@@ -5625,6 +5625,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return roles;
   }
 
+  /**
+   * Label shown for a role. Uses the key role.acronym.&lt;acronym&gt; from the custom properties of the global unit or
+   * from global.properties; when no such key exists, falls back to Role.getAcronymLabel().
+   *
+   * @param role the role to label.
+   * @return the label of the role, or null when the role is null.
+   */
+  public String getRoleLabel(Role role) {
+    if (role == null) {
+      return null;
+    }
+    if (role.getAcronym() != null) {
+      String key = "role.acronym." + role.getAcronym();
+      if (this.hasKey(key)) {
+        return this.getText(key);
+      }
+    }
+    return role.getAcronymLabel();
+  }
+
   public BaseSecurityContext getSecurityContext() {
     return this.securityContext;
   }
