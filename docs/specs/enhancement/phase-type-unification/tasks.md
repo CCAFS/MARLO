@@ -335,7 +335,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Design refs:** DD-9 (amended).
 - **Files touched:**
   - `BaseAction.java`: the six old type methods re-added as `@Deprecated` one-line aliases (T04 equivalences), each declaration carrying `// CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b`; no fields or setters;
-  - `configuration/marlo-checkstyle.xml`: `SuppressWithNearbyCommentFilter` with literal formats (only `RegexpSinglelineJava`, only the two exact markers);
+  - `configuration/marlo-checkstyle.xml`: `SuppressWithNearbyCommentFilter` with literal formats (only the FN-005 rule, only the two exact markers; since T16 the filter matches that rule's id `RemovedPhaseTypeMethod`, DD-9);
   - `BaseActionPhaseTypeCharacterizationTest.java`: one test that each alias equals its new method (marker `... - alias under test`).
 - **Scope:** not a git revert of T11 (its commit also holds the records and the test rewrites).
 - **Tests:** compile gate; full test suite with `-am`.
@@ -519,7 +519,7 @@ parallel with T05–T10.
 - [x] Both migrations pass their 8 scenarios; `marlo-migration` checklist reported. (`validation-report.md` MIG-001 / MIG-002 PASS: 8 scenarios recorded, auditor reproduced 1 and 2; T15 Flyway rehearsal.)
 - [x] OQ1–OQ4 answered and recorded. (`execution.md` "Open questions answered" and T15; OQ4 on the local copies by owner exception, production run on release day, W1 / W2.)
 - [ ] Constitutional checklist of `requirements.md` §7 confirmed in the PR. (at PR)
-- [ ] T16 done and re-validated (NF-006 added after validation, requirements §9, 2026-10-29). (T16 done; re-validation pending.)
+- [x] T16 done and re-validated (NF-006 added after validation, requirements §9, 2026-10-29). (`validation-report.md` Addendum B.)
 - [x] `575a1c7aff` either on `origin/staging` or removed from the branch before the PR. (On `origin/staging`, verified 2026-10-29.)
 
 ## 9. Estimate and PR Strategy

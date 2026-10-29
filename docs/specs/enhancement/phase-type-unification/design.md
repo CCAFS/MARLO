@@ -72,7 +72,10 @@ without breaking FN-004 (§15, DD-2).
 ### Repository root
 - `configuration/marlo-checkstyle.xml` — one rule that rejects the removed method names in Java (NF-003; P-11); until
   T11b, also a `SuppressWithNearbyCommentFilter` with literal formats that exempts only the two exact alias markers
-  from that rule (requirements §9, 2026-10-29).
+  from that rule (requirements §9, 2026-10-29). Since T16, also the `PhaseNameLiteral` rule (NF-006) and the
+  `id`-based alias filter (DD-9).
+- `configuration/marlo-checkstyle-suppressions.xml` — new in T16: scopes `PhaseNameLiteral` to main sources outside
+  `rest/` (DD-9).
 
 ### Not touched
 - `rest/`, every `ManagerImpl` replication method, `PhaseDAO.findCycle`, `getCrpPhase`, `getPhasesByCycles`,
@@ -256,6 +259,21 @@ because no non-REST logic reads `name` after S3.
   (`// CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b` or `... - alias under test`) is exempt, and
   only from that check, through a `SuppressWithNearbyCommentFilter` with literal formats. T11b removes the aliases
   and the filter.
+  **Extension for NF-006 (T16, requirements §9, 2026-10-29):**
+  - A second `RegexpSinglelineJava` module, `id="PhaseNameLiteral"`, rejects a phase-named receiver's `getName()`
+    compared with a string literal or a constant, in both orders. It is single-line and keyed to the receiver's
+    name; the forms it cannot see (split lines, `Objects.equals` / `StringUtils.equals`, `switch`, a case change
+    or `trim()` before `.equals`, receivers with arguments, a name held in a variable) are listed in its comment.
+  - `configuration/marlo-checkstyle-suppressions.xml`, loaded by a `SuppressionFilter` with `optional=true`,
+    suppresses `PhaseNameLiteral` alone in `rest/` and `src/test`. A run that misses the file can only
+    over-report.
+  - The NF-003 rule now has `id="RemovedPhaseTypeMethod"`, and the alias filter matches
+    `checkFormat="^RemovedPhaseTypeMethod$"`. Checkstyle 8.18 matches `checkFormat` against the check class name
+    first, and both modules share the class, so a class-based format would exempt the markers from both rules.
+    The marker text is unchanged. NF-003 violations now report as `[RemovedPhaseTypeMethod]`.
+  - FTL is not read by Checkstyle: `PhaseNameLiteralFtlTest` scans every template for a phase `name` compared
+    with a quoted literal (`==`, `!=`, and a single `=` inside `[#if` / `[#elseif`), with one allowance,
+    `crpPhases.ftl` `(phase.name == "POWB")` (DD-7), matched by file and content.
 - **DD-10 — M2 runs last.** Requirements OPS-001.
 - **DD-11 — Two kinds of negation, two rules (JD-1, RJ-1).**
   1. **Negation of an old null-safe `BaseAction` method** stays a bare negation of its replacement:

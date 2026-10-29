@@ -280,3 +280,65 @@ ships with or before the code, and M2 only after it (A1, OPS-001).
 | W9 | `staging` `d65ccdcb75` and `dev` `6ec459d8bc` fix the same project-focus duplication differently; a merge with `dev` makes `ProjectFocusManagerImplReplicationTest` fail (2 errors, NPE at `ProjectFocusManagerImpl.addProjectFocusPhase:58`; seen in the T11a merge simulation) | Not this spec's code. Settle with the owner of that fix at the `dev` merge |
 
 **Archive readiness:** unchanged in substance; archive after T11b, or archive with T11b carried as a follow-up spec.
+
+## Addendum B — Re-validation of NF-006 / T16 and the second staging merge (2026-10-29)
+
+> Written by the auditor (T3, `opus`; T16's Implementer was `sonnet`). It re-runs every gate on the new HEAD and
+> audits the one requirement added after validation, NF-006. Rows not named below stand as in §2–§12 and
+> Addendum A.
+
+**Verdict: PASS WITH WARNINGS stands. NF-006 PASS. 0 FAIL, 0 BLOCKED; 1 new WARN (W10, spec text), closed the same day.**
+
+| Item | Value |
+|---|---|
+| Validated commit | `e0bb416b52` on `phase-type-unification` |
+| Changes since `c0c9cbdade` | `1a233d503e` (Addendum A record); `6c4880ff5c` merge of `staging` (role labels from `.properties`, PMU/PMC → PIU i18n: `Role.java`, `BaseAction.getRoleLabel`, `CrpUsersAction`, `crpUsers.ftl`, `main-menu.ftl`, three `.properties`; no phase code); `2821305719` NF-006 + T16 spec; `e0bb416b52` T16 code |
+| Where | Detached worktree `MARLO-val2` at `e0bb416b52`, removed afterwards. No Maven in the main checkout, no server, no DB access |
+
+### Gates (re-run by the auditor)
+
+| Gate | Result |
+|---|---|
+| Clean compile | Maven exit 0; 2415 (marlo-data) + 1062 (marlo-web) + 115 test sources |
+| Full suite `-am` | Maven exit 0; 111 surefire reports summed: 1164 run, 0 failures, 0 errors, 0 skipped (1160 + 4 in `PhaseNameLiteralFtlTest`) |
+| Checkstyle, spec-wide vs base `575a1c7aff` | 58 Java files changed by the spec's own first-parent commits (merge-only files excluded; `BaseAction.java` kept, since both sides touch it), 53 existing at base. Base 258 = 150 `[RemovedPhaseTypeMethod]` + 22 `[PhaseNameLiteral]` + 86 other; now 86, none from either rule. **No new violation** |
+| Both rules, tree-wide | 0 `[RemovedPhaseTypeMethod]`, 0 `[PhaseNameLiteral]`, 0 `[RegexpSinglelineJava]` over every Java file of `marlo-web`, `marlo-data`, `marlo-utils` `src` (main and test) |
+| Rules really run | The base copies above give 150 and 22 hits; the Leader's scratch probe (`execution.md` T16) shows each rule firing and the alias marker exempting only the FN-005 rule |
+
+**Counting note.** Since T16 the NF-003 rule reports as `[RemovedPhaseTypeMethod]`. The `RegexpSinglelineJava`
+counts in §2 and Addendum A were taken before that and are not comparable with a new run that greps the old label.
+
+### NF-006 — clause-level coverage
+
+| Clause (AC NF-006) | Evidence | Result |
+|---|---|---|
+| Java: a phase-name comparison with a literal in `src/main` outside `rest/` → Checkstyle reports it (both AC examples) | Seeded `LoginAction.java:53` → `[PhaseNameLiteral]`; probe `"POWB".equals(this.getActualPhase().getName())` → reported; staging extracts: all expected sites caught (31 hits with variants) | PASS |
+| FTL: such a comparison → the suite fails naming file and line | Seeded `zzSeed.ftl:1` → `AssertionError … [WEB-INF/global/macros/zzSeed.ftl:1]`; staging `deliverableMacros.ftl:367, 411` and dev `:385, 429` caught as fixtures | PASS |
+| On the tree both gates pass, only the three exceptions allowed | Tree-wide 0 hits (above); FTL test green with exactly one allowance use (`crpPhases.ftl:227`, matched by file and content, required to match once); `rest/` suppressed by id; `applyPhaseTypeOfName` not matched by construction | PASS |
+| BUT null check, name-to-name and display MUST NOT be reported | `ProjectExpectedStudiesValidator:760, 774`, `rest/` lookups, summary file names, `${phase.name}` uses: 0 hits on the tree | PASS |
+| D11 | Both gates in place; a `dev` merge carrying `deliverableMacros.ftl:385` will fail the suite until it is converted | PASS |
+| T16 closing record | Reviewer PASS, attempt 3; two FAILs recorded with their fixes (`execution.md` T16) | PASS |
+
+### Rows changed
+
+| Row | Was | Now |
+|---|---|---|
+| Task completion | 17/18 (T11b open) | 18/19 (T11b open; T16 done) |
+| Requirement coverage | NF-006 did not exist | NF-006 PASS |
+| DoD (`tasks.md` §8) "T16 done and re-validated" | open | met by this addendum |
+
+### New WARN
+
+| # | Finding | Recommendation |
+|---|---|---|
+| W10 | `design.md` has no entry for NF-006. DD-9 describes only the NF-003 rule and its filter "with literal formats"; the T16 design (second rule `PhaseNameLiteral`, the `marlo-checkstyle-suppressions.xml` file scoped by id to `rest/` and `src/test`, the NF-003 rule's new id `RemovedPhaseTypeMethod` and the filter now matching that id because 8.18 matches `checkFormat` against the class name first) lives only in `execution.md` T16. `tasks.md:338` still says the filter covers "only `RegexpSinglelineJava`" | **Closed 2026-10-29:** DD-9 extended with the T16 design, `design.md` §2 repository-root files updated, `tasks.md` T11a filter bullet reworded. Closure sweep: `only \`RegexpSinglelineJava\`` and `checkFormat` grepped across this folder; remaining hits are history (`execution.md`, this report's earlier sections) |
+
+### Advisory (carried from T16, not gating)
+
+- `.claude/skills/marlo-verify/scripts/checkstyle.sh` does not `cd` to the repo root; from a subdirectory the
+  relative suppressions file is missed and the run over-reports (never under-reports). Fix on `staging`, shared
+  tooling.
+- The Java rule is single-line and receiver-name based; its blind spots are listed in the rule comment.
+
+**Archive readiness:** unchanged — archive after T11b, or archive with T11b carried as a follow-up spec; W10 is
+closed (spec text updated).
