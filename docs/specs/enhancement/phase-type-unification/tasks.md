@@ -290,7 +290,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `playwright-cli`, `marlo-verify`, `marlo-commit`.
 
 ### T10 — FTL batch 3: remaining FTL (`global/pages`, home, publications, annual report, POWB, admin)
-- **Status:** pending · **Size:** M · **Depends on:** T09 · **Module:** marlo-web (FTL)
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T10) · **Size:** M · **Depends on:** T09 · **Module:** marlo-web (FTL)
 - **Requirements:** FN-005 (part), NF-001, NF-002.
 - **Design refs:** §5 (including `POWB` property and exclusions).
 - **Files touched:** the rest of §A1 FTL:

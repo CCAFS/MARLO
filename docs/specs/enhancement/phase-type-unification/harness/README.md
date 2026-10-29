@@ -1,14 +1,14 @@
 # Rendered-HTML capture harness (T07, NF-002)
 
 Captures the rendered HTML of a fixed reference set of MARLO pages from a LOCAL app, normalizes only what is proven to
-vary run-to-run, and diffs a capture against a stored baseline. GET-only after login, but one known GET has a side effect (see the coverage notes), so run it only against a
+vary run-to-run, and diffs a capture against a stored baseline. GET-only after login, but some GETs write rows (see the coverage notes), so run it ONLY against a
 throwaway schema.
 
 ## Run
 
 ```
 # app must already be up on http://localhost:8080/marlo-web/ (see docs/infrastructure.md section 6)
-harness/capture.sh <out-dir>              # one command -> capture dir (114 pages + _manifest.txt)
+harness/capture.sh <out-dir>              # one command -> capture dir (186 pages + _manifest.txt)
 harness/diff.sh <baseline-dir> <out-dir>  # one command -> prints every differing page; silent + "IDENTICAL" when equal
 RAW=1 harness/capture.sh <out-dir>        # no normalization (to prove what varies)
 ```
@@ -33,6 +33,11 @@ RAW=1 harness/capture.sh <out-dir>        # no normalization (to prove what vari
   id of another phase renders the "Page not found" page.
 - The first view of a progress-phase `contributionCrp` page creates the missing milestone row (a GET side effect of the
   action, seen as `milestones[N].id` empty once, then a real id). Capture twice before taking a baseline on a fresh schema.
+- The annual report and POWB pages (`Y_*`) also save a missing synthesis row on a plain GET (their `prepare()` calls
+  `saveReportSynthesis` / `savePowbSynthesis`, e.g. `CrpProgressAction.java:511`, `ToCAdjustmentsAction.java:359`), so the
+  first capture on a fresh schema creates `report_synthesis*` / `powb_synthesis*` rows. Capture twice before baselining.
+  Never point the app at `aiccradb_actsave` or any real schema while running this harness.
+- T10 added the `Y_*` pages (72): `publicationsList` for AICCRA and AICCRA_III in the plan, progress and reporting phases, and the RTB (phase 262 reporting, 260 POWB 2019) publication form, all 14 `annualReport` and 19 `annualReport2018` sections, all 11 `powb` and 6 `powb2019` sections, plus a few AICCRA/AICCRA_III annual report and POWB pages. RTB stands in where AICCRA answers an internal error (most annual report sections) or has no publication-type deliverable in 2026. Not reachable from any CRP: the "only at Reporting cycle" branch of the annual report sections and the POWB pages outside a plan phase answer the not-found page, so the `!reportingActive` true branch is never rendered. `main-menu.ftl` and `guide-button.ftl` and `javascript-constants.ftl` render on every page.
 - The Global Unit switcher entries and every list are rendered in hash order, so the order differs per request.
 
 ## Normalizations (applied in `capture.sh`; nothing else is touched)

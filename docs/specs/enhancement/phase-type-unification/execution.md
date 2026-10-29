@@ -825,3 +825,87 @@
   T15 (HITL).
 - **BUDGET TRIPWIRE FIRED (second time).** Escalated to the owner at the T09 gate. Owner decision (2026-10-28): LOC
   budget raised to ~3,500 (`design.md` §17); commit T09 and continue with T10.
+
+### T10 — FTL batch 3: remaining FTL (`global/pages`, home, publications, annual report, POWB, admin) — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1).
+- **Requirements covered:** FN-005 (FTL part complete), NF-001, NF-002.
+- **Review mode:** full, one Reviewer (`opus`).
+- **Isolation:** main checkout; app on `zz_t07_actsave`; source FTL copied to the deployed dir.
+
+#### Attempt 1
+
+- **Harness extension:** `pages.txt` 114 → 186 (72 `Y_*` pages): publications list (AICCRA, AICCRA_III, three phases;
+  RTB 262), the publication form (RTB 262), all 14 `annualReport` and 19 `annualReport2018` sections (RTB 262), all 11
+  `powb` and 6 `powb2019` sections (RTB 260), and a few AICCRA/AICCRA_III annual report and POWB pages. RTB stands in
+  where AICCRA answers an internal error or has no publication-type deliverable. Pre-edit `t10-base` vs `t10-base2` →
+  `IDENTICAL: 187 files compared`.
+- **Files changed (45 FTL, +55 / −55, all LF):** `guide-button.ftl:24, 222` → `reportingPhase`, `:91, 225`
+  `POWB?exists && POWB` → `planningPhase`, `:153, 228` `UpKeepActive` → `progressPhase`; `javascript-constants.ftl:30-31`
+  right-hand sides → `reportingPhase` / `progressPhase` (JS names kept); `main-menu.ftl:4, 48, 55, 61` (right-hand sides;
+  `reportingActiveMenu` kept; `:55, 61` INT-3 behind `'visible': false &&`); `projectsListTemplate.ftl:12`
+  `!reportingActive && !planningActive` → `!reportingPhase && !(planningPhase || progressPhase)`, `:174`;
+  `publicationsList.ftl:24`, `publication.ftl:68`, `replicateButton.ftl:3`; the 14 `annualReport_*` + template and 19
+  `AR2018_*` + template `[#if !reportingActive]`; `menu-annualReport.ftl:114`, `menu-AR2018.ftl:112` (inside a
+  comment), `menu-powb.ftl:116`, `menu-powb2019.ftl:126`.
+- **Evidence re-run (non-author, Leader-inline):**
+  - whole `WEB-INF` FTL grep of the old tokens → only `javascript-constants.ftl:30-31` (`var reportingActive=`,
+    `var upKeepActive=`: §A3 JS names); `POWB?exists` → 0; remaining bare `POWB` hits are titles and comments;
+  - deployed copies `cmp`-equal source;
+  - fresh 186-page capture vs `t10-base` → `IDENTICAL: 187 files compared`; `t10-base` equals `t09-base` on all
+    shared pages.
+
+  **VERIFIED.**
+- **JS globals (Implementer):** plan false/false, progress false/true, reporting true/false, POWB page false/false,
+  NOGU pages false/false — identical before and after.
+- **Falsifier (Implementer, observed):** deployed `javascript-constants.ftl` `(reportingPhase)` → `(reportingPhas)` →
+  AICCRA reporting 431 rendered `var reportingActive= false;` against the baseline's `true`. Restored; value back to
+  `true`; `cmp` equal.
+- **Reviewer:** PASS. Every swap matches a §5 row and the old methods are aliases of the new ones; the plan/progress
+  PDF links at `guide-button.ftl:225-230` prove the capitalised `POWB` / `UpKeepActive` resolved to true before the
+  change; JS contract kept (no `.js` in the diff); no shadowing; `crpPhases.ftl:227` (§B literal) untouched as
+  required. ISSUES: none.
+- **ADVISORY:**
+  - README undercounted GET side effects: the annual report and POWB `prepare()` methods save a missing synthesis row
+    on a GET (e.g. `CrpProgressAction.java:511`, `ToCAdjustmentsAction.java:359`). **Fixed by the Leader in the
+    harness README before commit** (capture twice; never against a real schema).
+  - Coverage gap (recorded, not counted as covered): no capture renders the true branch of `!reportingPhase` in the
+    33 annual report section/template files (those pages answer not-found outside reporting). Proven by the
+    delegation identity only. `menu-annualReport.ftl:114` is dead code (`false && …`); `menu-AR2018.ftl:112` is a
+    comment.
+- **runtime events:** the Implementer left two self-matching wait loops (`pgrep -f harness/capture.sh` found their own
+  command lines) that kept re-waking the agent; the Leader killed them and stopped the agent after its final report.
+- **spawns:** implementer 80 calls, ~168,671 tokens, ended complete (stopped by the Leader afterwards); reviewer 19
+  calls, 100,361 tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T10
+
+- Tasks closed: 12 of 16 (T00–T10, T12).
+- LOC: ~2,823 + 110 (FTL) + ~85 (harness) = **~3,018, against ~3,500**.
+
+#### Server-log check after T10 (owner question: "were all the exceptions the expected ones?")
+
+The Leader classified every exception in the app log for T07–T10 (`scratchpad/t07_server.log`):
+
+- **FreeMarker:** 6 errors `Macro "deliverablesList" has no parameter with name "isReportingPhase"` at a single
+  minute — the T08 falsifier (parameter renamed to `isReportingZzz` in the deployed copy), as intended. All other
+  template errors are data-driven and fire at the same count on every capture of the same page set, before and after
+  the edits: `project.startDate` missing in `projectOutcomes.ftl:25` / `projectCcafsOutcomes.ftl:26` (12 per T09
+  capture), and on the AR2018 pages a `?starts_with` on a null value plus one `OutcomesMilestonesAction.getOutcome`
+  call with a null argument (14 per T10 capture: base, base2, new and the Leader re-run alike). None references a
+  renamed name.
+- **Java:** NPE in `DeliverableAction` sort comparators (`:1985`, `:2017`, null institution), NPE in
+  `EditProjectOutcomeInterceptor:168, 402`, `ArrayIndexOutOfBoundsException` in `EditProjectInterceptor:127` (no
+  `projectID` parameter), `InaccessibleObjectException` in `AutoSaveReader` (Java 17 reflection), and the
+  `UnhandledExceptionAction` error pages (the AICCRA annual report sections). None of those lines was changed on this
+  branch, and no stack frame passes through `BaseAction.is*Phase` or `Phase.is*Phase`.
+- **Conclusion:** no exception was introduced by T06–T10. The pre-existing ones are out of scope (bugfix candidates).
+
+### Run paused (2026-10-28, owner request after T10)
+
+- Next eligible task: **T11** (remove the old methods, fields and setters; Checkstyle rule). It needs Maven, so run it
+  in a worktree. Then T14 (docs), T13 (M2; needs OQ2/OQ3 answered), T15 (manual QA HITL).
+- Local environment left by this run: `marlo-dev.properties` restored to `aiccradb_actsave` (backup of the T07 state
+  in the scratchpad); the throwaway schema `zz_t07_actsave` is kept for T15 and the harness; the app started at T07
+  may still be running on port 8080 against `zz_t07_actsave` until someone restarts it.

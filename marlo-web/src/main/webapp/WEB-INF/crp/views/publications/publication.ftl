@@ -65,7 +65,7 @@
       <ul class="nav nav-tabs" role="tablist"> 
           <li role="presentation" class="active"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
           
-          [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
+          [#if (reportingPhase || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
           <li role="presentation" class=""><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
           
           [#--  <li role="presentation" class="" ><a index="3" href="#deliverable-qualityCheck" aria-controls="quality" role="tab" data-toggle="tab">Quality check</a></li>--]

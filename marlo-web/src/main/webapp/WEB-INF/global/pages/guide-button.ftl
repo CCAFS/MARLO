@@ -21,7 +21,7 @@
     <div class="line-modal" ></div>
     <div class="text-modal-evidences">
     
-    [#if reportingActive?exists && reportingActive]
+    [#if reportingPhase?exists && reportingPhase]
       [#if actionPath == 'crpDashboard']
         <h3 >[@s.text name="guide.button.home.popup.title" /]</h3>    
         <div class="text-inter">
@@ -88,7 +88,7 @@
       [/#if] 
     [/#if]
 
-    [#if POWB?exists && POWB ]
+    [#if planningPhase?exists && planningPhase ]
       [#if actionPath == 'crpDashboard']
         <h3 >[@s.text name="guide.button.home.popup.title" /]</h3>   
         <div class="text-inter">
@@ -150,7 +150,7 @@
       [/#if] 
     [/#if]
 
-    [#if UpKeepActive?exists &&  UpKeepActive]
+    [#if progressPhase?exists &&  progressPhase]
       [#if actionPath == 'crpDashboard']
         <h3 >[@s.text name="home.popup.title" /]</h3>   
         <div class="text-inter">
@@ -219,13 +219,13 @@
     </div>
     <div class="line-modal-bottom" ></div>
     <div class="container-buttons-evidences">
-      [#if reportingActive?exists && reportingActive]
+      [#if reportingPhase?exists && reportingPhase]
         <a  target="_blank" href="${baseUrlCdn}/global/documents/MARLO_AICCRA_Annual_Report_Detailed_instructions.pdf">
       [/#if]
-      [#if POWB?exists && POWB ]
+      [#if planningPhase?exists && planningPhase ]
         <a  target="_blank" href="${baseUrlCdn}/global/documents/AICCRA_Project_Planning_Detailed_Instructions.pdf">
       [/#if]
-      [#if UpKeepActive?exists &&  UpKeepActive]
+      [#if progressPhase?exists &&  progressPhase]
         <a  target="_blank" href="${baseUrlCdn}/global/documents/MARLO_AICCRA_Mid_year_Report_Detailed_instructions.pdf">
       [/#if]
         
