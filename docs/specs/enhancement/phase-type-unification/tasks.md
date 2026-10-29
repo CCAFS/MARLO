@@ -158,7 +158,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `tdd`, `marlo-verify`, `marlo-commit`.
 
 ### T04 — `BaseAction` same-named methods + delegation of the old ones (B3)
-- **Status:** pending · **Size:** S · **Depends on:** T03 · **Module:** marlo-web
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T04) · **Size:** S · **Depends on:** T03 · **Module:** marlo-web
 - **Requirements:** FN-002, FN-003, FN-004, FN-009, INT-3 (`isUpKeepActive`); NF-001.
 - **Design refs:** DD-2; §14 S2; P-1.
 - **Files touched:** `action/BaseAction.java`:
@@ -169,7 +169,14 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Verification:** compile gate; `mvn -q -o -pl marlo-web -am test`.
 - **Falsifier:** delegate `isPlanningActive()` to `isPlanningPhase()` (plan only) → T02's `UpKeep/Planning/1` row for `isPlanningActive` goes red.
 - **Red run:** `predicted — greenfield artifact (observed in T04)`.
-- **Disqualifier:** any T02 expectation edited other than the INT-3 `isUpKeepActive` rows invalidates the run.
+- **Disqualifier:** any T02 expectation edited other than the following invalidates the run:
+  - the INT-3 `isUpKeepActive` rows;
+  - the five rows outside DD-3's domain, whose name disagrees with the type or which have a null field:
+    `POWB/Planing/0`, `POWB/null/0`, `null/Planning/0`, `UpKeep/Planning/null`, `UpKeep/null/1`. They change
+    because the old plan methods read the name (FN-002 as amended at the T03 gate). Each changed cell is named
+    in the commit.
+
+  (Amended 2026-10-28 at the T04 pre-spawn gate, approved by the owner.)
 - **Consumers:** all of `call-sites.md` §A1, through the delegates; no call site changes yet.
 - **Review:** full.
 - **Done when:** T02 green with only the INT-3 rows changed; falsifier observed; gates pass.

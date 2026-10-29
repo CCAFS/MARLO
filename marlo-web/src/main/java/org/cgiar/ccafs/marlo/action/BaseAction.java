@@ -3011,16 +3011,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public String getCurrentCycle() {
-    try {
-      if (this.isReportingActive()) {
-        return APConstants.REPORTING;
-      } else {
-        return APConstants.PLANNING;
-      }
-    } catch (Exception e) {
-      LOG.debug("Could not resolve the current cycle, so no cycle is returned", e);
-      return null;
+    if (this.isReportingPhase()) {
+      return APConstants.REPORTING;
     }
+    return APConstants.PLANNING;
   }
 
   public int getCurrentCycleYear() {
@@ -6344,14 +6338,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return this.availabePhase;
   }
 
+  /**
+   * @deprecated use {@link #isPlanningPhase()}, which reads the type of the phase and not its name.
+   */
+  @Deprecated
   public boolean isAWPBActive() {
-    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB")
-        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.isPlanningPhase();
   }
 
   public boolean isCanEdit() {
@@ -7691,12 +7683,21 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  /**
+   * @deprecated the planning cycle is the plan phase or the progress phase: ask {@link #isPlanningPhase()} and
+   *             {@link #isProgressPhase()}.
+   */
+  @Deprecated
   public boolean isPlanningActive() {
-    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null) {
-      return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
-    } else {
-      return false;
-    }
+    return this.isPlanningPhase() || this.isProgressPhase();
+  }
+
+  /**
+   * Tells whether the actual phase is the plan phase. It is false when there is no actual phase.
+   */
+  public boolean isPlanningPhase() {
+    Phase phase = this.getActualPhase();
+    return phase != null && phase.isPlanningPhase();
   }
 
   public boolean isPMU() {
@@ -7736,14 +7737,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   }
 
+  /**
+   * @deprecated use {@link #isPlanningPhase()}, which reads the type of the phase and not its name.
+   */
+  @Deprecated
   public boolean isPOWB() {
-    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB")
-        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.isPlanningPhase();
   }
 
   public boolean isPowb2019() {
@@ -7817,13 +7816,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * @deprecated use {@link #isProgressPhase()}.
+   */
+  @Deprecated
   public boolean isProgressActive() {
-    try {
-      return this.getActualPhase().getUpkeep();
-    } catch (Exception e) {
-      LOG.debug("Could not read the upkeep flag of the actual phase, so the progress is reported as inactive", e);
-      return false;
-    }
+    return this.isProgressPhase();
+  }
+
+  /**
+   * Tells whether the actual phase is the progress phase. It is false when there is no actual phase.
+   */
+  public boolean isProgressPhase() {
+    Phase phase = this.getActualPhase();
+    return phase != null && phase.isProgressPhase();
   }
 
   /**
@@ -8061,15 +8067,20 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
+  /**
+   * @deprecated use {@link #isReportingPhase()}.
+   */
+  @Deprecated
   public boolean isReportingActive() {
-    boolean reporting = false;
-    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null
-      && APConstants.REPORTING != null) {
-      reporting = this.getActualPhase().getDescription().equals(APConstants.REPORTING);
-    } else {
-      reporting = false;
-    }
-    return reporting;
+    return this.isReportingPhase();
+  }
+
+  /**
+   * Tells whether the actual phase is the reporting phase. It is false when there is no actual phase.
+   */
+  public boolean isReportingPhase() {
+    Phase phase = this.getActualPhase();
+    return phase != null && phase.isReportingPhase();
   }
 
   public boolean isRole(String roleAcronym) {
@@ -8200,10 +8211,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
+  /**
+   * @deprecated use {@link #isProgressPhase()}.
+   */
+  @Deprecated
   public boolean isUpKeepActive() {
-
-    return this.getActualPhase().getUpkeep();
-
+    return this.isProgressPhase();
   }
 
   /**

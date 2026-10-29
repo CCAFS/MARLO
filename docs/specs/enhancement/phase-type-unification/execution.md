@@ -331,3 +331,90 @@
 - LOC: 279 + 235 = 514 (budget T01–T03: 335). The overrun is in test LOC; the total of ~1,270 still holds a
   margin of about 760 for 12 tasks. Watch it at T05 and T06.
 - Review rounds: 3.
+
+### T04 — `BaseAction` same-named methods + delegation of the old ones — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1)
+- **Requirements covered:** FN-002 (as amended), FN-003, FN-004, FN-009, INT-3 (`isUpKeepActive`), NF-001,
+  NF-005 bullet 2.
+- **Effort / skills:** `high`; `tdd`, `marlo-verify`.
+- **Isolation:** worktree. The Implementer started at the stale base `9a2cf412ef` and reset it to `a97f428db4`
+  before any work, as its brief required.
+
+#### Decisions made
+
+- 2026-10-28, at the pre-spawn gate (owner): the T04 *Disqualifier* in `tasks.md` was amended. The permitted T02
+  changes are now:
+  - the INT-3 `isUpKeepActive` throw rows;
+  - five rows outside DD-3's domain: `POWB/Planing/0`, `POWB/null/0`, `null/Planning/0`, `UpKeep/Planning/null`,
+    `UpKeep/null/1`.
+
+  These rows change because the old plan methods read the name. This follows from the FN-002 amendment made at the
+  T03 gate.
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/BaseAction.java` (LF, targeted edits):
+    - new `isPlanningPhase()`, `isProgressPhase()` and `isReportingPhase()`, each `Phase p = getActualPhase(); return p != null && p.isXxxPhase();`;
+    - the six old methods are `@Deprecated` and delegate: `isPOWB` / `isAWPBActive` → `isPlanningPhase()`;
+      `isPlanningActive` → `isPlanningPhase() || isProgressPhase()`; `isProgressActive` / `isUpKeepActive` →
+      `isProgressPhase()`; `isReportingActive` → `isReportingPhase()`;
+    - `getCurrentCycle()` is now `isReportingPhase() ? APConstants.REPORTING : APConstants.PLANNING`, and can no
+      longer return null.
+  - `BaseActionPhaseTypeCharacterizationTest.java`:
+    - the permitted cells changed: `isUpKeepActive` throw → false on the empty phase, no session, empty session,
+      null actual phase and `UpKeep/Planning/null`, plus the five out-of-domain rows;
+    - three literal-table tests added for the new methods;
+    - the `assertThrows` helper was removed and the null-actual-phase fixture extracted.
+- **Implementer verification:** compile 2415 + 1062 + 112; full suite 1137 / 0 / 0; Checkstyle on BaseAction
+  HEAD 9 = tree 9 (delta 0), test file 0.
+- **Evidence re-run (non-author, Leader-inline, in the worktree at `2415b74203`):**
+  - The diff covers 2 files.
+  - Clean compile: 2415 + 1062 + 112.
+  - `mvn -o -pl marlo-web -am test`: surefire totals **run 1137, fail 0, err 0, skip 0** (108 reports).
+  - 0 CR characters in the diff.
+  - Falsifier: `isPlanningActive()` was changed to `return this.isPlanningPhase();`. Result: `Tests run: 17, Failures: 3`,
+    namely `UpKeep/null/1 isPlanningActive expected:<true> but was:<false>`,
+    `UpKeep/Planning/1 isPlanningActive …` and `Progress/Planning/1 isPlanningActive …`. The edit was reverted.
+
+  **VERIFIED.**
+- **Reviewer verdict:** PASS (`opus`, checklist mode, weighted to reliability and risk). It checked:
+  - every changed T02 cell against the amended Disqualifier, with nothing else changed;
+  - the expectations are literals;
+  - null safety under P-1;
+  - FN-009's literal strings;
+  - NF-005 bullet 2;
+  - that no call site, field or constant was touched;
+  - that no FTL/OGNL clash exists on `planningPhase` / `progressPhase` / `reportingPhase`.
+
+  ISSUES: none.
+- **Forward-pointer findings:**
+  1. **`Phase` serialization.**
+     - Gson in `getPhasesJson()` serializes fields, and REST has no `ResponseEntity<Phase>`.
+     - The Implementer's claim that about 140 Struts JSON results serialize BaseAction getters was **refuted by
+       the Reviewer**. P-12 holds: `ignoreHierarchy` is not set anywhere, so the default `true` applies, and
+       BaseAction getters never reach a JSON payload. No change needed.
+  2. **`getCurrentCycle()`** cannot return null any more. The old `catch → null` branch was dead code.
+  3. **The empty-session row** is a unit-test path. It is not treated as the production path.
+- **ADVISORY (recorded, no rework):**
+  - READABILITY: the class Javadoc of `BaseActionPhaseTypeCharacterizationTest` (lines 33-35) still says "as they
+    answer today". Three test names contradict their rows after T04:
+    - `aNullNameIsNoPlanNameButKeepsItsDescriptionAndUpkeep`;
+    - `aNullDescriptionIsNeitherPlanningNorReportingButKeepsItsNameAndUpkeep`;
+    - `aMisspelledPlaningDescriptionIsNotAPlanningPhaseButStillAPlanningCycle`.
+  - RISK: the out-of-domain flips are safe only because M1 (`2441a8e0f6`) ships with this code. The release notes
+    must keep M1 and T04 in the same deploy (PR 1 before or with PR 2).
+- **runtime events:** none.
+- **spawns:**
+  - implementer 57 calls, 145,107 tokens, ended complete;
+  - reviewer 22 calls, 68,906 tokens, ended complete.
+
+#### Running totals vs budget (design §17)
+
+- Tasks closed: 5 of 16 (T00–T04).
+- LOC: 514 + 202 = 716 (budget T01–T04: 395; total ~1,270). The test LOC overrun continues: about 554 remain for
+  T05–T15, against a sum of ~875 for those tasks. **The total tripwire is likely to fire around T06**, so it is
+  raised at this gate.
+- Review rounds: 4 (budget ~24).

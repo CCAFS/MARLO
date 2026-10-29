@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 
 /**
  * Characterization of the phase type methods of {@link BaseAction} as they answer today. Every expected value below was
@@ -42,7 +41,7 @@ public class BaseActionPhaseTypeCharacterizationTest {
 
   private static final Long PHASE_ID = Long.valueOf(7L);
 
-  /** The answers of the six old type methods and of the cycle for one input. {@code null} upkeep means it throws. */
+  /** The answers of the six old type methods and of the cycle for one input. */
   private static final class Answers {
 
     private final boolean powb;
@@ -53,14 +52,14 @@ public class BaseActionPhaseTypeCharacterizationTest {
 
     private final boolean progressActive;
 
-    private final Boolean upKeepActive;
+    private final boolean upKeepActive;
 
     private final boolean reportingActive;
 
     private final String currentCycle;
 
     private Answers(boolean powb, boolean awpbActive, boolean planningActive, boolean progressActive,
-      Boolean upKeepActive, boolean reportingActive, String currentCycle) {
+      boolean upKeepActive, boolean reportingActive, String currentCycle) {
       this.powb = powb;
       this.awpbActive = awpbActive;
       this.planningActive = planningActive;
@@ -72,14 +71,14 @@ public class BaseActionPhaseTypeCharacterizationTest {
   }
 
   private static final Answers PLAN_NAME_NO_UPKEEP =
-    new Answers(true, true, true, false, Boolean.FALSE, false, "Planning");
+    new Answers(true, true, true, false, false, false, "Planning");
 
-  private static final Answers UPKEEP_FLAGGED = new Answers(false, false, true, true, Boolean.TRUE, false, "Planning");
+  private static final Answers UPKEEP_FLAGGED = new Answers(false, false, true, true, true, false, "Planning");
 
-  private static final Answers REPORTING = new Answers(false, false, false, false, Boolean.FALSE, true, "Reporting");
+  private static final Answers REPORTING = new Answers(false, false, false, false, false, true, "Reporting");
 
   /** The empty phase and every input that reads as "no usable phase" for the type methods. */
-  private static final Answers NO_PHASE = new Answers(false, false, false, false, null, false, "Planning");
+  private static final Answers NO_PHASE = new Answers(false, false, false, false, false, false, "Planning");
 
   private static Phase phase(String name, String description, Boolean upkeep) {
     Phase phase = new Phase(null, description, 2026);
@@ -108,11 +107,7 @@ public class BaseActionPhaseTypeCharacterizationTest {
     assertEquals(input + " isAWPBActive", expected.awpbActive, action.isAWPBActive());
     assertEquals(input + " isPlanningActive", expected.planningActive, action.isPlanningActive());
     assertEquals(input + " isProgressActive", expected.progressActive, action.isProgressActive());
-    if (expected.upKeepActive == null) {
-      assertThrows(input + " isUpKeepActive", NullPointerException.class, action::isUpKeepActive);
-    } else {
-      assertEquals(input + " isUpKeepActive", expected.upKeepActive.booleanValue(), action.isUpKeepActive());
-    }
+    assertEquals(input + " isUpKeepActive", expected.upKeepActive, action.isUpKeepActive());
     assertEquals(input + " isReportingActive", expected.reportingActive, action.isReportingActive());
     assertEquals(input + " getCurrentCycle", expected.currentCycle, action.getCurrentCycle());
   }
@@ -121,6 +116,21 @@ public class BaseActionPhaseTypeCharacterizationTest {
     Field field = BaseAction.class.getDeclaredField(fieldName);
     field.setAccessible(true);
     field.set(target, value);
+  }
+
+  /** An action whose actual phase resolves to null: the session has no such phase and the manager finds none. */
+  private static BaseAction actionWithNullActualPhase() throws ReflectiveOperationException {
+    BaseAction action = actionOn(null);
+    PhaseManager phaseManager = (PhaseManager) Proxy.newProxyInstance(PhaseManager.class.getClassLoader(),
+      new Class<?>[] {PhaseManager.class}, (proxy, method, args) -> {
+        if ("getPhaseById".equals(method.getName())) {
+          assertEquals("the phase id handed to the manager", PHASE_ID, args[0]);
+          return null;
+        }
+        throw new UnsupportedOperationException(method.getName());
+      });
+    inject(action, "phaseManager", phaseManager);
+    return action;
   }
 
   @Test
@@ -151,27 +161,17 @@ public class BaseActionPhaseTypeCharacterizationTest {
   @Test
   public void aMisspelledPlaningDescriptionIsNotAPlanningPhaseButStillAPlanningCycle() {
     assertAnswers("POWB/Planing/0", actionOn(phase("POWB", "Planing", Boolean.FALSE)),
-      new Answers(true, true, false, false, Boolean.FALSE, false, "Planning"));
+      new Answers(false, false, false, false, false, false, "Planning"));
   }
 
   @Test
-  public void theEmptyPhaseIsNoTypeAndItsUpkeepQuestionThrows() {
+  public void theEmptyPhaseIsNoType() {
     assertAnswers("empty phase", actionOn(new Phase(null, "", -1)), NO_PHASE);
   }
 
   @Test
-  public void aNullActualPhaseAnswersNoTypeAndItsUpkeepQuestionThrows() throws ReflectiveOperationException {
-    BaseAction action = actionOn(null);
-    PhaseManager phaseManager = (PhaseManager) Proxy.newProxyInstance(PhaseManager.class.getClassLoader(),
-      new Class<?>[] {PhaseManager.class}, (proxy, method, args) -> {
-        if ("getPhaseById".equals(method.getName())) {
-          assertEquals("the phase id handed to the manager", PHASE_ID, args[0]);
-          return null;
-        }
-        throw new UnsupportedOperationException(method.getName());
-      });
-    inject(action, "phaseManager", phaseManager);
-
+  public void aNullActualPhaseAnswersNoType() throws ReflectiveOperationException {
+    BaseAction action = actionWithNullActualPhase();
     assertNull("the stubbed lookup leaves the actual phase null", action.getActualPhase());
     assertAnswers("null actual phase", action, NO_PHASE);
   }
@@ -200,24 +200,59 @@ public class BaseActionPhaseTypeCharacterizationTest {
   }
 
   @Test
-  public void aNullUpkeepIsNotProgressAndItsUpkeepQuestionThrows() {
+  public void aNullUpkeepIsNotProgressAndItsUpkeepQuestionAnswersFalse() {
     assertAnswers("UpKeep/Planning/null", actionOn(phase("UpKeep", "Planning", null)),
-      new Answers(false, false, true, false, null, false, "Planning"));
+      new Answers(false, false, false, false, false, false, "Planning"));
   }
 
   @Test
   public void aNullDescriptionIsNeitherPlanningNorReportingButKeepsItsNameAndUpkeep() {
     assertAnswers("POWB/null/0", actionOn(phase("POWB", null, Boolean.FALSE)),
-      new Answers(true, true, false, false, Boolean.FALSE, false, "Planning"));
+      new Answers(false, false, false, false, false, false, "Planning"));
     assertAnswers("UpKeep/null/1", actionOn(phase("UpKeep", null, Boolean.TRUE)),
-      new Answers(false, false, false, true, Boolean.TRUE, false, "Planning"));
+      new Answers(false, false, true, true, true, false, "Planning"));
   }
 
   @Test
   public void aNullNameIsNoPlanNameButKeepsItsDescriptionAndUpkeep() {
     assertAnswers("null/Planning/0", actionOn(phase(null, "Planning", Boolean.FALSE)),
-      new Answers(false, false, true, false, Boolean.FALSE, false, "Planning"));
+      new Answers(true, true, true, false, false, false, "Planning"));
     assertAnswers("null/Reporting/0", actionOn(phase(null, "Reporting", Boolean.FALSE)), REPORTING);
+  }
+
+  private static void assertTypes(String input, BaseAction action, boolean plan, boolean progress, boolean reporting) {
+    assertEquals(input + " isPlanningPhase", plan, action.isPlanningPhase());
+    assertEquals(input + " isProgressPhase", progress, action.isProgressPhase());
+    assertEquals(input + " isReportingPhase", reporting, action.isReportingPhase());
+  }
+
+  @Test
+  public void theSameNamedQuestionsAnswerThePhaseTypeOfEachRow() {
+    assertTypes("POWB/Planning/0", actionOn(phase("POWB", "Planning", Boolean.FALSE)), true, false, false);
+    assertTypes("AWPB/Planning/0", actionOn(phase("AWPB", "Planning", Boolean.FALSE)), true, false, false);
+    assertTypes("UpKeep/Planning/1", actionOn(phase("UpKeep", "Planning", Boolean.TRUE)), false, true, false);
+    assertTypes("Progress/Planning/1", actionOn(phase("Progress", "Planning", Boolean.TRUE)), false, true, false);
+    assertTypes("AR/Reporting/0", actionOn(phase("AR", "Reporting", Boolean.FALSE)), false, false, true);
+    assertTypes("POWB/Planing/0", actionOn(phase("POWB", "Planing", Boolean.FALSE)), false, false, false);
+  }
+
+  @Test
+  public void theSameNamedQuestionsReadTheTypeFieldsAndNeverTheName() {
+    assertTypes("null/Planning/0", actionOn(phase(null, "Planning", Boolean.FALSE)), true, false, false);
+    assertTypes("POWB/null/0", actionOn(phase("POWB", null, Boolean.FALSE)), false, false, false);
+    assertTypes("UpKeep/null/1", actionOn(phase("UpKeep", null, Boolean.TRUE)), false, true, false);
+    assertTypes("UpKeep/Planning/null", actionOn(phase("UpKeep", "Planning", null)), false, false, false);
+    assertTypes("AR/Reporting/null", actionOn(phase("AR", "Reporting", null)), false, false, true);
+  }
+
+  @Test
+  public void theSameNamedQuestionsAnswerFalseWithoutAUsablePhase() throws ReflectiveOperationException {
+    assertTypes("empty phase", actionOn(new Phase(null, "", -1)), false, false, false);
+    assertTypes("null actual phase", actionWithNullActualPhase(), false, false, false);
+    assertTypes("no session", new BaseAction() {
+
+      private static final long serialVersionUID = 1L;
+    }, false, false, false);
   }
 
   @Test
