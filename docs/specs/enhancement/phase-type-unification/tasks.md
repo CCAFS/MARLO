@@ -370,7 +370,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `marlo-migration`, `marlo-commit`.
 
 ### T14 — Documentation
-- **Status:** pending · **Size:** S · **Depends on:** T11 · **Module:** docs
+- **Status:** [x] done (2026-10-29, PASS attempt 1; `execution.md` T14) · **Size:** S · **Depends on:** T11 · **Module:** docs
 - **Requirements:** proposal Part D; requirements §4 (PRD/TRD pending item).
 - **Design refs:** §2 (docs); requirements §4.
 - **Files touched:**

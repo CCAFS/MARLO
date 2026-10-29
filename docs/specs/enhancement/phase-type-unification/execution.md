@@ -991,3 +991,41 @@ The Leader classified every exception in the app log for T07–T10 (`scratchpad/
 
 - Tasks closed: 13 of 16 (T00–T12).
 - LOC: ~3,018 + 194 (T11) = **~3,212, against ~3,500**. Remaining: T13 (M2; needs OQ2/OQ3), T14 (docs), T15 (HITL).
+
+### T14 — Documentation — PASS (checklist)
+
+- **Date:** 2026-10-29
+- **Final status:** PASS (attempt 1).
+- **Requirements covered:** proposal Part D; requirements §4 (PRD/TRD pending item).
+- **Review mode:** checklist (documentation text), Leader.
+- **Isolation:** main checkout, docs only; no Maven, no server (another session's `cargo:run` runs from this checkout).
+
+#### Attempt 1
+
+- **Files changed (1):** `docs/specs/epic/phase-topology/agent-context.md` §1: the `name` row now says display label
+  only, never the type; the `upkeep` row says plan (`false`) vs progress (`true`); a new "Phase type" table maps each
+  type to `Phase.is*Phase()`, its rule (DD-3), and the `BaseAction` method / FTL bean, and names the removed methods
+  and the Checkstyle rule that forbids them.
+- **Not changed:** `reports/ai-context/save-validation-matrix.md` and `interceptor-validator-playbook.md` hold no
+  old-method name (grep → 0), so nothing to edit.
+- **Evidence re-run (non-author, Leader):** `grep -rnE "isPOWB|isReportingActive|isUpKeepActive|isPlanningActive|isProgressActive|isAWPBActive" docs reports`
+  outside this spec folder → only the deliberate removal note at `phase-topology/agent-context.md:37-38`. Table rules
+  checked against `Phase.java:658-679` (`APConstants.PLANNING.equals(description) && Boolean.FALSE.equals(upkeep)`,
+  `Boolean.TRUE.equals(upkeep)`, `APConstants.REPORTING.equals(description)`). **VERIFIED.**
+- **Falsifier (Implementer, observed):** `isPOWB probe` appended to `save-validation-matrix.md` → grep showed
+  `reports/ai-context/save-validation-matrix.md:50:isPOWB probe`; removed → grep empty.
+- **Checklist:** one imprecision fixed by the Leader: "All three are false on a null `description` / `upkeep`" was
+  wrong for `isReportingPhase()` (reads `description` only) → "Each is false when a field its rule reads is null."
+- **spawns:** implementer 7 calls, ~78,000 tokens, ended complete.
+
+#### Pending items for `staging` (shared-file rule; not edited on this branch)
+
+- `docs/prd.md:157` (US-ADM-01) and `:214` (assumptions) and `docs/trd/trd.md:170` (§3.3) and `:570` name the phases
+  "POWB / UpKeep / AR". Proposed wording: "plan / progress / reporting phases (per-tenant names such as POWB / UpKeep /
+  AR or AWPB / Progress / AR)", and in TRD §3.3 add: the phase type comes from `description` + `upkeep`
+  (`Phase.is*Phase()`), `name` is a display label only.
+
+#### Running totals vs budget (design §17), after T14
+
+- Tasks closed: 14 of 16 (T00–T12, T14).
+- LOC: ~3,212 + 15 (docs) = **~3,227, against ~3,500**. Remaining: T13 (M2; needs OQ2/OQ3), T15 (HITL).

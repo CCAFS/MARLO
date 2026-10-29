@@ -14,15 +14,29 @@ evidence.
 
 | Field | Real role |
 |---|---|
-| `name` | Cosmetic label, per tenant. `POWB` / `AR` / `UpKeep`; AICCRA renamed them to `AWPB` / `Progress`. |
+| `name` | **Display label only, per tenant** (`POWB` / `AR` / `UpKeep`; AICCRA renamed them to `AWPB` / `Progress`). Never decides the phase type: see "Phase type" below. |
 | `description` | **Behaviour discriminator.** Only `Planning` or `Reporting` (`PhaseDescription`, `APConstants.PLANNING` / `REPORTING`). |
 | `year` | Reporting year, not the calendar window. |
-| `upkeep` | Second discriminator; separates POWB from UpKeep inside `Planning`. |
+| `upkeep` | Second discriminator; separates the plan phase (`false`) from the progress phase (`true`) inside `Planning`. |
 | `editable` | **The real write-permission switch.** See §4. |
 | `visible` | Appears in the timeline or not. Does **not** affect replication. |
 | `next_phase` | Self-FK, `ON DELETE RESTRICT`. The replication chain. |
 | `start_date` / `end_date` | The only ordering key in the UI today. |
 | `crp` | Global Unit (column `global_unit_id`). |
+
+**Phase type.** Read it from the helpers, never from `name`
+(spec `docs/specs/enhancement/phase-type-unification/`, DD-3):
+
+| Type | `Phase` | Rule | `BaseAction` / FTL |
+|---|---|---|---|
+| Planning | `isPlanningPhase()` | `description` equals `Planning` (case-sensitive) and `upkeep` is `false` | `isPlanningPhase()` / `planningPhase` |
+| Progress | `isProgressPhase()` | `upkeep` is `true` | `isProgressPhase()` / `progressPhase` |
+| Reporting | `isReportingPhase()` | `description` equals `Reporting` (case-sensitive) | `isReportingPhase()` / `reportingPhase` |
+
+Each is false when a field its rule reads is null. The `BaseAction` versions delegate to `getActualPhase()` and
+are null-safe on it. Removed methods: `isPOWB`, `isAWPBActive`, `isPlanningActive`, `isProgressActive`,
+`isUpKeepActive`, `isReportingActive`. A `RegexpSinglelineJava` rule in `configuration/marlo-checkstyle.xml` forbids
+them.
 
 `Phases.hbm.xml` also declares **84 child collections**, and the migrations accumulate **160+ FK declarations
 pointing at `phases`**, almost all `RESTRICT`.
