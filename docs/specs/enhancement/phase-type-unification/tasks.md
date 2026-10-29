@@ -231,7 +231,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `error-handling-patterns`, `marlo-verify`, `marlo-commit`.
 
 ### T07 — Rendered-HTML capture harness and baseline (NF-002)
-- **Status:** pending · **Size:** M · **Depends on:** T04 (the code under baseline must already delegate) · **Module:** tooling (scratch, not shipped)
+- **Status:** [x] done (2026-10-28, PASS attempt 1, checklist review; `execution.md` T07) · **Size:** M · **Depends on:** T04 (the code under baseline must already delegate) · **Module:** tooling (scratch, not shipped)
 - **Requirements:** NF-002, AC NF-001/002, AC FN-003/004 "BUT a page rendered with no session or no global unit…".
 - **Design refs:** DD-5; §16 OR-1, OR-2.
 - **Files touched:** a capture script outside the shipped tree (spec folder `harness/` or scratchpad), recorded in `execution.md`.

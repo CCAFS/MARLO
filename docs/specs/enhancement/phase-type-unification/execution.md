@@ -654,3 +654,65 @@
 - Tasks closed: 8 of 16 (T00–T06, T12).
 - LOC: ~1,735 + 424 (T06: +280 / −144) = **~2,159, against the raised budget of ~2,800**.
 - Review rounds: 8.
+
+### T07 — Rendered-HTML capture harness and baseline (NF-002) — PASS (checklist)
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1). Review mode per task: checklist (test tooling, not shipped; its falsifier is
+  the gate). No Reviewer spawn owed.
+- **Requirements covered:** NF-002, AC NF-001/002, AC FN-003/004 (page with no session / no global unit).
+- **Coordination (OR-2, Concurrency):** the `cargo:run` in the main checkout (PID 77433) belonged to session
+  `marlo-14` (staging `575a1c7aff`, QATEST testing, paused). Owner instruction: "paralo tu". The Leader notified
+  `marlo-14`, then stopped it with SIGTERM.
+- **Database isolation:** `marlo-dev.properties` points at `aiccradb_actsave`; starting the branch there would apply
+  M1 to a real schema and break `marlo-14`'s staging build (unknown applied migration). The Leader copied
+  `aiccradb_actsave` to the throwaway `zz_t07_actsave` (mysqldump | mysql, 99 s; 619 tables/views, 31 routines, 392
+  phases on both sides), backed up `marlo-dev.properties` to the scratchpad and set `mysql.database=zz_t07_actsave`.
+  The app started from this branch at `0fa05c4737` via `run-marlo-java17.sh`; Flyway applied only
+  `2.6.0.20261028.1817 FixPlaningPhaseDescription` to `zz_t07_actsave`. Check afterwards: `aiccradb_actsave` still has
+  12 `Planing` rows and max migration `2.6.0.20261022.1141`.
+- **Isolation:** main checkout (the running app serves it). No worktree.
+
+#### Attempt 1
+
+- **Files (new, tooling):** `harness/capture.sh` (64 lines; GET-only page views after one login POST per CRP; refuses
+  a non-localhost base; reads `~/.marlo-local-credentials`, never writes them), `harness/diff.sh`, `harness/pages.txt`
+  (page list), `harness/README.md` (run, diff, normalization table). Captured HTML lives only in the scratchpad
+  (`html-baseline/run1` is the baseline) and is never committed.
+- **Reference set (42 pages, all HTTP 200):**
+  - AICCRA (45), phases 429 plan / 430 progress / 431 reporting: dashboard (main menu, guide button), projects list,
+    description (102086), deliverable (24753, with participants), innovation (1626), budget by partners,
+    project contributions, and the study list — 24 pages;
+  - AICCRA_III (47), phases 444 / 445 / 446: dashboard, projects list, description, budget by partners,
+    contributions on project 102093 — 15 pages (no deliverables, innovations or studies exist there);
+  - expected-study form: RTB phase 262 (no AICCRA study rows in the 2026 phases) — 1 page;
+  - no global unit: anonymous `login.do` and logged-in `glossary.do` — 2 pages.
+- **Normalizations:** N1 `jsessionid`; N2 cache-bust params; N3 CSRF tokens (none present, kept per task); N4 sorted
+  Global Unit switcher entries; N5 per-request CSP nonce; N6 line sort on the 40 non-NOGU pages (Hibernate
+  collections render in unstable order); N7 collection indexes `[n]` / `_n"` on sorted pages; N8 the duplicated
+  alliance-lever id on innovation 1626 / phase 431.
+- **Null test (Implementer):** `diff.sh run1 run2` … `run1 run5` → `IDENTICAL: 43 files compared` each.
+- **Falsifier (Implementer, observed):** the deployed `guide-button.ftl:24` changed `reportingActive` →
+  `planningActive` (source tree untouched) → `diff.sh run1 fal1` named the 15 AICCRA_III pages plus the manifest.
+  Reverted (`cmp` against the backup matched); `diff.sh run1 fal2` → `IDENTICAL: 43 files compared`.
+- **Evidence re-run (non-author, Leader-inline):** a fresh capture `leader-rerun` → exit 0, all 42 pages 200,
+  `diff.sh run1 leader-rerun` → `IDENTICAL: 43 files compared`. `git status` shows only the new `harness/`.
+
+  **VERIFIED.**
+- **Checklist:** GET-only after login ✓; localhost guard ✓; credentials not written ✓; baseline stable across 6
+  captures ✓; falsifier observed ✓; run coordinated with other sessions ✓; captures not committed ✓.
+- **Known limits (recorded for T08–T10):**
+  - N6 hides a pure reordering on the 40 sorted pages; a boolean rename in FTL changes content, not order.
+  - The falsifier change did not alter the AICCRA pages (only AICCRA_III), presumably because AICCRA renders the
+    guide-button branch differently with both phase types open; not confirmed. Batch diffs on AICCRA pages are
+    still content diffs, so a changed rendering would show.
+  - AICCRA_III carries no deliverable, innovation or study pages; those are covered on AICCRA only.
+  - The app stays up on `zz_t07_actsave` for T08–T10. `marlo-dev.properties` must be restored from the scratchpad
+    backup and `marlo-14` told when the FTL batches finish.
+- **runtime events:** first copy attempt failed (`sed: RE error: illegal byte sequence`), retried with `LC_ALL=C`.
+- **spawns:** implementer 64 calls, 155,420 tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T07
+
+- Tasks closed: 9 of 16 (T00–T07, T12).
+- LOC: ~2,159 + ~159 (harness, tooling) = **~2,318, against ~2,800**.

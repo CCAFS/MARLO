@@ -1,0 +1,49 @@
+# name|crp|path|flags   (all GET-only; paths relative to $BASE; flags "sorted" = N6 order-insensitive canonical form, see README)
+# Phases in the local zz_t07_actsave schema: AICCRA 429 plan, 430 progress, 431 reporting; AICCRA_III 444 plan, 445 progress,
+# 446 reporting; RTB 262 reporting (the only CRP with an expected study).
+# --- AICCRA (45) ---
+AICCRA_plan_dashboard|AICCRA|AICCRA/crpDashboard.do?edit=true&phaseID=429|sorted
+AICCRA_plan_projectsList|AICCRA|clusters/AICCRA/projectsList.do?edit=true&phaseID=429|sorted
+AICCRA_plan_description|AICCRA|clusters/AICCRA/description.do?projectID=102086&edit=true&phaseID=429|sorted
+AICCRA_plan_deliverable|AICCRA|clusters/AICCRA/deliverable.do?deliverableID=24753&edit=true&phaseID=429|sorted
+AICCRA_plan_innovation|AICCRA|clusters/AICCRA/innovation.do?innovationID=1626&edit=true&phaseID=429|sorted
+AICCRA_plan_budgetByPartners|AICCRA|clusters/AICCRA/budgetByPartners.do?projectID=102086&edit=true&phaseID=429|sorted
+AICCRA_plan_contributionsCrpList|AICCRA|clusters/AICCRA/contributionsCrpList.do?projectID=102086&edit=true&phaseID=429|sorted
+AICCRA_plan_expectedStudiesList|AICCRA|clusters/AICCRA/expectedStudies.do?edit=true&phaseID=429|sorted
+AICCRA_progress_dashboard|AICCRA|AICCRA/crpDashboard.do?edit=true&phaseID=430|sorted
+AICCRA_progress_projectsList|AICCRA|clusters/AICCRA/projectsList.do?edit=true&phaseID=430|sorted
+AICCRA_progress_description|AICCRA|clusters/AICCRA/description.do?projectID=102086&edit=true&phaseID=430|sorted
+AICCRA_progress_deliverable|AICCRA|clusters/AICCRA/deliverable.do?deliverableID=24753&edit=true&phaseID=430|sorted
+AICCRA_progress_innovation|AICCRA|clusters/AICCRA/innovation.do?innovationID=1626&edit=true&phaseID=430|sorted
+AICCRA_progress_budgetByPartners|AICCRA|clusters/AICCRA/budgetByPartners.do?projectID=102086&edit=true&phaseID=430|sorted
+AICCRA_progress_contributionsCrpList|AICCRA|clusters/AICCRA/contributionsCrpList.do?projectID=102086&edit=true&phaseID=430|sorted
+AICCRA_progress_expectedStudiesList|AICCRA|clusters/AICCRA/expectedStudies.do?edit=true&phaseID=430|sorted
+AICCRA_reporting_dashboard|AICCRA|AICCRA/crpDashboard.do?edit=true&phaseID=431|sorted
+AICCRA_reporting_projectsList|AICCRA|clusters/AICCRA/projectsList.do?edit=true&phaseID=431|sorted
+AICCRA_reporting_description|AICCRA|clusters/AICCRA/description.do?projectID=102086&edit=true&phaseID=431|sorted
+AICCRA_reporting_deliverable|AICCRA|clusters/AICCRA/deliverable.do?deliverableID=24753&edit=true&phaseID=431|sorted
+AICCRA_reporting_innovation|AICCRA|clusters/AICCRA/innovation.do?innovationID=1626&edit=true&phaseID=431|sorted
+AICCRA_reporting_budgetByPartners|AICCRA|clusters/AICCRA/budgetByPartners.do?projectID=102086&edit=true&phaseID=431|sorted
+AICCRA_reporting_contributionsCrpList|AICCRA|clusters/AICCRA/contributionsCrpList.do?projectID=102086&edit=true&phaseID=431|sorted
+AICCRA_reporting_studiesList|AICCRA|clusters/AICCRA/studies.do?edit=true&phaseID=431|sorted
+# --- AICCRA_III (47): only project 102093 exists in 2026; no deliverables, innovations or studies there ---
+AICCRA_III_plan_dashboard|AICCRA_III|AICCRA_III/crpDashboard.do?edit=true&phaseID=444|sorted
+AICCRA_III_plan_projectsList|AICCRA_III|clusters/AICCRA_III/projectsList.do?edit=true&phaseID=444|sorted
+AICCRA_III_plan_description|AICCRA_III|clusters/AICCRA_III/description.do?projectID=102093&edit=true&phaseID=444|sorted
+AICCRA_III_plan_budgetByPartners|AICCRA_III|clusters/AICCRA_III/budgetByPartners.do?projectID=102093&edit=true&phaseID=444|sorted
+AICCRA_III_plan_contributionsCrpList|AICCRA_III|clusters/AICCRA_III/contributionsCrpList.do?projectID=102093&edit=true&phaseID=444|sorted
+AICCRA_III_progress_dashboard|AICCRA_III|AICCRA_III/crpDashboard.do?edit=true&phaseID=445|sorted
+AICCRA_III_progress_projectsList|AICCRA_III|clusters/AICCRA_III/projectsList.do?edit=true&phaseID=445|sorted
+AICCRA_III_progress_description|AICCRA_III|clusters/AICCRA_III/description.do?projectID=102093&edit=true&phaseID=445|sorted
+AICCRA_III_progress_budgetByPartners|AICCRA_III|clusters/AICCRA_III/budgetByPartners.do?projectID=102093&edit=true&phaseID=445|sorted
+AICCRA_III_progress_contributionsCrpList|AICCRA_III|clusters/AICCRA_III/contributionsCrpList.do?projectID=102093&edit=true&phaseID=445|sorted
+AICCRA_III_reporting_dashboard|AICCRA_III|AICCRA_III/crpDashboard.do?edit=true&phaseID=446|sorted
+AICCRA_III_reporting_projectsList|AICCRA_III|clusters/AICCRA_III/projectsList.do?edit=true&phaseID=446|sorted
+AICCRA_III_reporting_description|AICCRA_III|clusters/AICCRA_III/description.do?projectID=102093&edit=true&phaseID=446|sorted
+AICCRA_III_reporting_budgetByPartners|AICCRA_III|clusters/AICCRA_III/budgetByPartners.do?projectID=102093&edit=true&phaseID=446|sorted
+AICCRA_III_reporting_contributionsCrpList|AICCRA_III|clusters/AICCRA_III/contributionsCrpList.do?projectID=102093&edit=true&phaseID=446|sorted
+# --- single expected study form (RTB, the only CRP with study data) ---
+RTB_reporting_study|RTB|clusters/RTB/study.do?expectedID=3384&edit=true&phaseID=262|sorted
+# --- pages with no global unit: anonymous (no session) login page, and a logged-in page whose URL has no CRP ---
+NOGU_anonymous_login|-|login.do
+NOGU_loggedin_glossary|AICCRA|glossary.do
