@@ -120,7 +120,9 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   `crpPhases.ftl:227` stays as it is (§9, 2026-10-28), and `GlobalUnitCreateAction.applyPhaseTypeOfName`
   (`"Progress".equals(input.getName())`, `:499`), which parses the admin-typed name into the type of a NEW phase
   and never classifies an existing one (FN-007, §9, 2026-10-29). The old type methods and the write-only
-  `planningActive` / `reportingActive` fields and setters MUST no longer exist.
+  `planningActive` / `reportingActive` fields and setters MUST no longer exist. Time-limited exception (§9,
+  2026-10-29): until T11b, the six old type methods exist in `BaseAction` as `@Deprecated` one-line aliases of the new
+  ones; the fields and setters stay removed.
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-006 — The plan, progress and reporting phases of every unit after AICCRA
   MUST be named `Planning`, `Progress` and `Reporting`. AICCRA's phases and those of every earlier unit MUST
   keep their current names.
@@ -160,7 +162,11 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
 - ENH-PHASE-TYPE-UNIFICATION-001-NF-002 — The rendered HTML of the reference page set (§6 AC for NF-002) MUST be
   byte-identical before and after each migration batch, except for cache-bust parameters.
 - ENH-PHASE-TYPE-UNIFICATION-001-NF-003 — Reintroducing a removed old type method in Java MUST fail the
-  Checkstyle gate.
+  Checkstyle gate. Time-limited exception (§9, 2026-10-29): the six old names exist as `@Deprecated` one-line
+  aliases in `BaseAction`, because the redesign on `dev` (A2-2607 deliverables form, xKeCo/a2-2613 innovations)
+  still uses them in FTL. The rule stays and still fails any new caller; only a line carrying the exact marker
+  `// CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b` (or `... - alias under test`, in the alias
+  test) is exempt, and only from that check. T11b removes the aliases and the exemption.
 - ENH-PHASE-TYPE-UNIFICATION-001-NF-004 — The compile and Checkstyle gates MUST pass at every task boundary
   (`marlo-verify`).
 - ENH-PHASE-TYPE-UNIFICATION-001-NF-005 — Every migrated site MUST give the same result as today on five inputs:
@@ -262,7 +268,8 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   `isProgressActive`, `isUpKeepActive`, `isReportingActive`, `reportingActive`, `upKeepActive`,
   `UpKeepActive`, `planningActive`) over `marlo-web/src/main` and `marlo-web/src/test`, and a grep for the
   property `POWB` used as an FTL expression (`guide-button.ftl:91, 225` today),
-- Then it MUST return no hit, except the excluded identifiers listed in `call-sites.md` §A3:
+- Then it MUST return no hit, except the excluded identifiers listed in `call-sites.md` §A3 and, until T11b, the six
+  alias declarations in `BaseAction.java` and their uses in the alias test (§9, 2026-10-29):
   - the action name `isProgressActive` (`struts-json.xml:74`) and its URL (`global.js:39, 210`);
   - the JS globals `reportingActive` / `upKeepActive` (`javascript-constants.ftl:30-31` left-hand side, and the 7 JS reads);
   - the comment in the applied migration `V2_6_0_20260930_0948__…sql:3`;
@@ -270,7 +277,8 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   - `POWB` in comments, i18n keys and string literals.
 - And no FTL local, assign or macro parameter MUST still carry an old name (`call-sites.md` §A2 renamed with its
   callers),
-- And adding a call to a removed method in a Java file MUST fail Checkstyle,
+- And adding a call to a removed method in a Java file MUST fail Checkstyle, unless the line carries one of the two
+  exact markers of NF-003 (the aliases and their test only, until T11b),
 - AND IT MUST be shown that no phase-name literal decides a type outside `rest/`, `crpPhases.ftl:227` and
   `GlobalUnitCreateAction:499` (parsing for a new phase, FN-007), by a
   grep for `getName()` on phase objects and `.name` on phase variables in FTL, as run.
@@ -455,3 +463,16 @@ command in this repo can see it. It is asked of the BI owner (§8 OQ2) before DA
   Closure sweep: `crpPhases.ftl:227` and `Known sites` were grepped across this folder. Aligned: `requirements.md`
   FN-005, its AC and INT-3; `design.md` §2 and DD-7; `tasks.md` T11 verification. Left as history: `execution.md`
   T05 and T11 entries, `judgment.md`, `proposal.md`, `validation-report.md`.
+- 2026-10-29 — Deprecated aliases until the redesign reaches staging (owner). `dev` carries a redesign (A2-2607
+  deliverables form, xKeCo/a2-2613 innovations) whose FTL still uses `reportingActive` (resolved through the getter
+  `isReportingActive()`) and `action.isProgressActive()`; merging it after T11 would break pages, and
+  `(reportingActive ...)!false` would silently become false. T11a re-adds the six old type methods in `BaseAction` as
+  `@Deprecated` one-line aliases of the new ones (same equivalences as T04). The fields and setters stay removed. The
+  Checkstyle rule stays and still fails any new caller: a `SuppressWithNearbyCommentFilter` with literal formats
+  exempts only a line carrying `// CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b` or
+  `// CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test`, and only from that check. The final removal of the
+  aliases, the filter and the alias test is T11b, after A2-2607 and A2-2613 reach staging. Not a git revert of T11.
+  Closure sweep: `NF-003`, `FN-005`, `no longer exist`, `removed` and `T11` were grepped across this folder.
+  Aligned: `requirements.md` FN-005, NF-003 and the AC for FN-005/NF-003; `design.md` §2 (BaseAction and
+  `marlo-checkstyle.xml` bullets) and DD-9; `tasks.md` T11 note, T11a, T11b, the coverage map, the dependency graph
+  and §7. Left as history: `execution.md`, `judgment.md`, `proposal.md`, `validation-report.md`, `call-sites.md`.

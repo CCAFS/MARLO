@@ -43,14 +43,14 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 | FN-003, FN-004, AC FN-003/004/INT-3 "each returns false", "no exception" | T03 (Phase) + T04 (BaseAction) |
 | AC FN-003/004 "BUT a page rendered with no session or no global unit MUST NOT change its output" | T07 (captures it) + T08–T10 (diff) |
 | NF-005, AC NF-005 (five-input truth tables; "BUT ProjectOutcomeValidator / OutcomesMilestonesAction MUST NOT become true on empty / null") | T05 (§B sites) + T06 (guarded Java sites in §A1) |
-| FN-005, AC FN-005/NF-003 (grep returns no hit except §A3; no FTL local or parameter keeps an old name; adding a call fails Checkstyle; "AND IT MUST be shown that no phase-name literal decides a type…") | T11 |
+| FN-005, AC FN-005/NF-003 (grep returns no hit except §A3; no FTL local or parameter keeps an old name; adding a call fails Checkstyle; "AND IT MUST be shown that no phase-name literal decides a type…") | T11 (+ T11a exception, T11b closes it) |
 | FN-006, DA-002, AC FN-006/DA-002 (47+ renamed, 45 unchanged, "BUT inconsistent row keeps its name") | T13 |
 | FN-007, AC FN-007 (templates 45 and 47; no `Planing`; "BUT unknown type copied unchanged") | T12 |
 | FN-008, INT-2, AC FN-008 ("editable, no label, no note"; "AICCRA progress as today"; "BUT lock unchanged in plan / reporting") | T08 (code) + T15 (human check of AICCRA_III progress page) |
 | FN-009, AC FN-009 | T02 (pins) + T04 |
 | DA-001, MIG-001, MIG-002, AC DA-001/MIG (8 scenarios, expected = pre-run SELECT, "AND IT MUST … no numeric id literal") | T01 (M1) + T13 (M2) |
 | NF-001, NF-002, AC NF-001/002 ("byte-identical", "BUT a difference MUST NOT be waved through") | T07 (baseline) + T08, T09, T10 (each batch) |
-| NF-003 | T11 |
+| NF-003 | T11 (+ T11a exception, T11b closes it) |
 | NF-004 | every code task (Done criteria) |
 | OPS-001, AC OPS-001 | T13 (file order + header) |
 | OPS-002, AC OPS-002 | T13 (release checklist) + T15 (records the listing) |
@@ -311,6 +311,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Status:** [x] done (2026-10-29, PASS attempt 2; `execution.md` T11) · **Size:** S · **Depends on:** T06, T10 · **Module:** marlo-web + `configuration/`
 - **Requirements:** FN-005, NF-003; AC FN-005/NF-003 (all clauses including "AND IT MUST be shown that no phase-name literal decides a type…").
 - **Design refs:** DD-9; §13; P-8, P-11, P-12.
+- **Note:** the six methods were re-added as deprecated aliases by T11a (requirements §9, 2026-10-29); T11b removes them for good.
 - **Files touched:**
   - `BaseAction.java`: delete the six old methods, `planningActive` / `reportingActive` fields and setters (`:471, 487, 8924, 8928`);
   - `configuration/marlo-checkstyle.xml`: a `RegexpSinglelineJava` rule for the six names.
@@ -325,6 +326,31 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Consumers:** every former caller, now on the new names; the rewritten tests.
 - **Review:** full.
 - **Done when:** compile, tests and Checkstyle green; seeded red observed; greps clean.
+- **Skills:** `marlo-verify`, `marlo-commit`.
+
+### T11a — Deprecated aliases for the redesign merge
+- **Status:** [x] done (2026-10-29, PASS attempt 2; `execution.md` T11a) · **Size:** S · **Depends on:** T11 · **Module:** marlo-web + `configuration/`
+- **Requirements:** FN-005, NF-003 (time-limited exception; requirements §9, 2026-10-29).
+- **Design refs:** DD-9 (amended).
+- **Files touched:**
+  - `BaseAction.java`: the six old type methods re-added as `@Deprecated` one-line aliases (T04 equivalences), each declaration carrying `// CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b`; no fields or setters;
+  - `configuration/marlo-checkstyle.xml`: `SuppressWithNearbyCommentFilter` with literal formats (only `RegexpSinglelineJava`, only the two exact markers);
+  - `BaseActionPhaseTypeCharacterizationTest.java`: one test that each alias equals its new method (marker `... - alias under test`).
+- **Scope:** not a git revert of T11 (its commit also holds the records and the test rewrites).
+- **Tests:** compile gate; full test suite with `-am`.
+- **Verification:** rule over all Java returns 0 hits; Checkstyle delta against HEAD is 0; every old name used by the redesign's FTL on `dev` resolves to an alias.
+- **Falsifier:** a call without the marker is flagged; a marker without the exact suffix is flagged; `// CHECKSTYLE.OFF: LineLength` does not silence LineLength; the marker removed from an alias declaration is flagged.
+- **Done when:** compile, tests and Checkstyle green; the four falsifiers observed.
+- **Skills:** `marlo-verify`, `marlo-commit`.
+
+### T11b — Remove the aliases and the suppression filter
+- **Status:** pending · **Size:** S · **Depends on:** A2-2607 and A2-2613 merged to `staging` · **Module:** marlo-web + `configuration/`
+- **Requirements:** FN-005, NF-003 (closes the T11a exception).
+- **Design refs:** DD-9.
+- **Files touched:** the redesign's FTL (`reportingActive`, `action.isProgressActive()` and any other old name moved to the new names); `BaseAction.java` (delete the six aliases); `configuration/marlo-checkstyle.xml` (delete the `SuppressWithNearbyCommentFilter` module); the alias test (remove).
+- **Verification:** the rule over all Java returns 0 hits; `grep -rn "CHECKSTYLE.OFF" --include=*.java` returns 0; the old-name FTL grep returns only the §A3 identifiers.
+- **Falsifier:** re-add a marker on a new caller of an old name: it is flagged once the filter is removed.
+- **Done when:** compile, tests and Checkstyle green; greps clean.
 - **Skills:** `marlo-verify`, `marlo-commit`.
 
 ### T12 — Name phases by type at global-unit creation (FN-007)
@@ -414,6 +440,7 @@ T02 ─┘          │                              ├─► T11 ─► T13 �
                 └─► T07 ─► T08 ─► T09 ─► T10 ──┘     ▲
 T03 ─► T12 ──────────────────────────────────────────┘
 T11 ─► T14
+T11 ─► T11a ─► T11b   (T11b waits for A2-2607 and A2-2613 on staging)
 T08 ─► T15
 ```
 
@@ -455,7 +482,7 @@ parallel with T05–T10.
 
 ## 7. Rollback Plan
 
-- **Code:** revert per task commit. Every task leaves the app working, because old names delegate until T11.
+- **Code:** revert per task commit. Every task leaves the app working, because old names delegate until T11 (T11a re-adds them as deprecated aliases until T11b).
 - **M1:** data repair; not reverted. If ever needed, restore from the captured ids.
 - **M2:** restore each row from the captured `(id, name)` list (OPS-004). Never by cutoff and type (FJ-1).
 

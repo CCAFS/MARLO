@@ -1245,3 +1245,63 @@ measured total is **3,018** lines (`validation-report.md` §8, W7), against the 
   The T10 running total (~3,018) happens to equal the final measure; the T11, T13 and T14 additions (+194, +60, +15)
   were not matched by growth in the diff.
 - **Harness pages:** 186 (`grep -c '^[^#]' harness/pages.txt`); `design.md` §17 said 114, which was the T09 figure.
+
+### T11a — Deprecated aliases for the redesign merge — PASS
+
+- **Date:** 2026-10-29
+- **Final status:** PASS (attempt 2).
+- **Why (owner decision, requirements §9 2026-10-29):** `origin/dev` carries a redesign (branches
+  `A2-2607-Adapt-the-Deliverables-form-section-to-AICCRA-FSRP-IV` and `xKeCo/a2-2613-adapt-the-innovations-from-section-to-ai`)
+  whose FTL still uses `reportingActive` and `action.isProgressActive()` in six files (`deliverableInfo`,
+  `deliverableList`, `projectDeliverable`, `projectInnovation`, `deliverableMacros`, `innovationTemplates`). With T11
+  merged, those pages would fail or, where wrapped in `(…)!false`, silently read `false`, whoever merges second
+  (this branch into `dev`, or the redesign into `staging`). Re-adding the old names as aliases makes either side of
+  every conflict correct. Not a `git revert`: T11's commit also holds this log, `tasks.md` and test rewrites.
+- **Isolation:** worktree `../MARLO-alias`, branch `phase-type-unification-alias` from `581858f937`; applied to
+  `phase-type-unification` (now `d3c539cbbd`, which merged `staging` at 10:56) by cherry-pick.
+
+#### Safety check before the change (Leader)
+
+- Old names on the `dev` side, re-checked with `git grep -w` (a `\b` pattern can silently miss in `git grep`):
+  merged tree Java → 0 calls; FTL → only the six conflicting files, using `reportingActive` (19) and
+  `action.isProgressActive()` (2, plus local variables of that name); nothing outside them except the §A3 JS names.
+- Checkstyle 8.18 probe: `SuppressWithNearbyCommentFilter` inside `TreeWalker` suppresses only the commented line;
+  under `Checker` it throws `SuppressWithNearbyCommentFilter is not allowed as a child in Checker`.
+
+#### Attempt 1
+
+- **Change:** six `@Deprecated` one-line aliases in `BaseAction` delegating exactly as T04 (`isPOWB`, `isAWPBActive`
+  → `isPlanningPhase()`; `isUpKeepActive`, `isProgressActive` → `isProgressPhase()`; `isReportingActive` →
+  `isReportingPhase()`; `isPlanningActive` → `isPlanningPhase() || isProgressPhase()`); fields and setters not
+  restored; a `SuppressWithNearbyCommentFilter` in `marlo-checkstyle.xml`; test
+  `theDeprecatedAliasesAnswerAsTheirPhaseTypeMethods` (plan, progress, reporting, empty, null phase).
+- **Gates (Implementer):** clean compile exit 0 (2415 / 1062 / 114); suite `-am` 1160 / 0 / 0; Checkstyle delta 0;
+  rule 0 hits over 3597 files; falsifier A (call without marker) and B (markers stripped) flagged.
+- **Merge simulation (Leader, worktree discarded):** `d3c539cbbd` + this diff merged with `origin/dev` using
+  `-X theirs` (the `dev` side of every conflict, worst case) → merge OK; old names left in FTL: `reportingActive`,
+  `isProgressActive`, and `POWB` as titles/comments only; every needed getter present; compile exit 0
+  (2440 / 1065 / 117); suite 1187 run / 0 fail / **2 errors**, both in `ProjectFocusManagerImplReplicationTest`
+  (NPE at `ProjectFocusManagerImpl.addProjectFocusPhase:58`): `staging` `d65ccdcb75` and `dev` `6ec459d8bc` fix the
+  same focus-duplication bug differently. Unrelated to phases; it surfaces on any `staging` → `dev` merge.
+- **Reviewer:** FAIL. The filter `commentFormat="CHECKSTYLE.OFF\: (\w+)"` + `checkFormat="$1"` let
+  `// CHECKSTYLE.OFF: <AnyCheck>` silence any check (e.g. `LineLength`) on any line of any file (CLAUDE.md hard rule 7;
+  NF-003). Advisory: record the NF-003 exception and T11b in the spec before commit.
+
+#### Attempt 2
+
+- **Change:** literal filter — `commentFormat`
+  `CHECKSTYLE\.OFF\: RegexpSinglelineJava - (deprecated alias until T11b|alias under test)`, `checkFormat`
+  `RegexpSinglelineJava`, `influenceFormat` 0. Spec: FN-005, NF-003 and their AC carry the time-limited exception;
+  §9 entry; `design.md` §2 and DD-9; `tasks.md` T11 note, T11a, T11b, coverage map, dependency graph, §7.
+- **Falsifiers (Implementer):** A plain call → flagged; B marker stripped from one declaration → flagged; C
+  `// CHECKSTYLE.OFF: LineLength` on a 176-char line → `LineLength` flagged; D marker without suffix → flagged;
+  control (exact marker) → 0.
+- **Evidence re-run (non-author, Leader):** probe on the final config — exact markers at the declaration and at a
+  test-style call suppressed; flagged: plain call, marker without suffix, partial name `Regexp`, `LineLength`.
+  Implementer gates: compile exit 0, suite 1160 / 0 / 0, Checkstyle delta 0, rule 0 hits. **VERIFIED.**
+- **Reviewer:** PASS. ADVISORY (accepted): an exact marker copied onto a new caller still passes until T11b; T11b's
+  `grep -rn "CHECKSTYLE.OFF" --include=*.java` → 0 is the backstop.
+- **Open for T11b:** wait for A2-2607 and A2-2613 on `staging`; then migrate their FTL uses, delete the aliases, the
+  filter and the alias test.
+- **spawns:** implementer 34 calls (19 + 7 + 8), ~347,000 tokens, ended complete; reviewer 11 calls (10 + 1),
+  ~130,000 tokens, ended complete.

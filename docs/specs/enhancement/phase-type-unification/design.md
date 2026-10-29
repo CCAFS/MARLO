@@ -54,7 +54,8 @@ without breaking FN-004 (§15, DD-2).
 ### marlo-web
 - `action/BaseAction.java`:
   - adds the three actual-phase methods;
-  - makes the six old methods delegate to them, then removes them (FN-005);
+  - makes the six old methods delegate to them, then removes them (FN-005); time-limited exception: T11a keeps them as
+    `@Deprecated` one-line aliases until T11b (requirements §9, 2026-10-29);
   - removes the write-only fields and setters;
   - migrates the 6 `PROJECT_INDICATOR_PHASE_PREVIOUS_NAME` sites.
 - `action/superadmin/GlobalUnitCreateAction.java`: the text path `parsePhaseLine` (FN-007).
@@ -69,7 +70,9 @@ without breaking FN-004 (§15, DD-2).
 - Migrations: 2 new files under `src/main/resources/database/migrations/`.
 
 ### Repository root
-- `configuration/marlo-checkstyle.xml` — one rule that rejects the removed method names in Java (NF-003; P-11).
+- `configuration/marlo-checkstyle.xml` — one rule that rejects the removed method names in Java (NF-003; P-11); until
+  T11b, also a `SuppressWithNearbyCommentFilter` with literal formats that exempts only the two exact alias markers
+  from that rule (requirements §9, 2026-10-29).
 
 ### Not touched
 - `rest/`, every `ManagerImpl` replication method, `PhaseDAO.findCycle`, `getCrpPhase`, `getPhasesByCycles`,
@@ -248,6 +251,11 @@ because no non-REST logic reads `name` after S3.
 - **DD-9 — Old names are blocked by a Checkstyle regexp rule, written in this spec.** The console-printing
   precedent `0a17b19671` is not on this branch: it is only on `logging-json-appender`, and
   `configuration/marlo-checkstyle.xml` has no Regexp rule at `9e2a9ed838` (JD-5). Requirements NF-003; P-11.
+  Time-limited exception (requirements §9, 2026-10-29): until T11b, the six old methods exist in `BaseAction` as
+  `@Deprecated` one-line aliases. The rule is unchanged. Only a line carrying one of the two exact markers
+  (`// CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b` or `... - alias under test`) is exempt, and
+  only from that check, through a `SuppressWithNearbyCommentFilter` with literal formats. T11b removes the aliases
+  and the filter.
 - **DD-10 — M2 runs last.** Requirements OPS-001.
 - **DD-11 — Two kinds of negation, two rules (JD-1, RJ-1).**
   1. **Negation of an old null-safe `BaseAction` method** stays a bare negation of its replacement:

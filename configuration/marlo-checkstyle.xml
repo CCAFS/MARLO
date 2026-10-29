@@ -73,6 +73,15 @@
 				<property name="message" value="Removed phase type method: use isPlanningPhase(), isProgressPhase() or isReportingPhase() (ENH-PHASE-TYPE-UNIFICATION-001, FN-005)."/>
 			</module>
 
+			<!-- Lets the deprecated phase aliases in BaseAction (and their alias test) opt out of the rule above. Only the
+			     RegexpSinglelineJava check can be silenced, only by these two exact markers, only on the commented line.
+			     T11b removes the aliases and this filter. -->
+			<module name="SuppressWithNearbyCommentFilter">
+				<property name="commentFormat" value="CHECKSTYLE\.OFF\: RegexpSinglelineJava - (deprecated alias until T11b|alias under test)"/>
+				<property name="checkFormat" value="RegexpSinglelineJava"/>
+				<property name="influenceFormat" value="0"/>
+			</module>
+
 		</module>
 		
 	</module>  

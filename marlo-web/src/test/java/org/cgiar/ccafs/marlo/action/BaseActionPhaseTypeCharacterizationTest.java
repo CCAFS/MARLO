@@ -256,4 +256,28 @@ public class BaseActionPhaseTypeCharacterizationTest {
     assertEquals("Phase.isReporting() with a null description (INT-3: it threw before)", false,
       phase("AR", null, Boolean.FALSE).isReporting().booleanValue());
   }
+
+  private static void assertAliases(String input, BaseAction action) {
+    boolean pOWB = action.isPOWB(); // CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test
+    assertEquals(input + " isPOWB", action.isPlanningPhase(), pOWB);
+    boolean aWPBActive = action.isAWPBActive(); // CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test
+    assertEquals(input + " isAWPBActive", action.isPlanningPhase(), aWPBActive);
+    boolean upKeepActive = action.isUpKeepActive(); // CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test
+    assertEquals(input + " isUpKeepActive", action.isProgressPhase(), upKeepActive);
+    boolean progressActive = action.isProgressActive(); // CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test
+    assertEquals(input + " isProgressActive", action.isProgressPhase(), progressActive);
+    boolean reportingActive = action.isReportingActive(); // CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test
+    assertEquals(input + " isReportingActive", action.isReportingPhase(), reportingActive);
+    boolean planningActive = action.isPlanningActive(); // CHECKSTYLE.OFF: RegexpSinglelineJava - alias under test
+    assertEquals(input + " isPlanningActive", action.isPlanningPhase() || action.isProgressPhase(), planningActive);
+  }
+
+  @Test
+  public void theDeprecatedAliasesAnswerAsTheirPhaseTypeMethods() throws ReflectiveOperationException {
+    assertAliases("POWB/Planning/0", actionOn(phase("POWB", "Planning", Boolean.FALSE)));
+    assertAliases("UpKeep/Planning/1", actionOn(phase("UpKeep", "Planning", Boolean.TRUE)));
+    assertAliases("AR/Reporting/0", actionOn(phase("AR", "Reporting", Boolean.FALSE)));
+    assertAliases("empty phase", actionOn(new Phase(null, "", -1)));
+    assertAliases("null actual phase", actionWithNullActualPhase());
+  }
 }

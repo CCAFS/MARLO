@@ -8040,6 +8040,60 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return phase != null && phase.isReportingPhase();
   }
 
+  /**
+   * @deprecated use {@link #isPlanningPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isPOWB() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isPlanningPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isPlanningPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isAWPBActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isPlanningPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isProgressPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isUpKeepActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isProgressPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isProgressPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isProgressActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isProgressPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isReportingPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isReportingActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isReportingPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isPlanningPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isPlanningActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isPlanningPhase() || this.isProgressPhase();
+  }
+
   public boolean isRole(String roleAcronym) {
     String roles = this.getRoles();
     if (roles.contains(roleAcronym)) {
