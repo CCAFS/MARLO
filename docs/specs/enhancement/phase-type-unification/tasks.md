@@ -183,7 +183,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `tdd`, `marlo-verify`, `marlo-commit`.
 
 ### T05 — Name-literal sites (§B, Java) with truth tables (NF-005)
-- **Status:** pending · **Size:** M · **Depends on:** T04 · **Module:** marlo-web (+ both `APConstants`)
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T05) · **Size:** M · **Depends on:** T04 · **Module:** marlo-web (+ both `APConstants`)
 - **Requirements:** FN-005 (Java name literals), NF-005 and its AC (including the "BUT … MUST NOT become true" clause), INT-3 (summary sites).
 - **Design refs:** §7; DD-11 rule 2; P-9, P-15.
 - **Files touched:**
@@ -328,14 +328,14 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `marlo-verify`, `marlo-commit`.
 
 ### T12 — Name phases by type at global-unit creation (FN-007)
-- **Status:** pending · **Size:** S · **Depends on:** T03 · **Module:** marlo-data + marlo-web
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T12) · **Size:** S · **Depends on:** T03 · **Module:** marlo-data + marlo-web
 - **Requirements:** FN-007, INT-1 (creation part); AC FN-007 (all clauses).
 - **Design refs:** DD-8; P-7.
 - **Files touched:**
   - `GlobalUnitCreationManagerImpl.java:519-543` (`createPhases`): name from type when the type is known;
   - `GlobalUnitCreateAction.java:490-525` (`parsePhaseLine`): derives `description` / `upkeep` for the names Planning / Progress / Reporting only;
   - a new test `GlobalUnitCreationPhaseNamingTest`.
-- **Tests:** templates as AICCRA (`AWPB/Progress/AR`, including `Planing` rows before M1 is simulated), AICCRA_III (`POWB/UpKeep/AR`), and an unknown-type phase.
+- **Tests:** templates as AICCRA (`AWPB/Progress/AR`, after M1), AICCRA_III (`POWB/UpKeep/AR`), and an unknown-type phase. A pre-M1 `AWPB/Planing/0` template phase is an unknown type, copied unchanged and documented as such. (Amended 2026-10-28 at the T12 pre-spawn gate, owner: creation relies on M1.)
 - **Verification:** compile gate; test with `-am`.
 - **Falsifier:** copy the template name unchanged → the AICCRA-template case asserts `Planning` and gets `AWPB` → red.
 - **Red run:** `predicted — greenfield artifact (observed in T12)`.

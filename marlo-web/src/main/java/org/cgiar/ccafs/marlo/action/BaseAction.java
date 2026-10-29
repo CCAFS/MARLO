@@ -3957,7 +3957,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = projectExpectedStudyInfoListTemp.stream()
         .filter(c -> c != null && c.getProjectExpectedStudy() != null
           && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
-          && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+          && c.getPhase().isReportingPhase()
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
 
@@ -3973,7 +3973,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             projectExpectedStudyInfoListTemp.stream()
               .filter(c -> c != null && c.getProjectExpectedStudy() != null
                 && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
-                && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+                && c.getPhase().isReportingPhase()
                 && c.getPhase().getYear() < (this.getActualPhase().getYear()))
               .collect(Collectors.toList());
           if (!projectExpectedStudyInfoList2.isEmpty() && projectExpectedStudyInfoList2.get(0).getYear() != null) {
@@ -4221,7 +4221,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<ProjectInnovationInfo> projectInnovationInfoList = this.projectInnovationInfoManager.findAll().stream()
       .filter(c -> c != null && c.getProjectInnovation() != null
         && c.getProjectInnovation().getId().longValue() == innovation.longValue()
-        && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+        && c.getPhase().isReportingPhase()
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
@@ -4234,7 +4234,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<ProjectInnovationInfo> projectInnovationInfoList2 = this.projectInnovationInfoManager.findAll().stream()
           .filter(c -> c != null && c.getProjectInnovation() != null
             && c.getProjectInnovation().getId().longValue() == innovation.longValue()
-            && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+            && c.getPhase().isReportingPhase()
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
         if (!projectInnovationInfoList2.isEmpty() && projectInnovationInfoList2.get(0).getYear() != null) {
@@ -4575,7 +4575,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.projectPolicyInfoManager.findAll().stream()
         .filter(c -> c != null && c.getProjectPolicy() != null
           && c.getProjectPolicy().getId().longValue() == policy.longValue()
-          && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+          && c.getPhase().isReportingPhase()
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
@@ -4588,7 +4588,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<ProjectPolicyInfo> projectPolicyInfoList2 = this.projectPolicyInfoManager.findAll().stream()
           .filter(c -> c != null && c.getProjectPolicy() != null
             && c.getProjectPolicy().getId().longValue() == policy.longValue()
-            && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+            && c.getPhase().isReportingPhase()
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
         if (!projectPolicyInfoList2.isEmpty() && projectPolicyInfoList2.get(0).getYear() != null) {

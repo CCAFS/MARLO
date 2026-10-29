@@ -279,7 +279,9 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
 - Given the admin creation flow with AICCRA (45) as the template, and again with AICCRA_III (47),
 - When a unit is created,
 - Then its phases MUST be named Planning, Progress and Reporting by type,
-- And no phase MUST carry `description = 'Planing'`,
+- And, once M1 has run, no phase MUST carry `description = 'Planing'`. Creation follows DD-3 and does not
+  tolerate the typo: a pre-M1 `Planing` template phase is an unknown type and is copied unchanged. (Amended
+  2026-10-28 at the T12 pre-spawn gate, owner.)
 - BUT a template phase of an unknown type MUST be copied unchanged.
 
 **AC for FN-008, INT-2:**

@@ -189,9 +189,8 @@ public class ProjectOutcomeValidator extends BaseValidator {
           action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].expectedValue",
             InvalidFieldsMessages.EMPTYFIELD);
         }
-        if (action.getActualPhase() != null && action.getActualPhase().getName() != null
-          && (!action.getActualPhase().getName().equals("POWB")
-            && !action.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
+        // Progress or reporting phase. It is false without a phase, as the guard on the phase name was.
+        if (action.isProgressPhase() || action.isReportingPhase()) {
           if (projectMilestone.getAchievedValue() != null && projectMilestone.getAchievedValue() < 0) {
             action.getInvalidFields().put("input-projectOutcome.milestones[" + i + "].achievedValue",
               InvalidFieldsMessages.EMPTYFIELD);

@@ -418,3 +418,177 @@
   T05–T15, against a sum of ~875 for those tasks. **The total tripwire is likely to fire around T06**, so it is
   raised at this gate.
 - Review rounds: 4 (budget ~24).
+- **Budget decision at the T04 gate:** the owner answered "Si" to a question that offered two options for the
+  projected overrun: raise the budget to ~1,600, or stop when it is actually exceeded. The answer does not pick one,
+  so the Leader keeps the conservative default: the budget is **not** raised, and the tripwire stops the run when
+  the actual total exceeds ~1,270 LOC.
+
+### T12 — Name phases by type at global-unit creation — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1). It ran in parallel with T05, in separate worktrees with disjoint files.
+- **Requirements covered:** FN-007, INT-1 (creation part); AC FN-007 (as amended).
+- **Effort / skills:** `high`; `tdd`, `marlo-verify`.
+- **Isolation:** worktree. It started at the stale base `9a2cf412ef` and was reset to `1aeb58a763`.
+
+#### Decisions made
+
+- 2026-10-28, at the pre-spawn gate (owner, option "Confiar en M1"): creation follows DD-3 and does not tolerate the
+  typo. A pre-M1 `Planing` template phase is an unknown type and is copied unchanged. The AC for FN-007 in
+  `requirements.md` and the *Tests* line of T12 in `tasks.md` were amended to say so.
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-data/.../manager/impl/GlobalUnitCreationManagerImpl.java` (+19, LF): `createPhases` calls the new private
+    `resolvePhaseName(phase)` after description and upkeep are set. It returns `APConstants.PLANNING`, a private
+    `PROGRESS_PHASE_NAME` ("Progress") or `APConstants.REPORTING` by the `Phase` type methods; any other phase keeps
+    its trimmed copied name.
+  - `marlo-web/.../action/superadmin/GlobalUnitCreateAction.java` (+19, LF): the new private `applyPhaseTypeOfName`
+    runs at the end of `parsePhaseLine`. The names `Planning`, `Progress` and `Reporting` become
+    `Planning/false`, `Planning/true` and `Reporting/false`. Every other name keeps today's parsing.
+  - `marlo-web/src/test/.../data/manager/impl/GlobalUnitCreationPhaseNamingTest.java` (new, 5 tests, GPL header,
+    Proxy doubles that record what `savePhase` and `createGlobalUnit` receive, literal expectations).
+
+    | Case | Input | Expected |
+    |---|---|---|
+    | AICCRA, after M1 | `AWPB/Planning/0`, `Progress/Planning/1`, `AR/Reporting/0` | Planning, Progress, Reporting |
+    | AICCRA_III | `POWB/Planning/0`, `UpKeep/Planning/1`, `AR/Reporting/0` | Planning, Progress, Reporting |
+    | unknown type | `"  Pilot "/Pilot/0`, `Special/Other/0` | `Pilot`, `Special` |
+    | pre-M1 | `AWPB/Planing/0`, `AR/Reporting/0` | `AWPB` (unchanged, `Planing` kept), `Reporting` |
+    | text path | the lines `Planning`, `Progress`, `Reporting`, `Pilot` | `Planning/Planning/false`, `Progress/Planning/true`, `Reporting/Reporting/false`, `Pilot/Pilot/false` |
+- **Red before implementation (assertion level):** for example
+  `expected:<[Planning, Progress, Reporting]> but was:<[AWPB, Progress, AR]>`.
+- **Evidence re-run (non-author, Leader-inline, in the worktree at `ca236e29c9`):**
+  - the diff covers 3 files;
+  - clean compile 2415 + 1062 + 113;
+  - full suite: surefire **run 1142, fail 0, err 0, skip 0**;
+  - falsifier: manager line 549 changed to `phase.setName(phase.getName())` gives `Tests run: 5, Failures: 3`:
+    `expected:<[Planning, Progress, Reporting]> but was:<[AWPB, Progress, AR]>`, `expected:<[AWPB, Reporting]> but was:<[AWPB, AR]>` and
+    `expected:<[Planning, Progress, Reporting]> but was:<[POWB, UpKeep, AR]>`. Reverted.
+
+  **VERIFIED.**
+- **Checkstyle:** delta 0 (HEAD 3 = tree 3; the three long lines already existed).
+- **Not Done / Assumptions (verbatim from the Implementer):**
+  - "In the text path, the name decides the type even when an explicit third column is present
+    (`Progress|2027|Planning` gives `Planning/true`). The brief left this open."
+  - "For input with upkeep true and description `Reporting` (outside the allowed domain, DD-3), the manager names
+    the phase `Progress` because the check order is Planning, Progress, Reporting."
+
+  These are assumptions, not owed items, so no continuation was spawned.
+- **Reviewer verdict:** PASS (`opus`, checklist mode). Its rulings:
+  - **Assumption 1 is a spec gap, for the owner to decide.** `tasks.md` says to derive the type "for the names".
+    Honouring the third column instead would contradict itself, because the manager would then rename
+    `Planning|2027|Reporting` to `Reporting`. Raised at the T12 gate.
+  - **Assumption 2 is in scope.** It sits outside DD-3's domain and cannot be reached: on the text path, upkeep is
+    true only with `Planning`, and the template path has no `Reporting/1` row (T00, T03).
+  - A `Progress` line on the text path changing from `Progress/Progress/0` to `Progress/Planning/1` is approved
+    (tasks.md T12 files; DD-8 "both paths"; INT-1).
+- **ADVISORY:**
+  - READABILITY: `"Progress"` is written in two places (the manager constant and the action literal). A shared
+    `APConstants` constant would be a follow-up and is out of scope here.
+  - RELIABILITY: the text-path match is case-sensitive, so `progress|2027` stays an unknown type, as today. The
+    screen help could say that case matters.
+- **runtime events:** none.
+- **spawns:**
+  - implementer 30 calls, 140,237 tokens, ended partial (assumptions only);
+  - reviewer 8 calls, 56,585 tokens, ended complete.
+
+### T05 — Name-literal sites (§B, Java) with truth tables — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1). It ran in parallel with T12.
+- **Requirements covered:**
+  - FN-005 (Java name literals outside `rest/`);
+  - NF-005 with its AC, including the BUT clause;
+  - INT-3 as a class of change: the summary sites and the six year filters on the empty phase.
+- **Effort / skills:** `xhigh` (save pipeline); `tdd`, `error-handling-patterns`, `marlo-verify`.
+- **Review mode:** two Reviewers in parallel, one per lens, because the effort was `xhigh` and the save pipeline is
+  touched: (a) risk and reliability, (b) readability and resilience with test validity.
+- **Isolation:** worktree. It started at the stale base `9a2cf412ef` and was reset to `1aeb58a763`.
+
+#### Attempt 1
+
+- **Files changed (9):**
+  - `ProjectOutcomeValidator.java:191-194` (CRLF kept): becomes `action.isProgressPhase() || action.isReportingPhase()`.
+  - `OutcomesMilestonesAction.java` loop: becomes `(current.isProgressPhase() || current.isReportingPhase())`. The `current != null`
+    guard and the year clause are kept.
+  - `FundingSourcesSummaryAction.java` 498, 697, 1004 and `ProjectsFundingSourcesSummaryAction.java` 611: become
+    `getSelectedPhase().isProgressPhase()`.
+  - `ExpectedDeliverablesSummaryAction.java` 352-356: becomes `getSelectedPhase() != null && getSelectedPhase().isProgressPhase()`.
+  - `BaseAction.java`, the six year-filter sites: become `c.getPhase().isReportingPhase()`. The removed constant was `"AR"`.
+  - `PROJECT_INDICATOR_PHASE_PREVIOUS_NAME` is removed from both `APConstants.java` files. `POWB_ACRONYM` is kept (P-9).
+  - `PhaseNameSiteTruthTableTest.java` (new, 9 tests): the old expressions are copied with `file:line @9e2a9ed838`
+    and evaluated on POWB, AWPB, UpKeep, Progress, AR, the empty phase and a null phase, with literal expectations.
+    It runs the real code for the year methods, `validateProjectMilestone` and `getNextPOWBMilestone`.
+- **§B inventory:** the pre-edit counts match `call-sites.md`. After the edit, 6 sites remain:
+  - the `projectContributionCrp.ftl:539` comment;
+  - `crpPhases.ftl:227`;
+  - `deliverableMacros.ftl:367, 411` (owned by T08);
+  - the `POWB_ACRONYM` declaration and its file-name use.
+- **Red before the edit:** 4 of 9 tests failed on behavioral assertions.
+- **Evidence re-run (non-author, Leader-inline, in the worktree at `a51a7a0343`):**
+  - the diff covers 9 files;
+  - clean compile 2415 + 1062 + 113;
+  - full suite: surefire **run 1146, fail 0, err 0, skip 0**;
+  - `grep PROJECT_INDICATOR_PHASE_PREVIOUS_NAME` over marlo-web, marlo-data and marlo-utils finds 0;
+  - falsifier: `ProjectOutcomeValidator` line 193 changed to `!action.isPlanningPhase()` gives
+    `ProjectOutcomeValidator:191-194 NEW expression on empty phase expected:<NO> but was:<YES>` and the same on the
+    null phase. Reverted.
+
+  **VERIFIED.**
+- **Checkstyle:** 18 → 18, delta 0.
+- **Reviewer (a), risk and reliability:** PASS. It checked:
+  - no validator, save-pipeline or report result changes on a real phase;
+  - operator precedence and parentheses are preserved;
+  - every INT-3 case is a real INT-3 case: only the in-memory empty phase reached it, and the only catcher logged
+    the error and returned an empty list;
+  - both `APConstants` copies are in sync;
+  - the remaining `"AR"` literals are all in `rest/`.
+
+  ISSUES: none.
+- **Reviewer (b), test validity:** PASS. It checked:
+  - each copied old expression is faithful to the removed lines;
+  - every site has an empty and a null row;
+  - no expected value echoes the code under test;
+  - the proxies assert their arguments.
+
+  ISSUES: none.
+- **Recorded gap (Reviewer b; the owner sees it at the gate):** the summary sites are proven by an expression truth
+  table plus a match against the shipped source. The report builders themselves are never executed.
+- **Not Done / Assumptions (Implementer, verbatim summary):**
+  - `getNextPOWBMilestone` keeps two NPEs that exist today (`current.getNext()` can be null; the empty phase's
+    null id is unboxed to `long`). The tests pin both.
+  - A null `Phase` reference at the year infos and at the funding summaries still throws, as before.
+  - Both are left alone on purpose: they are outside INT-3's list. **Follow-up candidate (bugfix), not in this spec.**
+- **ADVISORY (recorded, no rework):**
+  - RISK: INT-3's "Known sites" list in `requirements.md` does not name the six year filters or
+    `getExpectedStudiesYears` (which now returns years instead of an empty list on a name-less info phase). Add
+    them at archive.
+  - RELIABILITY: the source-text test reads `src/main/java/...` relative to the working directory. It works under
+    Surefire but fails from an IDE or the repo root (`System.getProperty("basedir")` would fix it).
+  - RESILIENCE:
+    - in the year-method first-filter tables, the empty row tells nothing, because year -1 filters the phase out
+      whatever the type check answers; the second-filter table carries that row;
+    - the source match is brittle against `this.` removal and would miss `"UpKeep".equals(...)`.
+  - READABILITY: for `getExpectedStudiesYears`, a caught exception is shown as THROWS; a separate `SWALLOWED`
+    outcome would be clearer.
+- **runtime events:** none.
+- **spawns:**
+  - implementer 89 calls, 280,805 tokens, ended partial (assumptions only);
+  - reviewer (a) 15 calls, 85,232 tokens, ended complete;
+  - reviewer (b) 11 calls, 70,280 tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T05 and T12
+
+- Tasks closed: 7 of 16 (T00–T05, T12).
+- LOC: 716 + 676 (T05: +648 / −28) + 343 (T12) = **~1,735, against a total budget of ~1,270**. The budget for
+  T05 + T12 was 270. Most of the overrun is tests: T05's truth-table test alone is 633 lines.
+- Review rounds: 7 (budget ~24).
+- **BUDGET TRIPWIRE FIRED.** The run stops and the overrun is escalated to the owner (Step 2.4). This is never
+  `auto-approved`. Remaining tasks: T06–T11, T13–T15.
+- **Owner decisions at the tripwire stop (2026-10-28):**
+  - The LOC budget is raised to ~2,800 (`design.md` §17). Execution continues with T06.
+  - T12 text path: the name decides the type even when the line carries an explicit third column. This is
+    accepted as the owner's decision, closing the spec gap the Reviewer raised.
+  - Commit T12 and T05 as separate commits.

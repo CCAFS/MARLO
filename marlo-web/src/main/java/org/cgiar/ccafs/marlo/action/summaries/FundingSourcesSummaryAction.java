@@ -495,8 +495,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
             || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Extended.getStatusId()))
 
-            || ((this.getSelectedPhase().getName().equals("UpKeep")
-              || this.getSelectedPhase().getName().equals("Progress"))
+            || (this.getSelectedPhase().isProgressPhase()
               && pb.getProject().getProjectInfo().getStatus().intValue() == Integer
                 .parseInt(ProjectStatusEnum.Ongoing.getStatusId())
               || pb.getProject().getProjectInfo().getStatus().intValue() == Integer
@@ -694,8 +693,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
                 && d.getDeliverableInfo().getYear() == this.getSelectedYear()) && d.getDeliverableInfo().isActive()
                 // If upkeep phase is selected
                 || (d.getDeliverableInfo().getStatus() != null
-                  && (this.getSelectedPhase().getName().equals("UpKeep")
-                    || this.getSelectedPhase().getName().equals("Progress"))
+                  && this.getSelectedPhase().isProgressPhase()
                   && (((d.getDeliverableInfo().getYear() == this.getSelectedYear())
                     || (d.getDeliverableInfo().getNewExpectedYear() != null
                       && d.getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear()))))
@@ -1001,8 +999,7 @@ public class FundingSourcesSummaryAction extends BaseSummariesAction implements 
           && df.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null && (
           // If upkeep phase is selected
           (df.getDeliverable().getDeliverableInfo().getStatus() != null
-            && (this.getSelectedPhase().getName().equals("UpKeep")
-              || this.getSelectedPhase().getName().equals("Progress"))
+            && this.getSelectedPhase().isProgressPhase()
             && ((df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
               || (df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
                 && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())))
