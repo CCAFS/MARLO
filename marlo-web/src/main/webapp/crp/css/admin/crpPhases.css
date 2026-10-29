@@ -5,7 +5,7 @@
  *  - global.css paints every bare <button> Bootstrap blue with a 3px bottom
  *    border, so each control below resets that before styling itself;
  *  - the phase selector rendered by main-menu.ftl on this same page already owns
- *    .phaseRow / .phaseRow__name / .phaseRow__dates (marlo-redesign.css, section
+ *    .phaseRow / .phaseRow__name (marlo-redesign.css, section
  *    4), which is why the table rows here are .cycRow and not .phaseRow.
  *
  * Colours come from the design tokens in global/css/marlo-redesign.css; the two
@@ -302,16 +302,16 @@
 }
 
 .cycTable__inner {
-  min-width: 880px;
+  min-width: 720px;
 }
 
 /* The single source of the column geometry: header, year headers and rows all
    read it. The last three tracks are fixed because they hold controls of a known
-   size; the first three share what is left. */
+   size; the first two share what is left. */
 .cycHead,
 .cycRow {
   display: grid;
-  grid-template-columns: minmax(240px, 2.4fr) minmax(160px, 1.7fr) minmax(120px, 1.4fr) 116px 144px 68px;
+  grid-template-columns: minmax(240px, 2.4fr) minmax(120px, 1.4fr) 116px 144px 68px;
   align-items: center;
   padding: 0 16px;
 }
@@ -473,36 +473,6 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--marlo-text-muted);
-}
-
-/* Window */
-.cycRow__window {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.cycRow__dates {
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  color: var(--marlo-ink);
-}
-
-.cycRow__dates--none {
-  font-weight: 400;
-  color: var(--marlo-text-subtle);
-}
-
-.cycRow__duration {
-  font-size: 12px;
-  white-space: nowrap;
-  color: var(--marlo-text-muted);
-}
-
-.cycRow__duration--live {
-  font-weight: 500;
-  color: var(--marlo-warning-text);
 }
 
 /* Next phase */

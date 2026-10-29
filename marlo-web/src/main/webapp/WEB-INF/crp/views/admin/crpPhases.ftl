@@ -7,7 +7,7 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js" 
   ] 
 /]
-[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpPhases.css?20260916" ] /]
+[#assign customCSS = [ "${baseUrlMedia}/css/admin/crpPhases.css?20261029" ] /]
 [#assign currentSection = "admin" /]
 [#assign currentStage = "crpPhases" /]
 
@@ -23,8 +23,8 @@
 [#--
   Planning / Reporting cycles.
 
-  The screen is one table of the global unit's phases: what each one is, when its
-  window runs, what follows it, and the two switches an administrator actually
+  The screen is one table of the global unit's phases: what each one is, what
+  follows it, and the two switches an administrator actually
   owns here -- whether the phase shows on the timeline (`visible`) and whether it
   is open for editing (`editable`) -- plus the single radio that picks the landing
   phase (`defaultPhaseID`).
@@ -34,20 +34,18 @@
   version kept the two date inputs in the markup behind `display:none`, and that
   is still what happens below. They have to stay submitted -- `prepare()` clears
   `phasesAction` on POST, so Struts rebuilds each Phase from the request alone and
-  any field the form drops is written back as null.
+  any field the form drops is written back as null. The dates are not shown
+  anywhere on the row either: product asked for phase dates to be hidden across
+  the UI, so the former "Window" column is gone.
 
-  Class names are prefixed `cyc*` on purpose. `.phaseRow`, `.phaseRow__name` and
-  `.phaseRow__dates` are already taken by the phase selector
+  Class names are prefixed `cyc*` on purpose. `.phaseRow` and `.phaseRow__name`
+  are already taken by the phase selector
   (`global/pages/timeline-phases.ftl`, styled in marlo-redesign.css section 4),
   which main-menu.ftl renders on this very page.
 --]
 
 [#-- ============================== Derived data ============================== --]
-[#-- Midnight today. `.now?date` keeps the time of day, which makes a day count
-     off by up to one; formatting through yyyy-MM-dd and parsing back truncates
-     it properly. --]
-[#assign cycToday = .now?string("yyyy-MM-dd")?date("yyyy-MM-dd") /]
-[#assign cycDayMs = 86400000 /]
+[#assign cycToday = .now?date /]
 [#assign cycCurrentYear = .now?string("yyyy")?number /]
 [#assign cycPhases = (phasesAction)![] /]
 [#assign cycTotal = cycPhases?size /]
@@ -180,7 +178,6 @@
 
                 <div class="cycHead" role="row">
                   <span class="cycHead__cell">[@s.text name="crpPhases.column.phase" /]</span>
-                  <span class="cycHead__cell">[@s.text name="crpPhases.column.window" /]</span>
                   <span class="cycHead__cell">[@s.text name="crpPhases.column.nextPhase" /]</span>
                   [#-- Short column headings, not the field labels. `projectPhases.visible`
                        ("Display on timeline") wraps to two lines at this width and would
@@ -225,18 +222,6 @@
                              field is saved as null. --]
                         [#assign yearLimit = 2018 /]
                         [#assign canOpenClose = ((phase.year > yearLimit) && !((phase.year == (yearLimit + 1)) && (phase.name == "POWB"))) || cycIsOpen /]
-                        [#assign cycHasDates = (phase.startDate)?? && (phase.endDate)?? /]
-                        [#if cycHasDates]
-                          [#assign cycStart = phase.startDate?date /]
-                          [#assign cycEnd = phase.endDate?date /]
-                          [#assign cycLive = (cycStart?long <= cycToday?long) && (cycEnd?long >= cycToday?long) /]
-                          [#assign cycFuture = cycStart?long > cycToday?long /]
-                          [#-- AICCRA has rows whose end_date precedes their start_date (429, 426
-                               and 427 as of this writing). The window is still worth showing --
-                               it is how an administrator spots the bad data -- but a span of
-                               "-259 days" is not, so the count is dropped when it is negative. --]
-                          [#assign cycSpan = ((cycEnd?long - cycStart?long) / cycDayMs)?round /]
-                        [/#if]
 
                         <div id="crpPhase-${phase.id?c}"
                           class="cycRow cycRow--${cycTone(phase)}[#if cycIsOpen] is-open[/#if][#if cycIsLanding] is-landing[/#if]"
@@ -264,26 +249,6 @@
                                 class="cycBadge cycBadge--landing">[@s.text name="crpPhases.column.landing" /]</span></span>
                               <span class="cycRow__meta">#${phase.id?c} &middot; ${(phase.description)!} &middot; ${(phase.crp.acronym)!}</span>
                             </span>
-                          </div>
-
-                          [#-- Window --]
-                          <div class="cycRow__cell cycRow__window">
-                            [#if cycHasDates]
-                              <span class="cycRow__dates">${cycStart?string("d MMM yyyy")} &ndash; ${cycEnd?string("d MMM yyyy")}</span>
-                              [#if cycLive || cycFuture || (cycSpan >= 0)]
-                                <span class="cycRow__duration[#if cycLive] cycRow__duration--live[/#if]">
-                                  [#if cycLive]
-                                    [@s.text name="crpPhases.window.daysLeft"][@s.param]${(((cycEnd?long - cycToday?long) / cycDayMs)?round)?c}[/@s.param][/@s.text]
-                                  [#elseif cycFuture]
-                                    [@s.text name="crpPhases.window.opensIn"][@s.param]${(((cycStart?long - cycToday?long) / cycDayMs)?round)?c}[/@s.param][/@s.text]
-                                  [#else]
-                                    [@s.text name="crpPhases.window.days"][@s.param]${cycSpan?c}[/@s.param][/@s.text]
-                                  [/#if]
-                                </span>
-                              [/#if]
-                            [#else]
-                              <span class="cycRow__dates cycRow__dates--none">[@s.text name="crpPhases.window.none" /]</span>
-                            [/#if]
                           </div>
 
                           [#-- Next phase --]

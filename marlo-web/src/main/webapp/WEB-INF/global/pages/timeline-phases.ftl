@@ -77,9 +77,6 @@
           [#if isCurrent]disabled="disabled"[/#if]>
           <span class="phasePill__text">
             <span class="phasePill__name">${(phase.composedName)!}</span>
-            [#if (phase.endDate)??]
-              <span class="phasePill__dates">[@s.text name="phaseSelector.endsOn"][@s.param]${phase.endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
-            [/#if]
           </span>
           [@phaseBadge status=status solid=isCurrent /]
           [#if isCurrent]
@@ -121,9 +118,6 @@
                     [#if isCurrent]disabled="disabled"[/#if]>
                     <span class="phaseRow__text">
                       <span class="phaseRow__name">${(phase.composedName)!}[#if isCurrent]<em>[@s.text name="phaseSelector.currentlyLoaded" /]</em>[/#if]</span>
-                      [#if (phase.startDate)?? && (phase.endDate)??]
-                        <span class="phaseRow__dates">${phase.startDate?date?string("dd MMM")} &ndash; ${phase.endDate?date?string("dd MMM yyyy")}</span>
-                      [/#if]
                     </span>
                     [@phaseBadge status=status /]
                   </button>
