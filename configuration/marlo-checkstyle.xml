@@ -13,6 +13,14 @@
 			<property name="max" value="3500" />
 		</module>
 
+		<!-- Excludes rest/ from the PhaseNameLiteral rule (NF-006). The path is relative to the directory Checkstyle is
+		     started from (the repository root); optional, so a run from elsewhere still works and only loses the
+		     rest/ exclusion, which can then over-report, never under-report. -->
+		<module name="SuppressionFilter">
+			<property name="file" value="configuration/marlo-checkstyle-suppressions.xml"/>
+			<property name="optional" value="true"/>
+		</module>
+
 		
 		<module name="TreeWalker">
 	
@@ -68,17 +76,39 @@
 			isProgressPhase() and isReportingPhase() (and the same methods on BaseAction), never from a phase name.
 			The old name-based methods and their setters were removed and must not be declared or called again. -->
 			<module name="RegexpSinglelineJava">
+				<property name="id" value="RemovedPhaseTypeMethod"/>
 				<property name="format" value="\b(isPOWB|isAWPBActive|isPlanningActive|isProgressActive|isUpKeepActive|isReportingActive|setPlanningActive|setReportingActive)\s*\("/>
 				<property name="ignoreComments" value="true"/>
 				<property name="message" value="Removed phase type method: use isPlanningPhase(), isProgressPhase() or isReportingPhase() (ENH-PHASE-TYPE-UNIFICATION-001, FN-005)."/>
 			</module>
 
-			<!-- Lets the deprecated phase aliases in BaseAction (and their alias test) opt out of the rule above. Only the
-			     RegexpSinglelineJava check can be silenced, only by these two exact markers, only on the commented line.
-			     T11b removes the aliases and this filter. -->
+			<!-- ENH-PHASE-TYPE-UNIFICATION-001 NF-006: a phase's name is free text (FN-005 removed every decision that
+			read it), so a phase-named receiver's getName() must not be compared with a string literal or a constant:
+			x.getName().equals("..."), .equalsIgnoreCase("..."), .equals(CONSTANT), getName() == "..." / != "...", and
+			"...".equals(x.getName()). A phase-named receiver is an expression whose last segment before .getName()
+			contains Phase/phase (getActualPhase(), phase, currentPhase, getPhase()). Not flagged: null checks
+			(getName() != null), name-to-name comparisons (c.getName().equalsIgnoreCase(dto.getPhase().getName())),
+			display and concatenation, and receivers that are not phase-named (GlobalUnitCreateAction.applyPhaseTypeOfName).
+			The rule sees one line at a time, so these forms are NOT caught (known, deliberately not widened): a
+			comparison split across lines, Objects.equals / StringUtils.equals(phase.getName(), "X"), switch (phase.getName()),
+			.trim() / .toUpperCase() before .equals, receivers with arguments (getPhase(id).getName()), and a name stored in a
+			variable first. The rule covers main sources outside rest/: rest/ and src/test are excluded through
+			marlo-checkstyle-suppressions.xml (id below). Use Phase#isPlanningPhase()/isProgressPhase()/isReportingPhase(). -->
+			<module name="RegexpSinglelineJava">
+				<property name="id" value="PhaseNameLiteral"/>
+				<property name="format" value="\w*[Pp]hase\w*(?:\(\))?\.getName\(\)\s*(?:==|!=)\s*(?:&quot;|(?:\w+\.)?[A-Z][A-Z0-9_]+\b(?![\w(.]))|\w*[Pp]hase\w*(?:\(\))?\.getName\(\)\s*\.equals(?:IgnoreCase)?\(\s*(?:&quot;|(?:\w+\.)?[A-Z][A-Z0-9_]+\s*\))|(?:&quot;[^&quot;]*&quot;|\b(?:\w+\.)?[A-Z][A-Z0-9_]+)\s*(?:\.equals(?:IgnoreCase)?\(|==|!=)\s*(?:\w+(?:\(\))?\.)*\w*[Pp]hase\w*(?:\(\))?\.getName\(\)"/>
+				<property name="ignoreComments" value="true"/>
+				<property name="message" value="Do not compare a phase name with a literal or a constant: use isPlanningPhase(), isProgressPhase() or isReportingPhase() (ENH-PHASE-TYPE-UNIFICATION-001, NF-006)."/>
+			</module>
+
+			<!-- Lets the deprecated phase aliases in BaseAction (and their alias test) opt out of the FN-005 rule above
+			     (id RemovedPhaseTypeMethod) only. Both RegexpSinglelineJava modules share the check class name, and in
+			     Checkstyle 8.18 a class-name match decides before messageFormat is read, so checkFormat targets the module
+			     id instead: the NF-006 rule (PhaseNameLiteral) can never be silenced by these markers. Only by these two exact
+			     markers, only on the commented line. T11b removes the aliases and this filter. -->
 			<module name="SuppressWithNearbyCommentFilter">
 				<property name="commentFormat" value="CHECKSTYLE\.OFF\: RegexpSinglelineJava - (deprecated alias until T11b|alias under test)"/>
-				<property name="checkFormat" value="RegexpSinglelineJava"/>
+				<property name="checkFormat" value="^RemovedPhaseTypeMethod$"/>
 				<property name="influenceFormat" value="0"/>
 			</module>
 

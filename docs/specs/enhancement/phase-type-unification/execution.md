@@ -1357,3 +1357,68 @@ Owner question: "¿ya soy libre de modificar `name`?" Run on `6c4880ff5c`, `orig
 `ExpectedDeliverablesSummaryAction:356`, `deliverableMacros.ftl:367, 411`. `origin/dev` has the same, plus the
 redesign's `deliverableMacros.ftl:385` (`actualPhase.name != 'Progress' && !redesign`), which the `dev` merge
 must convert. Nothing in the NF-003 rule stops a new one, hence NF-006 / T16 (requirements §9, 2026-10-29).
+
+## T16 — Gate against new phase-name literals (NF-006)
+
+- **Date:** 2026-10-29 · **Worktree:** `MARLO-t16`, branch `phase-type-unification-t16` from `2821305719` (the main
+  checkout runs another session's server) · **Implementer:** akili-implementer (sonnet) · **Reviewer:**
+  akili-reviewer (opus) · **Result:** PASS, attempt 3.
+- **Persona drift:** `akili doctor --agents` reported unmarked sections; the fix is a shared-file edit, pending on
+  `staging` (W8). The checkpoint bounds were stated in the brief.
+
+**Files:**
+- `configuration/marlo-checkstyle.xml`:
+  - second `RegexpSinglelineJava` rule, `id="PhaseNameLiteral"`: a phase-named receiver's `getName()` compared
+    with a literal or a constant, both orders; comment lists the known non-caught forms (split lines,
+    `Objects.equals` / `StringUtils.equals`, `switch`, `.trim()` / case change before `.equals`, receivers with
+    arguments, a name held in a variable);
+  - the NF-003 rule now has `id="RemovedPhaseTypeMethod"`, and the T11a `SuppressWithNearbyCommentFilter` matches
+    `checkFormat="^RemovedPhaseTypeMethod$"`. The marker text is unchanged.
+- `configuration/marlo-checkstyle-suppressions.xml` (new, loaded by a `SuppressionFilter` with `optional=true`):
+  `PhaseNameLiteral` suppressed in `rest/` and `src/test` only.
+- `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/PhaseNameLiteralFtlTest.java` (new, 4 tests): scans every
+  `src/main/webapp/**/*.ftl` for a phase `name` compared with a quoted literal (`==`, `!=`, and a single `=`
+  inside `[#if` / `[#elseif`); one allowance, `crpPhases.ftl` `(phase.name == "POWB")`, matched by file and
+  content and required to match exactly one line.
+
+**Attempts:**
+1. Implementer DONE. Reviewer **FAIL**: the rule sat under the NF-003 `SuppressWithNearbyCommentFilter`, whose
+   `checkFormat` matched the shared class name, so the alias markers also silenced NF-006 (DD-9 "only from that
+   check"). Advisories: FTL single `=`, list the Java blind spots, document the allowance scope.
+2. Implementer DONE. `messageFormat` cannot narrow the filter in 8.18 (`SuppressWithNearbyCommentFilter$Tag.isMatch`
+   returns on a class-name match before reading it), so the rule got an id and the filter matches the id.
+   Leader re-run **MISMATCH**: the rule also flagged test code,
+   `PhaseNameSiteTruthTableTest.java:137` (`infoPhase.getName().equals("AR")`, a deliberate fixture); NF-006
+   scopes the gate to main sources.
+3. Implementer DONE: `src/test` suppressed for `PhaseNameLiteral` only. Leader re-run VERIFIED. Reviewer **PASS**.
+
+**Evidence:**
+- Seeded reds: Java `LoginAction.java:53: Do not compare a phase name with a literal or a constant: … [PhaseNameLiteral]`
+  (the same seed under `rest/` not reported); FTL `java.lang.AssertionError: A template compares a phase name with
+  a literal (NF-006); …: [WEB-INF/global/macros/zzSeed.ftl:1]`. Seeds removed.
+- Real sites caught (extracted with `git show`): `origin/staging` `BaseAction` 6369/6370, 7761/7762 (and the six
+  year filters 3966, 3982, 4230, 4243, 4584, 4597), `ProjectOutcomeValidator` 193/194, `FundingSourcesSummaryAction`
+  498/499, 697/698, 1004/1005, `ProjectsFundingSourcesSummaryAction` 611/612, `ExpectedDeliverablesSummaryAction`
+  354/356; FTL `deliverableMacros.ftl` staging 367, 411 and `origin/dev` 385, 429. Staging extracts plus variants:
+  31 `[PhaseNameLiteral]`.
+- Not reported: `ProjectExpectedStudiesValidator:760, 774` (null checks), `rest/` name-to-name lookups,
+  `DeliverablesParticipantsSummaryAction:138`, the evidence summaries' `fileName.append(…getName())`,
+  `GlobalUnitCreateAction.applyPhaseTypeOfName`, FTL display uses.
+- Leader probe (scratch file): marker + `phase.getName().equals("AR")` → `[PhaseNameLiteral]`; marker + `isPOWB()` →
+  exempt; `isPOWB()` without marker, or with the suffix `T11c` → `[RemovedPhaseTypeMethod]`. `// CHECKSTYLE.OFF:
+  LineLength` does not silence LineLength.
+- Falsifier: the `crpPhases.ftl` lock line altered → `the crpPhases.ftl 2019 lock exception must match exactly one
+  line expected:<1> but was:<0>`; restored.
+- Gates: clean compile 2415 / 1062 / 115 test files, Maven exit 0; tests with `-am` 1164 run, 0 failures, 0 errors
+  (1160 + 4); the new class re-run after a Javadoc wrap, 4 / 0; Checkstyle over all Java in `marlo-web/src/main`,
+  `marlo-data/src/main` and `marlo-web/src/test`: 0 `[PhaseNameLiteral]`, 0 `[RemovedPhaseTypeMethod]`; delta of
+  the new test file 0. Attempts 2 and 3 changed only XML and the test's Javadoc after the full compile/test run.
+
+**ADVISORY (open):**
+- **Label change:** NF-003 violations now print `[RemovedPhaseTypeMethod]`, not `[RegexpSinglelineJava]`. A
+  re-validation must count `[RemovedPhaseTypeMethod]` and `[PhaseNameLiteral]`; repeating the old
+  `RegexpSinglelineJava` count of `validation-report.md` would read 0 regardless.
+- `.claude/skills/marlo-verify/scripts/checkstyle.sh` does not `cd` to the repo root; run from a subdirectory, the
+  relative suppressions file is missed and the run over-reports (`rest/`, `PhaseNameSiteTruthTableTest:137`), never
+  under-reports. Fix on `staging` (shared tooling).
+- `tasks.md` T11a filter bullet names the check by class ("only `RegexpSinglelineJava`"); reword at archive.

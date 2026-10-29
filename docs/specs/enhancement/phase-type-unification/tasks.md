@@ -433,7 +433,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `playwright-cli`.
 
 ### T16 — Gate against new phase-name literals (NF-006)
-- **Status:** pending · **Size:** S · **Depends on:** T11 · **Module:** marlo-web + `configuration/`
+- **Status:** [x] done (2026-10-29, PASS attempt 3; `execution.md` T16) · **Size:** S · **Depends on:** T11 · **Module:** marlo-web + `configuration/`
 - **Requirements:** NF-006, AC NF-006 (all clauses); defect class D11.
 - **Design refs:** DD-9 (same Checkstyle approach as NF-003); requirements §9, 2026-10-29 "Guard the free name".
 - **Files touched:**
@@ -519,7 +519,7 @@ parallel with T05–T10.
 - [x] Both migrations pass their 8 scenarios; `marlo-migration` checklist reported. (`validation-report.md` MIG-001 / MIG-002 PASS: 8 scenarios recorded, auditor reproduced 1 and 2; T15 Flyway rehearsal.)
 - [x] OQ1–OQ4 answered and recorded. (`execution.md` "Open questions answered" and T15; OQ4 on the local copies by owner exception, production run on release day, W1 / W2.)
 - [ ] Constitutional checklist of `requirements.md` §7 confirmed in the PR. (at PR)
-- [ ] T16 done and re-validated (NF-006 added after validation, requirements §9, 2026-10-29).
+- [ ] T16 done and re-validated (NF-006 added after validation, requirements §9, 2026-10-29). (T16 done; re-validation pending.)
 - [x] `575a1c7aff` either on `origin/staging` or removed from the branch before the PR. (On `origin/staging`, verified 2026-10-29.)
 
 ## 9. Estimate and PR Strategy
