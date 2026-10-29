@@ -114,7 +114,7 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
           acronym = "Cluster Coordinator";
           break;
         case "PMU":
-          acronym = "PMC";
+          acronym = "PIU";
           break;
 
         case "FPL":
