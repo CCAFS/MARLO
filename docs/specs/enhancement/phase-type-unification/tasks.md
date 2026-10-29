@@ -3,7 +3,7 @@
 **Spec ID:** ENH-PHASE-TYPE-UNIFICATION-001
 **Status:** Draft
 **Owner:** IBD Team — Kenji Tanaka
-**Last Updated:** 2026-10-28
+**Last Updated:** 2026-10-29
 **Implements design:** docs/specs/enhancement/phase-type-unification/design.md (Judgment Day: `judgment.md`, escalated, then FJ-1..FJ-3 fixed and not re-judged)
 **Branching:** `phase-type-unification`, from `staging` (`575a1c7aff`); no upstream set; first push `git push -u origin phase-type-unification`.
 **Target merge:** staging.
@@ -27,8 +27,8 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 
 - [x] `requirements.md` and `design.md` written; design reviewed by Judgment Day (`judgment.md`).
 - [x] Feature branch `phase-type-unification` exists, from `staging` `575a1c7aff`.
-- [ ] `575a1c7aff` (template fix from another session) pushed to `origin/staging`, or removed from this branch before the PR (owner).
-- [ ] T00 production check done before T03 (OPS-003).
+- [x] `575a1c7aff` (template fix from another session) pushed to `origin/staging`, or removed from this branch before the PR (owner). On `origin/staging`, verified 2026-10-29 (`git merge-base --is-ancestor 575a1c7aff origin/staging` → yes; it is the merge base).
+- [x] T00 production check done before T03 (OPS-003). Done under the owner exception, on the local copies (`execution.md` T00); the production run stays a release-day item (`validation-report.md` W1).
 - [x] OQ2 (external `phases.name` readers) and OQ3 (QA view) answered before T13 (2026-10-29; `execution.md` "Open questions answered").
 
 ## 3. Task List
@@ -318,7 +318,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Tests:** compile gate; full test suite with `-am`.
 - **Verification:**
   - the AC FN-005 grep set returns only the §A3 identifiers;
-  - the phase-name literal grep (`getName()` on phases in Java, `.name` on phase variables in FTL) returns only `crpPhases.ftl:227` and display uses.
+  - the phase-name literal grep (`getName()` on phases in Java, `.name` on phase variables in FTL) returns only `crpPhases.ftl:227`, `GlobalUnitCreateAction:499` (parsing for a new phase, FN-007; requirements §9, 2026-10-29) and display uses.
 - **Falsifier:** re-add `public boolean isPOWB()` and a call → Checkstyle red. Remove the rule → green, which proves the rule is the gate.
 - **Red run:** `predicted — greenfield artifact (observed in T11)`.
 - **Disqualifier:** a Checkstyle run through `mvn checkstyle:check` is not evidence; it cannot run here (`marlo-verify`).
@@ -461,14 +461,14 @@ parallel with T05–T10.
 
 ## 8. Definition of Done
 
-- [ ] Every coverage-map row closed by its task, with the evidence quoted in `execution.md`.
-- [ ] Every falsifier observed red and quoted; every predicted red replaced by the observed one.
-- [ ] Compile gate, Checkstyle delta (with the new rule) and the test suite with `-am` green at the end.
-- [ ] HTML diffs clean for T08–T10, except INT-2.
-- [ ] Both migrations pass their 8 scenarios; `marlo-migration` checklist reported.
-- [ ] OQ1–OQ4 answered and recorded.
-- [ ] Constitutional checklist of `requirements.md` §7 confirmed in the PR.
-- [ ] `575a1c7aff` either on `origin/staging` or removed from the branch before the PR.
+- [x] Every coverage-map row closed by its task, with the evidence quoted in `execution.md`. (`validation-report.md` §6: every requirement and clause has an owner task and evidence; reach gaps W3 / W4 recorded.)
+- [x] Every falsifier observed red and quoted; every predicted red replaced by the observed one. (`validation-report.md` §9: falsifiers T01–T15 observed red, recorded per task.)
+- [x] Compile gate, Checkstyle delta (with the new rule) and the test suite with `-am` green at the end. (`validation-report.md` §5: compile 2415 / 1062, 1159 tests, Checkstyle 86 → 86, re-run by the auditor.)
+- [x] HTML diffs clean for T08–T10, except INT-2. (`execution.md` T08–T10: 186 pages `IDENTICAL` per batch; INT-2 shown in the T15 browser check; reach gaps W4.)
+- [x] Both migrations pass their 8 scenarios; `marlo-migration` checklist reported. (`validation-report.md` MIG-001 / MIG-002 PASS: 8 scenarios recorded, auditor reproduced 1 and 2; T15 Flyway rehearsal.)
+- [x] OQ1–OQ4 answered and recorded. (`execution.md` "Open questions answered" and T15; OQ4 on the local copies by owner exception, production run on release day, W1 / W2.)
+- [ ] Constitutional checklist of `requirements.md` §7 confirmed in the PR. (at PR)
+- [x] `575a1c7aff` either on `origin/staging` or removed from the branch before the PR. (On `origin/staging`, verified 2026-10-29.)
 
 ## 9. Estimate and PR Strategy
 
@@ -491,7 +491,7 @@ parallel with T05–T10.
 | T14 | 30 |
 | **Total shipped** | **~1,270** |
 
-**PR strategy:** about 1,270 LOC, above the ~400-LOC guideline. Five chained PRs to `staging`:
+**PR strategy (original plan, kept for the record):** about 1,270 LOC, above the ~400-LOC guideline. Five chained PRs to `staging`:
 1. PR 1: T01 (M1), independent.
 2. PR 2: T02–T05 (contract, tests, name-literal sites).
 3. PR 3: T06–T10 (call-site migration, HTML-diff evidence).
@@ -499,3 +499,9 @@ parallel with T05–T10.
 5. PR 5: T13 (M2), released last.
 
 Each PR description says what to review first and links the previous and next PR.
+
+**Actual (2026-10-29):** one branch (`phase-type-unification`) and one PR to `staging`, not five. The budget was
+raised twice by the owner (~2,800, then ~3,500 at T09; `design.md` §17). Measured size against the merge base
+`575a1c7aff`: 2,181 insertions + 517 deletions = **2,698 lines** in 134 files (code, tests, config and the epic doc)
+plus 320 lines of HTML harness = **3,018**. Command and counts: `design.md` §17. The PR description should say what to
+review first (design.md §17 and the migrations) and that M1 ships with or before the code and M2 after it (OPS-001).

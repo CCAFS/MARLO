@@ -3,7 +3,7 @@
 **Spec ID:** ENH-PHASE-TYPE-UNIFICATION-001
 **Status:** Draft
 **Owner:** IBD Team — Kenji Tanaka
-**Last Updated:** 2026-10-28
+**Last Updated:** 2026-10-29
 **Depth:** Full
 **Verified at:** commit `9e2a9ed838` unless a row says otherwise
 **Requirements:** `requirements.md` · **Call-site inventory:** `call-sites.md` (generated evidence for the Premise Ledger)
@@ -304,8 +304,23 @@ with no build.
 |---|---|
 | Tasks | 16 (`tasks.md` T00–T15; T00 and T07 were split out at decomposition: the production check and the HTML harness) |
 | Files | ~135 in total (RJ-3):<br>- 117 in `call-sites.md` §A1<br>- 5 more from §B<br>- 4 not in either list: `Phase.java`, `GlobalUnitCreationManagerImpl.java`, `GlobalUnitCreateAction.java`, marlo-data `APConstants.java`<br>- ~9 new or support files: Checkstyle config, 2 migrations, ~4 tests, ~2 docs |
-| LOC changed | **~3,500 (raised again 2026-10-28 by the owner when the tripwire fired after T09 at ~2,823; the FTL batches grew the HTML harness to 114 pages). Before that ~2,800 (raised 2026-10-28 when the tripwire fired after T05/T12 at ~1,735 actual; the overrun is test code).** First budget: ~1,270 shipped, the per-task sum in `tasks.md` §9. Tests are a large part (~460 across T02, T03, T05, T12). The design-time figure of ~1,015 undercounted the tests |
+| LOC changed | **~3,500 (raised again 2026-10-28 by the owner when the tripwire fired after T09 at ~2,823; the FTL batches grew the HTML harness: 114 pages at T09, 186 at T10; the harness now has 186). Before that ~2,800 (raised 2026-10-28 when the tripwire fired after T05/T12 at ~1,735 actual; the overrun is test code).** First budget: ~1,270 shipped, the per-task sum in `tasks.md` §9. Tests are a large part (~460 across T02, T03, T05, T12). The design-time figure of ~1,015 undercounted the tests |
 | Review rounds | ~24 (1.5 per task; the FTL batches T08–T10 may need 2 each for the HTML diff) |
+
+**Measured at close (2026-10-29).** Base `575a1c7aff` (`git merge-base origin/staging HEAD`), HEAD `d50883cd86`:
+
+| Count | Command | Result |
+|---|---|---|
+| Code, tests, config and the epic doc, spec folder excluded | `git diff --shortstat 575a1c7aff..HEAD -- . ':!docs/specs/enhancement/phase-type-unification'` | 134 files, +2,181 / −517 = **2,698** |
+| HTML harness | `git diff --shortstat 575a1c7aff..HEAD -- docs/specs/enhancement/phase-type-unification/harness` | 4 files, +320 |
+| **Total counted** | the two rows added | **3,018**, under the ~3,500 budget |
+| Same, without the epic doc (`:!docs`) | `git diff --shortstat 575a1c7aff..HEAD -- . ':!docs'` | 133 files, +2,165 / −515 = 2,680 |
+| Spec documents (not counted) | `git diff --shortstat 575a1c7aff..HEAD -- docs/specs/enhancement/phase-type-unification` | 11 files, +3,984 |
+| Harness pages | `grep -c '^[^#]' harness/pages.txt` | **186** (the file has 196 lines; 10 are comments or blanks) |
+
+Files: 134 outside the spec folder (133 under `marlo-*` and `configuration/`, plus the epic doc
+`docs/specs/epic/phase-topology/agent-context.md`) and 4 harness files, which agrees with the ~135 expected. LOC is
+insertions plus deletions as `git diff --shortstat` reports them.
 
 The declared depth, Full, matches. The large LOC count is volume, not complexity: most of it is the closed
 replacement table.

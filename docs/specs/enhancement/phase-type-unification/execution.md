@@ -1138,7 +1138,8 @@ Run in this order, in the release window, with T04–T11 deployed in the same re
 ### T15 — Manual QA and release HITL — PASS (owner-confirmed)
 
 - **Date:** 2026-10-29
-- **Status:** `[~]`, waiting on owner items (screenshot confirmation, OQ1, OQ4 part 2 on production).
+- **Status:** `[x]` done 2026-10-29 (was `[~]` while waiting on the owner items below: screenshot confirmation, OQ1,
+  OQ4 part 2, all confirmed or run on the local copies, see "Owner confirmations" and "OQ4 part 2").
 - **Isolation:** worktree `../MARLO-t15` (detached at `6e6df17d0c`), not committed; local-only edits: `marlo-web/pom.xml`
   ports 8081 / 8444 / RMI 8206 / AJP 8010, and its `marlo-dev.properties` on `zz_t07_actsave`, URLs on 8081, autosave
   folder in the scratchpad. Built with `package` (no `install`, `~/.m2` untouched); started with `cargo:run` directly
@@ -1226,3 +1227,21 @@ Same exception as T00 ("Hazlo localmente ya que es una copia de prod"); read-onl
 
 - Tasks closed: 16 of 16.
 - LOC: **~3,287, against ~3,500**.
+
+### Measured totals (2026-10-29, post-validation)
+
+The running totals above are kept as they were written. The close figure of **~3,287 overstates the size**; the
+measured total is **3,018** lines (`validation-report.md` §8, W7), against the ~3,500 budget.
+
+- **Base and HEAD:** merge base `575a1c7aff` (`git merge-base origin/staging HEAD`), HEAD `d50883cd86`.
+- **Code, tests, config and the epic doc:** `git diff --shortstat 575a1c7aff..HEAD -- . ':!docs/specs/enhancement/phase-type-unification'`
+  → `134 files changed, 2181 insertions(+), 517 deletions(-)` = 2,698.
+- **HTML harness:** `git diff --shortstat 575a1c7aff..HEAD -- docs/specs/enhancement/phase-type-unification/harness`
+  → `4 files changed, 320 insertions(+)`.
+- **Total:** 2,698 + 320 = **3,018**. Without the harness and the epic doc (`:!docs`): 2,680.
+- **Why the estimate was higher (likely, not itemized per task):** it summed per-task figures, `~` estimates
+  included. A file that several tasks edited (`BaseAction.java` in T04, T05 and T06, for one) was counted once per
+  task, and a line rewritten by a later task was counted twice. The net diff against the base counts each line once.
+  The T10 running total (~3,018) happens to equal the final measure; the T11, T13 and T14 additions (+194, +60, +15)
+  were not matched by growth in the diff.
+- **Harness pages:** 186 (`grep -c '^[^#]' harness/pages.txt`); `design.md` §17 said 114, which was the T09 figure.

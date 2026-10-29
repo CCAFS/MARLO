@@ -4,7 +4,7 @@
 **Status:** Draft
 **Owner:** IBD Team — Kenji Tanaka
 **Reviewers:** IBD team lead, PMU lead, QA lead, Tech lead
-**Last Updated:** 2026-10-28
+**Last Updated:** 2026-10-29
 **Type:** Change · **Deliverable:** software · **Depth:** Full (cross-cutting, data migration, 421 sites in 117 files per `call-sites.md` §A1)
 **Approval Mode:** gated
 **Source:** `proposal.md` in this folder (committed `9e2a9ed838`)
@@ -88,7 +88,11 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   - `Phase.isReporting()` with a null `description`;
   - `CanEditPowbSynthesisInterceptor:112`, which unboxes `getActualPhase().getUpkeep()`;
   - `deliverableMacros.ftl:367, 411` (`actualPhase.name != 'Progress'`) on a null actual phase;
-  - summary sites that call `getSelectedPhase().getName().equals(…)` on a null name (`FundingSourcesSummaryAction:498, 697, 1004`, `ProjectsFundingSourcesSummaryAction:611`).
+  - summary sites that call `getSelectedPhase().getName().equals(…)` on a null name (`FundingSourcesSummaryAction:498, 697, 1004`, `ProjectsFundingSourcesSummaryAction:611`);
+  - the six year filters in `BaseAction`, which read `c.getPhase().getName()` on an info phase today and now ask
+    `isReportingPhase()` (`getExpectedStudiesYears:3958, 3974`, `getInnovationsYears:4222, 4235`,
+    `getPoliciesYears:4576, 4589`). `getExpectedStudiesYears` catches the exception today and returns an empty
+    list; on a name-less info phase it now returns the years (added 2026-10-29).
 
   A site with a null guard today keeps answering `false`, never `true`, when the guard fails (NF-005).
 - **INT-4** — DA-001 repairs data: the `Planing` phases become recognized as plan or progress phases. On the
@@ -112,8 +116,10 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-004 — Asking the type of any phase object, including one with a null
   `description`, null `upkeep` or null `name`, MUST NOT throw.
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-005 — After the migration, no code in `marlo-web/src/main` outside `rest/`
-  MAY decide a phase's type by comparing its `name` with a literal or a constant. Exception: the 2019 lock in
-  `crpPhases.ftl:227` stays as it is (§9, 2026-10-28). The old type methods and the write-only
+  MAY decide a phase's type by comparing its `name` with a literal or a constant. Exceptions: the 2019 lock in
+  `crpPhases.ftl:227` stays as it is (§9, 2026-10-28), and `GlobalUnitCreateAction.applyPhaseTypeOfName`
+  (`"Progress".equals(input.getName())`, `:499`), which parses the admin-typed name into the type of a NEW phase
+  and never classifies an existing one (FN-007, §9, 2026-10-29). The old type methods and the write-only
   `planningActive` / `reportingActive` fields and setters MUST no longer exist.
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-006 — The plan, progress and reporting phases of every unit after AICCRA
   MUST be named `Planning`, `Progress` and `Reporting`. AICCRA's phases and those of every earlier unit MUST
@@ -265,7 +271,8 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
 - And no FTL local, assign or macro parameter MUST still carry an old name (`call-sites.md` §A2 renamed with its
   callers),
 - And adding a call to a removed method in a Java file MUST fail Checkstyle,
-- AND IT MUST be shown that no phase-name literal decides a type outside `rest/` and `crpPhases.ftl:227`, by a
+- AND IT MUST be shown that no phase-name literal decides a type outside `rest/`, `crpPhases.ftl:227` and
+  `GlobalUnitCreateAction:499` (parsing for a new phase, FN-007), by a
   grep for `getName()` on phase objects and `.name` on phase variables in FTL, as run.
 
 **AC for FN-006, DA-002:**
@@ -437,3 +444,14 @@ command in this repo can see it. It is asked of the BI owner (§8 OQ2) before DA
   The code is unchanged; the three spec tensions are recorded in `execution.md` T03. Closure sweep: `each MUST
   return` and `for every phase whose` were grepped across this folder. The only hit left is the amendment note
   itself, which quotes the old wording.
+- 2026-10-29 — Post-validation corrections (`validation-report.md` W5), spec text brought up to the code; no code
+  change:
+  - INT-3 "Known sites" now names the six `BaseAction` year filters (`getExpectedStudiesYears`,
+    `getInnovationsYears`, `getPoliciesYears`, two sites each). They were converted in T05 and recorded as an
+    advisory in `execution.md` T05.
+  - FN-005 and its AC now list `GlobalUnitCreateAction:499` beside `crpPhases.ftl:227`. It is the owner-approved T12
+    parsing of the typed name into the type of a new phase (FN-007), not a classification of an existing phase.
+
+  Closure sweep: `crpPhases.ftl:227` and `Known sites` were grepped across this folder. Aligned: `requirements.md`
+  FN-005, its AC and INT-3; `design.md` §2 and DD-7; `tasks.md` T11 verification. Left as history: `execution.md`
+  T05 and T11 entries, `judgment.md`, `proposal.md`, `validation-report.md`.
