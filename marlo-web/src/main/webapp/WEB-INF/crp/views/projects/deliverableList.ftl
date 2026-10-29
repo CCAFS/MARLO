@@ -41,7 +41,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-    <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if] </p>
+    <p class="col-md-10">[#if reportingPhase] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -71,7 +71,7 @@
       </div>
     </div>
     <div class="containerText col-md-12">
-      <p class="alertText">[#if reportingActive] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if]</p>
+      <p class="alertText">[#if reportingPhase] [@s.text name="project.deliverableList.help2" /] [#else] [@s.text name="project.deliverableList.help1" /] [/#if]</p>
     </div>
     <div  class="viewMoreCollapse closed"></div>
   </div>
@@ -118,7 +118,7 @@
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]
 
           <h3 class="headTitle">[@s.text name="project.deliverableList.title" /]</h3>
-          [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination")]
+          [#if (reportingPhase || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination")]
             [#--  FAIR LEGEND --]
             <div class="form-group col-md-12 legendContent">
               <div class="col-md-12 fairDiagram" >[@s.text name="project.deliverableList.fairExplanation" /] </div>
@@ -167,7 +167,7 @@
           [#-- Current table --]
           <div class="containerCurrentDeliverables">
             <!--  <h3 class="subTitle headTitle">Deliverables</h3>  -->
-            [#if reportingActive]
+            [#if reportingPhase]
              <p class="note">[@s.text name="project.deliverableList.focusDeliverablesMessage"][@s.param]${currentCycleYear}[/@s.param][@s.param]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/@s.param][/@s.text]</p>
             <hr />
             [/#if]
@@ -185,10 +185,10 @@
                 </div>
               </div>
             <div class="currentDeliverables table-responsive">
-              [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingPhase=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
+              [@deliverableList.deliverablesList deliverables=(currentDeliverableList)![] canValidate=true canEdit=candit  isReportingPhase=reportingPhase namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
             </div>
               [#--  
-                [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingPhase=reportingActive namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
+                [@deliverableList.deliverablesList deliverables=(project.getCurrentDeliverables(actualPhase))![] canValidate=true canEdit=candit  isReportingPhase=reportingPhase namespace="/clusters" defaultAction="${(crpSession)!}/deliverable" projectID=projectID/]
              --]
           </div>
 
@@ -223,7 +223,7 @@
                 </div>
               </div>            
             <div class="previousDeliverables table-responsive">
-              [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingPhase=reportingActive namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
+              [@deliverableList.deliverablesList deliverables=(project.getPreviousDeliverables(actualPhase) + previousSharedDeliverableList)![] canValidate=true canEdit=candit isReportingPhase=reportingPhase namespace="/projects" defaultAction="${(crpSession)!}/deliverable" currentTable=false projectID=projectID/]
             </div>
           </div>
 

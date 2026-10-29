@@ -304,7 +304,7 @@ with no build.
 |---|---|
 | Tasks | 16 (`tasks.md` T00–T15; T00 and T07 were split out at decomposition: the production check and the HTML harness) |
 | Files | ~135 in total (RJ-3):<br>- 117 in `call-sites.md` §A1<br>- 5 more from §B<br>- 4 not in either list: `Phase.java`, `GlobalUnitCreationManagerImpl.java`, `GlobalUnitCreateAction.java`, marlo-data `APConstants.java`<br>- ~9 new or support files: Checkstyle config, 2 migrations, ~4 tests, ~2 docs |
-| LOC changed | **~2,800 (raised 2026-10-28 by the owner, when the budget tripwire fired after T05/T12 at ~1,735 actual; the overrun is test code).** First budget: ~1,270 shipped, the per-task sum in `tasks.md` §9. Tests are a large part (~460 across T02, T03, T05, T12). The design-time figure of ~1,015 undercounted the tests |
+| LOC changed | **~3,500 (raised again 2026-10-28 by the owner when the tripwire fired after T09 at ~2,823; the FTL batches grew the HTML harness to 114 pages). Before that ~2,800 (raised 2026-10-28 when the tripwire fired after T05/T12 at ~1,735 actual; the overrun is test code).** First budget: ~1,270 shipped, the per-task sum in `tasks.md` §9. Tests are a large part (~460 across T02, T03, T05, T12). The design-time figure of ~1,015 undercounted the tests |
 | Review rounds | ~24 (1.5 per task; the FTL batches T08–T10 may need 2 each for the HTML diff) |
 
 The declared depth, Full, matches. The large LOC count is volume, not complexity: most of it is the closed

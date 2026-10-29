@@ -59,7 +59,7 @@
 
   <div class="clearfix"></div>
   [#-- Status and year expected selects --]
-  <div class="${reportingActive?string('fieldFocus','simpleBox')}">
+  <div class="${reportingPhase?string('fieldFocus','simpleBox')}">
 
     <div class="form-group row">
       [#--  [#assign canViewNewExpectedYear = action.candEditExpectedYear(deliverable.id) /]  --]
@@ -75,7 +75,7 @@
         [#--  [#assign canNotEditYear = (deliverable.deliverableInfo.status == 4)!false || !action.candEditYear(deliverable.id)/]  --]
          [#assign dbExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
          [#if isDeliverableNew]
-         	[#if reportingActive]
+         	[#if reportingPhase]
           	[#assign projectExpectedYear = "project.projectInfo.getYearActualPhase(${currentCycleYear})"]
           [#else]
           	[#assign projectExpectedYear = "project.projectInfo.getAllYearsPhase(${currentCycleYear})"]
@@ -131,7 +131,7 @@
 
     <hr />
     [#-- New deliverable at reporting --]
-    [#if isDeliverableNew && editable && (reportingActive)]<i class="text-center">The status of this deliverable should be 'Complete' due is new</i> <br />[/#if]
+    [#if isDeliverableNew && editable && (reportingPhase)]<i class="text-center">The status of this deliverable should be 'Complete' due is new</i> <br />[/#if]
 
     [#-- Deliverable field status --]
     [#if isDeliverableComplete]
@@ -195,7 +195,7 @@
   [/#if]
 
   [#-- Contribution to LP6 --]
-  [#if action.hasSpecificities('crp_lp6_active') && reportingActive && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
+  [#if action.hasSpecificities('crp_lp6_active') && reportingPhase && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
     <div class="form-group">
       <label>[@s.text name="deliverable.LP6Contribution.contribution"/][@customForm.req required=true /]</label>
       [@customForm.radioFlat id="lp6Contribution-yes" name="deliverable.contribution" label="Yes" value="true"  checked=(action.getHasLp6ContributionDeliverable(deliverable.id,actualPhase.id))!false cssClassLabel="radio-label-yes" editable=editable /]

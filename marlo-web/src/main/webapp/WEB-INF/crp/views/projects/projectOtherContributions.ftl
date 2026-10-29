@@ -63,7 +63,7 @@
           
             [#-- -- -- REPORTING BLOCK -- -- --]
             [#-- Others impact pathways contributions --]
-            [#if reportingActive]
+            [#if reportingPhase]
               <div id="otherContributionsBlock">
                 [#if project.otherContributionsList?has_content]
                   [#list project.otherContributionsList as element]

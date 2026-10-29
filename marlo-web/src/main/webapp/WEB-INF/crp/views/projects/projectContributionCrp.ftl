@@ -197,7 +197,7 @@
                      additional questions below are rendered. --]
                 <div class="text-modal-evidences decodeHTML">${(cpiOutcome.instructions)!}</div>
                 <div class="container-buttons-evidences">
-                  [#if !action.isPOWB() && ((cpiOutcome.file.fileName??)!false)]
+                  [#if !action.isPlanningPhase() && ((cpiOutcome.file.fileName??)!false)]
                     <a href="${action.getBaseLineFileURL((cpiOutcome.id?string)!-1)}&filename=${(cpiOutcome.file.fileName)!}" target="_blank">
                       <div class="button-pdf-modal">
                         <p>[@s.text name="projectContributionCrp.guidance.readFull" /]</p>
@@ -215,10 +215,10 @@
           <div class="cpi-card">
             <h4 class="cpi-card__title">[@s.text name="projectOutcome.contributionToThisOutcome" /]</h4>
             <div class="cpi-field" style="display:${showOutcomeValue?string('block', 'none')}">
-              [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(cpiOutcome.year)!afYear type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingActive && editOutcomeExpectedValue /]
+              [@customForm.input name="projectOutcome.expectedValue" i18nkey="projectOutcome.expectedValueAF" paramText=(cpiOutcome.year)!afYear type="text" placeholder="" className="targetValue targetValueNumber" required=true editable=editable && !reportingPhase && editOutcomeExpectedValue /]
             </div>
             <div class="cpi-field">
-              [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingActive || (!(projectOutcome.narrativeTarget?has_content)!false)) /]
+              [@customForm.textArea name="projectOutcome.narrativeTarget" required=true className="limitWords-150" editable=editable && (!reportingPhase || (!(projectOutcome.narrativeTarget?has_content)!false)) /]
             </div>
           </div>
 
@@ -307,7 +307,7 @@
                A2-2622): outside it each answer reads back, or "Not answered". The
                markup must be posted in every cycle anyway: saveIndicators() deletes
                every ProjectOutcomeIndicator the form does not send back. --]
-          [#assign cpiAnswerQuestions = reportingActive /]
+          [#assign cpiAnswerQuestions = reportingPhase /]
           [#if action.hasSpecificities('crp_baseline_indicators')]
             <div class="cpi-card cpi-questions">
               <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.additionalQuestions" /]</h4>
@@ -322,7 +322,7 @@
           [/#if]
 
           [#-- ═══ Communications · annual report only ═══ --]
-          [#if reportingActive && action.hasSpecificities('crp_show_project_outcome_communications') ]
+          [#if reportingPhase && action.hasSpecificities('crp_show_project_outcome_communications') ]
           [#assign comunication = action.loadProjectCommunication(currentCycleYear) /]
           [#assign comunicationIndex = action.getIndexCommunication(currentCycleYear) /]
           [#assign comunicationName = "projectOutcome.communications[${comunicationIndex}].communication" /]
@@ -353,7 +353,7 @@
                 [@nextUserMacro element={} name="projectOutcome.nextUsers" index=0 /]
               [/#if]
             </div>
-            [#if editable && !reportingActive]
+            [#if editable && !reportingPhase]
               <button type="button" class="addNextUser cpi-nextUsers__add">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1.5v9M1.5 6h9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                 [@s.text name="form.buttons.addNextUser"/]
@@ -363,14 +363,14 @@
           [/#if]
                     
           [#-- ═══ Lessons · annual report only ═══ --]
-          [#if !action.isProjectNew(project.id) && action.isReportingActive() && action.isLessonsActive()]
-          [#assign lessonsCycle = reportingActive?string('reporting','planning') /]
+          [#if !action.isProjectNew(project.id) && action.isReportingPhase() && action.isLessonsActive()]
+          [#assign lessonsCycle = reportingPhase?string('reporting','planning') /]
           <div id="lessons" class="cpi-card cpi-lessons">
             <h4 class="cpi-card__title">[@s.text name="projectContributionCrp.lessons" /]</h4>
             [#-- Lessons learnt from last planning/reporting cycle, read back --]
             [#if (projectOutcome.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="cpi-field cpi-field--text is-read cpi-lessons__previous">
-              <span class="cpi-field__label"><label class="readOnly">[@customForm.text name="projectOutcome.previousLessons.${lessonsCycle}" param="${reportingActive?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]</label></span>
+              <span class="cpi-field__label"><label class="readOnly">[@customForm.text name="projectOutcome.previousLessons.${lessonsCycle}" param="${reportingPhase?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]</label></span>
               <div class="textArea"><p>${projectOutcome.projectComponentLessonPreview.lessons}</p></div>
             </div>
             [/#if]
@@ -380,7 +380,7 @@
             <input type="hidden" name="projectOutcome.projectComponentLesson.componentName" value="${actionName}">
             <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
               [@cpiLabel name="projectOutcome.projectComponentLesson.lessons" key="projectOutcome.lessons.${lessonsCycle}" help="projectOutcome.lessons.help" editable=editable /]
-              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${lessonsCycle}" placeholder="projectContributionCrp.lessons.placeholder" className="${reportingActive?string('fieldFocus','')}" required=true editable=editable showTitle=false /]
+              [@customForm.textArea name="projectOutcome.projectComponentLesson.lessons" i18nkey="projectOutcome.lessons.${lessonsCycle}" placeholder="projectContributionCrp.lessons.placeholder" className="${reportingPhase?string('fieldFocus','')}" required=true editable=editable showTitle=false /]
             </div>
           </div>
           [/#if]
@@ -556,9 +556,8 @@
        looser than `&&`, so `(x)!false && y` reads as `x ! (false && y)` -- the
        default swallows the rest of the expression and y is dropped. --]
   [#local isAiccraRules = (action.isAiccra())!false /]
-  [#local isUpkeepCycle = (action.isUpKeepActive())!false /]
-  [#local isPlanningCycle = (action.isPlanningActive())!false /]
-  [#local isAwpbCycle = isAiccraRules && isPlanningCycle && !isUpkeepCycle /]
+  [#local isUpkeepCycle = (action.isProgressPhase())!false /]
+  [#local isAwpbCycle = isAiccraRules && planningPhase /]
 
   [#-- The PMC target is the programme's own figure: every user reads it in every
        cycle, and only an administrator or the PMU edits it. saveMilestones() holds
@@ -567,7 +566,7 @@
   [#local isCrpAdmin = (action.canEditCrpAdmin())!false /]
   [#local isPmu = (action.isPMU())!false /]
   [#local isAdminOrPmu = isSuperAdmin || isCrpAdmin || isPmu /]
-  [#local achievedPhase = reportingActive || isUpkeepCycle /]
+  [#local achievedPhase = reportingPhase || isUpkeepCycle /]
   [#local showAchieved = !isAwpbCycle /]
 
   [#-- A hidden field is still rendered: customForm leaves an input carrying the
@@ -575,13 +574,13 @@
        back in every phase, outside its planning/reporting branches. Dropping the
        markup would post nothing and blank the stored figure. --]
   [#local canSetted = editable && isCurrentPeriod && isAiccraRules?then(isAdminOrPmu, isSuperAdmin) /]
-  [#local canExpected = editable && !reportingActive && isCurrentPeriod /]
-  [#local canNarrative = editable && !reportingActive && isCurrentPeriod /]
+  [#local canExpected = editable && !reportingPhase && isCurrentPeriod /]
+  [#local canNarrative = editable && !reportingPhase && isCurrentPeriod /]
   [#local canAchieved = editable && achievedPhase && isCurrentPeriod /]
   [#-- Progress takes the achieved figure as an early read, so it is optional there
        and only the annual report requires it. ProjectOutcomeValidator holds the same
        rule, so the form and the missing-fields check agree. --]
-  [#local achievedRequired = isCurrentPeriod && isAiccraRules?then(reportingActive, achievedPhase) /]
+  [#local achievedRequired = isCurrentPeriod && isAiccraRules?then(reportingPhase, achievedPhase) /]
 
   [#-- A disaggregated target whose unit is a percentage reports shares of the
        principal target's figures. projectContributionCrpRedesign.js resolves each
@@ -618,13 +617,13 @@
             [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="settedValue" aria-live="polite"></span>[/#if]
             <span class="cpi-field__note">[@s.text name="projectContributionCrp.pmcNote" /]</span>
           </div>
-          <div class="cpi-field ${canExpected?string('is-edit', (reportingActive || !isCurrentPeriod)?string('is-read','is-locked'))}">
+          <div class="cpi-field ${canExpected?string('is-edit', (reportingPhase || !isCurrentPeriod)?string('is-read','is-locked'))}">
             [@customForm.input name="${customName}.expectedValue" i18nkey="projectOutcomeMilestone.finalExpectedValue" type="text" placeholder="" className="targetValue targetValueNumber" required=isCurrentPeriod editable=canExpected /]
             [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="expectedValue" aria-live="polite"></span>[/#if]
             [#if !canExpected && !isCurrentPeriod]<span class="cpi-field__note">[@s.text name="projectContributionCrp.otherPeriod" /]</span>[/#if]
           </div>
           <div class="cpi-field ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
-            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingActive?string('fieldFocus','')} targetValue targetValueNumber" required=achievedRequired editable=canAchieved /]
+            [@customForm.input name="${customName}.achievedValue" i18nkey="projectOutcomeMilestone.achievedValue" type="text" placeholder="" className="${reportingPhase?string('fieldFocus','')} targetValue targetValueNumber" required=achievedRequired editable=canAchieved /]
             [#if isPct]<span class="cpi-field__resolved" data-cpi-resolve="achievedValue" aria-live="polite"></span>[/#if]
             [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
           </div>
@@ -646,7 +645,7 @@
       [@customForm.textArea name="${customName}.narrativeTarget" i18nkey="projectOutcomeMilestone.expectedNarrative2021" required=isCurrentPeriod className="limitWords-200" editable=canNarrative help="projectOutcomeMilestone.expectedNarrative2021.helpText" helpIcon=false /]
     </div>
     <div class="cpi-field cpi-field--text ${canAchieved?string('is-edit', achievedPhase?string('is-read','is-locked'))}"[#if !showAchieved] style="display:none"[/#if]>
-      [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=achievedRequired className="limitWords-100 ${reportingActive?string('fieldFocus','')}" editable=canAchieved /]
+      [@customForm.textArea name="${customName}.narrativeAchieved" i18nkey="projectOutcomeMilestone.achievedNarrative" required=achievedRequired className="limitWords-100 ${reportingPhase?string('fieldFocus','')}" editable=canAchieved /]
       [#if !achievedPhase]<span class="cpi-field__note">[@s.text name="projectContributionCrp.opensInReporting" /]</span>[/#if]
     </div>
   </div>
@@ -668,14 +667,14 @@
   [#local customName = "${name}[${index}]" /]
   [#-- The planning answers are written while planning; in the annual report an answer
        already given reads back, and only an empty one stays open. --]
-  [#local canTitle = editable && (!reportingActive || (!element.nextUser?has_content)!true) /]
-  [#local canKnowledge = editable && (!reportingActive || (!element.knowledge?has_content)!true) /]
-  [#local canStrategies = editable && (!reportingActive || (!element.strategies?has_content)!true) /]
+  [#local canTitle = editable && (!reportingPhase || (!element.nextUser?has_content)!true) /]
+  [#local canKnowledge = editable && (!reportingPhase || (!element.knowledge?has_content)!true) /]
+  [#local canStrategies = editable && (!reportingPhase || (!element.strategies?has_content)!true) /]
   <div id="nextUser-${isTemplate?string('template', index)}" class="nextUser cpi-nextUser" style="display:${isTemplate?string('none','block')}">
     [#-- Only drawn while the list holds more than one user (see the stylesheet). --]
     <div class="cpi-nextUser__head">
       <span class="cpi-nextUser__title">[@s.text name="projectOutcomeNextUser.projectNextUser" /] <span class="index">${index+1}</span></span>
-      [#if editable && !reportingActive]
+      [#if editable && !reportingPhase]
         <button type="button" class="removeNextUser cpi-nextUser__remove">[@s.text name="projectContributionCrp.nextUser.remove" /]</button>
       [/#if]
     </div>
@@ -699,7 +698,7 @@
     </div>
 
     [#-- Reporting --]
-    [#if reportingActive]
+    [#if reportingPhase]
       <div class="cpi-field cpi-field--text ${editable?string('is-edit','is-read')}">
         [@cpiLabel name="${customName}.knowledgeReport" key="projectOutcomeNextUser.reportOnProgress" editable=editable /]
         [@customForm.textArea name="${customName}.knowledgeReport" i18nkey="projectOutcomeNextUser.reportOnProgress" required=true className="limitWords-200 fieldFocus" editable=editable showTitle=false /]
@@ -737,19 +736,19 @@
     <input type="hidden" name="${customName}.crpProgramOutcomeIndicator.id" value="${(projectOutcomeIndicator.crpProgramOutcomeIndicator.id)!}" >
     <div class="form-group row">
       <div class="col-md-3">
-        [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
+        [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingPhase /]
       </div>
       <div class="col-md-3">
-        [#if reportingActive]
+        [#if reportingPhase]
           [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="targetValue" placeholder="Numeric Value" required=true editable=editable /]
         [/#if]
       </div>
       <div class="col-md-3"></div>
     </div>
     <div class="form-group">
-      [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingActive /]
+      [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-100" editable=editable && !reportingPhase /]
     </div>
-    [#if reportingActive]
+    [#if reportingPhase]
       <div class="form-group">
         [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
       </div>
@@ -775,10 +774,10 @@
     [#-- [#if index==0]
       <div class="form-group row">
         <div class="col-md-3">
-          [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingActive /]
+          [@customForm.input name="${customName}.value" i18nkey="projectOutcomeBaseline.expectedValue" className="targetValue" placeholder="Numeric Value" value="${(projectOutcomeIndicator.value)!}" required=true editable=editable && !reportingPhase /]
         </div>
         <div class="col-md-3">
-          [#if reportingActive]
+          [#if reportingPhase]
             [@customForm.input name="${customName}.valueReporting" i18nkey="projectOutcomeBaseline.achievedValue" className="targetValue" placeholder="Numeric Value" required=true editable=editable /]
           [/#if]
         </div>
@@ -789,10 +788,10 @@
     
       <div class="form-group ">
         [@customForm.textArea name="${customName}.narrative" i18nkey="projectOutcomeBaseline.expectedNarrative" value="${(projectOutcomeIndicator.narrative)!}" required=true className="limitWords-150" editable=editable && AREditable/]
-        [#-- && !reportingActive  --]
+        [#-- && !reportingPhase  --]
       </div>
       [#--  
-      [#if reportingActive]
+      [#if reportingPhase]
         <div class="form-group">
           [@customForm.textArea name="${customName}.achievedNarrative" i18nkey="projectOutcomeBaseline.achievedNarrative" required=true className="limitWords-100" editable=editable /]
         </div>
@@ -1113,7 +1112,7 @@
 [#function isYearRequired year]
   [#if project.projectInfo.endDate??]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
       [#return  (year == currentCycleYear) && (endDate gte year) ]

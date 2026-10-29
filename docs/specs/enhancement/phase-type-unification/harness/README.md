@@ -1,13 +1,14 @@
 # Rendered-HTML capture harness (T07, NF-002)
 
 Captures the rendered HTML of a fixed reference set of MARLO pages from a LOCAL app, normalizes only what is proven to
-vary run-to-run, and diffs a capture against a stored baseline. GET-only: it never saves or edits anything.
+vary run-to-run, and diffs a capture against a stored baseline. GET-only after login, but one known GET has a side effect (see the coverage notes), so run it only against a
+throwaway schema.
 
 ## Run
 
 ```
 # app must already be up on http://localhost:8080/marlo-web/ (see docs/infrastructure.md section 6)
-harness/capture.sh <out-dir>              # one command -> capture dir (42 pages + _manifest.txt)
+harness/capture.sh <out-dir>              # one command -> capture dir (114 pages + _manifest.txt)
 harness/diff.sh <baseline-dir> <out-dir>  # one command -> prints every differing page; silent + "IDENTICAL" when equal
 RAW=1 harness/capture.sh <out-dir>        # no normalization (to prove what varies)
 ```
@@ -21,9 +22,17 @@ RAW=1 harness/capture.sh <out-dir>        # no normalization (to prove what vari
   On another schema, edit the ids.
 - Coverage notes: AICCRA/AICCRA_III have no expected-study rows in 2026 phases, so the expected-study FORM is captured
   on RTB phase 262 (the only CRP with study data) and the study LISTS on AICCRA. AICCRA_III has one project and no
-  deliverables or innovations, so those pages are captured for AICCRA only. The main menu and guide button are part
+  deliverables or innovations, so the deliverable, innovation and study FORMS are captured for AICCRA only (the
+  T09 list pages cover both units). The main menu and guide button are part
   of every page; the dashboards are the dedicated menu/guide captures. NOGU_* are the no-global-unit pages: the
   anonymous login page (no session) and a logged-in `glossary.do` (no CRP in the URL).
+- T09 added the list-macro pages (deliverable and innovation lists) and one page per `crp/views/projects` section
+  (partners, activities, locations, ccafsOutcomes, outcomes, otherContributions, highlights, outputs, budgetByFlagship,
+  contributionCrp) for AICCRA and AICCRA_III in the plan, progress and reporting phases (`X_*` pages, 72 in all). contributionCrp
+  needs a `projectOutcomeID` that exists in the phase (AICCRA 36447-36449 and 37599-37601; AICCRA_III 42440-42442): an
+  id of another phase renders the "Page not found" page.
+- The first view of a progress-phase `contributionCrp` page creates the missing milestone row (a GET side effect of the
+  action, seen as `milestones[N].id` empty once, then a real id). Capture twice before taking a baseline on a fresh schema.
 - The Global Unit switcher entries and every list are rendered in hash order, so the order differs per request.
 
 ## Normalizations (applied in `capture.sh`; nothing else is touched)

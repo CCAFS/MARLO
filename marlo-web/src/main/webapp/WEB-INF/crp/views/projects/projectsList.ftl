@@ -58,13 +58,13 @@
       <h1 class="cl-heading">[@s.text name="projectsList.activeTitle" /]</h1>
       <p class="cl-subheading">
         [@s.text name="projectsList.subtitle"]
-          [@s.param][@s.text name="projectsList.active${reportingActive?string('Reporting', 'Planning')}.help" /][/@s.param]
+          [@s.param][@s.text name="projectsList.active${reportingPhase?string('Reporting', 'Planning')}.help" /][/@s.param]
           [@s.param]${phaseName}[/@s.param]
           [@s.param]${myProjectsList?size}[/@s.param]
         [/@s.text]
       </p>
     </div>
-    [#if action.canAddCoreProject() && (!crpClosed) && !reportingActive && phaseEditable]
+    [#if action.canAddCoreProject() && (!crpClosed) && !reportingPhase && phaseEditable]
       <div class="cl-headerActions">
         <a class="cl-btn cl-btn--secondary" href="[@s.url action='${crpSession}/addNewAdminProject'][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
@@ -115,7 +115,7 @@
     title="projectsList.readOnly.title" help="projectsList.otherProjects.help" /]
 
   [#-- Archived (completed and cancelled) --]
-  [#if !reportingActive]
+  [#if !reportingPhase]
     [@listSection id="archivedProjects" projects=archivedProjectsList icon="archive" archived=true
       title="projectsList.archivedProjects" help="projectsList.archived.help" /]
   [/#if]

@@ -81,7 +81,7 @@
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. selectedYear as year]
-                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable && !reportingActive /] </a></li>
+                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable && !reportingPhase /] </a></li>
               [/#list]
             </ul>
             
@@ -240,7 +240,7 @@
 [#function isYearRequired year]
   [#if (project.projectInfo.endDate??)!false]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
       [#return  (year == currentCycleYear) && (endDate gte year) ]
@@ -254,7 +254,7 @@
 [#function isYearEditable year]
   [#if (project.projectInfo.endDate??)!false]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year gte currentCycleYear) ]
     [#else]
       [#return  (year gte currentCycleYear) ]

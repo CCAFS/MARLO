@@ -43,7 +43,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-    <p class="col-md-10">[#if reportingActive] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] </p>
+    <p class="col-md-10">[#if reportingPhase] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -58,7 +58,7 @@
     </div>
     <div class="containerText col-md-12">
       <p class="alertText">
-        [#if reportingActive] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] 
+        [#if reportingPhase] [@s.text name="project.activities.help2" /] [#else] [@s.text name="project.activities.help1" /] [/#if] 
       </p>
     </div>
     <div  class="viewMoreCollapse closed"></div>
@@ -238,13 +238,13 @@
         [@customForm.select name="${customName}.projectPartnerPerson.id" label=""  i18nkey="project.activities.inputLeader" listName="partnerPersons" keyFieldName="id"  displayFieldName="composedInstitutionName"  multiple=false required=true  className=" activityLeader" editable=editable/]
       </div>
 
-      <div class="row activityStatusBlock ${reportingActive?string('fieldFocus','')}">
+      <div class="row activityStatusBlock ${reportingPhase?string('fieldFocus','')}">
       [#-- Activity status --]
       <div class="col-md-12 form-group">
         [@customForm.select name="${customName}.activityStatus" label=""  i18nkey="project.activities.inputStatus" listName="status" keyFieldName=""  displayFieldName=""  multiple=false required=true header=false className=" activityStatus" editable=editable/]
       </div>
 
-      [#if reportingActive]
+      [#if reportingPhase]
       [#-- Progress label matches activity status; default On-going (2) for new/template (same as saveActivitiesNewData / select default) --]
       [#assign apProgressKey = (element.activityStatus)!2 /]
       [#if (element.activityStatus)?? && element.activityStatus == -1]

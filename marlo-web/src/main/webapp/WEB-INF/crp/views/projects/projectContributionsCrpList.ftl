@@ -92,7 +92,7 @@
               </p>
             </div>
 
-        [#if reportingActive && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
+        [#if reportingPhase && canEdit] <p class="note">[@s.text name="projectContributionsCrpList.reportingHelp"/]</p>[/#if]
 
 				[#assign useTabs = action.hasSpecificities('show_contribution_performance_indicator_deprecated_tab_active')]
 
@@ -422,7 +422,7 @@
         [#if hasDraft]<strong class="text-info">[DRAFT]</strong>[/#if]
 
         [#-- Report --]
-        [#if reportingActive && !isThisComplete]
+        [#if reportingPhase && !isThisComplete]
           <span class="label label-primary" title="Required for reporting"><span class="glyphicon glyphicon-flash" ></span> Report</span>
         [/#if]
 
@@ -482,7 +482,7 @@
     [#-- Other Contribution ID --]
     <input type="hidden" name="${customName}.id" class="otherContributionId" value="${(contribution.id)!-1}"/>
     [#-- Indicator --]
-    <div class="form-group ${reportingActive?string('fieldFocus','')}">
+    <div class="form-group ${reportingPhase?string('fieldFocus','')}">
       <div class="row">
         <div class="col-md-12">
           [@customForm.select name="${customName}.outcome" className="otherContributionIndicator" label="" i18nkey="projectOtherContribution.outcome" listName="outcomes" keyFieldName="id" displayFieldName="composedName" required=true editable=editable /]
@@ -494,7 +494,7 @@
       <div class="row">
         <div class="col-md-12">
         <label>[@customForm.text name="projectOtherContribution.description" param="${currentCycleYear}" readText=!editable /]:[@customForm.req required=editable /]</label>
-        [@customForm.textArea name="${customName}.description" className="otherContributionDescription limitWords-100 ${reportingActive?string('fieldFocus','')}"  i18nkey="" showTitle=false required=true editable=editable  /]
+        [@customForm.textArea name="${customName}.description" className="otherContributionDescription limitWords-100 ${reportingPhase?string('fieldFocus','')}"  i18nkey="" showTitle=false required=true editable=editable  /]
         </div>
       </div>
     </div>
@@ -503,7 +503,7 @@
       <div class="row">
         <div class="col-md-5">
           <label>[@customForm.text name="projectOtherContribution.target" readText=!editable /]:</label>
-          [@customForm.input name="${customName}.target" className="otherContributionTarget ${reportingActive?string('fieldFocus','')}" i18nkey="" showTitle=false editable=editable  /]
+          [@customForm.input name="${customName}.target" className="otherContributionTarget ${reportingPhase?string('fieldFocus','')}" i18nkey="" showTitle=false editable=editable  /]
         </div>
       </div>
     </div>
@@ -511,7 +511,7 @@
 [/#macro]
 
 [#macro contributionToLP6 template=false]
-[#if action.hasSpecificities('crp_lp6_active') && reportingActive]
+[#if action.hasSpecificities('crp_lp6_active') && reportingPhase]
 [#assign isContributing = ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false) ]
   <div id="projectContributionToLP6" class="borderBox project-${project.id} phase-${actualPhase.id}">
 
@@ -544,7 +544,7 @@
 [#function isYearRequired year]
   [#if project.endDate??]
     [#assign endDate = (project.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
       [#return  (year == currentCycleYear) && (endDate gte year) ]

@@ -771,3 +771,57 @@
 
 - Tasks closed: 10 of 16 (T00–T08, T12).
 - LOC: ~2,318 + 184 (T08: +92 / −92) = **~2,502, against ~2,800**.
+
+### T09 — FTL batch 2: `crp/views/projects` — PASS
+
+- **Date:** 2026-10-28
+- **Final status:** PASS (attempt 1).
+- **Requirements covered:** FN-005 (part), NF-001, NF-002; INT-3 (`menu-projects.ftl:221`).
+- **Review mode:** full, one Reviewer (`opus`).
+- **Isolation:** main checkout; app on `zz_t07_actsave`; source FTL copied to the deployed dir.
+
+#### Attempt 1
+
+- **Harness extension (tooling):** `harness/pages.txt` 42 → 114 pages: the 9 list pages from T08 plus 63 section
+  pages (partners, activities, locations, ccafsOutcomes, outcomes, otherContributions, highlights, outputs,
+  budgetByFlagship, contributionCrp) for AICCRA and AICCRA_III in the three phases. No new normalization. New pre-edit
+  baseline `t09-base`; the first capture was unstable because the first GET of a progress-phase `contributionCrp`
+  page creates the missing milestone row (existing action behaviour, on the throwaway schema only); bases 2–4 are
+  byte-identical (`IDENTICAL: 115 files compared`). The README records the side effect.
+- **Files changed (21 FTL, +120 / −121):** every §A1 row for `crp/views/projects`. `reportingActive` →
+  `reportingPhase` (incl. negations, DD-11 rule 1); `menu-projects.ftl:57, 73, 75, 221` `upKeepActive`/`UpKeepActive`
+  → `progressPhase`; `projectDeliverable.ftl:467` → `reportingPhase || progressPhase`; `projectContributionCrp.ftl`
+  `:200` `!action.isPOWB()` → `!action.isPlanningPhase()`, `:366` → `action.isReportingPhase()`, `:559` →
+  `action.isProgressPhase()`, `:560-561` `isAwpbCycle = isAiccraRules && planningPhase` with the dead
+  `isPlanningCycle` local removed (it was itself an §A1 row); `deliverableList.ftl:188, 191, 226` caller values →
+  `=reportingPhase` (closes the T08 advisory). CRLF kept in `projectContributionsCrpList.ftl`.
+- **Evidence re-run (non-author, Leader-inline):**
+  - old-name grep over `crp/views/projects` → 0 (Implementer: 120 before);
+  - only `projectContributionCrp.ftl` has unequal +/− (one deleted line); deployed copies `cmp`-equal source;
+  - fresh 114-page capture vs `t09-base` → `IDENTICAL: 115 files compared`, all 200;
+  - `t09-base` equals the T07 baseline byte for byte on the 42 shared pages.
+
+  **VERIFIED.**
+- **Falsifier (Implementer, observed):** deployed `projectLocations.ftl:42` `[#if !reportingPhase]` →
+  `[#if reportingPhase]` → a 31-line block disappeared from the AICCRA plan locations page and appeared on the
+  reporting one. Reverted; recapture identical; `cmp` equal.
+- **Reviewer:** PASS. Each change is a rename to the method the old one already delegates to; `:560` equals
+  `planningPhase` on every input (a plan phase is never a progress phase under DD-3); all 121 §A1 rows migrated
+  (incl. `projectInnovation.ftl:113` in T08); the §B comment at `projectContributionCrp.ftl:539` stays by design;
+  `actualPhase.upkeep` reads (`deliverableList.ftl:121`, `projectDeliverable.ftl:280, 299`) are correctly out of
+  scope (not in §5/§A1/§B; FN-005 forbids only name literals); `menu-projects.ftl:221` is a listed INT-3 case already
+  effective since T04; no shadowing; harness GET-only apart from the recorded side effect. ISSUES: none.
+- **ADVISORY:** README wording (GET-only claim, AICCRA_III coverage) — fixed by the Leader in the README before commit.
+  Local `isUpkeepCycle` (`projectContributionCrp.ftl:559`) could become `isProgressCycle` in a later cleanup.
+  Evidence reach: no captured page was confirmed to render `projectBudgetByCoAs.ftl`, `projectOverviewByMogs.ftl`,
+  `projectStudies.ftl` or `deliverableInfo.ftl`; those rest on the delegation-identity argument.
+- **runtime events:** none.
+- **spawns:** implementer 42 calls, 156,719 tokens, ended complete; reviewer 24 calls, 114,755 tokens, ended complete.
+
+#### Running totals vs budget (design §17), after T09
+
+- Tasks closed: 11 of 16 (T00–T09, T12).
+- LOC: ~2,502 + 241 (FTL) + ~80 (harness) = **~2,823, at the ~2,800 budget**. Remaining: T10 (M), T11, T13, T14 (S),
+  T15 (HITL).
+- **BUDGET TRIPWIRE FIRED (second time).** Escalated to the owner at the T09 gate. Owner decision (2026-10-28): LOC
+  budget raised to ~3,500 (`design.md` §17); commit T09 and continue with T10.

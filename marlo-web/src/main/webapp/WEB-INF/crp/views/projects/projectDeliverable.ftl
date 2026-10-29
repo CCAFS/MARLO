@@ -50,7 +50,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-    <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
+    <p class="col-md-10">[#if reportingPhase] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -65,7 +65,7 @@
       </div>
     </div>
     <div class="containerText col-md-12">
-      <p class="alertText">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
+      <p class="alertText">[#if reportingPhase] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
     </div>
     <div  class="viewMoreCollapse closed"></div>
   </div>
@@ -277,7 +277,7 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="[#if indexTab==1 || indexTab==0]active[/#if]"><a index="1" href="#deliverable-mainInformation" aria-controls="info" role="tab" data-toggle="tab">[@s.text name="project.deliverable.generalInformation.titleTab" /]</a></li>
 
-                [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
+                [#if (reportingPhase || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
                 <li role="presentation" class="[#if indexTab==2]active[/#if]"><a index="2" href="#deliverable-disseminationMetadata" aria-controls="metadata" role="tab" data-toggle="tab">Dissemination & Metadata</a></li>
 
                 [#assign isRequiredQuality = deliverable.deliverableInfo.requeriedFair() || ((action.hasDeliverableRule(deliverable.deliverableInfo, deliverableComplianceCheck))!false) /]
@@ -296,7 +296,7 @@
               <div id="deliverable-mainInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
                 [#include "/WEB-INF/crp/views/projects/deliverableInfo.ftl" /]
               </div>
-              [#if (reportingActive || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
+              [#if (reportingPhase || actualPhase.upkeep) && action.hasSpecificities("crp_has_disemination") ]
               [#-- Deliverable disseminationMetadata --]
               <div id="deliverable-disseminationMetadata" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
                 [#-- Is this deliverable already disseminated? --]
@@ -464,7 +464,7 @@
 </div>
 
 
-[#if reportingActive || upKeepActive]
+[#if reportingPhase || progressPhase]
   [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
   [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
 [/#if]

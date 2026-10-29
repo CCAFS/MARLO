@@ -276,7 +276,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Skills:** `playwright-cli`, `marlo-verify`, `marlo-commit`.
 
 ### T09 — FTL batch 2: `crp/views/projects`
-- **Status:** pending · **Size:** M · **Depends on:** T08 · **Module:** marlo-web (FTL)
+- **Status:** [x] done (2026-10-28, PASS attempt 1; `execution.md` T09) · **Size:** M · **Depends on:** T08 · **Module:** marlo-web (FTL)
 - **Requirements:** FN-005 (part), NF-001, NF-002; INT-3 (`menu-projects.ftl` `UpKeepActive`).
 - **Design refs:** §5.
 - **Files touched:** every `crp/views/projects/*.ftl` in §A1, for example `projectContributionCrp.ftl` (including `:561` → `planningPhase`), `menu-projects.ftl`, `projectInnovation.ftl:113` (§A2 local), `deliverableList.ftl` (if not done in T08), `projectCcafsOutcomes.ftl`.

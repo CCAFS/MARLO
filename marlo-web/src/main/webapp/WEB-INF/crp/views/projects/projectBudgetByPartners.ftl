@@ -28,7 +28,7 @@
 [#if (!availabePhase)!false]
   [#include "/WEB-INF/crp/views/projects/availability-projects.ftl" /]
 [#else]
-[#if !reportingActive]
+[#if !reportingPhase]
 <!-- 
 <div class="container helpText viewMore-block">
   <div style="display:none" class="helpMessage infoText">
@@ -89,7 +89,7 @@
             [#-- Year Tabs --]
             <ul class="nav nav-tabs budget-tabs" role="tablist">
               [#list startYear .. selectedYear as year]
-                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable && !reportingActive /] </a></li>
+                <li class="[#if year == selectedYear]active[/#if]"><a href="#year-${year}" role="tab" data-toggle="tab">${year} [@customForm.req required=isYearRequired(year) && editable && !reportingPhase /] </a></li>
               [/#list]
             </ul>
             
@@ -119,7 +119,7 @@
                           <td class="text-right"><strong><small>US$ <span class="overallAmount cycle-planning year-${year}">0.00</span></small></strong></td>
                         </tr>
                         [#-- Reporting --]
-                        [#if (reportingActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+                        [#if (reportingPhase)  && action.hasSpecificities(crpEnableBudgetExecution)]
                           <tr>
                             <td class="amountType"> <small>Actual Expenditure</small> </td>
                             [#list budgetTypesList as budgetType]
@@ -144,7 +144,7 @@
               [/#list]  
             </div>
             
-            [#if true || !reportingActive]
+            [#if true || !reportingPhase]
             [#-- Section Buttons & hidden inputs--]
             [#include "/WEB-INF/crp/views/projects/buttons-projects.ftl" /]
             [/#if]
@@ -235,7 +235,7 @@
             [/#list]
           </tr>
           [#-- Actual Expenditure--]
-          [#if (reportingActive)  && action.hasSpecificities(crpEnableBudgetExecution)]
+          [#if (reportingPhase)  && action.hasSpecificities(crpEnableBudgetExecution)]
             <tr>
               <td class="amountType"> Actual expenditure:</td>
               [#list budgetTypesList as budgetType]
@@ -538,7 +538,7 @@
 [#function isYearRequired year]
   [#if (project.projectInfo.endDate??)!false]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
       [#return  (year == currentCycleYear) && (endDate gte year) ]
@@ -552,7 +552,7 @@
 [#function isYearEditable year]
   [#if (project.projectInfo.endDate??)!false]
     [#assign endDate = (project.projectInfo.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year gte currentCycleYear) ]
     [#else]
       [#return  (year gte currentCycleYear) ]
