@@ -61,6 +61,9 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       projectFocusAdd.setPhase(phase);
       projectFocusAdd.setProject(projectFocus.getProject());
       projectFocusDAO.save(projectFocusAdd);
+      // Hibernate does not refresh this collection with the new row. Without it, saving the same focus again in this
+      // request (saveInfoPhase does, once per new phase) finds nothing above and inserts a duplicate in every phase.
+      phase.getProjectFocuses().add(projectFocusAdd);
     } else {
       for (ProjectFocus projectFocusBD : projectFocuses) {
         projectFocusBD.setActive(projectFocus.isActive());
