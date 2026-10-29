@@ -52,6 +52,7 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 | NF-001, NF-002, AC NF-001/002 ("byte-identical", "BUT a difference MUST NOT be waved through") | T07 (baseline) + T08, T09, T10 (each batch) |
 | NF-003 | T11 (+ T11a exception, T11b closes it) |
 | NF-004 | every code task (Done criteria) |
+| NF-006, AC NF-006 (Java rule; FTL scan; "only the three exceptions"; "BUT null check, name-to-name and display MUST NOT be reported"), D11 | T16 |
 | OPS-001, AC OPS-001 | T13 (file order + header) |
 | OPS-002, AC OPS-002 | T13 (release checklist) + T15 (records the listing) |
 | OPS-003 | T00 |
@@ -431,6 +432,28 @@ Task prefix below: `T` = `ENH-PHASE-TYPE-UNIFICATION-001-T`.
 - **Done when:** every item recorded and confirmed by the owner.
 - **Skills:** `playwright-cli`.
 
+### T16 — Gate against new phase-name literals (NF-006)
+- **Status:** pending · **Size:** S · **Depends on:** T11 · **Module:** marlo-web + `configuration/`
+- **Requirements:** NF-006, AC NF-006 (all clauses); defect class D11.
+- **Design refs:** DD-9 (same Checkstyle approach as NF-003); requirements §9, 2026-10-29 "Guard the free name".
+- **Files touched:**
+  - `configuration/marlo-checkstyle.xml`: a second `RegexpSinglelineJava` rule (own `id`, own message) matching a phase-named receiver's `getName()` compared with a string literal or a constant, in both orders (`x.getName().equals("…")` / `equalsIgnoreCase` / `== "…"`, and `"…".equals(x.getName())`). `rest/` is excluded by a path-scoped suppression; `GlobalUnitCreateAction.applyPhaseTypeOfName` is not matched (its receiver is the parsed input, not a phase).
+  - a new test in `marlo-web/src/test/java/.../` (GPL header) that scans `marlo-web/src/main/webapp/**/*.ftl` for `name` on a phase variable compared with `'…'` or `"…"` (`==`, `!=`), allows only `crpPhases.ftl:227` by file and content, and fails naming each file and line.
+- **Scope:** **first step:** seed one forbidden Java line and one forbidden FTL line; observe both reds; remove the seeds. Then run both gates on the tree and on the 16 known sites of `origin/staging` (as text fixtures or a scratch copy) to prove they are caught.
+- **Tests:** the new FTL scan test; full suite with `-am`.
+- **Verification:**
+  - Checkstyle over all Java: the new rule reports 0 hits on the tree;
+  - the same rule reports each of the Java name sites still on `origin/staging` (`BaseAction:6369, 7761`, `ProjectOutcomeValidator:193`, `FundingSourcesSummaryAction:498, 697, 1004`, `ProjectsFundingSourcesSummaryAction:611`, `ExpectedDeliverablesSummaryAction:356`);
+  - the FTL test passes on the tree and fails on `deliverableMacros.ftl` from `origin/staging` (`:367, 411`) and from `origin/dev` (`:385, 429`);
+  - no hit on `getName() != null` (`ProjectExpectedStudiesValidator:760, 774`), on the `rest/` name-to-name lookups, or on display uses.
+- **Falsifier:** seeded Java line flagged; seeded FTL line fails the test; the `crpPhases.ftl:227` allowance removed → the test fails on it, which proves the allowlist is exact.
+- **Red run:** `predicted — greenfield artifact (observed in T16)`.
+- **Disqualifier:** a Checkstyle run through `mvn checkstyle:check` is not evidence (`marlo-verify`); a rule tuned on the current tree only, without the staging sites, does not prove it catches anything.
+- **Consumers:** every future branch; the `dev` merge (the redesign's `deliverableMacros.ftl:385` must be converted there, see `execution.md` "Branch events and re-verification").
+- **Review:** full.
+- **Done when:** compile, tests and Checkstyle green; the reds of the falsifier observed; the staging and dev sites caught.
+- **Skills:** `marlo-verify`, `marlo-commit`.
+
 ## 4. Dependency Graph
 
 ```
@@ -441,6 +464,7 @@ T02 ─┘          │                              ├─► T11 ─► T13 �
 T03 ─► T12 ──────────────────────────────────────────┘
 T11 ─► T14
 T11 ─► T11a ─► T11b   (T11b waits for A2-2607 and A2-2613 on staging)
+T11 ─► T16
 T08 ─► T15
 ```
 
@@ -495,6 +519,7 @@ parallel with T05–T10.
 - [x] Both migrations pass their 8 scenarios; `marlo-migration` checklist reported. (`validation-report.md` MIG-001 / MIG-002 PASS: 8 scenarios recorded, auditor reproduced 1 and 2; T15 Flyway rehearsal.)
 - [x] OQ1–OQ4 answered and recorded. (`execution.md` "Open questions answered" and T15; OQ4 on the local copies by owner exception, production run on release day, W1 / W2.)
 - [ ] Constitutional checklist of `requirements.md` §7 confirmed in the PR. (at PR)
+- [ ] T16 done and re-validated (NF-006 added after validation, requirements §9, 2026-10-29).
 - [x] `575a1c7aff` either on `origin/staging` or removed from the branch before the PR. (On `origin/staging`, verified 2026-10-29.)
 
 ## 9. Estimate and PR Strategy

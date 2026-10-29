@@ -183,6 +183,13 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   - A negation of an old null-safe `BaseAction` method (`!isPOWB()`, `!isReportingActive()`, …) MUST stay a
     bare negation of its replacement, because both return `false` on the empty and the null phase (RJ-1).
     The exception is `isUpKeepActive()`, which throws there today and falls under INT-3 (FJ-2).
+- ENH-PHASE-TYPE-UNIFICATION-001-NF-006 — A new comparison of a phase's `name` with a string literal or a
+  constant MUST fail a build gate, in Java and in FTL, so that the name stays free once FN-005 holds. Java: a
+  Checkstyle rule beside the NF-003 rule. FTL, which Checkstyle does not read: a unit test that scans the
+  templates and runs with the suite. Allowed, and listed by the gate as exact exceptions: `crpPhases.ftl:227`
+  (the 2019 lock, §9 2026-10-28), `GlobalUnitCreateAction.applyPhaseTypeOfName` (parsing for a new phase,
+  FN-007) and `rest/`. Comparing a phase's name with another phase's name, a null check, and display are not
+  comparisons with a literal and stay allowed (§9, 2026-10-29).
 
 ### Operations
 
@@ -358,6 +365,18 @@ name-based typing, and its header states the dependency.
 **AC for OPS-002:** the release checklist contains the draft listing command, and its output is recorded in the
 release notes. An empty listing is the expected result.
 
+**AC for NF-006:**
+- Given the tree after T16,
+- When a line comparing a phase's `name` with a literal is added to a Java file under `marlo-web/src/main` or
+  `marlo-data/src/main` outside `rest/` (for example `getSelectedPhase().getName().equals("Progress")`, or
+  `"POWB".equals(phase.getName())`),
+- Then Checkstyle MUST report it,
+- And when such a comparison is added to an FTL template (for example `actualPhase.name != 'Progress'`), the
+  test suite MUST fail and name the file and line,
+- And on the tree as it is, both gates MUST pass with only the three exceptions of NF-006 allowed,
+- BUT a phase-name null check (`getName() != null`), a name-to-name comparison (`rest/` lookups) and a display
+  use (`${phase.name}`, `composedName`, autosave file names) MUST NOT be reported.
+
 ### Defect classes and their gates
 
 | # | Defect class this spec can produce | Gate that catches it |
@@ -372,6 +391,7 @@ release notes. An empty listing is the expected result.
 | D8 | INT-2 not effective, or leaking to plan or reporting phases | NF-002 diff shows the expected change only on the progress page; a human check of the AICCRA_III progress page at the HITL pause (the local copy needs that phase made visible on a throwaway DB) |
 | D9 | Checkstyle violations or the old names reintroduced | Checkstyle delta against HEAD; the NF-003 rule |
 | D10 | A draft orphaned by the rename | OPS-002 listing in the release window (human check) |
+| D11 | A new name-literal comparison after the spec ships (a merge from `dev`, a new branch) | NF-006: the Checkstyle rule (Java) and the FTL scan test |
 
 **Accepted risk:** an external consumer of `phases.name` outside the repo (Power BI datasets, CLARISA). No
 command in this repo can see it. It is asked of the BI owner (§8 OQ2) before DA-002.
@@ -476,3 +496,14 @@ command in this repo can see it. It is asked of the BI owner (§8 OQ2) before DA
   Aligned: `requirements.md` FN-005, NF-003 and the AC for FN-005/NF-003; `design.md` §2 (BaseAction and
   `marlo-checkstyle.xml` bullets) and DD-9; `tasks.md` T11 note, T11a, T11b, the coverage map, the dependency graph
   and §7. Left as history: `execution.md`, `judgment.md`, `proposal.md`, `validation-report.md`, `call-sites.md`.
+- 2026-10-29 — Guard the free name (owner). FN-005 holds on this branch, but the NF-003 rule only forbids the six
+  old method names: nothing stops a new `getName().equals("Progress")` in Java or `actualPhase.name != 'Progress'`
+  in FTL. `dev` already shows it: the redesign added `deliverableMacros.ftl:385`
+  (`actualPhase.name != 'Progress' && !redesign`). NF-006, its AC, defect class D11 and task T16 add a Java
+  Checkstyle rule and an FTL scan test. Evidence gathered the same day, recorded in `execution.md`
+  "Name-use audit": on `origin/staging`, `origin/main` and `origin/dev` about 16 sites still decide by name, so
+  the name is free only where this branch is deployed; reports pick their phase by id or by
+  `description` + year + `upkeep` and use the name only in file names and titles. Closure sweep: `NF-003`,
+  `FN-005` and `name` gates were grepped across this folder. Aligned: `requirements.md` NF-006, AC NF-006, D11;
+  `tasks.md` coverage map, T16, dependency graph, §8. Left as history: `validation-report.md` (re-validation of
+  T16 pending), `execution.md`, `judgment.md`, `proposal.md`.

@@ -1319,3 +1319,41 @@ measured total is **3,018** lines (`validation-report.md` §8, W7), against the 
 - **Tooling notes for later runs:** in zsh an unquoted `$FILES` is not word-split (Checkstyle got one argument and
   reported 0); macOS bash 3.2 has no `mapfile`. A plain bash script with `while read` and `xargs -0` works
   (`scratchpad/cs_delta.sh`).
+
+## Name-use audit (2026-10-29, Leader, read-only)
+
+Owner question: "¿ya soy libre de modificar `name`?" Run on `6c4880ff5c`, `origin/staging`, `origin/main`,
+`origin/dev`, and the local copies `aiccradb1` / `aiccradb_actsave`. No code changed.
+
+**On this branch, nothing decides by name** outside the FN-005 exceptions (`crpPhases.ftl:227`,
+`GlobalUnitCreateAction:499`, `rest/`). Name reads left:
+
+| Use | Sites | Effect of a rename |
+|---|---|---|
+| Autosave draft file name `id_Class_<name>_<year>…` | ~142 (e.g. `BaseAction:2334`, `DeliverableAction:868`) | Unsaved drafts not found (OPS-002, D10) |
+| Display: `composedName`, `crpDeliverables.ftl:72, 83`, `crpPhases.ftl`, `CrpActivityAction:145` | — | Visible text changes (OQ1) |
+| Report file names and titles: `DeliverablesParticipantsSummaryAction:138`; `fileName.append(getSelectedPhase().getName())` in `OutcomesMilestonesEvidenceSummaryAction:226`, `PoliciesEvidenceSummaryAction:248`, `ExternalPartnersSummaryAction:207`, `InnovationsEvidenceSummaryAction:241` | 5 | File name / title text changes |
+| Null check `getName() != null` | `ProjectExpectedStudiesValidator:760, 774` | None |
+| DB view `qa_capdev_view` (`ph.name = 'AR'`), consumed by `qa_capdev` (`phase_name = 'AR' AND phase_year = '2019'`) | DB only; not in the repo (`git grep -i qa_capdev` and `git log --all -S qa_capdev`: 0) | None for M2: data only from units 1–28, 2017–2019. Ignored by the owner for now |
+
+**Reports.** No report decides by name:
+
+- Summaries pick the phase by `phaseID`, or by `cycle` + `year` through `findCycle`, which filters
+  `description`, `year` and `upkeep` (`BaseSummariesAction:305-340, 395-410`, `PhaseMySQLDAO:71-72`).
+- The `cycle` value sent to the Pentaho templates is `getSelectedCycle()`, which is the `description`
+  (`StudiesSummaryAction:271`, `ReportingSummaryAction:7925` and others). No `.prpt` under
+  `marlo-web/src/main/resources/pentaho` compares the cycle with a phase name; `POWBTemplate.prpt` carries
+  "POWB" only in static titles.
+- The summaries that compared the name on `staging` (`FundingSourcesSummaryAction`,
+  `ProjectsFundingSourcesSummaryAction`, `ExpectedDeliverablesSummaryAction`) have no name comparison on this
+  branch (converted in T05).
+- `report-orchestrator` resolves the phase by `phaseID`, or by `description` + `year` + `upkeep = 0` + unit
+  acronym (`phase-resolver.service.ts:33-60`); `cluster.repository.ts:122` selects `ph.description AS cycle`.
+  It never reads `phases.name`.
+
+**Other branches still decide by name**, so the name is free only where this branch is deployed:
+`origin/staging` / `origin/main` keep `BaseAction:6369, 7761` (`"POWB"`), `ProjectOutcomeValidator:193`,
+`FundingSourcesSummaryAction:498, 697, 1004`, `ProjectsFundingSourcesSummaryAction:611`,
+`ExpectedDeliverablesSummaryAction:356`, `deliverableMacros.ftl:367, 411`. `origin/dev` has the same, plus the
+redesign's `deliverableMacros.ftl:385` (`actualPhase.name != 'Progress' && !redesign`), which the `dev` merge
+must convert. Nothing in the NF-003 rule stops a new one, hence NF-006 / T16 (requirements §9, 2026-10-29).
