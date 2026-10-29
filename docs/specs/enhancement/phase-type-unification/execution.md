@@ -1305,3 +1305,17 @@ measured total is **3,018** lines (`validation-report.md` §8, W7), against the 
   filter and the alias test.
 - **spawns:** implementer 34 calls (19 + 7 + 8), ~347,000 tokens, ended complete; reviewer 11 calls (10 + 1),
   ~130,000 tokens, ended complete.
+
+### Branch events and re-verification (2026-10-29, after the validation)
+
+- **10:56 — `staging` merged into this branch by the owner** (`d3c539cbbd`, outside this run): 8 files from four
+  `staging` fixes (project focus replication `d65ccdcb75`, project list flagships/regions `093bbf6ba4`, partner
+  emails `4b9066c82a`, i18n `e5bfe769ee`). Checked: no phase names, no old methods, no migration.
+- **T11a** cherry-picked on top (`c0c9cbdade`), see the T11a entry.
+- **Re-verification on `c0c9cbdade`** (temporary detached worktree, removed): clean compile exit 0
+  (2415 / 1062 / 114); suite `-am` 1160 / 0 / 0 / 0; Checkstyle spec-wide vs `575a1c7aff` on 55 files: base 214
+  (143 `RegexpSinglelineJava` + 71 other) → now 71, no new violation; rule 0 hits tree-wide. Recorded as Addendum A
+  of `validation-report.md` (new W9: the project-focus fix collision between `staging` and `dev`).
+- **Tooling notes for later runs:** in zsh an unquoted `$FILES` is not word-split (Checkstyle got one argument and
+  reported 0); macOS bash 3.2 has no `mapfile`. A plain bash script with `while read` and `xargs -0` works
+  (`scratchpad/cs_delta.sh`).

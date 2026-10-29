@@ -242,3 +242,41 @@ ships with or before the code, and M2 only after it (A1, OPS-001).
 ```text
 /akili-archive enhancement/phase-type-unification
 ```
+
+---
+
+## Addendum A — Re-verification after the staging merge and T11a (2026-10-29)
+
+> Written by the Leader, not the auditor. It re-runs the gates on the new HEAD; it does not re-audit the spec.
+
+**Verdict:** the gates hold on `c0c9cbdade`. FN-005 and NF-003 are now met **with a recorded, time-limited exception**
+(T11a); every other row of this report stands.
+
+| Item | Value |
+|---|---|
+| Re-verified commit | `c0c9cbdade` on `phase-type-unification` |
+| What changed since `d50883cd86` | `581858f937` (W5–W7 spec fixes, this report); `d3c539cbbd` merge of `staging` (8 files: project focus replication, project list, partner emails, i18n; no phase names, no old methods); `c0c9cbdade` T11a deprecated aliases (`execution.md` T11a) |
+| Where | Temporary detached worktree at `c0c9cbdade`, removed afterwards; no build in the main checkout |
+
+| Gate | Result |
+|---|---|
+| Clean compile | exit 0; 2415 (marlo-data) + 1062 (marlo-web) + 114 test sources |
+| Full suite `-am` | 1160 run, 0 failures, 0 errors, 0 skipped (1159 + the T11a alias test) |
+| Checkstyle, spec-wide vs base `575a1c7aff` | 55 Java files changed by the spec (the 8 staging-merge files excluded), 51 existing at base. Base 214 = 143 `RegexpSinglelineJava` (the old calls the spec removed) + 71 other; now 71, none `RegexpSinglelineJava`. **No new violation** |
+| New rule tree-wide | 0 hits over `marlo-web`, `marlo-data`, `marlo-utils` `src` |
+| Migrations after M1 on HEAD | only M1 `V2_6_0_20261028_1817` and M2 `V2_6_0_20261029_0834` |
+
+**Row changes:**
+
+| Row | Was | Now | Why |
+|---|---|---|---|
+| FN-005 / NF-003 | PASS | **PASS with exception** | Six `@Deprecated` aliases exist until T11b; the rule still fails any new caller; only two exact markers are exempt (requirements §9, 2026-10-29) |
+| Task completion | 16/16 | 17/18 (T11b open) | T11b waits for A2-2607 and A2-2613 on `staging` |
+
+**New WARN:**
+
+| # | Finding | Recommendation |
+|---|---|---|
+| W9 | `staging` `d65ccdcb75` and `dev` `6ec459d8bc` fix the same project-focus duplication differently; a merge with `dev` makes `ProjectFocusManagerImplReplicationTest` fail (2 errors, NPE at `ProjectFocusManagerImpl.addProjectFocusPhase:58`; seen in the T11a merge simulation) | Not this spec's code. Settle with the owner of that fix at the `dev` merge |
+
+**Archive readiness:** unchanged in substance; archive after T11b, or archive with T11b carried as a follow-up spec.
