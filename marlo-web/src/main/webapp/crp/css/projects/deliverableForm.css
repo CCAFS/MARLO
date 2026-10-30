@@ -84,6 +84,12 @@
 .dlf .dlf-link:hover,
 .dlf .dlf-link:focus { background: var(--dlf-info-bg); color: var(--dlf-brand-dark); text-decoration: none; }
 .dlf .dlf-link--end { align-self: flex-end; margin-left: auto; }
+/* A field help link on the label line, right-aligned (Category: "View categories"). */
+.dlf .dlf-field--help { position: relative; }
+.dlf .dlf-field--help > .dlf-fieldHelp { position: absolute; top: -4px; right: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.dlf .dlf-field--help > .dlf-fieldHelp .dlf-link { height: 26px; }
+/* Closing the categories dialog hands focus back to the link: keep the focus look for keyboard focus only. */
+.dlf .dlf-field--help > .dlf-fieldHelp .dlf-link:focus:not(:focus-visible) { background: none; color: var(--dlf-brand); outline: 0; box-shadow: none; }
 
 .dlf .dlf-btn {
   display: inline-flex;
@@ -146,6 +152,7 @@
 .dlf .dlf-chip__dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .dlf .dlf-chip--fields.is-warn .dlf-chip__dot { background: var(--dlf-warn-dot); }
 .dlf .dlf-field--status .dlf-hint { margin-top: 6px; }
+.dlf .dlf-hint--warn { color: var(--dlf-required); }
 .dlf .dlf-chip--owner:hover,
 .dlf .dlf-chip--owner:focus { border-color: var(--dlf-line-strong); color: var(--dlf-ink); text-decoration: none; }
 .dlf .dlf-chip__avatar {

@@ -304,6 +304,16 @@ $(document).ready(function() {
   listCount($fundingList, $fundingList.closest('.dlf-list').find('.dlf-list__head label'));
   setAddLabel($fundingList.find('select.fundingSource'), text('add-funding-source'));
 
+  // Reporting: the "still On-going" warning under the status follows the selected status (2 = On-going).
+  // deliverableInfo.js disables the On-going option at reporting, and jQuery's val() returns null for a selected
+  // disabled option, so read the native value.
+  var $ongoingHint = $root.find('[data-dlf-ongoing-hint]');
+  if($ongoingHint.length) {
+    $root.on('change', 'select.status', function() {
+      $ongoingHint.prop('hidden', this.value !== '2');
+    });
+  }
+
   // ---- SHFRM: priority action cards with their sub-actions ----
   // The priority actions are an elementsListComponent (its hidden list keeps the posted ids and drives the remove
   // logic of deliverableShfrm.js), and each one has a block in #projectPartnersBlock with its sub-actions. The

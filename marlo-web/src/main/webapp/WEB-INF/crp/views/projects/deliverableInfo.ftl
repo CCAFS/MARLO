@@ -68,8 +68,12 @@
 
     [#-- Type and subtype inputs --]
     <div class="dlf-grid dlf-grid--2">
-      <div class="dlf-field">
+      [#-- The categories guide opens from a small link on the Category label line --]
+      <div class="dlf-field dlf-field--help">
         [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableCategory.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
+        <div id="popup" class="helpMessage3 dlf-fieldHelp">
+          <button type="button" id="opener" class="dlf-link">[@dlfIcon "info" /][@s.text name="project.deliverable.redesign.categories.help" /]</button>
+        </div>
       </div>
       <div class="dlf-field subType-select">
         [@customForm.select name="deliverable.deliverableInfo.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" placeholder="project.deliverable.redesign.placeholder.subCategory" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
@@ -98,12 +102,6 @@
           [/#if]
         </table>
       </div> <!-- End dialog-->
-
-      <div id="popup" class="helpMessage3">
-        <button type="button" id="opener" class="dlf-link">
-          [@dlfIcon "info" /][@s.text name="project.deliverable.generalInformation.deliverableType" /]
-        </button>
-      </div>
     </div>
   </section>
 
@@ -120,6 +118,10 @@
         [#-- A new deliverable at reporting is reported as complete --]
         [#if isDeliverableNew && editable && (reportingActive)]
           <p class="dlf-hint">[@s.text name="project.deliverable.redesign.newShouldBeComplete" /]</p>
+        [/#if]
+        [#-- At reporting the validator flags an On-going status: say why next to the field --]
+        [#if !isDeliverableNew && editable && (reportingActive)]
+          <p class="dlf-hint dlf-hint--warn" data-dlf-ongoing-hint[#if ((deliverable.deliverableInfo.status)!0) != 2] hidden[/#if]>[@s.text name="project.deliverable.redesign.status.ongoingAtReporting" /]</p>
         [/#if]
       </div>
 
@@ -244,17 +246,13 @@
               <div class="clearfix"></div>
             </li>
           [/#list]
-          <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.activities.empty" /]</p>
+          <p style="display:none;" class="emptyText">[@activitiesEmpty /]</p>
         [#else]
-          <p class="emptyText"> [@s.text name="project.deliverable.activities.empty" /]</p>
+          <p class="emptyText">[@activitiesEmpty /]</p>
         [/#if]
         </ul>
         [#if editable ]
           [@customForm.select name="deliverable.deliverableActivity.id" label="" showTitle=false  i18nkey="" listName="activities" keyFieldName="id"  displayFieldName="title"  header=true required=false  className="activity" editable=true/]
-
-          [#if !activities?has_content]
-            <div class="note"> [@s.text name="project.deliverable.activities.empty" /]  </div>
-          [/#if]
         [/#if]
       </div>
     </div>
@@ -291,17 +289,13 @@
               <div class="clearfix"></div>
             </li>
           [/#list]
-          <p style="display:none;" class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>
+          <p style="display:none;" class="emptyText">[@dlfListEmpty emptyKey="project.deliverable.fundingSource.empty" canPick=fundingSources?has_content noneKey="project.deliverable.redesign.fundingSource.none" linkAction="budgetByPartners" linkKey="project.deliverable.redesign.fundingSource.budgetLink" /]</p>
         [#else]
-          <p class="emptyText"> [@s.text name="project.deliverable.fundingSource.empty" /]</p>
+          <p class="emptyText">[@dlfListEmpty emptyKey="project.deliverable.fundingSource.empty" canPick=fundingSources?has_content noneKey="project.deliverable.redesign.fundingSource.none" linkAction="budgetByPartners" linkKey="project.deliverable.redesign.fundingSource.budgetLink" /]</p>
         [/#if]
         </ul>
         [#if editable ]
           [@customForm.select name="deliverable.fundingSource.id" label=""  showTitle=false  i18nkey="" listName="fundingSources" keyFieldName="id"  displayFieldName="composedName"  header=true required=true  className="fundingSource" editable=editable/]
-
-          [#if !fundingSources?has_content]
-            <div class="note"> [@s.text name="deliverable.fundingSourceListEmpty" /]  </div>
-          [/#if]
         [/#if]
       </div>
     </div>
@@ -382,12 +376,8 @@
         </div>
 
         [#if editable]
-          <p class="partnerListMsj dlf-hint">
-            [@s.text name="project.deliverable.generalInformation.partnerNotList" /]
-            <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'] [@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              [@s.text name="project.deliverable.generalInformation.partnersLink" /]
-            </a>
-          </p>
+          [#-- One line: text and link sit on the same line, so FreeMarker's whitespace stripping keeps the space --]
+          <p class="partnerListMsj dlf-hint">[@s.text name="project.deliverable.redesign.partners.notListed" /] <a href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/partners'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name="project.deliverable.redesign.partners.link" /]</a></p>
         [/#if]
       </div>
     </div>
@@ -413,6 +403,23 @@
       <p class="emptyText">[@s.text name="project.deliverable.redesign.shared.empty"][@s.param]${sectionNoun}[/@s.param][/@s.text]</p>
     [/#if]
   </div>
+[/#macro]
+
+[#-- The single empty state of the Activities and Funding source lists. When the project has nothing to pick, the
+     state says so and links to the section that adds them, instead of a second note under the select. --]
+[#macro dlfListEmpty emptyKey canPick linkAction="" linkKey="" noneKey=""]
+  [#if editable && !canPick && linkAction?has_content]
+    [#if noneKey?has_content][@s.text name=noneKey][@s.param]${sectionNoun}[/@s.param][/@s.text][#else][@s.text name=emptyKey /][/#if]
+    <a class="dlf-link" href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/${linkAction}'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name=linkKey /]</a>
+  [#else]
+    [@s.text name=emptyKey /]
+  [/#if]
+[/#macro]
+
+[#-- Activities link only where the Activities module is on --]
+[#macro activitiesEmpty]
+  [#local activitiesModule = action.hasSpecificities(action.crpActivitesModule()) /]
+  [@dlfListEmpty emptyKey="project.deliverable.activities.empty" canPick=activities?has_content linkAction=activitiesModule?then("activities", "") linkKey="project.deliverable.redesign.activities.mapLink" /]
 [/#macro]
 
 [#macro dlfIcon name]
