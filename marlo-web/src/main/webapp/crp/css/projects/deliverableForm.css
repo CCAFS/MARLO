@@ -2293,3 +2293,61 @@ html.dlf-guideOpen body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .dlf .dlf-card .onoffswitch .button-label { transition: none; }
 }
+
+/* ══════════ Read-only (closed phase or no edit permission: .dlf.is-readonly) ══════════
+   Same components as in edit mode, none of them actionable: no required marks, no add/remove controls, no editing
+   hints. Choices keep every option with the saved one marked; numbers stay in their boxes as selectable text. */
+.dlf.is-readonly .requiredTag { display: none !important; }
+.dlf.is-readonly .elementsListComponent .removeElement,
+.dlf.is-readonly .elementsListComponent .sortElement,
+.dlf.is-readonly .elementsListComponent .panel-body > .select2-container,
+.dlf.is-readonly .elementsListComponent .panel-body > select,
+.dlf.is-readonly .listindicators > .dlf-link,
+.dlf.is-readonly .elementsListComponent[listname="deliverable.geographicScopes"] .panel-body { display: none !important; }
+/* The scope list reads as its chips in edit mode too, so it needs no empty box */
+.dlf .dlf-scope .dlf-listEmpty { display: none; }
+.dlf .dlf-roEmpty { display: block; margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-subtle); }
+.dlf.is-readonly .dlf-card p.emptyText {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: 400 14px/1.55 Figtree, sans-serif;
+  color: var(--dlf-subtle);
+}
+.dlf.is-readonly .selectList > p { margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-ink); }
+/* Yes/No, radios and checkboxes: shown whole, the saved answer marked, nothing reacts */
+.dlf.is-readonly .onoffswitch .button-label,
+.dlf.is-readonly .radioFlat label,
+.dlf.is-readonly .inputsFlat label,
+.dlf.is-readonly .dlf-scopeChip { pointer-events: none; cursor: default; }
+.dlf.is-readonly .onoffswitch input:disabled + .button-label,
+.dlf.is-readonly .radioFlat input:disabled + label,
+.dlf.is-readonly .inputsFlat input + label { opacity: 1; }
+/* Numbers: the edit box, read-only, its text selectable */
+.dlf.is-readonly input.form-control[readonly] { cursor: text; background: var(--dlf-surface); color: var(--dlf-ink); }
+.dlf.is-readonly input.form-control[readonly]:focus { border-color: var(--dlf-line); box-shadow: none; outline: 0; }
+/* Contact persons: only the chosen ones */
+.dlf.is-readonly #dlf-partners .deliverableUserItem:not(:has(input:checked)) { display: none !important; }
+/* Countries: chips without "+ Add country" or remove */
+.dlf.is-readonly #dlf-geographicScope .select2-search--inline,
+.dlf.is-readonly #dlf-geographicScope .select2-selection__choice__remove { display: none !important; }
+.dlf.is-readonly #dlf-geographicScope .select2-container { pointer-events: none; }
+/* global.css paints read-only checkboxes as grey blocks: keep the edit mode's box, ticked when saved */
+.dlf.is-readonly .block-involveParticipants .inputsFlat input[type="checkbox"][readonly] + .checkbox-label { cursor: default !important; }
+.dlf.is-readonly .block-involveParticipants .inputsFlat input[type="checkbox"][readonly] + .checkbox-label:before {
+  border-color: #b4b4b4 !important;
+  background: #f4f4f4 !important;
+  cursor: default !important;
+}
+.dlf.is-readonly .block-involveParticipants .inputsFlat input[type="checkbox"][readonly]:checked + .checkbox-label:before { background: #3197EE !important; box-shadow: inset 0 0 0 4px #f4f4f4; }
+.dlf.is-readonly .dlf-level { pointer-events: none; cursor: default; }
+/* Countries: read-only box without the input look; "Not provided" when none was saved */
+.dlf.is-readonly #dlf-geographicScope .select2-selection--multiple { min-height: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; }
+.dlf.is-readonly #dlf-geographicScope .select2-selection--multiple:not(:has(.select2-selection__choice))::after {
+  content: "Not provided";
+  font: 400 14px/1.55 Figtree, sans-serif;
+  color: var(--dlf-subtle);
+}
+.dlf.is-readonly .dlf-card p.emptyText.center { text-align: left !important; }

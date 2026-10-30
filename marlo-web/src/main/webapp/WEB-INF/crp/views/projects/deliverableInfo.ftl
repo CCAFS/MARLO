@@ -158,7 +158,8 @@
         [#else]
           <div class="select">
             <label for="">[@s.text name="deliverable.newExpectedYear" /]:</label>
-            <p>${(deliverable.deliverableInfo.newExpectedYear)!}</p>
+            [#-- -1 is the stored "no new year": read it as the empty state --]
+            [#if ((deliverable.deliverableInfo.newExpectedYear)!-1) > 0]<p>${deliverable.deliverableInfo.newExpectedYear?c}</p>[#else]<p class="dlf-roEmpty">[@s.text name="project.deliverable.redesign.notProvided" /]</p>[/#if]
             <input type="hidden" class="yearNewExpected" name="deliverable.deliverableInfo.newExpectedYear" value="${(deliverable.deliverableInfo.newExpectedYear)!}" />
           </div>
         [/#if]
@@ -357,10 +358,9 @@
       </div>
 
       [#-- Other contact person that will contribute --]
-      [#assign displayOtherPerson = (!deliverable.otherPartnerships?has_content && !editable)?string('none','block') /]
       <div class="dlf-field dlf-divided">
         <div class="dlf-list__head">
-          <label for="" style="display:${displayOtherPerson}">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
+          <label for="">[@customForm.text name="projectDeliverable.otherContactContributing" readText=!editable/]</label>
           [#if editable && canEdit]
             <button type="button" class="dlf-btn dlf-btn--soft dlf-btn--sm addPartnerItem">
               [@dlfIcon "plus" /][@s.text name="form.buttons.addPartner" /]
@@ -371,7 +371,7 @@
           [#list (deliverable.otherPartnerships)![] as otherPartnership]
             [@deliverableMacros.deliverablePartnerMacro element=(otherPartnership)!{} name="deliverable.otherPartnerships" index=otherPartnership_index defaultType=2/]
           [#else]
-            <p class="simpleBox emptyText center"> [@s.text name="project.deliverable.partnership.emptyText" /] </p>
+            <p class="simpleBox emptyText center"> [@s.text name=editable?then("project.deliverable.partnership.emptyText", "project.deliverable.redesign.notProvided") /] </p>
           [/#list]
         </div>
 
@@ -398,7 +398,7 @@
   [#-- myProjects is every other cluster of the phase: with none, and nothing shared yet, there is nothing to pick --]
   [#local noSharedOptions = !((myProjects)?has_content) && !((deliverable.sharedDeliverables)?has_content) /]
   <div class="listClusters[#if noSharedOptions] is-empty[/#if]">
-    [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label="deliverable.sharedProjects"  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
+    [@customForm.elementsListComponent name="deliverable.sharedDeliverables" elementType="project" elementList=(deliverable.sharedDeliverables)![] label=editable?then("deliverable.sharedProjects", "deliverable.sharedProjects.readText")  listName="myProjects" keyFieldName="id" displayFieldName="composedName" required=false /]
     [#if noSharedOptions]
       <p class="emptyText">[@s.text name="project.deliverable.redesign.shared.empty"][@s.param]${sectionNoun}[/@s.param][/@s.text]</p>
     [/#if]
@@ -408,7 +408,9 @@
 [#-- The single empty state of the Activities and Funding source lists. When the project has nothing to pick, the
      state says so and links to the section that adds them, instead of a second note under the select. --]
 [#macro dlfListEmpty emptyKey canPick linkAction="" linkKey="" noneKey=""]
-  [#if editable && !canPick && linkAction?has_content]
+  [#if !editable]
+    [@s.text name="project.deliverable.redesign.notProvided" /]
+  [#elseif !canPick && linkAction?has_content]
     [#if noneKey?has_content][@s.text name=noneKey][@s.param]${sectionNoun}[/@s.param][/@s.text][#else][@s.text name=emptyKey /][/#if]
     <a class="dlf-link" href="[@s.url namespace="/${currentSection}" action='${(crpSession)!}/${linkAction}'][@s.param name="projectID"]${projectID}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">[@s.text name=linkKey /]</a>
   [#else]

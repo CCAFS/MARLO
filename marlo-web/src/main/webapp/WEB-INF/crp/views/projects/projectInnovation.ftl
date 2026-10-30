@@ -20,8 +20,8 @@
   "${baseUrlCdn}/global/js/fieldsValidation.js?20250825",
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#-- The form redesign reuses the deliverable form's (A2-2607): save state, labels and word counters --]
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261023-3",
-  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261023-6"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261030-3",
+  "${baseUrlMedia}/js/projects/innovationFormRedesign.js?20261030-1"
 ] /]
 
 [#assign moduleJS = [
@@ -36,8 +36,8 @@
   "${baseUrlMedia}/css/projects/projectInnovations.css?20250915",
   "${baseUrlCdn}/global/css/customDataTable.css?20250825",
   [#-- A2-2613: the deliverable form redesign (.dlf) plus what the innovation form adds (.inf) --]
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261021-1",
-  "${baseUrlMedia}/css/projects/innovationForm.css?20261023-9"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261030-5",
+  "${baseUrlMedia}/css/projects/innovationForm.css?20261030-1"
 ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "innovations" /]

@@ -583,13 +583,15 @@
     [#if label?has_content]
       <label for="${name}">[@s.text name=label /]</label>
     [/#if]
+    [#-- The redesigned deliverable form keeps the whole control in read-only, marked and inert --]
+    [#local inertChoice = !editable && (deliverableFormRedesign)!false /]
     <div class="button-wrap radio-inline">  
-      [#if editable]
-        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true"
+      [#if editable || inertChoice]
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if inertChoice || disabled]disabled[/#if]
                [#if (customValue == "true")!false]checked[/#if] />
         <label for="${name}-yes" class="${neutral?string('neutral','')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
 
-        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+        <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if inertChoice || disabled]disabled[/#if]
                [#if (customValue == "false")!false]checked[/#if] />
         <label for="${name}-no" class="${neutral?string('neutral','')} no-button-label button-label value-false [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
       [#else]
@@ -635,18 +637,20 @@
     [#if label?has_content]
       <label for="${name}">[@s.text name=label /]</label>
     [/#if]
+    [#-- The redesigned deliverable form keeps the whole control in read-only, marked and inert --]
+    [#local inertChoice = !editable && (deliverableFormRedesign)!false /]
     <div class="button-wrap radio-inline">  
-      [#if editable]
-        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true"
+      [#if editable || inertChoice]
+        <input id="${name}-yes" class="radio-input yesInput" type="radio" name="${name}" value="true" [#if inertChoice || disabled]disabled[/#if]
                [#if (customValue == "true")!false]checked[/#if] />
         <label for="${name}-yes" class="${neutral?string('neutral','')} yes-button-label button-label value-true [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
 
         [#if capacityEventType]
-          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if inertChoice || disabled]disabled[/#if]
                  [#if (customValue != "true")!false]checked[/#if] />
           <label class="button-label no-button-label-disabled">${noLabel}</label>
         [#else]
-          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false"
+          <input id="${name}-no" class="radio-input noInput" type="radio" name="${name}" value="false" [#if inertChoice || disabled]disabled[/#if]
                  [#if (customValue != "true")!false]checked[/#if] />
           <label for="${name}-no" class="${neutral?string('neutral','')} no-button-label button-label value-false [#if (customValue != "true")!false]radio-checked[/#if]">${noLabel}</label>
         [/#if]
@@ -924,6 +928,10 @@
           [/#list]
         [/#if]
       </ul>
+      [#-- The redesigned deliverable form: one boxed empty state, hidden by deliverableFormRedesign.js once a row exists --]
+      [#if (editable || forceEditable) && (deliverableFormRedesign)!false]
+        <p class="emptyText dlf-listEmpty"[#if elementList?has_content] hidden[/#if]>[@s.text name="project.deliverable.redesign.list.empty" /]</p>
+      [/#if]
       [#if editable || forceEditable]
         <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel} ${cssClass} [#if (hasPrimary)!false] primarySelect[/#if]">
           <option value="-1">[@s.text name="form.select.placeholder" /]</option>
@@ -932,7 +940,7 @@
           [/#list]
         </select>
       [#else]
-        [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
+        [#if !(elementList?has_content)][#if (deliverableFormRedesign)!false]<p class="dlf-roEmpty">[@s.text name="project.deliverable.redesign.notProvided" /]</p>[#else]<p class="font-italic"> No entries added yet.</p>[/#if][/#if]
       [/#if]
     </div>
     [#-- Element item Template --]
@@ -990,7 +998,7 @@
           [/#list]
         </select>
       [#else]
-        [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
+        [#if !(elementList?has_content)][#if (deliverableFormRedesign)!false]<p class="dlf-roEmpty">[@s.text name="project.deliverable.redesign.notProvided" /]</p>[#else]<p class="font-italic"> No entries added yet.</p>[/#if][/#if]
       [/#if]
     </div>
     [#-- Element item Template --]
@@ -1056,7 +1064,7 @@
           [/#list]
         </select>
       [#else]
-        [#if !(elementList?has_content)]<p class="font-italic"> No entries added yet.</p>[/#if]
+        [#if !(elementList?has_content)][#if (deliverableFormRedesign)!false]<p class="dlf-roEmpty">[@s.text name="project.deliverable.redesign.notProvided" /]</p>[#else]<p class="font-italic"> No entries added yet.</p>[/#if][/#if]
       [/#if]
     </div>
     [#-- Element item Template --]
@@ -1187,7 +1195,8 @@
               <div class="checkbox-list-item col-md-3">
                 [#local checkboxName = (checkbox.name!checkbox.name)?lower_case /]
                 [#local isChecked = element[checkboxName]!false /]
-                [@checkBoxFlat id="${customName}.${checkboxName}" name="${customName}.${checkboxName}" label="${checkbox.name}" disabled=false editable=true value="true" checked=isChecked cssClass="" cssClassLabel=""/]
+                [#-- Read-only page: the roles stay visible, marked and unchangeable --]
+                [@checkBoxFlat id="${customName}.${checkboxName}" name="${customName}.${checkboxName}" label="${checkbox.name}" disabled=!((editable)!true) editable=true value="true" checked=isChecked cssClass="" cssClassLabel=""/]
               </div>
             [/#list]
         [/#if] 

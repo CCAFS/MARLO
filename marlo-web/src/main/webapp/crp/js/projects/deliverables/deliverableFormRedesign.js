@@ -304,6 +304,15 @@ $(document).ready(function() {
   listCount($fundingList, $fundingList.closest('.dlf-list').find('.dlf-list__head label'));
   setAddLabel($fundingList.find('select.fundingSource'), text('add-funding-source'));
 
+  // Element lists (indicators, shared teams, regions...): the boxed empty state shows while the list has no row.
+  $root.find('.elementsListComponent > .panel-body > .dlf-listEmpty').each(function() {
+    var $empty = $(this);
+    var $list = $empty.siblings('ul.list').first();
+    watch($list, function() {
+      $empty.prop('hidden', $list.children('li').length > 0);
+    });
+  });
+
   // Reporting: the "still On-going" warning under the status follows the selected status (2 = On-going).
   // deliverableInfo.js disables the On-going option at reporting, and jQuery's val() returns null for a selected
   // disabled option, so read the native value.
@@ -483,6 +492,10 @@ $(document).ready(function() {
     refresh();
     $select.on('change', refresh);
     $levels.on('click', '.dlf-level', function() {
+      // Read-only: the select is rendered disabled so the levels show the saved answer without changing it
+      if($select.prop('disabled')) {
+        return;
+      }
       $select.val($(this).attr('data-level')).trigger('change');
     });
   });

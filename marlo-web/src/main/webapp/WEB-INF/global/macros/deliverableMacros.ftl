@@ -14,6 +14,15 @@
         <div class="col-md-6">
           [#-- Geographic Scope --]
           [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
+          [#-- Read-only in the redesigned form: the edit mode's scope chips, the saved ones marked, none clickable --]
+          [#if !editable && (deliverableFormRedesign)!false]
+            [#assign selectedScopeIds = ((deliverable.geographicScopes)![])?map(g -> (g.repIndGeographicScope.id)!0) /]
+            <div class="dlf-scopeChips dlf-scopeChips--ro" role="group">
+              [#list ((repIndGeographicScopes)![])?sort_by("id") as scope]
+                <span class="dlf-scopeChip[#if selectedScopeIds?seq_contains(scope.id)] is-on[/#if]" aria-disabled="true"><span class="dlf-scopeChip__box" aria-hidden="true"></span>${scope.name}</span>
+              [/#list]
+            </div>
+          [/#if]
         </div>
       </div>
       <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
@@ -124,13 +133,13 @@
           [#if marker.id < 3]<div class="col-md-4">
           <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
+          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=(editable || (deliverableFormRedesign)!false) disabled=!editable/]
           </div>
           [#elseif !(action.isAiccra())]
           <div class="col-md-3">
           <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=editable/]
+          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=(editable || (deliverableFormRedesign)!false) disabled=!editable/]
           </div>
           [/#if]
         [#else]
@@ -203,6 +212,8 @@
 [#local customName = "deliverable.deliverableParticipant" /]
 [#local capacityEventType = ((deliverable.deliverableInfo?has_content) && (deliverable.deliverableInfo.deliverableType?has_content) && (deliverable.deliverableInfo.deliverableType.id?has_content) && deliverable.deliverableInfo.deliverableType.id == 145)!false]
 
+[#-- The redesigned form shows the same controls in read-only, inert (readonly numbers, disabled choices) --]
+[#local inertField = !editable && (deliverableFormRedesign)!false /]
 [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(deliverable.deliverableInfo.status)]
 [#local hasParticipants = (deliverable.deliverableParticipant.hasParticipants?string)!""/]
   
@@ -273,7 +284,7 @@
           [@customForm.helpLabel name="involveParticipants.trainingPeriod.help" showIcon=false editable=editable/] 
         </label><br />
         [#list (repIndTrainingTerms)![] as item]
-          [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=editable /]
+          [@customForm.radioFlat id="trainingPeriod-${item.id}"  name="${customName}.repIndTrainingTerm.id" label="${item.name}"  value="${item.id}"  checked=(deliverable.deliverableParticipant.repIndTrainingTerm.id == item.id)!false cssClass="" cssClassLabel="font-normal" editable=(editable || inertField) disabled=inertField /]
         [#else]
           LIST NOT FOUND
         [/#list]
@@ -304,39 +315,39 @@
     <div class="form-group row block-participantNumbers">
       <div class="col-md-3">
         <div class="text-area-container">
-         [@customForm.input name="${customName}.participants" i18nkey="project.deliverable.redesign.participants.total" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+         [@customForm.input name="${customName}.participants" i18nkey="project.deliverable.redesign.participants.total" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=(editable || inertField) readOnly=inertField /]
         </div>
         <br>
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateParticipants" name="${customName}.estimateParticipants" label="involveParticipants.estimate" value="true" editable=(editable || inertField) disabled=inertField checked=((deliverable.deliverableParticipant.estimateParticipants)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
+          [@customForm.input name="${customName}.females" i18nkey="involveParticipants.females" help="involveParticipants.females.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=(editable || inertField) readOnly=inertField disabled=(deliverable.deliverableParticipant.dontKnowFemale)!false /]
         </div>
         <br>
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
-          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" value="true" editable=editable checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateFemales" name="${customName}.estimateFemales" label="involveParticipants.estimate" value="true" editable=(editable || inertField) disabled=inertField checked=((deliverable.deliverableParticipant.estimateFemales)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="dontKnowFemale" name="${customName}.dontKnowFemale" label="involveParticipants.dontKnow" value="true" editable=(editable || inertField) disabled=inertField checked=((deliverable.deliverableParticipant.dontKnowFemale)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-3">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.african" i18nkey="project.deliverable.redesign.participants.african" help="involveParticipants.african.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=editable /]
+          [@customForm.input name="${customName}.african" i18nkey="project.deliverable.redesign.participants.african" help="involveParticipants.african.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=(editable!false && validateIsProgressWithStatus!true) editable=(editable || inertField) readOnly=inertField /]
         </div>
         <br>
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateAfrican" name="${customName}.estimateAfrican" label="involveParticipants.estimate" value="true" editable=(editable || inertField) disabled=inertField checked=((deliverable.deliverableParticipant.estimateAfrican)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
       <div class="col-md-3 femaleNumbers">
         <div class="text-area-container">
-          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=editable /]
+          [@customForm.input name="${customName}.youth" i18nkey="involveParticipants.youth" help="involveParticipants.youth.help" placeholder="project.deliverable.redesign.placeholder.number" className="numericInput" required=validateIsProgressWithStatus!true editable=(editable || inertField) readOnly=inertField /]
         </div>
         <br>
         <div class="dottedBox">
-          [@customForm.checkBoxFlat id="estimateYouth" name="${customName}.estimateYouth" label="involveParticipants.estimate" value="true" editable=editable checked=((deliverable.deliverableParticipant.estimateYouth)!false) cssClass="" cssClassLabel="font-italic" /]
+          [@customForm.checkBoxFlat id="estimateYouth" name="${customName}.estimateYouth" label="involveParticipants.estimate" value="true" editable=(editable || inertField) disabled=inertField checked=((deliverable.deliverableParticipant.estimateYouth)!false) cssClass="" cssClassLabel="font-italic" /]
         </div>
       </div>
     </div>
@@ -1459,6 +1470,7 @@
     [#if (dpp.user.id == user.id)!false][#local deliverableUser = dpp ][#break][/#if]
   [/#list]
   
+  [#local inertField = !editable && (deliverableFormRedesign)!false /]
   [#-- The redesigned deliverable form draws the person's initials and email from these two attributes --]
   [#local personName = ((user.composedCompleteName)!"")?trim /]
   [#local personWords = personName?split(" ")?filter(w -> w?has_content) /]
@@ -1471,9 +1483,9 @@
     [/#if]
     [#-- User ID Radio/Check --]
     [#if isResponsable]
-      [@customForm.radioFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="radio-label-yes" inline=false /]
+      [@customForm.radioFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" disabled=inertField editable=(editable || inertField) value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="radio-label-yes" inline=false /]
     [#else]
-      [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=false editable=editable value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
+      [@customForm.checkBoxFlat id="${customID}" name="${customName}.user.id" label="${user.composedCompleteName}" help="" paramText="" helpIcon=true disabled=inertField editable=(editable || inertField) value="${user.id}" checked=isUserChecked cssClass="" cssClassLabel="" /]
     [/#if]
   </div>
 [/#macro]
