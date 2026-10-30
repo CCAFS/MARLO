@@ -390,8 +390,10 @@ public class DeliverableValidator extends BaseValidator {
           if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
             && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+            // The field has a value: the problem is that an On-going deliverable cannot be reported
             action.addMessage(action.getText("project.deliverable.generalInformation.status"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.status",
+              action.getText("project.deliverable.redesign.status.ongoingAtReporting"));
           }
 
           if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {

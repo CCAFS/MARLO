@@ -68,8 +68,12 @@
 
     [#-- Type and subtype inputs --]
     <div class="dlf-grid dlf-grid--2">
-      <div class="dlf-field">
+      [#-- The categories guide opens from a small link on the Category label line --]
+      <div class="dlf-field dlf-field--help">
         [@customForm.select name="deliverable.deliverableInfo.deliverableType.deliverableCategory.id" label=""  i18nkey="project.deliverable.generalInformation.type" listName="deliverableTypeParent" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm typeSelect" editable=editable/]
+        <div id="popup" class="helpMessage3 dlf-fieldHelp">
+          <button type="button" id="opener" class="dlf-link">[@dlfIcon "info" /][@s.text name="project.deliverable.redesign.categories.help" /]</button>
+        </div>
       </div>
       <div class="dlf-field subType-select">
         [@customForm.select name="deliverable.deliverableInfo.deliverableType.id" label=""  i18nkey="project.deliverable.generalInformation.subType" placeholder="project.deliverable.redesign.placeholder.subCategory" listName="deliverableSubTypes" keyFieldName="id"  displayFieldName="name"  multiple=false required=true  className=" form-control input-sm subTypeSelect" editable=editable/]
@@ -98,12 +102,6 @@
           [/#if]
         </table>
       </div> <!-- End dialog-->
-
-      <div id="popup" class="helpMessage3">
-        <button type="button" id="opener" class="dlf-link">
-          [@dlfIcon "info" /][@s.text name="project.deliverable.generalInformation.deliverableType" /]
-        </button>
-      </div>
     </div>
   </section>
 
@@ -120,6 +118,10 @@
         [#-- A new deliverable at reporting is reported as complete --]
         [#if isDeliverableNew && editable && (reportingActive)]
           <p class="dlf-hint">[@s.text name="project.deliverable.redesign.newShouldBeComplete" /]</p>
+        [/#if]
+        [#-- At reporting the validator flags an On-going status: say why next to the field --]
+        [#if !isDeliverableNew && editable && (reportingActive)]
+          <p class="dlf-hint dlf-hint--warn" data-dlf-ongoing-hint[#if ((deliverable.deliverableInfo.status)!0) != 2] hidden[/#if]>[@s.text name="project.deliverable.redesign.status.ongoingAtReporting" /]</p>
         [/#if]
       </div>
 
