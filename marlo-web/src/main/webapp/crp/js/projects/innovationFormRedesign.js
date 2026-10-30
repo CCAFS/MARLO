@@ -12,6 +12,15 @@ $(document).ready(function() {
   }
   var readOnly = $root.hasClass('is-readonly');
 
+  // Read-only: sortableList.js makes the external partners draggable; nothing may change on this page.
+  if(readOnly) {
+    setTimeout(function() {
+      $root.find('.ui-sortable').each(function() {
+        $(this).sortable('disable');
+      });
+    }, 0);
+  }
+
   // ---- Header chip and General Information note follow the Innovation/Bundle answer ----
   // The note only tells what this visit changed: it shows once Bundled innovation is chosen here.
   var $bundleChip = $root.find('[data-inf-bundle-chip]');

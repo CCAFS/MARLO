@@ -2026,3 +2026,7 @@ body:has(.dlf.inf) .p-multiselect-overlay .p-checkbox-box .p-checkbox-icon { wid
 .dlf.inf.is-readonly .inf-vc__help { display: none; }
 /* Read-only region chips have no remove button: the same space on both sides */
 .dlf.inf.is-readonly .dlf-card .regionalBlock .panel.tertiary .panel-body > ul.list > li.relationElement { padding-right: 10px; }
+
+/* Read-only: the partners cannot be reordered, so the drag handle goes (it outranks the generic read-only rule) */
+.dlf.inf.is-readonly .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement > .sortElement { display: none !important; }
+.dlf.inf.is-readonly .dlf-card .inf-externals .panel.tertiary .panel-body > ul.list > li.relationElement { cursor: default; }

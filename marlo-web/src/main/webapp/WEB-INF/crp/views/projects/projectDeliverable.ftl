@@ -11,12 +11,12 @@
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261030-1"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261030-3"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261030-2"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261030-5"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]
@@ -205,7 +205,8 @@
 
         [@s.form action=actionName method="POST" enctype="multipart/form-data" cssClass=""]       
         
-        <div class="dlf">
+        [#-- is-readonly: closed phase or no edit permission; deliverableForm.css makes every control inert --]
+        <div class="dlf[#if !editable] is-readonly[/#if]">
 
           [#-- Back to the list --]
           <a class="dlf-back" href="[@s.url action='${crpSession}/deliverableList'][@s.param name="projectID" value=project.id /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
