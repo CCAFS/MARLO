@@ -1,0 +1,113 @@
+# Reusable: asynchronous Jenkins finalization for CI-only pipelines.
+#
+# The caller runs its checks and calls this workflow ONLY when all of them passed. Jenkins records the run and
+# posts the final Slack message; GitHub Actions does NOT wait for it. On CI failure the caller notifies Slack
+# directly (slack-notify.reusable.yml) and never calls Jenkins.
+#
+# Same invocation and security pattern as jenkins-cd.reusable.yml (deploy hand-over), without artifacts:
+#   * `buildWithParameters`; the call fails unless Jenkins answers 201 with a queue item;
+#   * HTTPS only: `--proto =https`, no redirect is followed, every URL is built from the configured https base;
+#     only the queue item number and the build number are taken from Jenkins responses;
+#   * credentials reach curl through stdin, never on the command line or in the logs;
+#   * at most ~20 s to show the build number; the result is Jenkins' job (Slack).
+#
+# Jenkins job contract (string parameters):
+#   GIT_COMMIT_SHA  40-hex commit checked by the CI
+#   GIT_REF         refs/heads/<branch>
+#   GH_RUN_ID       <run id>-<attempt>
+#   GH_RUN_URL      link to this GitHub Actions run attempt
+name: jenkins-ci-finalize (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      jenkins-job:
+        description: Jenkins finalization job name, e.g. prms-reporting-tool-staging-ci
+        type: string
+        required: true
+      environment:
+        description: GitHub Environment of the hand-over (deployment branch rules apply)
+        type: string
+        required: true
+      jenkins-url:
+        description: Jenkins base URL, https only
+        type: string
+        default: https://automation.prms.cgiar.org
+    secrets:
+      JENKINS_USERNAME:
+        required: true
+      JENKINS_API_TOKEN:
+        required: true
+    outputs:
+      build-url:
+        description: Link to the Jenkins build, or to its queue item when the build had not started yet
+        value: ${{ jobs.finalize.outputs.build-url }}
+
+permissions: {}
+
+jobs:
+  finalize:
+    name: finalize ${{ inputs.jenkins-job }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: ${{ inputs.environment }}
+    outputs:
+      build-url: ${{ steps.finalize.outputs.build-url }}
+    steps:
+      - name: Request the Jenkins finalization build
+        id: finalize
+        env:
+          JENKINS_USERNAME: ${{ secrets.JENKINS_USERNAME }}
+          JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+          JENKINS_URL: ${{ inputs.jenkins-url }}
+          JOB: ${{ inputs.jenkins-job }}
+          COMMIT: ${{ github.sha }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          JENKINS_URL="${JENKINS_URL%/}"
+          [[ "$JENKINS_URL" =~ ^https://[A-Za-z0-9.-]+(:[0-9]+)?$ ]] || { echo "::error::the Jenkins URL must be https://<host> (fail closed)"; exit 1; }
+          [[ "$JOB" =~ ^[A-Za-z0-9._-]{1,128}$ ]] || { echo "::error::invalid Jenkins job name"; exit 1; }
+          [[ "$COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::invalid commit"; exit 1; }
+          run_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}"
+
+          # Authenticated call to "${JENKINS_URL}<path>". The path is always ours; curl refuses any protocol other
+          # than https (--proto =https) and follows no redirect (no -L). Credentials go through stdin.
+          jenkins() { # jenkins <path> <curl args...>
+            local path="$1"; shift
+            printf 'user = "%s:%s"\n' "$JENKINS_USERNAME" "$JENKINS_API_TOKEN" \
+              | curl --config - --proto '=https' --proto-redir '=https' --max-redirs 0 -sS --max-time 30 "$@" "${JENKINS_URL}${path}"
+          }
+
+          headers="$(mktemp)"
+          code="$(jenkins "/job/${JOB}/buildWithParameters" -o /dev/null -D "$headers" -w '%{http_code}' -X POST \
+            --data-urlencode "GIT_COMMIT_SHA=${COMMIT}" \
+            --data-urlencode "GIT_REF=${REF}" \
+            --data-urlencode "GH_RUN_ID=${run_id}" \
+            --data-urlencode "GH_RUN_URL=${run_url}")" || code="000"
+          if [ "$code" != "201" ]; then
+            echo "::error::Jenkins did not accept the request (HTTP ${code}). 400: the job has no parameters yet; 401/403: credentials or permissions; 3xx: redirect refused (https only)."
+            exit 1
+          fi
+          # Only the queue item NUMBER is taken from the Location header; its scheme and host are ignored.
+          item="$(tr -d '\r' <"$headers" | awk 'tolower($1)=="location:"{print $2}' | tail -n 1 | sed -nE 's#^.*/queue/item/([0-9]+)/?$#\1#p')"
+          rm -f "$headers"
+          [[ "$item" =~ ^[0-9]+$ ]] || { echo "::error::Jenkins accepted the request but returned no queue item"; exit 1; }
+          echo "Jenkins accepted the request: queue item ${item}"
+
+          # Best effort, at most ~20 s: show the build number. The final result is Jenkins' job (Slack).
+          build_url="${JENKINS_URL}/queue/item/${item}/"
+          for _ in 1 2 3 4; do
+            sleep 5
+            number="$(jenkins "/queue/item/${item}/api/json?tree=executable%5Bnumber%5D" 2>/dev/null | jq -r '.executable.number // empty' 2>/dev/null || true)"
+            if [[ "$number" =~ ^[0-9]+$ ]]; then build_url="${JENKINS_URL}/job/${JOB}/${number}/"; break; fi
+          done
+          echo "Jenkins: ${build_url}"
+          echo "build-url=${build_url}" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Jenkins CI finalization"
+            echo "- Job: \`${JOB}\`"
+            echo "- Build: ${build_url}"
+            echo "Jenkins records the run and posts the final result to Slack; this run does not wait for it."
+          } >> "$GITHUB_STEP_SUMMARY"

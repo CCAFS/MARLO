@@ -1,0 +1,104 @@
+# MARLO STAGING: continuous integration only (same model as CLARISA and Reporting Tool STAGING).
+#
+#   push to staging -> GitHub Actions (image build, not published) -> Jenkins marlo-staging-ci (verify + Jira + final Slack)
+#
+# CI only: no deploy, no SSH, no ECR push, no AWS access and no Secrets Manager read. STAGING is no longer deployed
+# (owner decision, 2026-10-30); the legacy job marlo-java-17 is kept in Jenkins for manual runs only and is no longer
+# started on push (jenkins-trigger-java-staging.yml runs only on workflow_dispatch).
+#
+# Build: the ORIGINAL Dockerfile (`mvn clean install -Dmaven.test.skip=true` inside it, as in the DEV pipeline; no
+# tests are added). The MARLO properties are read only at application start-up (@PropertySource), so the build needs
+# no secret: the image is built without them and discarded with the runner, never pushed.
+# Jenkins finalization (jenkins-ci-finalize.reusable.yml, verbatim from CLARISA/Reporting Tool STAGING): only when the
+# build passed; it does not wait. GitHub Environment marlo-staging (deployment branch staging only, no variables, no
+# secrets) is the gate of that hand-over; it uses the repository secrets JENKINS_USERNAME / JENKINS_API_TOKEN.
+# The job name `build image (marlo, not published)` is part of the Jenkins contract (stage "Verify CI Run"). Rename it
+# only together with the Jenkinsfile.
+#
+# Slack (one message per event, never duplicated):
+#   started     GitHub Actions, at the start of the run (slack-notify.reusable.yml)
+#   failed      GitHub Actions, when the build (or the Jenkins hand-over) failed or was cancelled; Jenkins is not called
+#   succeeded   Jenkins marlo-staging-ci, after verifying the run
+#   SLACK_NOTIFICATIONS_WEBHOOK_URL (incoming webhook of #notifications-platform). Without it the notifications are
+#   skipped with a warning; they never block the pipeline.
+#
+# Action pinning: every `uses:` is a full commit SHA (same SHA as the MARLO DEV pipeline):
+#   actions/checkout  v7.0.1  3d3c42e5aac5ba805825da76410c181273ba90b1
+name: marlo-staging-ci
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: marlo-staging-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------- start notification
+  notify-start:
+    name: notify start (Slack)
+    permissions: {}
+    uses: ./.github/workflows/slack-notify.reusable.yml
+    with:
+      status: started
+      title: MARLO NEW ENVIRONMENT
+      project: MARLO
+      environment-label: STAGING
+    secrets:
+      SLACK_NOTIFICATIONS_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_WEBHOOK_URL }}
+
+  # ---------------------------------------------------------------- build (no secrets, no AWS, not published)
+  # The legacy job runs no lint and no tests (none added, as in DEV). The image build compiles the WAR.
+  build-image:
+    name: build image (marlo, not published)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    env:
+      DOCKER_BUILDKIT: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build image (original Dockerfile, local only)
+        run: docker build --tag "local/marlo:${{ github.run_id }}-${{ github.run_attempt }}" .
+
+  # ---------------------------------------------------------------- Jenkins finalization
+  # Only when the build passed: Jenkins verifies the run, sends the Jira build info and posts the final Slack
+  # message. Does not wait.
+  finalize:
+    name: finalize (Jenkins marlo-staging-ci)
+    needs: build-image
+    if: needs.build-image.result == 'success'
+    permissions: {}
+    uses: ./.github/workflows/jenkins-ci-finalize.reusable.yml
+    with:
+      jenkins-job: marlo-staging-ci
+      environment: marlo-staging
+    secrets:
+      JENKINS_USERNAME: ${{ secrets.JENKINS_USERNAME }}
+      JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+
+  # ---------------------------------------------------------------- CI failure notification
+  # Only when the run failed before Jenkins accepted the request. Jenkins is not called on failure.
+  notify-ci-failure:
+    name: notify CI failure (Slack)
+    needs: [build-image, finalize]
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
+    permissions: {}
+    uses: ./.github/workflows/slack-notify.reusable.yml
+    with:
+      status: failed
+      title: MARLO NEW ENVIRONMENT
+      project: MARLO
+      environment-label: STAGING
+      detail: >-
+        build-image=${{ needs.build-image.result }},
+        jenkins-hand-over=${{ needs.finalize.result }}
+    secrets:
+      SLACK_NOTIFICATIONS_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_WEBHOOK_URL }}
