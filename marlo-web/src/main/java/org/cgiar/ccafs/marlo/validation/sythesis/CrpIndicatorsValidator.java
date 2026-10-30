@@ -109,7 +109,7 @@ public class CrpIndicatorsValidator extends BaseValidator {
       action.addActionMessage(
         " " + action.getText("saving.missingFields", new String[] {action.getValidationMessage().toString()}));
     }
-    if (action.isReportingActive()) {
+    if (action.isReportingPhase()) {
       this.saveMissingFields(ipLiaisonInstitution, APConstants.REPORTING, action.getActualPhase().getYear(),
         action.getActualPhase().getUpkeep(), ProjectSectionStatusEnum.CRP_INDICATORS.getStatus(), action);
     } else {

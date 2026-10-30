@@ -109,7 +109,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
     baseAction.setSession(session);
     PowbSynthesis powbSynthesis;
 
-    if (baseAction.isPlanningActive() && !baseAction.getActualPhase().getUpkeep()) {
+    if (baseAction.isPlanningPhase()) {
       long liaisonInstitutionID;
       user = userManager.getUser(baseAction.getCurrentUser().getId());
 
@@ -162,7 +162,7 @@ public class CanEditPowbSynthesisInterceptor extends AbstractInterceptor impleme
         canEdit = true;
       } else {
         if (baseAction.hasPermission(baseAction.generatePermission(Permission.POWB_SYNTHESIS_PERMISSION, params))) {
-          if (baseAction.isPlanningActive()) {
+          if (baseAction.isPlanningPhase() || baseAction.isProgressPhase()) {
             canEdit = true;
           }
         }

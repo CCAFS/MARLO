@@ -172,7 +172,7 @@
             <td class="name">
               [#-- Report Tag --]
               [#if isNew] <span class="label label-info">[@s.text name="global.new" /]</span> [/#if]
-              [#if reportingActive && !oldFormat && (item.projectExpectedStudyInfo.year == actualPhase.year) && isOwner && !isThisComplete]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
+              [#if reportingPhase && !oldFormat && (item.projectExpectedStudyInfo.year == actualPhase.year) && isOwner && !isThisComplete]<span class="label label-primary" title="Required for this cycle"><span class="glyphicon glyphicon-flash" ></span> Report</span>[/#if]
               [#if !oldFormat]<a href="${dlurl}" ${isOwner?string('','target="blank"')}>[/#if]
                 [#if oldFormat] <span class="label label-info">Old Format</span> [/#if]
                 [@utils.tableText value=shortTitle /]

@@ -111,7 +111,7 @@ public class CanEditReportSynthesisInterceptor extends AbstractInterceptor imple
     user = userManager.getUser(baseAction.getCurrentUser().getId());
 
     // Only for reporting
-    if (baseAction.isReportingActive()) {
+    if (baseAction.isReportingPhase()) {
 
       // Get The liaison Institution
       try {
@@ -162,7 +162,7 @@ public class CanEditReportSynthesisInterceptor extends AbstractInterceptor imple
         canEdit = true;
       } else {
         if (baseAction.hasPermission(baseAction.generatePermission(Permission.REPORT_SYNTHESIS_PERMISSION, params))) {
-          if (baseAction.isReportingActive()) {
+          if (baseAction.isReportingPhase()) {
             canEdit = true;
           }
         }

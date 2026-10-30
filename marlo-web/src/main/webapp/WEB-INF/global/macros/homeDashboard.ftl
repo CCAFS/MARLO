@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/utils.ftl" as utilities/]
 
-[#macro deliverablesHomeList deliverables={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
+[#macro deliverablesHomeList deliverables={} owned=true canValidate=false canEdit=false isReportingPhase=false namespace="/clusters" defaultAction="deliverableList" currentTable=true]
   <table class="projectsList" id="deliverables">
     <thead>
       <tr class="subHeader">
@@ -23,7 +23,7 @@
         [#-- Is Complete --]
         [#assign isDeliverableComplete = action.isDeliverableCompleteDashboard(deliverable.deliverableId, actualPhase.id)!false /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isDeliverableComplete ]
+        [#local toReport = reportingPhase && !isDeliverableComplete ]
 
         <tr>
           [#-- Deliverable ID --]
@@ -81,7 +81,7 @@
   </table>
 [/#macro]
 
-[#macro studiesHomeList studies={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="studyList" currentTable=true]
+[#macro studiesHomeList studies={} owned=true canValidate=false canEdit=false isReportingPhase=false namespace="/clusters" defaultAction="studyList" currentTable=true]
   <table class="projectsList" id="studies">
     <thead>
       <tr class="subHeader">
@@ -102,7 +102,7 @@
         [#-- Is Complete --]
         [#assign isThisComplete = (action.hasStudiesMissingFields('',study.studyId))!false /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isThisComplete ]
+        [#local toReport = reportingPhase && !isThisComplete ]
 
         <tr>
          [#-- Study ID --]
@@ -158,7 +158,7 @@
   </table>
 [/#macro]
 
-[#macro innovationsHomeList innovations={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="innovationList" currentTable=true]
+[#macro innovationsHomeList innovations={} owned=true canValidate=false canEdit=false isReportingPhase=false namespace="/clusters" defaultAction="innovationList" currentTable=true]
   <table class="projectsList" id="innovations">
     <thead>
       <tr class="subHeader">
@@ -180,7 +180,7 @@
         [#-- Is Complete --]
         [#assign isThisComplete = (action.hasInnovationMissingFields(innovation.innovationId))!false /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isThisComplete ]
+        [#local toReport = reportingPhase && !isThisComplete ]
 
         <tr>
           [#-- Project ID --]
@@ -242,7 +242,7 @@
   </table>
 [/#macro]
 
-[#macro policiesHomeList policies={} owned=true canValidate=false canEdit=false isReportingActive=false namespace="/clusters" defaultAction="policyList" currentTable=true]
+[#macro policiesHomeList policies={} owned=true canValidate=false canEdit=false isReportingPhase=false namespace="/clusters" defaultAction="policyList" currentTable=true]
   <table class="projectsList" id="studies">
     <thead>
       <tr class="subHeader">
@@ -263,7 +263,7 @@
         [#-- Is Complete --]
         [#assign isThisComplete = (action.hasPoliciesMissingFields(policy.policyId))!false /]
         [#-- To Report --]
-        [#local toReport = reportingActive && !isThisComplete ]
+        [#local toReport = reportingPhase && !isThisComplete ]
 
         <tr>
           [#-- Project ID --]

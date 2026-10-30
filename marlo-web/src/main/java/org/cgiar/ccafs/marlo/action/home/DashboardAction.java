@@ -314,7 +314,7 @@ public class DashboardAction extends BaseAction {
 
     }
     // Skip closed projects for Reporting
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       if (this.getActualPhase() != null && this.getActualPhase().getId() != null) {
         List<Project> closedProjects =
           projectManager.getCompletedProjects(this.getCrpID(), this.getActualPhase().getId());

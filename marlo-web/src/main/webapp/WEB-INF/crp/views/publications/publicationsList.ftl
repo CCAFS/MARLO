@@ -21,7 +21,7 @@
 [#import "/WEB-INF/crp/macros/publicationsListTemplate.ftl" as publicationsList /]
 
 <section class="container">
-  [#if reportingActive]
+  [#if reportingPhase]
   <article class="row" id="mainInformation">
     <div class="col-md-12">
     

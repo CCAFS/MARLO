@@ -154,7 +154,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
    * cycle. Its other fields are not required.
    */
   public void validateCancelledActivity(Activity activity, int index, String listName, BaseAction action) {
-    if (activity == null || !action.isReportingActive()) {
+    if (activity == null || !action.isReportingPhase()) {
       return;
     }
     List<String> params = new ArrayList<>();
@@ -240,7 +240,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
           InvalidFieldsMessages.EMPTYFIELD);
       }
 
-      if (action.isReportingActive()) {
+      if (action.isReportingPhase()) {
         if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
           Calendar cal = Calendar.getInstance();
           cal.set(Calendar.YEAR, action.getCurrentCycleYear());
@@ -255,7 +255,7 @@ public class ProjectActivitiesValidator extends BaseValidator {
       }
 
 
-      if (action.isReportingActive()) {
+      if (action.isReportingPhase()) {
         if (activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Ongoing.getStatusId())
           || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Extended.getStatusId())
           || activity.getActivityStatus() == Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())

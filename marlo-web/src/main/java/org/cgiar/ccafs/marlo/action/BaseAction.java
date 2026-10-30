@@ -468,7 +468,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   protected boolean next;
   private Map<String, Parameter> parameters;
-  private boolean planningActive;
   @Autowired
   private ProjectComponentLessonManager projectComponentLessonManager;
   @Autowired
@@ -484,7 +483,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   private LiaisonInstitutionManager liaisonInstitutionManager;
   @Autowired
   private DeliverableTypeManager deliverableTypeManager;
-  private boolean reportingActive;
 
   protected HttpServletRequest request;
 
@@ -1270,7 +1268,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       // Check if the shared cluster trainees specificity is active
       if (this.hasSpecificities(APConstants.DELIVERABLE_SHARED_CLUSTERS_TRAINEES_ACTIVE)) {
         // Check if there is no submission in progress phase
-        if (!this.isProgressActive()) {
+        if (!this.isProgressPhase()) {
           // Retrieve deliverable cluster participants
           List<DeliverableClusterParticipant> deliverableClusterParticipants = deliverableClusterParticipantManager
             .getDeliverableClusterParticipantByDeliverableAndPhase(deliverableID, phaseID);
@@ -1330,7 +1328,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       return false;
     }
 
@@ -1443,7 +1441,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       return false;
     }
 
@@ -3011,16 +3009,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public String getCurrentCycle() {
-    try {
-      if (this.isReportingActive()) {
-        return APConstants.REPORTING;
-      } else {
-        return APConstants.PLANNING;
-      }
-    } catch (Exception e) {
-      LOG.debug("Could not resolve the current cycle, so no cycle is returned", e);
-      return null;
+    if (this.isReportingPhase()) {
+      return APConstants.REPORTING;
     }
+    return APConstants.PLANNING;
   }
 
   public int getCurrentCycleYear() {
@@ -3142,7 +3134,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           deliverable.getDeliverableInfo(this.getActualPhase());
           if (deliverable.getDeliverableInfo() != null) {
 
-            if (this.isReportingActive() || this.isUpKeepActive()) {
+            if (this.isReportingPhase() || this.isProgressPhase()) {
               if (deliverable.getDeliverableInfo().isRequiredToComplete()
                 || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
                 deSet.add(deliverable);
@@ -3197,7 +3189,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           long projectDB = deliverable.getProject().getId().longValue();
           if (deliverable.getProject() != null && projectDB == projectID) {
             if (deliverable.getDeliverableInfo() != null) {
-              if (this.isReportingActive() || this.isUpKeepActive()) {
+              if (this.isReportingPhase() || this.isProgressPhase()) {
                 if (deliverable.getDeliverableInfo().isRequiredToComplete()
                   || deliverable.getDeliverableInfo().isStatusCompleteInNextPhases()) {
                   deSet.add(deliverable);
@@ -3238,7 +3230,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           long projectDB = deliverable.getProject().getId().longValue();
           if (deliverable.getProject() != null && projectDB == projectID) {
             if (deliverable.getDeliverableInfo() != null) {
-              if (this.isReportingActive() || this.isUpKeepActive()) {
+              if (this.isReportingPhase() || this.isProgressPhase()) {
                 if (deliverable.getDeliverableInfo().isRequiredToComplete()) {
                   deSet.add(deliverable);
                 }
@@ -3963,7 +3955,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       List<ProjectExpectedStudyInfo> projectExpectedStudyInfoList = projectExpectedStudyInfoListTemp.stream()
         .filter(c -> c != null && c.getProjectExpectedStudy() != null
           && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
-          && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+          && c.getPhase().isReportingPhase()
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
 
@@ -3979,7 +3971,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             projectExpectedStudyInfoListTemp.stream()
               .filter(c -> c != null && c.getProjectExpectedStudy() != null
                 && c.getProjectExpectedStudy().getId().longValue() == expectedStudy.longValue()
-                && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+                && c.getPhase().isReportingPhase()
                 && c.getPhase().getYear() < (this.getActualPhase().getYear()))
               .collect(Collectors.toList());
           if (!projectExpectedStudyInfoList2.isEmpty() && projectExpectedStudyInfoList2.get(0).getYear() != null) {
@@ -4227,7 +4219,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     List<ProjectInnovationInfo> projectInnovationInfoList = this.projectInnovationInfoManager.findAll().stream()
       .filter(c -> c != null && c.getProjectInnovation() != null
         && c.getProjectInnovation().getId().longValue() == innovation.longValue()
-        && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+        && c.getPhase().isReportingPhase()
         && c.getPhase().getYear() == (this.getActualPhase().getYear()))
       .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
@@ -4240,7 +4232,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<ProjectInnovationInfo> projectInnovationInfoList2 = this.projectInnovationInfoManager.findAll().stream()
           .filter(c -> c != null && c.getProjectInnovation() != null
             && c.getProjectInnovation().getId().longValue() == innovation.longValue()
-            && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+            && c.getPhase().isReportingPhase()
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
         if (!projectInnovationInfoList2.isEmpty() && projectInnovationInfoList2.get(0).getYear() != null) {
@@ -4581,7 +4573,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       this.projectPolicyInfoManager.findAll().stream()
         .filter(c -> c != null && c.getProjectPolicy() != null
           && c.getProjectPolicy().getId().longValue() == policy.longValue()
-          && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+          && c.getPhase().isReportingPhase()
           && c.getPhase().getYear() == (this.getActualPhase().getYear()))
         .collect(Collectors.toList());
     List<Integer> allYears = new ArrayList<>();
@@ -4594,7 +4586,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         List<ProjectPolicyInfo> projectPolicyInfoList2 = this.projectPolicyInfoManager.findAll().stream()
           .filter(c -> c != null && c.getProjectPolicy() != null
             && c.getProjectPolicy().getId().longValue() == policy.longValue()
-            && c.getPhase().getName().equals(APConstants.PROJECT_INDICATOR_PHASE_PREVIOUS_NAME)
+            && c.getPhase().isReportingPhase()
             && c.getPhase().getYear() < (this.getActualPhase().getYear()))
           .collect(Collectors.toList());
         if (!projectPolicyInfoList2.isEmpty() && projectPolicyInfoList2.get(0).getYear() != null) {
@@ -4963,7 +4955,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           project = this.projectManager.getProjectById(projectID);
 
           // Validate LP6 Contribution question
-          if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingActive()) {
+          if (this.hasSpecificities(APConstants.CRP_LP6_ACTIVE) && this.isReportingPhase()) {
 
             List<ProjectLp6Contribution> projectLp6Contributions = project.getProjectLp6Contributions().stream()
               .filter(pl -> pl.isActive() && pl.getPhase().equals(this.getActualPhase())).collect(Collectors.toList());
@@ -4995,7 +4987,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           for (ProjectOutcome projectOutcome : project.getOutcomes()) {
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectOutcome(projectOutcome.getId(),
-              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
             if (sectionStatus == null) {
               return false;
             }
@@ -5019,7 +5011,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               caStudies.add(caseStudyProject.getCaseStudy());
               sectionStatus =
                 this.sectionStatusManager.getSectionStatusByCaseStudy(caseStudyProject.getCaseStudy().getId(),
-                  this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+                  this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
               if (sectionStatus == null) {
                 return false;
 
@@ -5049,7 +5041,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           for (ProjectHighlight highlight : highlights) {
 
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectHighlight(highlight.getId(),
-              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
             if (sectionStatus == null) {
               return false;
 
@@ -5103,7 +5095,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           }
 
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            this.getCurrentCycleYear(), this.isProgressPhase(), section);
 
           // Check if exist deliverables without activities
           List<Deliverable> deliverablesMissingActivity = new ArrayList<>();
@@ -5161,7 +5153,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
              * status = new SectionStatus();
              * status.setCycle(this.getCurrentCycle());
              * status.setYear(this.getCurrentCycleYear());
-             * status.setUpkeep(this.isUpKeepActive());
+             * status.setUpkeep(this.isProgressPhase());
              * status.setProject(project);
              * status.setSectionName(ProjectSectionStatusEnum.ACTIVITIES.getStatus());
              * status.setMissingFields("missingDeliverableActivity");
@@ -5180,7 +5172,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           break;
 
         case BUDGET:
-          if (this.isReportingActive()) {
+          if (this.isReportingPhase()) {
             return true;
           } else {
             if (!this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
@@ -5192,7 +5184,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               .collect(Collectors.toList()).isEmpty()) {
               return false;
             }
-            if (this.isReportingActive() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
+            if (this.isReportingPhase() && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
               if (project.getProjectBudgetExecutions().stream()
                 .filter(d -> d.isActive() && d.getPhase() != null && d.getPhase().equals(this.getActualPhase()))
                 .collect(Collectors.toList()).isEmpty()) {
@@ -5201,7 +5193,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             }
 
             sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-              this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              this.getCurrentCycleYear(), this.isProgressPhase(), section);
             if (sectionStatus != null) {
               if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
                 return true;
@@ -5213,13 +5205,13 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         case DESCRIPTION:
         case LOCATIONS:
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            this.getCurrentCycleYear(), this.isProgressPhase(), section);
           if (sectionStatus != null) {
             if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
               return true;
             }
           } else {
-            if (this.isReportingActive()) {
+            if (this.isReportingPhase()) {
               return true;
             }
           }
@@ -5258,7 +5250,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           for (ProjectExpectedStudy projectExpectedStudy : projectStudies) {
             sectionStatus =
               this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(projectExpectedStudy.getId(),
-                this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+                this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
             if (sectionStatus != null) {
               if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() != 0) {
                 return false;
@@ -5284,7 +5276,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
             for (ProjectInnovation projectInnovation : innovations) {
               sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
-              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
               if (sectionStatus != null) {
               if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
                 return false;
@@ -5312,7 +5304,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           for (ProjectInnovation projectInnovation : innovations) {
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
-              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
             if (sectionStatus != null) {
               if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
                 return false;
@@ -5334,7 +5326,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           for (ProjectPolicy projectPolicy : policies) {
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(),
-              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+              this.getCurrentCycle(), this.getCurrentCycleYear(), this.isProgressPhase(), section);
             if (sectionStatus != null) {
               if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
                 return false;
@@ -5349,7 +5341,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         case LEVERAGES:
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            this.getCurrentCycleYear(), this.isProgressPhase(), section);
           if (sectionStatus != null) {
             if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
               return true;
@@ -5363,7 +5355,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
         default:
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-            this.getCurrentCycleYear(), this.isUpKeepActive(), section);
+            this.getCurrentCycleYear(), this.isProgressPhase(), section);
           if (sectionStatus != null) {
             // A status whose missing fields were never written is not a complete section
             if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
@@ -5631,6 +5623,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       roles.add(userRole.getRole());
     }
     return roles;
+  }
+
+  /**
+   * Label shown for a role. Uses the key role.acronym.&lt;acronym&gt; from the custom properties of the global unit or
+   * from global.properties; when no such key exists, falls back to Role.getAcronymLabel().
+   *
+   * @param role the role to label.
+   * @return the label of the role, or null when the role is null.
+   */
+  public String getRoleLabel(Role role) {
+    if (role == null) {
+      return null;
+    }
+    if (role.getAcronym() != null) {
+      String key = "role.acronym." + role.getAcronym();
+      if (this.hasKey(key)) {
+        return this.getText(key);
+      }
+    }
+    return role.getAcronymLabel();
   }
 
   public BaseSecurityContext getSecurityContext() {
@@ -5923,7 +5935,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     sectionStatus =
       this.sectionStatusManager.getSectionStatusByFundingSource(fundingSource.getId(), this.getCurrentCycle(),
-        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
+        this.getCurrentCycleYear(), this.isProgressPhase(), ProjectSectionStatusEnum.FUNDINGSOURCE.getStatus());
 
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields() != null) {
@@ -5950,7 +5962,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectInnovation(innovation.getId(), this.getCurrentCycle(),
-        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.INNOVATIONS.getStatus());
+        this.getCurrentCycleYear(), this.isProgressPhase(), ProjectSectionStatusEnum.INNOVATIONS.getStatus());
 
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields() != null) {
@@ -6149,7 +6161,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(), this.getCurrentCycle(),
-        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.POLICIES.getStatus());
+        this.getCurrentCycleYear(), this.isProgressPhase(), ProjectSectionStatusEnum.POLICIES.getStatus());
 
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields() != null) {
@@ -6219,7 +6231,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
     sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectExpectedStudy(expectedStudy.getId(), this.getCurrentCycle(),
-        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus());
+        this.getCurrentCycleYear(), this.isProgressPhase(), ProjectSectionStatusEnum.EXPECTEDSTUDIES.getStatus());
 
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields() != null) {
@@ -6342,16 +6354,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isAvailabePhase() {
     return this.availabePhase;
-  }
-
-  public boolean isAWPBActive() {
-    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB")
-        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   public boolean isCanEdit() {
@@ -7680,7 +7682,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isPhaseOne() {
     try {
-      if (this.isReportingActive() && this.getCrpSession().equals("ccafs") && this.getCurrentCycleYear() <= 2016) {
+      if (this.isReportingPhase() && this.getCrpSession().equals("ccafs") && this.getCurrentCycleYear() <= 2016) {
         return true;
       } else {
         return false;
@@ -7691,12 +7693,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public boolean isPlanningActive() {
-    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null) {
-      return this.getActualPhase().getDescription().equals(APConstants.PLANNING);
-    } else {
-      return false;
-    }
+  /**
+   * Tells whether the actual phase is the plan phase. It is false when there is no actual phase.
+   */
+  public boolean isPlanningPhase() {
+    Phase phase = this.getActualPhase();
+    return phase != null && phase.isPlanningPhase();
   }
 
   public boolean isPMU() {
@@ -7734,16 +7736,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       return false;
     }
 
-  }
-
-  public boolean isPOWB() {
-    if (this.getActualPhase() != null && this.getActualPhase().getName() != null
-      && (this.getActualPhase().getName().equals("POWB")
-        || this.getActualPhase().getName().equals(APConstants.POWB_ACRONYM))) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   public boolean isPowb2019() {
@@ -7817,13 +7809,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     return false;
   }
 
-  public boolean isProgressActive() {
-    try {
-      return this.getActualPhase().getUpkeep();
-    } catch (Exception e) {
-      LOG.debug("Could not read the upkeep flag of the actual phase, so the progress is reported as inactive", e);
-      return false;
-    }
+  /**
+   * Tells whether the actual phase is the progress phase. It is false when there is no actual phase.
+   */
+  public boolean isProgressPhase() {
+    Phase phase = this.getActualPhase();
+    return phase != null && phase.isProgressPhase();
   }
 
   /**
@@ -8061,15 +8052,66 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     }
   }
 
-  public boolean isReportingActive() {
-    boolean reporting = false;
-    if (this.getActualPhase() != null && this.getActualPhase().getDescription() != null
-      && APConstants.REPORTING != null) {
-      reporting = this.getActualPhase().getDescription().equals(APConstants.REPORTING);
-    } else {
-      reporting = false;
-    }
-    return reporting;
+  /**
+   * Tells whether the actual phase is the reporting phase. It is false when there is no actual phase.
+   */
+  public boolean isReportingPhase() {
+    Phase phase = this.getActualPhase();
+    return phase != null && phase.isReportingPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isPlanningPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isPOWB() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isPlanningPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isPlanningPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isAWPBActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isPlanningPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isProgressPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isUpKeepActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isProgressPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isProgressPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isProgressActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isProgressPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isReportingPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isReportingActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isReportingPhase();
+  }
+
+  /**
+   * @deprecated use {@link #isPlanningPhase()}; alias kept until the deliverables and innovations
+   *             redesign reaches staging (ENH-PHASE-TYPE-UNIFICATION-001 T11b).
+   */
+  @Deprecated
+  public boolean isPlanningActive() { // CHECKSTYLE.OFF: RegexpSinglelineJava - deprecated alias until T11b
+    return this.isPlanningPhase() || this.isProgressPhase();
   }
 
   public boolean isRole(String roleAcronym) {
@@ -8198,12 +8240,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    */
   public boolean isSectionStatusStoredOnValidation(String sectionName) {
     return false;
-  }
-
-  public boolean isUpKeepActive() {
-
-    return this.getActualPhase().getUpkeep();
-
   }
 
   /**
@@ -8435,7 +8471,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         && c.getComponentName().equals(this.getActionName().replaceAll(crp.getAcronym() + "/", "")))
       .collect(Collectors.toList());
 
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       List<ProjectComponentLesson> lessonsPreview = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
           && c.getCycle().equals(APConstants.PLANNING)
@@ -8450,7 +8486,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void loadLessons(GlobalUnit crp, Project project, String actionName) {
 
     Project projectDB = this.projectManager.getProjectById(project.getId());
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
 
       List<ProjectComponentLesson> lessons = projectDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
@@ -8476,7 +8512,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public void loadLessonsOutcome(GlobalUnit crp, ProjectOutcome projectOutcome) {
 
     ProjectOutcome projectOutcomeDB = this.projectOutcomeManager.getProjectOutcomeById(projectOutcome.getId());
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
 
       List<ProjectComponentLesson> lessons = projectOutcomeDB.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
@@ -8509,7 +8545,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void loadLessonsSynthesis(GlobalUnit crp, IpProgram program) {
 
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
 
       List<ProjectComponentLesson> lessons = program.getProjectComponentLessons().stream()
         .filter(c -> c.isActive() && c.getYear() == this.getActualPhase().getYear()
@@ -8689,7 +8725,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       ipProgram.getProjectComponentLesson().setId(null);
     }
 
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       ipProgram.getProjectComponentLesson().setCycle(APConstants.REPORTING);
     } else {
       ipProgram.getProjectComponentLesson().setCycle(APConstants.PLANNING);
@@ -8919,14 +8955,6 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public void setPhaseID(Long phaseID) {
     this.phaseID = phaseID;
-  }
-
-  public void setPlanningActive(boolean planningActive) {
-    this.planningActive = planningActive;
-  }
-
-  public void setReportingActive(boolean reportingActive) {
-    this.reportingActive = reportingActive;
   }
 
   public void setSave(boolean save) {
@@ -9245,7 +9273,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
     boolean result = true;
     try {
 
-      if (this.isProgressActive() && status != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
+      if (this.isProgressPhase() && status != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
         result = false;
       }
       return result;
@@ -9258,7 +9286,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   public boolean validatePolicy(long policyID) {
     SectionStatus sectionStatus =
       this.sectionStatusManager.getSectionStatusByProjectPolicy(policyID, this.getCurrentCycle(),
-        this.getCurrentCycleYear(), this.isUpKeepActive(), ProjectSectionStatusEnum.POLICIES.getStatus());
+        this.getCurrentCycleYear(), this.isProgressPhase(), ProjectSectionStatusEnum.POLICIES.getStatus());
     if (sectionStatus != null) {
       if (sectionStatus.getMissingFields().length() != 0) {
         return false;

@@ -382,7 +382,7 @@
   </div>
   <div class="simpleBox">
   
-  [#if actualPhase.name != 'Progress' && !redesign]
+  [#if !progressPhase && !redesign]
     <div class="note--2 text-center">
       <p>[@s.text name="involveParticipants.sharedClusters.note" /]</p>
     </div>
@@ -426,7 +426,7 @@
         [#assign index = 0]
         [#list list as cluster]
 
-          [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (actualPhase.name != 'Progress') /]
+          [#assign isSharedCluster = (action.isSubmit(cluster.project.id)) && (!progressPhase) /]
           [#if isSharedCluster][#local anySubmitted = true /][/#if]
 
           <input type="hidden" name="${customName}[${index}].id" class="valueId" value="${(cluster.id)!0}" valueIndex="${(cluster.id)!0}" clusterIdParticipant="${(cluster.project.id)!0}" />
@@ -1603,7 +1603,7 @@
   <div class="simpleBox form-group">
     <div class=" row yesNoInputDeliverable">
       <span class="col-md-9">
-      [#if reportingActive]
+      [#if reportingPhase]
         <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.reporting" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>
       [#else]
         <label class="yesNoLabel" for="">[@s.text name="deliverable.shfrmContribution.question.planning" /] [@customForm.req required=validateIsProgressWithStatus!true /]</label>
@@ -1619,7 +1619,7 @@
       <hr />
       
       [#-- Shfrm Contribution Narrative --]
-      [#if reportingActive]
+      [#if reportingPhase]
         [#-- Previous narrative --]
         [#if deliverable.deliverableInfo.shfrmContributionNarrative?has_content]       
           <div class="form-group">

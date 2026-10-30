@@ -200,7 +200,7 @@ public class SendNotificationEmailAction extends BaseAction {
     values[5] = actualPhase.getDescription() == null ? "" : actualPhase.getDescription().toLowerCase();
 
 
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
       message.append(this.getText("submit.email.message", values));
     } else {
       message.append(this.getText("submit.email.message.noPDF", values));

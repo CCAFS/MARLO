@@ -82,7 +82,7 @@
                   [@customForm.textArea name="project.outcomesPandr[${indexYear}].statement" required=yearRequired && editable className="limitWords-150" showTitle=false editable=yearEditable /]
                 </div>
                 [#-- -- -- REPORTING BLOCK -- -- --]
-                [#if reportingActive && (year == currentCycleYear) ]
+                [#if reportingPhase && (year == currentCycleYear) ]
                 <div class="fieldFocus">
                   <div class="fullPartBlock bs-callout bs-callout-info " style="padding-bottom:20px !important;">
                     <label>[@customForm.text name="projectOutcomes.annualProgressCurrentReporting" readText=!editable param="${year}" /]:[@customForm.req required=editable /]</label>
@@ -130,7 +130,7 @@
             [#-- Lessons learnt from last planning/reporting cycle --]
                [#if (project.projectComponentLessonPreview.lessons?has_content)!false]
             <div class="fullBlock">
-               <label>[@customForm.text name="projectPartners.previousLessons.${reportingActive?string('reporting','planning')}" param="${reportingActive?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]:</label>
+               <label>[@customForm.text name="projectPartners.previousLessons.${reportingPhase?string('reporting','planning')}" param="${reportingPhase?then((actualPhase.year)!0, ((actualPhase.year)!0) - 1)}" /]:</label>
                     <div class="textArea "><p>${project.projectComponentLessonPreview.lessons}</p></div>
                  
             </div>
@@ -140,7 +140,7 @@
               <input type="hidden" name="project.projectComponentLesson.id" value=${(project.projectComponentLesson.id)!"-1"} />
                     <input type="hidden" name="project.projectComponentLesson.year" value="${(actualPhase.year)!0}" />
                     <input type="hidden" name="project.projectComponentLesson.componentName" value="${actionName}">
-                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectOutcomes.lessons.${reportingActive?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
+                    [@customForm.textArea name="project.projectComponentLesson.lessons" i18nkey="projectOutcomes.lessons.${reportingPhase?string('reporting','planning')}" required=!project.bilateralProject editable=editable /]
                  </div>
           </div>
           [/#if]
@@ -165,7 +165,7 @@
 [#function isYearRequired year]
   [#if project.endDate??]
     [#assign endDate = (project.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
       [#return  (year == currentCycleYear) && (endDate gte year) ]

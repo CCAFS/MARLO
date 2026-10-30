@@ -608,8 +608,7 @@ public class ProjectsFundingSourcesSummaryAction extends BaseSummariesAction imp
           && df.getDeliverable().getDeliverableInfo(this.getSelectedPhase()) != null && (
           // If upkeep phase is selected
           (df.getDeliverable().getDeliverableInfo().getStatus() != null
-            && (this.getSelectedPhase().getName().equals("UpKeep")
-              || this.getSelectedPhase().getName().equals("Progress"))
+            && this.getSelectedPhase().isProgressPhase()
             && ((df.getDeliverable().getDeliverableInfo().getYear() == this.getSelectedYear())
               || (df.getDeliverable().getDeliverableInfo().getNewExpectedYear() != null
                 && df.getDeliverable().getDeliverableInfo().getNewExpectedYear() == this.getSelectedYear())))

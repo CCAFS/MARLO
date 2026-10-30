@@ -33,7 +33,7 @@
 [@utilities.helpBox name="annualReport.${currentStage}.help" /]
     
 <section class="container">
-  [#if !reportingActive]
+  [#if !reportingPhase]
     <div class="borderBox text-center">Annual Report is availbale only at Reporting cycle</div>
   [#else]
     [#-- Program (Flagships and PMU) --]

@@ -44,7 +44,7 @@
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
     <p class="col-md-10">
       [#if (project.projectInfo.isProjectEditLeader())!false]
-        [#if (reportingActive)!false]
+        [#if (reportingPhase)!false]
           [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
         [#else]
           [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison${isCenterProject?string('Center', '')}" /][/@s.param] [/@s.text]
@@ -68,7 +68,7 @@
     <div class="containerText col-md-12">
       <p class="alertText">
         [#if (project.projectInfo.isProjectEditLeader())!false]
-          [#if (reportingActive)!false]
+          [#if (reportingPhase)!false]
             [@s.text name="projectDescription.help3" ] [@s.param][@s.text name="global.managementLiaison" /][/@s.param] [/@s.text]
           [#else]
             [@s.text name="projectDescription.help2" ] [@s.param][@s.text name="global.managementLiaison${isCenterProject?string('Center', '')}" /][/@s.param] [/@s.text]
@@ -192,7 +192,7 @@
             </div>
             
             [#-- Project status --]
-            <div class="form-group ${reportingActive?string('fieldFocus','')}">
+            <div class="form-group ${reportingPhase?string('fieldFocus','')}">
               <div class="form-group row">
                 <div class="col-md-6">
                   [#if editable || editStatus]

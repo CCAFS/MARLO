@@ -9,7 +9,7 @@
     - archived: the list of completed and cancelled projects, which also offers the summary PDF.
 --]
 [#macro projectsList projects=[] tableId="projects" canEdit=false archived=false namespace="/" defaultAction="description" ariaLabel=""]
-  [#local showBudget = !archived && !reportingActive && !planningActive && !centerGlobalUnit /]
+  [#local showBudget = !archived && !reportingPhase && !(planningPhase || progressPhase) && !centerGlobalUnit /]
   <table class="clustersTable" id="${tableId}" aria-label="${ariaLabel}">
     <thead>
       <tr>
@@ -171,7 +171,7 @@
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.4 6.6 11.4 12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                   [@s.text name="projectsList.status.submitted" /]
                 </span>
-              [#elseif !archived && !reportingActive]
+              [#elseif !archived && !reportingPhase]
                 <span class="cl-pending" title="[@s.text name="projectsList.status.readyForLeader.help" /]">[@s.text name="projectsList.status.readyForLeader" /]</span>
               [/#if]
             [/#if]

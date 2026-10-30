@@ -80,7 +80,7 @@
             <span class="ptn-note__icon" aria-hidden="true">i</span>
             <div class="ptn-note__body">
               <p class="ptn-note__text">
-                [#if projectEditLeader][#if reportingActive][@s.text name="projectPartners.help3" /][#else][@s.text name="projectPartners.help2" ][@s.param][@s.text name="global.managementLiaison" /][/@s.param][/@s.text][/#if][#else][@s.text name="projectPartners.help1" /][/#if]
+                [#if projectEditLeader][#if reportingPhase][@s.text name="projectPartners.help3" /][#else][@s.text name="projectPartners.help2" ][@s.param][@s.text name="global.managementLiaison" /][/@s.param][/@s.text][/#if][#else][@s.text name="projectPartners.help1" /][/#if]
               </p>
               <div class="ptn-note__extra" id="ptn-note-extra" data-ptn-note-extra hidden></div>
               <div class="ptn-legend" id="ptn-legend" hidden>

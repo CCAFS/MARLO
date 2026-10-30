@@ -39,7 +39,7 @@
   </div>
 [/#if]
 <input type="hidden"  name="expectedStudy.id" value="${(expectedStudy.id)!}" />
-[#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingActive/]
+[#assign isOutcomeCaseStudy = ((expectedStudy.projectExpectedStudyInfo.studyType.id == 1)!false) && reportingPhase/]
 [#assign indexTab = 0]
 [#if isOutcomeCaseStudy]
   <!--  <div class="container helpText viewMore-block">

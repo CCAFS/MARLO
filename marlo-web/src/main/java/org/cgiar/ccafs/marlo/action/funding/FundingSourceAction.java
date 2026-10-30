@@ -216,7 +216,7 @@ public class FundingSourceAction extends BaseAction {
       || this.hasPermissionNoBase(
         this.generatePermission(Permission.FUNDING_SOURCE_EDIT_PERMISSION, loggedCrp.getAcronym()));
 
-    return permission && !this.isReportingActive();
+    return permission && !this.isReportingPhase();
   }
 
   @Override
@@ -299,7 +299,7 @@ public class FundingSourceAction extends BaseAction {
    */
   public boolean canMapProjects(int year) {
 
-    if (!this.isReportingActive()) {
+    if (!this.isReportingPhase()) {
       if (this.fundingSource != null) {
 
         if (this.fundingSource.getFundingSourceInstitutions() != null) {

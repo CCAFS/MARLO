@@ -68,7 +68,7 @@ public class SafeguardValidator extends BaseValidator {
     // id without this guard throws for every cluster whose type is missing.
     Long clusterTypeId = projectInfo.getClusterType() == null ? null : projectInfo.getClusterType().getId();
     if (!Boolean.TRUE.equals(projectInfo.getAdministrative())
-      && (action.isUpKeepActive() || action.isReportingActive()) && clusterTypeId != null
+      && (action.isProgressPhase() || action.isReportingPhase()) && clusterTypeId != null
       && clusterTypeId.longValue() != 2 && clusterTypeId.longValue() != 3) {
 
       action.setInvalidFields(new HashMap<>());

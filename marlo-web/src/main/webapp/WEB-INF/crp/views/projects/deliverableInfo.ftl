@@ -129,7 +129,7 @@
       <div id="deliverableYear" class="dlf-field">
          [#assign dbExpectedYear = ((deliverable.deliverableInfo.year)!currentCycleYear)  ]
          [#if isDeliverableNew]
-         	[#if reportingActive]
+         	[#if reportingPhase]
           	[#assign projectExpectedYear = "project.projectInfo.getYearActualPhase(${currentCycleYear})"]
           [#else]
           	[#assign projectExpectedYear = "project.projectInfo.getAllYearsPhase(${currentCycleYear})"]

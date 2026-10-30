@@ -125,7 +125,7 @@ public class CanEditCrpIndicatorsInterceptor extends AbstractInterceptor impleme
       canEdit = true;
     } else {
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.CRP_INDICATORS_PERMISSION, params))) {
-        if (baseAction.isReportingActive()) {
+        if (baseAction.isReportingPhase()) {
           canEdit = true;
         }
       }

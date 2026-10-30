@@ -63,7 +63,7 @@
 <div class="container helpText viewMore-block">
   <div class="helpMessage infoText">
     <img class="col-md-2" src="${baseUrlCdn}/global/images/icon-help.jpg" />
-    <p class="col-md-10">[#if reportingActive] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
+    <p class="col-md-10">[#if reportingPhase] [@s.text name="project.deliverable.help2" /] [#else] [@s.text name="project.deliverable.help1" /] [/#if] </p>
   </div>
   <div style="display:none" class="viewMore closed"></div>
 </div>
@@ -550,7 +550,7 @@
 </div>
 
 
-[#if reportingActive || upKeepActive]
+[#if reportingPhase || progressPhase]
   [@deliverableMacros.authorMacro element={} index=-1 name="deliverable.users"  isTemplate=true /]
   [@deliverableMacros.flagshipMacro element={} index=-1 name="deliverable.crps"  isTemplate=true /]
 [/#if]

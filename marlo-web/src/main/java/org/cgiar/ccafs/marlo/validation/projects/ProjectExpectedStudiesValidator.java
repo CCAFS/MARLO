@@ -518,7 +518,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     try {
       if (projectExpectedStudy.getProjectExpectedStudyInfo() != null
         && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus() != null) {
-        if (action.isProgressActive() && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus()
+        if (action.isProgressPhase() && projectExpectedStudy.getProjectExpectedStudyInfo().getStatus()
           .getId() != Integer.parseInt(ProjectStatusEnum.Complete.getStatusId())) {
           result = true;
         }
@@ -708,7 +708,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
     // Validate Alliance OICR ID - only mandatory to AWPB phases
-    // if (action.isAWPBActive()) {
+    // if (action.isPlanningPhase()) {
 
     // }
 
@@ -752,7 +752,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     }
 
 
-    if (!action.isPOWB()) {
+    if (!action.isPlanningPhase()) {
       // Not AWPB phase - just for reporting and progress
       if (!resultProgessValidate) {
         // validate Milestones
@@ -913,7 +913,7 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
         }
 
         // Validate Quantification
-        if (baseAction.isReportingActive()) {
+        if (baseAction.isReportingPhase()) {
           if (projectExpectedStudy.getQuantifications() != null) {
             for (int i = 0; i < projectExpectedStudy.getQuantifications().size(); i++) {
               this.validateQuantifications(action, projectExpectedStudy.getQuantifications().get(i), i);

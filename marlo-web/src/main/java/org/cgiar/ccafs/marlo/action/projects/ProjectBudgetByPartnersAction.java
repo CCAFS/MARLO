@@ -139,7 +139,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public boolean canAddFunding(long institutionID) {
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       return false;
     }
 
@@ -181,7 +181,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
 
   public boolean canEditFunding(long type, long institutionID) {
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       return false;
     }
     if (type == 1) {
@@ -204,7 +204,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public boolean canEditFundingSourceBudget() {
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       return false;
     }
 
@@ -213,7 +213,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   }
 
   public boolean canEditGender() {
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       return false;
     }
 
@@ -223,7 +223,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
 
   public boolean canSearchFunding(long institutionID) {
 
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       return false;
     }
 
@@ -699,7 +699,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
             && (c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 3
               || c.getFundingSource().getFundingSourceInfo(this.getActualPhase()).getStatus() != 5))
           .collect(Collectors.toList()));
-        if ((this.isReportingActive() || this.isUpKeepActive())
+        if ((this.isReportingPhase() || this.isProgressPhase())
           && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
           project.setBudgetExecutions(project.getProjectBudgetExecutions().stream()
             .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().equals(this.getActualPhase()))
@@ -767,7 +767,7 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
       if (project.getBudgets() != null) {
         project.getBudgets().clear();
       }
-      if ((this.isReportingActive() || this.isUpKeepActive())
+      if ((this.isReportingPhase() || this.isProgressPhase())
         && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
         if (project.getBudgetExecutions() != null) {
           project.getBudgetExecutions().clear();
@@ -781,11 +781,11 @@ public class ProjectBudgetByPartnersAction extends BaseAction {
   @Override
   public String save() {
     if (this.hasPermission("canEdit")) {
-      if (this.isPlanningActive()) {
+      if (this.isPlanningPhase() || this.isProgressPhase()) {
         this.saveBasicBudgets();
       }
 
-      if ((this.isReportingActive() || this.isUpKeepActive())
+      if ((this.isReportingPhase() || this.isProgressPhase())
         && this.hasSpecificities(this.getCrpEnableBudgetExecution())) {
         this.saveDeleteBudgetExecutions();
       }

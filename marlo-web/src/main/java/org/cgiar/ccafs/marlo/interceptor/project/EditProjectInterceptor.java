@@ -282,7 +282,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
         // check permission to edit budget execution in reporting
-        if (baseAction.isReportingActive() && actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())) {
+        if (baseAction.isReportingPhase() && actionName.contains(ProjectSectionStatusEnum.BUDGET.getStatus())) {
           canEdit = baseAction.canEditAnyProjectExecution(projectId);
         }
 

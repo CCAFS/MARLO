@@ -304,7 +304,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         }
       }
 
-      if (!baseAction.isUpKeepActive() && baseAction
+      if (!baseAction.isProgressPhase() && baseAction
         .hasPermission(baseAction.generatePermission(Permission.PROJECT_DELIVERABLE_EDIT_PERMISSION, params))) {
         if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null) {
           if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
@@ -314,7 +314,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         }
 
 
-        if ((baseAction.isReportingActive() || baseAction.isUpKeepActive())
+        if ((baseAction.isReportingPhase() || baseAction.isProgressPhase())
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -323,7 +323,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
           canEdit = true;
         }
 
-        if ((baseAction.isReportingActive() || baseAction.isUpKeepActive())
+        if ((baseAction.isReportingPhase() || baseAction.isProgressPhase())
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus() != null
           && deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().intValue() == Integer
             .parseInt(ProjectStatusEnum.Complete.getStatusId())
@@ -347,7 +347,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = false;
       }
 
-      if (baseAction.isPlanningActive() && !baseAction.isUpKeepActive()) {
+      if (baseAction.isPlanningPhase()) {
         if (!this.canEditDeliverable(deliverable, phase)) {
           canEdit = false;
           baseAction.setEditStatus(true);
@@ -367,7 +367,7 @@ public class EditDeliverableInterceptor extends AbstractInterceptor implements S
         canEdit = false;
       }
 
-      if (baseAction.isPlanningActive() && !baseAction.isUpKeepActive()) {
+      if (baseAction.isPlanningPhase()) {
         if (deliverable.getDeliverableInfo(baseAction.getActualPhase()).getStatus().longValue() == Long
           .parseLong(ProjectStatusEnum.Cancelled.getStatusId())
 

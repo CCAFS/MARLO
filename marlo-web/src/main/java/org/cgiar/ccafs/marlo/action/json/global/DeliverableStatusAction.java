@@ -73,7 +73,7 @@ public class DeliverableStatusAction extends BaseAction {
 
       status.put(projectStatusEnum.getStatusId(), projectStatusEnum.getStatus());
     }
-    if (this.isPlanningActive() && !this.isUpKeepActive()) {
+    if (this.isPlanningPhase()) {
 
       if (deliverable.getDeliverableInfo(this.getActualPhase()).getStatus() != null
         && deliverable.getDeliverableInfo(this.getActualPhase()).getStatus().intValue() != Integer

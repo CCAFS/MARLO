@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!-- ENH-PHASE-TYPE-UNIFICATION-001 NF-006: the REST layer looks phases up by name on purpose (its DTOs carry the
+     name), so rest/ is outside the PhaseNameLiteral rule of marlo-checkstyle.xml. Checkstyle 8.18 has no
+     SuppressionSingleFilter, so the exclusion lives in this file and names the rule by its id. -->
+<suppressions>
+  <suppress id="PhaseNameLiteral" files="[\\/]marlo[\\/]rest[\\/]"/>
+  <!-- NF-006 covers main sources only. Tests may keep a deliberate name-literal fixture (for example
+       PhaseNameSiteTruthTableTest, which pins the old behavior). RemovedPhaseTypeMethod (NF-003) still applies there. -->
+  <suppress id="PhaseNameLiteral" files="[\\/]src[\\/]test[\\/]"/>
+</suppressions>

@@ -363,7 +363,7 @@ public class FundingSourceListAction extends BaseAction {
       || this.hasPermissionNoBase(
         this.generatePermission(Permission.FUNDING_SOURCE_EDIT_PERMISSION, loggedCrp.getAcronym()));
 
-    return permission && !this.isReportingActive();
+    return permission && !this.isReportingPhase();
   }
 
 

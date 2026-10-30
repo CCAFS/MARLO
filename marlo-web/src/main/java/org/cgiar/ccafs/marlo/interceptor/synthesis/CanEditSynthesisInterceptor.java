@@ -138,7 +138,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
       canEdit = true;
     } else {
       if (baseAction.hasPermission(baseAction.generatePermission(Permission.SYNTHESIS_BY_MOG_PERMISSION, params))) {
-        if (baseAction.isReportingActive()) {
+        if (baseAction.isReportingPhase()) {
           canEdit = true;
         }
       }

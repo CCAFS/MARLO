@@ -183,7 +183,7 @@ public class ProjectBudgetsValidator extends BaseValidator {
         // if project is in pre-setting phase doesn't validate budget execution
         if (project.getProjecInfoPhase(action.getActualPhase()) != null
           && project.getProjecInfoPhase(action.getActualPhase()).isProjectEditLeader()) {
-          if ((action.isReportingActive() || action.isUpKeepActive())
+          if ((action.isReportingPhase() || action.isProgressPhase())
             && action.hasSpecificities(action.getCrpEnableBudgetExecution())) {
             if (project.getBudgetExecutions() != null && project.getBudgetExecutions().size() > 0) {
               int i = 0;

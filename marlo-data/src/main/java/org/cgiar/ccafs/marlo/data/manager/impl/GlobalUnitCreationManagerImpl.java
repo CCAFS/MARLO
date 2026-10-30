@@ -68,6 +68,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalUnitCreationManagerImpl.class);
   private static final String CRP_ADMIN_ROLE_ACRONYM = "CRP-Admin";
   private static final String SUPER_ADMIN_ROLE_ACRONYM = "superadmin";
+  private static final String PROGRESS_PHASE_NAME = "Progress";
 
   /** Parameter format used for boolean-like specificities (true/false). */
   private static final int PARAMETER_FORMAT_BOOLEAN = 1;
@@ -516,6 +517,23 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
     return null;
   }
 
+  /**
+   * Names a new phase by its type: Planning, Progress or Reporting. A phase whose type is none of the three keeps the
+   * name it was given.
+   */
+  private String resolvePhaseName(Phase phase) {
+    if (phase.isPlanningPhase()) {
+      return APConstants.PLANNING;
+    }
+    if (phase.isProgressPhase()) {
+      return PROGRESS_PHASE_NAME;
+    }
+    if (phase.isReportingPhase()) {
+      return APConstants.REPORTING;
+    }
+    return phase.getName();
+  }
+
   private List<Phase> createPhases(GlobalUnit globalUnit, List<PhaseInput> phasesInput) {
     List<Phase> createdPhases = new ArrayList<>();
 
@@ -528,6 +546,7 @@ public class GlobalUnitCreationManagerImpl implements GlobalUnitCreationManager 
       phase.setStartDate(phaseInput.getStartDate());
       phase.setEndDate(phaseInput.getEndDate());
       phase.setUpkeep(phaseInput.isUpkeep() != null ? phaseInput.isUpkeep() : Boolean.FALSE);
+      phase.setName(this.resolvePhaseName(phase));
       phase.setEditable(phaseInput.isEditable() != null ? phaseInput.isEditable() : Boolean.TRUE);
       phase.setVisible(phaseInput.isVisible() != null ? phaseInput.isVisible() : Boolean.TRUE);
       createdPhases.add(phaseManager.savePhase(phase));

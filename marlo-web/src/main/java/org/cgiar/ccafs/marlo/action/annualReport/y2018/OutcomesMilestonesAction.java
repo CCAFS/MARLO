@@ -423,9 +423,8 @@ public class OutcomesMilestonesAction extends BaseAction {
     String stripped = StringUtils.stripToNull(milestoneComposedId);
     Phase current = this.getActualPhase();
     if (current != null) {
-      while (current.getName() != null
-        && ((!StringUtils.containsIgnoreCase(current.getName(), "POWB"))
-          && (!StringUtils.containsIgnoreCase(current.getName(), APConstants.POWB_ACRONYM)))
+      // Walk over the progress and reporting phases only: an untyped phase stops the loop, as a nameless one did
+      while ((current.isProgressPhase() || current.isReportingPhase())
         && current.getYear() != this.getCurrentCycleYear() + 1) {
         current = current.getNext();
       }

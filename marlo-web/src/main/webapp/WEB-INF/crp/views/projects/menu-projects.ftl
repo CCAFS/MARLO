@@ -20,7 +20,7 @@
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
       { 'slug': 'budgetByPartners',  'name': 'Budget',  'action': 'budgetByPartners',  'active': false, 'show': false  },
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': false , 'show': false  }
-      [#--  { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true , 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject}  --]
+      [#--  { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': true , 'show': action.getCountProjectFlagships(project.id) && !reportingPhase && isCrpProject}  --]
       ]
     }
     
@@ -42,19 +42,19 @@
     { 'title': 'Indicators', 'show': isCrpProject,
       'items': [
       { 'slug': 'contributionsCrpList',  'name': 'projects.menu.contributionsCrpList',  'action': 'contributionsCrpList',  'active': true, 'show':!phaseOne  && ((!project.projectInfo.administrative)!false) , "showCheck": isGlobalUnitProject},
-      { 'slug': 'contributionsLP6',  'name': 'projects.menu.contributionLP6',  'action': 'contributionsLP6',  'active': true, 'show': action.hasSpecificities('crp_lp6_active') && reportingActive && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false), "showCheck": isGlobalUnitProject},
+      { 'slug': 'contributionsLP6',  'name': 'projects.menu.contributionLP6',  'action': 'contributionsLP6',  'active': true, 'show': action.hasSpecificities('crp_lp6_active') && reportingPhase && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false), "showCheck": isGlobalUnitProject},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject },
       { 'slug': 'projectPolicies',  'name': 'projects.menu.policies',           'action': 'policies',  'active': false, 'show': false, "showCheck": isGlobalUnitProject, "development": false},
-      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingActive, "showCheck": isGlobalUnitProject },
-      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive, "showCheck": isGlobalUnitProject, "development": false }
+      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingPhase, "showCheck": isGlobalUnitProject },
+      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingPhase, "showCheck": isGlobalUnitProject, "development": false }
       ]
     },
     { 'title': 'Outputs', 'show': true,
       'items': [
       { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne && isCrpProject , "showCheck": isGlobalUnitProject},
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true , "showCheck": isGlobalUnitProject, "development": false },
-      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': action.hasSpecificities("innovation_section_active"),'show': action.hasSpecificities("innovation_section_active") &&((reportingActive || upKeepActive) && isCrpProject) , "showCheck": isGlobalUnitProject, "development": false },
+      { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': action.hasSpecificities("innovation_section_active"),'show': action.hasSpecificities("innovation_section_active") &&((reportingPhase || progressPhase) && isCrpProject) , "showCheck": isGlobalUnitProject, "development": false },
       { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': false ,'show': false, "showCheck": isGlobalUnitProject }
       ]
     },
@@ -67,12 +67,12 @@
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': false, 'show':false, "showCheck": false },      
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': false, 'show': false, "showCheck": false},
-      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
+      { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingPhase && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
     },
-    { 'title': 'Safeguards', 'show':(UpKeepActive || reportingActive) && !project.projectInfo.administrative && (isCountryCluster || isRegionalCluster),
+    { 'title': 'Safeguards', 'show':(progressPhase || reportingPhase) && !project.projectInfo.administrative && (isCountryCluster || isRegionalCluster),
       'items': [
-      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (UpKeepActive || reportingActive) && !project.projectInfo.administrative && (isCountryCluster || isRegionalCluster), "showCheck": true, "development": false }
+      { 'slug': 'safeguards',  'name': 'projects.menu.safeguards',  'action': 'safeguards',  'active': true  ,'show': (progressPhase || reportingPhase) && !project.projectInfo.administrative && (isCountryCluster || isRegionalCluster), "showCheck": true, "development": false }
       ]
     },
     { 'title': 'Feedback', 'show': action.hasSpecificities(action.feedbackModule()),
@@ -187,7 +187,7 @@
   [/#if]
 
   [#-- Open for Project Leaders --]
-  [#if !reportingActive && canSwitchProject && ( completedPreProject || projectEditLeader) && !crpClosed && !centerGlobalUnit]
+  [#if !reportingPhase && canSwitchProject && ( completedPreProject || projectEditLeader) && !crpClosed && !centerGlobalUnit]
     [#if !submission]
     <div class="clusterMenu-status__toggle">
       [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader" /]
@@ -218,7 +218,7 @@
         data-text-missing="[@s.text name="projects.menu.status.sectionMissing" /]"></div>
     [/#if]
 
-    [#assign enableUnsubmitButton = !upKeepActive ]
+    [#assign enableUnsubmitButton = !progressPhase ]
 
     [#if action.canAccessSuperAdmin()]
 

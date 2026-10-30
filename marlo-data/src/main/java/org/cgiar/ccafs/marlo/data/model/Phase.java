@@ -650,8 +650,32 @@ public class Phase extends MarloBaseEntity implements java.io.Serializable, IAud
     return true;
   }
 
+  /**
+   * Tells whether this is the plan phase: a Planning phase that is not flagged as upkeep.
+   * The answer reads only {@code description} and {@code upkeep}, never the name, and it is false when either is null.
+   * The planning cycle is "plan phase or progress phase", it has no method of its own.
+   */
+  public boolean isPlanningPhase() {
+    return APConstants.PLANNING.equals(description) && Boolean.FALSE.equals(upkeep);
+  }
+
+  /**
+   * Tells whether this is the progress phase: a phase flagged as upkeep. It is false when {@code upkeep} is null.
+   */
+  public boolean isProgressPhase() {
+    return Boolean.TRUE.equals(upkeep);
+  }
+
   public Boolean isReporting() {
-    return description.equals(APConstants.REPORTING);
+    return this.isReportingPhase();
+  }
+
+  /**
+   * Tells whether this is the reporting phase: its {@code description} is Reporting. It is false when the
+   * description is null.
+   */
+  public boolean isReportingPhase() {
+    return APConstants.REPORTING.equals(description);
   }
 
   public void setClusters(Set<CrpClusterOfActivity> clusters) {

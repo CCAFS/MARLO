@@ -419,7 +419,7 @@ public class ProjectOutcomeAction extends BaseAction {
     } catch (Exception e) {
       LOG.error(e + "error to filter canceled deliverable");
     }
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       try {
         // Exclude deliverables extended in AR
         currentDeliverables = currentDeliverables.stream()
@@ -1465,7 +1465,7 @@ public class ProjectOutcomeAction extends BaseAction {
          * } else {
          */
 
-        if (this.isReportingActive()) {
+        if (this.isReportingPhase()) {
           Phase previousPhase = phaseManager.findPreviousPhase(this.getActualPhase().getId());
           // get Project outcome for the last phase
           List<ProjectOutcome> outcomesLastPhase = new ArrayList<>();
@@ -1517,7 +1517,7 @@ public class ProjectOutcomeAction extends BaseAction {
 
     this.fillAllMilestonesYearsList();
 
-    if (this.isReportingActive()) {
+    if (this.isReportingPhase()) {
       if (projectOutcomeLastPhase != null) {
         CrpProgramOutcome crpProgramOutcomeLastPhase;
         crpProgramOutcomeLastPhase =
@@ -1861,7 +1861,7 @@ public class ProjectOutcomeAction extends BaseAction {
             projectOutcomeIndicatorDB.setValue(projectOutcomeIndicator.getValue());
             projectOutcomeIndicator.setPhase(this.getActualPhase());
 
-            if (this.isReportingActive()) {
+            if (this.isReportingPhase()) {
               projectOutcomeIndicatorDB.setValueReporting(projectOutcomeIndicator.getValueReporting());
               projectOutcomeIndicatorDB.setAchievedNarrative(projectOutcomeIndicator.getAchievedNarrative());
             }
@@ -1933,7 +1933,7 @@ public class ProjectOutcomeAction extends BaseAction {
              * client)
              */
 
-            if (this.isPlanningActive()) {
+            if (this.isPlanningPhase() || this.isProgressPhase()) {
               projectMilestoneDB.setNarrativeTarget(projectMilestone.getNarrativeTarget());
               projectMilestoneDB.setYear(projectMilestone.getYear());
               if (projectMilestone.getExpectedUnit() != null) {
@@ -2036,7 +2036,7 @@ public class ProjectOutcomeAction extends BaseAction {
   private ProjectOutcome saveProjectOutcome() {
 
 
-    if (this.isPlanningActive()) {
+    if (this.isPlanningPhase() || this.isProgressPhase()) {
 
 
       if (projectOutcome.getExpectedUnit() != null) {

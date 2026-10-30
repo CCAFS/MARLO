@@ -103,8 +103,8 @@
                       <div class="form-group row">
                         [#--  1. Indicator target value --]
                         <div class="col-md-4">
-                          [#assign isTargetValueRequired = isYearRequired(year) && (action.hasPermission("target") || (!projectIndicator.target?has_content)) && !reportingActive /]
-                          [#assign isTargetValueEditable = editable && (currentCycleYear lte year) && action.hasPermission("target") && !reportingActive /]
+                          [#assign isTargetValueRequired = isYearRequired(year) && (action.hasPermission("target") || (!projectIndicator.target?has_content)) && !reportingPhase /]
+                          [#assign isTargetValueEditable = editable && (currentCycleYear lte year) && action.hasPermission("target") && !reportingPhase /]
                           <label>[@s.text name="projectCcafsOutcomes.targetValue" /]:[@customForm.req required=isTargetValueRequired /]</label>
                           [#if isTargetValueEditable]
                             <input type="text" class="projectIndicatorTarget form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.target" value="${(projectIndicator.target)!}"/> 
@@ -126,7 +126,7 @@
                           [/#if]
                         </div>
                         [#-- 2. Cumulative target --]
-                        [#if (currentCycleYear lte year) && reportingActive]
+                        [#if (currentCycleYear lte year) && reportingPhase]
                         <div class="col-md-4">
                           <label>[@s.text name="projectCcafsOutcomes.comulativeTarget" /]:</label>
                           <div class="input"><p>${(action.calculateAcumulativeTarget(year,projectIndicator))!'Cannot be Calculated'}</p></div>
@@ -134,7 +134,7 @@
                         [/#if]
                         [#-- 3. Reporting target --]
                         [#-- -- -- REPORTING BLOCK -- -- --]
-                        [#if reportingActive && (year == currentCycleYear)]
+                        [#if reportingPhase && (year == currentCycleYear)]
                           <div class="col-md-4 " >
                             <label title='[@s.text name="projectCcafsOutcomes.achievedTarget.help" /]'>[@s.text name="projectCcafsOutcomes.achievedTarget" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("achieved") /]</label>
                             [#if editable && (currentCycleYear lte year) && action.hasPermission("achieved")]
@@ -149,8 +149,8 @@
                       [#-- Indicator target narrative description --]
                       <div class="row">
                         <div class="textArea form-group col-md-12 ">
-                          <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") && !reportingActive /]</label>
-                          [#if editable && (currentCycleYear lte year) && action.hasPermission("description") && !reportingActive ]
+                          <label>[@s.text name="projectCcafsOutcomes.targetNarrative" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("description") && !reportingPhase /]</label>
+                          [#if editable && (currentCycleYear lte year) && action.hasPermission("description") && !reportingPhase ]
                             <textarea class="projectIndicatorDescription form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.description">${projectIndicator.description!}</textarea>
                           [#else]
                             [#if !projectIndicator.description?has_content]
@@ -164,7 +164,7 @@
                       </div>
                       
                       [#-- -- -- REPORTING BLOCK -- -- --]
-                      [#if reportingActive && (year == currentCycleYear)]
+                      [#if reportingPhase && (year == currentCycleYear)]
                         [#-- Narrative for your achieved targets, including evidence --]
                         <div class="row">
                           <div class="textArea form-group col-md-12 ">
@@ -186,8 +186,8 @@
                       [#-- The expected annual gender and social inclusion contribution to this CCAFS outcome --]
                       <div class="row">
                         <div class="textArea form-group col-md-12">
-                          <label>[@s.text name="projectCcafsOutcomes.targetGender" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("gender") && !reportingActive /]</label>
-                          [#if editable && (currentCycleYear lte year) && action.hasPermission("gender") && !reportingActive]
+                          <label>[@s.text name="projectCcafsOutcomes.targetGender" /]:[@customForm.req required=isYearRequired(year) && action.hasPermission("gender") && !reportingPhase /]</label>
+                          [#if editable && (currentCycleYear lte year) && action.hasPermission("gender") && !reportingPhase]
                             <textarea class="projectIndicatorGender form-control input-sm ${(isYearRequired(year))?string('required','optional')}" name="${customName}.gender">${(projectIndicator.gender)!}</textarea>
                           [#else]
                             [#if !projectIndicator.gender?has_content]
@@ -201,7 +201,7 @@
                       </div>
                       
                       [#-- -- -- REPORTING BLOCK -- -- --]
-                      [#if reportingActive && (year == currentCycleYear)]
+                      [#if reportingPhase && (year == currentCycleYear)]
                         [#--  Narrative for your achieved annual gender and social inclusion contribution to this CCAFS outcome --]
                         <div class="row">
                           <div class="textArea form-group col-md-12">
@@ -262,7 +262,7 @@
 [#function isYearRequired year]
   [#if project.endDate??]
     [#assign endDate = (project.endDate?string.yyyy)?number]
-    [#if reportingActive]
+    [#if reportingPhase]
       [#return  (year == currentCycleYear)  && (endDate gte year) ]
     [#else]
       [#return  (year == currentCycleYear) && (endDate gte year) ]

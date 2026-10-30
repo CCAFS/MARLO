@@ -487,6 +487,24 @@ public class GlobalUnitCreateAction extends BaseAction {
     return phases;
   }
 
+  /**
+   * A line that names Planning, Progress or Reporting gives the phase the description and upkeep of that type: Planning
+   * is a plan phase, Progress is a Planning phase flagged as upkeep and Reporting is a Reporting phase. Any other name
+   * keeps the description and upkeep parsed from the line.
+   */
+  private void applyPhaseTypeOfName(GlobalUnitCreationManager.PhaseInput input) {
+    if (APConstants.PLANNING.equals(input.getName())) {
+      input.setDescription(APConstants.PLANNING);
+      input.setUpkeep(Boolean.FALSE);
+    } else if ("Progress".equals(input.getName())) {
+      input.setDescription(APConstants.PLANNING);
+      input.setUpkeep(Boolean.TRUE);
+    } else if (APConstants.REPORTING.equals(input.getName())) {
+      input.setDescription(APConstants.REPORTING);
+      input.setUpkeep(Boolean.FALSE);
+    }
+  }
+
   private GlobalUnitCreationManager.PhaseInput parsePhaseLine(String line, SimpleDateFormat df) {
     if (StringUtils.isBlank(line)) {
       return null;
@@ -512,6 +530,7 @@ public class GlobalUnitCreateAction extends BaseAction {
     input.setDescription(parts.length > 2 ? StringUtils.trim(parts[2]) : phaseName);
     input.setYear(phaseYear.intValue());
     input.setUpkeep(Boolean.FALSE);
+    this.applyPhaseTypeOfName(input);
     input.setEditable(Boolean.TRUE);
     input.setVisible(Boolean.TRUE);
 
