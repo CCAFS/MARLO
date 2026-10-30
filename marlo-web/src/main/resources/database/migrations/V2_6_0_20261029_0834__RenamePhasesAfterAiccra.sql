@@ -34,9 +34,9 @@
 --   FROM phases p
 --   JOIN (SELECT MIN(id) AS cutoff FROM global_units WHERE acronym = 'AICCRA') c ON p.global_unit_id > c.cutoff
 --   WHERE p.global_unit_id NOT IN (SELECT id FROM global_units WHERE acronym = 'AICCRA')
---     AND ((BINARY p.name IN ('POWB', 'AWPB') AND p.description IN ('Planning', 'Planing') AND p.upkeep = 0)
---       OR (BINARY p.name = 'UpKeep' AND p.description IN ('Planning', 'Planing') AND p.upkeep = 1)
---       OR (BINARY p.name = 'AR' AND p.description = 'Reporting' AND p.upkeep = 0))
+--     AND ((CAST(p.name AS BINARY) IN ('POWB', 'AWPB') AND p.description IN ('Planning', 'Planing') AND p.upkeep = 0)
+--       OR (CAST(p.name AS BINARY) = 'UpKeep' AND p.description IN ('Planning', 'Planing') AND p.upkeep = 1)
+--       OR (CAST(p.name AS BINARY) = 'AR' AND p.description = 'Reporting' AND p.upkeep = 0))
 --   ORDER BY p.id;
 --
 -- Also list the autosave drafts of the renamed units (OPS-002); see the release checklist of the spec.
@@ -44,11 +44,11 @@
 UPDATE phases p
 JOIN (SELECT MIN(id) AS cutoff FROM global_units WHERE acronym = 'AICCRA') c ON p.global_unit_id > c.cutoff
 SET p.name = CASE
-  WHEN BINARY p.name IN ('POWB', 'AWPB') THEN 'Planning'
-  WHEN BINARY p.name = 'UpKeep' THEN 'Progress'
+  WHEN CAST(p.name AS BINARY) IN ('POWB', 'AWPB') THEN 'Planning'
+  WHEN CAST(p.name AS BINARY) = 'UpKeep' THEN 'Progress'
   ELSE 'Reporting'
 END
 WHERE p.global_unit_id NOT IN (SELECT id FROM global_units WHERE acronym = 'AICCRA')
-  AND ((BINARY p.name IN ('POWB', 'AWPB') AND p.description IN ('Planning', 'Planing') AND p.upkeep = 0)
-    OR (BINARY p.name = 'UpKeep' AND p.description IN ('Planning', 'Planing') AND p.upkeep = 1)
-    OR (BINARY p.name = 'AR' AND p.description = 'Reporting' AND p.upkeep = 0));
+  AND ((CAST(p.name AS BINARY) IN ('POWB', 'AWPB') AND p.description IN ('Planning', 'Planing') AND p.upkeep = 0)
+    OR (CAST(p.name AS BINARY) = 'UpKeep' AND p.description IN ('Planning', 'Planing') AND p.upkeep = 1)
+    OR (CAST(p.name AS BINARY) = 'AR' AND p.description = 'Reporting' AND p.upkeep = 0));

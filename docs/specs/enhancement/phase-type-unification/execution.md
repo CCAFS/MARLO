@@ -1422,3 +1422,39 @@ must convert. Nothing in the NF-003 rule stops a new one, hence NF-006 / T16 (re
   relative suppressions file is missed and the run over-reports (`rest/`, `PhaseNameSiteTruthTableTest:137`), never
   under-reports. Fix on `staging` (shared tooling).
 - `tasks.md` T11a filter bullet names the check by class ("only `RegexpSinglelineJava`"); reword at archive.
+
+## Post-validation: M2 BINARY → CAST (2026-10-30)
+
+- **Reason:** MySQL 8.0.43 reports warning 1287 (`'BINARY expr' is deprecated and will be removed in a future
+  release. Please use CAST instead`) on M2. Every `BINARY p.name` in `V2_6_0_20261029_0834__RenamePhasesAfterAiccra.sql`
+  (the `CASE`, the `WHERE`, and the OPS-004 capture SELECT in the header) is now `CAST(p.name AS BINARY)`. No other
+  logic changed; 8 lines edited, ASCII, LF as before. M2 had not been applied to any shared database, so the file was
+  edited in place and no new migration was created.
+- **Method:** `phases` and `global_units` copied with `mysqldump` (read-only) into throwaway schemas `zz_m2cast_old` and
+  `zz_m2cast_new`, with the same 21 adversarial `phases` rows plus an extra `AICCRA` unit (id 9001) in both. M1, then the
+  ORIGINAL M2 (`git show HEAD:`) on `old` and the EDITED M2 on `new`. Both schemas dropped at the end.
+- **Source `aiccradb_actsave` (413 phases after the fixture):** original M2 71 rows matched / 71 changed, 5 warnings
+  (all 1287); edited M2 71 / 71, 0 warnings. `phases` checksum equal (3121564042); `EXCEPT` diff 0 both directions.
+  Rows M2 renamed, by new name (compared name before and after, by id): Planning 26, Progress 20, Reporting 25
+  = 71, the same ids and names in both schemas; by old name: POWB 19, AWPB 7, UpKeep 20, AR 25.
+- **Source `aiccradb1` (359 phases):** original 23 / 23, 5 warnings; edited 23 / 23, 0 warnings. Checksum equal
+  (3287391417); diff 0 both directions. Rows M2 renamed, by new name: Planning 8, Progress 8, Reporting 7 = 23, the
+  same in both schemas; by old name: POWB 7, AWPB 1, UpKeep 8, AR 7.
+- **Why the capture count differs from M2's count:** the capture SELECT ran on the source tables (66 and 18 rows); M2
+  ran on the copy with the 21 fixture rows added. Of those, 5 were renamed in each source (`UpKeep`/`Planning`/1,
+  `UpKeep`/`planning`/1, `AR`/`reporting`/0, `POWB`/`Planning`/0, `AWPB`/`Planning`/0, all in a unit after AICCRA).
+  66 + 5 = 71 and 18 + 5 = 23. The per-name totals above count only rows whose name changed; an earlier version of
+  this entry counted every row named Planning / Progress / Reporting after the run, which includes rows that
+  already had those names.
+- **Adversarial rows exercised:** `powb`, `upkeep`, `ar `, `AR ` (case and trailing space) not renamed; `AR` with
+  `upkeep` 1, `UpKeep` with `Reporting`, unit 9001 (acronym `AICCRA`, higher id), NULL unit, unit below the cutoff
+  and AICCRA itself not renamed. A NULL `name` cannot be stored (`NOT NULL`), so an empty name was used: not renamed.
+  Behaviour unchanged by the edit: `description` still matches case-insensitively (`planning` / `reporting` rows are
+  renamed, as validation A9 already noted).
+- **Idempotency:** the edited M2 run again on `new`: 0 rows matched, 0 changed, 0 warnings (both sources).
+- **OPS-004 capture SELECT (edited header):** on `aiccradb_actsave` 66 rows, on `aiccradb1` 18 rows, no warning 1287;
+  the same SELECT with `BINARY` returns the same 66 rows. After migration, on `zz_m2cast_new`: empty set, both sources.
+- **Fixture note:** `global_units.active_since` is `ON UPDATE CURRENT_TIMESTAMP`, so the copied unit 9001 differed by
+  one second between the two schemas in one run; it is a fixture artefact (M2 never writes `global_units`).
+- **Not changed:** the earlier entries above (T13 attempt 1, `validation-report.md` A9) quote the former `BINARY`
+  wording as history. `tasks.md`, `design.md` and `requirements.md` do not mention `BINARY`.
