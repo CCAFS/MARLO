@@ -1,9 +1,9 @@
 name: Trigger Jenkins Job Java 17 (DEV)
 
+# Automatic runs on push to dev were removed at the MARLO DEV cutover: pushes to dev are built by marlo-dev-cicd.yml
+# and deployed by the Jenkins CD job marlo-dev-docker-cd. Kept as workflow_dispatch to start the legacy job
+# marlo-dev-docker manually (recovery).
 on:
-  push:
-    branches:
-      - "dev"
   workflow_dispatch:
 
 jobs:
