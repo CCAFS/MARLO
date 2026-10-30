@@ -3,7 +3,8 @@
 #   GitHub Actions (CI)  ->  marlo-dev-docker-cd (Jenkins, CD orchestration)  ->  DEV server
 #
 # The legacy all-in-one job marlo-dev-docker (started by jenkins-trigger-java-dev.yml) is NOT used by this workflow and
-# is not changed by it; it stays available in Jenkins for manual recovery. Until the cutover both run on every push.
+# is not changed by it; it stays available in Jenkins for manual recovery. Since the cutover jenkins-trigger-java-dev.yml
+# runs only on workflow_dispatch, so pushes to dev run this workflow only.
 # `dry-run` of the Jenkins hand-over (job `deploy` below): true = marlo-dev-docker-cd verifies the request, the ECR
 # image and the server over SSH WITHOUT changing anything; false = real deploy (it also needs
 # REAL_DEPLOY_AUTHORIZED = true in the Jenkinsfile).
@@ -186,7 +187,7 @@ jobs:
     with:
       jenkins-job: marlo-dev-docker-cd
       environment: marlo-dev
-      dry-run: true # set to false ONLY in the cutover PR (owner authorization)
+      dry-run: false # real deploy on every push to dev (owner authorization, cutover)
       artifacts: marlo=${{ needs.publish-image.outputs.digest }}
     secrets:
       JENKINS_USERNAME: ${{ secrets.JENKINS_USERNAME }}
