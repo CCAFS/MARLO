@@ -373,7 +373,7 @@
 }
 
 .cycBadge--current {
-  background: var(--marlo-danger);
+  background: var(--marlo-danger-solid);
   color: var(--marlo-surface);
 }
 
