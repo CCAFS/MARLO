@@ -279,7 +279,9 @@
 .dlf .inf-prmsLine b { font-weight: 600; color: var(--dlf-ink); }
 .dlf .inf-prmsLine i { font-style: normal; }
 
-/* ---- Geographic scope: radio cards ---- */
+/* ---- Geographic scope: radio cards ----
+   Same option card as the deliverable form's chip radios (.dlf-chipRadios) and the design system's RadioCard:
+   40px, a #9AA4B0 hover border, a 500 label when chosen, and the drawn radio's brand dot inside a 3px white ring. */
 .dlf .inf-radioCards { display: flex; flex-wrap: wrap; gap: 8px; }
 .dlf .inf-radioCards .radioFlat-flex { float: none; width: auto; margin: 0 !important; padding: 0; }
 .dlf .inf-radioCards .feedback-flex-items:empty { display: none; }
@@ -288,10 +290,10 @@
 .dlf .inf-radioCards .radioFlat label {
   display: flex;
   align-items: center;
-  gap: 9px;
-  height: 38px;
+  gap: 10px;
+  height: 40px;
   margin: 0;
-  padding: 0 14px 0 11px;
+  padding: 0 16px 0 11px;
   border: 1px solid var(--dlf-line-strong);
   border-radius: 8px;
   background: #fff;
@@ -307,14 +309,14 @@
   width: 16px !important;
   height: 16px !important;
   margin: 0 !important;
-  border: 1.5px solid var(--dlf-line-strong) !important;
+  border: 1.5px solid var(--dlf-subtle) !important;
   border-radius: 50% !important;
   background: #fff !important;
   box-shadow: none !important;
 }
-.dlf .inf-radioCards .radioFlat label:hover { border-color: var(--dlf-brand); }
-.dlf .inf-radioCards .radioFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); font-weight: 600; }
-.dlf .inf-radioCards .radioFlat input:checked + label::before { border-color: var(--dlf-brand) !important; background: radial-gradient(circle, var(--dlf-brand) 0 4px, #fff 4.5px) !important; }
+.dlf .inf-radioCards .radioFlat label:hover { border-color: var(--dlf-subtle); }
+.dlf .inf-radioCards .radioFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .inf-radioCards .radioFlat input:checked + label::before { border-color: var(--dlf-brand) !important; background: var(--dlf-brand) !important; box-shadow: inset 0 0 0 3px #fff !important; }
 .dlf .inf-radioCards .radioFlat input:focus-visible + label { box-shadow: var(--dlf-focus-ring); }
 .dlf .inf-radioCards .commentNumberContainer { display: none; }
 .dlf .inf-radioCards > p,

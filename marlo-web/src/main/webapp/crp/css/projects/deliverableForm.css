@@ -374,6 +374,9 @@
 /* The feedback bubble beside the control, level with its first line. */
 .dlf .dlf-card .commentNumberContainer { position: relative; flex: none; margin-top: 26px; }
 .dlf .dlf-card label .commentNumberContainer { display: none; }
+/* The 26px above clears a field's label; a field drawn without one ("+ Add activity…", "Select the responsible…")
+   left the bubble hanging under the control. Centre it on the control instead. */
+.dlf .dlf-card .feedback-flex-items > .fieldReference:not(:has(label)) + .commentNumberContainer { margin-top: 0; align-self: center; }
 .dlf .dlf-card img.qaComment { width: 22px; margin-left: 0; }
 .dlf .dlf-card .numberOfCommentsBubble { top: -9px; right: -9px; left: auto; z-index: 1; margin: 0; transform: none; }
 .dlf .dlf-card .numberOfCommentsBubble p { min-width: 20px; padding: 1px 5px; font-size: 9.5px; line-height: 14px; }
@@ -971,25 +974,29 @@ html.dlf-guideOpen body { overflow: hidden; }
 /* Geographic scope: the scopes as toggle chips; the list underneath keeps the posted ids. */
 .dlf .dlf-scope > .panel-body { display: none; }
 .dlf .dlf-scope__hint { margin-left: 8px; font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
-.dlf .dlf-scopeChips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+/* The design system's CheckCard: the multi-select sibling of the radio cards (40px, 500 13.5px, 16px box). */
+.dlf .dlf-scopeChips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
 .dlf .dlf-scopeChip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 34px;
+  gap: 10px;
+  height: 40px;
   margin: 0;
-  padding: 0 12px;
+  padding: 0 16px 0 11px;
   border: 1px solid var(--dlf-line-strong);
   border-radius: 8px;
   background: #fff;
-  font: 600 13px Figtree, sans-serif;
-  color: var(--dlf-ink-soft);
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
   cursor: pointer;
 }
 .dlf .dlf-scopeChip:hover { border-color: var(--dlf-subtle); }
+.dlf .dlf-scopeChip:focus-visible { border-color: var(--dlf-brand); }
 .dlf .dlf-scopeChip__box {
-  width: 14px;
-  height: 14px;
+  flex: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
   border: 1.5px solid var(--dlf-subtle);
   border-radius: 4px;
   background: #fff;
@@ -997,7 +1004,7 @@ html.dlf-guideOpen body { overflow: hidden; }
 .dlf .dlf-scopeChip.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
 .dlf .dlf-scopeChip.is-on .dlf-scopeChip__box {
   border-color: var(--dlf-brand);
-  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 10 10' fill='none'%3E%3Cpath d='M2 5.2 4.1 7.2 8 3' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.4 6.2 5 8.8l4.6-5' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
 }
 /* Region and countries: one field box per list, the chips and an inline "+ Add ..." prompt inside it. */
 .dlf #dlf-geographicScope .regionalBlock .panel.tertiary,
@@ -2306,6 +2313,17 @@ html.dlf-guideOpen body { overflow: hidden; }
 .dlf.is-readonly .elementsListComponent[listname="deliverable.geographicScopes"] .panel-body { display: none !important; }
 /* The scope list reads as its chips in edit mode too, so it needs no empty box */
 .dlf .dlf-scope .dlf-listEmpty { display: none; }
+/* An empty list prints both texts (forms.ftl): "No entries added yet" while editing, the muted "Not provided" read-only.
+   Read-only, an empty region list also drops the input-like box it sits in while editing. */
+.dlf .dlf-listEmpty__ro,
+.dlf.is-readonly .dlf-listEmpty__edit { display: none; }
+.dlf.is-readonly .dlf-listEmpty__ro { display: inline; }
+.dlf.is-readonly .dlf-card .regionalBlock .panel.tertiary > .panel-body:not(:has(> ul.list > li)) {
+  min-height: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+}
 .dlf .dlf-roEmpty { display: block; margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--dlf-subtle); }
 .dlf.is-readonly .dlf-card p.emptyText {
   margin: 0;
