@@ -930,7 +930,9 @@
       </ul>
       [#-- The redesigned deliverable form: one boxed empty state, hidden by deliverableFormRedesign.js once a row exists --]
       [#if (editable || forceEditable) && (deliverableFormRedesign)!false]
-        <p class="emptyText dlf-listEmpty"[#if elementList?has_content] hidden[/#if]>[@s.text name="project.deliverable.redesign.list.empty" /]</p>
+        [#-- Inside this library `editable` is the action's, true in a closed phase too, so the read-only text is
+             printed beside the edit one and deliverableForm.css shows the one that applies (.dlf.is-readonly). --]
+        <p class="emptyText dlf-listEmpty"[#if elementList?has_content] hidden[/#if]><span class="dlf-listEmpty__edit">[@s.text name="project.deliverable.redesign.list.empty" /]</span><span class="dlf-listEmpty__ro">[@s.text name="project.deliverable.redesign.notProvided" /]</span></p>
       [/#if]
       [#if editable || forceEditable]
         <select name="" id="" class="setSelect2 maxLimit-${maxLimit} elementType-${composedID} indexLevel-${indexLevel} ${cssClass} [#if (hasPrimary)!false] primarySelect[/#if]">

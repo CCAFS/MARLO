@@ -400,7 +400,9 @@ $(document).ready(function() {
   // setGeographicScope() still shows the region and country blocks.
   var $scopeComponent = $root.find('.geographicScopeBlock .elementsListComponent').first();
   var $scopeSelect = $scopeComponent.find('select.elementType-repIndGeographicScope');
-  if($scopeSelect.length) {
+  // Read-only: deliverableMacros.ftl already prints the chips (.dlf-scopeChips--ro) and the hidden select is still
+  // in the page, so building the editable chips here drew the group twice.
+  if($scopeSelect.length && !$root.find('.dlf-scopeChips--ro').length) {
     var $chips = $('<div class="dlf-scopeChips" role="group"></div>');
     $scopeComponent.addClass('dlf-scope');
     $scopeComponent.find('.panel-head label').append(
