@@ -930,13 +930,17 @@ function checkPassword(email,password) {
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
                 wrongData("incorrectPassword");
-                // The captcha appears after 3 incorrect passwords, and every later one asks for a new challenge
-                incorrectPasswordCount++;
-                if(incorrectPasswordCount >= 3) {
-                  requireCaptcha();
-                }
               } else {
                 wrongData("incorrectPassword", data.messageEror);
+              }
+              // A2-2659: every failed password attempt counts, whatever the account type. The captcha is there to
+              // slow down password guessing, and it used to count only the Active Directory message above, which
+              // CGIAR accounts no longer reach since they sign in with Cognito or an emailed code. A local account
+              // with a wrong password gets no message at all. From the 3rd failure on, each one asks for a new
+              // challenge
+              incorrectPasswordCount++;
+              if(incorrectPasswordCount >= 3) {
+                requireCaptcha();
               }
 
               // Hide the loading spinner. Runs after requireCaptcha() above, so that
