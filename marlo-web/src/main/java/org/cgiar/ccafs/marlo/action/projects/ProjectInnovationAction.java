@@ -178,6 +178,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.GeographicScopeRules;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectInnovationValidator;
 
 import java.io.BufferedReader;
@@ -1159,8 +1160,8 @@ public class ProjectInnovationAction extends BaseAction {
               haveRegions = true;
             }
 
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-                && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            if (GeographicScopeRules
+              .needsCountries(projectInnovationGeographicScope.getRepIndGeographicScope().getId())) {
               haveCountries = true;
             }
 
@@ -1871,28 +1872,11 @@ public class ProjectInnovationAction extends BaseAction {
 
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
+      // A2-2709: all six scopes, broadest first (Global ... Sub-national, then "yet to be determined")
       geographicScopeList = repIndGeographicScopeManager.findAll();
-
-      try {
-        if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
-
-          RepIndGeographicScope geographicDelete;
-          // Remove multi-national
-          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(3);
-          if (geographicDelete != null) {
-            geographicScopeList.remove(geographicDelete);
-          }
-          // Remove sub-national
-          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(5);
-          if (geographicDelete != null) {
-            geographicScopeList.remove(geographicDelete);
-          }
-
-          geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
-              .collect(Collectors.toList());
-        }
-      } catch (Exception e) {
-        logger.error("error deleting elements from", e);
+      if (geographicScopeList != null) {
+        geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
+          .collect(Collectors.toList());
       }
 
       // Innovation Type
@@ -2557,32 +2541,15 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveComplementarySolutions(innovationDB, phase);
       this.savePrmsInnovations(innovationDB, phase);
 
-      boolean haveRegions = false;
-      boolean haveCountries = false;
-
-      if (innovation.getGeographicScopes() != null) {
-        for (ProjectInnovationGeographicScope projectInnovationGeographicScope : innovation.getGeographicScopes()) {
-
-          if (projectInnovationGeographicScope != null
-              && projectInnovationGeographicScope.getRepIndGeographicScope() != null
-              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != null) {
-
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
-
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-                && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
-            }
-          }
-        }
+      // A2-2709: one scope, read as saveGeographicScope reads it. Regions and countries the scope does not ask for
+      // are cleared, and the "specific countries" answer only stands under a regional scope.
+      Long postedScopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "innovation");
+      boolean haveRegions = GeographicScopeRules.needsRegions(postedScopeId);
+      if (!haveRegions) {
+        innovation.getProjectInnovationInfo().setHasSpecifiedOutputCountries(null);
       }
-
-      if (innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries() != null
-          && innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries()) {
-        haveCountries = true;
-      }
+      boolean haveCountries = GeographicScopeRules.needsCountries(postedScopeId)
+        || (haveRegions && Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries()));
 
       if (haveRegions) {
         // Save the Regions List
@@ -2593,26 +2560,28 @@ public class ProjectInnovationAction extends BaseAction {
 
       if (haveCountries) {
         // Save the Countries List (ProjectInnovationcountry)
-        if (innovation.getCountriesIds() != null || !innovation.getCountriesIds().isEmpty()) {
+        // No country chosen posts nothing: an empty list, so the stored countries are removed
+        if (innovation.getCountriesIds() == null) {
+          innovation.setCountriesIds(new ArrayList<>());
+        }
 
-          List<ProjectInnovationCountry> countries = projectInnovationCountryManager
-              .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
-          List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
-          for (String countryIds : innovation.getCountriesIds()) {
-            ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
-            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-            countryInn.setProjectInnovation(innovation);
-            countryInn.setPhase(this.getActualPhase());
-            countriesSave.add(countryInn);
-            if (!countries.contains(countryInn)) {
-              projectInnovationCountryManager.saveProjectInnovationCountry(countryInn);
-            }
+        List<ProjectInnovationCountry> countries = projectInnovationCountryManager
+          .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
+        List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
+        for (String countryIds : innovation.getCountriesIds()) {
+          ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
+          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+          countryInn.setProjectInnovation(innovation);
+          countryInn.setPhase(this.getActualPhase());
+          countriesSave.add(countryInn);
+          if (!countries.contains(countryInn)) {
+            projectInnovationCountryManager.saveProjectInnovationCountry(countryInn);
           }
+        }
 
-          for (ProjectInnovationCountry projectInnovationCountry : countries) {
-            if (!countriesSave.contains(projectInnovationCountry)) {
-              projectInnovationCountryManager.deleteProjectInnovationCountry(projectInnovationCountry.getId());
-            }
+        for (ProjectInnovationCountry projectInnovationCountry : countries) {
+          if (!countriesSave.contains(projectInnovationCountry)) {
+            projectInnovationCountryManager.deleteProjectInnovationCountry(projectInnovationCountry.getId());
           }
         }
       } else {
@@ -5284,6 +5253,24 @@ public class ProjectInnovationAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
+  /**
+   * A2-2709: the one geographic scope the form posted, as the list the validator reads.
+   *
+   * @return a list with the posted scope, empty when none was chosen
+   */
+  private List<ProjectInnovationGeographicScope> postedGeographicScopes() {
+    List<ProjectInnovationGeographicScope> scopes = new ArrayList<>();
+    Long scopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "innovation");
+    RepIndGeographicScope scope =
+      scopeId == null ? null : repIndGeographicScopeManager.getRepIndGeographicScopeById(scopeId);
+    if (scope != null) {
+      ProjectInnovationGeographicScope posted = new ProjectInnovationGeographicScope();
+      posted.setRepIndGeographicScope(scope);
+      scopes.add(posted);
+    }
+    return scopes;
+  }
+
   public void setToolCategoryList(List<ToolFunctionCategory> toolCategoryList) {
     this.toolCategoryList = toolCategoryList;
   }
@@ -5326,6 +5313,11 @@ public class ProjectInnovationAction extends BaseAction {
         }
       } catch (Exception e) {
         logger.error("Error normalizing reference deliverable type params before validation:", e);
+      }
+
+      // A2-2709: the validator reads the posted scope as an object, which Struts does not build
+      if (innovation != null) {
+        innovation.setGeographicScopes(this.postedGeographicScopes());
       }
 
       // Change the parameters for the new way to validate the data

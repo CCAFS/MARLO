@@ -333,8 +333,14 @@
 
     [#-- ─── Geographic scope ──────────────────────────────────────────────── --]
     [#local geographicScopeElement = (element.geographicScopes)![] ]
-    [#local isRegional =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeRegional) /]
-    [#local isNational =      findElementID(geographicScopeElement,  action.reportingIndGeographicScopeNational) /]
+    [#-- A2-2709: one scope. A legacy record with several shows the broadest (lowest id), as the validator reads it --]
+    [#local savedScopeIds = geographicScopeElement?map(g -> (g.repIndGeographicScope.id)!0)?filter(i -> i > 0)?sort /]
+    [#local checkedScopeId = savedScopeIds?has_content?then(savedScopeIds?first, 0) /]
+    [#local isRegional = (checkedScopeId == action.reportingIndGeographicScopeRegional) /]
+    [#-- Multi-national, National and Sub-national ask for countries --]
+    [#local needsCountries = (checkedScopeId == action.reportingIndGeographicScopeMultiNational)
+      || (checkedScopeId == action.reportingIndGeographicScopeNational)
+      || (checkedScopeId == action.reportingIndGeographicScopeSubNational) /]
     [#local hasSpecifiedOutputCountries = ((element.projectInnovationInfo??) && (element.projectInnovationInfo.hasSpecifiedOutputCountries??))?then(element.projectInnovationInfo.hasSpecifiedOutputCountries,"") /]
     <section class="dlf-card geographicScopeBlock" id="dlf-geographicScope">
       <h2 class="dlf-card__title">[@s.text name="projectInnovations.geographicScope" /][@customForm.req required=(editable && reportingActive) /]</h2>
@@ -350,17 +356,17 @@
         [#-- Geographic Scope: one radio card per scope --]
         <div class="inf-radioCards" role="radiogroup" aria-label="[@s.text name="projectInnovations.geographicScope" /]">
           [#list geographicScopeList as geoScope]
-            [#local isChecked = ((existGeographicScope) && (element.geographicScopes[0].repIndGeographicScope??) && (geoScope.id == element.geographicScopes[0].repIndGeographicScope.id)) /]
+            [#local isChecked = (geoScope.id == checkedScopeId) /]
             [@customForm.radioFlat id="geoScope-${geoScope.id}" name="innovation.geographicScopes[0].repIndGeographicScope.id" label="${geoScope.name}" value="${geoScope.id}" checked=isChecked cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=true disabled=!editable /]
           [/#list]
         </div>
 
-        <div class="geographicScopeMessage" style="display:${(isNational)?string('block','none')}">
+        <div class="geographicScopeMessage" style="display:${(needsCountries)?string('block','none')}">
           [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
         </div>
 
-        [#-- National scope --]
-        <div class="dlf-field nationalBlock" style="display:${(isNational)?string('block','none')}">
+        [#-- Multi-national, National and Sub-national scope --]
+        <div class="dlf-field nationalBlock" style="display:${(needsCountries)?string('block','none')}">
           [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable /]
         </div>
 

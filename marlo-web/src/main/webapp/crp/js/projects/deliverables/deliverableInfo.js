@@ -316,10 +316,23 @@ function init() {
   });
 
   // Deliverable Geographic Scope
-  $('select.elementType-repIndGeographicScope').on("addElement removeElement", function (event, id, name) {
-    setGeographicScope(this);
-  });
-  setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+  var $scopeRadios = $('.geographicScopeBlock input.radioType-geographicScopes');
+  if ($scopeRadios.length) {
+    // A2-2706: one scope as radio cards. setGeographicScope2 (global.js) shows the region or country field the
+    // scope asks for, clears the other one and limits national and sub-national to one country.
+    $scopeRadios.on('change', function () {
+      setGeographicScope2(this, true);
+    });
+    // On load only the saved scope sets the fields up; with none, the template already hides both
+    if ($scopeRadios.filter(':checked').length) {
+      setGeographicScope2($scopeRadios.filter(':checked')[0]);
+    }
+  } else {
+    $('select.elementType-repIndGeographicScope').on("addElement removeElement", function (event, id, name) {
+      setGeographicScope(this);
+    });
+    setGeographicScope($('form select.elementType-repIndGeographicScope')[0]);
+  }
   // valiate checkbox "No DOI provided" value
 
   deliverablePartnersModule.init();

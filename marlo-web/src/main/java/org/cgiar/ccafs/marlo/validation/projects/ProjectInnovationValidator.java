@@ -32,13 +32,13 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCenter;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCoDeveloper;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationComplementarySolution;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationContributingOrganization;
-import org.cgiar.ccafs.marlo.data.model.ProjectInnovationGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationReference;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ValueChain;
+import org.cgiar.ccafs.marlo.utils.GeographicScopeRules;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
 
@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -474,6 +475,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     // Validate Geographic Scope
     boolean haveRegions = false;
     boolean haveCountries = false;
+    Long scopeId = null;
 
     if (projectInnovation.getGeographicScopes() == null || projectInnovation.getGeographicScopes().isEmpty()) {
       if (!resultProgessValidate) {
@@ -486,17 +488,13 @@ public class ProjectInnovationValidator extends BaseValidator {
       }
 
     } else {
-      for (ProjectInnovationGeographicScope innovationGeographicScope : projectInnovation.getGeographicScopes()) {
-        if (innovationGeographicScope != null && innovationGeographicScope.getRepIndGeographicScope() != null
-          && innovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
-          haveRegions = true;
-        }
-        if (innovationGeographicScope != null && innovationGeographicScope.getRepIndGeographicScope() != null
-          && innovationGeographicScope.getRepIndGeographicScope().getId() != 1
-          && innovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
-          haveCountries = true;
-        }
-      }
+      // A2-2709: one scope (the broadest, for legacy records with several); only multi-national, national and
+      // sub-national ask for countries, so Global and "yet to be determined" ask for nothing
+      scopeId = GeographicScopeRules.broadest(projectInnovation.getGeographicScopes().stream()
+        .filter(s -> s != null && s.getRepIndGeographicScope() != null).map(s -> s.getRepIndGeographicScope().getId())
+        .collect(Collectors.toList()));
+      haveRegions = GeographicScopeRules.needsRegions(scopeId);
+      haveCountries = GeographicScopeRules.needsCountries(scopeId);
     }
 
 
@@ -542,6 +540,15 @@ public class ProjectInnovationValidator extends BaseValidator {
             action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
         }
 
+      } else if (!GeographicScopeRules.validCountryCount(scopeId, projectInnovation.getCountriesIds().size())) {
+        // Multi-national takes two or more countries, national and sub-national exactly one
+        if (struts) {
+          String countMessage = action.getText(scopeId == GeographicScopeRules.MULTI_NATIONAL
+            ? "geographicScope.countries.multiNational" : "geographicScope.countries.single");
+          action.addMessage(countMessage);
+          action.addMissingField("innovation.countries");
+          action.getInvalidFields().put("input-innovation.countriesIds", countMessage);
+        }
       }
     }
 

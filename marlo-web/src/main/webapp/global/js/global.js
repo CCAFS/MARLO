@@ -1518,7 +1518,8 @@ function setGeographicScope(component) {
   }
 }
 
-function setGeographicScope2(component) {
+// userChange: the user picked the scope now (not the page load), so the countries the new scope cannot keep are cleared
+function setGeographicScope2(component, userChange) {
   var $value = $(component).val();
   var $partner = $(component).parents('.geographicScopeBlock');
   
@@ -1596,6 +1597,12 @@ function setGeographicScope2(component) {
         dropdownAdapter: CustomDropdownAdapter
       });
     } else {
+
+      // National and sub-national take one country: a choice of several from multi-national does not carry over
+      var chosenCountries = ($nationalBlock.find("select").val()) || [];
+      if (userChange && chosenCountries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
 
       $nationalBlock.find("select").select2('destroy');
 
