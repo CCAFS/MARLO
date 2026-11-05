@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${deliverableID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = ["select2","font-awesome","dropzone","blueimp-file-upload","jsUri", "flag-icon-css", "pickadate", "vue"] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20261021",
+  "${baseUrlMedia}/js/projects/deliverables/deliverableInfo.js?20261105-1",
   "${baseUrlMedia}/js/projects/deliverables/deliverableShfrm.js?20240711",
   "${baseUrlMedia}/js/projects/deliverables/deliverableDissemination.js?20261021",
   "${baseUrlMedia}/js/projects/deliverables/deliverableQualityCheck.js?20220721",
@@ -11,12 +11,12 @@
   [#--  "${baseUrlMedia}/js/projects/deliverables/deliverableDataSharing.js?20180523",--]
   [#--  "${baseUrlCdn}/global/js/autoSave.js",--]
   "${baseUrlCdn}/global/js/fieldsValidation.js?20180529",
-  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261104"
+  "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261105"
 ] /]
 [#assign customCSS = [
   "${baseUrl}/crp/css/projects/projectDeliverable.css?20240729",
   "${baseUrlCdn}/global/css/404.css?20240523",
-  "${baseUrl}/crp/css/projects/deliverableForm.css?20261104"
+  "${baseUrl}/crp/css/projects/deliverableForm.css?20261105-1"
   ] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "deliverableList" /]

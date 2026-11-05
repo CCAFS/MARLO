@@ -971,13 +971,20 @@ html.dlf-guideOpen body { overflow: hidden; }
 .dlf .dlf-card label .note--2 p { margin: 0; font: inherit; color: inherit; }
 .dlf .dlf-card label .note--2::before { display: none; }
 
-/* Geographic scope: the scopes as toggle chips; the list underneath keeps the posted ids. */
-.dlf .dlf-scope > .panel-body { display: none; }
-.dlf .dlf-scope__hint { margin-left: 8px; font: 400 12px Figtree, sans-serif; color: var(--dlf-muted); }
-/* The design system's CheckCard: the multi-select sibling of the radio cards (40px, 500 13.5px, 16px box). */
-.dlf .dlf-scopeChips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
-.dlf .dlf-scopeChip {
-  display: inline-flex;
+/* Geographic scope (A2-2706): one scope, as radio cards. The innovation form's .inf-radioCards and the design
+   system's RadioCard: 40px, a #9AA4B0 hover border, a 500 label when chosen, the brand dot inside a 3px white ring. */
+.dlf .dlf-scopeRadios { display: flex; flex-wrap: wrap; gap: 8px; }
+.dlf .dlf-scopeRadios > .dlf-scopeRadios__label { display: block; flex-basis: 100%; margin: 0; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .dlf-scopeRadios .radioFlat-flex { float: none; width: auto; margin: 0 !important; padding: 0; }
+.dlf .dlf-scopeRadios .feedback-flex-items:empty { display: none; }
+.dlf .dlf-scopeRadios .radioFlat { position: relative; display: block; margin: 0; padding: 0; }
+/* global.css pins every .fieldReference to width: 100% !important, which stretches each radio card to the row */
+.dlf .dlf-scopeRadios > .fieldReference.radioFlat { flex: none; float: none; width: auto !important; }
+.dlf .dlf-scopeRadios > .feedback-flex-items,
+.dlf .dlf-scopeRadios > .commentNumberContainer { display: none; }
+.dlf .dlf-scopeRadios .radioFlat input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .dlf-scopeRadios .radioFlat label {
+  display: flex;
   align-items: center;
   gap: 10px;
   height: 40px;
@@ -990,22 +997,23 @@ html.dlf-guideOpen body { overflow: hidden; }
   color: var(--dlf-ink);
   cursor: pointer;
 }
-.dlf .dlf-scopeChip:hover { border-color: var(--dlf-subtle); }
-.dlf .dlf-scopeChip:focus-visible { border-color: var(--dlf-brand); }
-.dlf .dlf-scopeChip__box {
+.dlf .dlf-scopeRadios .radioFlat label::after { display: none !important; }
+.dlf .dlf-scopeRadios .radioFlat label::before {
+  content: "" !important;
+  position: static !important;
   flex: none;
-  box-sizing: border-box;
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid var(--dlf-subtle);
-  border-radius: 4px;
-  background: #fff;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--dlf-subtle) !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: none !important;
 }
-.dlf .dlf-scopeChip.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
-.dlf .dlf-scopeChip.is-on .dlf-scopeChip__box {
-  border-color: var(--dlf-brand);
-  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.4 6.2 5 8.8l4.6-5' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
-}
+.dlf .dlf-scopeRadios .radioFlat label:hover { border-color: var(--dlf-subtle); }
+.dlf .dlf-scopeRadios .radioFlat input:checked + label { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .dlf-scopeRadios .radioFlat input:checked + label::before { border-color: var(--dlf-brand) !important; background: var(--dlf-brand) !important; box-shadow: inset 0 0 0 3px #fff !important; }
+.dlf .dlf-scopeRadios .radioFlat input:focus-visible + label { box-shadow: var(--dlf-focus-ring); }
 /* Region and countries: one field box per list, the chips and an inline "+ Add ..." prompt inside it. */
 .dlf #dlf-geographicScope .regionalBlock .panel.tertiary,
 .dlf #dlf-geographicScope .nationalBlock .select { margin: 0; padding: 0; border: 0; background: none; }
@@ -2309,10 +2317,7 @@ html.dlf-guideOpen body { overflow: hidden; }
 .dlf.is-readonly .elementsListComponent .sortElement,
 .dlf.is-readonly .elementsListComponent .panel-body > .select2-container,
 .dlf.is-readonly .elementsListComponent .panel-body > select,
-.dlf.is-readonly .listindicators > .dlf-link,
-.dlf.is-readonly .elementsListComponent[listname="deliverable.geographicScopes"] .panel-body { display: none !important; }
-/* The scope list reads as its chips in edit mode too, so it needs no empty box */
-.dlf .dlf-scope .dlf-listEmpty { display: none; }
+.dlf.is-readonly .listindicators > .dlf-link { display: none !important; }
 /* An empty list prints both texts (forms.ftl): "No entries added yet" while editing, the muted "Not provided" read-only.
    Read-only, an empty region list also drops the input-like box it sits in while editing. */
 .dlf .dlf-listEmpty__ro,
@@ -2338,8 +2343,7 @@ html.dlf-guideOpen body { overflow: hidden; }
 /* Yes/No, radios and checkboxes: shown whole, the saved answer marked, nothing reacts */
 .dlf.is-readonly .onoffswitch .button-label,
 .dlf.is-readonly .radioFlat label,
-.dlf.is-readonly .inputsFlat label,
-.dlf.is-readonly .dlf-scopeChip { pointer-events: none; cursor: default; }
+.dlf.is-readonly .inputsFlat label { pointer-events: none; cursor: default; }
 .dlf.is-readonly .onoffswitch input:disabled + .button-label,
 .dlf.is-readonly .radioFlat input:disabled + label,
 .dlf.is-readonly .inputsFlat input + label { opacity: 1; }

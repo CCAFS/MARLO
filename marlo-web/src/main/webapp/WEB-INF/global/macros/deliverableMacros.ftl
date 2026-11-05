@@ -2,26 +2,38 @@
 [#import "/WEB-INF/global/macros/utils.ftl" as utils /]
 
 [#macro deliverableGeographicScope]
+  [#-- A2-2706: the redesigned form takes one scope, as radio cards; other pages (publications) keep the list --]
+  [#local singleScope = (deliverableFormRedesign)!false /]
   <div class="block-geographicScope geographicScopeBlock">
     [#assign geographicScopeList = (deliverable.geographicScopes)![] ]
-    [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
-    [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
-    [#assign isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
-    [#assign isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
-    
+    [#if singleScope]
+      [#-- A legacy record with several scopes shows the broadest (lowest id), as the validator reads it --]
+      [#local savedScopeIds = geographicScopeList?map(g -> (g.repIndGeographicScope.id)!0)?filter(i -> i > 0)?sort /]
+      [#local checkedScopeId = savedScopeIds?has_content?then(savedScopeIds?first, 0) /]
+      [#assign isRegional =      (checkedScopeId == action.reportingIndGeographicScopeRegional) /]
+      [#assign isMultiNational = (checkedScopeId == action.reportingIndGeographicScopeMultiNational) /]
+      [#assign isNational =      (checkedScopeId == action.reportingIndGeographicScopeNational) /]
+      [#assign isSubNational =   (checkedScopeId == action.reportingIndGeographicScopeSubNational) /]
+    [#else]
+      [#assign isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+      [#assign isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+      [#assign isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+      [#assign isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+    [/#if]
+
     <div class="form-group">
       <div class="row">
         <div class="col-md-6">
           [#-- Geographic Scope --]
-          [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
-          [#-- Read-only in the redesigned form: the edit mode's scope chips, the saved ones marked, none clickable --]
-          [#if !editable && (deliverableFormRedesign)!false]
-            [#assign selectedScopeIds = ((deliverable.geographicScopes)![])?map(g -> (g.repIndGeographicScope.id)!0) /]
-            <div class="dlf-scopeChips dlf-scopeChips--ro" role="group">
-              [#list ((repIndGeographicScopes)![])?sort_by("id") as scope]
-                <span class="dlf-scopeChip[#if selectedScopeIds?seq_contains(scope.id)] is-on[/#if]" aria-disabled="true"><span class="dlf-scopeChip__box" aria-hidden="true"></span>${scope.name}</span>
+          [#if singleScope]
+            <div class="dlf-scopeRadios" role="radiogroup" aria-label="[@s.text name="deliverable.geographicScope" /]">
+              <span class="dlf-scopeRadios__label">[@s.text name="deliverable.geographicScope" /][@customForm.req required=true /]</span>
+              [#list ((repIndGeographicScopes)![]) as scope]
+                [@customForm.radioFlat id="deliverableScope-${scope.id}" name="deliverable.geographicScopes[0].repIndGeographicScope.id" label="${scope.name}" value="${scope.id}" checked=(scope.id == checkedScopeId) cssClass="radioType-geographicScopes" cssClassLabel="radio-label" editable=true disabled=!editable /]
               [/#list]
             </div>
+          [#else]
+            [@customForm.elementsListComponent name="deliverable.geographicScopes" elementType="repIndGeographicScope" elementList=deliverable.geographicScopes label="deliverable.geographicScope" listName="repIndGeographicScopes" keyFieldName="id" displayFieldName="name" required=true /]
           [/#if]
         </div>
       </div>

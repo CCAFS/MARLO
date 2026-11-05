@@ -394,60 +394,8 @@ $(document).ready(function() {
   // The sub-action selects every new card clones carry the same label.
   setAddLabel($('[id^="subactionSelect-"] select'), text('add-sub-action'));
 
-  // ---- Geographic scope: the scopes as toggle chips ----
-  // The scope list stays the elementsListComponent the save reads (deliverable.geographicScopes); the chips add a
-  // scope through onSelectElement (global.js) and remove it through the row's own remove control, so
-  // setGeographicScope() still shows the region and country blocks.
-  var $scopeComponent = $root.find('.geographicScopeBlock .elementsListComponent').first();
-  var $scopeSelect = $scopeComponent.find('select.elementType-repIndGeographicScope');
-  // Read-only: deliverableMacros.ftl already prints the chips (.dlf-scopeChips--ro) and the hidden select is still
-  // in the page, so building the editable chips here drew the group twice.
-  if($scopeSelect.length && !$root.find('.dlf-scopeChips--ro').length) {
-    var $chips = $('<div class="dlf-scopeChips" role="group"></div>');
-    $scopeComponent.addClass('dlf-scope');
-    $scopeComponent.find('.panel-head label').append(
-        $('<span class="dlf-scope__hint"></span>').text(text('select-all')));
-    // The select lists the scopes alphabetically; the chips follow their ids, broadest first as in the design
-    // (Global, Regional, Multi-national, National, Sub-national, then "yet to be determined").
-    $scopeSelect.find('option').sort(function(a, b) {
-      return (parseInt(a.value, 10) || 0) - (parseInt(b.value, 10) || 0);
-    }).each(function() {
-      if(this.value === '-1' || this.value === '') {
-        return;
-      }
-      $('<button type="button" class="dlf-scopeChip" aria-pressed="false"></button>')
-        .attr('data-scope', this.value)
-        .append('<span class="dlf-scopeChip__box" aria-hidden="true"></span>')
-        .append(document.createTextNode($(this).text()))
-        .appendTo($chips);
-    });
-    $chips.insertAfter($scopeComponent.find('.panel-head'));
-
-    var refreshChips = function() {
-      var selected = $scopeComponent.find('ul.list > li.relationElement .elementRelationID').map(function() {
-        return this.value;
-      }).get();
-      $chips.find('.dlf-scopeChip').each(function() {
-        var on = $.inArray($(this).attr('data-scope'), selected) !== -1;
-        $(this).toggleClass('is-on', on).attr('aria-pressed', on);
-      });
-    };
-    watch($scopeComponent.find('ul.list'), refreshChips);
-
-    $chips.on('click', '.dlf-scopeChip', function() {
-      var value = $(this).attr('data-scope');
-      var $row = $scopeComponent.find('ul.list > li.relationElement').filter(function() {
-        return $(this).find('.elementRelationID').val() === value;
-      });
-      if($row.length) {
-        $row.find('.removeElement').trigger('click');
-      } else if(typeof onSelectElement === 'function') {
-        $scopeSelect.find('option[value="' + value + '"]').prop('disabled', false);
-        $scopeSelect.val(value);
-        onSelectElement.call($scopeSelect[0]);
-      }
-    });
-  }
+  // ---- Geographic scope ----
+  // A2-2706: one scope, drawn as radio cards by deliverableMacros.ftl; deliverableInfo.js follows the choice.
   // Only the single region selects: on a multi-select (the countries under a regional scope) the rendered element
   // is the list of chips and the search box, and writing the label into it wiped them out.
   setAddLabel($root.find('.regionalBlock select').not('[multiple]'), text('add-region'));
