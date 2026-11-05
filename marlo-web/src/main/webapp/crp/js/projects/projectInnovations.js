@@ -17,7 +17,7 @@ $(document).ready(function () {
   }); */
 
   $('input.radioType-geographicScopes').on("change", function () {
-    setGeographicScope2(this);
+    setGeographicScope2(this, true);
     $('select.countriesSelect').each(function (i, element) {
       dynamicMarginToSelectedRender(element);
     });
