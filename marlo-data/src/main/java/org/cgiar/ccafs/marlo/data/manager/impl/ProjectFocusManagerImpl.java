@@ -50,10 +50,11 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
 
   public void addProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
-      .collect(Collectors.toList());
+    // Query the database instead of phase.getProjectFocuses(): that collection is loaded once per session and misses
+    // the rows inserted by an earlier replication in the same request (ProjectInfoManagerImpl.saveInfoPhase replicates
+    // once per new phase), which inserted one duplicate per pass.
+    List<ProjectFocus> projectFocuses = projectFocusDAO.findActiveByProjectProgramAndPhase(projecID,
+      projectFocus.getCrpProgram().getId(), phase.getId());
     if (projectFocuses.isEmpty()) {
 
       ProjectFocus projectFocusAdd = new ProjectFocus();

@@ -1,0 +1,215 @@
+# MARLO DEV: CI on GitHub Actions, CD on Jenkins (CD-only job marlo-dev-docker-cd).
+#
+#   GitHub Actions (CI)  ->  marlo-dev-docker-cd (Jenkins, CD orchestration)  ->  DEV server
+#
+# The legacy all-in-one job marlo-dev-docker (started by jenkins-trigger-java-dev.yml) is NOT used by this workflow and
+# is not changed by it; it stays available in Jenkins for manual recovery. Since the cutover jenkins-trigger-java-dev.yml
+# runs only on workflow_dispatch, so pushes to dev run this workflow only.
+# `dry-run` of the Jenkins hand-over (job `deploy` below): true = marlo-dev-docker-cd verifies the request, the ECR
+# image and the server over SSH WITHOUT changing anything; false = real deploy (it also needs
+# REAL_DEPLOY_AUTHORIZED = true in the Jenkinsfile).
+#
+# Triggers: push to dev (the DEV branch) only, and workflow_dispatch (manual; GitHub offers it only once the workflow
+# file is on the default branch). No pull_request trigger: the build reads the DEV properties secret, which is never
+# given to pull request code.
+#   CI script checks (no secret, no AWS), then ONE publish job that writes marlo-dev.properties from the same secret as
+#   the legacy job, builds the ORIGINAL Dockerfile once (`mvn clean install -Dmaven.test.skip=true` inside it, as
+#   today; no tests are added), pushes the image to the existing ECR repository marlo-app-dev by immutable digest and
+#   hands the digest, the commit and this run over to Jenkins (jenkins-cd.reusable.yml). Jenkins verifies the run and
+#   the image and runs the legacy Deploy stage with the image reference adapted to the digest. It never builds.
+# The job names are part of the Jenkins contract (stage "Verify CI Run"): `CI script checks (bash -n, ShellCheck)` and
+# `publish image (marlo)`. Rename them only together with the Jenkinsfile.
+#
+# Slack (reusable workflow slack-notify.reusable.yml; one message per event, never duplicated):
+#   started               GitHub Actions, at the start of the run (the whole CI/CD process)
+#   failed                GitHub Actions, only when the run fails before Jenkins started the deploy build
+#   succeeded / failed    Jenkins, for the deploy (post block of the CD job)
+#
+# GitHub Environment marlo-dev (publish and hand-over, one environment as CLARISA DEV). No required reviewers (it runs
+# on every push); deployment branches: dev only; administrators cannot bypass it.
+#   Variables: CICD_BOUND_REF (refs/heads/dev), CICD_AWS_REGION, CICD_ECR_REPOSITORY (marlo-app-dev).
+#   Secrets: CICD_BUILD_ROLE_ARN, CICD_PROPERTIES_SECRET_ID. They are identifiers, not credentials; they are secrets
+#   only so GitHub masks them in these public logs (`with:` inputs and `env:` headers), which `::add-mask::` cannot
+#   do before a step runs.
+#   The build role trusts only CCAFS/MARLO (repository and owner ids), the environment marlo-dev and the ref
+#   refs/heads/dev; it can read only the MARLO DEV properties secret and push only to marlo-app-dev.
+#   Repository secrets JENKINS_USERNAME / JENKINS_API_TOKEN (the same as jenkins-trigger-java-dev.yml).
+#   Slack: SLACK_NOTIFICATIONS_WEBHOOK_URL (incoming webhook of #notifications-platform). Without it the
+#   notifications are skipped with a warning; they never block the pipeline.
+#
+# Secret handling (only the application properties, as in the Jenkins job):
+#   * OIDC with `output-env-credentials: false`: credentials are never exported to the job; only the secret-read step
+#     and the push step receive them, through their own `env:`.
+#   * The AWS CLI writes the secret straight to the git-ignored marlo-dev.properties (mode 0600), the path the legacy
+#     job uses; its values are also registered as log masks (defense in depth). Never echoed, never an output, never
+#     uploaded, never cached; the file is removed by an `if: always()` step. No `set -x`.
+#   * The docker build runs through .github/scripts/without-oidc.sh: no AWS credential and no OIDC request variable.
+#   * As today, the file is packaged in the WAR and therefore in the image (known risk, accepted for this migration;
+#     externalizing the configuration is a later, separate change).
+#
+# Action pinning: every `uses:` is a full commit SHA (same SHAs as the Reporting Tool and CLARISA DEV pipelines):
+#   actions/checkout                       v7.0.1  3d3c42e5aac5ba805825da76410c181273ba90b1
+#   aws-actions/configure-aws-credentials  v6.3.0  e1253824e5c10ff9df46874f81ed3ec929e19cfd
+# The local reusable workflows (./.github/workflows/*.reusable.yml) run from this same commit.
+name: marlo-dev-cicd
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: marlo-dev-cicd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------- start notification
+  # Runs in parallel with the checks and never blocks them.
+  notify-start:
+    name: notify start (Slack)
+    permissions: {}
+    uses: ./.github/workflows/slack-notify.reusable.yml
+    with:
+      status: started
+      title: MARLO NEW ENVIRONMENT
+      project: MARLO
+      environment-label: DEV
+    secrets:
+      SLACK_NOTIFICATIONS_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_WEBHOOK_URL }}
+
+  # ---------------------------------------------------------------- mandatory checks
+  # The legacy job runs no lint and no tests (owner decision: none added). Only the CI scripts are checked.
+  ci-script-checks:
+    name: CI script checks (bash -n, ShellCheck)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Syntax
+        run: |
+          for f in .github/scripts/*.sh; do bash -n "$f"; done
+      - name: ShellCheck (preinstalled on the runner)
+        run: shellcheck --severity=warning .github/scripts/*.sh
+
+  # ---------------------------------------------------------------- build + publish
+  # Starts only when the checks passed. No deploy request here.
+  publish-image:
+    name: publish image (marlo)
+    needs: ci-script-checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment: marlo-dev
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      DOCKER_BUILDKIT: '1'
+      LOCAL_IMAGE: local/marlo:${{ github.run_id }}-${{ github.run_attempt }}
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - name: Enforce bound ref
+        env:
+          BOUND_REF: ${{ vars.CICD_BOUND_REF }}
+          CURRENT_REF: ${{ github.ref }}
+        run: |
+          if [ -z "${BOUND_REF:-}" ] || [ "$CURRENT_REF" != "$BOUND_REF" ]; then echo "::error::ref is not the bound ref (fail closed)"; exit 1; fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Assume the build role through OIDC (credentials not exported to the job)
+        id: aws-config
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ secrets.CICD_BUILD_ROLE_ARN }}
+          aws-region: ${{ vars.CICD_AWS_REGION }}
+          role-session-name: marlo-dev-ci-${{ github.run_id }}
+          mask-aws-account-id: true
+          output-env-credentials: false
+          output-credentials: true
+      - name: MARLO properties from Secrets Manager (git-ignored file, as the legacy job)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.aws-config.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws-config.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws-config.outputs.aws-session-token }}
+          AWS_REGION: ${{ vars.CICD_AWS_REGION }}
+          SECRET_ID: ${{ secrets.CICD_PROPERTIES_SECRET_ID }}
+        run: bash .github/scripts/write-marlo-properties.sh
+      # Original Dockerfile and build context, as `docker build -t marlo-app-dev:<n> .` in the legacy job; only the
+      # provenance labels checked by Jenkins (stage "Verify Image") are added.
+      - name: Build image (original Dockerfile)
+        run: >-
+          bash .github/scripts/without-oidc.sh docker build
+          --label "org.opencontainers.image.revision=${{ github.sha }}"
+          --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}"
+          --label "org.cgiar.cicd.run=${{ github.run_id }}-${{ github.run_attempt }}"
+          --label org.cgiar.cicd.unit=marlo
+          --tag "$LOCAL_IMAGE" .
+      - name: Remove the MARLO properties
+        if: always()
+        run: bash .github/scripts/remove-marlo-properties.sh
+      - name: Assume the build role through OIDC for the push (credentials not exported to the job)
+        id: aws
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ secrets.CICD_BUILD_ROLE_ARN }}
+          aws-region: ${{ vars.CICD_AWS_REGION }}
+          role-session-name: marlo-dev-ci-${{ github.run_id }}
+          mask-aws-account-id: true
+          output-env-credentials: false
+          output-credentials: true
+      - name: Push image and capture its digest
+        id: push
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.aws.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws.outputs.aws-session-token }}
+          AWS_REGION: ${{ vars.CICD_AWS_REGION }}
+          REPOSITORY: ${{ vars.CICD_ECR_REPOSITORY }}
+          LOCAL: ${{ env.LOCAL_IMAGE }}
+          TAG: gha-${{ github.run_id }}-${{ github.run_attempt }}
+        run: bash .github/scripts/push-image.sh
+
+  # ---------------------------------------------------------------- CD hand-over to Jenkins
+  # Only after `publish-image` succeeded with a digest. Jenkins deploys exactly this digest.
+  deploy:
+    name: deploy (Jenkins marlo-dev-docker-cd)
+    needs: publish-image
+    if: needs.publish-image.result == 'success' && needs.publish-image.outputs.digest != ''
+    permissions: {}
+    uses: ./.github/workflows/jenkins-cd.reusable.yml
+    with:
+      jenkins-job: marlo-dev-docker-cd
+      environment: marlo-dev
+      dry-run: false # real deploy on every push to dev (owner authorization, cutover)
+      artifacts: marlo=${{ needs.publish-image.outputs.digest }}
+    secrets:
+      JENKINS_USERNAME: ${{ secrets.JENKINS_USERNAME }}
+      JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+
+  # ---------------------------------------------------------------- CI failure notification
+  # Only when the run failed before Jenkins started a build (the checks, the publish or the hand-over itself).
+  # Once Jenkins started the build, Jenkins reports the outcome.
+  notify-ci-failure:
+    name: notify CI failure (Slack)
+    needs: [ci-script-checks, publish-image, deploy]
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
+    permissions: {}
+    uses: ./.github/workflows/slack-notify.reusable.yml
+    with:
+      status: failed
+      title: MARLO NEW ENVIRONMENT
+      project: MARLO
+      environment-label: DEV
+      detail: >-
+        ci-script-checks=${{ needs.ci-script-checks.result }},
+        publish-image=${{ needs.publish-image.result }},
+        jenkins-hand-over=${{ needs.deploy.result }}
+    secrets:
+      SLACK_NOTIFICATIONS_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_WEBHOOK_URL }}

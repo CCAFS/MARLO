@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Named;
 import javax.inject.Inject;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 @Named
 public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> implements ProjectFocusDAO {
@@ -59,6 +60,18 @@ public class ProjectFocusMySQLDAO extends AbstractMarloDAO<ProjectFocus, Long> i
   public ProjectFocus find(long id) {
     return super.find(ProjectFocus.class, id);
 
+  }
+
+  @Override
+  public List<ProjectFocus> findActiveByProjectProgramAndPhase(long projectID, long programID, long phaseID) {
+    String query = "from " + ProjectFocus.class.getName()
+      + " where active = true and project.id = :projectId and crpProgram.id = :programId and phase.id = :phaseId";
+    Query<ProjectFocus> createQuery =
+      this.getSessionFactory().getCurrentSession().createQuery(query, ProjectFocus.class);
+    createQuery.setParameter("projectId", projectID);
+    createQuery.setParameter("programId", programID);
+    createQuery.setParameter("phaseId", phaseID);
+    return super.findAll(createQuery);
   }
 
   @Override

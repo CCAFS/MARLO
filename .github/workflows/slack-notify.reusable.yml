@@ -1,0 +1,105 @@
+# Reusable: posts a CI/CD notification to Slack in the style of the Jenkins `slackSend` messages
+# (bold "[<title>]: (<ENV>)" line plus one colored attachment with short fields).
+#
+# Split of responsibilities (one message per event, never duplicated):
+#   GitHub Actions  status=started  when the CI/CD run starts (the whole process, not the Jenkins deploy)
+#                   status=failed   only when the run fails BEFORE Jenkins accepted the deploy (CI failure,
+#                                   or the Jenkins hand-over itself failed): Jenkins has no build to report
+#   Jenkins         succeeded / failed of the deploy (post block of the CD job, slackSend + slack-token)
+#
+# Transport: the Slack incoming webhook of #notifications-platform (secret SLACK_NOTIFICATIONS_WEBHOOK_URL). An incoming webhook
+# always posts to the channel it was created for; the channel cannot be chosen here.
+#
+# Notifications never block the pipeline: the job is `continue-on-error`, and a missing or rejected webhook
+# only produces a warning. The webhook URL is a credential: it is never printed and is passed to curl
+# through stdin.
+name: slack-notify (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        description: started | failed
+        type: string
+        required: true
+      title:
+        description: Bracketed label of the message, e.g. "Reporting Tool NEW ENVIRONMENT"
+        type: string
+        required: true
+      project:
+        description: Project name shown in the details, e.g. "Reporting Tool"
+        type: string
+        required: true
+      environment-label:
+        description: Environment shown in the message, e.g. DEV, STAGING, PROD
+        type: string
+        required: true
+      detail:
+        description: Optional extra line (e.g. the result of each job)
+        type: string
+        default: ""
+    secrets:
+      SLACK_NOTIFICATIONS_WEBHOOK_URL:
+        required: false
+
+permissions: {}
+
+jobs:
+  notify:
+    name: slack ${{ inputs.status }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - name: Post to Slack
+        env:
+          SLACK_NOTIFICATIONS_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS_WEBHOOK_URL }}
+          STATUS: ${{ inputs.status }}
+          TITLE: ${{ inputs.title }}
+          PROJECT: ${{ inputs.project }}
+          ENV_LABEL: ${{ inputs.environment-label }}
+          DETAIL: ${{ inputs.detail }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SLACK_NOTIFICATIONS_WEBHOOK_URL:-}" ]; then echo "::warning::SLACK_NOTIFICATIONS_WEBHOOK_URL is not available; notification skipped"; exit 0; fi
+          case "$SLACK_NOTIFICATIONS_WEBHOOK_URL" in
+            https://hooks.slack.com/*) ;;
+            *) echo "::warning::SLACK_NOTIFICATIONS_WEBHOOK_URL is not a Slack https webhook; notification skipped"; exit 0 ;;
+          esac
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}"
+          commit_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${COMMIT}"
+          case "$STATUS" in
+            started)
+              color="#FFFF00"; att_title="CI/CD Start Details"
+              text=":rocket: *[${TITLE}]*: *(${ENV_LABEL})* - CI/CD started" ;;
+            failed)
+              color="#FF0000"; att_title="CI Failure Details"
+              text=":alert: *[${TITLE}]*: *(${ENV_LABEL})* - CI/CD failed in GitHub Actions (no deploy was started) :alert:" ;;
+            *) echo "::warning::unknown status '$STATUS'; notification skipped"; exit 0 ;;
+          esac
+          payload="$(jq -n \
+            --arg text "$text" --arg color "$color" --arg att_title "$att_title" \
+            --arg project "$PROJECT" --arg env "$ENV_LABEL" --arg repo "${GITHUB_REPOSITORY#*/}" \
+            --arg branch "$BRANCH" --arg commit "<${commit_url}|${COMMIT:0:7}>" \
+            --arg run "<${run_url}|Click here>" --arg detail "$DETAIL" '
+            { text: $text,
+              attachments: [ { title: $att_title, color: $color,
+                fields: ([
+                  {title: "Project", value: $project, short: true},
+                  {title: "Environment", value: $env, short: true},
+                  {title: "Repository", value: $repo, short: true},
+                  {title: "Branch", value: $branch, short: true},
+                  {title: "Commit", value: $commit, short: true},
+                  {title: "GitHub Actions Run", value: $run, short: false}
+                ] + (if $detail == "" then [] else [{title: "Detail", value: $detail, short: false}] end)) } ] }')"
+          # The webhook URL goes to curl through stdin (`url = ...`), so it never appears on a command line.
+          code="$(printf 'url = "%s"\n' "$SLACK_NOTIFICATIONS_WEBHOOK_URL" \
+            | curl --config - --proto '=https' --max-redirs 0 -sS -o /dev/null -w '%{http_code}' --max-time 20 \
+                -X POST -H 'Content-Type: application/json; charset=utf-8' --data "$payload")" || code="000"
+          if [ "$code" = "200" ]; then
+            echo "Slack notification sent (${STATUS})"
+          else
+            echo "::warning::Slack did not accept the notification (HTTP ${code}); the pipeline continues"
+          fi

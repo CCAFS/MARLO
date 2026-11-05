@@ -177,7 +177,7 @@
         <strong>[@s.text name="header.userMenu.roles" /]</strong>
         [#if rolesList?has_content]
           [#list rolesList as r]
-            <span>${(r.aiccraAcronymDimanic)!}</span>[#if r_has_next] [/#if]
+            <span>${(action.getRoleLabel(r))!}</span>[#if r_has_next] [/#if]
           [/#list]
         [/#if]
         [#if liasons?has_content]
