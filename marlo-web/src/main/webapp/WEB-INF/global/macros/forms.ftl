@@ -530,7 +530,7 @@
   </div>
 [/#macro]
 
-[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false]
+[#macro yesNoInput name label="" disabled=false editable=true inverse=false value="" yesLabel="Yes" noLabel="No" cssClass="" neutral=false yesDisabled=false yesTitle=""]
   [#-- Determinar valor actual --]
   [#if value == ""]
     [#assign customValue][@s.property value="${name}"/][/#assign]
@@ -548,7 +548,12 @@
 
     [#if editable]
       <div class="button-wrap">
-        <label for="yes-button-${name}" class="yes-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
+        [#if yesDisabled]
+          [#-- Shown but not choosable: no yes-button-label, so page-wide handlers bound to it skip it --]
+          <label class="button-label is-disabled" aria-disabled="true" [#if yesTitle?has_content]title="${yesTitle}"[/#if]>${yesLabel}</label>
+        [#else]
+          <label for="yes-button-${name}" class="yes-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "true")!false]radio-checked[/#if]">${yesLabel}</label>
+        [/#if]
         <label for="no-button-${name}" class="no-button-label button-label [#if neutral]neutral[/#if] [#if (customValue == "false")!false]radio-checked[/#if]">${noLabel}</label>
         <input type="hidden" name="${name}" id="hasCoordinates-${name}" class="onoffswitch-radio" value="${(customValue)!-1}" />
       </div>
