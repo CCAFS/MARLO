@@ -41,9 +41,12 @@
         [#-- Regional scope --]
         [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
-      <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+      [#-- A2-2712: on the redesigned form the label follows the scope, "Countries" for multi-national and "Country" for
+           the single-country scopes; setGeographicScope2 (global.js) swaps it. The scope list keeps "Country(ies)" --]
+      [#local countriesLabelKey = singleScope?then(isMultiNational?then('geographicScope.countriesLabel', 'geographicScope.countryLabel'), 'deliverable.countries') /]
+      <div class="form-group nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}"[#if singleScope] data-label-single="[@s.text name="geographicScope.countryLabel" /]" data-label-multiple="[@s.text name="geographicScope.countriesLabel" /]"[/#if]>
         [#-- Multinational, National and Subnational scope --]
-        [@customForm.select name="deliverable.countriesIds" label="" i18nkey="deliverable.countries" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
+        [@customForm.select name="deliverable.countriesIds" label="" i18nkey=countriesLabelKey listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="deliverable.countriesIds" multiple=true required=true className="countriesSelect" disabled=!editable/]
       </div>
     </div>
    
