@@ -365,9 +365,11 @@
           [@customForm.labelText name="projectInnovations.geographicScopeTopic" text="projectInnovations.geographicScopeTopic" /]
         </div>
 
-        [#-- Multi-national, National and Sub-national scope --]
-        <div class="dlf-field nationalBlock" style="display:${(needsCountries)?string('block','none')}">
-          [@customForm.select name="innovation.countriesIds" label="" i18nkey="projectInnovations.country" listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable /]
+        [#-- Multi-national, National and Sub-national scope. A2-2713: the label follows the scope, "Countries" for
+             multi-national and "Country" for the single-country scopes; setGeographicScope2 (global.js) swaps it --]
+        [#local countriesLabelKey = (checkedScopeId == action.reportingIndGeographicScopeMultiNational)?then('geographicScope.countriesLabel', 'geographicScope.countryLabel') /]
+        <div class="dlf-field nationalBlock" style="display:${(needsCountries)?string('block','none')}" data-label-single="[@s.text name="geographicScope.countryLabel" /]" data-label-multiple="[@s.text name="geographicScope.countriesLabel" /]">
+          [@customForm.select name="innovation.countriesIds" label="" i18nkey=countriesLabelKey listName="countries" keyFieldName="isoAlpha2"  displayFieldName="name" value="innovation.countriesIds" multiple=true required=!isProgressActive className="countriesSelect" disabled=!editable /]
         </div>
 
         [#-- Regional scope --]
