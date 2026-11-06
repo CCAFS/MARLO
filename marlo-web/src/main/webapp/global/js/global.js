@@ -1518,6 +1518,21 @@ function setGeographicScope(component) {
   }
 }
 
+// The countries field reads "Country" while it takes one country and "Countries" under multi-national. The texts come
+// from the block's data-label-* attributes (i18n); a block without them keeps the label it was rendered with
+function setCountriesLabel($nationalBlock, multiple) {
+  var text = $nationalBlock.attr(multiple ? 'data-label-multiple' : 'data-label-single');
+  if (!text) {
+    return;
+  }
+  $nationalBlock.find('label').first().contents().filter(function () {
+    return this.nodeType === 3 && $.trim(this.nodeValue) !== '';
+  }).first().each(function () {
+    // Swap the words only: the spacing before the required mark and any trailing ":" stay as rendered
+    this.nodeValue = this.nodeValue.replace(/\S[\s\S]*?(?=:?\s*$)/, text);
+  });
+}
+
 // userChange: the user picked the scope now (not the page load), so the countries the new scope cannot keep are cleared
 function setGeographicScope2(component, userChange) {
   var $value = $(component).val();
@@ -1582,7 +1597,8 @@ function setGeographicScope2(component, userChange) {
   }
 
   if ($isMultiNational || $isNational || $isSubNational) {
-    
+    setCountriesLabel($nationalBlock, $isMultiNational);
+
     if ($isMultiNational) {
 
       $nationalBlock.find("select").select2('destroy');
