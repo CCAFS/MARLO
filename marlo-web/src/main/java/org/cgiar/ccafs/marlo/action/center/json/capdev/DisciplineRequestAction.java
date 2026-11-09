@@ -129,7 +129,7 @@ public class DisciplineRequestAction extends BaseAction {
       loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
       loggedCrp = crpManager.getGlobalUnitById(loggedCrp.getId());
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.SESSION_CRP + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get {} from the session", APConstants.SESSION_CRP, e);
     }
   }
 

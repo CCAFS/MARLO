@@ -184,8 +184,8 @@ public class ProjectHighlightSummaryAction extends BaseSummariesAction implement
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, stopTime);
     return SUCCESS;
   }
 
@@ -449,8 +449,8 @@ public class ProjectHighlightSummaryAction extends BaseSummariesAction implement
       Long.parseLong(StringUtils.trim(parameters.get(APConstants.HIGHLIGHT_REQUEST_ID).getMultipleValues()[0]));
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info("Start report download: " + this.getFileName() + ". User: " + this.getDownloadByUser() + ". CRP: "
-      + this.getLoggedCrp().getAcronym());
+    LOG.info("Start report download: {}. CRP: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null);
   }
 
   public void setBytesPDF(byte[] bytesPDF) {

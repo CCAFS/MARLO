@@ -10,7 +10,7 @@
     [#else]
       <p>
         [@s.text name="message.historyVersion" ]  
-          [@s.param]<span>${capdev.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${capdev.modifiedBy.composedName}</span>[/@s.param]
           [@s.param]<span>${capdev.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="capdevID" value=capdevID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
         [/@s.text]

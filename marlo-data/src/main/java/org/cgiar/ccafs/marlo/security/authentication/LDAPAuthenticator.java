@@ -83,8 +83,7 @@ public class LDAPAuthenticator implements Authenticator {
       if (!looged.containsKey(APConstants.LOGIN_MESSAGE)) {
         looged.put(APConstants.LOGIN_MESSAGE, APConstants.ERROR_LDAP_CONNECTION);
       }
-      LOG.error("Exception raised trying to log in the user '{}' against the active directory. ", email,
-        e.getMessage());
+      LOG.error("Exception raised trying to log in the user '{}' against the active directory.", email, e);
     }
     return looged;
   }

@@ -356,7 +356,7 @@ public class Innovations2018Validator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.INNOVATIONS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations validators: " + e.getMessage());
+        LOG.error("Error getting innovations validators", e);
       }
     }
 

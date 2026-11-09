@@ -71,10 +71,12 @@ public interface IpProjectContributionOverviewManager {
   /**
    * @param mogId
    * @param year
+   * @param program
+   * @param phaseId phase whose project info decides which projects report and are global
    * @return
    */
   public List<IpProjectContributionOverview> getProjectContributionOverviewsSytnhesisGlobal(long mogId, int year,
-    long program);
+    long program, long phaseId);
 
   /**
    * This method saves the information of the given ipProjectContributionOverview

@@ -55,12 +55,17 @@ public class SubActionsByPriorityAction extends BaseAction {
     Map<String, Object> subAction;
     List<ShfrmSubAction> shfrmSubActions = new ArrayList<>();
     try {
-      shfrmSubActions = shfrmSubActionManager.findAll().stream()
-        .filter(s -> s != null && s.isActive() && s.getShfrmPriorityAction() != null
-          && s.getShfrmPriorityAction().getId() != null && s.getShfrmPriorityAction().getId().equals(priorityActionID))
-        .collect(Collectors.toList());
+      // findAll() answers null on an empty table; the list stays empty, as it did when that threw
+      List<ShfrmSubAction> allSubActions = shfrmSubActionManager.findAll();
+      if (allSubActions != null) {
+        shfrmSubActions = allSubActions.stream()
+          .filter(s -> s != null && s.isActive() && s.getShfrmPriorityAction() != null
+            && s.getShfrmPriorityAction().getId() != null
+            && s.getShfrmPriorityAction().getId().equals(priorityActionID))
+          .collect(Collectors.toList());
+      }
     } catch (Exception e) {
-      logger.error("error getting sub actions " + e);
+      logger.error("error getting sub actions", e);
     }
 
     if (shfrmSubActions != null && !shfrmSubActions.isEmpty()) {

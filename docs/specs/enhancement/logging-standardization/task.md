@@ -46,6 +46,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T01 — Remove the dead REST logging aspect
 
+- **Status:** Done, 2026-10-26: `logging/LoggingAspect.java` deleted, its `@Bean` and import dropped from
+  `MarloRestApiConfig`, and the stale aspect comment removed from `ExceptionTranslator`. The Shiro advisor
+  beans in the same class are untouched. No reference to `LoggingAspect` remains.
 - **Depends on:** — (but land it with or after T02, which carries the replacement coverage)
 - **Module:** marlo-web
 - **Files touched:**
@@ -80,6 +83,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T02 — Log every REST error handler with its status
 
+- **Status:** Done before 2026-10-26, outside this task list: `ExceptionTranslator` puts the status in `LogContext` and
+  logs every handled REST error with it, at a level that follows the status (5xx ERROR and emailed, 429 DEBUG,
+  401 and 404 INFO, other 4xx WARN). Verified by reading the code on 2026-10-26.
 - **Depends on:** —
 - **Module:** marlo-web
 - **Files touched:**
@@ -103,6 +109,11 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T03 — Fix the shipped `log.folder` defaults
 
+- **Status:** Done, 2026-10-26: the tracked `marlo-test.properties` now has `log.folder=${user.home}/marlo/logs`
+  instead of `/home/julianrodriguez/logs`. The deployed environments run the `dev` and `pro` profiles with their
+  own untracked files, so no deployment reads this template; only `logback.xml` reads `log.folder`. A probe with
+  logback 1.2.13 confirmed a system property inside the value resolves and the missing folders are created.
+  `marlo-dev.properties` is gitignored, so it is each developer's own file and is not changed here.
 - **Depends on:** —
 - **Module:** marlo-web (resources)
 - **Files touched:**
@@ -142,6 +153,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T05 — `LoggingContextFilter` and its registration
 
+- **Status:** Done, 2026-10-02 (commit `812aac85cc`) and 2026-10-08 (`47906c6686`), ahead of T08 and in another shape:
+  `logging/LogContext.java` fills and clears `request_id`, `controller_affected` and `status_code` per request
+  instead of a `LoggingContextFilter`. The values are in the text log, not yet in a JSON one.
 - **Depends on:** T04
 - **Module:** marlo-web
 - **Files touched:**
@@ -164,6 +178,8 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T06 — `user_id` into the context
 
+- **Status:** Done, 2026-10-02 (commit `812aac85cc`), through `LogContext`: `user_id` is put on authenticated requests
+  and removed at the end of each request.
 - **Depends on:** T05
 - **Module:** marlo-web
 - **Files touched:**
@@ -178,6 +194,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T07 — User name/email and tool enrichment
 
+- **Status:** Done, 2026-10-02 to 2026-10-08 (commits `812aac85cc`, `47906c6686`), through `LogContext`: `tool_name`
+  carries the Global Unit acronym, and `user_name`/`user_email` are kept pending and published only when the
+  request fails with status 400 or more (SEC-001), sanitized so a name cannot split or fake a line.
 - **Depends on:** T05, T06
 - **Module:** marlo-web
 - **Files touched:**
@@ -235,6 +254,10 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T09 — Cleanup: the save chain
 
+- **Status:** Partly done, 2026-10-26: the four `printStackTrace()` of `AbstractMarloDAO` now log through `LOG.error`
+  with the exception as the last argument, and its log lines use `{}` placeholders. `AuditLogMySQLDao`,
+  `HibernateAuditLogListener` and the `ProjectInnovation*ManagerImpl` files had no offender left. No
+  `return`, `throw` or condition changed. The JSON check of the verification waits for T08.
 - **Depends on:** T08 (so the effect is visible in the JSON log)
 - **Module:** marlo-data
 - **Files touched:**
@@ -254,6 +277,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T10 — Cleanup: the authentication path
 
+- **Status:** Done before 2026-10-26, outside this task list: `UserManagerImp` and `UserMySQLDAO` report through SLF4J
+  only, a failed login is a WARN that names the user by id (`b204e93587`), and credentials are no longer
+  printed (`3f1f23cd58`, A2-2652). Verified by reading the code on 2026-10-26.
 - **Depends on:** T09
 - **Module:** marlo-data
 - **Files touched:**
@@ -270,6 +296,17 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T11 — Cleanup: filters and the REST layer
 
+- **Status:** Done, 2026-10-26: the 60 `printStackTrace()` / `System.out` occurrences in `web/filter`,
+  `rest/controller/v2/controllist` and `rest/services/deliverables` are gone. Caught exceptions are passed to
+  `LOG.error` as the last argument; the metadata clients keep one log line per failure instead of two. The
+  field error dumps before each `MARLOFieldValidationException` are DEBUG, null-safe per element, because
+  `ExceptionTranslator` already logs the 400. The WOS response dump is DEBUG; an unknown GeoIP address is
+  DEBUG and any other GeoIP failure WARN with the exception class only, since it runs on every REST request.
+  The new messages carry no request-supplied text (entity acronym, outcome id, link), only numeric ids, so a
+  crafted value cannot forge a log line. A debug print in `PolicyItem` that re-ran
+  `policyMilestoneManager.findAll()` was removed, and four commented-out prints deleted. Seven `*Item`
+  classes got an SLF4J `LOG`. No `return`, `throw` or condition changed; the controllers that swallow an
+  exception still swallow it. The JSON check of the verification waits for T08.
 - **Depends on:** T09
 - **Module:** marlo-web
 - **Files touched:**
@@ -285,6 +322,10 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T12 — Cleanup: `MicroserviceReportAction`
 
+- **Status:** Done, 2026-10-26: the 17 `System.out` lines of `MicroserviceReportAction` now go through SLF4J. Queue
+  connection, publish, download and configuration failures are `LOG.error` with the exception; retries and
+  progress are DEBUG. No URL is logged, since the File Management response can return a signed one. The
+  three publisher methods keep their behaviour.
 - **Depends on:** T09
 - **Module:** marlo-web
 - **Files touched:**

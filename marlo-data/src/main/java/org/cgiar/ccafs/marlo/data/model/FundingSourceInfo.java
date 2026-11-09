@@ -228,13 +228,6 @@ public class FundingSourceInfo extends MarloAuditableEntity implements java.io.S
     return sb.toString();
   }
 
-  @Override
-  public User getModifiedBy() {
-    User u = new User();
-    u.setId(new Long(3));
-    return u;
-  }
-
   public Institution getOriginalDonor() {
     return originalDonor;
   }

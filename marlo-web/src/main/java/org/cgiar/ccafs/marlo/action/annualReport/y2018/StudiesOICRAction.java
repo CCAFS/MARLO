@@ -310,7 +310,6 @@ public class StudiesOICRAction extends BaseAction {
     if (sectionStatus != null && sectionStatus.getMissingFields() != null && !sectionStatus.getMissingFields().isEmpty()
       && sectionStatus.getMissingFields().length() != 0 && sectionStatus.getSynthesisFlagships() != null
       && !sectionStatus.getSynthesisFlagships().isEmpty()) {
-      System.out.println("flagships with missing fields" + sectionStatus.getSynthesisFlagships());
       flagshipsIncomplete = sectionStatus.getSynthesisFlagships();
     }
 

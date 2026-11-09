@@ -37,6 +37,8 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -44,6 +46,8 @@ import org.apache.struts2.dispatcher.Parameter;
 public class CanEditSynthesisInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = -1238999468476665730L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(CanEditSynthesisInterceptor.class);
 
 
   Map<String, Parameter> parameters;
@@ -71,7 +75,7 @@ public class CanEditSynthesisInterceptor extends AbstractInterceptor implements 
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.warn("Answering not found after an exception in the action or its permission check", e);
       return BaseAction.NOT_FOUND;
     }
   }

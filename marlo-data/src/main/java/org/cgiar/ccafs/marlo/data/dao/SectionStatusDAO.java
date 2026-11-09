@@ -133,4 +133,14 @@ public interface SectionStatusDAO {
    */
   public SectionStatus save(SectionStatus sectionStatus);
 
+  /**
+   * Store the missing fields of an existing section status in a session and transaction of its own, so that no other
+   * entity loaded or changed by the request is written with it.
+   *
+   * @param sectionStatusId the id of the section status.
+   * @param missingFields the missing fields to store.
+   * @return the number of rows updated: 1, or 0 when the section status does not exist.
+   */
+  public int updateMissingFieldsInOwnSession(long sectionStatusId, String missingFields);
+
 }

@@ -125,7 +125,7 @@ public class ExpectedStudiesOther {
       meliaList =
         this.expectedStudiesOtherItem.findAllMeliaByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not list the MELIA studies", e);
     }
     return meliaList;
   }
@@ -150,7 +150,7 @@ public class ExpectedStudiesOther {
         throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.MELIA.GET.id.404"));
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the MELIA study {}", id, e);
     }
 
     return response;

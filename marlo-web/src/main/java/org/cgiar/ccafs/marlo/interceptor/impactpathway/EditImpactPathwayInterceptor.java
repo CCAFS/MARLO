@@ -39,6 +39,8 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -46,6 +48,8 @@ import org.apache.struts2.dispatcher.Parameter;
 public class EditImpactPathwayInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 8294421978295446976L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(EditImpactPathwayInterceptor.class);
   private final GlobalUnitManager crpManager;
   private final UserManager userManager;
   private final CrpProgramManager crpProgramManager;
@@ -122,7 +126,7 @@ public class EditImpactPathwayInterceptor extends AbstractInterceptor implements
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.warn("Answering not found after an exception in the action or its permission check", e);
       return BaseAction.NOT_FOUND;
     }
   }

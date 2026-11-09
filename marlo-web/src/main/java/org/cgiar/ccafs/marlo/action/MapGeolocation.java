@@ -36,6 +36,8 @@ import javax.inject.Inject;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -45,6 +47,8 @@ public class MapGeolocation extends BaseAction {
 
 
   private static final long serialVersionUID = -5001936842420166300L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(MapGeolocation.class);
 
 
   private LocElementManager locElementManager;
@@ -80,8 +84,9 @@ public class MapGeolocation extends BaseAction {
         conn.setRequestProperty("Accept", "application/json");
         conn.setRequestProperty("User-Agent", "MARLO/1.0 (+https://marlo.cgiar.org)");
 
-        if (conn.getResponseCode() != 200) {
-          System.out.println("Failed : HTTP error code : " + conn.getResponseCode());
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+          LOG.warn("The geolocation service answered HTTP {}", responseCode);
         }
 
         BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
@@ -111,9 +116,9 @@ public class MapGeolocation extends BaseAction {
         }
 
       } catch (MalformedURLException e) {
-        e.printStackTrace();
+        LOG.warn("Invalid geolocation service URL", e);
       } catch (IOException e) {
-        e.printStackTrace();
+        LOG.warn("Could not read the geolocation service response", e);
       }
     }
   }

@@ -74,8 +74,7 @@ public class DataverseClientApi extends MetadataClientApi {
             metadataModel.setPublicationDate(date);
           }
         } catch (ParseException e) {
-          e.printStackTrace();
-          LOG.warn(e.getMessage());
+          LOG.warn("Could not parse the Dataverse publication date", e);
         }
 
         if (jo.has(persistentUrl)) {
@@ -308,8 +307,7 @@ public class DataverseClientApi extends MetadataClientApi {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
+      LOG.error("Could not read the Dataverse metadata", e);
     }
     return metadataModel;
 

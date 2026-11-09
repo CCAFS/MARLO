@@ -112,7 +112,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       Object result = query.uniqueResult();
       exists = result != null;
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not check whether the table {} exists", tableName, e);
     }
 
     return exists;
@@ -136,8 +136,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       List<Map<String, Object>> result = query.list();
       return result;
     } catch (Exception e) {
-      LOG.error(" error " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not run the stored procedure {}", storeProcedure, e);
       return null;
     }
 
@@ -157,8 +156,7 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
       List<Map<String, Object>> result = query.list();
       return result;
     } catch (Exception e) {
-      LOG.error(" error " + e.getMessage());
-      e.printStackTrace();
+      LOG.error("Could not run the stored procedure {} for the user {}", storeProcedure, userId, e);
       return null;
     }
 
@@ -365,20 +363,20 @@ public abstract class AbstractMarloDAO<T, ID extends Serializable> {
         String messageType = (String) row[2];
         String messageText = (String) row[3];
 
-        LOG.info("Table: " + table);
-        LOG.info("Operation: " + operation);
-        LOG.info("Message Type: " + messageType);
-        LOG.info("Message Text: " + messageText);
+        LOG.info("Table: {}", table);
+        LOG.info("Operation: {}", operation);
+        LOG.info("Message Type: {}", messageType);
+        LOG.info("Message Text: {}", messageText);
 
         if ("status".equals(messageType) && "OK".equals(messageText)) {
           return true;
         } else if ("error".equals(messageType)) {
-          LOG.error("Error with table: " + messageText);
+          LOG.error("Error with table: {}", messageText);
           return false;
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not check the integrity of the table {}", tableName, e);
     }
 
     return false;

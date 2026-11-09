@@ -29,6 +29,7 @@ import org.cgiar.ccafs.marlo.data.model.LiaisonInstitution;
 import org.cgiar.ccafs.marlo.data.model.LiaisonUser;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
 import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
@@ -48,6 +49,8 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -55,6 +58,8 @@ import org.apache.struts2.dispatcher.Parameter;
 public class EditProjectInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 1423197153747668108L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(EditProjectInterceptor.class);
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
@@ -89,7 +94,7 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.warn("Answering not found after an exception in the action or its permission check", e);
       return BaseAction.NOT_FOUND;
     }
   }
@@ -218,10 +223,12 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
 
         }
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+        // A project without information in the phase has no end date or status to restrict the edition with
+        ProjectInfo phaseInfo = project.getProjecInfoPhase(baseAction.getActualPhase());
+        if (phaseInfo != null && phaseInfo.getEndDate() != null && phaseInfo.getStatus() != null) {
           Calendar cal = Calendar.getInstance();
-          cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
-          if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          cal.setTime(phaseInfo.getEndDate());
+          if (phaseInfo.getStatus().longValue() == Long
             .parseLong(ProjectStatusEnum.Ongoing.getStatusId())
             && baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
             canEdit = false;
@@ -232,12 +239,10 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
 
         }
 
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate() != null) {
+        if (phaseInfo != null && phaseInfo.getEndDate() != null && phaseInfo.getStatus() != null) {
           Calendar cal = Calendar.getInstance();
-          cal.setTime(project.getProjecInfoPhase(baseAction.getActualPhase()).getEndDate());
-          System.out.println(cal.get(Calendar.YEAR));
-          System.out.println(baseAction.getActualPhase().getYear());
-          if (project.getProjecInfoPhase(baseAction.getActualPhase()).getStatus().longValue() == Long
+          cal.setTime(phaseInfo.getEndDate());
+          if (phaseInfo.getStatus().longValue() == Long
             .parseLong(ProjectStatusEnum.Complete.getStatusId())) {
             if (baseAction.getActualPhase().getYear() > cal.get(Calendar.YEAR)) {
               if (!isAdmin) {
@@ -249,9 +254,9 @@ public class EditProjectInterceptor extends AbstractInterceptor implements Seria
         }
 
 
-        if (project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getDescription()
-          .equals(APConstants.REPORTING)
-          && project.getProjecInfoPhase(baseAction.getActualPhase()).getPhase().getYear() == 2016) {
+        if (phaseInfo != null && phaseInfo.getPhase() != null
+          && APConstants.REPORTING.equals(phaseInfo.getPhase().getDescription())
+          && phaseInfo.getPhase().getYear() == 2016) {
           canEdit = false;
           baseAction.setEditStatus(false);
         }

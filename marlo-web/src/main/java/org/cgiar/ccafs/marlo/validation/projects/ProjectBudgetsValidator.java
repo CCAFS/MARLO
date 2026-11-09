@@ -55,8 +55,17 @@ public class ProjectBudgetsValidator extends BaseValidator {
     this.fundingSourceManager = fundingSourceManager;
   }
 
-  private Path getAutoSaveFilePath(Project project, long crpID, BaseAction action) {
-    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+  /**
+   * @return the path of the section's autosave file, or null when its name cannot be built: no Global Unit or phase.
+   */
+  private Path getAutoSaveFilePath(Project project, Long crpID, BaseAction action) {
+    if (crpID == null || action.getActualPhase() == null) {
+      return null;
+    }
+    GlobalUnit crp = this.getAutoSaveGlobalUnit(action, crpID.longValue(), crpManager);
+    if (crp == null) {
+      return null;
+    }
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGET.getStatus().replace("/", "_");
     String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
@@ -86,11 +95,12 @@ public class ProjectBudgetsValidator extends BaseValidator {
   public void validate(BaseAction action, Project project, boolean saving) {
     action.setInvalidFields(new HashMap<>());
     hasErros = false;
-    if (project != null) {
+    // The section status is stored per phase, so there is nothing to validate without one
+    if (project != null && action.getActualPhase() != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
-        if (path.toFile().exists()) {
+        if (path != null && path.toFile().exists()) {
           action.addMissingField("draft");
         }
       }
@@ -110,25 +120,28 @@ public class ProjectBudgetsValidator extends BaseValidator {
               if (projectBudget.getAmount() != null) {
                 if (projectBudget.getYear() == action.getCurrentCycleYear()) {
                   FundingSource fundingSource =
-                    fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
-                  // calculate the remaing. If the budget is new, calculate it with the budgets associated with this FS
-                  // in
-                  // the year evaluated. If it is not new this budget is excluded from the calculation
-                  double remaining = 0;
-                  if (projectBudget.getId() == null) {
-                    remaining = fundingSource.getRemaining(projectBudget.getYear(), action.getActualPhase());
-                  } else {
-                    remaining = fundingSource.getRemainingExcludeBudget(projectBudget.getYear(),
-                      projectBudget.getId().longValue(), action.getActualPhase());
-                  }
-                  double currentAmount = projectBudget.getAmount().doubleValue();
-                  double subBudgets = remaining - currentAmount;
-                  int intValue = (int) subBudgets;
-                  if (intValue < 0) {
-                    action.addMessage(action.getText("projectBudgets.fundig"));
-                    action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
-                      InvalidFieldsMessages.EMPTYFIELD);
+                    projectBudget.getFundingSource() == null || projectBudget.getFundingSource().getId() == null ? null
+                      : fundingSourceManager.getFundingSourceById(projectBudget.getFundingSource().getId());
+                  // A budget without an existing funding source has no remaining amount to be compared with
+                  if (fundingSource != null) {
+                    // calculate the remaing. If the budget is new, calculate it with the budgets associated with this
+                    // FS in the year evaluated. If it is not new this budget is excluded from the calculation
+                    double remaining = 0;
+                    if (projectBudget.getId() == null) {
+                      remaining = fundingSource.getRemaining(projectBudget.getYear(), action.getActualPhase());
+                    } else {
+                      remaining = fundingSource.getRemainingExcludeBudget(projectBudget.getYear(),
+                        projectBudget.getId().longValue(), action.getActualPhase());
+                    }
+                    double currentAmount = projectBudget.getAmount().doubleValue();
+                    double subBudgets = remaining - currentAmount;
+                    int intValue = (int) subBudgets;
+                    if (intValue < 0) {
+                      action.addMessage(action.getText("projectBudgets.fundig"));
+                      action.getInvalidFields().put("input-project.budgets[" + i + "].amount",
+                        InvalidFieldsMessages.EMPTYFIELD);
 
+                    }
                   }
 
                   total = total + projectBudget.getAmount().longValue();

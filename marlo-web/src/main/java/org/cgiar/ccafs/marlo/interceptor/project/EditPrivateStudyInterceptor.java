@@ -36,6 +36,8 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -43,6 +45,8 @@ import org.apache.struts2.dispatcher.Parameter;
 public class EditPrivateStudyInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 4178469256964398247L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(EditPrivateStudyInterceptor.class);
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
@@ -76,7 +80,16 @@ public class EditPrivateStudyInterceptor extends AbstractInterceptor implements 
 
     try {
       this.setPermissionParameters(invocation);
+    } catch (NullPointerException | NumberFormatException | IndexOutOfBoundsException e) {
+      // A study id, cycle or year that is missing or is not a number is a bad request, and so is a study whose project
+      // has no active origin unit: the study is not found. Only the reading of the request is covered, so a failure of
+      // the action itself is not hidden as a 404.
+      LOG.warn("The study requested could not be read from the request: {}", e.getClass().getSimpleName());
+      BaseAction action = (BaseAction) invocation.getAction();
+      return action.NOT_FOUND;
+    }
 
+    try {
       if (!isPrivate) {
         return invocation.invoke();
       } else {

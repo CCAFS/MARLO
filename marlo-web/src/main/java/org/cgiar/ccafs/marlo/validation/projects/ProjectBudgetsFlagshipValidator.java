@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.data.manager.BudgetTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
+import org.cgiar.ccafs.marlo.data.model.BudgetType;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.ProgramType;
@@ -65,8 +66,17 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     this.budgetTypeManager = budgetTypeManager;
   }
 
-  private Path getAutoSaveFilePath(Project project, long crpID, BaseAction action) {
-    GlobalUnit crp = crpManager.getGlobalUnitById(crpID);
+  /**
+   * @return the path of the section's autosave file, or null when its name cannot be built: no Global Unit or phase.
+   */
+  private Path getAutoSaveFilePath(Project project, Long crpID, BaseAction action) {
+    if (crpID == null || action.getActualPhase() == null) {
+      return null;
+    }
+    GlobalUnit crp = this.getAutoSaveGlobalUnit(action, crpID.longValue(), crpManager);
+    if (crp == null) {
+      return null;
+    }
     String composedClassName = project.getClass().getSimpleName();
     String actionFile = ProjectSectionStatusEnum.BUDGETBYFLAGSHIP.getStatus().replace("/", "_");
     String autoSaveFile = project.getId() + "_" + composedClassName + "_" + action.getActualPhase().getName() + "_"
@@ -115,23 +125,30 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     this.sMessage = sMessage;
 
 
-    if (project != null) {
+    // The section status is stored per phase, so there is nothing to validate without one
+    if (project != null && project.getId() != null && action.getActualPhase() != null) {
       if (!saving) {
         Path path = this.getAutoSaveFilePath(project, action.getCrpID(), action);
 
-        if (path.toFile().exists()) {
+        if (path != null && path.toFile().exists()) {
           action.addMissingField("draft");
         }
       }
 
-      project.getBudgetsFlagship().removeIf(Objects::isNull);
+      // A save that posts no budget row binds no list at all
+      if (project.getBudgetsFlagship() != null) {
+        project.getBudgetsFlagship().removeIf(Objects::isNull);
+      }
 
       Project projectDB = projectManager.getProjectById(project.getId());
+      if (projectDB == null) {
+        return;
+      }
       List<ProjectFocus> projectFocuses = new ArrayList<>(projectDB.getProjectFocuses().stream()
-        .filter(pf -> pf.isActive()
+        .filter(pf -> pf.isActive() && pf.getCrpProgram() != null
           && pf.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-            & pf.getCrpProgram().getResearchArea() == null
-          && pf.getPhase() != null && pf.getPhase().equals(action.getActualPhase()))
+          && pf.getCrpProgram().getResearchArea() == null && pf.getPhase() != null
+          && pf.getPhase().equals(action.getActualPhase()))
         .collect(Collectors.toList()));
       if (!projectFocuses.isEmpty()) {
         Boolean hasW1W2Budget =
@@ -144,36 +161,16 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
           this.hasBudgets(new Long(4), action.getCurrentCycleYear(), project.getId(), action.getActualPhase());
         if (CollectionUtils.isNotEmpty(project.getBudgetsFlagship())) {
           if (hasW1W2Budget) {
-            List<ProjectBudgetsFlagship> w1w2List = project.getBudgetsFlagship().stream()
-              .filter(c -> c != null && (c.getBudgetType().getId().longValue() == 1)
-                && (c.getYear() == action.getCurrentCycleYear())
-                && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
-              .collect(Collectors.toList());
-            this.validateBudgets(action, w1w2List, new Long(1));
+            this.validateBudgets(action, this.budgetsOfType(action, project, 1L), 1L);
           }
           if (hasW3Budget) {
-            List<ProjectBudgetsFlagship> w3List =
-              project.getBudgetsFlagship().stream()
-                .filter(c -> c.getBudgetType().getId().longValue() == 2 && c.getYear() == action.getCurrentCycleYear()
-                  && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
-                .collect(Collectors.toList());
-            this.validateBudgets(action, w3List, new Long(2));
+            this.validateBudgets(action, this.budgetsOfType(action, project, 2L), 2L);
           }
           if (hasBilateralBudget) {
-            List<ProjectBudgetsFlagship> bilateralList =
-              project.getBudgetsFlagship().stream()
-                .filter(c -> c.getBudgetType().getId().longValue() == 3 && c.getYear() == action.getCurrentCycleYear()
-                  && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
-                .collect(Collectors.toList());
-            this.validateBudgets(action, bilateralList, new Long(3));
+            this.validateBudgets(action, this.budgetsOfType(action, project, 3L), 3L);
           }
           if (hasCenterFundsBudget) {
-            List<ProjectBudgetsFlagship> centerFundsList =
-              project.getBudgetsFlagship().stream()
-                .filter(c -> c.getBudgetType().getId().longValue() == 4 && c.getYear() == action.getCurrentCycleYear()
-                  && (c.getPhase() != null && c.getPhase().equals(action.getActualPhase())))
-                .collect(Collectors.toList());
-            this.validateBudgets(action, centerFundsList, new Long(4));
+            this.validateBudgets(action, this.budgetsOfType(action, project, 4L), 4L);
           }
 
         } else {
@@ -204,9 +201,23 @@ public class ProjectBudgetsFlagshipValidator extends BaseValidator {
     }
   }
 
+  /**
+   * The flagship budgets of one budget type for the current cycle year and phase. A row without a budget type cannot
+   * belong to any type, so it is left out instead of failing the whole validation.
+   */
+  private List<ProjectBudgetsFlagship> budgetsOfType(BaseAction action, Project project, long type) {
+    return project.getBudgetsFlagship().stream()
+      .filter(c -> c != null && c.getBudgetType() != null && c.getBudgetType().getId() != null
+        && c.getBudgetType().getId().longValue() == type && c.getYear() == action.getCurrentCycleYear()
+        && c.getPhase() != null && c.getPhase().equals(action.getActualPhase()))
+      .collect(Collectors.toList());
+  }
+
   public void validateBudgets(BaseAction action, List<ProjectBudgetsFlagship> projectBudgetsFlagships, long type) {
     List<String> params = new ArrayList<String>();
-    params.add(budgetTypeManager.getBudgetTypeById(type).getName());
+    BudgetType budgetType = budgetTypeManager.getBudgetTypeById(type);
+    // The message names the budget type; its id stands in for a type that is not in the catalog
+    params.add(budgetType != null && budgetType.getName() != null ? budgetType.getName() : String.valueOf(type));
     double amount = 0;
     for (ProjectBudgetsFlagship projectBudgetsFlagship : projectBudgetsFlagships) {
       if (projectBudgetsFlagship.getAmount() == null) {

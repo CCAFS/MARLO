@@ -589,3 +589,17 @@ ul.nav li a {
   }
   
 }
+
+/* Why Generate cannot be used for the selected cycle, under the project / cluster select */
+.summariesFiles .projectSelectionMessage {
+  display: block;
+  margin-top: 6px;
+}
+
+.summariesFiles .projectSelectionMessage--info {
+  color: #6E6E6E;
+}
+
+.summariesFiles form button[type="submit"]:disabled {
+  cursor: not-allowed;
+}

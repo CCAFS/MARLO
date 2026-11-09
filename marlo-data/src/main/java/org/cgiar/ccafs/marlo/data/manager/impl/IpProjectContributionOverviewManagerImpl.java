@@ -77,8 +77,9 @@ public class IpProjectContributionOverviewManagerImpl implements IpProjectContri
 
   @Override
   public List<IpProjectContributionOverview> getProjectContributionOverviewsSytnhesisGlobal(long mogId, int year,
-    long program) {
-    return ipProjectContributionOverviewDAO.getProjectContributionOverviewsSynthesisGlobal(mogId, year, program);
+    long program, long phaseId) {
+    return ipProjectContributionOverviewDAO.getProjectContributionOverviewsSynthesisGlobal(mogId, year, program,
+      phaseId);
   }
 
   @Override

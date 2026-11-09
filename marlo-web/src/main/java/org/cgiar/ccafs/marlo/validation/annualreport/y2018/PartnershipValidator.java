@@ -243,7 +243,7 @@ public class PartnershipValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.EXTERNAL_PARTNERSHIPS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting partnerships delete: " + e.getMessage());
+        LOG.error("Error getting partnerships delete", e);
       }
     }
 

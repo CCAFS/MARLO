@@ -46,9 +46,9 @@
       { 'slug': 'contributionsLP6',  'name': 'projects.menu.contributionLP6',  'action': 'contributionsLP6',  'active': true, 'show': action.hasSpecificities('crp_lp6_active') && reportingActive && ((action.getProjectLp6ContributionValue(project.id, actualPhase.id))!false), "showCheck": isGlobalUnitProject},
       { 'slug': 'projectOutcomes',  'name': 'projects.menu.projectOutcomes',  'action': 'outcomesPandR',  'active': true, 'show':  phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject},
       { 'slug': 'ccafsOutcomes',  'name': 'projects.menu.ccafsOutcomes',  'action': 'ccafsOutcomes',  'active': true, 'show': phaseOne && !project.projectInfo.administrative , "showCheck": isGlobalUnitProject },
-      { 'slug': 'projectPolicies',  'name': 'projects.menu.policies',           'action': 'policies',  'active': true, 'show': (reportingActive || upKeepActive) && !aiccra, "showCheck": isGlobalUnitProject, "development": false},
-      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingActive && Aiccra , "showCheck": isGlobalUnitProject },
-      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive && Aiccra, "showCheck": isGlobalUnitProject, "development": false }
+      { 'slug': 'projectPolicies',  'name': 'projects.menu.policies',           'action': 'policies',  'active': false, 'show': false, "showCheck": isGlobalUnitProject, "development": false},
+      { 'slug': 'projectStudies',  'name': 'projects.menu.expectedStudies',  'action': 'studies',  'active': true, 'show': !centerGlobalUnit && !reportingActive, "showCheck": isGlobalUnitProject },
+      { 'slug': 'projectStudies',  'name': 'projects.menu.studies',           'action': 'studies',  'active': true, 'show': reportingActive, "showCheck": isGlobalUnitProject, "development": false }
       ]
     },
     { 'title': 'Outputs', 'show': true,
@@ -56,7 +56,7 @@
       { 'slug': 'overviewByMogs',  'name': 'projects.menu.overviewByMogs',  'action': 'outputs',  'active': true, 'show' : phaseOne && isCrpProject , "showCheck": isGlobalUnitProject},
       { 'slug': 'deliverableList',  'name': 'projects.menu.deliverables',  'action': 'deliverableList',  'active': true , "showCheck": isGlobalUnitProject, "development": false },
       { 'slug': 'innovations',  'name': 'projects.menu.innovations',  'action': 'innovationsList',  'active': action.hasSpecificities("innovation_section_active"),'show': action.hasSpecificities("innovation_section_active") &&((reportingActive || upKeepActive) && isCrpProject) , "showCheck": isGlobalUnitProject, "development": false },
-      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': true ,'show': reportingActive && isCrpProject && action.hasSpecificities("crp_view_highlights") && !aiccra, "showCheck": isGlobalUnitProject }
+      { 'slug': 'highlights',  'name': 'Project Highlights',  'action': 'highlights',  'active': false ,'show': false, "showCheck": isGlobalUnitProject }
       ]
     },
     { 'title': 'Activities', 'show': action.hasSpecificities(action.crpActivitesModule()),
@@ -67,7 +67,7 @@
     { 'title': 'Budget', 'show': false,
       'items': [
       { 'slug': 'budgetByPartners',  'name': 'projects.menu.budgetByPartners',  'action': 'budgetByPartners',  'active': false, 'show':false, "showCheck": false },      
-      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': false, 'show': action.getCountProjectFlagships(project.id) && !reportingActive && isCrpProject, "showCheck": false},
+      { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': false, 'show': false, "showCheck": false},
       { 'slug': 'leverages',  'name': 'Leverages',  'action': 'leverages',  'active': true, 'show': reportingActive && action.hasSpecificities("crp_leverages_module") && isCrpProject, "showCheck": isGlobalUnitProject}
       ]
     },
@@ -116,8 +116,9 @@
       <li>
         <ul>[#if !((menu.hideTitle)!false)]<p class="menuTitle">${menu.title}</p>[/#if]
           [#list menu.items as item]
-            [#if (item.showCheck)!true]
+            [#-- Reset per item, so an item without a check never reuses the status of the previous one --]
             [#assign submitStatus = false /]
+            [#if (item.showCheck)!true]
               [#if item.action?has_content && projectID?has_content]
                   [#assign submitStatus = (action.getProjectSectionStatus(item.action, projectID))!false /]
               [#else]
@@ -139,7 +140,8 @@
                   [#if (item.development)!false][@utils.underConstruction title="global.underConstruction" width="20px" height="20px" /][/#if]
                 </a>
               </li>
-              [#if item.active]
+              [#-- Only a section that shows a check can be required to complete the project --]
+              [#if item.active && (item.showCheck)!true]
                 [#if submitStatus][#assign sectionsChecked = sectionsChecked + 1 /][/#if]
                 [#assign sectionsForChecking = sectionsForChecking + ["${item.action}"] /]
               [/#if]

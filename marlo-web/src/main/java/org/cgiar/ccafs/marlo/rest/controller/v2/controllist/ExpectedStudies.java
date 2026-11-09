@@ -143,7 +143,7 @@ public class ExpectedStudies {
         throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.OICR.GET.id.404"));
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the expected study {}", id, e);
     }
 
     return response;

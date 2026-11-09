@@ -24,12 +24,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ReportsManagementAction extends BaseAction {
 
   private static final long serialVersionUID = -793652591843623397L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(ReportsManagementAction.class);
 
   public static long getSerialversionuid() {
     return serialVersionUID;
@@ -64,7 +67,7 @@ public class ReportsManagementAction extends BaseAction {
       reportConfigurations = reportConfigurationManager.findAll();
       this.loadData();
     } catch (Exception e) {
-      Log.error("error getting tip parameters " + e);
+      LOG.warn("Could not load the report configurations", e);
     }
   }
 

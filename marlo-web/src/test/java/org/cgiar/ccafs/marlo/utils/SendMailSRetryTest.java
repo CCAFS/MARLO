@@ -113,10 +113,16 @@ public class SendMailSRetryTest {
 
     private final int port;
     private final boolean production;
+    private final String supportMailbox;
 
     MailConfig(int port, boolean production) {
+      this(port, production, SUPPORT);
+    }
+
+    MailConfig(int port, boolean production, String supportMailbox) {
       this.port = port;
       this.production = production;
+      this.supportMailbox = supportMailbox;
     }
 
     @Override
@@ -136,7 +142,7 @@ public class SendMailSRetryTest {
 
     @Override
     public String getEmailNotification() {
-      return SUPPORT;
+      return supportMailbox;
     }
 
     @Override
@@ -228,12 +234,42 @@ public class SendMailSRetryTest {
   }
 
   @Test
-  public void testTestEnvironmentRetryWithoutBccIsSent() {
-    // The TO used to be the BCC unconditionally, so a row without BCC failed on every retry.
+  public void testTestEnvironmentRetryWithoutBccGoesOnlyToSupport() {
+    // Outside production the support mailbox is the only recipient, whether or not the row has a BCC: it used to
+    // fall back to the stored TO, a real person in a database copied from production.
     boolean sent = this.retry(false, Map.of(APConstants.CRP_EMAIL_SUPPORT_TEAM, "false"), GLOBAL_UNIT, null);
 
     assertTrue(sent);
-    assertEquals(List.of("someone@marlo.test"), smtp.recipients);
+    assertEquals(List.of(SUPPORT), smtp.recipients);
+  }
+
+  @Test
+  public void testTestEnvironmentRetryWithBccGoesOnlyToSupport() {
+    boolean sent = this.retry(false, Map.of(APConstants.CRP_EMAIL_SUPPORT_TEAM, "false"), GLOBAL_UNIT,
+      "watcher@marlo.test");
+
+    assertTrue(sent);
+    assertEquals("neither the stored TO, CC nor BCC is reached", List.of(SUPPORT), smtp.recipients);
+  }
+
+  @Test
+  public void testTestEnvironmentWithoutSupportMailboxSendsNothing() {
+    for (String mailbox : new String[] {null, "", "  ", "not an address", "a@marlo.test, b@marlo.test"}) {
+      SendMailS sendMail = new SendMailS(new MailConfig(smtp.port(), false, mailbox), null, null,
+        specificities(Map.of(APConstants.CRP_EMAIL_SUPPORT_TEAM, "false")));
+
+      boolean sent = sendMail.sendRetry("someone@marlo.test", "colleague@marlo.test", "watcher@marlo.test",
+        "[AICCRA] Welcome", "<p>Hi</p>", null, null, null, true, GLOBAL_UNIT);
+
+      assertFalse("mailbox [" + mailbox + "]", sent);
+      assertTrue("mailbox [" + mailbox + "] reached " + smtp.recipients, smtp.recipients.isEmpty());
+    }
+  }
+
+  @Test
+  public void testTestingRecipientIsTheSingleSupportAddress() {
+    assertEquals(SUPPORT, new SendMailS(new MailConfig(0, false, " " + SUPPORT + " "), null, null, null)
+      .getTestingRecipient());
   }
 
   @Test

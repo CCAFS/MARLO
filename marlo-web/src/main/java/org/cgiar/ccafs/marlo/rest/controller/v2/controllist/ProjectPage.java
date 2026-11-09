@@ -84,7 +84,7 @@ public class ProjectPage {
       }
       return response;
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the project page {}", id, e);
       return null;
     }
 

@@ -391,7 +391,7 @@ public class SrfProgressValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.CRP_PROGRESS.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting srfProgress validators: " + e.getMessage());
+        LOG.error("Error getting srfProgress validators", e);
 
       }
     }

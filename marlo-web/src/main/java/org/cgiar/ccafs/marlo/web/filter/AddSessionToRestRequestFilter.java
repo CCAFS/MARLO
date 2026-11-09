@@ -281,10 +281,10 @@ public class AddSessionToRestRequestFilter extends OncePerRequestFilter {
       element = locElementManager.getLocElementByISOCode(isoCode);
 
     } catch (IOException e) {
-      e.printStackTrace();
+      LOG.warn("Could not resolve the GeoIP country of the request: {}", e.getClass().getSimpleName());
       element = null;
     } catch (GeoIp2Exception e) {
-      e.printStackTrace();
+      LOG.debug("No GeoIP country for the request address");
       element = null;
     }
 

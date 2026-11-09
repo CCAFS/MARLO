@@ -95,10 +95,14 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
 
   @Override
   public String execute() throws Exception {
+    // These reports require a logged user. A request without one used to fail in prepare() on the user lookup; the
+    // check is explicit so that a later change to that log line, or a program bound from the request, cannot open them
+    if (this.getCurrentUser() == null) {
+      return NOT_LOGGED;
+    }
     // A missing or unknown programID left the program null and the report failed with a NullPointerException
     if (researchProgram == null) {
-      LOG.warn("No research program for {}, answered as not found",
-        this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID));
+      LOG.warn("No research program for the {} parameter, answered as not found", APConstants.CRP_PROGRAM_ID);
       return NOT_FOUND;
     }
 
@@ -453,13 +457,20 @@ public class OutcomesContributionsSummaryAction extends BaseAction implements Su
     try {
       programID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.CRP_PROGRAM_ID)));
       researchProgram = programService.getProgramById(programID);
+    } catch (NumberFormatException e) {
+      // A missing or non-numeric program id is a bad request; the exception is not logged because its message
+      // repeats the value the request sent
+      LOG.warn("The {} parameter is missing or not a number", APConstants.CRP_PROGRAM_ID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.CRP_PROGRAM_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the research program {}", programID, e);
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName());
+    // A missing or unknown program has no report: execute() answers it as not found
+    if (researchProgram != null) {
+      LOG.info(
+        "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName());
+    }
   }
 
   public void setBytesPDF(byte[] bytesPDF) {

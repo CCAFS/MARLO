@@ -468,6 +468,11 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     if (this.getSelectedPhase() == null) {
       return NOT_FOUND;
     }
+    // A missing or unknown projectID has no project to report on
+    if (project == null) {
+      LOG.warn("No project for the {} parameter, answered as not found", APConstants.PROJECT_REQUEST_ID);
+      return NOT_FOUND;
+    }
 
     try {
       hasGender = this.hasSpecificities(APConstants.CRP_BUDGET_GENDER);
@@ -502,9 +507,8 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     }
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
 
     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
       String masterQueryName = "Main_Query";
@@ -581,9 +585,8 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
     return SUCCESS;
   }
 
@@ -1301,16 +1304,23 @@ public class ProjectContributionLP6PDFSummaryAction extends BaseSummariesAction 
       this
         .setProjectID(Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID))));
       this.setCrpSession(this.getLoggedCrp().getAcronym());
+    } catch (NumberFormatException e) {
+      // A missing or non-numeric projectID is a bad request; the exception is not logged because its message repeats
+      // the value the request sent
+      LOG.warn("The {} parameter is missing or not a number", APConstants.PROJECT_REQUEST_ID);
     } catch (Exception e) {
-      LOG.error("Failed to get " + APConstants.PROJECT_REQUEST_ID + " parameter. Exception: " + e.getMessage());
+      LOG.error("Failed to get the CRP of the project {}", this.getProjectID(), e);
     }
     // Get project from DB
     try {
       this.setProject(projectManager.getProjectById(this.getProjectID()));
     } catch (Exception e) {
-      LOG.error("Failed to get project. Exception: " + e.getMessage());
+      LOG.error("Failed to get project", e);
     }
-    this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    // A missing or unknown projectID leaves the project null: execute() answers it as not found
+    if (project != null) {
+      this.setProjectInfo(project.getProjecInfoPhase(this.getSelectedPhase()));
+    }
   }
 
 

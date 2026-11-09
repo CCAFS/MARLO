@@ -594,7 +594,7 @@ public class DeliverableValidator extends BaseValidator {
                         indicator.getCrpProgramOutcome().setAcronym(outcome.getAcronym());
                       }
                     } catch (Exception e) {
-                      LOG.error("error getting crp program outcome", e);
+                      LOG.warn("Could not get the CRP program outcome of a deliverable indicator: {}", e.toString());
                     }
                   }
                   if (soilIndicator != null && soilIndicator.getIndicatorName() != null && indicator != null

@@ -225,9 +225,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
     return SUCCESS;
   }
 
@@ -911,9 +910,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     hasW1W2Co = this.hasSpecificities(APConstants.CRP_FS_W1W2_COFINANCING);
     hasRegions = this.hasSpecificities(APConstants.CRP_HAS_REGIONS);
     this.setGeneralParameters();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
   }
@@ -923,10 +921,11 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       DeliverableUserPartnership partnership = deliverable.getDeliverableUserPartnerships().stream()
         .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
           && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-        .collect(Collectors.toList()).get(0);
+        .findFirst().orElse(null);
+      // A deliverable without a responsible partner answers null, as before, without throwing
       return partnership;
     } catch (Exception e) {
-      LOG.warn("Error getting DeliverablePartnership. Exception: " + e.getMessage());
+      LOG.warn("Error getting DeliverablePartnership", e);
       return null;
     }
   }

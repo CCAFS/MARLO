@@ -70,6 +70,9 @@ public class SendMailS extends BaseAction {
   // source was recorded at all.
   static final String BACKGROUND_SOURCE = "background";
 
+  // Subject prefix of every email sent outside production
+  static final String TESTING_PREFIX = "(TESTING ENVIRONMENT) ";
+
   // Managers
   private APConfig config;
   private EmailLogManager emailLogManager;
@@ -164,15 +167,45 @@ public class SendMailS extends BaseAction {
   }
 
   /**
-   * Sets the TO of a message sent from a test environment the way send() does: the BCC when there is one, the TO
-   * otherwise. sendRetry() used to take the BCC unconditionally, so a row without BCC failed on every retry.
+   * Reads the only recipient an email may have outside production: the support mailbox email.notification. The rule
+   * is applied here rather than left to the callers, who used to make it hold by passing that mailbox as the BCC.
+   *
+   * @return the address, or null when the mailbox is blank or is not a single valid address.
    */
-  private void setTestRecipient(MimeMessage msg, String toEmail, String bbcEmail) throws MessagingException {
-    String recipient = bbcEmail != null ? bbcEmail : toEmail;
-    if (recipient != null) {
-      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
+  // Package-private so SendMailSTestingRecipientTest can call it.
+  String getTestingRecipient() {
+    String mailbox = config.getEmailNotification();
+    if (mailbox == null || mailbox.trim().isEmpty()) {
+      return null;
     }
+    try {
+      InternetAddress[] addresses = InternetAddress.parse(mailbox.trim(), true);
+      if (addresses.length != 1) {
+        return null;
+      }
+      addresses[0].validate();
+      return addresses[0].getAddress();
+    } catch (AddressException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the TO of a message sent outside production: the support mailbox, and nobody else. Without a valid mailbox
+   * the message is not sent at all, so it never falls back to the real recipients.
+   *
+   * @return true when the recipient was set; false when the message must not be sent.
+   */
+  private boolean setTestingRecipient(MimeMessage msg, String subject) throws MessagingException {
+    String recipient = this.getTestingRecipient();
+    if (recipient == null) {
+      LOG.error("The message '{}' was not sent: outside production it goes only to email.notification, which is not"
+        + " a single valid address", subject);
+      return false;
+    }
+    msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, true));
     LOG.info("   - TO: {}", recipient);
+    return true;
   }
 
   /**
@@ -411,18 +444,11 @@ public class SendMailS extends BaseAction {
         testingHeader.append("CC: " + ccEmail + "<br>");
         testingHeader.append("BBC: " + bbcEmail + "<br>");
         testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "(TESTING ENVIRONMENT) " + subject;
+        subject = TESTING_PREFIX + subject;
         messageContent = testingHeader.toString() + messageContent;
-        if (toEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+        if (!this.setTestingRecipient(msg, subject)) {
+          return;
         }
-        if (bbcEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
-        }
-        // msgbackup.setRecipients(Message.RecipientType.TO,
-        // InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - TO: " + bbcEmail);
-        // }
       } else {
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
@@ -448,7 +474,8 @@ public class SendMailS extends BaseAction {
         LOG.error("Could not set the FROM address of the message '{}'", subject, e);
       }
 
-      if (bbcEmail != null) {
+      // Outside production the support mailbox is the only recipient, so no copy is added
+      if (bbcEmail != null && config.isProduction()) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
         // msgbackup.setRecipients(Message.RecipientType.BCC,
         // InternetAddress.parse(bbcEmail, false));
@@ -587,9 +614,11 @@ public class SendMailS extends BaseAction {
         testingHeader.append("CC: " + ccEmail + "<br>");
         testingHeader.append("BBC: " + bbcEmail + "<br>");
         testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "TEST " + subject;
+        subject = TESTING_PREFIX + subject;
         messageContent = testingHeader.toString() + messageContent;
-        this.setTestRecipient(msg, toEmail, bbcEmail);
+        if (!this.setTestingRecipient(msg, subject)) {
+          return false;
+        }
       } else {
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
@@ -608,7 +637,8 @@ public class SendMailS extends BaseAction {
         LOG.error("Could not set the FROM address of the message '{}'", subject, e);
       }
 
-      if (bbcEmail != null) {
+      // Outside production the support mailbox is the only recipient, so no copy is added
+      if (bbcEmail != null && config.isProduction()) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
         LOG.info("   - BBC: " + bbcEmail);
       }
@@ -733,18 +763,11 @@ public class SendMailS extends BaseAction {
         testingHeader.append("CC: " + ccEmail + "<br>");
         testingHeader.append("BBC: " + bbcEmail + "<br>");
         testingHeader.append("----------------------------------------------------<br><br>");
-        subject = "TEST " + subject;
+        subject = TESTING_PREFIX + subject;
         messageContent = testingHeader.toString() + messageContent;
-        if (toEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+        if (!this.setTestingRecipient(msg, subject)) {
+          return;
         }
-        if (bbcEmail != null) {
-          msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(bbcEmail, false));
-        }
-        // msgbackup.setRecipients(Message.RecipientType.TO,
-        // InternetAddress.parse(bbcEmail, false));
-        LOG.info("   - TO: " + bbcEmail);
-        // }
       } else {
         if (toEmail != null) {
           msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
@@ -770,7 +793,8 @@ public class SendMailS extends BaseAction {
         LOG.error("Could not set the FROM address of the message '{}'", subject, e);
       }
 
-      if (bbcEmail != null) {
+      // Outside production the support mailbox is the only recipient, so no copy is added
+      if (bbcEmail != null && config.isProduction()) {
         msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bbcEmail, false));
         // msgbackup.setRecipients(Message.RecipientType.BCC,
         // InternetAddress.parse(bbcEmail, false));

@@ -821,7 +821,7 @@ public class CrpUsersAction extends BaseAction {
 
               } catch (NoSuchAlgorithmException e) {
                 LOG.error("Could not notify the new user {} of the role assigned to them", newUser.getEmail(), e);
-                LOG.error(e.getMessage());
+                LOG.error(e.getMessage(), e);
               }
 
               // Add Crp Users
@@ -1115,9 +1115,10 @@ public class CrpUsersAction extends BaseAction {
       if (userRole.getUser() != null && userRole.getUser().getId() == userID) {
         Role role = userRole.getRole();
         if (role != null && role.getAcronym() != null) {
-          if (role.getAiccraAcronymDimanic() != null) {
-            if (!roleAcronyms.contains(role.getAiccraAcronymDimanic())) {
-              roleAcronyms.add(role.getAiccraAcronymDimanic());
+          String roleLabel = this.getRoleLabel(role);
+          if (roleLabel != null) {
+            if (!roleAcronyms.contains(roleLabel)) {
+              roleAcronyms.add(roleLabel);
             }
           } else if (role.getAcronymDimanic() != null) {
             if (!roleAcronyms.contains(role.getAcronymDimanic())) {

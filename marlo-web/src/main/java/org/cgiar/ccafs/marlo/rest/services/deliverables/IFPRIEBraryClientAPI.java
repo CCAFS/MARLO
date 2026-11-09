@@ -282,8 +282,7 @@ public class IFPRIEBraryClientAPI extends MetadataClientApi {
     } catch (
 
     Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
+      LOG.error("Could not read the IFPRI eBrary metadata", e);
       jo = null;
     }
 

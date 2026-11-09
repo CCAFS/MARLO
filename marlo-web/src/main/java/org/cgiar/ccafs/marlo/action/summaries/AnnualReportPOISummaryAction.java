@@ -571,7 +571,7 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
       XWPFHeaderFooterPolicy headerFooterPolicy = new XWPFHeaderFooterPolicy(document, sectPr);
       headerFooterPolicy.createFooter(STHdrFtr.DEFAULT, paragraphs);
     } catch (Exception e) {
-      LOG.error("Failed to createFooter. Exception: " + e.getMessage());
+      LOG.error("Failed to createFooter", e);
     }
   }
 
@@ -1761,9 +1761,8 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
     // Calculate time of generation
     long stopTime = System.currentTimeMillis();
     stopTime = stopTime - startTime;
-    LOG.info("Downloaded successfully: " + this.getFileName() + ". User: "
-      + this.getCurrentUser().getComposedCompleteName() + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: "
-      + this.getSelectedCycle() + ". Time to generate: " + stopTime + "ms.");
+    LOG.info("Downloaded successfully: {}. CRP: {}. Cycle: {}. Time to generate: {}ms.", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle(), stopTime);
     return SUCCESS;
   }
 
@@ -1988,9 +1987,8 @@ public class AnnualReportPOISummaryAction extends BaseSummariesAction implements
 
     // Calculate time to generate report
     startTime = System.currentTimeMillis();
-    LOG.info(
-      "Start report download: " + this.getFileName() + ". User: " + this.getCurrentUser().getComposedCompleteName()
-        + ". CRP: " + this.getLoggedCrp().getAcronym() + ". Cycle: " + this.getSelectedCycle());
+    LOG.info("Start report download: {}. CRP: {}. Cycle: {}", this.getFileName(),
+      this.getLoggedCrp() != null ? this.getLoggedCrp().getAcronym() : null, this.getSelectedCycle());
   }
 
   public void setInputStream(InputStream inputStream) {

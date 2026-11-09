@@ -215,7 +215,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting innovations list", e);
       }
     }
   }
@@ -438,7 +438,7 @@ public class OutcomeMilestonesValidator extends BaseValidator {
           action.getActualPhase().getYear(), action.getActualPhase().getUpkeep(),
           ReportSynthesis2018SectionStatusEnum.OUTOMESMILESTONES.getStatus(), action);
       } catch (Exception e) {
-        LOG.error("Error getting innovations list: " + e.getMessage());
+        LOG.error("Error getting innovations list", e);
       }
     }
 

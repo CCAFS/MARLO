@@ -17,6 +17,10 @@
 			<interceptor name="requireUser"
 				class="org.cgiar.ccafs.marlo.interceptor.RequireUserInterceptor" />
 
+			<!-- answers 403 when the session user cannot access the superadmin pages -->
+			<interceptor name="superAdminValidation"
+				class="org.cgiar.ccafs.marlo.interceptor.superadmin.SuperAdminInterceptor" />
+
 			<!-- answering 404 when the phaseID does not belong to the session Global Unit (A2-2606) -->
 			<interceptor name="validPhase"
 				class="org.cgiar.ccafs.marlo.interceptor.ValidPhaseInterceptor" />
@@ -696,10 +700,13 @@
 			</result>
 		</action>
 
+		<!-- Replaces a Global Unit logo, so only a superadmin may call it, like the Global Unit management page -->
 		<action name="globalUnitLogoUpload"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.UploadGlobalUnitLogoAction">
 			<interceptor-ref name="logErrorStatus" />
+			<interceptor-ref name="requireUser" />
 			<interceptor-ref name="validPhase" />
+			<interceptor-ref name="superAdminValidation" />
 			<interceptor-ref name="defaultStack" />
 			<interceptor-ref name="fileUpload">
 				<param name="maximumSize">314572900</param>

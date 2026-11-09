@@ -923,19 +923,20 @@ public class ProjectPartnerAction extends BaseAction {
         List<CrpProgram> crpPrograms = projectManager.getPrograms(project.getId(),
           ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
 
-        if (crpPrograms != null) {
+        // The program leaders are copied whenever the project has a flagship, not only when it has more than one
+        if (crpPrograms != null && !crpPrograms.isEmpty()) {
           if (crpPrograms.size() > 1) {
             LOG.warn("Crp programs should be 1");
-
-            if (crpPrograms.get(0) != null) {
-              CrpProgram crpProgram = crpPrograms.get(0);
-              for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-                .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
-                if (ccEmail.isEmpty()) {
-                  ccEmail += crpProgramLeader.getUser().getEmail();
-                } else {
-                  ccEmail += ", " + crpProgramLeader.getUser().getEmail();
-                }
+          }
+          if (crpPrograms.get(0) != null) {
+            CrpProgram crpProgram = crpPrograms.get(0);
+            for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
+              .filter(cpl -> cpl.getUser() != null && cpl.getUser().isActive() && cpl.isActive())
+              .collect(Collectors.toList())) {
+              if (ccEmail.isEmpty()) {
+                ccEmail += crpProgramLeader.getUser().getEmail();
+              } else {
+                ccEmail += ", " + crpProgramLeader.getUser().getEmail();
               }
             }
           }
@@ -1056,13 +1057,15 @@ public class ProjectPartnerAction extends BaseAction {
       List<CrpProgram> crpPrograms = projectManager.getPrograms(project.getId(),
         ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
 
-      if (crpPrograms != null) {
+      // A project without a flagship has no program leaders to copy; get(0) on an empty list threw out of the save
+      if (crpPrograms != null && !crpPrograms.isEmpty() && crpPrograms.get(0) != null) {
         if (crpPrograms.size() > 1) {
           LOG.warn("Crp programs should be 1");
         }
         CrpProgram crpProgram = crpPrograms.get(0);
         for (CrpProgramLeader crpProgramLeader : crpProgram.getCrpProgramLeaders().stream()
-          .filter(cpl -> cpl.getUser().isActive() && cpl.isActive()).collect(Collectors.toList())) {
+          .filter(cpl -> cpl.getUser() != null && cpl.getUser().isActive() && cpl.isActive())
+          .collect(Collectors.toList())) {
           if (ccEmail.isEmpty()) {
             ccEmail += crpProgramLeader.getUser().getEmail();
           } else {

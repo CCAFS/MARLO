@@ -942,7 +942,7 @@ public class OutcomesMilestonesAction extends BaseAction {
         }
       }
     } catch (Exception e) {
-      LOG.error("Error getting outcome list: " + e.getMessage());
+      LOG.error("Error getting outcome list", e);
     }
 
     // Get the Outcome milestones

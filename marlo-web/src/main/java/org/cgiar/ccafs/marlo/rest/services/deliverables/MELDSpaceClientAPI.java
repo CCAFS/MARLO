@@ -152,8 +152,7 @@ public class MELDSpaceClientAPI extends MetadataClientApi {
       metadataModel.setAuthors(authorsArr);
 
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
+      LOG.error("Could not read the MELSpace metadata", e);
 
     }
     return metadataModel;

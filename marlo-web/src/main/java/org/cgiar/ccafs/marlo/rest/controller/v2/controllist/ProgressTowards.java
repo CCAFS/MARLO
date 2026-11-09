@@ -85,7 +85,7 @@ public class ProgressTowards {
       progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
         this.getCurrentUser());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not create the progress towards target", e);
     }
 
 

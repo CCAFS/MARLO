@@ -2115,8 +2115,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
         // An absent or empty value is the everyday case: the templates still render the param with no value
         // when the phase they were given has no id. A value that is present and does not resolve is not.
         if (StringUtils.isNotBlank(phaseIDParam)) {
-          LOG.debug("The {} parameter is not a valid phase id ({}), so the current phase param is used",
-            APConstants.PHASE_ID, phaseIDParam);
+          // Only the parsed number is logged: the raw value comes from the request and can carry line breaks that
+          // forge log lines
+          if (requestedPhaseID != 0L) {
+            LOG.debug("The {} parameter {} does not resolve to a phase, so the current phase param is used",
+              APConstants.PHASE_ID, requestedPhaseID);
+          } else {
+            LOG.debug("The {} parameter is not a valid phase id, so the current phase param is used",
+              APConstants.PHASE_ID);
+          }
         }
         Phase phase = this.getPhaseFromCurrentPhaseParam();
 
@@ -4319,6 +4326,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
   }
 
   public List<Auditlog> getListLog(IAuditLog object) {
+    // A section with no saved record yet has no history: the empty list it always got, without an ERROR per page view
+    if (object == null || object.getId() == null) {
+      return new ArrayList<Auditlog>();
+    }
     try {
       return this.auditLogManager.listLogs(object.getClass(), Long.parseLong(object.getId().toString()),
         this.getActionName(), this.getActualPhase().getId());
@@ -4988,7 +4999,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             if (sectionStatus == null) {
               return false;
             }
-            if (sectionStatus.getMissingFields().length() != 0) {
+            if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
               return false;
             }
           }
@@ -5013,7 +5024,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
                 return false;
 
               }
-              if (sectionStatus.getMissingFields().length() > 0) {
+              if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() > 0) {
                 return false;
 
               }
@@ -5043,7 +5054,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               return false;
 
             }
-            if (sectionStatus.getMissingFields().length() > 0) {
+            if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() > 0) {
               return false;
 
             }
@@ -5162,7 +5173,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
 
           if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() == 0) {
+            if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
               return true;
             }
           }
@@ -5192,7 +5203,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
               this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() == 0) {
+              if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
                 return true;
               }
             }
@@ -5204,7 +5215,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
             this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() == 0) {
+            if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
               return true;
             }
           } else {
@@ -5275,7 +5286,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
               sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
               this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
               if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() != 0) {
+              if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
                 return false;
               }
               } else {
@@ -5303,7 +5314,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectInnovation(projectInnovation.getId(),
               this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() != 0) {
+              if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
                 return false;
               }
             } else {
@@ -5325,7 +5336,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
             sectionStatus = this.sectionStatusManager.getSectionStatusByProjectPolicy(projectPolicy.getId(),
               this.getCurrentCycle(), this.getCurrentCycleYear(), this.isUpKeepActive(), section);
             if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() != 0) {
+              if (sectionStatus.getMissingFields() == null || sectionStatus.getMissingFields().length() != 0) {
                 return false;
               }
             } else {
@@ -5340,7 +5351,7 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
             this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() == 0) {
+            if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
               return true;
             }
           } else {
@@ -5350,24 +5361,12 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
           break;
 
-        case BUDGETBYFLAGSHIP:
-          if (this.isAiccra()) {
-            return true;
-          } else {
-            sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
-              this.getCurrentCycleYear(), this.isUpKeepActive(), section);
-            if (sectionStatus != null) {
-              if (sectionStatus.getMissingFields().length() == 0) {
-                return true;
-              }
-            }
-          }
-          break;
         default:
           sectionStatus = this.sectionStatusManager.getSectionStatusByProject(projectID, this.getCurrentCycle(),
             this.getCurrentCycleYear(), this.isUpKeepActive(), section);
           if (sectionStatus != null) {
-            if (sectionStatus.getMissingFields().length() == 0) {
+            // A status whose missing fields were never written is not a complete section
+            if (sectionStatus.getMissingFields() != null && sectionStatus.getMissingFields().length() == 0) {
               return true;
             }
             break;
@@ -5632,6 +5631,26 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
       roles.add(userRole.getRole());
     }
     return roles;
+  }
+
+  /**
+   * Label shown for a role. Uses the key role.acronym.&lt;acronym&gt; from the custom properties of the global unit or
+   * from global.properties; when no such key exists, falls back to Role.getAcronymLabel().
+   *
+   * @param role the role to label.
+   * @return the label of the role, or null when the role is null.
+   */
+  public String getRoleLabel(Role role) {
+    if (role == null) {
+      return null;
+    }
+    if (role.getAcronym() != null) {
+      String key = "role.acronym." + role.getAcronym();
+      if (this.hasKey(key)) {
+        return this.getText(key);
+      }
+    }
+    return role.getAcronymLabel();
   }
 
   public BaseSecurityContext getSecurityContext() {
@@ -7832,15 +7851,15 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * Activity management catalog of the Global Unit.
    * <p>
    * The answer comes from the {@code project_activity_creation_active} specificity. When the Global Unit has no custom
-   * parameter for it, the legacy behaviour is kept: every Global Unit typed its own titles until the catalog was
-   * introduced for AICCRA in 2021.
+   * parameter for it, or the session was opened before the parameter existed, the catalog is used: false is the
+   * default value the parameter declares.
    *
    * @return true when the activity title is a free text field, false when it comes from the catalog
    */
   public boolean isProjectActivityCreationActive() {
     String value = this.specificityValue(APConstants.PROJECT_ACTIVITY_CREATION_ACTIVE);
     if (value == null) {
-      return !this.isAiccra();
+      return false;
     }
 
     return Boolean.parseBoolean(value);
@@ -7853,29 +7872,23 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isProjectCenter(long projectID) {
-    if (this.isAiccra()) {
+    GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
+
+    /**
+     * findByProjectId only returns the origin Global Unit of the project, and only while it is active, so it
+     * answers null for every project that has none. The callers cannot absorb a failure here: the project list
+     * asks this for each of its rows and the FreeMarker default operator does not catch a Java exception, so a
+     * single project without an origin Global Unit used to break the whole page.
+     */
+    if (globalUnitProject == null || globalUnitProject.getGlobalUnit() == null
+      || globalUnitProject.getGlobalUnit().getGlobalUnitType() == null
+      || globalUnitProject.getGlobalUnit().getGlobalUnitType().getId() == null) {
+      LOG.debug("The project {} has no active origin Global Unit, so it is not reported as a Center project",
+        projectID);
       return false;
-    } else {
-      GlobalUnitProject globalUnitProject = this.globalUnitProjectManager.findByProjectId(projectID);
-
-      /**
-       * findByProjectId only returns the origin Global Unit of the project, and only while it is active, so it
-       * answers null for every project that has none. The callers cannot absorb a failure here: the project list
-       * asks this for each of its rows and the FreeMarker default operator does not catch a Java exception, so a
-       * single project without an origin Global Unit used to break the whole page.
-       */
-      if (globalUnitProject == null || globalUnitProject.getGlobalUnit() == null
-        || globalUnitProject.getGlobalUnit().getGlobalUnitType() == null) {
-        LOG.debug("The project {} has no active origin Global Unit, so it is not reported as a Center project",
-          projectID);
-        return false;
-      }
-
-      if (globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4) {
-        return true;
-      }
     }
-    return false;
+
+    return globalUnitProject.getGlobalUnit().getGlobalUnitType().getId().intValue() == 4;
   }
 
   /**
@@ -7885,12 +7898,8 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
    * @return
    */
   public boolean isProjectCrpOrPlatform(long projectID) {
-    if (this.isAiccra()) {
-      return true;
-    } else {
-      boolean result = globalUnitProjectManager.isProjectCreatedByCrpOrPlatform(projectID);
-      return result;
-    }
+    // The manager answers a Boolean; an absent answer means the project was not created by a CRP or Platform
+    return Boolean.TRUE.equals(globalUnitProjectManager.isProjectCreatedByCrpOrPlatform(projectID));
   }
 
   /**
@@ -8198,6 +8207,17 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
 
   public boolean isSwitchSession() {
     return this.switchSession;
+  }
+
+  /**
+   * Tell whether a validator has to store the result it computes for an existing section status itself. A page save
+   * stores it through its own transaction, so the answer is false; an action that only validates overrides it.
+   *
+   * @param sectionName the name of the section whose status is being saved.
+   * @return true when the validator has to store the missing fields of an existing status.
+   */
+  public boolean isSectionStatusStoredOnValidation(String sectionName) {
+    return false;
   }
 
   public boolean isUpKeepActive() {

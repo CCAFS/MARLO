@@ -18,6 +18,12 @@
     </div>  
     
     [#if !messageSent]
+    [#if (action.missingRequiredFields)!false]
+      <p class="alert alert-danger text-center col-xs-12">[@s.text name="saving.fields.required" /]</p>
+    [/#if]
+    [#if (action.requestFailed)!false]
+      <p class="alert alert-danger text-center col-xs-12">[@s.text name="marloRequestCreation.sendFailed" /]</p>
+    [/#if]
     <div class="slideshow-container col-xs-12 form-group">
       [#-- SLIDE 1 --]
       <div class="mySlides fades">
@@ -72,7 +78,7 @@
         [#if powbSynthesisID??]<input type="hidden" name="powbSynthesisID" value="${(powbSynthesisID)!}"/>[/#if]
         [#if synthesisID??]<input type="hidden" name="synthesisID" value="${(synthesisID)!}"/>[/#if]
         <input type="hidden" name="context" value="${(context)!}" />
-        <input type="hidden" name="phaseID" value="${actualPhase.id}"/>
+        <input type="hidden" name="phaseID" value="${(actualPhase.id)!}"/>
         <div class="clearfix"></div>
         <br />
         <div class="form-group text-center">

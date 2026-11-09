@@ -113,7 +113,7 @@ public class ParticipantsCapDev {
       idcapdev =
         this.participantsCapDevItem.deleteParticipantsCapDevById(id, CGIAREntity, year, phase, this.getCurrentUser());
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not delete the CapDev participants {}", id, e);
     }
     ResponseEntity<Long> response = new ResponseEntity<Long>(idcapdev, HttpStatus.OK);
     if (response.getStatusCode() == HttpStatus.NOT_FOUND) {

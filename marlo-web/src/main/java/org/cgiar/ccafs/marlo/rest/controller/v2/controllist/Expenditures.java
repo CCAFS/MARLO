@@ -124,7 +124,7 @@ public class Expenditures {
         throw new NotFoundException("404", this.env.getProperty("Expenditure.Example.GET.id.404"));
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("Could not get the expenditure {}", id, e);
     }
     return response;
   }

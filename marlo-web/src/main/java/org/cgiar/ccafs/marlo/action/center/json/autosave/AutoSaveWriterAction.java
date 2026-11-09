@@ -48,6 +48,8 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.opensymphony.xwork2.Action;
 import org.apache.struts2.dispatcher.Parameter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -58,6 +60,8 @@ public class AutoSaveWriterAction extends BaseAction {
 
 
   private static final long serialVersionUID = 2904862716714197942L;
+
+  private static final Logger LOG = LoggerFactory.getLogger(AutoSaveWriterAction.class);
 
   private String autoSave[];
 
@@ -170,10 +174,10 @@ public class AutoSaveWriterAction extends BaseAction {
         status.put("activeSince", dt.format(generatedDate));
       } catch (IOException e) {
         status.put("status", false);
-        e.printStackTrace();
+        LOG.error("Could not write the autosave file", e);
       } catch (Exception e) {
         status.put("status", false);
-        e.printStackTrace();
+        LOG.error("Could not write the autosave file", e);
       }
 
     }

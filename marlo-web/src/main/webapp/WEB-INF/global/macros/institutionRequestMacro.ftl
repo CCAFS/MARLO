@@ -25,16 +25,16 @@
               [#-- Requested Source --]
               <p><strong>[@s.text name="Requested Source" /]:</strong> <i>${(partner.requestSource)}</i></p>
               [#-- CRP --]
-              <p><strong>[@s.text name="CRP" /]:</strong> <i>${(partner.crp.acronym?html)!'Not Available'}</i></p>
+              <p><strong>[@s.text name="CRP" /]:</strong> <i>${(partner.crp.acronym)!'Not Available'}</i></p>
               [#-- Requested by --]
-              <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName?html)!'none'}</i></p>
+              <p><strong>[@s.text name="Requested By" /]:</strong> <i>${(partner.createdBy.composedName)!'none'}</i></p>
               [#-- Active since --]
-              <p><strong>[@s.text name="Active since" /]:</strong> <i>${(partner.activeSince?html)!'none'}</i></p>
+              <p><strong>[@s.text name="Active since" /]:</strong> <i>${(partner.activeSince)!'none'}</i></p>
               
               [#if partner.externalUserMail??]
                 <hr />
-                <p><strong>API Requester:</strong> <i>${(partner.externalUserName?html)!'none'} (${(partner.externalUserMail?html)!'none'})</i></p>
-                <p><strong>API Comments:</strong> <i>${(partner.externalUserComments?html)!'none'}</i></p>
+                <p><strong>API Requester:</strong> <i>${(partner.externalUserName)!'none'} (${(partner.externalUserMail)!'none'})</i></p>
+                <p><strong>API Comments:</strong> <i>${(partner.externalUserComments)!'none'}</i></p>
               [/#if]
             </div>
             
@@ -163,13 +163,13 @@
                       [#-- It was muted, its better to show in the form --]
                       [#-- Added Requested Source --]
                       <br><strong>[@s.text name="Requested Source" /]:</strong> <i>${(officeRequest.requestSource)}</i>                    
-                      <br><strong>[@s.text name="CRP" /]:</strong> <i>${(officeRequest.crp.acronym?html)!''}</i>
-                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName?html)!'none'}</i>                      
-                      <br><strong>[@s.text name="Active since" /]:</strong> <i>${(officeRequest.activeSince?html)!'none'}</i>                      
+                      <br><strong>[@s.text name="CRP" /]:</strong> <i>${(officeRequest.crp.acronym)!''}</i>
+                      <br><strong>[@s.text name="Requested By" /]:</strong> <i>${(officeRequest.createdBy.composedName)!'none'}</i>                      
+                      <br><strong>[@s.text name="Active since" /]:</strong> <i>${(officeRequest.activeSince)!'none'}</i>                      
                       [#if officeRequest.externalUserMail??]
                         <hr />
-                        <p><strong>API Requester:</strong> <i>${(officeRequest.externalUserName?html)!'none'} (${(officeRequest.externalUserMail?html)!'none'})</i></p>
-                        <p><strong>API Comments:</strong> <i>${(officeRequest.externalUserComments?html)!'none'}</i></p>
+                        <p><strong>API Requester:</strong> <i>${(officeRequest.externalUserName)!'none'} (${(officeRequest.externalUserMail)!'none'})</i></p>
+                        <p><strong>API Comments:</strong> <i>${(officeRequest.externalUserComments)!'none'}</i></p>
                       [/#if]  
                     </li>
                   [/#list]

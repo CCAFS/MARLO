@@ -221,8 +221,7 @@ public class CIMMYTDspaceClientAPI extends MetadataClientApi {
       metadataModel.setAuthors(authorsArr);
 
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getLocalizedMessage());
+      LOG.error("Could not read the CIMMYT DSpace metadata", e);
     }
     return metadataModel;
 

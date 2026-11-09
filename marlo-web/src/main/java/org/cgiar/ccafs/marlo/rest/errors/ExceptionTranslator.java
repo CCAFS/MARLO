@@ -82,8 +82,6 @@ public class ExceptionTranslator {
   @ResponseBody
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public ErrorDTO processAuthorizationException(final RuntimeException ex) {
-    // This one doesn't get logged by our aspectj logger due to Shiro's
-    // aspects being applied first.
     LogContext.putStatusCode(HttpStatus.UNAUTHORIZED.value());
     LOG.error("AuthorizationException - user does does not have correct permissions");
     return new ErrorDTO(ErrorConstants.ERR_ACCESS_DENIED, ErrorConstants.SEVERITY_ERROR,

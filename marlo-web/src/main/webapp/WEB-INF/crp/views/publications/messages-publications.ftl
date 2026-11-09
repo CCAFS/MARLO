@@ -6,7 +6,7 @@
       <p>[@s.text name="deliverable.message.historyNotFound" /]</p>
     [#else]
       <p>[@s.text name="deliverable.message.historyVersion" ]  
-          [@s.param]<span>${deliverable.modifiedBy.composedName?html}</span>[/@s.param]
+          [@s.param]<span>${deliverable.modifiedBy.composedName}</span>[/@s.param]
           [@s.param]<span>${deliverable.activeSince?datetime}</span>[/@s.param]
           [@s.param]<a href="[@s.url][@s.param name="deliverableID" value=deliverableID /][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">here</a>[/@s.param]
          [/@s.text]

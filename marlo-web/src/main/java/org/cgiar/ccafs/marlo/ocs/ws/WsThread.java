@@ -108,8 +108,7 @@ public class WsThread implements Runnable {
         resourceInfoOCS.setCountryofIntitutionISO(rEstudies.get(0).getId().getCountryId());
       }
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getMessage());
+      LOG.error("Could not read the OCS resource information", e);
     }
 
     return resourceInfoOCS;
@@ -181,8 +180,7 @@ public class WsThread implements Runnable {
         agreementOCS.setContractStatus(myAgree.getStatus());
       }
     } catch (ParseException e) {
-      e.printStackTrace();
-      LOG.error(e.getMessage());
+      LOG.error("Could not parse the OCS agreement information", e);
     }
   }
 

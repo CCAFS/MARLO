@@ -40,7 +40,7 @@ function attachEvents() {
   // Block reports that need a project or cluster when none is selected
   $('.summariesFiles.allowProjectID form').on('submit', validateProjectSelection);
   $('.summariesFiles.allowProjectID select[name="projectID"]').on('change', function() {
-    $(this).next().removeClass('fieldError');
+    updateProjectSelectionState($(this).parents('.summariesFiles'));
   });
 
   // Show or hide select a cluster
@@ -58,26 +58,77 @@ function hideShowClusterSelect() {
   } else {
     $('#AICCRA_progressReportProcessSummary').children().eq(1).show('slow');
   }
+  updateProjectSelectionState($(this).parents('.summariesFiles'));
 }
 
 /**
- * Stops the submit while the project list is empty (still loading, or a phase without projects) or the placeholder
- * is selected, since the report cannot be built without a project. A hidden select is not required.
+ * A report needs a project unless it has no project select, or the user asked for all of them (Progress Report,
+ * "All Clusters"). Read from the radio, not from the visibility of the select, which is still animating here.
+ */
+function isProjectSelectionRequired($parent) {
+  return $parent.find('select[name="projectID"]').length > 0
+    && $parent.find('[name="showAllYears"]:checked').val() != 'true';
+}
+
+/**
+ * Safety net behind the disabled Generate button (e.g. Enter in a field): stops the submit while the project list is
+ * loading, empty or failed, or while no project is selected.
  */
 function validateProjectSelection(e) {
-  var $select = $(this).find('select[name="projectID"]');
-  if (!$select.length || !$select.closest('.form-group').is(':visible')) {
+  var $parent = $(this).parents('.summariesFiles');
+  if (!isProjectSelectionRequired($parent)) {
     return;
   }
 
-  var projectID = $select.val();
-  if (projectID == null || projectID == "" || projectID == "-1") {
+  var projectID = $parent.find('select[name="projectID"]').val();
+  var isListReady = $parent.data('projectListState') == 'ready';
+  if (!isListReady || projectID == null || projectID == "" || projectID == "-1") {
     e.preventDefault();
-    $select.next().addClass('fieldError');
+    updateProjectSelectionState($parent, isListReady);
     return;
   }
 
-  $select.next().removeClass('fieldError');
+  updateProjectSelectionState($parent);
+}
+
+/**
+ * Syncs the project select, the Generate button and the message under the select with the state of the project
+ * list, so the reason Generate cannot be used is always written out, not only shown by a color.
+ * @param $parent the summariesFiles box of the report
+ * @param showRequired true to ask for a project, after a submit without one
+ */
+function updateProjectSelectionState($parent, showRequired) {
+  var $select = $parent.find('select[name="projectID"]');
+  var $message = $parent.find('.projectSelectionMessage');
+  var $generate = $parent.find('form button[type="submit"]');
+  var state = $parent.data('projectListState');
+  var isRequired = isProjectSelectionRequired($parent);
+  var messageKey = null;
+  var isError = false;
+
+  if (isRequired && state == 'empty') {
+    messageKey = 'empty';
+  } else if (isRequired && state == 'error') {
+    messageKey = 'error';
+    isError = true;
+  } else if (isRequired && showRequired) {
+    messageKey = 'required';
+    isError = true;
+  }
+
+  // A disabled select is left out of the submit, which only matters for the all-projects report
+  $select.prop('disabled', isRequired && state != 'ready');
+  $select.next().toggleClass('fieldError', isError);
+  $generate.prop('disabled', isRequired && state != 'ready');
+  $parent.find('form').attr('aria-busy', state == 'loading');
+
+  $message.empty().removeClass('fieldError projectSelectionMessage--info');
+  if (messageKey) {
+    $message.addClass(isError ? 'fieldError' : 'projectSelectionMessage--info');
+    $message.append($('<span aria-hidden="true"></span>')
+      .addClass(isError ? 'glyphicon glyphicon-exclamation-sign' : 'glyphicon glyphicon-info-sign'));
+    $message.append(document.createTextNode(' ' + $message.data('message-' + messageKey)));
+  }
 }
 
 function changePhaseParameters(){
@@ -114,11 +165,7 @@ function selectReport() {
     $('.imgArrow').css("margin-top", "auto" )
     return
   }
-  // Update the project list if necessary
   var $parent = $(this).parent();
-  if($parent.hasClass('allowProjectID')){
-    getProjectsByCycleYear($parent, $parent.find('[name="phaseID"]').val());
-  }
   // Hide all reports
   $('.summariesFiles').removeClass("selected");
   $('.extraOptions').slideUp();
@@ -128,6 +175,10 @@ function selectReport() {
   // Show selected report
   $(this).parent().find('.extraOptions').slideDown();
   $(this).parent().find('.extraOptions').find('select, input').attr('disabled', false).trigger("liszt:updated");
+  // Update the project list if necessary, after the line above so the select stays disabled while it loads
+  if($parent.hasClass('allowProjectID')){
+    getProjectsByCycleYear($parent, $parent.find('[name="phaseID"]').val());
+  }
   $(this).parent().addClass("selected");
   $(this).parent().find('.imgArrow').css("rotate", "180deg" )
   $(this).parent().find('.imgArrow').css("margin-top", "-4px" )
@@ -156,7 +207,17 @@ function selectSummariesSection(e) {
  */
 function getProjectsByCycleYear(parent, phaseID) {
   var $parent = $(parent);
-  $parent.find(".allProjectsSelect").empty();
+  var $select = $parent.find('select[name="projectID"]');
+  // Only the latest request may fill the list: an earlier one answering late would add the projects of another cycle
+  var requestID = ($parent.data('projectListRequest') || 0) + 1;
+  $parent.data('projectListRequest', requestID);
+  var isLatestRequest = function() {
+    return $parent.data('projectListRequest') == requestID;
+  };
+
+  $select.empty();
+  $parent.data('projectListState', 'loading');
+  updateProjectSelectionState($parent);
   $parent.find('.loading').fadeIn();
   $.ajax({
       url: baseURL + "/projectListByPhase.do?",
@@ -167,14 +228,26 @@ function getProjectsByCycleYear(parent, phaseID) {
         phaseID: phaseID
       },
       success: function(m) {
-        $.each(m.projects, function(i,e) {
-          $parent.find(".allProjectsSelect").addOption(e.id, "C" + e.id + " - " + e.description);
+        if (!isLatestRequest()) {
+          return;
+        }
+        var projects = (m && m.projects) || [];
+        $.each(projects, function(i,e) {
+          $select.addOption(e.id, "C" + e.id + " - " + e.description);
         })
-        if (m.projects && m.projects.length) {
-          $parent.find(".allProjectsSelect").next().removeClass('fieldError');
+        $select.trigger('change.select2');
+        $parent.data('projectListState', projects.length ? 'ready' : 'empty');
+      },
+      error: function() {
+        if (isLatestRequest()) {
+          $parent.data('projectListState', 'error');
         }
       },
       complete: function() {
+        if (!isLatestRequest()) {
+          return;
+        }
+        updateProjectSelectionState($parent);
         $parent.find('.loading').fadeOut();
       }
   });
