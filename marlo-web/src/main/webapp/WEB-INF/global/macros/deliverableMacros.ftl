@@ -38,8 +38,9 @@
         </div>
       </div>
       <div class="form-group regionalBlock" style="display:${(isRegional)?string('block','none')}">
-        [#-- Regional scope --]
-        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label="deliverable.region"  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
+        [#-- Regional scope. The redesigned form takes several regions, so it reads "Region(s)" as the innovation
+             form does; other pages and the summaries keep deliverable.region --]
+        [@customForm.elementsListComponent name="deliverable.deliverableRegions" elementType="locElement" elementList=deliverable.deliverableRegions label=singleScope?then('geographicScope.regionsLabel', 'deliverable.region')  listName="repIndRegions" keyFieldName="id" displayFieldName="composedName" required=false /]
       </div>
       [#-- A2-2712: on the redesigned form the label follows the scope, "Countries" for multi-national and "Country" for
            the single-country scopes; setGeographicScope2 (global.js) swaps it. The scope list keeps "Country(ies)" --]
