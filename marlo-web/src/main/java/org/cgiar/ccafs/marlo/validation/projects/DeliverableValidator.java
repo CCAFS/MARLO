@@ -36,7 +36,6 @@ import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrossCuttingMarker;
 import org.cgiar.ccafs.marlo.data.model.DeliverableCrpOutcome;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
-import org.cgiar.ccafs.marlo.data.model.DeliverableGeographicScope;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
 import org.cgiar.ccafs.marlo.data.model.DeliverableMetadataElement;
 import org.cgiar.ccafs.marlo.data.model.DeliverableParticipant;
@@ -50,6 +49,7 @@ import org.cgiar.ccafs.marlo.data.model.ProjectSectionStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.RepIndTypeActivity;
 import org.cgiar.ccafs.marlo.data.model.SoilIndicator;
+import org.cgiar.ccafs.marlo.utils.GeographicScopeRules;
 import org.cgiar.ccafs.marlo.utils.InvalidFieldsMessages;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.BaseValidator;
@@ -389,8 +389,10 @@ public class DeliverableValidator extends BaseValidator {
           if (action.isReportingActive() && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus() != null
             && deliverable.getDeliverableInfo(action.getActualPhase()).getStatus().intValue() == Integer
               .parseInt(ProjectStatusEnum.Ongoing.getStatusId())) {
+            // The field has a value: the problem is that an On-going deliverable cannot be reported
             action.addMessage(action.getText("project.deliverable.generalInformation.status"));
-            action.getInvalidFields().put("input-deliverable.deliverableInfo.status", InvalidFieldsMessages.EMPTYFIELD);
+            action.getInvalidFields().put("input-deliverable.deliverableInfo.status",
+              action.getText("project.deliverable.redesign.status.ongoingAtReporting"));
           }
 
           if (action.hasSpecificities(APConstants.CRP_HAS_DISEMINATION)) {
@@ -969,25 +971,24 @@ public class DeliverableValidator extends BaseValidator {
     // Validate Geographic Scope
     boolean haveRegions = false;
     boolean haveCountries = false;
+    Long scopeId = null;
 
     if (deliverable.getGeographicScopes() == null || deliverable.getGeographicScopes().isEmpty()) {
       action.addMessage(action.getText("geographicScopes"));
       action.addMissingField("deliverable.geographicScope");
       action.getInvalidFields().put("list-deliverable.geographicScopes",
         action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
+      // A2-2706: the redesigned form's radio cards
+      action.getInvalidFields().put("input-deliverable.geographicScopes[0].repIndGeographicScope.id",
+        action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"geographicScopes"}));
     } else {
-      for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-        if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
-          && deliverableGeographicScope.getRepIndGeographicScope().getId() != null) {
-          if (deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
-            haveRegions = true;
-          }
-          if (deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
-            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
-            haveCountries = true;
-          }
-        }
-      }
+      // A2-2706: one scope (the broadest, for legacy records with several); only multi-national, national and
+      // sub-national ask for countries, so Global and "yet to be determined" ask for nothing
+      scopeId = GeographicScopeRules.broadest(deliverable.getGeographicScopes().stream()
+        .filter(s -> s != null && s.getRepIndGeographicScope() != null).map(s -> s.getRepIndGeographicScope().getId())
+        .collect(Collectors.toList()));
+      haveRegions = GeographicScopeRules.needsRegions(scopeId);
+      haveCountries = GeographicScopeRules.needsCountries(scopeId);
     }
 
     if (haveRegions) {
@@ -1007,6 +1008,13 @@ public class DeliverableValidator extends BaseValidator {
         action.addMissingField("deliverable.countries");
         action.getInvalidFields().put("input-deliverable.countriesIds",
           action.getText(InvalidFieldsMessages.EMPTYLIST, new String[] {"countries"}));
+      } else if (!GeographicScopeRules.validCountryCount(scopeId, deliverable.getCountriesIds().size())) {
+        // Multi-national takes two or more countries, national and sub-national exactly one
+        String countMessage = action.getText(scopeId == GeographicScopeRules.MULTI_NATIONAL
+          ? "geographicScope.countries.multiNational" : "geographicScope.countries.single");
+        action.addMessage(countMessage);
+        action.addMissingField("deliverable.countries");
+        action.getInvalidFields().put("input-deliverable.countriesIds", countMessage);
       }
     }
 

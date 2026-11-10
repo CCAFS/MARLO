@@ -143,9 +143,14 @@ export class MalMultiselect {
         `
             });
             // Use PrimeVue
+            // A2-2613: darkModeSelector defaults to 'system', which writes color-scheme: dark on :root whenever the OS
+            // is in dark mode and turns every native control of the page dark. MARLO has no dark theme.
             this.vueApp.use(PrimeVue.Config, {
                 theme: {
-                    preset: 'Aura'
+                    preset: 'Aura',
+                    options: {
+                        darkModeSelector: false
+                    }
                 },
             });
             // Register MultiSelect component

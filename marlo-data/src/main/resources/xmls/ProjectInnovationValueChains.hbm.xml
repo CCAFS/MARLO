@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- A2-2613: value chains selected for an innovation, per phase -->
+<hibernate-mapping>
+	<class name="org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain" table="project_innovation_value_chains"
+		optimistic-lock="none">
+		<id name="id" type="java.lang.Long">
+			<column name="id" />
+			<generator class="identity" />
+		</id>
+		<property name="active" type="boolean">
+			<column name="is_active" not-null="true" />
+		</property>
+		<property name="activeSince" type="timestamp" update="false">
+			<column name="active_since" length="19" not-null="true" />
+		</property>
+		<property name="modificationJustification" type="string">
+			<column name="modification_justification" sql-type="TEXT" />
+		</property>
+		<many-to-one name="createdBy" class="org.cgiar.ccafs.marlo.data.model.User"
+            fetch="select" update="false">
+            <column name="created_by" />
+        </many-to-one>
+		<many-to-one name="modifiedBy" class="org.cgiar.ccafs.marlo.data.model.User"
+            fetch="select">
+            <column name="modified_by" />
+        </many-to-one>
+		<many-to-one name="projectInnovation"
+            class="org.cgiar.ccafs.marlo.data.model.ProjectInnovation" fetch="select">
+            <column name="innovation_id" not-null="true" />
+        </many-to-one>
+		<many-to-one name="valueChain"
+            class="org.cgiar.ccafs.marlo.data.model.ValueChain" fetch="select">
+            <column name="value_chain_id" not-null="true" />
+        </many-to-one>
+		<many-to-one name="phase" class="org.cgiar.ccafs.marlo.data.model.Phase"
+            fetch="select">
+            <column name="id_phase" not-null="true" />
+        </many-to-one>
+	</class>
+</hibernate-mapping>
