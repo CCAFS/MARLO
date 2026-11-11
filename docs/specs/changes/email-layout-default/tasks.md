@@ -27,7 +27,7 @@ the main checkout.
 ---
 
 ### CHG-EMAIL-LAYOUT-001-T01 — The shell becomes the base value
-- **Status:** pending · **Size:** S · **Depends on:** Q1 (answered) · **Module:** marlo-web (resources, utils Javadoc, tests)
+- **Status:** [x] done 2026-11-11 (execution.md T01) · **Size:** S · **Depends on:** Q1 (answered) · **Module:** marlo-web (resources, utils Javadoc, tests)
 - **Requirements:** FN-001, FN-002 (AC: shell for a file-less unit), FN-004, FN-003 (AICCRA/AICCRA_III inherit an identical shell)
 - **Design:** §2 resources rows 1-3, DD-1, DD-8 (comment only), DD-10
 - **Scope:**

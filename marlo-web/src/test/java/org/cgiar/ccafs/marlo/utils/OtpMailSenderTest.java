@@ -516,7 +516,10 @@ public class OtpMailSenderTest {
       assertTrue(body, body.contains("Do not share this code with anyone."));
       assertTrue(body, body.contains("If you did not request this code, you can ignore this email."));
       assertTrue(body, body.contains("MARLOSupport@cgiar.org"));
-      assertFalse("no link at all, so none carries the code", body.toLowerCase().contains("http"));
+      // The shell carries the image URLs, so the check covers the body only: the HTML part holds the bare body.
+      String scoped = body.equals(htmlOf(message)) ? bareBody() : body;
+      assertTrue("the body is inside the HTML part", body.contains(scoped));
+      assertFalse("no link at all, so none carries the code", scoped.toLowerCase().contains("http"));
     }
     assertFalse("the subject does not carry the code", message.getSubject().contains(CODE));
     assertTrue(htmlOf(message).contains("<p"));
@@ -1302,11 +1305,10 @@ public class OtpMailSenderTest {
   }
 
   @Test
-  public void aUnitWithoutAShellSendsTheBareBodyAsBefore() throws Exception {
+  public void aUnitThatOptsOutOfTheShellSendsTheBareBodyAsBefore() throws Exception {
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
-    TextProvider[] providers = {texts(global), UnitTextProvider.forCustomFile(null),
-      UnitTextProvider.forCustomFile("noSuchFile")};
+    TextProvider[] providers = {texts(override("email.layout", "{0}"))};
 
     for (TextProvider provider : providers) {
       this.sender.sendAsync(provider, ASSETS_URL, RECIPIENT, CODE, "CCAFS", UNIT);

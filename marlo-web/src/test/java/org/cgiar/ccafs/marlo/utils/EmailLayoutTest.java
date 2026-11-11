@@ -66,10 +66,25 @@ public class EmailLayoutTest {
   }
 
   @Test
-  public void testBaseLayoutSendsTheBodyAsItIs() throws IOException {
+  public void testBaseLayoutWrapsTheBodyInTheShell() throws IOException {
     Properties base = load(null, "/global.properties");
 
-    assertEquals(BODY, EmailLayout.wrap(texts(base), ASSETS_URL, BODY));
+    String email = EmailLayout.wrap(texts(base), ASSETS_URL, BODY);
+
+    assertTrue("the base shell keeps the body untouched", email.contains(BODY));
+    assertTrue(email.contains("src=\"" + ASSETS_URL + "/global/images/email/marlo-logo.png\""));
+    assertTrue(email.contains("mailto:MARLOSupport@cgiar.org"));
+    assertFalse("the body is wrapped, not sent as it is", BODY.equals(email));
+  }
+
+  @Test
+  public void testAUnitThatOptsOutSendsTheBodyAsItIs() throws IOException {
+    // DD-9: a unit that must stay plain sets email.layout={0} in its custom file over the base shell.
+    Properties base = load(null, "/global.properties");
+    Properties optOut = new Properties(base);
+    optOut.setProperty("email.layout", "{0}");
+
+    assertEquals(BODY, EmailLayout.wrap(texts(optOut), ASSETS_URL, BODY));
   }
 
   @Test
