@@ -83,7 +83,7 @@ the main checkout.
 - **Skills:** marlo-verify, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T04 — Submit email: own unit's texts, real link, honest PDF wording, shell
-- **Status:** pending · **Size:** M · **Depends on:** T03 · **Module:** marlo-web (`action/projects/ProjectSubmissionAction.java`, test)
+- **Status:** [x] done 2026-11-11 (execution.md T04) · **Size:** M · **Depends on:** T03 · **Module:** marlo-web (`action/projects/ProjectSubmissionAction.java`, test)
 - **Requirements:** FN-006, FN-007 (AC FN-007 both cycles + failed PDF), FN-010, FN-011 (AC FN-011 submit cases)
 - **Design:** DD-4, DD-5, DD-6, P-3, P-4, P-12
 - **Scope:**

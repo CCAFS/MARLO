@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.LiaisonUserManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
@@ -25,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
 import org.cgiar.ccafs.marlo.data.manager.SubmissionManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -32,7 +34,9 @@ import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.UnitTextProvider;
 
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
@@ -44,6 +48,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.opensymphony.xwork2.TextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +76,7 @@ public class ProjectSubmissionAction extends BaseAction {
   private String cycleName;
   private final RoleManager roleManager;
   private PhaseManager phaseManager;
+  private final CustomParameterManager customParameterManager;
 
 
   private long projectID;
@@ -82,7 +88,8 @@ public class ProjectSubmissionAction extends BaseAction {
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
     GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
-    PhaseManager phaseManager, UserManager userManager, ReportingSummaryAction reportingSummaryAction) {
+    PhaseManager phaseManager, UserManager userManager, ReportingSummaryAction reportingSummaryAction,
+    CustomParameterManager customParameterManager) {
     super(config);
     this.submissionManager = submissionManager;
     this.projectManager = projectManager;
@@ -92,6 +99,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.userManager = userManager;
     this.phaseManager = phaseManager;
     this.reportingSummaryAction = reportingSummaryAction;
+    this.customParameterManager = customParameterManager;
   }
 
   @Override
@@ -170,6 +178,48 @@ public class ProjectSubmissionAction extends BaseAction {
     }
     cycleName = APConstants.PLANNING;
 
+  }
+
+  /** The assembled submit email: its subject and its body, shell included. */
+  static final class SubmitEmail {
+
+    final String subject;
+    final String body;
+
+    SubmitEmail(String subject, String body) {
+      this.subject = subject;
+      this.body = body;
+    }
+  }
+
+  /**
+   * Assembles the subject and the body of the submit email with the texts of one Global Unit: the planning copy
+   * only when the PDF is really attached, the role footer once, and the whole body inside the shell.
+   */
+  // @akili-spec changes/email-layout-default
+  static SubmitEmail assembleEmail(TextProvider texts, String assetsUrl, String crp, String projectAcronym,
+    String[] values, boolean pdfAttached) {
+    String subject = texts.getText("submit.email.subject", new String[] {crp, projectAcronym});
+    StringBuilder message = new StringBuilder();
+    message.append(texts.getText(pdfAttached ? "submit.email.message" : "submit.email.message.noPDF", values));
+    message.append(texts.getText("email.role.support.noCrpAdmins"));
+    message.append(texts.getText("email.role.bye"));
+    return new SubmitEmail(subject, EmailLayout.wrap(texts, assetsUrl, message.toString()));
+  }
+
+  /**
+   * The texts of the Global Unit being submitted in, read from its own custom file and not from the shared provider,
+   * which holds whichever unit the server served last. A failure is logged and answered with this action's provider.
+   */
+  private TextProvider unitTexts() {
+    try {
+      CustomParameter parameter = customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CUSTOM_FILE, loggedCrp.getId().longValue());
+      return UnitTextProvider.forCustomFile(parameter == null ? null : parameter.getValue());
+    } catch (RuntimeException e) {
+      LOG.warn("The texts of the submitting unit could not be read, the submit email uses the default texts", e);
+      return this;
+    }
   }
 
   private void sendNotficationEmail() {
@@ -287,12 +337,10 @@ public class ProjectSubmissionAction extends BaseAction {
     } else {
       projectAcronym = "C" + project.getId();
     }
-    String subject = null;
-    subject = this.getText("submit.email.subject", new String[] {crp, projectAcronym});
+    TextProvider texts = this.unitTexts();
 
 
     // Building the email message
-    StringBuilder message = new StringBuilder();
     String[] values = new String[7];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crp;
@@ -300,23 +348,10 @@ public class ProjectSubmissionAction extends BaseAction {
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[4] = String.valueOf(this.getActualPhase().getYear());
     values[5] = this.getActualPhase().getDescription().toLowerCase();
-    // Message to download the pdf
-    if (!this.isPlanningActive()) {
-      values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
-        + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.PHASE_ID + "="
-        + this.getActualPhase().getId();
-    }
-
-
-    if (this.isPlanningActive()) {
-      message.append(this.getText("submit.email.message", values));
-    } else {
-      message.append(this.getText("submit.email.message.noPDF", values));
-    }
-
-    message.append(this.getText("email.support.noCrpAdmins"));
-    // message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    // Link to the project summary, offered in both cycles
+    values[6] = config.getBaseUrl() + "/projects/" + this.getCurrentCrp().getAcronym() + "/reportingSummary.do?"
+      + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.PHASE_ID + "="
+      + this.getActualPhase().getId();
 
     // Send pdf
     // Get the PDF from the Project report url.
@@ -354,12 +389,14 @@ public class ProjectSubmissionAction extends BaseAction {
         LOG.error("There was an error trying to get the URL to download the PDF file", e);
       }
     }
+    boolean pdfAttached = buffer != null && fileName != null && contentType != null;
+    SubmitEmail email = assembleEmail(texts, this.getBaseUrlCdn(), crp, projectAcronym, values, pdfAttached);
     if (this.validateEmailNotification()) {
-      if (buffer != null && fileName != null && contentType != null) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), buffer.array(), contentType, fileName,
+      if (pdfAttached) {
+        sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, buffer.array(), contentType, fileName,
           true);
       } else {
-        sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, null, null, null, true);
       }
     }
   }

@@ -117,3 +117,44 @@
 - **Issues encountered:** none.
 - **Final verification:** green (re-run VERIFIED, Reviewer PASS).
 - **Budget running totals:** tasks 3/8; LOC 445 changed (315 + 130) of ~800 (owner-adjusted); review rounds 3/10. Within budget.
+
+### CHG-EMAIL-LAYOUT-001-T04 — Submit email: own unit's texts, real link, honest PDF wording, shell
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 1
+- **Skills / effort:** marlo-verify, tdd; Implementer effort high (Java on a live user flow — above the medium default); Reviewer full (high).
+
+#### Attempt 1
+- **Files changed:** `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/projects/ProjectSubmissionAction.java` (+61/−24, LF preserved); new `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/projects/ProjectSubmissionEmailTest.java` (~105 lines, GPL header).
+- **Change:** `CustomParameterManager` added to the `@Inject` constructor; private `unitTexts()` reads `APConstants.CRP_CUSTOM_FILE` for `loggedCrp` → `UnitTextProvider.forCustomFile`, any `RuntimeException` → one slf4j WARN, fallback `this`; package-private `static SubmitEmail assembleEmail(TextProvider, String assetsUrl, String crp, String projectAcronym, String[] values, boolean pdfAttached)` (`// @akili-spec changes/email-layout-default`) resolves subject, picks `submit.email.message` only when `pdfAttached` else `.noPDF`, footer `email.role.support.noCrpAdmins` + `email.role.bye`, wraps with `EmailLayout.wrap`; call site computes `{6}` in both cycles and `pdfAttached` after PDF generation.
+- **Red run:** test written against a stub of `assembleEmail` keeping today's behaviour (legacy `email.support.noCrpAdmins`/`email.bye`, no wrap) → `Tests run: 5, Failures: 5`, exit 1, each `java.lang.AssertionError: <case> is not inside the shell` (content assertions before it passed). Baseline `grep -c EmailLayout ProjectSubmissionAction.java` → 0.
+- **Implementer verification:** G-compile exit 0 (2430 / 1063 / 113); G-check `ProjectSubmissionAction.java` 1 at HEAD, 1 now (pre-existing `MethodLength` on `sendNotficationEmail`; method shrank ~13 lines), new test 0 → delta 0; G-test 22 tests, 0 failures; hygiene ok.
+- **Falsifiers (executed):** fixed `aicrra` provider → 2 red (aiccra3 case, base case); `pdfAttached` forced `true` → case (b) red; `wrap` dropped → 5 red. All reverted (diff against saved copy).
+- **FN-010 envelope:** to/cc/bcc construction and PDF/attachment fields absent from the diff; both `sendMail.send` calls changed only the subject/body arguments.
+- **Not Done / Assumptions (Implementer):** (1) falsifier 2 tests the static method's choice, not the call-site order — call-site order is review-only; (2) footer counted as `mailto:MARLOSupport@cgiar.org` once, one "automated notification", one "Kind regards", no "technical MARLO team" sentence; (3) missing-file case uses `forCustomFile("noSuchFile")`; (4) `unitTexts()` and call-site wiring untested (need Hibernate) — compile + review only. No owed item, no blocker: not a continuation.
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — `mvn -o -pl marlo-web -am test -Dtest=ProjectSubmissionEmailTest,SubmitEmailCopyTest,EmailLayoutTest,EmailPlainTextTest` exit 0, `Compiling 2430` / `1063` / `113`, `Tests run: 22, Failures: 0, Errors: 0`.
+- **Reviewer verdict:** PASS (full) — `pdfAttached` set after the PDF try/catch with the old three-way non-null test (both failure paths leave `buffer` null → `.noPDF`); `{6}` same expression, reporting-only guard removed (DD-5); envelope untouched; `unitTexts()` same key as the OTP exemplar, null-safe via the catch, slf4j, exception-only log argument; injection consistent, `validate()` untouched; MethodLength pre-existing; tests call the production method with real providers, asserted wording comes from the real `.properties`; subject through the unit provider (FN-011 c).
+- **runtime events:** none
+
+- **spawns:** implementer 27 calls, 145456 tokens, ended partial (Not Done / Assumptions, no owed item); reviewer 9 calls, 63590 tokens, ended complete
+- **ADVISORY (4R, non-gating):**
+  - Reliability: under the microservice path `ReportingSummaryAction.execute()` swallows its own errors (L1392–1397), so `getBytesPDF()` can return an empty array — `pdfAttached` true, 0-byte PDF attached, email says "attached". Pre-existing, outside AC FN-007; `buffer.remaining() > 0` would close it but needs a spec decision. Raised to the owner at the T04 gate.
+  - Readability: call-site ordering covered by review only (static method cannot test it).
+  - Risk: `unitTexts()` does one DB read even when `validateEmailNotification()` is false; negligible, not in `validate()`.
+- **Requirements covered:** FN-006, FN-007 (both cycles, failed PDF), FN-010, FN-011 (submit).
+- **Decisions made:** effort raised to high (Leader); test placed under `action/projects/` beside the action (package-private access).
+- **Issues encountered:** none.
+- **Final verification:** green (re-run VERIFIED, Reviewer PASS).
+- **Budget running totals:** tasks 4/8; LOC ~635 changed (445 + 85 prod + ~105 test) of ~800 (owner-adjusted); review rounds 4/10. Within budget; T05 (similar size) will bring it near the cap.
+
+## Budget Adjustment (after T04)
+
+- **Date:** 2026-11-11
+- **Delta:** ~635 LOC after 4 of 8 tasks against the ~800 cap set after T02; projected ~870–900 at completion.
+- **Cause:** test volume (T04 production ~85 LOC, within estimate; T05 is symmetric to T04).
+- **Decision:** owner (Kenji Tanaka) approved raising the LOC tripwire to **~950**; tasks (8) and review rounds (10) unchanged.
+
+## Deferred (owner decision at the T04 gate)
+
+- **Empty PDF from the microservice path:** `ReportingSummaryAction.execute()` swallows its own errors, so `getBytesPDF()` can return an empty array; the submit email then attaches a 0-byte PDF and says "attached". Pre-existing, outside AC FN-007. Owner decision 2026-11-11: **not in this spec** — candidate for a separate proposal (possible fix: `buffer.remaining() > 0` in `pdfAttached`).
