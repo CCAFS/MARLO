@@ -18,7 +18,11 @@ package org.cgiar.ccafs.marlo.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -201,6 +205,49 @@ public class EmailLayoutTest {
         problems);
     }
     assertEquals("OTP emails that do not show the footer exactly once: " + problems, 0, problems.size());
+  }
+
+  /**
+   * The DD-9 opt-out block exactly as global.properties documents it: the commented lines below email.layout,
+   * uncommented and read as properties, plus email.layout={0}. It is the block a unit file would carry.
+   */
+  private static Properties optOutUnit(Properties base) throws Exception {
+    StringBuilder block = new StringBuilder("email.layout={0}\n");
+    String documented = new String(Files.readAllBytes(
+      Paths.get(EmailLayoutTest.class.getResource("/global.properties").toURI())), StandardCharsets.ISO_8859_1);
+    for (String line : documented.split("\\r?\\n")) {
+      if (line.startsWith("# email.role.") || line.startsWith("# login.otp.email.html=")) {
+        block.append(line.substring(2)).append('\n');
+      }
+    }
+    Properties unit = new Properties(base);
+    unit.load(new StringReader(block.toString()));
+    return unit;
+  }
+
+  @Test
+  public void testUnitThatCopiesTheDocumentedOptOutBlockSendsPlainEmailsWithSupportAndNoticeOnce() throws Exception {
+    Properties base = load(null, "/global.properties");
+    Properties unit = optOutUnit(base);
+    TextProvider texts = texts(unit);
+    List<String> problems = new ArrayList<>();
+
+    for (String admins : new String[] {"", "Jane Admin"}) {
+      // A caller sends the admins sentence or the no-admins one, never both.
+      String body = texts.getText("email.role.dear", new String[] {"Jane"})
+        + texts.getText(admins.isEmpty() ? "email.role.support.noCrpAdmins" : "email.role.support",
+          new String[] {admins})
+        + texts.getText("email.role.getStarted", new String[] {})
+        + texts.getText("email.role.bye", new String[] {});
+      assertEquals("the opted-out unit sends the body as it is", body, EmailLayout.wrap(texts, ASSETS_URL, body));
+      checkFooterOnce("opt-out role (admins='" + admins + "')", body, problems);
+    }
+    String otp = texts.getText("login.otp.email.html",
+      new String[] {"MARLO", "123456", "10", base.getProperty("footer.contactEmail")});
+    assertEquals(otp, EmailLayout.wrap(texts, ASSETS_URL, otp));
+    // The pre-shell OTP copy never carried the do-not-reply notice: only its support address is checked.
+    assertEquals(1, count(visibleText(otp).toLowerCase(), "marlosupport@cgiar.org"));
+    assertEquals("opt-out emails that do not show the footer exactly once: " + problems, 0, problems.size());
   }
 
   @Test

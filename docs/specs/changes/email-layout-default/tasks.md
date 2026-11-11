@@ -119,12 +119,12 @@ the main checkout.
 - **Skills:** marlo-verify, tdd, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T06 — Opt-out blocks from the Q1 answer
-- **Status:** pending · **Size:** XS · **Depends on:** T02, Q1 · **Module:** marlo-web (resources)
+- **Status:** [x] done 2026-11-11 (execution.md T06) · **Size:** XS · **Depends on:** T02, Q1 · **Module:** marlo-web (resources)
 - **Requirements:** FN-002 (AC FN-002), FN-005
 - **Design:** DD-9, §14
 - **Scope:** for each production unit the owner lists as "must stay plain" in Q1, add the DD-9 block to its custom file (`email.layout={0}` + pre-shell `email.role.support`, `.support.noCrpAdmins`, `.bye`, `login.otp.email.html`). **Q1 answer (2026-11-11): none — every unit receives the shell.** No unit file changes; the task ships only the opt-out test below, so the mechanism stays proven.
   - Backend route: none — project conventions.
-- **Tests:** extend T02's footer-once test with an opt-out case: a unit file carrying the block → body as is, support and notice once each. G-test `EmailLayoutTest`.
+- **Tests:** extend T02's footer-once test with an opt-out case: a unit file carrying the block → body as is, support and notice once each (OTP: support once, notice at most once — AC FN-002 amended 2026-11-11). G-test `EmailLayoutTest`.
 - **Falsifier:** an opt-out block without `email.role.bye` → the opt-out case red (no notice).
 - **Red run:** `predicted — greenfield artifact (observed in T06)`.
 - **Disqualifier:** an opt-out decided without the owner's Q1 answer is not evidence of FN-002 scope.

@@ -191,3 +191,33 @@
 - **Final verification:** green (re-run VERIFIED, Reviewer PASS).
 - **Budget running totals:** tasks 5/8; LOC ~809 changed (635 + 69 prod + 105 test) of ~950 (owner-adjusted); review rounds 5/10. Within budget.
 - **Tension resolved (owner, 2026-11-11, T05 gate):** amendment accepted — `requirements.md` AC FN-011 THEN now reads ("cluster"; "PMC" in the submit copy only — the unsubmit copy is Appendix A.1 verbatim); `tasks.md` T05 (a) updated; Decision Log entry with closure sweep added. Execute-time spec edit: `requirements.md#ac-fn-011` — carried as a named conformance check in the next Reviewer brief (T06). Amended-doc diffs checked: the only removed lines are the two intended ones.
+
+### CHG-EMAIL-LAYOUT-001-T06 — Opt-out blocks from the Q1 answer
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 1
+- **Skills / effort:** marlo-verify; Implementer effort low (XS, test only); Reviewer checklist (medium).
+- **Q1 answer (quoted from `tasks.md` gate / `design.md` §14):** "Q1 answered 2026-11-11 — every Global Unit receives the shell, none opts out." → no unit custom file receives the DD-9 block; the task ships only the opt-out test.
+
+#### Attempt 1
+- **Files changed:** `marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/EmailLayoutTest.java` only (+47): helper `optOutUnit(Properties base)` and `testUnitThatCopiesTheDocumentedOptOutBlockSendsPlainEmailsWithSupportAndNoticeOnce`. The fixture reads the commented DD-9 lines (`# email.role.*`, `# login.otp.email.html=`) from `global.properties` (ISO-8859-1), uncomments them, adds `email.layout={0}`, layers over base; nothing added under `custom/`.
+- **Red run:** block without `email.role.bye` → role `support address x2, do-not-reply notice x0` (admins `""` and `"Jane Admin"`), OTP `support x1, notice x0`; 9 run, 1 failure.
+- **Implementer verification:** G-compile exit 0 (2430 / 1063 / 114); G-check delta 0; G-test `EmailLayoutTest,OtpMailSenderTest` 51 run, 0 failures; `git status`: only the test file; hygiene ok.
+- **Falsifier (executed):** drop `email.role.bye` from the block → `role (admins=''): support x1, notice x0` (and `'Jane Admin'`), red; reverted.
+- **Implementer deviations:** (1) role assembly uses `support.noCrpAdmins` when admins is empty and `support` otherwise, never both (T02's `checkFooterOnce` concatenates both, harmless there because both base values are empty); (2) OTP check asserts support once only — the documented pre-shell OTP copy has no notice.
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — `mvn -o -pl marlo-web -am test -Dtest=EmailLayoutTest,OtpMailSenderTest` exit 0, `Compiling 2430` / `1063` / `114`, `Tests run: 51, Failures: 0, Errors: 0`; `git status`: only `EmailLayoutTest.java`.
+- **Reviewer verdict:** PASS (checklist) — deviation (1) matches real callers (`CrpUsersAction.java:589` uses only `.noCrpAdmins`; `ProjectPartnerAction.java:815`, `SendEmails.java:323, :442` only `.support`); fixture reads the real comment block (pattern matches only `global.properties` L3897-3900); scope test-only. Named conformance check `requirements.md#ac-fn-011` as amended 2026-11-11: meaning of FN-011 (L63) unchanged, no conflict.
+- **runtime events:** none
+
+- **spawns:** implementer 8 calls, 92309 tokens, ended complete; reviewer 15 calls, 52651 tokens, ended complete
+- **ADVISORY (4R, non-gating):**
+  - Readability: the fixture supplies `email.layout={0}` itself (DD-9 wording L3894 says so); a comment saying where `{0}` comes from would help.
+  - Reliability: the fixture finds the block by line prefix; a later `# email.role.*` comment elsewhere in `global.properties` would be pulled in — scan could be bounded between "Opt-out block" and `email.layout=`.
+- **Spec tension (Pivot Detection, lightest form — raised at the T06 gate):** AC FN-002 (`requirements.md` L105-109) requires the support address **and the do-not-reply notice** once each in "any of the five emails" of an opted-out unit (OTP included, AC FN-001 L100); the DD-9 block (FN-002 L54, design §15 DD-9) restores the pre-shell `login.otp.email.html` (`global.properties:3900`), which carries `{3}` and no notice. Both cannot hold for the OTP email. Reviewer options: (a) amend AC FN-002 — OTP of an opted-out unit needs the support address once, notice at most once (no behaviour change, matches the test); (b) add the notice to the documented OTP opt-out line and strengthen the test. Pending owner answer.
+- **Requirements covered:** FN-002 (mechanism proven, no unit opts out), FN-005.
+- **Decisions made:** Implementer deviations accepted.
+- **Issues encountered:** none.
+- **Final verification:** green (re-run VERIFIED, Reviewer PASS).
+- **Budget running totals:** tasks 6/8; LOC ~856 changed (809 + 47) of ~950 (owner-adjusted); review rounds 6/10. Within budget.
+- **Tension resolved (owner, 2026-11-11, T06 gate):** option (a) accepted — `requirements.md` AC FN-002 AND now requires, for the OTP email of an opted-out unit, the support address once and the notice at most once; `tasks.md` T06 tests line updated; Decision Log entry with closure sweep added (the tasks.md coverage row "AND support/notice still once" is a summary and stays as is). Execute-time spec edit: `requirements.md#ac-fn-002` — carried as a named conformance check in the T07 Reviewer brief. Amended-doc diffs checked: the only removed lines are the intended ones.

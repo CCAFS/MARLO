@@ -106,7 +106,7 @@ Verified live 2026-11-11 (local, throwaway DB): submit/unsubmit work in AICCRA a
 - GIVEN a unit whose custom file carries the opt-out block (`email.layout={0}` plus the restored footer keys, design DD-9)
 - WHEN any of the five emails above is sent
 - THEN the stored message is the body alone, with no shell markup
-- AND IT MUST still contain the support address and the do-not-reply notice once each (JD-2).
+- AND IT MUST still contain the support address and the do-not-reply notice once each (JD-2); for the OTP email, whose restored pre-shell copy (DD-9) never carried the notice, the support address once and the notice at most once.
 
 **AC FN-003 — AICCRA unchanged**
 - GIVEN AICCRA and AICCRA_III
@@ -201,6 +201,7 @@ Verified live 2026-11-11 (local, throwaway DB): submit/unsubmit work in AICCRA a
 - 2026-11-11 — Amended by judgment round 1 (`judgment.md`): FN-003 drops TEST (JD-3); FN-011 covers submit and the subject (JD-1, JD-4); AC FN-002 requires the footer for opted-out units (JD-2); AC FN-007 adds the failed-PDF case (JS-3); A.4 `email.role.support` empty (JD-6); Q1 gates execute (JD-5). Closure sweep: forward `grep -n -E "TEST|please contact \{0\}|FN-011|Blocks|before specify|before T7|byte-for-byte" requirements.md proposal.md` — hits updated here and in proposal §4, §12, §14; the remaining TEST hits (§1, §2, AC FN-004) describe today's shell owners and stay true; backward: design.md §2/§15/§16 rewritten in the same round.
 - 2026-11-11 — Q1 answered: every Global Unit receives the new shell, none opts out (owner decision, so the production list of active units is not needed). FN-002's opt-out stays as a mechanism, used by no unit today; T06 ships only its test. Closure sweep: forward `grep -n "Q1\|P-11" *.md` — requirements Q1, proposal Q1/§14, design §14/§16, tasks gate/T01/T06/DoD updated; judgment.md is a frozen record and stays as is.
 - 2026-11-11 — Amended at execute (T05 gate, owner approval): AC FN-011's THEN covered submit and unsubmit with ("cluster", "PMC"), but the approved A.1 `unsubmit.email.message` (required verbatim by FN-008) contains no "PMC"; the THEN now limits "PMC" to the submit copy. Meaning of FN-011 unchanged (own unit's copy, no "Technical Implementation Team"). Closure sweep: forward `grep -n '"PMC"' *.md` — requirements AC FN-011 and tasks T05 (a) updated; the A.1 heading and the A.2 substitution line describe the AICCRA vocabulary and stay true; execution.md is history; backward: no document cites AC FN-011's wording.
+- 2026-11-11 — Amended at execute (T06 gate, owner approval, option a): AC FN-002 required the do-not-reply notice once in every email of an opted-out unit, but the DD-9 block restores the pre-shell `login.otp.email.html`, which never carried it; the AND now requires, for the OTP email only, the support address once and the notice at most once. No behaviour change; no unit opts out today (Q1). Closure sweep: forward `grep -n 'notice once each\|do-not-reply notice once' *.md` — requirements AC FN-002 and tasks T06 updated; execution.md is history; backward: FN-002 (L54) and design DD-9 describe the block and stay true.
 
 ---
 
