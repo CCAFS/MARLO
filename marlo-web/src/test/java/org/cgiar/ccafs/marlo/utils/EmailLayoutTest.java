@@ -15,10 +15,14 @@
 
 package org.cgiar.ccafs.marlo.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Proxy;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -88,14 +92,115 @@ public class EmailLayoutTest {
   }
 
   @Test
-  public void testBaseRoleBlocksMatchTheSharedOnes() throws IOException {
-    // The role notifications read their own copy of the shared blocks, so AICCRA can drop the support sentence and
-    // the platform link from them without changing every other notification. The base copy must stay identical.
+  public void testBaseRoleBlocksAreShellAwareAndTheSharedOnesAreUnchanged() throws IOException {
+    // DD-2: inside the shell the footer carries the support address and the do-not-reply notice, so the base role
+    // blocks hold the AICCRA values. The shared email.* blocks (read by the notifications outside the shell) keep
+    // the pre-shell footer.
     Properties base = load(null, "/global.properties");
+    Properties aicrra = load(null, "/custom/aicrra.properties");
 
-    for (String block : new String[] {"dear", "bye", "support", "support.noCrpAdmins", "getStarted"}) {
-      assertEquals(block, base.getProperty("email." + block), base.getProperty("email.role." + block));
+    for (String block : new String[] {"dear", "support", "support.noCrpAdmins", "bye"}) {
+      assertEquals(block, aicrra.getProperty("email.role." + block), base.getProperty("email.role." + block));
     }
+    assertEquals("", base.getProperty("email.role.support"));
+    assertEquals("", base.getProperty("email.role.support.noCrpAdmins"));
+    assertTrue(base.getProperty("email.role.getStarted").contains("Please sign in to MARLO to get started."));
+    assertFalse(base.getProperty("email.role.getStarted").contains("<br>"));
+
+    assertTrue(base.getProperty("email.support").contains("MARLOSupport@cgiar.org"));
+    assertTrue(base.getProperty("email.support.noCrpAdmins").contains("MARLOSupport@cgiar.org"));
+    assertTrue(base.getProperty("email.bye").contains("Please do not reply to this email"));
+    assertEquals("<br><br>Please sign in to MARLO to get started.", base.getProperty("email.getStarted"));
+  }
+
+  /**
+   * The custom files that override at least one key with the given prefix, found by scanning the folder, so a new
+   * override file is covered without editing the test.
+   */
+  private static List<String> customFilesOverriding(String prefix) throws Exception {
+    List<String> names = new ArrayList<>();
+    File folder = new File(EmailLayoutTest.class.getResource("/custom").toURI());
+    for (File file : folder.listFiles((dir, name) -> name.endsWith(".properties"))) {
+      Properties own = load(null, "/custom/" + file.getName());
+      for (String key : own.stringPropertyNames()) {
+        if (key.startsWith(prefix)) {
+          names.add(file.getName());
+          break;
+        }
+      }
+    }
+    Collections.sort(names);
+    return names;
+  }
+
+  /** Strips the markup, so an address inside an href and as link text counts once, as the reader sees it. */
+  private static String visibleText(String email) {
+    return email.replaceAll("<[^>]*>", "");
+  }
+
+  private static int count(String text, String needle) {
+    int total = 0;
+    for (int at = text.indexOf(needle); at >= 0; at = text.indexOf(needle, at + 1)) {
+      total++;
+    }
+    return total;
+  }
+
+  /** Appends one line to the problems when the email repeats, or lacks, the support address or the notice. */
+  private static void checkFooterOnce(String label, String email, List<String> problems) {
+    String visible = visibleText(email).toLowerCase();
+    int addresses = count(visible, "marlosupport@cgiar.org");
+    int notices = count(visible, "do not reply");
+    if (addresses != 1 || notices != 1) {
+      problems.add(label + ": support address x" + addresses + ", do-not-reply notice x" + notices);
+    }
+  }
+
+  @Test
+  public void testRoleEmailShowsTheFooterOnceForTheBaseAndEveryUnitThatOverridesARoleKey() throws Exception {
+    List<String> units = new ArrayList<>();
+    units.add("");
+    units.addAll(customFilesOverriding("email.role."));
+    assertTrue("the scan finds the overriding units", units.size() > 1);
+    Properties base = load(null, "/global.properties");
+    List<String> problems = new ArrayList<>();
+
+    for (String unit : units) {
+      Properties properties = unit.isEmpty() ? base : load(base, "/custom/" + unit);
+      TextProvider texts = texts(properties);
+      // The admins list a caller passes can be empty (DD-2), and can hold names.
+      for (String admins : new String[] {"", "Jane Admin"}) {
+        String body = texts.getText("email.role.dear", new String[] {"Jane"})
+          + texts.getText("email.role.support", new String[] {admins})
+          + texts.getText("email.role.support.noCrpAdmins", new String[] {admins})
+          + texts.getText("email.role.getStarted", new String[] {})
+          + texts.getText("email.role.bye", new String[] {});
+        String label = (unit.isEmpty() ? "global.properties" : unit) + " (admins='" + admins + "')";
+        String email = EmailLayout.wrap(texts, ASSETS_URL, body);
+        assertTrue(label + " keeps its body", email.contains("Jane"));
+        checkFooterOnce(label, email, problems);
+      }
+    }
+    assertEquals("units that do not show the footer exactly once: " + problems, 0, problems.size());
+  }
+
+  @Test
+  public void testOtpEmailShowsTheFooterOnceForTheBaseAndEveryUnitThatOverridesIt() throws Exception {
+    List<String> units = new ArrayList<>();
+    units.add("");
+    units.addAll(customFilesOverriding("login.otp.email.html"));
+    Properties base = load(null, "/global.properties");
+    List<String> problems = new ArrayList<>();
+
+    for (String unit : units) {
+      Properties properties = unit.isEmpty() ? base : load(base, "/custom/" + unit);
+      TextProvider texts = texts(properties);
+      String body = texts.getText("login.otp.email.html",
+        new String[] {"MARLO", "123456", "10", properties.getProperty("footer.contactEmail")});
+      checkFooterOnce((unit.isEmpty() ? "global.properties" : unit) + " OTP", EmailLayout.wrap(texts, ASSETS_URL, body),
+        problems);
+    }
+    assertEquals("OTP emails that do not show the footer exactly once: " + problems, 0, problems.size());
   }
 
   @Test

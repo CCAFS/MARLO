@@ -46,7 +46,7 @@ the main checkout.
 - **Skills:** marlo-verify, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T02 — Footer-once in the base file and the two overriding units
-- **Status:** pending · **Size:** S · **Depends on:** T01 · **Module:** marlo-web (resources, tests)
+- **Status:** [x] done 2026-11-11 (execution.md T02) · **Size:** S · **Depends on:** T01 · **Module:** marlo-web (resources, tests)
 - **Requirements:** FN-005 (AC FN-005, every listed unit and the OTP email), FN-003 (AICCRA/AICCRA_III unchanged), NF-002
 - **Design:** DD-2, DD-3, DD-10, Appendix A.4/A.5 (requirements)
 - **Scope:**

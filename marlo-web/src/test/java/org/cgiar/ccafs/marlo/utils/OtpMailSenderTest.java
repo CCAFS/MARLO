@@ -536,7 +536,9 @@ public class OtpMailSenderTest {
 
     assertEquals(1, this.awaitDeliveryLines(1).size());
     String html = htmlOf(transport.delivered.get(0));
-    assertTrue(html, html.contains("a&lt;b&gt;&amp;&quot;c&#39;"));
+    // The base HTML body no longer reads the support address (A.5): the shell footer carries it, so the override
+    // reaches the text part only.
+    assertFalse(html, html.contains("a&lt;b&gt;&amp;&quot;c&#39;"));
     assertFalse(html, html.contains("a<b>"));
     assertTrue(textOf(transport.delivered.get(0)).contains("a<b>&\"c'"));
   }

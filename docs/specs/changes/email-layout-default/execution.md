@@ -52,3 +52,39 @@
 - **Issues encountered:** none.
 - **Final verification:** green (re-run VERIFIED, Reviewer PASS).
 - **Budget running totals:** tasks 1/8; LOC 179 changed (+76/−103) of ~380; review rounds 1/10. Within budget.
+
+### CHG-EMAIL-LAYOUT-001-T02 — Footer-once in the base file and the two overriding units
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 1
+- **Skills / effort:** marlo-verify; Implementer effort medium; Reviewer full (high).
+
+#### Attempt 1
+- **Files changed:** `marlo-web/src/main/resources/global.properties`, `custom/ciat.properties`, `custom/pabra.properties`; tests `utils/EmailLayoutTest.java`, `utils/OtpMailSenderTest.java`. Diff: 5 files, +119 / −17.
+- **Red run (footer-once tests written before the property edits):** support address / do-not-reply counts in the assembled, MessageFormat-formatted, wrapped email — role email of global, alliance, ciat, pabra: 3 / 2 each, for admins `""` and `"Jane Admin"`; base OTP: 2 / 1; aicrra, aiccra3 role and the aicrra/aiccra3/test OTP overrides passed; `testBaseRoleBlocksAreShellAwareAndTheSharedOnesAreUnchanged` failed on `dear`. Baseline greps: role keys with support/notice in global = 3; `login.otp.email.html` with "Need help" = 1.
+- **Implementer verification:** G-compile exit 0 (2430 / 1063 / 111); G-test five suites 130 run, 0 failures; G-check delta 0 on the two test classes; G-i18n no findings; LF preserved.
+- **Falsifiers (executed):** restoring pabra's `email.role.support.noCrpAdmins` → role footer-once red for pabra only (2 / 1); re-adding "Need help…" to the base OTP html → OTP footer-once red for global.properties (2 / 1). Both reverted.
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — `mvn -o -pl marlo-web -am test -Dtest=EmailLayoutTest,OtpMailSenderTest,EmailPlainTextTest,UnitTextProviderTest,OtpRequestCodeActionTest` exit 0, `Compiling 2430` / `1063` / `111`, `Tests run: 130, Failures: 0, Errors: 0`; `git diff` of aicrra/aiccra3/alliance = 0 lines; base greps 0 / 0.
+- **Reviewer verdict:** PASS (full) — base `dear`, `support`, `support.noCrpAdmins`, `getStarted`, `bye` and the OTP html match Appendix A.4/A.5 verbatim; ciat/pabra deletions are the A.4 list; AICCRA/AICCRA_III/alliance absent from the diff (FN-003); tests assemble the real email through `getText`/`MessageFormat` and `EmailLayout.wrap`; the scan reads `custom/`, no hard-coded list; T01's DD-9 comment block untouched; no AICCRA wording in base values.
+- **runtime events:** none
+
+- **spawns:** implementer 18 calls, 113980 tokens, ended complete; reviewer 6 calls, 58965 tokens, ended complete
+- **ADVISORY (4R, non-gating):**
+  - Reliability (coverage): the scan finds files overriding `email.role.*` after the change (alliance, aicrra, aiccra3). ciat and pabra no longer override any role key, so they are covered by the base run (their role email resolves identically to the base). A test comment saying so would prevent a later reader from thinking two AC FN-005 units went untested; T08's live SQL counts cover ciat/pabra explicitly if they are among the units sent.
+  - Readability (counting): counts are on tag-stripped visible text (the shell's `mailto:` href + link text would otherwise double-count); a body `mailto:` under different link text, or "don't reply" wording, would not be counted. Not a defect today (FN-005 is about what the email shows).
+  - Resilience: `getResource("/custom").toURI()` as `File` works only while test resources are a directory; the role test has a `units.size() > 1` guard, the OTP test has none.
+  - Readability: line ~204 of the new test sits at ~120 chars (Checkstyle delta 0).
+  - Risk: low — TEST, ciat, pabra now get the base greeting and sign-off (accepted: JD-3, A.4).
+- **Requirements covered:** FN-005 (base + overriding units + OTP), FN-003 (AICCRA/AICCRA_III untouched), NF-002.
+- **Decisions made:** Implementer assumptions accepted — OTP footer-once scans every file overriding `login.otp.email.html` (aicrra, aiccra3, test; superset of "base and aicrra"); `{3}` passed as the unit's `footer.contactEmail`; base `email.role.getStarted` = current sentence as a paragraph per A.4 (not aicrra's empty value — confirmed by the Reviewer). The Reviewer diff was passed by scratchpad path rather than inline (225 lines) to avoid transcription error; the wrapper Reviewer keeps `Read`.
+- **Issues encountered:** none.
+- **Final verification:** green (re-run VERIFIED, Reviewer PASS).
+- **Budget running totals:** tasks 2/8; LOC 315 changed (179 + 136) of ~380; review rounds 2/10. LOC trending above budget — tests (+119 here) carry most of it; to watch at T03.
+
+## Budget Adjustment (after T02)
+
+- **Date:** 2026-11-11
+- **Delta:** 315 LOC after 2 of 8 tasks against a design budget of ~380; projected ~700–800 at completion.
+- **Cause:** test volume required by the tasks' own disqualifiers (folder scan, both admins variants, counts on the assembled email) — production code within estimate.
+- **Decision:** owner (Kenji Tanaka) approved raising the LOC tripwire to **~800** and keeping the tests as written; tasks (8) and review rounds (10) unchanged.
