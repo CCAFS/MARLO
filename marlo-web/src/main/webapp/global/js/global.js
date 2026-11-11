@@ -1039,8 +1039,9 @@ function onSelectElement() {
   var counted = $list.find('li').length;
   var className = $list.attr('class');
 
-  // Select an option
-  if ($option.val() == "-1") {
+  // Select an option. A select cleared with .val(null) has no selected option at all: nothing to add then, or an
+  // empty row is appended and select2 is initialised a second time over the live instance.
+  if (!$option.length || $option.val() == "-1") {
     return;
   }
 
@@ -1517,7 +1518,23 @@ function setGeographicScope(component) {
   }
 }
 
-function setGeographicScope2(component) {
+// The countries field reads "Country" while it takes one country and "Countries" under multi-national. The texts come
+// from the block's data-label-* attributes (i18n); a block without them keeps the label it was rendered with
+function setCountriesLabel($nationalBlock, multiple) {
+  var text = $nationalBlock.attr(multiple ? 'data-label-multiple' : 'data-label-single');
+  if (!text) {
+    return;
+  }
+  $nationalBlock.find('label').first().contents().filter(function () {
+    return this.nodeType === 3 && $.trim(this.nodeValue) !== '';
+  }).first().each(function () {
+    // Swap the words only: the spacing before the required mark and any trailing ":" stay as rendered
+    this.nodeValue = this.nodeValue.replace(/\S[\s\S]*?(?=:?\s*$)/, text);
+  });
+}
+
+// userChange: the user picked the scope now (not the page load), so the countries the new scope cannot keep are cleared
+function setGeographicScope2(component, userChange) {
   var $value = $(component).val();
   var $partner = $(component).parents('.geographicScopeBlock');
   
@@ -1580,7 +1597,8 @@ function setGeographicScope2(component) {
   }
 
   if ($isMultiNational || $isNational || $isSubNational) {
-    
+    setCountriesLabel($nationalBlock, $isMultiNational);
+
     if ($isMultiNational) {
 
       $nationalBlock.find("select").select2('destroy');
@@ -1595,6 +1613,12 @@ function setGeographicScope2(component) {
         dropdownAdapter: CustomDropdownAdapter
       });
     } else {
+
+      // National and sub-national take one country: a choice of several from multi-national does not carry over
+      var chosenCountries = ($nationalBlock.find("select").val()) || [];
+      if (userChange && chosenCountries.length > 1) {
+        $nationalBlock.find("select").val(null).trigger('change');
+      }
 
       $nationalBlock.find("select").select2('destroy');
 

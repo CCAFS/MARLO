@@ -54,6 +54,16 @@ public interface ProjectFocusDAO {
    */
   public List<ProjectFocus> findAll();
 
+  /**
+   * This method gets the active projectFocus rows that link a project to a program in a phase. It queries the database,
+   * so it also sees the rows inserted earlier in the same session.
+   *
+   * @param projectID is the project identifier.
+   * @param programID is the crp program identifier.
+   * @param phaseID is the phase identifier.
+   * @return a list of active ProjectFocus, empty if there is none.
+   */
+  public List<ProjectFocus> findActiveByProjectProgramAndPhase(long projectID, long programID, long phaseID);
 
   /**
    * This method saves the information of the given projectFocus

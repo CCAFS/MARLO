@@ -9,7 +9,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/home/dashboard.css?20260908",
+  "${baseUrlMedia}/css/home/dashboard.css?20261029",
   "${baseUrlCdn}/global/css/customDataTable.css?20250509",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -198,16 +198,12 @@
     </aside>
   [/#macro]
 
+  [#-- Name only: phase dates are hidden across the UI, and an "opens in N days"
+       chip would give them away. --]
   [#macro scNextPhasePanel phase eyebrowKey compact=false]
-    [#local scDays = ((phase.startDate?long - scToday?long) / scDayMs)?round /]
     <aside class="scheduleCard__next[#if compact] scheduleCard__next--compact[/#if]">
       <span class="scheduleCard__nextEyebrow">[@s.text name="${eyebrowKey}" /]</span>
       <span class="scheduleCard__nextName">${(phase.composedName)!}</span>
-      <span class="scheduleCard__nextDates">[@s.text name="dashboard.schedule.next.phaseDates"][@s.param]${phase.startDate?date?string("dd MMM yyyy")}[/@s.param][@s.param]${phase.endDate?date?string("dd MMM yyyy")}[/@s.param][/@s.text]</span>
-      <span class="scheduleCard__nextChip">
-        [#if scDays lte 1][@s.text name="dashboard.schedule.opensTomorrow" /]
-        [#else][@s.text name="dashboard.schedule.opensIn"][@s.param]${scDays?c}[/@s.param][/@s.text][/#if]
-      </span>
     </aside>
   [/#macro]
 
@@ -328,15 +324,8 @@
            below. A single upcoming thing renders no second panel, and the
            fallback crosses kinds, so one activity plus an unopened phase pairs
            the two. --]
-      [#-- The 44px offset that lines the column's top edge up with the frame's
-           is for a lone panel only: a pair is already tall enough to reach the
-           frame's bottom, so keeping the offset drops it past it (A2-2453).
-           This condition mirrors the branches below exactly -- change one and
-           the other has to change with it. --]
-      [#assign scSidePair = scNextItem?has_content?then(
-        scSecondItem?has_content || scNextPhase?has_content, scSecondPhase?has_content) /]
       [#if scNextItem?has_content || scNextPhase?has_content]
-        <div class="scheduleCard__side[#if scSidePair] scheduleCard__side--pair[/#if]">
+        <div class="scheduleCard__side">
           [#if scNextItem?has_content]
             [@scNextActivityPanel activity=scNextItem[0] eyebrowKey="dashboard.schedule.next.activityEyebrow" /]
             [#if scSecondItem?has_content]

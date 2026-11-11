@@ -9603,6 +9603,14 @@ img.qaOptionsComment {
   transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 .clusterMenu-status__toggle .button-label:hover { color: #1F2A37; background: rgba(255, 255, 255, .6); }
+/* "Yes" before the pre-set sections are complete: visible, not choosable. */
+.clusterMenu-status__toggle .button-label.is-disabled,
+.clusterMenu-status__toggle .button-label.is-disabled:hover,
+.clusterMenu-status__toggle .button-label.is-disabled:active {
+  color: #9AA4B0;
+  background: transparent;
+  cursor: not-allowed;
+}
 .clusterMenu-status__toggle .button-label.radio-checked,
 .clusterMenu-status__toggle .button-label.radio-checked:hover {
   background: #FFFFFF;

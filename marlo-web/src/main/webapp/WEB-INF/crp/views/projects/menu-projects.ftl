@@ -14,9 +14,10 @@
 [/#if]
 [#if !((project.projectInfo.isProjectEditLeader())!false)]
   [#assign menus= [
-    { 'title': 'General Information', 'show': true,
+    [#-- No separator: the first row already reads "General information". --]
+    { 'title': 'General Information', 'show': true, 'hideTitle': true,
       'items': [
-      { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true  },
+      { 'slug': 'description',  'name': 'projects.menu.generalInformation',  'action': 'description',  'active': true  },
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true  },
       { 'slug': 'budgetByPartners',  'name': 'Budget',  'action': 'budgetByPartners',  'active': false, 'show': false  },
       { 'slug': 'budgetByFlagships',  'name': 'projects.menu.budgetByFlagships',  'action': 'budgetByFlagship',  'active': false , 'show': false  }
@@ -32,9 +33,9 @@
       { 'slug': 'centerProgram',  'name': 'projects.menu.centerProgram',  'action': 'centerProgram',  'active': true, "showCheck": true  }
       ]
     },
-    { 'title': 'General Information', 'show': true,
+    { 'title': 'General Information', 'show': true, 'hideTitle': true,
       'items': [
-      { 'slug': 'description',  'name': 'projects.menu.description',  'action': 'description',  'active': true, "showCheck": isGlobalUnitProject},
+      { 'slug': 'description',  'name': 'projects.menu.generalInformation',  'action': 'description',  'active': true, "showCheck": isGlobalUnitProject},
       { 'slug': 'partners',  'name': 'projects.menu.partners',  'action': 'partners',  'active': true, "showCheck": isGlobalUnitProject },
       { 'slug': 'locations',  'name': 'projects.menu.locations',  'action': 'locations',  'active': true, "showCheck": isGlobalUnitProject  }
       ]
@@ -113,7 +114,7 @@
     [#list menus as menu]
       [#if menu.show]
       <li>
-        <ul><p class="menuTitle">${menu.title}</p>
+        <ul>[#if !((menu.hideTitle)!false)]<p class="menuTitle">${menu.title}</p>[/#if]
           [#list menu.items as item]
             [#-- Reset per item, so an item without a check never reuses the status of the previous one --]
             [#assign submitStatus = false /]
@@ -186,17 +187,16 @@
   </div>
   [/#if]
 
-  [#-- Open for Project Leaders --]
-  [#if !reportingActive && canSwitchProject && ( completedPreProject || projectEditLeader) && !crpClosed && !centerGlobalUnit]
-    [#if !submission]
+  [#-- Open for Project Leaders. Whoever can switch the project always sees the toggle;
+       "Yes" stays disabled until every pre-set section is complete. --]
+  [#assign canTogglePreset = !reportingActive && canSwitchProject && !crpClosed && !centerGlobalUnit /]
+  [#if canTogglePreset && !submission]
     <div class="clusterMenu-status__toggle">
-      [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader" /]
+      [@customForm.yesNoInput name="project.projectInfo.isProjectEditLeader()" label="project.isOpen" editable=true inverse=false cssClass="projectEditLeader"
+        yesDisabled=!(completedPreProject || projectEditLeader) yesTitle=action.getText("projects.menu.status.presetNote") /]
     </div>
-    [/#if]
-  [#else]
-    [#if !projectEditLeader]
-      <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.presetNote" /]</p>
-    [/#if]
+  [#elseif !projectEditLeader && !(canTogglePreset && completedPreProject)]
+    <p class="clusterMenu-status__note">[@s.text name="projects.menu.status.presetNote" /]</p>
   [/#if]
 
   [#if !centerGlobalUnit]
@@ -293,7 +293,7 @@
 [#include "/WEB-INF/global/macros/discardChangesPopup.ftl"]
 
 [#-- Project Submit JS --]
-[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20261009-2" ] + customJS  /]
+[#assign customJS = [ "${baseUrlMedia}/js/projects/projectSubmit.js?20261105-2" ] + customJS  /]
 
 [#macro menuIcon name="" show=true width="" height="" ]
   <span style="display:${show?string('inline','none')};">
