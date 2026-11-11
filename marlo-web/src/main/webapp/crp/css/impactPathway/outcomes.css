@@ -1358,40 +1358,59 @@ span.icon-20 {
   gap: 12px;
   flex-wrap: wrap;
   min-height: 52px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: var(--opi-surface-alt);
-  border: 1px solid #EEF2F5;
-  border-radius: var(--opi-radius-sm);
+  border: 1px solid var(--opi-border);
+  border-radius: 10px;
 }
 
-.opi-panel__label { font: 600 13px Figtree, sans-serif; color: var(--opi-ink); }
-.opi-panel__note { font: 400 12.5px Figtree, sans-serif; color: var(--opi-muted); }
+/* The deliverable and innovation forms' question: 600 13.5px, the note under it. */
+.opi-panel__label { font: 600 13.5px/1.45 Figtree, sans-serif; color: var(--opi-ink); }
+.opi-panel__note { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--opi-muted); }
 
-/* ---------- Yes / No segmented control ---------- */
+/* Disaggregations: question and note on the left, the answer pinned right. */
+.opi-dis__ask { flex-wrap: nowrap; justify-content: space-between; gap: 16px; }
+.opi-dis__askText { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.opi-dis__ask .opi-seg { flex: none; }
+/* On a phone the answer drops under the question instead of squeezing it. */
+@media (max-width: 575px) { .opi-dis__ask { flex-wrap: wrap; } }
+
+/* ---------- Yes / No segmented control ----------
+   The design system's SegmentedControl (brand), as in the deliverable and innovation forms:
+   a #EEF2F5 track, 30px segments; Yes chosen = brand, No chosen = slate. */
 
 .opi-seg {
   display: inline-flex;
   align-items: center;
-  padding: 2px;
-  border: 1px solid var(--opi-border-strong);
-  border-radius: var(--opi-radius-sm);
-  background: #fff;
   gap: 2px;
+  padding: 4px;
+  border: 0;
+  border-radius: 10px;
+  background: #EEF2F5;
 }
 
 .opi-seg__btn {
-  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 30px;
   padding: 0 14px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
-  font: 600 12.5px Figtree, sans-serif;
+  font: 500 13.5px Figtree, sans-serif;
   background: transparent;
   color: var(--opi-ink-soft);
 }
 
-.opi-seg__btn.is-on { background: var(--opi-primary); color: #fff; }
-.opi-seg__btn[disabled] { cursor: not-allowed; opacity: .6; }
+.opi-seg__btn:hover { color: var(--opi-ink); }
+.opi-seg__btn.is-on { font-weight: 600; color: #fff; background: var(--opi-primary); box-shadow: 0 1px 3px rgba(2, 119, 162, .3); }
+.opi-seg__btn.opi-dis__no.is-on { background: var(--opi-ink-soft); box-shadow: 0 1px 3px rgba(31, 42, 55, .3); }
+/* Read-only: the answer stays visible and whole, it just does not react. */
+.opi-seg__btn[disabled] { cursor: default; }
+.opi-seg__btn[disabled]:hover { color: var(--opi-ink-soft); }
+.opi-seg__btn.is-on[disabled]:hover { color: #fff; }
 
 /* ---------- Disaggregations table ---------- */
 

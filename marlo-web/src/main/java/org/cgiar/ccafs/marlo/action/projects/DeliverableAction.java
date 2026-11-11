@@ -157,6 +157,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.GeographicScopeRules;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.utils.doi.DOIService;
 import org.cgiar.ccafs.marlo.validation.projects.DeliverableValidator;
@@ -1465,8 +1466,8 @@ public class DeliverableAction extends BaseAction {
               haveRegions = true;
             }
 
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            if (GeographicScopeRules
+              .needsCountries(projectInnovationGeographicScope.getRepIndGeographicScope().getId())) {
               haveCountries = true;
             }
 
@@ -2034,8 +2035,9 @@ public class DeliverableAction extends BaseAction {
         }
         this.setDraft(false);
       }
+      // A2-2706: broadest first (Global ... Sub-national, then "yet to be determined"), as the radio cards read
       this.setRepIndGeographicScopes(repIndGeographicScopeManager.findAll().stream()
-        .sorted((g1, g2) -> g1.getName().compareTo(g2.getName())).collect(Collectors.toList()));
+        .sorted(Comparator.comparing(RepIndGeographicScope::getId)).collect(Collectors.toList()));
       // cgamboa 03/05/2024 function locElementManager.findAll() will be used once time
       List<LocElement> listLocElementPrevious = locElementManager.findAll();
       repIndRegions = listLocElementPrevious.stream()
@@ -3363,24 +3365,11 @@ public class DeliverableAction extends BaseAction {
       // this.saveProjectOutcomes(deliverableDB, this.getActualPhase());
       this.saveCrpOutcomes(deliverableDB, this.getActualPhase());
 
-      boolean haveRegions = false;
-      boolean haveCountries = false;
-
-      if (deliverable.getGeographicScopes() != null) {
-        for (DeliverableGeographicScope deliverableGeographicScope : deliverable.getGeographicScopes()) {
-
-          if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
-            && deliverableGeographicScope.getRepIndGeographicScope().getId() == 2) {
-            haveRegions = true;
-          }
-
-          if (deliverableGeographicScope != null && deliverableGeographicScope.getRepIndGeographicScope() != null
-            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 1
-            && deliverableGeographicScope.getRepIndGeographicScope().getId() != 2) {
-            haveCountries = true;
-          }
-        }
-      }
+      // A2-2706: the posted scope decides which locations stay; the ones it does not ask for are cleared, so
+      // Global and "yet to be determined" keep neither regions nor countries
+      Long postedScopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "deliverable");
+      boolean haveRegions = GeographicScopeRules.needsRegions(postedScopeId);
+      boolean haveCountries = GeographicScopeRules.needsCountries(postedScopeId);
 
       try {
         if (deliverableManagedState.getDeliverableInfo().getStudyType() == null
@@ -3976,7 +3965,11 @@ public class DeliverableAction extends BaseAction {
 
   private void saveDeliverableCountries(Deliverable deliverableManagedState) {
 
-    if (deliverable.getCountriesIds() != null || !deliverable.getCountriesIds().isEmpty()) {
+    // No country chosen posts nothing: an empty list, so the stored countries are removed
+    if (deliverable.getCountriesIds() == null) {
+      deliverable.setCountriesIds(new ArrayList<>());
+    }
+    if (deliverable.getCountriesIds() != null) {
 
       List<DeliverableLocation> countries =
         deliverableLocationManager.getDeliverableLocationbyPhase(deliverable.getId(), this.getActualPhase().getId());
@@ -4523,46 +4516,40 @@ public class DeliverableAction extends BaseAction {
    * @param phase
    */
   public void saveGeographicScope(Deliverable deliverable, Phase phase) {
+    // A2-2706: one scope. The radios post its catalogue id only, so the phase keeps exactly the posted scope:
+    // the rows that differ (or repeat it, legacy data) are removed and the scope is added when missing. The
+    // manager replicates both to the later phases.
+    Long postedScopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "deliverable");
+    RepIndGeographicScope postedScope =
+      postedScopeId == null ? null : repIndGeographicScopeManager.getRepIndGeographicScopeById(postedScopeId);
 
-    // Search and deleted form Information
-    if (deliverable.getDeliverableGeographicScopes() != null
-      && deliverable.getDeliverableGeographicScopes().size() > 0) {
-
+    boolean kept = false;
+    if (deliverable.getDeliverableGeographicScopes() != null) {
       List<DeliverableGeographicScope> scopePrev = new ArrayList<>(deliverable.getDeliverableGeographicScopes().stream()
-        .filter(nu -> nu.isActive() && nu.getPhase().getId().equals(phase.getId())).collect(Collectors.toList()));
+        .filter(
+          nu -> nu != null && nu.isActive() && nu.getPhase() != null && nu.getPhase().getId().equals(phase.getId()))
+        .collect(Collectors.toList()));
 
       for (DeliverableGeographicScope deliverableScope : scopePrev) {
-        if (this.deliverable.getGeographicScopes() == null
-          || !this.deliverable.getGeographicScopes().contains(deliverableScope)) {
+        boolean isPosted = postedScope != null && deliverableScope.getRepIndGeographicScope() != null
+          && postedScope.getId().equals(deliverableScope.getRepIndGeographicScope().getId());
+        if (isPosted && !kept) {
+          kept = true;
+        } else {
           deliverableGeographicScopeManager.deleteDeliverableGeographicScope(deliverableScope.getId());
         }
       }
     }
 
-    // Save form Information
-    if (this.deliverable.getGeographicScopes() != null) {
-      for (DeliverableGeographicScope deliverableScope : this.deliverable.getGeographicScopes()) {
-        if (deliverableScope != null) {
-          if (deliverableScope.getId() == null) {
-            DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
-            deliverableScopeSave.setDeliverable(deliverable);
-            deliverableScopeSave.setPhase(phase);
-            RepIndGeographicScope repIndGeographicScope = null;
-            if (deliverableScope.getRepIndGeographicScope() != null
-              && deliverableScope.getRepIndGeographicScope().getId() != null) {
-              repIndGeographicScope = repIndGeographicScopeManager
-                .getRepIndGeographicScopeById(deliverableScope.getRepIndGeographicScope().getId());
-            }
-
-            if (repIndGeographicScope != null) {
-              deliverableScopeSave.setRepIndGeographicScope(repIndGeographicScope);
-            }
-
-            deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
-            // This is to add innovationCrpSave to generate correct auditlog.
-            this.deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
-          }
-        }
+    if (postedScope != null && !kept) {
+      DeliverableGeographicScope deliverableScopeSave = new DeliverableGeographicScope();
+      deliverableScopeSave.setDeliverable(deliverable);
+      deliverableScopeSave.setPhase(phase);
+      deliverableScopeSave.setRepIndGeographicScope(postedScope);
+      deliverableGeographicScopeManager.saveDeliverableGeographicScope(deliverableScopeSave);
+      // This is to add the scope to generate a correct audit log.
+      if (this.deliverable.getDeliverableGeographicScopes() != null) {
+        this.deliverable.getDeliverableGeographicScopes().add(deliverableScopeSave);
       }
     }
   }
@@ -5708,8 +5695,30 @@ public class DeliverableAction extends BaseAction {
   @Override
   public void validate() {
     if (save) {
+      // A2-2706: the validator reads the posted scope as an object, which Struts does not build
+      if (deliverable != null) {
+        deliverable.setGeographicScopes(this.postedGeographicScopes());
+      }
       deliverableValidator.validate(this, deliverable, true);
     }
+  }
+
+  /**
+   * A2-2706: the one geographic scope the form posted, as the list the validator reads.
+   *
+   * @return a list with the posted scope, empty when none was chosen
+   */
+  private List<DeliverableGeographicScope> postedGeographicScopes() {
+    List<DeliverableGeographicScope> scopes = new ArrayList<>();
+    Long scopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "deliverable");
+    RepIndGeographicScope scope =
+      scopeId == null ? null : repIndGeographicScopeManager.getRepIndGeographicScopeById(scopeId);
+    if (scope != null) {
+      DeliverableGeographicScope posted = new DeliverableGeographicScope();
+      posted.setRepIndGeographicScope(scope);
+      scopes.add(posted);
+    }
+    return scopes;
   }
 
   /**

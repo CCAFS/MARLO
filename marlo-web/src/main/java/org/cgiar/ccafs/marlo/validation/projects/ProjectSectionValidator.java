@@ -730,6 +730,18 @@ public class ProjectSectionValidator<T extends BaseAction> extends BaseValidator
           .filter(o -> o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
       }
 
+      // Innovation value chains (A2-2613)
+      if (innovation.getProjectInnovationValueChains() != null) {
+        innovation.setValueChains(new ArrayList<>(innovation.getProjectInnovationValueChains().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
+      // Institutions that co-developed the bundle (A2-2613)
+      if (innovation.getProjectInnovationCoDevelopers() != null) {
+        innovation.setCoDevelopers(new ArrayList<>(innovation.getProjectInnovationCoDevelopers().stream()
+          .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
+      }
+
       // Innovations SDGs
       if (innovation.getProjectInnovationSDGs() != null) {
         innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
