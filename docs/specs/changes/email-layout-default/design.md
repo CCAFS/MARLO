@@ -108,7 +108,7 @@ unit's `crp_custom_file`, it logs one WARN with the unit id and falls back to it
 No new input. The unescaped `{7}` justification is unchanged and out of scope.
 
 ## 14. Backwards Compatibility & Rollout
-- **Gate:** `/akili-execute` does not start until Q1 (production active units) is answered (P-11).
+- **Gate:** Q1 answered 2026-11-11 — every Global Unit receives the shell, none opts out (P-11 settled by owner decision).
 - **Visible change** for every unit without its own `email.layout`: role, welcome, OTP, submit and unsubmit emails gain the shell. Units outside Appendix A keep their own submit/unsubmit wording (legacy `<br>` copy) inside the shell, with the new footer; aicrra/aiccra3 already send no "To begin…" line (empty `email.role.getStarted`). Accepted.
 - **Failed-PDF planning submissions** of every unit now use that unit's `.noPDF` copy with the real `{6}` link (DD-5) — a visible change for alliance, bigdata, eib, gender, pim, test, wheat as well. Accepted.
 - **Opt-out** before release for any unit that must stay plain: the DD-9 block in its custom file.
@@ -147,7 +147,7 @@ Depth check: Standard holds.
 
 ## 16. Premise Ledger
 
-Count: 14 rows — 13 verified, 1 `UNVERIFIED` (of the `UNVERIFIED`: High 1, Low 0). Rows with Impact High overall: P-1, P-2, P-5, P-8, P-11.
+Count: 14 rows — 13 verified, 1 settled by owner decision (P-11), 0 `UNVERIFIED`. Rows with Impact High overall: P-1, P-2, P-5, P-8, P-11.
 Blast-radius triggers: `live-path` (submit/unsubmit user actions — P-3, P-4, P-12), `shared-state` (base
 `email.layout` and `email.role.*` read by every wrapped email — P-5, P-13), `consumer` (tests and docs — P-9).
 
@@ -163,19 +163,19 @@ Blast-radius triggers: `live-path` (submit/unsubmit user actions — P-3, P-4, P
 | P-8 | `footer.contactEmail` = `MARLOSupport@cgiar.org` in every file defining it | data-env | `grep -H '^footer.contactEmail=' global.properties custom/*.properties` → 5 hits, same value | 460ecbd5be | DD-2/DD-10 drop a different address (High) | — |
 | P-9 | Consumers: the five test files and the methods listed in §2; `reports/ai-context/role-assignment-email-catalog.md` (updated); `changes/center-email-otp-login/{requirements,design,tasks,execution}.md` (historical; only its `requirements.md` gets the DD-8 Decision Log entry) | consumer | `grep -rln -e 'email\.layout' -e 'EmailLayout' -e 'email\.role\.' marlo-web/src/test` → 5 files; `grep -rln 'email.layout' reports docs` → the catalog, the four OTP spec files, this spec | 460ecbd5be | A test or doc goes stale unnoticed (Low) | — |
 | P-10 | `email.bye` is read by 12 classes, `email.role.bye` by 8 (7 actions + `SendEmails`) | consumer | `grep -rl 'getText("email.bye")' marlo-web/src/main/java \| wc -l` → 12; `'getText("email.role.bye")'` → 8 | 460ecbd5be | DD-4's rejected alternative becomes viable (Low) | — |
-| P-11 | Production active Global Units | data-env | `UNVERIFIED — confirm at source before relying on it` (local copy: 45, 47, 48, 49, 50 active; 17 legacy custom files exist) | — | Opt-out list, and the visible change for every legacy unit (High) | Q1 — Kenji Tanaka, **before `/akili-execute` starts** |
+| P-11 | Production active Global Units | data-env | Not needed — owner decision 2026-11-11: every unit receives the shell, so no opt-out list depends on which units are active (local copy: 45, 47, 48, 49, 50 active; 17 legacy custom files exist) | — | Opt-out list (empty), and the visible change for every legacy unit — accepted (High) | Q1 — Kenji Tanaka, answered 2026-11-11 |
 | P-12 | Submit names the session unit: `{1}` from `loggedCrp`, the summary URL from `getCurrentCrp()` — both the session's `SESSION_CRP`; unsubmit names the project's origin unit | location | `ProjectSubmissionAction.java:149-150` (`loggedCrp` = session `SESSION_CRP`), `:281`, `:305` (`getCurrentCrp()`); `UnsubmitProjectAction.java:251` (`globalUnitProject` origin) | 460ecbd5be | DD-6 picks a different unit (Low) | — |
 | P-13 | Callers pass `email.role.support` an admins list that can be empty | shared-state | `SendEmails.java:300-323`; `ProjectPartnerAction.java:815, 995, 1125`; `CrpPpaPartnersAction.java:370` | 460ecbd5be | DD-2 could keep the admins clause (Low) | — |
 | P-14 | 30 classes send through `SendMailS`; 8 of them wrap their body; `OtpMailSender` also wraps but sends through its own transport (9 wrapping files, 39 call sites); after this spec 10 of the 30 wrap and 20 do not | data-env | `grep -rl -e 'sendMail\.send' -e 'sendMailS\.send' -e 'sendMail\.sendTemporal' marlo-web/src/main/java \| wc -l` → 30; `grep -rl 'EmailLayout\.wrap' marlo-web/src/main/java` → 9 files, of which `OtpMailSender` is not among the 30; `grep -rn 'EmailLayout\.wrap' marlo-web/src/main/java \| wc -l` → 39 | 460ecbd5be | Scope counts in requirements §4 wrong (Low) | — |
 
 Divergence noted (JD/JS-6): for a Center (type 4) session `InternationalitazionFileInterceptor` picks the file by the
 origin unit's acronym; DD-6 reads `crp_custom_file`, as `OtpRequestCodeAction` does. Submit/unsubmit are CRP
-flows; no Center unit uses them today (not verified in production — part of Q1).
+flows; no Center unit uses them today (not verified in production; Q1 was settled by decision, so this stays an assumption).
 
 ## 17. Open Risks
 
 | Risk | Mitigation |
 |---|---|
-| A legacy unit active in production changes look unexpectedly | Q1 gates execute; DD-9 opt-out |
+| A legacy unit active in production changes look unexpectedly | Accepted by the owner (Q1, 2026-11-11): every unit changes look; DD-9 opt-out stays available |
 | Email clients render the shell differently | In production for AICCRA since A2-2484; human render check in the verification task |
 | `MessageFormat` mangles new copy | Appendix A has no apostrophes; marlo-verify i18n gate; copy test |

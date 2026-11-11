@@ -132,9 +132,9 @@ footers) is bounded and fully enumerated: five `email.role.*` keys and the OTP b
 
 | # | Item | Handling |
 |---|---|---|
-| Q1 | **Which Global Units are active in production?** The local copy shows only 45, 47, 48, 49, 50 active. | Owner to confirm before `/akili-execute` starts (moved from "before specify" at design judgment, JD-5); any unit that must keep plain emails gets `email.layout={0}` |
+| Q1 | **Which Global Units are active in production?** The local copy shows only 45, 47, 48, 49, 50 active. | Answered 2026-11-11 by Kenji Tanaka: **every Global Unit receives the new shell; none opts out.** |
 | Q2 | Approval of the new submit/unsubmit copy for AICCRA / AICCRA_III, and of the role-neutral base copy in `global.properties` (§5 item 8) | Draft in `/akili-specify`, approved by the owner (PMU/PIU wording) |
-| R5 | The neutral base copy changes the submit/unsubmit emails of legacy units without an override (ccafs, a4nh, fta, livestock, maize, rice, wle, ciat) if any is still active | Covered by Q1; arguments `{0}`–`{7}` are kept, so only wording and spacing change |
+| R5 | The neutral base copy changes the submit/unsubmit emails of legacy units without an override (ccafs, a4nh, fta, livestock, maize, rice, wle, ciat) if any is still active | Accepted at Q1 (2026-11-11: every unit gets the shell); arguments `{0}`–`{7}` are kept, so only wording and spacing change |
 | R1 | A footer key missed in the enumeration prints twice | Enumeration recorded in §3 P6 with the command used (KZ-…-directory-abstraction-1: every sibling, not only the named ones); verification renders each email type in a unit with and without its own file |
 | R2 | `getText` runs `MessageFormat`: apostrophes must be `''`, braces only as arguments | marlo-verify i18n gate on every changed line |
 | R3 | The OTP email (`changes/center-email-otp-login`) resolves the shell outside a request through `UnitTextProvider` | Verify the OTP email for a unit with and without its own file |
@@ -155,4 +155,4 @@ footers) is bounded and fully enumerated: five `email.role.*` keys and the OTP b
 /akili-specify changes/email-layout-default
 ```
 
-Standard depth. Q1 (active units in production) must be answered before `/akili-execute`.
+Standard depth. Q1 answered 2026-11-11: every unit receives the new shell, none opts out.

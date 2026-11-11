@@ -6,7 +6,7 @@
 **Last Updated:** 2026-11-11
 **Requirements:** `requirements.md` · **Design:** `design.md` (JUDGMENT: APPROVED, `judgment.md`)
 **Branch:** `email-layout-default` from `staging` `460ecbd5be`
-**Gate before T1:** Q1 answered (production active Global Units) — design §14, P-11.
+**Gate before T1:** Q1 answered 2026-11-11 — every Global Unit receives the shell, none opts out (design §14, P-11).
 
 > **Answer first.** Eight tasks: three on i18n data (shell, footer, copy), two on the actions (submit, unsubmit),
 > one on the per-unit opt-out list from Q1, one on docs, one live verification. Every task carries the compile and
@@ -27,7 +27,7 @@ the main checkout.
 ---
 
 ### CHG-EMAIL-LAYOUT-001-T01 — The shell becomes the base value
-- **Status:** pending · **Size:** S · **Depends on:** Q1 gate · **Module:** marlo-web (resources, utils Javadoc, tests)
+- **Status:** pending · **Size:** S · **Depends on:** Q1 (answered) · **Module:** marlo-web (resources, utils Javadoc, tests)
 - **Requirements:** FN-001, FN-002 (AC: shell for a file-less unit), FN-004, FN-003 (AICCRA/AICCRA_III inherit an identical shell)
 - **Design:** §2 resources rows 1-3, DD-1, DD-8 (comment only), DD-10
 - **Scope:**
@@ -122,7 +122,7 @@ the main checkout.
 - **Status:** pending · **Size:** XS · **Depends on:** T02, Q1 · **Module:** marlo-web (resources)
 - **Requirements:** FN-002 (AC FN-002), FN-005
 - **Design:** DD-9, §14
-- **Scope:** for each production unit the owner lists as "must stay plain" in Q1, add the DD-9 block to its custom file (`email.layout={0}` + pre-shell `email.role.support`, `.support.noCrpAdmins`, `.bye`, `login.otp.email.html`). If the answer lists none, the task closes with that answer quoted and no file change.
+- **Scope:** for each production unit the owner lists as "must stay plain" in Q1, add the DD-9 block to its custom file (`email.layout={0}` + pre-shell `email.role.support`, `.support.noCrpAdmins`, `.bye`, `login.otp.email.html`). **Q1 answer (2026-11-11): none — every unit receives the shell.** No unit file changes; the task ships only the opt-out test below, so the mechanism stays proven.
   - Backend route: none — project conventions.
 - **Tests:** extend T02's footer-once test with an opt-out case: a unit file carrying the block → body as is, support and notice once each. G-test `EmailLayoutTest`.
 - **Falsifier:** an opt-out block without `email.role.bye` → the opt-out case red (no notice).
@@ -214,4 +214,4 @@ T04 and T05 are independent of each other (different files) but share the T03 co
 - [ ] All tasks done with evidence in `execution.md`.
 - [ ] G-compile, G-check, G-i18n green on the final tree; full `mvn -q -o -pl marlo-web -am test` green.
 - [ ] Owner's render approval recorded (T08).
-- [ ] Q1 answer quoted (T06).
+- [ ] Q1 answer quoted (T06): none opts out.

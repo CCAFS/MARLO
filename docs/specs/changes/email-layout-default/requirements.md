@@ -189,7 +189,7 @@ Verified live 2026-11-11 (local, throwaway DB): submit/unsubmit work in AICCRA a
 
 | # | Question | Owner | Blocks |
 |---|---|---|---|
-| Q1 | Which Global Units are active in production? Any that must keep plain emails gets the opt-out block (FN-002, design DD-9). | Kenji Tanaka | **`/akili-execute` does not start without the answer** (judgment JD-5) |
+| Q1 | Which Global Units are active in production? Any that must keep plain emails gets the opt-out block (FN-002, design DD-9). | Kenji Tanaka | Answered 2026-11-11 by Kenji Tanaka: **every Global Unit receives the new shell; none opts out.** The production list is not needed: no unit gets the opt-out block. |
 | Q2 | Approval of Appendix A copy. | Kenji Tanaka / AICCRA PMU | This gate |
 
 ## 9. Decision Log
@@ -199,6 +199,7 @@ Verified live 2026-11-11 (local, throwaway DB): submit/unsubmit work in AICCRA a
 - 2026-11-11 — Unsubmit test-session findings kept out of scope — separate tickets; this spec changes copy and wrapping, not authorization or validation.
 - 2026-11-11 — Amended by design (Phase 2): FN-011 added (unsubmit runs without the unit's i18n file, design DD-6); AC FN-005 now names `email.role.support` and the OTP email; A.4 gains `email.role.support`; ciat/pabra also drop `email.role.support`; A.5 added (base OTP body). Closure sweep run: forward `grep -n "email.role.bye override\|support.noCrpAdmins\` and \`email.role.getStarted\` overrides\|alliance, aicrra, aiccra3, ciat, pabra, test" requirements.md proposal.md` — the old ciat/pabra lists and the AC FN-005 file list updated here; proposal.md §3 P6 and §5 item 3 describe the same overrides in summary form ("override them with the same pre-shell text") and stay true; backward: no document cites A.4 or AC FN-005 yet.
 - 2026-11-11 — Amended by judgment round 1 (`judgment.md`): FN-003 drops TEST (JD-3); FN-011 covers submit and the subject (JD-1, JD-4); AC FN-002 requires the footer for opted-out units (JD-2); AC FN-007 adds the failed-PDF case (JS-3); A.4 `email.role.support` empty (JD-6); Q1 gates execute (JD-5). Closure sweep: forward `grep -n -E "TEST|please contact \{0\}|FN-011|Blocks|before specify|before T7|byte-for-byte" requirements.md proposal.md` — hits updated here and in proposal §4, §12, §14; the remaining TEST hits (§1, §2, AC FN-004) describe today's shell owners and stay true; backward: design.md §2/§15/§16 rewritten in the same round.
+- 2026-11-11 — Q1 answered: every Global Unit receives the new shell, none opts out (owner decision, so the production list of active units is not needed). FN-002's opt-out stays as a mechanism, used by no unit today; T06 ships only its test. Closure sweep: forward `grep -n "Q1\|P-11" *.md` — requirements Q1, proposal Q1/§14, design §14/§16, tasks gate/T01/T06/DoD updated; judgment.md is a frozen record and stays as is.
 
 ---
 
