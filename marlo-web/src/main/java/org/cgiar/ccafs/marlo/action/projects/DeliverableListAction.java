@@ -45,6 +45,7 @@ import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectDeliverableShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectStatusEnum;
 import org.cgiar.ccafs.marlo.data.model.SectionStatus;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
@@ -91,6 +92,7 @@ public class DeliverableListAction extends BaseAction {
   private List<Deliverable> deliverables;
   private List<Deliverable> currentDeliverableList;
   private List<Deliverable> previousSharedDeliverableList;
+  private List<Deliverable> previousDeliverableList;
   private List<DeliverableType> deliverablesType;
   private GlobalUnit loggedCrp;
   private Project project;
@@ -179,7 +181,7 @@ public class DeliverableListAction extends BaseAction {
     deliverableID = Long
       .parseLong(StringUtils.trim(parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID).getMultipleValues()[0]));
 
-    // Si deliverableID no se cargó en prepare(), intentar obtenerlo aquí
+    // When prepare() did not load the deliverableID, read it here
     if (deliverableID <= 0) {
         Parameter param = parameters.get(APConstants.PROJECT_DELIVERABLE_REQUEST_ID);
         
@@ -444,6 +446,10 @@ public class DeliverableListAction extends BaseAction {
     return loggedCrp;
   }
 
+  public List<Deliverable> getPreviousDeliverableList() {
+    return previousDeliverableList;
+  }
+
   public List<Deliverable> getPreviousSharedDeliverableList() {
     return previousSharedDeliverableList;
   }
@@ -476,6 +482,20 @@ public class DeliverableListAction extends BaseAction {
       deliverables = deliverableManager.getDuplicatesDeliverablesByPhase(this.getActualPhase().getId());
     } catch (Exception e) {
       logger.error("unable to get duplivated deliverables", e);
+    }
+
+    // Previous deliverables this project owns, with their responsible person for the list
+    previousDeliverableList = new ArrayList<>();
+    try {
+      previousDeliverableList = project.getPreviousDeliverables(this.getActualPhase());
+      for (Deliverable previous : previousDeliverableList) {
+        String leader = this.responsibleName(previous);
+        if (leader != null) {
+          previous.setResponsible(leader);
+        }
+      }
+    } catch (Exception e) {
+      logger.error("unable to get the previous deliverables of project {}", projectID, e);
     }
 
     // Load Shared deliverables
@@ -551,36 +571,7 @@ public class DeliverableListAction extends BaseAction {
               }
 
               // Responsible
-              String leader = null;
-              List<DeliverableUserPartnership> deliverablePartnershipResponsibles =
-                prevShared.getDeliverable().getDeliverableUserPartnerships().stream()
-                  .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId()) && dp
-                    .getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-                  .collect(Collectors.toList());
-              if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
-                if (deliverablePartnershipResponsibles.size() > 1) {
-                  logger.warn("There is more than one deliverable responsible for D{} in {}",
-                    prevShared.getDeliverable().getId(), this.getActualPhase());
-                }
-                DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
-
-                if (responsible != null && responsible.getDeliverableUserPartnershipPersons() != null) {
-
-                  DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
-                  List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons()
-                    .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
-                  if (!persons.isEmpty()) {
-                    responsibleppp = persons.get(0);
-                  }
-
-                  if (responsibleppp != null && responsibleppp.getUser() != null
-                    && responsibleppp.getUser().getComposedName() != null) {
-                    leader = responsibleppp.getUser().getComposedName();
-                  }
-                }
-              }
-
-              // Set deliverable responsible
+              String leader = this.responsibleName(prevShared.getDeliverable());
               if (leader != null) {
                 prevShared.getDeliverable().setResponsible(leader);
               }
@@ -673,37 +664,7 @@ public class DeliverableListAction extends BaseAction {
 
 
             // Responsible
-            String leader = null;
-            List<DeliverableUserPartnership> deliverablePartnershipResponsibles = deliverableTemp
-              .getDeliverableUserPartnerships().stream()
-              .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
-                && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
-              .collect(Collectors.toList());
-            if (deliverablePartnershipResponsibles != null && !deliverablePartnershipResponsibles.isEmpty()) {
-              if (deliverablePartnershipResponsibles.size() > 1) {
-                logger.warn("There is more than one deliverable responsible for D{} in {}", deliverableTemp.getId(),
-                  this.getActualPhase());
-              }
-              DeliverableUserPartnership responsible = deliverablePartnershipResponsibles.get(0);
-
-              if (responsible != null && responsible.getDeliverableUserPartnershipPersons() != null) {
-
-                DeliverableUserPartnershipPerson responsibleppp = new DeliverableUserPartnershipPerson();
-                List<DeliverableUserPartnershipPerson> persons = responsible.getDeliverableUserPartnershipPersons()
-                  .stream().filter(dp -> dp.isActive()).collect(Collectors.toList());
-                if (!persons.isEmpty()) {
-                  responsibleppp = persons.get(0);
-                }
-
-                if (responsibleppp != null && responsibleppp.getUser() != null
-                  && responsibleppp.getUser().getComposedName() != null) {
-                  leader = responsibleppp.getUser().getComposedName();
-                }
-              }
-            }
-
-
-            // Set deliverable responsible
+            String leader = this.responsibleName(deliverableTemp);
             if (leader != null) {
               deliverableTemp.setResponsible(leader);
             }
@@ -757,7 +718,7 @@ public class DeliverableListAction extends BaseAction {
     try {
       projectID = Long.parseLong(StringUtils.trim(this.getRequest().getParameter(APConstants.PROJECT_REQUEST_ID)));
 
-      // AÑADIR: Extraer deliverableID si viene en el request
+      // Read the deliverableID when the request carries one
       String deliverableParam = this.getRequest().getParameter(APConstants.PROJECT_DELIVERABLE_REQUEST_ID);
       if (StringUtils.isNotBlank(deliverableParam)) {
           deliverableID = Long.parseLong(StringUtils.trim(deliverableParam));
@@ -825,6 +786,33 @@ public class DeliverableListAction extends BaseAction {
 
   }
 
+  /**
+   * Name of the deliverable's responsible person in the actual phase: the first active person of its
+   * responsible partnership.
+   *
+   * @param deliverable the deliverable to read
+   * @return the person's composed name, or null when the deliverable has no responsible person
+   */
+  private String responsibleName(Deliverable deliverable) {
+    List<DeliverableUserPartnership> responsibles = deliverable.getDeliverableUserPartnerships().stream()
+      .filter(dp -> dp.isActive() && dp.getPhase().getId().equals(this.getActualPhase().getId())
+        && dp.getDeliverablePartnerType().getId().equals(APConstants.DELIVERABLE_PARTNERSHIP_TYPE_RESPONSIBLE))
+      .collect(Collectors.toList());
+    if (responsibles.isEmpty()) {
+      return null;
+    }
+    if (responsibles.size() > 1) {
+      logger.warn("There is more than one deliverable responsible for D{} in {}", deliverable.getId(),
+        this.getActualPhase());
+    }
+    DeliverableUserPartnership responsible = responsibles.get(0);
+    if (responsible == null || responsible.getDeliverableUserPartnershipPersons() == null) {
+      return null;
+    }
+    return responsible.getDeliverableUserPartnershipPersons().stream().filter(dp -> dp.isActive()).findFirst()
+      .map(DeliverableUserPartnershipPerson::getUser).map(User::getComposedName).orElse(null);
+  }
+
   private List<DeliverableUserPartnership> responsiblePartner(Deliverable deliverable) {
     try {
       return deliverable.getDeliverableUserPartnerships().stream()
@@ -865,6 +853,10 @@ public class DeliverableListAction extends BaseAction {
 
   public void setLoggedCrp(GlobalUnit loggedCrp) {
     this.loggedCrp = loggedCrp;
+  }
+
+  public void setPreviousDeliverableList(List<Deliverable> previousDeliverableList) {
+    this.previousDeliverableList = previousDeliverableList;
   }
 
   public void setPreviousSharedDeliverableList(List<Deliverable> previousSharedDeliverableList) {

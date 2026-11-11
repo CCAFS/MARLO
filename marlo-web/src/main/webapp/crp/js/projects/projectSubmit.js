@@ -27,6 +27,11 @@ $(document).ready(function() {
 
   /* Change Pre-setting state */
   $('.projectEditLeader .button-label').on('click', function() {
+    // "Yes" is disabled until every pre-set section is complete, and choosing the
+    // current answer again changes nothing, so neither opens the confirmation
+    if($(this).hasClass('is-disabled') || $(this).hasClass('radio-checked')) {
+      return;
+    }
     var $t = $(this).parent().find('input.onoffswitch-radio');
     var value = ($(this).hasClass('yes-button-label'));
     var $thisLabel = $(this);
