@@ -221,3 +221,30 @@
 - **Final verification:** green (re-run VERIFIED, Reviewer PASS).
 - **Budget running totals:** tasks 6/8; LOC ~856 changed (809 + 47) of ~950 (owner-adjusted); review rounds 6/10. Within budget.
 - **Tension resolved (owner, 2026-11-11, T06 gate):** option (a) accepted — `requirements.md` AC FN-002 AND now requires, for the OTP email of an opted-out unit, the support address once and the notice at most once; `tasks.md` T06 tests line updated; Decision Log entry with closure sweep added (the tasks.md coverage row "AND support/notice still once" is a summary and stays as is). Execute-time spec edit: `requirements.md#ac-fn-002` — carried as a named conformance check in the T07 Reviewer brief. Amended-doc diffs checked: the only removed lines are the intended ones.
+
+### CHG-EMAIL-LAYOUT-001-T07 — Docs: ai-context catalog and the OTP spec note
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 1
+- **Skills / effort:** cognitive-doc-design; Implementer effort low; Reviewer checklist (medium).
+- **Review intensity:** `tasks.md` claims `skip-eligible`; **not earned** — condition 3 fails (`Consumers`: "agents reading the catalog for role-email work", not `none`), so a conformance Reviewer ran. Reported at the T07 gate.
+
+#### Attempt 1
+- **Files changed:** `reports/ai-context/role-assignment-email-catalog.md`; `docs/specs/changes/center-email-otp-login/requirements.md` (one Decision Log entry, §10). Diff: 2 files, +32 / −21.
+- **Change:** catalog shell section — "Base" bullet now states `email.layout` in `global.properties` IS the shell (md5 `6b52db6bd9808a9361aa0d0e97c79985`, no custom file defines it, hardcoded `MARLOSupport@cgiar.org`, DD-10); new "Footer once" (DD-2) and "Opt-out" (DD-9, OTP-notice caveat per amended AC FN-002, no unit opts out — Q1) bullets; senders that wrap: 10 of 30 incl. submit/unsubmit (DD-6, DD-4); Rollback: per unit add the opt-out block, whole change revert the branch. Extra within the same catalog: §1 base-text table cells for `email.role.dear/support/support.noCrpAdmins/getStarted/bye` (described as copies of `email.*`, false after T01/T02) and the ciat/pabra/alliance paragraph (DD-3). OTP spec: DD-8 entry ("unit without a shell → bare body" now means "unit that opts out → bare body"; code path unchanged).
+- **Red run (baseline):** `grep -n 'email.layout' reports/ai-context/role-assignment-email-catalog.md` → lines 33, 42, 45, 49 ("Base … `email.layout={0}`"), 69 (rollback to `{0}`).
+- **Falsifier / Implementer verification:** after the edit `grep -n 'email.layout={0}'` on the catalog → L60 only (Opt-out bullet). Closure sweep `grep -rn 'email.layout={0}' reports docs/specs --include='*.md'` (glob quoted for zsh) → catalog L60 (current opt-out); `center-email-otp-login/requirements.md:184` (FN-017, historical) and `:483` (new DD-8 entry); all other hits in this spec's own files.
+- **Not Done / Assumptions (Implementer):** OTP spec FN-017 (L184) and AC-20 (L356) left as written (historical; the DD-8 entry says so); "10 of 30" taken from P-14. No owed item, no blocker: not a continuation.
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — catalog grep → L60 only; sweep files: catalog, OTP requirements, this spec only; recount `grep -rl 'EmailLayout\.wrap' marlo-web/src/main/java` → 11 files, 10 of them among the 30 senders (`sendMail.send` / `sendMailS.send` / `sendMail.sendTemporal`) → "10 of 30" holds.
+- **Reviewer verdict:** PASS (checklist) — every factual claim checked against design §15/§16 and the tree (`global.properties` L3885-3901, L7038; alliance L2689; no `email.role.*` in ciat/pabra; aicrra/aiccra3 keep five overrides); §1 table edit in scope (P-9 names the catalog as a consumer to update; corrects the named document, no new deliverable); DD-8 entry matches the §10 format, no other edit; stale FN-017/AC-20 are historical records allowed by Done-when; no shared/constitutional file touched. Named conformance check `requirements.md#ac-fn-002` as amended: FN-002's meaning unchanged, catalog consistent.
+- **runtime events:** none
+
+- **spawns:** implementer 9 calls, 94030 tokens, ended partial (Not Done / Assumptions, no owed item); reviewer 14 calls, 59761 tokens, ended complete
+- **ADVISORY (4R, non-gating):**
+  - Readability: catalog L36–40 (outside the diff, "As of A2-2484") still says submissions call the original `email.*` keys; after DD-4 submit/unsubmit read `email.role.*` — add a one-clause note when the catalog is next touched (the shell section L68–70 already states it).
+- **Requirements covered:** FN-002 (documented opt-out), DD-8.
+- **Decisions made:** §1 table correction accepted as in scope (Reviewer).
+- **Issues encountered:** the task's sweep command `--include=*.md` fails unquoted in zsh — run quoted.
+- **Final verification:** green (re-run VERIFIED, Reviewer PASS).
+- **Budget running totals:** tasks 7/8; LOC ~909 changed (856 + 53) of ~950 (owner-adjusted); review rounds 7/10. Within budget; T08 is verification (no LOC expected beyond `execution.md`).

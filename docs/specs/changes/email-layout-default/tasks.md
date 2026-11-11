@@ -134,7 +134,7 @@ the main checkout.
 - **Skills:** marlo-verify, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T07 — Docs: ai-context catalog and the OTP spec note
-- **Status:** pending · **Size:** XS · **Depends on:** T01, T02 · **Module:** docs
+- **Status:** [x] done 2026-11-11 (execution.md T07) · **Size:** XS · **Depends on:** T01, T02 · **Module:** docs
 - **Requirements:** FN-002 (documented opt-out), design DD-8
 - **Design:** §2 Docs, P-9
 - **Scope:** `reports/ai-context/role-assignment-email-catalog.md` lines ~33-69 → shell is the base value, opt-out block, rollback = set the opt-out block; `docs/specs/changes/center-email-otp-login/requirements.md` → one Decision Log entry (DD-8). No shared file of the CLAUDE.md list is touched.
