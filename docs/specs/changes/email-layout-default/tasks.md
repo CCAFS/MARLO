@@ -64,7 +64,7 @@ the main checkout.
 - **Skills:** marlo-verify, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T03 — Submit/unsubmit copy (Appendix A) and the summary link in the text
-- **Status:** pending · **Size:** S · **Depends on:** T02 · **Module:** marlo-web (resources, tests)
+- **Status:** [x] done 2026-11-11 (execution.md T03) · **Size:** S · **Depends on:** T02 · **Module:** marlo-web (resources, tests)
 - **Requirements:** FN-007 (text side: `{6}` in every rewritten key and in pabra), FN-008, FN-009, NF-002, NF-003
 - **Design:** DD-5 (keys consuming `{6}`), Appendix A.1-A.3
 - **Scope:**

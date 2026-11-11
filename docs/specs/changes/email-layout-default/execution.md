@@ -88,3 +88,32 @@
 - **Delta:** 315 LOC after 2 of 8 tasks against a design budget of ~380; projected ~700–800 at completion.
 - **Cause:** test volume required by the tasks' own disqualifiers (folder scan, both admins variants, counts on the assembled email) — production code within estimate.
 - **Decision:** owner (Kenji Tanaka) approved raising the LOC tripwire to **~800** and keeping the tests as written; tasks (8) and review rounds (10) unchanged.
+
+### CHG-EMAIL-LAYOUT-001-T03 — Submit/unsubmit copy (Appendix A) and the summary link in the text
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 1
+- **Skills / effort:** marlo-verify; Implementer effort medium; Reviewer full (high).
+
+#### Attempt 1
+- **Files changed:** `marlo-web/src/main/resources/global.properties`, `custom/aicrra.properties`, `custom/aiccra3.properties` (3 keys each), `custom/pabra.properties` (2 submit keys, `href` only); new `marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/SubmitEmailCopyTest.java` (108 lines, 4 tests, GPL header). Diff: +11/−11 in properties, +108 test.
+- **Red run (copy test before the property edits):** `Tests run: 4, Failures: 4` — aicrra / aiccra3 / global `submit.email.message lacks @6@`; pabra `submit.email.message must link {6}`. Baseline greps: `projectID=102080` in aicrra, aiccra3, pabra; Flagship in global submit/unsubmit = 2.
+- **Implementer verification:** G-compile exit 0 (counted classes; `-q` hid the compile lines); G-test `SubmitEmailCopyTest,EmailLayoutTest,EmailPlainTextTest,OtpMailSenderTest,UnitTextProviderTest` exit 0, 67 tests, 0 failures; G-check new file 0 violations; G-i18n no findings. Scripted Appendix diff = the test: `appendix(key, noun, summary, returner)` rebuilds A.1–A.3 and `assertEquals` it against each key formatted with sentinels `@0@`..`@7@` (`{6}` = `https://s6`).
+- **Falsifiers (executed):** hardcoded URL back in aiccra3 `.noPDF` → `AssertionError: aiccra3 submit.email.message.noPDF lacks https://s6`; single `'` in base `submit.email.message` → `AssertionError: global submit.email.message lacks @0@` (first attempt edited the wrong spot and wrongly passed; redone anchored on line start, then red). Both reverted.
+- **Not Done / Assumptions (Implementer, carried verbatim in substance):** (1) planning `submit.email.message` now carries `<a href="{6}">` but `ProjectSubmissionAction` fills `values[6]` only in reporting — empty link in planning until T04 (T04 scope). (2) Quote block markup chosen as `<blockquote style="margin:0 0 16px 0;padding:0 0 0 16px;border-left:3px solid #cccccc;"><em>{7}</em></blockquote>` (Appendix says only "indented quote block"). (3) Unsubmit indices taken from the Appendix without opening `UnsubmitProjectAction`. (4) pabra unsubmit and other units' keys left as they were. — No owed item, no blocker: not a continuation (item (1) is T04's approved scope).
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — `mvn -o -pl marlo-web -am test -Dtest=<five classes>` exit 0, `Compiling 2430` / `1063` / `112`, `Tests run: 67, Failures: 0, Errors: 0`; `grep -l 'projectID=102080' custom/*.properties` empty; Flagship count 0.
+- **Reviewer verdict:** PASS (full) — all nine keys and the test's `appendix(...)` template diffed by the Reviewer against requirements.md Appendix A.1–A.3 verbatim (independent of the Implementer's transcription); A.2 substitutions applied; submit `{0}`–`{6}` match `ProjectSubmissionAction.java:296-314`, unsubmit `{0}`–`{7}` match `UnsubmitProjectAction.java:266-282` (`{6}` there is the cycle); quote block conforms; pabra only `href`; GPL header matches the AGENTS.md template.
+- **runtime events:** none
+
+- **spawns:** implementer 22 calls, 116224 tokens, ended partial (Not Done / Assumptions field, no owed item); reviewer 12 calls, 58623 tokens, ended complete
+- **ADVISORY (4R, non-gating):**
+  - Risk (cross-task dependency): until T04, planning submits render `<a href="null">`. T03 must not reach `staging`/`dev` without T04 — keep them together on this branch, never cherry-pick T03 alone.
+  - Reliability: the plain-text assertion checks only the last argument; the HTML `assertEquals` already covers all of them.
+  - Reliability: `contains("407")` could false-positive on future copy; `"phaseID=407"` / `"projectID=102080"` would be more precise.
+  - Readability: `#cccccc` in the blockquote is a hardcoded colour (UX tokens do not apply to inline email styles).
+- **Requirements covered:** FN-007 (text side), FN-008, FN-009, NF-002, NF-003.
+- **Decisions made:** quote-block markup accepted (Reviewer confirmed conformance).
+- **Issues encountered:** none.
+- **Final verification:** green (re-run VERIFIED, Reviewer PASS).
+- **Budget running totals:** tasks 3/8; LOC 445 changed (315 + 130) of ~800 (owner-adjusted); review rounds 3/10. Within budget.
