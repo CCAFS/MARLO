@@ -101,7 +101,7 @@ the main checkout.
 - **Skills:** marlo-verify, tdd, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T05 — Unsubmit email: own unit's texts, role footer, shell
-- **Status:** pending · **Size:** M · **Depends on:** T03 · **Module:** marlo-web (`action/json/project/UnsubmitProjectAction.java`, test)
+- **Status:** [x] done 2026-11-11 (execution.md T05) · **Size:** M · **Depends on:** T03 · **Module:** marlo-web (`action/json/project/UnsubmitProjectAction.java`, test)
 - **Requirements:** FN-006, FN-008, FN-010, FN-011 (AC FN-011 unsubmit case)
 - **Design:** DD-4, DD-6, P-3, P-12
 - **Scope:**
@@ -109,7 +109,7 @@ the main checkout.
   - Subject (`:261`), body (`:282`) and footer (`email.role.support.noCrpAdmins`, `email.role.getStarted`, `email.role.bye` replacing `:283-285`) from that provider; wrap at the send (`:289`).
   - Extract the assembly into a package-private static method, as T04.
   - Backend route: none — project conventions.
-- **Tests:** new `UnsubmitProjectEmailTest`: (a) aicrra provider → "cluster", "PMC", justification in the quote block; (b) aiccra3 → "Technical Implementation Team"; (c) missing file → base copy in the shell; (d) footer once; (e) subject from the same provider as the body. G-test `UnsubmitProjectEmailTest`.
+- **Tests:** new `UnsubmitProjectEmailTest`: (a) aicrra provider → "cluster" (no "PMC": the A.1 unsubmit copy has none — AC FN-011 amended 2026-11-11), justification in the quote block; (b) aiccra3 → "Technical Implementation Team"; (c) missing file → base copy in the shell; (d) footer once; (e) subject from the same provider as the body. G-test `UnsubmitProjectEmailTest`.
 - **Falsifier:** resolve the subject with a different provider than the body → (e) red; keep `email.getStarted` (legacy) → (d) red for a unit whose legacy key carries a URL.
 - **Red run:** observed at baseline: `grep -c EmailLayout UnsubmitProjectAction.java` → 0; `email_logs` 18407 (local) — AICCRA project unsubmitted with AICCRA_III wording. Test: `predicted — greenfield artifact (observed in T05)`.
 - **Disqualifier:** as T04.

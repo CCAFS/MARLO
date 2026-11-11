@@ -17,6 +17,7 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.RoleManager;
@@ -25,6 +26,7 @@ import org.cgiar.ccafs.marlo.data.model.CrpClusterActivityLeader;
 import org.cgiar.ccafs.marlo.data.model.CrpClusterOfActivity;
 import org.cgiar.ccafs.marlo.data.model.CrpProgram;
 import org.cgiar.ccafs.marlo.data.model.CrpProgramLeader;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
@@ -34,7 +36,9 @@ import org.cgiar.ccafs.marlo.data.model.Role;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.data.model.UserRole;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
+import org.cgiar.ccafs.marlo.utils.UnitTextProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,8 +48,11 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.opensymphony.xwork2.TextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -54,6 +61,7 @@ public class UnsubmitProjectAction extends BaseAction {
 
 
   private static final long serialVersionUID = 6328194359119346721L;
+  private static final Logger LOG = LoggerFactory.getLogger(UnsubmitProjectAction.class);
 
 
   private final ProjectManager projectManager;
@@ -64,6 +72,7 @@ public class UnsubmitProjectAction extends BaseAction {
   private final GlobalUnitManager globalUnitManager;
 
   private final SendMailS sendMail;
+  private final CustomParameterManager customParameterManager;
 
   private long projectID;
   private String justification;
@@ -72,13 +81,15 @@ public class UnsubmitProjectAction extends BaseAction {
 
   @Inject
   public UnsubmitProjectAction(APConfig config, ProjectManager projectManager, SubmissionManager submissionManager,
-    SendMailS sendMail, RoleManager roleManager, GlobalUnitManager globalUnitManager) {
+    SendMailS sendMail, RoleManager roleManager, GlobalUnitManager globalUnitManager,
+    CustomParameterManager customParameterManager) {
     super(config);
     this.projectManager = projectManager;
     this.submissionManager = submissionManager;
     this.roleManager = roleManager;
     this.sendMail = sendMail;
     this.globalUnitManager = globalUnitManager;
+    this.customParameterManager = customParameterManager;
   }
 
   @Override
@@ -258,11 +269,9 @@ public class UnsubmitProjectAction extends BaseAction {
     } else {
       projectAcronym = "C" + project.getId();
     }
-    String subject = this.getText("unsubmit.email.subject",
-      new String[] {crp, projectAcronym});
+    TextProvider texts = this.unitTexts(globalUnitProject.getGlobalUnit());
 
     // Building the email message
-    StringBuilder message = new StringBuilder();
     String[] values = new String[8];
     String plName = "";
     if (project.getLeaderPerson(this.getActualPhase()) != null
@@ -279,14 +288,56 @@ public class UnsubmitProjectAction extends BaseAction {
     values[6] = this.getCurrentCycle().toLowerCase();
     values[7] = justification;
 
-    message.append(this.getText("unsubmit.email.message", values));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
+    UnsubmitEmail email = assembleEmail(texts, this.getBaseUrlCdn(), crp, projectAcronym, values);
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());
     if (this.validateEmailNotification(globalUnit)) {
-      sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+      sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, null, null, null, true);
+    }
+  }
+
+  /** The assembled unsubmit email: its subject and its body. */
+  static final class UnsubmitEmail {
+
+    final String subject;
+    final String body;
+
+    UnsubmitEmail(String subject, String body) {
+      this.subject = subject;
+      this.body = body;
+    }
+  }
+
+  /**
+   * Assembles the subject and the body of the unsubmit email with the texts of one Global Unit: the unit's copy, the
+   * role footer once, and the whole body inside the shell.
+   */
+  // @akili-spec changes/email-layout-default
+  static UnsubmitEmail assembleEmail(TextProvider texts, String assetsUrl, String crp, String projectAcronym,
+    String[] values) {
+    String subject = texts.getText("unsubmit.email.subject", new String[] {crp, projectAcronym});
+    StringBuilder message = new StringBuilder();
+    message.append(texts.getText("unsubmit.email.message", values));
+    message.append(texts.getText("email.role.support.noCrpAdmins"));
+    message.append(texts.getText("email.role.getStarted"));
+    message.append(texts.getText("email.role.bye"));
+    return new UnsubmitEmail(subject, EmailLayout.wrap(texts, assetsUrl, message.toString()));
+  }
+
+  /**
+   * The texts of the Global Unit the project belongs to, read from its own custom file and not from the shared
+   * provider, which holds whichever unit the server served last. A failure is logged and answered with this action's
+   * provider.
+   */
+  private TextProvider unitTexts(GlobalUnit unit) {
+    try {
+      CustomParameter parameter = customParameterManager
+        .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CUSTOM_FILE, unit.getId().longValue());
+      return UnitTextProvider.forCustomFile(parameter == null ? null : parameter.getValue());
+    } catch (RuntimeException e) {
+      LOG.warn("The texts of the unit owning the project could not be read, the unsubmit email uses the default texts",
+        e);
+      return this;
     }
   }
 

@@ -127,7 +127,7 @@ Verified live 2026-11-11 (local, throwaway DB): submit/unsubmit work in AICCRA a
 **AC FN-011 — texts from their own unit**
 - GIVEN the server's previous request loaded AICCRA_III texts
 - WHEN an AICCRA project is unsubmitted, and separately WHEN an AICCRA project is submitted in an AICCRA session
-- THEN subject and body use the AICCRA copy ("cluster", "PMC")
+- THEN subject and body use the AICCRA copy ("cluster"; "PMC" in the submit copy only — the unsubmit copy is Appendix A.1 verbatim)
 - BUT it must NOT contain "Technical Implementation Team" in the subject or the body
 - AND IT MUST hold the other way round: an AICCRA_III submit after an AICCRA request uses the AICCRA_III copy (today it does not — `email_logs` 18405).
 
@@ -200,6 +200,7 @@ Verified live 2026-11-11 (local, throwaway DB): submit/unsubmit work in AICCRA a
 - 2026-11-11 — Amended by design (Phase 2): FN-011 added (unsubmit runs without the unit's i18n file, design DD-6); AC FN-005 now names `email.role.support` and the OTP email; A.4 gains `email.role.support`; ciat/pabra also drop `email.role.support`; A.5 added (base OTP body). Closure sweep run: forward `grep -n "email.role.bye override\|support.noCrpAdmins\` and \`email.role.getStarted\` overrides\|alliance, aicrra, aiccra3, ciat, pabra, test" requirements.md proposal.md` — the old ciat/pabra lists and the AC FN-005 file list updated here; proposal.md §3 P6 and §5 item 3 describe the same overrides in summary form ("override them with the same pre-shell text") and stay true; backward: no document cites A.4 or AC FN-005 yet.
 - 2026-11-11 — Amended by judgment round 1 (`judgment.md`): FN-003 drops TEST (JD-3); FN-011 covers submit and the subject (JD-1, JD-4); AC FN-002 requires the footer for opted-out units (JD-2); AC FN-007 adds the failed-PDF case (JS-3); A.4 `email.role.support` empty (JD-6); Q1 gates execute (JD-5). Closure sweep: forward `grep -n -E "TEST|please contact \{0\}|FN-011|Blocks|before specify|before T7|byte-for-byte" requirements.md proposal.md` — hits updated here and in proposal §4, §12, §14; the remaining TEST hits (§1, §2, AC FN-004) describe today's shell owners and stay true; backward: design.md §2/§15/§16 rewritten in the same round.
 - 2026-11-11 — Q1 answered: every Global Unit receives the new shell, none opts out (owner decision, so the production list of active units is not needed). FN-002's opt-out stays as a mechanism, used by no unit today; T06 ships only its test. Closure sweep: forward `grep -n "Q1\|P-11" *.md` — requirements Q1, proposal Q1/§14, design §14/§16, tasks gate/T01/T06/DoD updated; judgment.md is a frozen record and stays as is.
+- 2026-11-11 — Amended at execute (T05 gate, owner approval): AC FN-011's THEN covered submit and unsubmit with ("cluster", "PMC"), but the approved A.1 `unsubmit.email.message` (required verbatim by FN-008) contains no "PMC"; the THEN now limits "PMC" to the submit copy. Meaning of FN-011 unchanged (own unit's copy, no "Technical Implementation Team"). Closure sweep: forward `grep -n '"PMC"' *.md` — requirements AC FN-011 and tasks T05 (a) updated; the A.1 heading and the A.2 substitution line describe the AICCRA vocabulary and stay true; execution.md is history; backward: no document cites AC FN-011's wording.
 
 ---
 

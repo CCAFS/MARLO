@@ -158,3 +158,36 @@
 ## Deferred (owner decision at the T04 gate)
 
 - **Empty PDF from the microservice path:** `ReportingSummaryAction.execute()` swallows its own errors, so `getBytesPDF()` can return an empty array; the submit email then attaches a 0-byte PDF and says "attached". Pre-existing, outside AC FN-007. Owner decision 2026-11-11: **not in this spec** — candidate for a separate proposal (possible fix: `buffer.remaining() > 0` in `pdfAttached`).
+
+### CHG-EMAIL-LAYOUT-001-T05 — Unsubmit email: own unit's texts, role footer, shell
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 1
+- **Skills / effort:** marlo-verify, tdd; Implementer effort high; Reviewer full (high). Exemplar: T04 (`ProjectSubmissionAction` + `ProjectSubmissionEmailTest`).
+
+#### Attempt 1
+- **Files changed:** `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/project/UnsubmitProjectAction.java` (+60/−9, LF preserved); new `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/json/project/UnsubmitProjectEmailTest.java` (105 lines, GPL header).
+- **Change:** `CustomParameterManager` injected, private slf4j `LOG`; `unitTexts(GlobalUnit)` from the origin unit's `crp_custom_file` (`APConstants.CRP_CUSTOM_FILE`), `RuntimeException` → WARN, fallback `this`; package-private static `assembleEmail(...)` (`@akili-spec`) builds subject, body, footer (`email.role.support.noCrpAdmins` → `email.role.getStarted` → `email.role.bye`) from one provider and wraps with `EmailLayout.wrap`; `UnsubmitEmail` holder mirrors T04.
+- **Red run:** test against a stub of today's assembly (legacy keys, no shell) → 4 of 5 failed (3 on `... is not inside the shell`, 1 on a wording assertion); subject case (e) passed on the stub — only its falsifier turns it red. Baseline `grep -c EmailLayout UnsubmitProjectAction.java` → 0.
+- **Implementer verification:** G-compile exit 0 (2430 / 1063 / 114); G-check 2 at HEAD, 2 now (pre-existing LineLength on commented-out lines), new test 0 → delta 0; G-test 22 tests, 0 failures; hygiene ok.
+- **Falsifiers (executed):** subject via `forCustomFile(null)` → (e) red (expected `[AICCRA] AICCRA cluster [P77] has been returned to the cluster leader for edits`, got `[MARLO] AICCRA project P77 has been returned to the project leader for edits`); legacy `email.getStarted` → first attempt stayed **green** (footer assertions did not look at the legacy line) — `assertShellOnce` strengthened with a `To begin, please visit` count = 0, rerun → 3 red (`aicrra legacy get-started link expected:<0> but was:<1>`, aiccra3, …). Both reverted (`cmp` against backup).
+- **Recipients / JSON:** only `sendMail.send(... subject, message.toString() ...)` → `(... email.subject, email.body ...)`; `toEmail`, `ccEmail`, `bbcEmails`, `mStatus` and `execute()` unchanged.
+- **Not Done / Assumptions (Implementer):** (1) "PMC" assertion dropped from case (a) — the approved aicrra `unsubmit.email.message` (Appendix A.1) contains no "PMC"; asserted "cluster", "submit the cluster again", the quote block, no "Technical Implementation Team" instead; (2) base `getStarted` once, none for aicrra/aiccra3; (3) private `LOG`, no clash with `BaseAction`; (4) `globalUnitProject.get(0)` pre-existing, untouched; scratch files written to `/tmp` (outside repo). No owed item, no blocker: not a continuation.
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — `mvn -o -pl marlo-web -am test -Dtest=UnsubmitProjectEmailTest,ProjectSubmissionEmailTest,SubmitEmailCopyTest,EmailLayoutTest` exit 0, `Compiling 2430` / `1063` / `114`, `Tests run: 22, Failures: 0, Errors: 0`. Leader also confirmed `PMC` absent from aicrra `unsubmit.email.message` and present in Appendix A.1 only in the submit rows.
+- **Reviewer verdict:** PASS (full) — whole email from one provider of the origin unit (`isActive() && isOrigin()`, DD-6/P-12); legacy footer keys gone; recipients, response, `validateEmailNotification` guard unchanged; `unitTexts` null-safe, slf4j, same key as T04; tests call the production method with real providers; strengthened `assertShellOnce` is meaningful (exact legacy `email.getStarted` text of aicrra/aiccra3/pabra).
+- **runtime events:** none
+
+- **spawns:** implementer 19 calls, 127803 tokens, ended partial (Not Done / Assumptions, no owed item); reviewer 10 calls, 65691 tokens, ended complete
+- **ADVISORY (4R, non-gating):**
+  - Risk: `{7}` (justification) and probably `{3}` (title) go raw into HTML, now inside `<blockquote><em>`; pre-existing, authenticated returners only; escaping belongs in a separate ticket (design §13 keeps it out of scope).
+  - Reliability: `projectInfo.getTitle()` and `.get(0)` on the origin filter can throw before the email is built (pre-existing) — the submission is already saved, so an "ok" unsubmit would answer 500.
+  - Readability: `LOG` is `static final` here, `static` in `ProjectSubmissionAction`.
+  - Spec: record the AC FN-011 vs Appendix A.1 tension (below).
+- **Spec tension (Pivot Detection, lightest form — raised at the T05 gate):** AC FN-011 (`requirements.md` ~L128-130) gives one THEN for submit and unsubmit: "subject and body use the AICCRA copy ("cluster", "PMC")"; Appendix A.1 `unsubmit.email.message` (~L220), required verbatim by FN-008 and AC FN-008/009 (~L149), contains no "PMC". Both cannot hold for unsubmit; the code follows the approved Appendix. Proposed one-line amendment pending owner answer.
+- **Requirements covered:** FN-006, FN-008, FN-010, FN-011 (unsubmit).
+- **Decisions made:** none beyond the Implementer's accepted assumptions; the tension's resolution is the owner's.
+- **Issues encountered:** falsifier 2 initially did not bite — test strengthened within the attempt.
+- **Final verification:** green (re-run VERIFIED, Reviewer PASS).
+- **Budget running totals:** tasks 5/8; LOC ~809 changed (635 + 69 prod + 105 test) of ~950 (owner-adjusted); review rounds 5/10. Within budget.
+- **Tension resolved (owner, 2026-11-11, T05 gate):** amendment accepted — `requirements.md` AC FN-011 THEN now reads ("cluster"; "PMC" in the submit copy only — the unsubmit copy is Appendix A.1 verbatim); `tasks.md` T05 (a) updated; Decision Log entry with closure sweep added. Execute-time spec edit: `requirements.md#ac-fn-011` — carried as a named conformance check in the next Reviewer brief (T06). Amended-doc diffs checked: the only removed lines are the two intended ones.
