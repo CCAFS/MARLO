@@ -424,3 +424,72 @@ tests). Run `41089045313` succeeded.
 `staging` also receives branches that never went through `dev`, so the `dev` merge is not a rehearsal of it. At
 that merge: compile, full suite, Checkstyle delta and a render smoke again; the release-day capture (OPS-004) on
 the production databases; and T11b once the redesign is in `staging`.
+
+## Addendum D — Re-validation after the staging merge with the A2-2613 redesign (2026-11-11)
+
+> Written by the auditor (T3, `opus`, read-only on the code). It re-runs the gates on the new HEAD and audits what
+> the `staging` merge brought in against the phase-type contract. Rows not named below stand as in §2–§12 and
+> Addenda A–C.
+
+**Verdict: PASS WITH WARNINGS stands. 0 FAIL, 0 BLOCKED, 2 new WARN, W9 closed.** Kevin's redesign (A2-2607 /
+A2-2613) does not change how a phase type is decided, and does not break any variable the spec introduced. What
+it leaves behind is the old-name debt T11b already plans for. T11b is now unblocked.
+
+| Item | Value |
+|---|---|
+| Validated commit | `0fb0b1e68e` on `phase-type-unification`; tree identical to `d0db816942` (merge of `origin/staging` `460ecbd5be`) |
+| `origin/staging` / `origin/main` | `460ecbd5be` / `105dc99d23` (PR #2731 carried `staging` to `main`; the redesign is on `main`, this spec is not) |
+| History note | `73525a83e5` + `6f09567ef7` (a local merge that dropped the `staging` content) are on the branch; `0fb0b1e68e` restores the `d0db816942` tree without a force push. Neither commit is on `dev`, `staging` or `main` |
+| Where | Worktree `MARLO-val`, detached at `0fb0b1e68e`, fresh (no prior `target/`). No Maven in the main checkout, no server started |
+| DB access | SELECT only on `aiccradb1` and `aiccradb_actsave` |
+
+### Gates (re-run by the auditor)
+
+| Gate | Result |
+|---|---|
+| Clean compile | Maven exit 0; 6 (marlo-utils) + 2430 (marlo-data) + 1063 (marlo-web) + 116 test sources |
+| Full suite `-am` | 1166 run, 0 failures, 0 errors, 0 skipped (surefire XML summed); `PhaseNameLiteralFtlTest` 4/0, `PhaseTypeEquivalenceTest` 15/0, `PhaseTypeCharacterizationTest` 18/0, `ProjectFocusManagerImplReplicationTest` 2/0 |
+| Checkstyle, the PR's 58 Java files vs `origin/staging` | `staging` versions with `staging`'s config 86 → branch versions with the branch config 86. Delta 0 |
+| Phase rules tree-wide | `RemovedPhaseTypeMethod` 0, `PhaseNameLiteral` 0. Both rules fire on probes (`b.isReportingActive()`; `phase.getName().equals("Progress")`), so 0 is a real 0 |
+| `CHECKSTYLE.OFF` markers | Only the six T11a aliases in `BaseAction` (8068–8113) and their characterization test |
+| Unchanged since the last audited commit `9138934db4` | M1, M2, `Phase.java` and the phase methods of `BaseAction`: no diff |
+| Migration order | The PR adds only M1 and M2. `staging` already has `V2_6_0_20261029_0938` (after M2); `MarloFlywayConfiguration:95` runs `setOutOfOrder(true)`, the same situation proven on DEV (Addendum C) |
+
+### What the redesign brought in, against the contract
+
+| Area | Finding | Result |
+|---|---|---|
+| INT-2 (`deliverableMacros.ftl`) | `staging` / `main` carry `actualPhase.name != 'Progress'` at 412 and 456. The branch has `!progressPhase && !redesign` and `(!progressPhase)` | PASS |
+| `menu-projects.ftl` preset toggle | `!reportingPhase` (the redesign dropped `completedPreProject \|\| projectEditLeader` on purpose) | PASS |
+| `DeliverableValidator` "On-going at reporting" rule | Uses `action.isReportingPhase()` | PASS |
+| Old names in FTL | 32 hits: 3 are §A3-type identifiers (`javascript-constants.ftl:30-31` JS variables fed from `reportingPhase` / `progressPhase`; `main-menu.ftl:4` local `reportingActiveMenu`); 29 are the redesign's `reportingActive` and `isProgressActive` in 6 files. All resolve through the T11a aliases. `origin/staging` has 226 hits; the branch leaves 32, the same count as `dev` | WARN (W11) |
+| `actualPhase.upkeep` read directly | `deliverableList.ftl`, `projectDeliverable.ftl` (dissemination tabs), as before the redesign. Same value as `progressPhase` | PASS (cleanup candidate for T11b) |
+| Phase name shown as text | `phaseLabel = actualPhase.name + year` in the deliverable and innovation lists. Display only; after M2 units 47–50 show `Planning` / `Progress` / `Reporting` instead of `POWB` / `UpKeep` / `AR`, which is the spec's intent. AICCRA is unchanged | PASS |
+| New replication (Java) | `ProjectInnovationCoDeveloperManagerImpl` and `ProjectInnovationValueChainManagerImpl` add `replicationTarget()` with `APConstants.PLANNING/REPORTING.equals(phase.getDescription())`, the pattern of the other 106 managers. Requirements §9 "No `ManagerImpl` is edited" keeps managers out of scope | PASS (advisory A-D1) |
+| Migrations from `staging` (11) | None reads or writes `phases.name`, `description` or `upkeep` | PASS |
+| JS from `staging` | Only year comparisons (`data-phase-year`); no phase-type logic | PASS |
+| Phase-related FTL vs `dev` | The branch and `dev` differ in 8 FTL, none phase-related (CSS/JS cache params, HellDots, captcha). Every phase-related template is byte-identical to the one rendered locally and on DEV in Addendum C | PASS (evidence carried) |
+
+### Rows changed
+
+| Row | Was | Now | Why |
+|---|---|---|---|
+| W9 (`ProjectFocusManagerImplReplicationTest`) | WARN | **Closed** | `81ae461abe` reached `staging` with the redesign; the test is 2/0 on this tree |
+| T11b | Blocked on A2-2607 / A2-2613 reaching `staging` | **Unblocked, pending** | Both are on `staging` `460ecbd5be` (and on `main`) |
+
+### New WARN
+
+| # | Finding | Recommendation |
+|---|---|---|
+| W11 | FN-005's AC grep is not clean: 29 old-name uses from the redesign (`deliverableList.ftl` 9, `deliverableInfo.ftl` 3, `projectDeliverable.ftl` 2, `deliverableMacros.ftl` 5, `innovationTemplates.ftl` 1 + the `isProgressActive` local at 121 with 7 uses, `projectInnovation.ftl` 113). Allowed only by the time-limited T11a exception | Run T11b next, on this branch or right after it merges to `staging`. T11b is the archive condition stated in Addendum A |
+| W12 | The render smoke owed at the `staging` merge (Addendum C) was not re-run on this tree. It rests on byte-identical phase templates (see the table above) and unchanged phase Java | Verify on the `staging` environment after the merge: migrations applied, 0 `Planing` rows, names per unit, one deliverable and one innovation in plan / progress / reporting. Together with W2 (OPS-004 capture on production) |
+
+### Advisory (not gating)
+
+| # | Note |
+|---|---|
+| A-D1 | The two new managers repeat the `getDescription()` replication pattern. A save made *in* a phase still described `Planing` does not replicate. Today those phases are AWPB / Progress 2028–2030 of units 45 and 50 (local copies), none editable or visible. M1 removes the typo. Feed the pattern into `enhancement/phase-cycle-centralization` |
+| A-D2 | Until this spec ships, `main` decides INT-2 by name. In unit 47 the progress phases are still named `UpKeep` (445, 448), so `main` would treat them as non-progress. On `aiccradb1` they are neither editable nor visible, so no user sees it today. Shipping this branch (code + M2) removes the case |
+
+**Archive readiness:** not yet. Archive after T11b (W11), with W1–W8 accepted or ticketed, and W12 / W2 closed
+at the `staging` deploy. The branch itself is ready to merge into `staging` (0 conflicts).
