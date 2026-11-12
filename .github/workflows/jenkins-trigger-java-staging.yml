@@ -1,9 +1,9 @@
 name: Trigger Jenkins Job Java 17 (STAGING)
 
+# Automatic runs on push to staging were removed at the MARLO STAGING cutover: pushes to staging are checked by
+# marlo-staging-ci.yml and finalized by the Jenkins job marlo-staging-ci (no deploy). Kept as workflow_dispatch to
+# start the legacy job marlo-java-17 manually.
 on:
-  push:
-    branches:
-      - "staging"
   workflow_dispatch:
 
 jobs:

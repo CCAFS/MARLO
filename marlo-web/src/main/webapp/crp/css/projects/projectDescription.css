@@ -1,24 +1,722 @@
-.inputsFlat {
-  margin-left: -10px;
-  padding-bottom: 5px;
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster description (General Information, A2-2734 redesign).
+ *
+ * Scoped under .pdn (projectDescription.ftl) so nothing here reaches the sidebar or any other page. The fields
+ * keep the markup customForm (forms.ftl) emits, because projectDescription.js, autoSave.js and fieldsValidation.js
+ * read it; only its presentation is restated here, at a weight that beats global.css.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.pdn,
+.pdn p, .pdn a, .pdn span, .pdn small, .pdn strong, .pdn label, .pdn li,
+.pdn h1, .pdn h2, .pdn h3, .pdn h4, .pdn h5,
+.pdn input, .pdn textarea, .pdn select, .pdn button, .pdn legend {
+  font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.pdn .glyphicon { font-family: 'Glyphicons Halflings'; }
+
+.pdn {
+  --pdn-brand: #0277A2;
+  --pdn-brand-dark: #015C7D;
+  --pdn-ink: #1F2A37;
+  --pdn-ink-soft: #4B5563;
+  --pdn-muted: #6B7280;
+  --pdn-subtle: #9AA4B0;
+  --pdn-line: #E5E9EF;
+  --pdn-line-soft: #EEF2F5;
+  --pdn-line-strong: #CBD5DE;
+  --pdn-surface: #FFFFFF;
+  --pdn-surface-alt: #FAFBFC;
+  --pdn-chip: #EEF2F5;
+  --pdn-locked-bg: #F1F3F6;
+  --pdn-locked-border: #E0E5EB;
+  --pdn-info-bg: #F2F9FC;
+  --pdn-info-hover: #E8F4F9;
+  --pdn-info-border: #BEDFEC;
+  --pdn-ok: #2E6B2F;
+  --pdn-ok-dot: #5BB85C;
+  --pdn-warn: #8A5A00;
+  --pdn-warn-dot: #C08A2E;
+  --pdn-danger: #B03028;
+  --pdn-required: #C7401C;
+  --pdn-focus-ring: 0 0 0 3px rgba(2, 119, 162, .12);
+  --pdn-radius: 12px;
+  --pdn-radius-sm: 8px;
+  --pdn-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 6px;
+  color: var(--pdn-ink);
+}
+.pdn *, .pdn *::before, .pdn *::after { box-sizing: border-box; }
+.pdn strong, .pdn b { font-weight: 600; }
+.pdn [hidden] { display: none !important; }
+.pdn button:focus-visible,
+.pdn a:focus-visible { outline: 0; box-shadow: var(--pdn-focus-ring); }
+
+/* ---------- Shared bits ---------- */
+
+.pdn .pdn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 24px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--pdn-brand);
+  cursor: pointer;
+}
+.pdn .pdn-link:hover,
+.pdn .pdn-link:focus { background: var(--pdn-info-bg); color: var(--pdn-brand-dark); text-decoration: none; }
+.pdn .pdn-hint { margin: 0; font: 400 12.5px/1.45 Figtree, sans-serif; color: var(--pdn-muted); }
+.pdn .pdn-fieldError { margin: 6px 0 0; font: 500 12px/1.4 Figtree, sans-serif; color: var(--pdn-required); }
+.pdn .pdn-field .pdn-hint[data-pdn-duration] { margin-top: 6px; font-size: 12px; }
+.pdn .pdn-tag {
+  flex: none;
+  padding: 1px 7px;
+  border: 1px solid var(--pdn-locked-border);
+  border-radius: 5px;
+  background: var(--pdn-locked-bg);
+  font: 600 11.5px/1.5 Figtree, sans-serif;
+  color: var(--pdn-ink-soft);
+}
+.pdn .pdn-empty { margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--pdn-subtle); }
+.pdn .pdn-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--pdn-radius-sm);
+  font: 600 13.5px Figtree, sans-serif;
+  cursor: pointer;
+}
+.pdn .pdn-btn--ghost { border: 1px solid var(--pdn-line-strong); background: #fff; color: var(--pdn-ink); }
+.pdn .pdn-btn--ghost:hover { background: var(--pdn-info-bg); }
+
+/* ---------- Header ---------- */
+
+.pdn .pdn-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 15px; }
+.pdn .pdn-head__title { margin: 0; font: 600 22px/1.3 Figtree, sans-serif; color: var(--pdn-ink); }
+.pdn .pdn-chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 6px;
+  background: var(--pdn-chip);
+  font: 700 12.5px Figtree, sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: var(--pdn-ink);
 }
 
-.icon-20 {
-  height: 17px;
+.pdn .pdn-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--pdn-info-border);
+  border-radius: var(--pdn-radius);
+  background: var(--pdn-info-bg);
+}
+.pdn .pdn-note__icon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--pdn-brand);
+  font: 700 12px Figtree, sans-serif;
+  color: #fff;
+}
+.pdn .pdn-note__text { flex: 1; min-width: 0; margin: 0; font: 400 13.5px/1.55 Figtree, sans-serif; color: var(--pdn-ink); text-wrap: pretty; }
+
+/* ---------- Section cards ---------- */
+
+.pdn .pdn-sections { display: flex; flex-direction: column; gap: 14px; }
+.pdn .pdn-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 20px 20px;
+  background: var(--pdn-surface);
+  border: 1px solid var(--pdn-line);
+  border-radius: var(--pdn-radius);
+  box-shadow: var(--pdn-shadow);
+}
+.pdn .pdn-card__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pdn .pdn-card__head--start { align-items: center; justify-content: flex-start; gap: 10px; }
+.pdn .pdn-card__title { margin: 0; font: 600 16px Figtree, sans-serif; color: var(--pdn-ink); }
+.pdn .pdn-card__aside { display: inline-flex; align-items: center; gap: 6px; font: 400 12.5px Figtree, sans-serif; color: var(--pdn-muted); }
+.pdn .pdn-card__intro { display: flex; flex-direction: column; gap: 4px; }
+.pdn .pdn-card__lead { margin: 0; font: 400 13px/1.5 Figtree, sans-serif; color: var(--pdn-ink-soft); text-wrap: pretty; }
+.pdn .pdn-card__head--start + .pdn-card__lead { margin-top: -10px; }
+.pdn .pdn-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border: 1px solid var(--pdn-info-border);
+  border-radius: 999px;
+  background: var(--pdn-info-bg);
+  font: 600 12px Figtree, sans-serif;
+  color: var(--pdn-brand-dark);
 }
 
-#projectDescription .panel #projectsList ul.list li.clusterActivity .listButton.remove{
-  position: absolute ;
+.pdn .pdn-grid { display: grid; gap: 16px; align-items: start; }
+.pdn .pdn-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ---------- Fields (customForm markup) ---------- */
+
+/* flow-root keeps the floats of a field (word counter, feedback bubble) inside it. */
+.pdn .pdn-field { display: flow-root; position: relative; min-width: 0; margin: 0; }
+.pdn .pdn-field .form-group { margin-bottom: 0; }
+.pdn .feedback-flex-items { align-items: flex-start; gap: 8px; }
+.pdn .feedback-flex-items > .fieldReference { flex: 1; min-width: 0; }
+
+.pdn .pdn-card label,
+.pdn .pdn-card .pdn-label {
+  display: block;
+  margin: 0 0 6px;
+  font: 600 13px/1.4 Figtree, sans-serif;
+  color: var(--pdn-ink);
+}
+.pdn .pdn-card label .requiredTag,
+.pdn .pdn-card .requiredTag { margin-left: 4px; font-weight: 700; color: var(--pdn-required); }
+.pdn .pdn-card label.readOnly { color: var(--pdn-ink); }
+.pdn .pdn-card .helpLabel { display: block; margin-top: 2px; font: 400 12.5px/1.45 Figtree, sans-serif; font-style: normal; color: var(--pdn-muted) !important; }
+.pdn .pdn-card label br { display: none; }
+
+.pdn .pdn-card input.form-control,
+.pdn .pdn-card textarea.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--pdn-line-strong);
+  border-radius: var(--pdn-radius-sm);
+  background: #fff;
+  box-shadow: none;
+  font: 400 14px Figtree, sans-serif;
+  color: var(--pdn-ink);
+}
+.pdn .pdn-card textarea.form-control { height: auto; min-height: 96px; padding: 10px 12px; line-height: 1.6; resize: vertical; }
+.pdn .pdn-card textarea.project-title { min-height: 64px; font-weight: 500; }
+.pdn .pdn-card input.form-control:focus,
+.pdn .pdn-card textarea.form-control:focus { border-color: var(--pdn-brand); box-shadow: var(--pdn-focus-ring); outline: none; }
+.pdn .pdn-card input.form-control.fieldError,
+.pdn .pdn-card textarea.form-control.fieldError { border-color: #D48A6A; }
+.pdn .pdn-card label.fieldError { color: var(--pdn-required); }
+.pdn .pdn-card .startDate,
+.pdn .pdn-card .endDate { cursor: pointer; }
+
+/* customForm prints a committed answer as a <p>; global.css justifies it with break-all. */
+.pdn .pdn-card .input > p,
+.pdn .pdn-card .textArea > p,
+.pdn .pdn-card .select > p {
+  margin: 0;
+  font: 400 14px/1.55 Figtree, sans-serif;
+  color: var(--pdn-ink);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+/* One muted "Not provided" for an empty answer, never the "Required" tag beside it. */
+.pdn .pdn-card .input > p .fieldEmpty,
+.pdn .pdn-card .textArea > p .fieldEmpty { color: var(--pdn-subtle); font-style: normal; }
+.pdn .pdn-card .input > p > span.fieldError,
+.pdn .pdn-card .textArea > p > span.fieldError { display: none; }
+
+/* A value only administrators set: read as a quiet box, not as a field. */
+.pdn .pdn-locked,
+.pdn .pdn-field--locked .textArea > p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 40px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--pdn-locked-border);
+  border-radius: var(--pdn-radius-sm);
+  background: var(--pdn-locked-bg);
+  font: 500 14px/1.45 Figtree, sans-serif;
+  color: var(--pdn-ink);
+}
+.pdn.is-readonly .pdn-locked,
+.pdn.is-readonly .pdn-field--locked .textArea > p { padding: 0; min-height: 0; border: 0; background: none; font-weight: 400; }
+
+/* Word counters (applyWordCounter, utils.js): a quiet caption under the control's right edge. */
+.pdn .pdn-card .charCount {
+  float: none;
+  display: block;
+  width: auto;
+  margin: 5px 0 0;
+  font-size: 11.5px !important;
+  line-height: 1.4;
+  color: var(--pdn-muted);
+  text-align: right !important;
+}
+.pdn .pdn-card .charCount.fieldError { color: var(--pdn-required); }
+
+/* The feedback bubble beside the control, level with its first line. */
+.pdn .pdn-card .commentNumberContainer { position: relative; flex: none; margin-top: 26px; }
+.pdn .pdn-card label .commentNumberContainer { display: none; }
+
+/* select2 single selects as the design's native-looking selects. */
+.pdn .pdn-card .selectList { position: relative; }
+.pdn .pdn-card .select2-container { width: 100% !important; }
+.pdn .pdn-card .select2-container--default .select2-selection--single {
+  height: 40px;
+  border: 1px solid var(--pdn-line-strong);
+  border-radius: var(--pdn-radius-sm);
+  background: #fff;
+}
+.pdn .pdn-card .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 32px 0 12px;
+  font: 500 14px/38px Figtree, sans-serif;
+  color: var(--pdn-ink);
+}
+.pdn .pdn-card .select2-container--default .select2-selection--single .select2-selection__arrow { top: 7px; right: 8px; height: 24px; }
+.pdn .pdn-card .select2-container--default.select2-container--focus .select2-selection--single,
+.pdn .pdn-card .select2-container--default.select2-container--open .select2-selection--single { border-color: var(--pdn-brand); box-shadow: var(--pdn-focus-ring); }
+.pdn .pdn-card .select2-selection.missingSelect2 { border-color: #D48A6A !important; }
+/* The status select carries the status colour as a dot before its text. */
+.pdn .pdn-field--status .select2-container--default .select2-selection--single .select2-selection__rendered { padding-left: 29px; }
+.pdn .pdn-field--status .selectList::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: 12px;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--pdn-status-dot, var(--pdn-subtle));
+  pointer-events: none;
+}
+/* The select2 list is appended to <body>, outside .pdn; global.css gives its search field a 14% right margin. */
+.select2-container .select2-dropdown .select2-search--dropdown .select2-search__field { margin-right: 0; }
+
+/* ---------- Cluster type: segmented control ---------- */
+
+.pdn .pdn-seg {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid var(--pdn-line);
+  border-radius: 10px;
+  background: var(--pdn-line-soft);
+}
+.pdn .pdn-seg.fieldError { border-color: #D48A6A; }
+.pdn .pdn-seg__btn {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--pdn-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background .14s ease, color .14s ease;
+}
+.pdn .pdn-seg__btn:hover { background: rgba(255, 255, 255, .6); color: var(--pdn-ink); }
+.pdn .pdn-seg__btn.is-on {
+  background: #fff;
+  font-weight: 600;
+  color: var(--pdn-brand-dark);
+  box-shadow: 0 1px 2px rgba(31, 42, 55, .12);
+}
+.pdn .pdn-seg__btn:disabled { cursor: default; }
+.pdn .pdn-seg__btn:disabled:not(.is-on) { background: transparent; color: var(--pdn-muted); }
+
+/* ---------- Challenges guidance ---------- */
+
+.pdn .pdn-field--guide > .pdn-guide__toggle { position: absolute; top: -3px; right: 0; }
+.pdn .pdn-guide {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--pdn-line-soft);
+  border-radius: 10px;
+  background: var(--pdn-surface-alt);
+  font: 400 13px/1.55 Figtree, sans-serif;
+  color: var(--pdn-ink-soft);
+  text-wrap: pretty;
+}
+
+/* ---------- Status ---------- */
+
+.pdn .pdn-status { display: flex; align-items: center; gap: 8px; margin: 0; font: 400 14px/1.55 Figtree, sans-serif; color: var(--pdn-ink); }
+.pdn .pdn-status__dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pdn-status-dot, var(--pdn-subtle)); }
+/* ProjectStatusEnum ids: 2 On-going, 3 Complete, 4 Extended, 5 Cancelled. */
+.pdn [data-status="2"],
+.pdn .pdn-field--status[data-status="2"] { --pdn-status-dot: var(--pdn-brand); }
+.pdn [data-status="3"],
+.pdn .pdn-field--status[data-status="3"] { --pdn-status-dot: var(--pdn-ok-dot); }
+.pdn [data-status="4"],
+.pdn .pdn-field--status[data-status="4"] { --pdn-status-dot: var(--pdn-warn-dot); }
+.pdn [data-status="5"],
+.pdn .pdn-field--status[data-status="5"] { --pdn-status-dot: var(--pdn-danger); }
+.pdn .pdn-subpanel {
+  padding: 14px;
+  border: 1px solid var(--pdn-line-soft);
+  border-radius: 10px;
+  background: var(--pdn-surface-alt);
+}
+
+/* ---------- Results framework ---------- */
+
+.pdn .pdn-framework {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.pdn .pdn-framework--single { grid-template-columns: minmax(0, 1fr); }
+.pdn .pdn-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--pdn-line);
+  border-radius: 10px;
+  background: var(--pdn-surface-alt);
+}
+/* global.css pads both lists by id (#projectFlagshipsBlock / #projectRegionsBlock); the id is restated to win. */
+.pdn #projectFlagshipsBlock.pdn-group,
+.pdn #projectRegionsBlock.pdn-group { padding: 14px; }
+.pdn .pdn-group > .pdn-group__title { order: -2; margin: 0; }
+.pdn .pdn-group > .fieldError { order: -2; }
+.pdn .pdn-group > .pdn-group__note { order: -1; margin-top: -2px; font-size: 12px; }
+.pdn .pdn-group > label.pdn-group__title.fieldError { color: var(--pdn-required); }
+.pdn .pdn-group:has(> label.pdn-group__title.fieldError) { border-color: #D48A6A; }
+.pdn .pdn-group__divider { display: block; height: 1px; margin: 2px 0; background: var(--pdn-line-soft); }
+
+/* label.pdn-check: the card's label rule (display: block, bold) must not reach the checkbox rows. */
+.pdn .pdn-check,
+.pdn .pdn-card label.pdn-check {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--pdn-line);
+  border-radius: var(--pdn-radius-sm);
+  background: #fff;
+  font: 500 13.5px/1.4 Figtree, sans-serif;
+  color: var(--pdn-ink);
+  cursor: pointer;
+}
+.pdn .pdn-check:hover { border-color: var(--pdn-line-strong); }
+.pdn .pdn-check.is-on { border-color: var(--pdn-info-border); background: var(--pdn-info-bg); }
+.pdn .pdn-check.is-locked,
+.pdn .pdn-check.is-static { cursor: default; }
+.pdn .pdn-check.is-locked:hover { border-color: var(--pdn-info-border); }
+.pdn .pdn-check.is-static:hover { border-color: var(--pdn-line); }
+.pdn .pdn-check.is-static.is-on:hover { border-color: var(--pdn-info-border); }
+.pdn .pdn-check.is-disabled { opacity: .55; cursor: not-allowed; }
+.pdn .pdn-check__input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.pdn .pdn-check__box {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1.5px solid var(--pdn-line-strong);
+  border-radius: 5px;
+  background: #fff;
+  transition: background .14s ease, border-color .14s ease;
+}
+.pdn .pdn-check.is-on .pdn-check__box {
+  border-color: var(--pdn-brand);
+  background: var(--pdn-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.6 6.2 5 8.5l4.4-5' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.pdn .pdn-check.is-locked .pdn-check__box { border-color: #7FA9BC; background-color: #7FA9BC; }
+.pdn .pdn-check__input:focus-visible + .pdn-check__box { box-shadow: var(--pdn-focus-ring); }
+.pdn .pdn-check__text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pdn .pdn-check__name { font: 500 13.5px/1.4 Figtree, sans-serif; color: var(--pdn-ink); }
+.pdn .pdn-check__code { font-weight: 600; color: var(--pdn-brand-dark); }
+.pdn .pdn-check__caption { display: inline-flex; align-items: center; gap: 5px; font: 400 12px Figtree, sans-serif; color: var(--pdn-muted); }
+/* The shake projectDescription.js plays when the liaison's own program is unchecked. */
+.pdn .pdn-check.animated { animation-duration: .6s; }
+
+.pdn .pdn-countPill {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  margin: 0;
+  padding: 0 9px;
+  border: 1px solid var(--pdn-info-border);
+  border-radius: 999px;
+  background: #fff;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--pdn-brand-dark);
+  cursor: pointer;
+}
+.pdn .pdn-countPill:hover { background: var(--pdn-info-hover); }
+
+/* Contributions modal (Bootstrap): the design's dialog header and table. */
+.pdn .pdn-modal .modal-content { border: 0; border-radius: var(--pdn-radius); box-shadow: 0 20px 50px rgba(31, 42, 55, .3); }
+/* global.css paints every modal header brand blue: the title and the close mark read white on it. */
+.pdn .pdn-modal .modal-header { padding: 14px 18px; border: 0; border-radius: var(--pdn-radius) var(--pdn-radius) 0 0; background: var(--pdn-brand); }
+.pdn .pdn-modal .modal-title { display: flex; flex-direction: column; gap: 2px; font: 600 16px Figtree, sans-serif; color: #fff; }
+.pdn .pdn-modal .modal-title small { font: 400 13px Figtree, sans-serif; color: rgba(255, 255, 255, .82); }
+.pdn .pdn-modal .modal-header .close { color: #fff; opacity: .9; text-shadow: none; }
+.pdn .pdn-modal .modal-header .close:hover { opacity: 1; }
+.pdn .pdn-modal .modal-body { padding: 0 18px 8px; }
+.pdn .pdn-modal .table { margin: 0; }
+.pdn .pdn-modal .table > thead > tr > th {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--pdn-line);
+  font: 600 11.5px Figtree, sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--pdn-muted);
+}
+.pdn .pdn-modal .table > tbody > tr > td { padding: 10px 8px; border-top: 1px solid var(--pdn-line-soft); font: 400 13.5px/1.5 Figtree, sans-serif; color: var(--pdn-ink); }
+.pdn .pdn-modal .modal-footer { padding: 12px 18px; border-top: 1px solid var(--pdn-line); }
+
+/* ---------- Save bar ----------
+ * The bar of the other redesigned sections: it follows the scroll 12px off the viewport
+ * bottom and settles at the end of the form. */
+.pdn .pdn-saveBar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin-top: 4px;
+  padding: 10px 12px 10px 18px;
+  background: var(--pdn-surface);
+  border: 1px solid var(--pdn-line);
+  border-radius: var(--pdn-radius);
+  box-shadow: 0 6px 18px rgba(31, 42, 55, .12);
+}
+.pdn .pdn-saveBar__info { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
+.pdn .pdn-saveBar__state { display: flex; align-items: center; gap: 8px; font: 600 13px Figtree, sans-serif; color: var(--pdn-ok); }
+.pdn .pdn-saveBar__dot { flex: none; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--pdn-ok-dot); }
+.pdn .pdn-saveBar.is-dirty .pdn-saveBar__state { color: var(--pdn-warn); }
+.pdn .pdn-saveBar.is-dirty .pdn-saveBar__dot { background: var(--pdn-warn-dot); }
+.pdn .pdn-saveBar__actions { flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.pdn .pdn-saveBar .clearfix { display: none; }
+.pdn .pdn-saveBar .buttons,
+.pdn .pdn-saveBar .buttons-content {
+  float: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+/* global.js pins .buttons-content to the viewport on scroll; inside the sticky bar it stays put. */
+.pdn .pdn-saveBar .buttons-content.positionFixedBot { position: static; bottom: auto; right: auto !important; }
+.pdn .pdn-saveBar .buttons-content.animated { animation: none; }
+.pdn .pdn-saveBar .button-save,
+.pdn .pdn-saveBar .button-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--pdn-radius-sm);
+  background: var(--pdn-brand);
+  color: #fff;
+  font: 600 14px Figtree, sans-serif;
+  text-decoration: none;
+}
+.pdn .pdn-saveBar .button-save:hover,
+.pdn .pdn-saveBar .button-save:focus,
+.pdn .pdn-saveBar .button-save:active,
+.pdn .pdn-saveBar .button-edit:hover,
+.pdn .pdn-saveBar .button-edit:focus,
+.pdn .pdn-saveBar .button-edit:active { border: 0; background: var(--pdn-brand-dark); color: #fff; }
+.pdn .pdn-saveBar .button-cancel,
+.pdn .pdn-saveBar .button-history,
+.pdn .pdn-saveBar .form-button:not(.button-save):not(.button-edit) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--pdn-line-strong);
+  border-radius: var(--pdn-radius-sm);
+  background: #fff;
+  color: var(--pdn-ink-soft);
+  font: 600 13px Figtree, sans-serif;
+  text-decoration: none;
+}
+.pdn .pdn-saveBar #lastUpdateMessage {
+  display: block;
+  float: none !important;
+  width: auto;
+  margin: 0;
+  font: 400 12.5px Figtree, sans-serif;
+  font-style: normal;
+  color: var(--pdn-muted);
+  text-align: left;
+}
+/* Until the script moves it next to the state it claims no room among the buttons. */
+.pdn .pdn-saveBar .pdn-saveBar__actions #lastUpdateMessage { display: none; }
+.pdn .pdn-saveBar.is-dirty #lastUpdateMessage { display: none; }
+
+/* ══════════ Read-only (closed phase or no edit permission: .pdn.is-readonly) ══════════
+   Same components as in edit mode, none of them actionable: no required marks and no editing hints. Choices keep
+   every option with the saved one marked. */
+.pdn.is-readonly .requiredTag { display: none !important; }
+.pdn.is-readonly .pdn-seg { pointer-events: none; }
+.pdn.is-readonly .pdn-check { pointer-events: none; }
+
+/* ---------- Month picker (Start / End date) ----------
+ * projectDescription.js replaces the old jQuery UI picker with one trigger and a month-grid panel; the original input
+ * stays, visually hidden, as the posted value. */
+
+.pdn .pdn-card input.form-control.pdn-month__value {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+}
+.pdn .pdn-monthpick { position: relative; }
+.pdn .pdn-card .pdn-monthpick__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  font: 400 14px Figtree, sans-serif;
+  color: var(--pdn-ink);
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--pdn-line-strong);
+  border-radius: var(--pdn-radius-sm);
+  cursor: pointer;
+}
+.pdn .pdn-card .pdn-monthpick__trigger:hover { border-color: var(--pdn-subtle); }
+.pdn .pdn-card .pdn-monthpick__trigger:focus-visible,
+.pdn .pdn-monthpick.is-open .pdn-monthpick__trigger { border-color: var(--pdn-brand); box-shadow: var(--pdn-focus-ring); outline: none; }
+.pdn .pdn-monthpick.is-error .pdn-monthpick__trigger { border-color: #D48A6A; }
+.pdn .pdn-monthpick__text.is-empty { color: var(--pdn-subtle); }
+.pdn .pdn-monthpick__icon { flex: 0 0 auto; color: var(--pdn-muted); }
+
+.pdn .pdn-monthpick__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  width: 264px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid var(--pdn-line);
+  border-radius: var(--pdn-radius-sm);
+  box-shadow: 0 8px 24px rgba(31, 42, 55, .14);
+}
+.pdn .pdn-monthpick__panel[hidden] { display: none; }
+.pdn .pdn-monthpick__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pdn .pdn-monthpick__year { font: 600 14px Figtree, sans-serif; color: var(--pdn-ink); }
+.pdn .pdn-card .pdn-monthpick__nav,
+.pdn .pdn-card .pdn-monthpick__month {
+  margin: 0;
+  font-family: Figtree, sans-serif;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--pdn-radius-sm);
+  cursor: pointer;
+}
+.pdn .pdn-card .pdn-monthpick__nav {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--pdn-ink-soft);
+}
+.pdn .pdn-monthpick__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+.pdn .pdn-card .pdn-monthpick__month {
+  height: 36px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pdn-ink);
+}
+.pdn .pdn-card .pdn-monthpick__nav:hover:not(:disabled),
+.pdn .pdn-card .pdn-monthpick__month:hover:not(:disabled) { background: var(--pdn-info-bg); border-color: var(--pdn-info-border); }
+.pdn .pdn-card .pdn-monthpick__nav:focus-visible,
+.pdn .pdn-card .pdn-monthpick__month:focus-visible { outline: none; border-color: var(--pdn-brand); box-shadow: var(--pdn-focus-ring); }
+.pdn .pdn-card .pdn-monthpick__month.is-selected,
+.pdn .pdn-card .pdn-monthpick__month.is-selected:hover { color: #fff; background: var(--pdn-brand); border-color: var(--pdn-brand); }
+.pdn .pdn-card .pdn-monthpick__nav:disabled,
+.pdn .pdn-card .pdn-monthpick__month:disabled { color: var(--pdn-subtle); opacity: .5; cursor: default; }
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 767px) {
+  .pdn .pdn-grid--2,
+  .pdn .pdn-framework { grid-template-columns: minmax(0, 1fr); }
+  .pdn .pdn-saveBar { flex-wrap: wrap; }
+  .pdn .pdn-saveBar__info { flex: 1 1 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdn .pdn-seg__btn,
+  .pdn .pdn-check__box { transition: none; }
+}
+
+/* Legacy: the cluster-of-activities list the template still carries. */
+#projectDescription .panel #projectsList ul.list li.clusterActivity .listButton.remove {
+  position: absolute;
   right: 0;
   top: 50%;
   transform: translateY(-50%);
   margin-right: 15px;
 }
-
-#projectDescription .panel #projectsList ul.list li.clusterActivity{
-  padding: 5px 10px ;
-}
-
-#guide-button{
-  display: block;
-}
+#projectDescription .panel #projectsList ul.list li.clusterActivity { padding: 5px 10px; }
+#guide-button { display: block; }

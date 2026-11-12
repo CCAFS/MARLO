@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -64,8 +65,11 @@ public class ProjectFocusManagerImplReplicationTest {
 
   @SuppressWarnings("unchecked")
   private <T> T stub(Class<T> type, java.util.function.BiFunction<String, Object[], Object> answer) {
-    return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type},
-      (proxy, method, args) -> answer.apply(method.getName(), args));
+    // A list method the test does not answer returns an empty list, as the real DAOs do, instead of null.
+    return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, (proxy, method, args) -> {
+      Object result = answer.apply(method.getName(), args);
+      return result == null && List.class.isAssignableFrom(method.getReturnType()) ? new ArrayList<>() : result;
+    });
   }
 
   private long insertedInto(long phaseId) {
@@ -100,6 +104,13 @@ public class ProjectFocusManagerImplReplicationTest {
           inserted.add(focus);
         }
         return focus;
+      }
+      if ("findActiveByProjectProgramAndPhase".equals(name)) {
+        // Same filter as ProjectFocusMySQLDAO: active rows of one project, program and phase.
+        return inserted.stream()
+          .filter(f -> f.isActive() && f.getProject().getId().equals(args[0])
+            && f.getCrpProgram().getId().equals(args[1]) && f.getPhase().getId().equals(args[2]))
+          .collect(Collectors.toList());
       }
       return null;
     });
