@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" />
 
     [#-- Second, import global javascripts and templates. --]
-    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20261105" />
+    <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global.css?20261111" />
     <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/jquery-ui.custom.css" />
     [#if centerGlobalUnit]
       <link rel="stylesheet" type="text/css" href="${baseUrlCdn}/global/css/global-center.css" />
@@ -103,7 +103,6 @@
       [/#if]
       gtag('config', '${googleAnalyticsID}');
     </script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     [#-- CLARITY --]
     [#if config.production]

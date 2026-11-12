@@ -153,8 +153,15 @@ public class APConfig {
   @Value("${clarisa.api.password}")
   private String CLARISA_API_PASSWORD;
 
-  @Value("${recaptcha.site.key}")
-  private String RECAPTCHAT_SITE_KEY;
+  /*
+   * A2-2659 -- Cloudflare Turnstile site key of the login captcha, which replaces reCAPTCHA v2.
+   * The ${key:default} form is deliberate, as for the Cognito fields below: the gitignored
+   * marlo-${profile}.properties of every environment still carries recaptcha.site.key, and a bare
+   * placeholder would stop the application from starting until turnstile.site.key is added. An empty key
+   * means the login shows no captcha.
+   */
+  @Value("${turnstile.site.key:}")
+  private String TURNSTILE_SITE_KEY;
 
   // Microservice configurations
   @Value("${microservice.queueUrl}")
@@ -812,18 +819,15 @@ public class APConfig {
   }
 
   /**
-   * Get recaptcha account key
-   * loaded
+   * Get the Cloudflare Turnstile site key of the login captcha.
    *
-   * @return a string with the path
+   * @return the site key, or an empty string when it is not configured (the login then shows no captcha)
    */
-  public String getRecaptchatSiteKey() {
-    if (RECAPTCHAT_SITE_KEY == null) {
-      LOG.error("there is not a base folder to save the uploaded files configured.");
-      /** Should we just throw an exception? **/
-      return null;
+  public String getTurnstileSiteKey() {
+    if (TURNSTILE_SITE_KEY == null) {
+      return "";
     }
-    return RECAPTCHAT_SITE_KEY;
+    return TURNSTILE_SITE_KEY.trim();
   }
 
   public String getSummaryMicroserviceURL() {

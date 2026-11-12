@@ -175,14 +175,24 @@
 
       <div class="roles">
         <strong>[@s.text name="header.userMenu.roles" /]</strong>
+        [#-- Acronym and shown label of each role, so a liaison institution named like a role is not listed twice:
+             the PMU role is labelled PMC, and its PMU liaison institution would read as a second role --]
+        [#assign userMenuRoleLabels = [] /]
+        [#list (rolesList)![] as r]
+          [#assign userMenuRoleLabels = userMenuRoleLabels + [((r.acronym)!"")?trim?upper_case,
+            ((action.getRoleLabel(r))!"")?trim?upper_case] /]
+        [/#list]
+        [#assign userMenuLiaisons = ((liasons)!"")?split(",")
+          ?map(l -> l?trim)
+          ?filter(l -> l?has_content && !userMenuRoleLabels?seq_contains(l?upper_case)) /]
         [#if rolesList?has_content]
           [#list rolesList as r]
             <span>${(action.getRoleLabel(r))!}</span>[#if r_has_next] [/#if]
           [/#list]
         [/#if]
-        [#if liasons?has_content]
+        [#if userMenuLiaisons?has_content]
           [#if rolesList?has_content] <br/> [/#if]
-          <span>${(liasons)!}</span>
+          <span>[@s.text name="header.userMenu.liaisons" /] ${userMenuLiaisons?join(", ")}</span>
         [/#if]
       </div>
 
