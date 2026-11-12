@@ -248,3 +248,112 @@
 - **Issues encountered:** the task's sweep command `--include=*.md` fails unquoted in zsh — run quoted.
 - **Final verification:** green (re-run VERIFIED, Reviewer PASS).
 - **Budget running totals:** tasks 7/8; LOC ~909 changed (856 + 53) of ~950 (owner-adjusted); review rounds 7/10. Within budget; T08 is verification (no LOC expected beyond `execution.md`).
+
+### CHG-EMAIL-LAYOUT-001-T08 — Live verification on a local copy, with the human render check
+
+- **Final status:** PASS
+- **Date:** 2026-11-11
+- **Implementer attempts:** 2 (attempt 1 Reviewer FAIL on evidence gaps; attempt 2 PASS)
+- **Skills / effort:** marlo-verify; attempt 1 effort high, attempt 2 xhigh (bump on FAIL). Reviewer checklist both rounds.
+- **Environment pre-check (Leader, before any spawn):** MySQL up (socket); `crp_email_support_team` = true for AICCRA (45), AICCRA_III (47), QATEST (50) in `aiccradb_actsave`; port 8080 free, no cargo/Maven running; `email.notification` = the owner's own address.
+
+#### Attempt 1
+- **Setup:** throwaway DB `aiccradb_t08_email` copied from `aiccradb_actsave`; pre-send check repeated in the copy (Disqualifier) — true for 45/47/50; app built and run from worktree `../MARLO-wt-email-layout` at `c24addcdde` (`package -DskipTests`, `cargo:run`, default ports); copy's `email_logs` max id 18400 → new rows 18401–18425, all to the notification address. App driven over HTTP (curl, the same form posts as the browser) and Playwright for login (credentials served by a one-shot 127.0.0.1 server, never in the transcript).
+- **Copy-only data changes:** `system_otp_login_active=true` for 45/47/50 (OTP request refuses otherwise); three throwaway Guest users; submissions 4996–5003 created, then unsubmitted.
+- **Records used:** planning submit/unsubmit — QATEST 102101/501, AICCRA 102076/429, AICCRA_III 102093/444 (+102095/444); reporting — QATEST 102101/503, AICCRA 102076/431, AICCRA_III 102093/446. Role + welcome (`crpUsers.do`) and OTP (`otpRequestCode.do`) per unit.
+- **Query A (shell / footer / wording; Leader re-run):** marker = `message` contains `global/images/email/marlo-logo.png` AND `email-band.png`. **Support count = `supp_raw − mailto`**: the shell prints `MARLOSupport@cgiar.org` as the `mailto:` href and once as visible text, so `supp_raw 2` / `mailto 1` means the address is shown once (not a falsifier hit). `notice` = lower-case `do not reply`; `tit` = "Technical Implementation Team".
+  ```
+  id     unit       src             shell supp_raw mailto notice tit flagship
+  18401  QATEST     crpUsers role   1     2        1      1      0   0
+  18402  QATEST     crpUsers welc   1     2        1      1      0   0
+  18403  AICCRA     crpUsers role   1     2        1      1      0   0
+  18404  AICCRA     crpUsers welc   1     2        1      1      0   0
+  18405  AICCRA_III crpUsers role   1     2        1      1      0   0
+  18406  AICCRA_III crpUsers welc   1     2        1      1      3   0   (AICCRA_III own copy)
+  18407  QATEST     otp             1     2        1      1      0   0
+  18408  AICCRA     otp             1     2        1      1      0   0
+  18409  AICCRA_III otp             1     2        1      1      0   0
+  18410  QATEST     submit          1     2        1      1      0   0
+  18411  QATEST     unsubmit        1     2        1      1      0   0
+  18412  AICCRA     submit          1     2        1      1      0   0
+  18413  AICCRA     unsubmit        1     2        1      1      0   0
+  18414  AICCRA_III submit          1     2        1      1      4   0
+  18415  AICCRA_III unsubmit        1     2        1      1      2   0
+  18416-18425 (reporting submits/unsubmits, extra AICCRA_III and QATEST pairs): shell 1, supp_raw 2, mailto 1, notice 1, flagship 0; tit 0 on QATEST/AICCRA, 2-4 on AICCRA_III
+  ```
+- **Query B (summary link; Leader re-run):** all `has_bad` (`projectID=102080` or `phaseID=407`) = 0.
+  ```
+  18410 QATEST     projectID=102101&phaseID=501  Full_Cluster_Report-QATEST-C102101-20261111-1550.pdf
+  18412 AICCRA     projectID=102076&phaseID=429  Full_Cluster_Report-AICCRA-C102076-20261111-1551.pdf
+  18414 AICCRA_III projectID=102093&phaseID=444  Full_Cluster_Report-AICCRA_III-C102093-20261111-1552.pdf
+  18416 QATEST     projectID=102101&phaseID=503  (reporting, no attachment)
+  18417 AICCRA     projectID=102076&phaseID=431  (reporting, no attachment)
+  18418 AICCRA_III projectID=102093&phaseID=446  (reporting, no attachment)
+  18422 AICCRA_III projectID=102095&phaseID=444  pdf ; 18423 QATEST projectID=102101&phaseID=501 pdf
+  ```
+- **Query C (PDF wording; Leader re-run):** "… summary is attached as a PDF" present exactly on the rows with `file_name` (18410, 18412, 18414, 18422, 18423); absent on reporting submits and on every unsubmit.
+- **FN-011 sequence (Implementer account):** AICCRA_III page loaded, then AICCRA submit (18412: "cluster", "PMC", tit 0) and unsubmit (18413: "cluster", no PMC per Appendix A.1, tit 0); AICCRA page loaded, then AICCRA_III submit (18414, TIT/PIU copy) and unsubmit (18415). The page-load ordering is the Implementer's account, not a logged fact (Reviewer advisory).
+- **FN-003:** AICCRA role/welcome 18403/18404 against pre-change 18300/18301 (2026-10-09), tag-stripped text diff: only name, user email and password differ. AICCRA OTP and AICCRA_III: no pre-change email exists; covered by the T01 md5 (`6b52db6bd9808a9361aa0d0e97c79985`) plus the owner's render review — owner acceptance quoted below.
+- **FN-007 failed PDF:** `.noPDF` path not reproducible live (the attachment never fails to be produced locally); covered by T04 unit case (b).
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — Queries A–C re-run against the copy, same values.
+- **Reviewer verdict:** FAIL (checklist). Findings (verbatim, condensed to the two issues):
+  1. NF-003 had neither a quoted result nor an owner verdict ("EmailPlainText.fromHtml on stored HTML reads as sentences" was an Implementer prose claim, not re-run). Violated: `tasks.md` T08 Review ("every AC row has a quoted query result or owner verdict"); `requirements.md` §6 AC NF-002/NF-003. Remediation: run `EmailPlainText.fromHtml` on submit (PDF), submit (reporting) and unsubmit rows per unit; quote the output.
+  2. FN-010 evidence did not support "unchanged": only `to_email` = notification and `cc_email` NULL quoted; no before/after for `subject`, `bbc_email`, attachment name. Violated: `requirements.md` §6 AC FN-010. Remediation: quote pre-change submit/unsubmit rows per unit, compare subject template and attachment-name pattern, classify each difference; record TO/CC/BCC as covered by the T04/T05 diff review plus the local gap (`isRestrictedToSupport`).
+- **runtime events:** none
+
+#### Attempt 2 (rework; no re-send, no app start)
+- **NF-003:** production `EmailPlainText.fromHtml` run over the stored `message` of nine rows. Leader re-run of the mechanical check (`markup` = lines matching `<[a-zA-Z/]` or `&[a-z]+;`; `bracedigit` = `\{[0-9]`; `link` = `reportingSummary.do?projectID=`):
+  ```
+  18410 markup=0 bracedigit=0 link=1   QATEST submit (PDF)
+  18412 markup=0 bracedigit=0 link=1   AICCRA submit (PDF)
+  18414 markup=0 bracedigit=0 link=1   AICCRA_III submit (PDF)
+  18416 markup=0 bracedigit=0 link=1   QATEST submit (reporting)
+  18417 markup=0 bracedigit=0 link=1   AICCRA submit (reporting)
+  18418 markup=0 bracedigit=0 link=1   AICCRA_III submit (reporting)
+  18411 markup=0 bracedigit=0 link=0   QATEST unsubmit
+  18413 markup=0 bracedigit=0 link=0   AICCRA unsubmit
+  18415 markup=0 bracedigit=0 link=0   AICCRA_III unsubmit
+  ```
+  Excerpt 18410: "MARLO SuperAdmin has submitted the QATEST project "QA Test Cluster Project" (C102101) for review in the 2026 planning cycle. … The project summary is attached as a PDF. You can also open it in MARLO (…/projects/QATEST/reportingSummary.do?projectID=102101&phaseID=501) or generate it at any time from the Summaries section." Footer once in every output.
+- **FN-010 (Leader re-run of the pre-change rows):**
+  ```
+  17500 2024-10-28 Alliance-AICCRA-KDS@cgiar.org NULL NULL [AICCRA] AICCRA cluster [Senegal] has been submitted  Full_Cluster_Report-AICCRA-C102076-20241028-2014.pdf
+  17894 2025-07-11 Alliance-AICCRA-KDS@cgiar.org NULL NULL [AICCRA] AICCRA_III cluster [C102093] has been submitted  Full_Cluster_Report-AICCRA_III-C102093-20250711-2030.pdf
+  17895 2025-07-11 Alliance-AICCRA-KDS@cgiar.org NULL NULL [AICCRA] AICCRA_III cluster [C102093] has been returned to the cluster leader for edits  NULL
+  18199 2025-12-17 Alliance-AICCRA-KDS@cgiar.org NULL NULL [AICCRA] AICCRA cluster [EA] has been returned to the cluster leader for edits  NULL
+  18393 2026-10-29 <notification> NULL NULL [MARLO] QATEST project C102102 has been submitted  Full_Cluster_Report-QATEST-C102102-20261029-0010.pdf
+  18395 2026-10-29 <notification> NULL NULL [MARLO] QATEST project C102102 has been returned to the project leader for edits  NULL
+  ```
+  - **Subject:** AICCRA identical before/after apart from the project (17500 vs 18412, 18199 vs 18413); QATEST identical apart from the project id. AICCRA_III "cluster" → "Technical Implementation Team" is **not this spec**: `git show 460ecbd5be:…/custom/aiccra3.properties` already carries "Technical Implementation Team" in `submit.email.subject` / `unsubmit.email.subject`, introduced by `a304236b35` (2026-09-28); `git diff 460ecbd5be c24addcdde` changes 0 subject lines in `.properties`.
+  - **Attachment name:** pattern `Full_Cluster_Report-<unit>-C<id>-<yyyyMMdd-HHmm>.pdf` identical; 0 changed Java lines building the file name.
+  - **TO / CC / BCC — checked against the code diff, not live.** Locally `SendMailS.send()` replaces them (`isRestrictedToSupport()` → to = notification, cc = null, bcc = null) because `crp_email_support_team` is true; the QATEST pair shows the same replacement on both sides, so identical local recipient values are **not** proof of the real ones. The real rules rest on the diff: in both actions only the `sendMail.send(...)` subject/body arguments changed (T04 entry "envelope untouched"; T05 entry "Recipients / JSON … unchanged").
+- **Evidence re-run (Leader inline, non-author):** VERIFIED — mechanical check over the nine outputs, pre-change rows, base-commit subject lines and `a304236b35` re-run; worktree `git status` 0 lines.
+- **Reviewer verdict:** PASS (checklist) — both issues closed; no new problem; "Dear ," in 18415 comes from `UnsubmitProjectAction` lines outside the spec diff and also appears pre-change (17895, 18395).
+- **runtime events:** none
+
+- **Owner verdicts (HITL, 2026-11-11):** render check of the 25 exported emails — "1 aprobado"; FN-003 for AICCRA OTP and AICCRA_III accepted on the T01 md5 plus the render review — "2 y 3 sí"; deferral of the live findings below to separate work — "2 y 3 sí".
+- **Live findings, deferred (owner, 2026-11-11 — not in this spec):**
+  - **Empty PDF reproduced live.** The local microservice is unreachable (RabbitMQ connect timeout, ~60 s per planning submit); `ReportingSummaryAction` swallows the error and `getBytesPDF()` returns an empty array, so the email attaches a 0-byte `Full_Cluster_Report-…pdf` and says "attached". Leader-confirmed: the summary link downloaded as HTTP 200 `application/pdf`, 0 bytes. Same item as §"Deferred (owner decision at the T04 gate)", now observed live.
+  - **"null" title.** 18422/18424 (project 102095, `projects_info.title` NULL in phase 444) render `"null"`; the `getTitle()` arguments are unchanged since `460ecbd5be`. Proposed together with the empty PDF as one bugfix of the submit/unsubmit emails.
+  - **`email_logs.fileContent` NULL** on attachment rows since at least 2026-10-09 (also pre-change 18301, 18393); separate investigation.
+  - **"Dear ,"** in unsubmit emails without a leader name — pre-existing (Reviewer advisory).
+- **DoD gates (Leader, worktree at `c24addcdde`, after the app stopped):** clean compile 2430 / 1063 / 114; full `mvn -o -pl marlo-web -am test` exit 0 — `Tests run: 1125, Failures: 0, Errors: 0, Skipped: 0`; Checkstyle via the marlo-verify script, branch vs `460ecbd5be`: `ProjectSubmissionAction` 1/1, `UnsubmitProjectAction` 2/2, all other changed files 0/0 → delta 0 (a first direct-jar run reported 0 everywhere because the jar failed to start on a missing picocli class — discarded); G-i18n: 43 added `.properties` lines, 0 single apostrophes, 0 non-argument braces.
+- **Cleanup:** cargo stopped, Playwright closed; `DROP DATABASE aiccradb_t08_email` (schemas left: aiccradb1-4, aiccradb_actsave, aiccradb_wt_test — the last belongs to another session, untouched); `git worktree remove ../MARLO-wt-email-layout` (worktree list: main checkout only).
+- **spawns:** implementer 120 calls, 226428 tokens, ended partial (Not Done / Assumptions: owner verdict pending, uncovered ACs — resolved by owner answers and attempt 2); reviewer 10 calls, 53809 tokens, ended complete (FAIL); implementer 25 calls, 129412 tokens, ended complete; reviewer 8 calls, 41860 tokens, ended complete (PASS)
+- **ADVISORY (4R, non-gating):**
+  - Risk: FN-010 TO/CC/BCC are code-diff evidence, not live (recorded above).
+  - Reliability: the FN-011 page-load ordering is the Implementer's account; access-log timestamps would make it evidence.
+  - Reliability: "Dear ," on unsubmit without a leader name is pre-existing; track as its own bugfix if wanted.
+- **Requirements covered:** FN-001, FN-003 (with owner acceptance), FN-005 (live for base/aicrra/aiccra3), FN-006, FN-007 (link, both cycles; failed PDF by T04 test), FN-010, FN-011, NF-003.
+- **Decisions made:** owner accepted FN-003 evidence basis; owner deferred the live findings; T08 left the copy-only data changes in the throwaway DB, dropped with it.
+- **Issues encountered:** first Checkstyle run gave a false green (jar classpath) — redone with the marlo-verify script; the Implementer's abridged table attributed `tit=3` to 18405 instead of 18406 — corrected by the Leader re-run.
+- **Final verification:** green (re-runs VERIFIED, Reviewer PASS, owner render approved).
+- **Budget running totals:** tasks 8/8; LOC ~909 (no code in T08) of ~950 (owner-adjusted); review rounds 9/10. Within budget.
+
+## Summary
+
+- **Status:** all 8 tasks PASS (2026-11-11). No HALT, no Pivot; two spec tensions resolved by amendment (AC FN-011 at T05, AC FN-002 at T06); budget raised once by the owner (LOC ~800 → ~950 after T04), finished at ~909 LOC, 9 of 10 review rounds.
+- **Delivered:** the branded shell is the base `email.layout` for every unit (none opts out, Q1); footer once in the base and the two overriding units; submit/unsubmit copy rewritten with the summary link, sent from the submitting unit's own texts inside the shell; opt-out block documented and tested; ai-context catalog and the OTP spec note updated.
+- **Definition of Done:** all tasks with evidence; compile, Checkstyle delta, i18n and the full suite (1125 tests) green on `c24addcdde`; owner render approval recorded (T08); Q1 quoted (T06).
+- **Out of this spec (owner, 2026-11-11):** empty PDF from the microservice path + "null" title → one bugfix proposal for the submit/unsubmit emails; `email_logs.fileContent` NULL → separate investigation; "Dear ," on unsubmit without a leader → optional bugfix.
+- **Next:** `/akili-test`, `/akili-validate`, `/akili-archive`.

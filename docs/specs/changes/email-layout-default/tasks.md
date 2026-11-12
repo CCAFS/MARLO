@@ -149,7 +149,7 @@ the main checkout.
 - **Skills:** cognitive-doc-design, marlo-commit.
 
 ### CHG-EMAIL-LAYOUT-001-T08 — Live verification on a local copy, with the human render check
-- **Status:** pending · **Size:** M · **Depends on:** T04, T05, T06, T07 · **Module:** none (verification)
+- **Status:** [x] done 2026-11-11 (execution.md T08) · **Size:** M · **Depends on:** T04, T05, T06, T07 · **Module:** none (verification)
 - **Requirements:** every AC of requirements §6 that needs a real send: FN-001/FN-006 (QATEST), FN-003 (AICCRA, AICCRA_III), FN-005 (SQL counts), FN-007 (planning + reporting + failed PDF where reproducible), FN-010, FN-011 (cross-unit sequence), NF-003
 - **Design:** §11, §14
 - **Scope:** worktree of the branch + throwaway DB copy (as the 2026-11-11 session: `crp_email_support_team` true for the units used, so mail goes only to `email.notification`); send per unit a role email, the welcome email, an OTP code, a submit and an unsubmit; query `email_logs` for shell marker, support/notice counts, `projectID=`/`phaseID=`, subject; run the FN-011 sequence (load an AICCRA_III page, then submit/unsubmit in AICCRA and vice versa); open each stored HTML in a browser for the owner's review at the HITL pause. Clean up worktree and DB copy.
@@ -211,7 +211,7 @@ T04 and T05 are independent of each other (different files) but share the T03 co
 - One PR into `staging`, reviewed in task order (T01 → T03 data first, then T04/T05 Java, then docs).
 
 ## Definition of Done
-- [ ] All tasks done with evidence in `execution.md`.
-- [ ] G-compile, G-check, G-i18n green on the final tree; full `mvn -q -o -pl marlo-web -am test` green.
-- [ ] Owner's render approval recorded (T08).
-- [ ] Q1 answer quoted (T06): none opts out.
+- [x] All tasks done with evidence in `execution.md`.
+- [x] G-compile, G-check, G-i18n green on the final tree; full `mvn -q -o -pl marlo-web -am test` green.
+- [x] Owner's render approval recorded (T08).
+- [x] Q1 answer quoted (T06): none opts out.
