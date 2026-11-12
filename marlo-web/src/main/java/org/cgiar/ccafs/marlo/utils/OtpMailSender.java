@@ -81,7 +81,8 @@ import org.slf4j.LoggerFactory;
  * The HTML part is the body of the {@code login.otp.email.html} key put inside the shell of the selected Global Unit,
  * {@link EmailLayout#wrap(TextProvider, String, String)} with the key {@code email.layout}, as every role and welcome
  * email is since A2-2484 (FN-017, UI-005, T20). The shell wraps only the HTML part: the text part keeps its own key.
- * A Global Unit without a shell has {@code email.layout={0}}, so its HTML part is the bare body. The non-production
+ * The shell is the base value of {@code email.layout}; a Global Unit that opted out with {@code email.layout={0}}
+ * sends the bare body. The non-production
  * header goes before the wrapped HTML, as {@code SendMailS} puts it, and the {@code email_logs} row stores the
  * wrapped HTML without it.
  * <p>
@@ -264,7 +265,7 @@ public final class OtpMailSender {
     String subject = text(texts, KEY_SUBJECT, appName);
     String plain = text(texts, KEY_TEXT, appName, code, minutes, support);
     String htmlBody = text(texts, KEY_HTML, escapeHtml(appName), escapeHtml(code), minutes, escapeHtml(support));
-    // The shell is the Global Unit's own key; a unit without one has email.layout={0} and sends the body as it is.
+    // The shell is the base value of the key; a unit that opted out with email.layout={0} sends the body as it is.
     String html = EmailLayout.wrap(texts, assetsUrl, htmlBody);
 
     // Read on every send, never cached: the flag decides who receives a sign-in code (FN-018).

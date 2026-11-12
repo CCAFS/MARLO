@@ -516,7 +516,10 @@ public class OtpMailSenderTest {
       assertTrue(body, body.contains("Do not share this code with anyone."));
       assertTrue(body, body.contains("If you did not request this code, you can ignore this email."));
       assertTrue(body, body.contains("MARLOSupport@cgiar.org"));
-      assertFalse("no link at all, so none carries the code", body.toLowerCase().contains("http"));
+      // The shell carries the image URLs, so the check covers the body only: the HTML part holds the bare body.
+      String scoped = body.equals(htmlOf(message)) ? bareBody() : body;
+      assertTrue("the body is inside the HTML part", body.contains(scoped));
+      assertFalse("no link at all, so none carries the code", scoped.toLowerCase().contains("http"));
     }
     assertFalse("the subject does not carry the code", message.getSubject().contains(CODE));
     assertTrue(htmlOf(message).contains("<p"));
@@ -533,7 +536,9 @@ public class OtpMailSenderTest {
 
     assertEquals(1, this.awaitDeliveryLines(1).size());
     String html = htmlOf(transport.delivered.get(0));
-    assertTrue(html, html.contains("a&lt;b&gt;&amp;&quot;c&#39;"));
+    // The base HTML body no longer reads the support address (A.5): the shell footer carries it, so the override
+    // reaches the text part only.
+    assertFalse(html, html.contains("a&lt;b&gt;&amp;&quot;c&#39;"));
     assertFalse(html, html.contains("a<b>"));
     assertTrue(textOf(transport.delivered.get(0)).contains("a<b>&\"c'"));
   }
@@ -1301,12 +1306,47 @@ public class OtpMailSenderTest {
     }
   }
 
+  /** Occurrences of the needle in the text a reader sees: markup stripped, so href and link text count once. */
+  private static int visibleCount(String html, String needle) {
+    String visible = html.replaceAll("<[^>]*>", "").toLowerCase();
+    int total = 0;
+    for (int at = visible.indexOf(needle); at >= 0; at = visible.indexOf(needle, at + 1)) {
+      total++;
+    }
+    return total;
+  }
+
   @Test
-  public void aUnitWithoutAShellSendsTheBareBodyAsBefore() throws Exception {
+  public void aUnitWithoutACustomFileSendsTheHtmlPartInsideTheBaseShellWithTheFooterOnce() throws Exception {
+    // CHG-EMAIL-LAYOUT-001 FN-001 at the sender: no custom file named, and a named file that does not exist.
     StubTransport transport = new StubTransport();
     this.senderWith(transport, "");
-    TextProvider[] providers = {texts(global), UnitTextProvider.forCustomFile(null),
-      UnitTextProvider.forCustomFile("noSuchFile")};
+    TextProvider[] providers = {UnitTextProvider.forCustomFile(null), UnitTextProvider.forCustomFile("noSuchFile")};
+
+    for (TextProvider provider : providers) {
+      this.sender.sendAsync(provider, ASSETS_URL, RECIPIENT, CODE, "QATEST", UNIT);
+    }
+
+    assertEquals(providers.length, this.awaitDeliveryLines(providers.length).size());
+    List<EmailLog> rows = this.awaitRows(providers.length);
+    assertEquals(providers.length, transport.delivered.size());
+    for (int i = 0; i < providers.length; i++) {
+      String html = htmlOf(transport.delivered.get(i));
+      assertTrue("wrapped in the base shell: " + html, html.startsWith("<table role=\"presentation\""));
+      assertTrue(html, html.contains("src=\"" + ASSETS_URL + "/global/images/email/marlo-logo.png\""));
+      assertTrue("the whole body sits inside the shell", html.contains(bareBody()));
+      assertEquals("support address once: " + html, 1, visibleCount(html, "marlosupport@cgiar.org"));
+      assertEquals("do-not-reply notice once: " + html, 1, visibleCount(html, "do not reply"));
+      assertEquals("the row stores the wrapped HTML", html, rows.get(i).getMessage());
+      assertFalse("the text part is not wrapped", textOf(transport.delivered.get(i)).contains("<"));
+    }
+  }
+
+  @Test
+  public void aUnitThatOptsOutOfTheShellSendsTheBareBodyAsBefore() throws Exception {
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    TextProvider[] providers = {texts(override("email.layout", "{0}"))};
 
     for (TextProvider provider : providers) {
       this.sender.sendAsync(provider, ASSETS_URL, RECIPIENT, CODE, "CCAFS", UNIT);
