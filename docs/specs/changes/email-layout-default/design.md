@@ -99,7 +99,9 @@ SMTP via `SendMailS` (unchanged; non-production still sends only to the support 
 
 ## 11. Observability
 `email_logs` stores the wrapped HTML per send and is the verification surface. When an action cannot read its
-unit's `crp_custom_file`, it logs one WARN with the unit id and falls back to its own `getText` (today's behavior).
+unit's `crp_custom_file`, it logs one WARN naming the role of the unit ("the submitting unit" / "the unit owning the
+project") with the exception, and falls back to its own `getText` (today's behavior). The message does not carry the
+unit id *(corrected at validate 2026-11-12, W1; adding the id is left to the submit/unsubmit bugfix proposal)*.
 
 ## 12. Performance & Scalability
 `UnitTextProvider` bundles are cached by `ResourceBundle` (P-7); one `custom_parameters` read per send. Negligible.
