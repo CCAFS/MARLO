@@ -1,1588 +1,1285 @@
-$(document).ready(init);
-var map;
-var style;
-var infoWindow = null;
-var markers = [];
-var countID = 0;
-var countries = [];
-var layer = {
-  setMap: function() {}
+/* ------------------------------------------------------------------------------------------------
+ * Project / cluster locations section (A2-2735 redesign), rendered by projectLocations.ftl.
+ *
+ * Every location row, location level and region carries the hidden inputs that
+ * ProjectLocationAction.save() reads. The page posts whatever sits in the form, and the action
+ * deletes what it no longer receives, so after every add or removal lcReindex() renames the
+ * inputs with contiguous indexes:
+ *   project.locationsData[i].{id,name,isList}
+ *   project.locationsData[i].locElements[j].{id,name,locElement.isoAlpha2,locGeoposition.*}
+ *   project.projectRegions[k].{id,scope,locElement.id | locElementType.id | locElementId | locElementTypeId}
+ * A level whose only rows are funding-source suggestions posts nothing: those rows travel in
+ * project.countryFS[n].selected instead.
+ *
+ * The map is Leaflet 1.9.4 with OpenStreetMap tiles, created the first time it scrolls into view.
+ * It never geocodes on render; Nominatim is called once per coordinate site, on "Add location", to
+ * learn the country the site sits in (saveGeoProjectLocation needs its ISO code).
+ * --------------------------------------------------------------------------------------------- */
+
+$(document).ready(lcInit);
+
+var lcText = {};
+var $lcRoot = $();
+var lcEditable = false;
+var lcScopeEditable = false;
+var lcHasSuggestions = false;
+var lcServerFlagged = false;
+var lcInitialState = null;
+var lcRowSeq = 0;
+var lcAdd = null;
+var lcListCache = {};
+var lcReverseCache = {};
+var lcMap = null;
+var lcMarkers = {};
+var lcDraftMarker = null;
+var lcCountryLevelId = '2';
+
+var LC_PIN = {
+    radius: 6.5,
+    color: '#fff',
+    weight: 2,
+    fillColor: '#0277A2',
+    fillOpacity: 1
 };
-var arSelectedLocations = [];
-var arInfoWindows = [];
-var reverseGeocodeCache = {};
-var geocoderSearchCache = {};
+var LC_PIN_HOVER = {
+    radius: 9,
+    fillColor: '#015C7D'
+};
 
-function reverseGeocode(lat, lng, onSuccess, onComplete) {
-  var cacheKey = Number.parseFloat(lat).toFixed(4) + ',' + Number.parseFloat(lng).toFixed(4);
-  if(reverseGeocodeCache[cacheKey]) {
-    if(onSuccess) {
-      onSuccess(reverseGeocodeCache[cacheKey]);
-    }
-    if(onComplete) {
-      onComplete();
-    }
+function lcInit() {
+  $lcRoot = $('[data-lc-root]');
+  if(!$lcRoot.exists()) {
     return;
   }
+  lcText = lcReadText($('#lc-i18n')[0]);
+  lcEditable = $lcRoot.attr('data-editable') === 'true';
+  lcScopeEditable = $lcRoot.attr('data-scope-editable') === 'true';
+  lcHasSuggestions = $lcRoot.attr('data-has-suggestions') === 'true';
 
-  $.ajax({
-      'url': 'https://nominatim.openstreetmap.org/reverse',
-      'dataType': 'json',
-      'data': {
-          format: 'jsonv2',
-          lat: lat,
-          lon: lng,
-          zoom: 3,
-          addressdetails: 1
-      },
-      success: function(data) {
-        reverseGeocodeCache[cacheKey] = data;
-        if(onSuccess) {
-          onSuccess(data);
-        }
-      },
-      complete: function() {
-        if(onComplete) {
-          onComplete();
-        }
-      }
+  // The save comes back with "list-project.locationsData: ..." among the action messages when the
+  // validator found the list missing; the inline alert takes over from there.
+  $('li#message').each(function() {
+    if($.trim($(this).text()).indexOf('list-project.locationsData') === 0) {
+      lcServerFlagged = true;
+    }
+  });
+
+  // The design's save bar carries only the save state
+  $('.lc-saveBar #lastUpdateMessage').remove();
+  // Read-only: the section buttons render nothing, so the bar would be an empty box
+  if(!lcEditable && !$.trim($lcRoot.find('.lc-saveBar').text())) {
+    $lcRoot.find('.lc-saveBar').prop('hidden', true);
+  }
+
+  $lcRoot.find('[data-lc-row]').each(function() {
+    lcPrepareRow($(this));
+  });
+  lcDisableTakenRegions();
+  lcRenderSuggestions();
+  lcSortGroups();
+  lcReindex();
+  lcAttachEvents();
+  lcRefresh();
+
+  lcInitialState = lcSnapshot();
+  lcRefreshSaveState();
+
+  lcWatchMap();
+  lcSetFileUploads();
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Text
+ * --------------------------------------------------------------------------------------------- */
+
+function lcReadText(el) {
+  var out = {};
+  if(!el) {
+    return out;
+  }
+  $.each(el.attributes, function(i,attr) {
+    if(attr.name.indexOf('data-') === 0) {
+      var key = attr.name.substring(5).replace(/-([a-z])/g, function(m,c) {
+        return c.toUpperCase();
+      });
+      out[key] = attr.value;
+    }
+  });
+  return out;
+}
+
+function lcT(key,values) {
+  var template = lcText[key];
+  if(template === undefined || template === null) {
+    return '';
+  }
+  return String(template).replace(/\{(\d+)\}/g, function(match,i) {
+    return(values && values[i] !== undefined) ? values[i] : match;
   });
 }
 
-function ensureLeafletAndGoogleCompat(callback) {
-  var onReady = function() {
-    if(!window.google) {
-      window.google = {};
+function lcFmt(value) {
+  return Number(value).toFixed(4);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Events
+ * --------------------------------------------------------------------------------------------- */
+
+function lcAttachEvents() {
+  // Yes / No questions (customForm.yesNoInputDeliverable): the labels drive real radios
+  $lcRoot.on('change', '[data-lc-question] .radio-input', function() {
+    lcSetAnswer($(this).closest('[data-lc-question]'), this.value);
+    lcRefresh();
+  });
+
+  // Regions
+  $lcRoot.on('change', '[data-lc-region-add]', function() {
+    var $option = $(this).find('option:selected');
+    if(this.value) {
+      lcAddRegion(this.value, $option.text(), $option.attr('data-scope') === 'true');
     }
-    if(!window.google.maps) {
-      window.google.maps = {};
+    this.value = '';
+  });
+  $lcRoot.on('click', '[data-lc-region-remove]', function() {
+    lcRemoveRegion($(this).closest('[data-lc-region]'));
+  });
+
+  // Funding-source suggestions
+  $lcRoot.on('change', '[data-lc-fs-check]', function() {
+    var $item = $(this).closest('[data-lc-fs]');
+    $item.toggleClass('is-on', this.checked);
+    $item.find('[data-lc-fs-value]').val(this.checked ? 'true' : 'false');
+    lcRenderSuggestions();
+    lcSortGroups();
+    lcReindex();
+    lcRefresh();
+    lcSyncMarkers();
+  });
+
+  // Locations list
+  $lcRoot.on('click', '[data-lc-row-remove]', function() {
+    lcRemoveRow($(this).closest('[data-lc-row]'));
+  });
+  $lcRoot.on('click', '[data-lc-row-focus]', function() {
+    lcFocusRow($(this).closest('[data-lc-row]'));
+  });
+  $lcRoot.on('mouseenter', '[data-lc-row]', function() {
+    lcHover($(this).attr('data-uid'), true);
+  });
+  $lcRoot.on('mouseleave', '[data-lc-row]', function() {
+    lcHover($(this).attr('data-uid'), false);
+  });
+
+  // Add panel
+  $lcRoot.on('click', '[data-lc-add-start]', lcStartAdd);
+  $lcRoot.on('click', '[data-lc-add-cancel]', lcCancelAdd);
+  $lcRoot.on('change', '[data-lc-level]', lcOnLevel);
+  $lcRoot.on('click', '[data-lc-pick]', function() {
+    lcTogglePick($(this));
+  });
+  $lcRoot.on('input', '[data-lc-add-name], [data-lc-add-lat], [data-lc-add-lon]', lcRefreshAdd);
+  $lcRoot.on('click', '[data-lc-add-confirm]', lcConfirmAdd);
+  $lcRoot.on('keydown', '[data-lc-add]', function(e) {
+    if(e.key === 'Escape') {
+      lcCancelAdd();
+    } else if(e.key === 'Enter' && $(e.target).is('input')) {
+      // Enter in a field would submit the whole section form
+      e.preventDefault();
+      $lcRoot.find('[data-lc-add-confirm]:enabled').trigger('click');
     }
-    if(window.google.maps.__leafletCompatReady) {
-      callback();
-      return;
+  });
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Geographic scope
+ * --------------------------------------------------------------------------------------------- */
+
+function lcAnswer(name) {
+  return $lcRoot.find('[data-lc-question="' + name + '"] .radio-input:checked').val() || '';
+}
+
+/** Checks the radio of an answer and marks its label, as the shared switch is drawn. */
+function lcSetAnswer($q,value) {
+  $q.find('.radio-input').each(function() {
+    this.checked = this.value === value;
+  });
+  $q.find('.yes-button-label').toggleClass('radio-checked', value === 'true');
+  $q.find('.no-button-label').toggleClass('radio-checked', value === 'false');
+}
+
+function lcDisableTakenRegions() {
+  var taken = {};
+  $lcRoot.find('[data-lc-region]').each(function() {
+    taken[$(this).attr('data-key')] = true;
+  });
+  $lcRoot.find('[data-lc-region-add] option').each(function() {
+    if(this.value) {
+      this.disabled = !!taken[this.value];
     }
+  });
+}
 
-    var maps = window.google.maps;
-
-    maps.Animation = {
-      DROP: 'DROP'
-    };
-    maps.GeocoderStatus = {
-      OK: 'OK'
-    };
-    maps.ControlPosition = {
-      TOP_CENTER: 'TOP_CENTER',
-      TOP_LEFT: 'TOP_LEFT'
-    };
-
-    maps.LatLng = function(lat, lng) {
-      this._lat = parseFloat(lat);
-      this._lng = parseFloat(lng);
-      this.lat = function() {
-        return this._lat;
-      };
-      this.lng = function() {
-        return this._lng;
-      };
-    };
-
-    maps.LatLngBounds = function(sw, ne) {
-      this._sw = sw;
-      this._ne = ne;
-      this.contains = function(latLng) {
-        var lng = latLng.lng();
-        // Leaflet can report wrapped longitudes outside [-180, 180].
-        while(lng > 180) {
-          lng -= 360;
-        }
-        while(lng < -180) {
-          lng += 360;
-        }
-        return latLng.lat() >= this._sw.lat() && latLng.lat() <= this._ne.lat() && lng >= this._sw.lng()
-          && lng <= this._ne.lng();
-      };
-    };
-
-    maps.Map = function(mapDiv, options) {
-      var centerLat = options.center.lat();
-      var centerLng = options.center.lng();
-      this._map = L.map(mapDiv, {
-        zoomControl: true
-      }).setView([centerLat, centerLng], options.zoom || 3);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(this._map);
-
-      var self = this;
-      this.controls = {
-        TOP_CENTER: {
-          push: function() {}
-        },
-        TOP_LEFT: {
-          push: function() {}
-        }
-      };
-      this.setCenter = function(latLng) {
-        self._map.panTo([latLng.lat(), latLng.lng()]);
-      };
-      this.setZoom = function(zoom) {
-        self._map.setZoom(zoom);
-      };
-      this.fitBounds = function(bounds) {
-        if(bounds && bounds._southWest && bounds._northEast) {
-          self._map.fitBounds([
-            [bounds._southWest.lat, bounds._southWest.lng],
-            [bounds._northEast.lat, bounds._northEast.lng]
-          ]);
-        }
-      };
-      this.panTo = function(latLng) {
-        self._map.panTo([latLng.lat(), latLng.lng()]);
-      };
-      this.getCenter = function() {
-        var c = self._map.getCenter();
-        return new maps.LatLng(c.lat, c.lng);
-      };
-      this.addListener = function(eventName, handler) {
-        if(eventName === 'center_changed') {
-          self._map.on('move', handler);
-        }
-      };
-      this.getDiv = function() {
-        return self._map.getContainer();
-      };
-    };
-
-    maps.Marker = function(options) {
-      this._position = new maps.LatLng(options.position.lat, options.position.lng);
-      this._name = options.name;
-      this._marker = L.marker([options.position.lat, options.position.lng], {
-        draggable: !!options.draggable
-      });
-      this.setMap = function(mapObj) {
-        if(mapObj && mapObj._map) {
-          this._mapObj = mapObj;
-          this._marker.addTo(mapObj._map);
-        } else if(this._mapObj) {
-          this._mapObj._map.removeLayer(this._marker);
-        }
-      };
-      this.getPosition = function() {
-        var p = this._marker.getLatLng();
-        return new maps.LatLng(p.lat, p.lng);
-      };
-      this.addListener = function(eventName, handler) {
-        if(eventName === 'click') {
-          this._marker.on('click', handler);
-        }
-      };
-    };
-
-    maps.InfoWindow = function() {
-      this._content = '';
-      this._position = null;
-      this.setOptions = function(options) {
-        this._content = options.content || '';
-        this._position = options.position || null;
-      };
-      this.open = function(mapObj) {
-        if(mapObj && mapObj._map && this._position) {
-          this._popup = L.popup().setLatLng([this._position.lat(), this._position.lng()]).setContent(this._content)
-            .openOn(mapObj._map);
-        }
-      };
-      this.close = function() {
-        if(this._popup) {
-          this._popup.remove();
-        }
-      };
-    };
-
-    maps.Geocoder = function() {
-      this.geocode = function(request, callback) {
-        var query = request && request.address ? request.address : '';
-        if(query && geocoderSearchCache[query]) {
-          callback(geocoderSearchCache[query].results, geocoderSearchCache[query].status);
-          return;
-        }
-
-        $.ajax({
-            'url': 'https://nominatim.openstreetmap.org/search',
-            'dataType': 'json',
-            'data': {
-                format: 'jsonv2',
-                q: query,
-                limit: 1
-            },
-            success: function(data) {
-              if(data && data.length > 0) {
-                var item = data[0];
-                var lat = parseFloat(item.lat);
-                var lon = parseFloat(item.lon);
-                var geocodeResult = [
-                    {
-                      geometry: {
-                        location: new maps.LatLng(lat, lon),
-                        viewport: {
-                          _southWest: {
-                            lat: parseFloat(item.boundingbox[0]),
-                            lng: parseFloat(item.boundingbox[2])
-                          },
-                          _northEast: {
-                            lat: parseFloat(item.boundingbox[1]),
-                            lng: parseFloat(item.boundingbox[3])
-                          }
-                        }
-                      }
-                    }
-                ];
-                geocoderSearchCache[query] = {
-                  results: geocodeResult,
-                  status: maps.GeocoderStatus.OK
-                };
-                callback(geocodeResult, maps.GeocoderStatus.OK);
-              }
-            }
-        });
-      };
-    };
-
-    maps.FusionTablesLayer = function() {
-      this.setMap = function() {};
-    };
-
-    maps.__leafletCompatReady = true;
-    callback();
-  };
-
-  if(window.L) {
-    onReady();
+function lcAddRegion(value,name,isScope) {
+  if($lcRoot.find('[data-lc-region][data-key="' + value + '"]').exists()) {
     return;
   }
+  var id = value.split('-')[0];
+  var $chip = $('#lc-templates [data-lc-region-template]').clone().removeAttr('data-lc-region-template');
+  $chip.attr('data-lc-region', '').attr('data-key', value);
+  $chip.find('.lc-chip__name').text($.trim(name));
+  // saveRegions() reads locElementId for UN regions and locElementTypeId for the global unit's own
+  $chip.find('.rId').attr('data-lc-field', isScope ? '.locElementTypeId' : '.locElementId').val(id);
+  $chip.find('.regionScope').val(isScope ? 'true' : 'false');
+  $chip.find('[data-lc-region-remove]').attr('aria-label', lcT('remove', [
+    $.trim(name)
+  ]));
+  $chip.insertBefore($lcRoot.find('[data-lc-regions-empty]'));
+  lcDisableTakenRegions();
+  lcReindex();
+  lcRefresh();
+}
 
-  if(document.getElementById('leaflet-css') == null) {
-    var css = document.createElement('link');
-    css.id = 'leaflet-css';
-    css.rel = 'stylesheet';
-    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-    document.head.appendChild(css);
+function lcRemoveRegion($chip) {
+  $chip.remove();
+  lcDisableTakenRegions();
+  lcReindex();
+  lcRefresh();
+  $lcRoot.find('[data-lc-region-add]').trigger('focus');
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Funding-source suggestions
+ * --------------------------------------------------------------------------------------------- */
+
+/**
+ * Shows the regional suggestions only while the regional answer is Yes, puts the checked
+ * suggested regions in the regions picker and the checked suggested countries in the Country
+ * group, both locked: they leave by being unchecked, never by a remove button.
+ */
+function lcRenderSuggestions() {
+  var regional = lcAnswer('project.projectInfo.locationRegional') === 'true';
+
+  $lcRoot.find('[data-lc-fs]').each(function() {
+    var $item = $(this);
+    var selected = $item.find('[data-lc-fs-check]').is(':checked');
+    var hide = (!lcEditable && !selected) || ($item.attr('data-fs-kind') === 'region' && !regional);
+    $item.prop('hidden', hide);
+  });
+  $lcRoot.find('[data-lc-fs-none]').prop('hidden', $lcRoot.find('[data-lc-fs]:not([hidden])').exists());
+
+  // Suggested regions, as fixed chips
+  $lcRoot.find('[data-lc-fs-chip]').remove();
+  $lcRoot.find('[data-lc-fs][data-fs-kind="region"]').each(function() {
+    if(!$(this).find('[data-lc-fs-check]').is(':checked')) {
+      return;
+    }
+    var $chip = $('<span class="lc-chip lc-chip--fs" data-lc-fs-chip></span>');
+    $chip.append($('<span class="lc-chip__name"></span>').text($(this).attr('data-name')));
+    $chip.append($('<span class="lc-chip__badge"></span>').text(lcT('fsBadge')));
+    $chip.insertBefore($lcRoot.find('[data-lc-regions-empty]'));
+  });
+
+  // Suggested countries, as locked rows of the Country group
+  var wanted = {};
+  $lcRoot.find('[data-lc-fs][data-fs-kind="country"]').each(function() {
+    if($(this).find('[data-lc-fs-check]').is(':checked')) {
+      wanted[$(this).attr('data-key')] = $(this);
+    }
+  });
+  $lcRoot.find('[data-lc-fs-row]').each(function() {
+    if(!wanted[$(this).attr('data-fs-key')]) {
+      lcDetachMarker($(this).attr('data-uid'));
+      $(this).remove();
+    } else {
+      delete wanted[$(this).attr('data-fs-key')];
+    }
+  });
+  $.each(wanted, function(key,$item) {
+    var $group = lcEnsureGroup(lcCountryLevelId, lcCountryName(), true);
+    var $row = lcNewRow();
+    $row.attr('data-lc-fs-row', '').attr('data-fs-key', key).addClass('is-fs');
+    $row.attr('data-name', $item.attr('data-name')).attr('data-iso', $item.attr('data-iso'));
+    $row.find('[data-lc-row-name]').text($item.attr('data-name'));
+    // Not posted as a location: the suggestion's own .selected flag carries it
+    $row.find('input').remove();
+    $row.find('[data-lc-row-remove]').remove();
+    $row.append($('<span class="lc-badge"></span>').attr('title', lcT('fsLocked')).append(
+        '<svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">'
+            + '<rect x="3.2" y="7" width="9.6" height="6.6" rx="1.6" stroke="currentColor" stroke-width="1.6"></rect>'
+            + '<path d="M5.6 7V5.2a2.4 2.4 0 0 1 4.8 0V7" stroke="currentColor" stroke-width="1.6"></path></svg>').append(
+        document.createTextNode(lcT('fsBadge'))));
+    $group.find('[data-lc-rows]').append($row);
+    lcPrepareRow($row);
+  });
+  // A Country group left with nothing in it goes away
+  $lcRoot.find('[data-lc-group]').each(function() {
+    if(!$(this).find('[data-lc-row]').exists() && $(this).attr('data-lc-new') === 'true') {
+      $(this).remove();
+    }
+  });
+}
+
+function lcCountryName() {
+  var $option = $lcRoot.find('[data-lc-level] option[value="' + lcCountryLevelId + '"]');
+  return $option.exists() ? $option.attr('data-name') : 'Country';
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Locations list
+ * --------------------------------------------------------------------------------------------- */
+
+function lcGroups() {
+  return $lcRoot.find('[data-lc-groups] [data-lc-group]');
+}
+
+function lcRows() {
+  return $lcRoot.find('[data-lc-groups] [data-lc-row]');
+}
+
+function lcIsCountryGroup($group) {
+  return $group.attr('data-level-id') === lcCountryLevelId;
+}
+
+/** Fills a row's icon and second line from what it holds. */
+function lcPrepareRow($row) {
+  if(!$row.attr('data-uid')) {
+    $row.attr('data-uid', 'lc' + (++lcRowSeq));
   }
-
-  var script = document.getElementById('leaflet-js');
-  if(script == null) {
-    script = document.createElement('script');
-    script.id = 'leaflet-js';
-    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    script.onload = onReady;
-    document.body.appendChild(script);
-  } else if(window.L) {
-    onReady();
+  var $group = $row.closest('[data-lc-group]');
+  var name = $row.attr('data-name') || '';
+  // Every row with a stored point gets a marker, countries included (their stored centre), as the
+  // previous map did; only sites read their coordinates in the list.
+  var hasPoint = $row.attr('data-lat') !== undefined;
+  var hasCoords = hasPoint && !lcIsCountryGroup($group);
+  $row.toggleClass('has-point', hasPoint);
+  var meta;
+  if($row.is('[data-lc-fs-row]')) {
+    meta = lcT('suggested');
+  } else if(hasCoords) {
+    meta = lcFmt($row.attr('data-lat')) + ', ' + lcFmt($row.attr('data-lon'));
+  } else if(lcIsCountryGroup($group)) {
+    meta = lcT('wholeCountry');
   } else {
-    script.addEventListener('load', onReady);
+    meta = lcT('fromList');
   }
+  $row.toggleClass('has-coords', hasCoords);
+  $row.find('[data-lc-row-icon]').text(hasCoords ? '' : name.substring(0, 2).toUpperCase());
+  $row.find('[data-lc-row-meta]').text(meta);
 }
 
-function init() {
-// Init select2
-  $('form select').select2({
-    width: "100%"
-  });
-
-  // Leaflet map and google.maps compatibility shim
-  loadScript();
-
-  /* Declaring Events */
-  attachEvents();
-
-  // Add file uploads
-  setFileUploads();
-
+function lcNewRow() {
+  return $('#lc-templates [data-lc-row-template]').clone().removeAttr('data-lc-row-template');
 }
 
-function attachEvents() {
-
-  /** Array countries * */
-  // From countries in locations table
-  $("input[value='Country']").parents(".locationLevel").find(".locElement").each(function(i,e) {
-    countries.push($(e).find(".locElementCountry").val());
-  });
-
-  // From suggested countries
-  if($('.locationLevel[data-name="Country"] .suggestedCountriesList').find('.locations').exists()) {
-    $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
+/** The group of a level, created (empty) at the end when the list does not have it yet. */
+function lcEnsureGroup(levelId,levelName,isList) {
+  var $group = lcGroups().filter('[data-level-id="' + levelId + '"]');
+  if($group.exists()) {
+    return $group.first();
   }
-
-  // Add suggested countries list into the blue mapped countries in map
-  $('.suggestedCountriesList').find('.locations').each(function(i,e) {
-    countries.push($(e).find('.locationName').attr('id'));
+  $group = $('#lc-templates [data-lc-group-template]').clone().removeAttr('data-lc-group-template');
+  $group.attr({
+      'data-level-id': levelId,
+      'data-level-name': levelName,
+      'data-is-list': isList ? 'true' : 'false',
+      'data-lc-new': 'true'
   });
-
-  // REMOVE REGION
-  $(".removeRegion").on("click", removeRegion);
-
-  // Remove a location element-Event
-  $(".removeLocation").on("click", removeLocationItem);
-
-  // REGIONAL QUESTION
-  $(".button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    var $input = $(this).parent().find('input');
-    $input.val(valueSelected);
-    $(this).parent().find("label").removeClass("radio-checked");
-    $(this).addClass("radio-checked");
-    $(document).trigger('updateComponent');
-  });
-
-  $(".isRegional .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(!valueSelected) {
-      $(".regionsBox").hide("slow");
-      $(".regionsContent").hide("slow");
-    } else {
-      $(".regionsBox").show("slow");
-      $(".regionsContent").show("slow");
-    }
-  });
-
-  /** Remove region option from region select * */
-  var regionSelect = $("#regionSelect");
-  $(".regionsContent").find(".recommended.locElement").each(function(i,e) {
-    if($(e).find(".recommendedSelected").val() == "true") {
-      var id = $(e).find(".elementID");
-      var scope = $(e).find(".locScope");
-      var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
-      option.prop('disabled', true);
-    }
-  });
-
-  $("#regionList").find(".region").each(function(i,e) {
-    var id = $(e).find("input.rId");
-    var scope = $(e).find("input.regionScope");
-    var option = regionSelect.find("option[value='" + id.val() + "-" + scope.val() + "']");
-    option.prop('disabled', true);
-  });
-
-  // Region Select
-  $("#regionSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-    if(option.val() != "-1") {
-      addRegion(option);
-      // Disable option from select
-      option.prop('disabled', true);
-      $('#regionSelect').select2();
-    }
-  });
-
-  // Events
-  $("#locLevelSelect").on("change", function() {
-    var option = $(this).find("option:selected");
-
-    // When the selected option is "Select an option" hide the form
-    if(option.val() == "-1") {
-      $("#addLocationButton").hide("slow");
-      $(".locationForm-container .selectLocations").hide("slow");
-      $(".locationForm-container .inputFormCoordinates-container").hide("slow");
-    } else {
-      // Show the add location button
-      $("#addLocationButton").show("slow");
-      // If is list, get the available options in select
-      if(option.val().split("-")[1] == "true") {
-        loadLocationElements(option.val().split("-")[0]);
-
-        // Show the form for list inputs (Country - CSV)
-        $("#inputFormWrapper").slideUp();
-        $(".selectLocations").slideDown();
-
-      } else {
-        // Show the form for name, latitude and longitude inputs
-        $(".selectLocations").slideUp();
-        $("#inputFormWrapper").slideDown();
-      }
-    }
-
-    // If the selected option is "Select an option" or "Climate Smart Village" hide the center indicator in the map
-    if(option.val() == "-1" || option.val().split("-")[1] == "true") {
-      $('#map .centerMarker').hide();
-    } else {
-      $('#map .centerMarker').show();
-    }
-
-  });
-
-  // Clicking recommended location checkbox
-  $('.recommendedLocName, .iconSelected').on(
-      'click',
-      function() {
-        var parent = $(this).parent();
-        var selectedInput = parent.find("input.recommendedSelected");
-        var option =
-            $("#regionSelect").find(
-                "option[value='" + parent.find("input.elementID").val() + "-" + parent.find("input.locScope").val()
-                    + "']");
-        if(parent.find(".acceptLocation").exists()) {
-          parent.find(".iconSelected").removeClass("acceptLocation");
-          parent.find(".iconSelected").addClass("notAcceptLocation");
-          selectedInput.val("false");
-          option.prop('disabled', false);
-          $('#regionSelect').select2();
-        } else {
-          checkRecommendedLocation(parent);
-          parent.find(".iconSelected").removeClass("notAcceptLocation");
-          parent.find(".iconSelected").addClass("acceptLocation");
-          selectedInput.val("true");
-          option.prop('disabled', true);
-          $('#regionSelect').select2();
-
-        }
-        $(document).trigger('updateComponent');
-      });
-
-  // When suggested locations checkbox change do
-  $('input.recommendedSelected').on('change', function() {
-    // On checkbox change, put value (true or false) in next input
-    $(this).parent().find('.recommended-location').val($(this).is(":checked"));
-
-    // Extract values from recommended select
-    var locIso = $(this).parent().find('.isoAlpha').attr('data-isoAlpha');
-    var locName = $(this).parent().find(".lName").attr('data-name');
-    var locId = $(this).parent().find(".elementID").val();
-
-    // Country (value=2) Row is the row in the locations table
-    var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
-    // Country list is the list in all locations popup
-    var countryList = $(".list-container").find(".Country");
-
-    // Add the selected country in map, table and list
-    if($(this).is(":checked")) {
-      $("#selectsContent").find("#noLocationsAdded").hide();
-
-      // Add suggested location in table
-      if(countryRow.exists()) {
-        addSuggestedCountry(locIso, locName, locId);
-      } else {
-        // If Country level location doesn't exists, so create level location in table
-        var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
-        $locationItem.attr("data-name", "Country");
-        $locationItem.find(".locLevelName").html('Country');
-        $locationItem.find("input.locationLevelId").val('2');
-        $locationItem.find("input.locationLevelName").val('Country');
-        $locationItem.find("input.isList").val(true);
-        $(".locationsDataTable > tbody:last-child").append($locationItem);
-
-        $locationItem.show("slow");
-        updateIndex();
-
-        // If Country level location doesn't exists, so create level list in all locations popup
-        var $locLevelList = $("#itemLoc-template").clone(true).removeAttr("id");
-        $locLevelList.find(".loc-level").attr('name', "Country");
-        $locLevelList.find(".loc-level").text("Country");
-        $locLevelList.find("ul").attr("name", "Country");
-        $locLevelList.find("ul").attr("id", "2");
-        $locLevelList.find("#itemList-template").remove();
-
-        $(".list-container").append($locLevelList);
-        $locLevelList.show();
-
-        // when country level is created, then add the checked suggested location
-        addSuggestedCountry(locIso, locName, locId);
-      }
-
-      // When a suggested location is added, show the suggested row into the country level
-      $('.locationLevel[data-name="Country"] .suggestedCountriesList').show();
-
-      // Add the suggested country in the map
-      countries.push(locIso);
-      layer.setMap(null);
-      mappingCountries();
-    } else {
-      // If the suggested location isn't checked, remove from table and popup list
-      removeSuggestedCountry(locIso, locId, countryRow, countryList);
-
-      // If there is not suggested countries in list, hide the row in table
-      if($(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0) {
-        $('.locationLevel[data-name="Country"] .suggestedCountriesList').hide();
-      }
-      // If also that is the last country, remove the table country level
-      if($(".locationLevel[data-name='Country']").find('.locations').length == 0) {
-        $(".locationLevel[data-name='Country']").remove();
-        $(".list-container").find("h4[name='Country']").parent().remove();
-
-        // Show the no locations added message
-        if($(".locationsDataTable").find(".locationLevel").length == 0) {
-          $("#selectsContent").find("#noLocationsAdded").show();
-        }
-
-        updateIndex();
-        checkItems($('#selectsContent'));
-      }
-
-      // Search the unmarked location in countries array and remove it (so it remove the country from map too)
-      var index = $.inArray(locIso, countries);
-      if(index !== -1) {
-        countries.splice(index, 1);
-      }
-      layer.setMap(null);
-      mappingCountries();
-    }
-  });
-
-  // On click put the map in the right view (all locations popup or add new location popup)
-  $('.allLocationsButton').on('click', function() {
-    changeMapDiv(this);
-  });
-
-  // On click put the map in the right view (all locations popup or add new location popup)
-  $('#addNewLocation-button').on('click', function() {
-    changeMapDiv(this);
-  });
-
-  // When click on a location in the all locations popup
-  $('.marker-map').on('click', function() {
-    var markerId = (this).id;
-    var markerName = $(this).attr("name");
-
-    $('.marker-map').removeClass('selected');
-    $(this).addClass('selected');
-
-    /* GET COORDINATES */
-    // If is Climate Smart Village Site, find latitude and longitude in database
-    // If is other location with coordinates find lat and lon in DOM
-    // Else is a Country, so find country with geocoder and center map.
-    if($(this).parent().attr('id') == '10') {
-      var url = baseURL + "/geopositionByElement.do";
-      var data = {
-          "locElementID": markerId,
-          phaseID: phaseID
-      };
-      $.ajax({
-          url: url,
-          type: 'GET',
-          dataType: "json",
-          data: data
-      }).done(function(m) {
-        if(m.geopositions.length != 0) {
-          latitude = m.geopositions[0].latitude;
-          longitude = m.geopositions[0].longitude;
-          var latLng = new google.maps.LatLng(latitude, longitude);
-          map.setCenter(latLng);
-          map.setZoom(15);
-        }
-      });
-    } else if($(this).find('.coordinates').exists()) {
-      var latitude = $(this).find('.coordinates').attr('data-lat');
-      var longitude = $(this).find('.coordinates').attr('data-lon');
-      var latLng = new google.maps.LatLng(latitude, longitude);
-      map.setCenter(latLng);
-      map.setZoom(7);
-    } else {
-      var geocoder = new google.maps.Geocoder();
-
-      geocoder.geocode({
-        'address': markerName
-      }, function(results,status) {
-        if(status == google.maps.GeocoderStatus.OK) {
-          map.setCenter(results[0].geometry.location);
-          map.fitBounds(results[0].geometry.viewport);
-        }
-      });
-    }
-  });
-
-  // When lost focus in coordinates inputs, moves the map to the indicated position
-  $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").blur(function() {
-    var latitude = $("#inputFormWrapper input.latitude").val();
-    var longitude = $("#inputFormWrapper input.longitude").val();
-    if(!map) {
-      return;
-    }
-    var latLng = new google.maps.LatLng(latitude, longitude);
-    map.setCenter(latLng)
-  });
-
-  // When click on a coordinate input, select all the text, to make easy clean or change the value
-  $("#inputFormWrapper input.latitude, #inputFormWrapper input.longitude").on('click', function() {
-    $(this).select();
-  });
-
-  // Load location options for all options when isList = true
-  var locOption = $("#locLevelSelect").find("option");
-  $.each(locOption, function(i,e) {
-    if($(e).val().split("-")[1] == "true") {
-      loadLocationElements($(e).val().split("-")[0]);
-    }
-  });
-
-  // Add the modal buttons listeners
-  modalButtonsListeners();
-
-  // Leaflet map needs size invalidation after Bootstrap modal finishes opening.
-  $('#addLocationModal, #allLocationsModal').on('shown.bs.modal', function() {
-    if(map && map._map && map._map.invalidateSize) {
-      setTimeout(function() {
-        map._map.invalidateSize();
-      }, 50);
-    }
-  });
-
-
-  // CSA Question
-  $(".isCSV .button-label").on("click", function() {
-    var valueSelected = $(this).hasClass('yes-button-label');
-    if(!valueSelected) {
-      $(".csvActivitiesBox").hide("slow");
-    } else {
-      $(".csvActivitiesBox").show("slow");
-    }
-  });
-
+  $group.find('[data-lc-group-name]').text(levelName);
+  $group.find('.locationLevelId').val(levelId);
+  $group.find('.locationLevelName').val(levelName);
+  $group.find('.isList').val(isList ? 'true' : 'false');
+  $group.insertBefore($lcRoot.find('[data-lc-empty]'));
+  lcSortGroups();
+  return $group;
 }
 
-// Load locations options depending on the location level id (Countries, CSV, etc.)
-function loadLocationElements(option) {
-
-  // LocElements options using ajax
-  var select = $("#countriesCmvs");
-  var url = baseURL + "/searchCountryListPL.do";
-  var data = {
-      parentId: option,
-      phaseID: phaseID
-  };
-  $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: "json",
-      data: data
-  })
-      .done(
-          function(m) {
-            select.empty();
-            for(var i = 0; i < m.locElements.length; i++) {
-              select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id + "-"
-                  + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name + "' >" + m.locElements[i].name
-                  + "</option>");
-            }
-          });
-}
-
-function modalButtonsListeners() {
-
-  // Add location button
-  $("#addLocationButton").on("click", function(e) {
-    $(this).prop('disabled', true);
-
-    // Select input
-    var $locationLevelSelect = $("#locLevelSelect");
-    var locationId = $locationLevelSelect.val().split("-")[0];
-    // IsList is true, when there are options to load in select (CSV, Countries)
-    var locationIsList = $locationLevelSelect.val().split("-")[1];
-    var locationName = $locationLevelSelect.val().split("-")[2];
-
-    // Multiple select input
-    var $locationSelect = $("#countriesCmvs");
-    // checking if is list
-    if(locationIsList == "true") {
-      // Checking if locations select is empty
-      if($locationSelect.val() != null) {
-
-        // Checking if the location level exist in the bottom table
-        if($(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").exists()) {
-          addCountryIntoLocLevel(locationId, $locationSelect, locationName);
-        } else {
-          // LocLevel makes reference to the location elements container (i.e. Country, Province, District, Village,
-          // etc.)
-          addLocLevel(locationName, locationId, locationIsList, $locationSelect);
-        }
-      }
-    } else {
-      // When name input is void, show a red border
-      if($("#inputFormWrapper").find(".name").val().trim() == "") {
-        $("#inputFormWrapper").find(".name").addClass("fieldError");
-        $("#inputFormWrapper").find(".name").on('change', function() {
-          $(this).removeClass('fieldError');
-        });
-      } else {
-        // On change remove red border
-        $("#inputFormWrapper").find(".name").removeClass("fieldError");
-        if(!$("#inputFormWrapper").find(".fieldError").exists()) {
-          // Checking if the location level exist in the bottom wrapper
-          if($(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").exists()) {
-            addLocByCoordinates(locationId, $locationSelect, locationName)
-          } else {
-            addLocLevel(locationName, locationId, locationIsList, $locationSelect);
-          }
-        }
-      }
-    }
+/** Orders the groups as crp_loc_element_types lists the levels. */
+function lcSortGroups() {
+  var order = {};
+  $lcRoot.find('[data-lc-level] option').each(function(i) {
+    order[this.value] = i;
   });
-
-}
-
-// Add Regions
-function addRegion(option) {
-  var canAdd = true;
-  if(option.val() == "-1") {
-    canAdd = false;
-  }
-  var optionValue = option.val().split("-")[0];
-  var optionScope = option.val().split("-")[1];
-
-  var $list = $(option).parents("#regionList").find(".list");
-  var $item = $("#regionTemplate").clone(true).removeAttr("id");
-  var v = $(option).text().length > 20 ? $(option).text().substr(0, 20) + ' ... ' : $(option).text();
-
-  // Check if is already selected
-  $list.find('.region').each(function(i,e) {
-    if($(e).find('input.rId').val() == optionValue) {
-      canAdd = false;
-      return;
-    }
-  });
-  if(!canAdd) {
+  if($.isEmptyObject(order)) {
     return;
   }
-
-  // Set region parameters
-  $item.find(".name").attr("title", $(option).text());
-  $item.find(".name").html(v);
-  $item.find(".rId").val(optionValue);
-  $item.find(".regionScope").val(optionScope);
-  $item.find(".id").val(-1);
-  $list.append($item);
-  $item.show('slow');
-  updateRegionList($list);
-  checkRegionList($list);
-
-}
-
-function removeRegion() {
-  var $list = $(this).parents('.list');
-  var $item = $(this).parents('.region');
-  var value = $item.find(".rId").val();
-  var scope = $item.find(".regionScope").val();
-  var name = $item.find(".name").attr("title");
-
-  var $select = $(".regionsSelect");
-  $item.hide(300, function() {
-    $item.remove();
-    checkRegionList($list);
-    updateRegionList($list);
+  var $groups = lcGroups().get();
+  $groups.sort(function(a,b) {
+    var oa = order[$(a).attr('data-level-id')];
+    var ob = order[$(b).attr('data-level-id')];
+    return(oa === undefined ? 999 : oa) - (ob === undefined ? 999 : ob);
   });
-  var option = $select.find("option[value='" + value + "-" + scope + "']");
-  option.prop('disabled', false);
-  $('#regionSelect').select2();
-}
-
-function updateRegionList($list) {
-  $($list).find('.region').each(function(i,e) {
-    // Set regions indexes
-    $(e).setNameIndexes(1, i);
+  var $anchor = $lcRoot.find('[data-lc-empty]');
+  $.each($groups, function(i,g) {
+    $(g).insertBefore($anchor);
   });
 }
 
-function checkRegionList(block) {
-  var items = $(block).find('.region').length;
-  if(items == 0) {
-    $(block).parent().find('p.emptyText').fadeIn();
-  } else {
-    $(block).parent().find('p.emptyText').fadeOut();
-  }
-}
-
-// Load script of google services
-function loadScript() {
-  ensureLeafletAndGoogleCompat(function() {
-    initMap();
-
-    var pendingMarkers = [];
-    $(".locationsDataTable").find(".locationLevel").each(function(index,item) {
-      var locationTypeId = $(item).find("input.locationLevelId").val();
-      $(item).find(".locElement").each(function(i,locItem) {
-        var latitude = $(locItem).find(".geoLatitude").val();
-        var longitude = $(locItem).find(".geoLongitude").val();
-        var isList = $(locItem).parent().parent().parent().find(".isList").val();
-        var site = $(locItem).find(".locElementName").val();
-        var idMarker = $(locItem).attr("id").split("-")[1];
-        if(latitude != "" && longitude != "" && latitude != 0 && longitude != 0) {
-          pendingMarkers.push({
-            idMarker: idMarker,
-            latitude: parseFloat(latitude),
-            longitude: parseFloat(longitude),
-            site: site,
-            isList: isList,
-            locType: locationTypeId == "10" ? 2 : 1
-          });
-        }
+/** Renames every posted input with contiguous indexes (see the header of this file). */
+function lcReindex() {
+  var levelIndex = 0;
+  lcGroups().each(function() {
+    var $group = $(this);
+    var $rows = $group.find('[data-lc-row]').not('[data-lc-fs-row]');
+    var posted = $rows.exists();
+    var prefix = 'project.locationsData[' + levelIndex + ']';
+    $group.find('.lc-group__inputs input').each(function() {
+      if(posted) {
+        this.name = prefix + $(this).attr('data-lc-field');
+      } else {
+        this.removeAttribute('name');
+      }
+    });
+    $rows.each(function(j) {
+      $(this).find('input[data-lc-field]').each(function() {
+        this.name = prefix + '.locElements[' + j + ']' + $(this).attr('data-lc-field');
       });
     });
-
-    var markerBatchSize = 40;
-    var markerIndex = 0;
-    function renderMarkerBatch() {
-      var end = Math.min(markerIndex + markerBatchSize, pendingMarkers.length);
-      for(var i = markerIndex; i < end; i++) {
-        var m = pendingMarkers[i];
-        addMarker(map, m.idMarker, m.latitude, m.longitude, m.site, m.isList, m.locType);
-      }
-      markerIndex = end;
-      if(markerIndex < pendingMarkers.length) {
-        setTimeout(renderMarkerBatch, 0);
-      }
-    }
-
-    if(pendingMarkers.length > 0) {
-      renderMarkerBatch();
+    if(posted) {
+      levelIndex++;
     }
   });
 
-}
-
-// Initialization Google Map API
-function initMap() {
-
-  style = [
-      {
-          "featureType": "water",
-          "stylers": [
-              {
-                "visibility": "on"
-              }, {
-                "color": "#b5cbe4"
-              }
-          ]
-      }, {
-          "featureType": "landscape",
-          "stylers": [
-            {
-              "color": "#efefef"
-            }
-          ]
-      }, {
-          "featureType": "road.highway",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#83a5b0"
-            }
-          ]
-      }, {
-          "featureType": "road.arterial",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#bdcdd3"
-            }
-          ]
-      }, {
-          "featureType": "road.local",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#ffffff"
-            }
-          ]
-      }, {
-          "featureType": "poi.park",
-          "elementType": "geometry",
-          "stylers": [
-            {
-              "color": "#e3eed3"
-            }
-          ]
-      }, {
-          "featureType": "administrative",
-          "stylers": [
-              {
-                "visibility": "on"
-              }, {
-                "lightness": 33
-              }
-          ]
-      }, {
-        "featureType": "road"
-      }, {
-          "featureType": "poi.park",
-          "elementType": "labels",
-          "stylers": [
-              {
-                "visibility": "on"
-              }, {
-                "lightness": 20
-              }
-          ]
-      }, {}, {
-          "featureType": "road",
-          "stylers": [
-            {
-              "lightness": 20
-            }
-          ]
-      }
-  ];
-  var mapDiv = document.getElementById('map');
-  map = new google.maps.Map(mapDiv, {
-      center: new google.maps.LatLng(14.41, -12.52),
-      zoom: 3,
-      mapTypeId: 'roadmap',
-      styles: style
-  });
-
-  // Create the search box and link it to the UI element.
-  // var input = document.getElementById('pac-input');
-  // var searchBox = new google.maps.places.SearchBox(input);
-  // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-  // Bias the SearchBox results towards current map's viewport.
-  // map.addListener('bounds_changed', function() {
-  // searchBox.setBounds(map.getBounds());
-  // });
-
-  // Listen for the event fired when the user selects a prediction and retrieve
-  // more details for that place.
-  /*
-   * searchBox.addListener('places_changed', function() { var places = searchBox.getPlaces(); if(places.length == 0) {
-   * return; } // For each place, get the icon, name and location. var bounds = new google.maps.LatLngBounds();
-   * places.forEach(function(place) { if(!place.geometry) { console.log("Returned place contains no geometry"); return; }
-   * var icon = { url: place.icon, size: new google.maps.Size(71, 71), origin: new google.maps.Point(0, 0), anchor: new
-   * google.maps.Point(17, 34), scaledSize: new google.maps.Size(25, 25) }; if(place.geometry.viewport) { // Only
-   * geocodes have viewport. bounds.union(place.geometry.viewport); } else { bounds.extend(place.geometry.location); }
-   * }); map.fitBounds(bounds); });
-   */
-
-  // Add country from map, when click on the center marker
-  $('<div/>').addClass('centerMarker').css('display', 'none').appendTo(map.getDiv()).click(function() {
-    var option = $("#locLevelSelect").find("option:selected");
-    if(option.val().split("-")[0] == "2") {
-      addLocationFromMap();
-    }
-  });
-
-  var centerControlDiv = document.createElement('div');
-  if(editable && $("span.has_otherLoc").text() == "true") {
-    var centerControl = new CenterControl(centerControlDiv, map);
-    centerControlDiv.index = 1;
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
-  }
-
-  if(markers.length > 0) {
-    map.setCenter(markers[markers.length - 1].getPosition());
-  }
-
-  mappingCountries();
-
-  // bounds of the desired area, this is the map limit to prevent the gray zone in google maps
-  var allowedBounds =
-      new google.maps.LatLngBounds(new google.maps.LatLng(-80.711903, -175.058594), new google.maps.LatLng(80.829945,
-          175.839844));
-  var lastValidCenter = map.getCenter();
-
-  map.addListener('center_changed', function() {
-    // after the center of the map has changed, pan back to the
-    // marker.
-    $("#inputFormWrapper").find(".latitude").val(map.getCenter().lat());
-    $("#inputFormWrapper").find(".longitude").val(map.getCenter().lng());
-
-    // In Leaflet mode, keep free pan behavior and avoid lockups due to wrapped world coordinates.
-    if(map && map._map) {
-      return;
-    }
-
-    if(allowedBounds.contains(map.getCenter())) {
-      // still within valid bounds, so save the last valid position
-      lastValidCenter = map.getCenter();
-      return;
-    }
-
-    // not valid anymore => return to last valid position
-    map.panTo(lastValidCenter);
-
-  });
-
-}
-
-// Map countries in google maps
-function mappingCountries() {
-  var query = "";
-  layer = new google.maps.FusionTablesLayer();
-  if(countries.length > 0) {
-
-    $.each(countries, function(i,c) {
-      if(i == countries.length - 1) {
-        query = query + "'" + c + "'";
-      } else {
-        query = query + "'" + c + "',";
-      }
-    });
-    var FT_Options = {
-        suppressInfoWindows: true,
-        query: {
-            select: 'kml_4326',
-            from: 2597535,
-            where: "'ISO_2DIGIT' IN (" + query + ") "
-        },
-        styles: [
-          {
-            polygonOptions: {
-                fillColor: "#2E2EFE",
-                fillOpacity: 0.15
-            }
-          }
-        ]
-    };
-    layer = new google.maps.FusionTablesLayer(FT_Options);
-    layer.setMap(map);
-  }
-
-}
-
-// Remove a location element-Function
-function removeLocationItem() {
-  var globalList = $(this).parents("#selectsContent");
-  var list = $(this).parents(".optionSelect-content");
-  var $item = $(this).parents('.locElement');
-  var locLevel = $item.parents('.locationLevel').attr('data-name');
-
-  // Loc level in all locations popup
-  var locLevelList = $(".list-container").find("h4[name='" + locLevel + "']").parent();
-
-  if($item.find(".geoLatitude").val() != "" && $item.find(".geoLongitude").val() != "") {
-    var optionValue = $item.attr("id").split('-');
-    var id = optionValue[1];
-    if(markers[id] != undefined) {
-      removeMarker(id);
-    }
-  }
-  $item.hide(function() {
-    // Remove unmarked location from locations list (all locations modal)
-    var locId = $item.attr('data-locId');
-    locLevelList.find("#" + locId).remove();
-
-    $item.remove();
-
-    // If is the last location in LocLevel, remove locLevel
-    if($(list).find(".locElement").length == 0) {
-      // If is Country check if is the last suggested Country too
-      if(locLevel == "Country") {
-        if($(".locationLevel[data-name='Country']").find('.suggestedCountriesList').find('.locations').length == 0) {
-          $(list).parents(".locationLevel").remove();
-          locLevelList.remove();
-        }
-      } else {
-        $(list).parents(".locationLevel").remove();
-        locLevelList.remove();
-      }
-
-      // If is the last LocLevel, show the "no locations added" message
-      if($(".locationsDataTable").find(".locationLevel").length == 0) {
-        $("#selectsContent").find("#noLocationsAdded").show();
-      }
-
-    }
-    updateIndex();
-    checkItems(globalList);
-  });
-  layer.setMap(null);
-
-  /* Remove of countries array */
-  var index = countries.indexOf($item.find(".locElementCountry").val());
-  if(index > -1) {
-    countries.splice(index, 1);
-  }
-  mappingCountries();
-}
-
-// Get short and long country name
-function getResultByType(results,type) {
-  if(results) {
-    for(var i = 0; i < results.address_components.length; i++) {
-      var types = results.address_components[i].types;
-      for(var typeIdx = 0; typeIdx < types.length; typeIdx++) {
-        if(types[typeIdx] == type) {
-          return {
-              short_name: results.address_components[i].short_name,
-              long_name: results.address_components[i].long_name
-          };
-        }
-      }
-    }
-  } else {
-    return undefined;
-  }
-}
-
-// Notification alert (to notify when locations already exists)
-function notify(text) {
-  var notyOptions = jQuery.extend({}, notyDefaultOptions);
-  notyOptions.text = text;
-  notyOptions.type = 'alert';
-  noty(notyOptions);
-}
-
-// Adding location level with locElements
-function addLocLevel(locationName,locationId,locationIsList,$locationSelect) {
-  // Hide the "no locations has been added" message
-  $("#selectsContent").find("#noLocationsAdded").hide();
-
-  // Add loc level in locations table
-  var $locationItem = $("#locationLevel-template").clone(true).removeAttr("id");
-  $locationItem.attr('data-name', locationName);
-  $locationItem.find(".locLevelName").html(locationName);
-  $locationItem.find("input.locationLevelId").val(locationId);
-  $locationItem.find("input.locationLevelName").val(locationName);
-  $locationItem.find("input.isList").val(locationIsList);
-  $(".locationsDataTable > tbody:last-child").append($locationItem);
-
-  // Add loc Level in locations list (all locations popup)
-  var $locLevelList = $("#itemLoc-template").clone(true).removeAttr("id");
-  $locLevelList.find(".loc-level").attr('name', locationName);
-  $locLevelList.find(".loc-level").text(locationName);
-  $locLevelList.find("ul").attr("name", locationName);
-  $locLevelList.find("ul").attr("id", locationId);
-  $locLevelList.find("#itemList-template").remove();
-
-  $(".list-container").append($locLevelList);
-  $locLevelList.show();
-
-  $locationItem.show("slow");
-  updateIndex();
-  if(locationIsList == "true") {
-    if(locationName != "Country") {
-      $locationItem.find(".allCountriesQuestion").show();
-      $locationItem.find("span.question").html($("span.qCmvSites").text());
-    }
-    addCountryIntoLocLevel(locationId, $locationSelect, locationName);
-  } else {
-    addLocByCoordinates(locationId, $locationSelect, locationName);
-  }
-}
-
-function addLocByCoordinates(locationId,$locationSelect,locationName) {
-  var countryName = "";
-  var $list =
-      $(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").parent().find(
-          ".optionSelect-content");
-  var $item = $('#location-template').clone(true).removeAttr("id");
-  var latitude = $("#inputFormWrapper").find(".latitude").val();
-  var longitude = $("#inputFormWrapper").find(".longitude").val();
-  var name = $("#inputFormWrapper").find("input.name").val();
-  var locLevelList = $(".list-container").find("ul[name='" + locationName + "']");
-  countID++;
-
-  var finalizeLocationAdd = function() {
-    // Add item into locations table
-    $item.attr("id", "location-" + (countID));
-    $item.attr("data-locId", (countID));
-    $item.find('.locationName').html(
-        '<span class="lName">' + name + '</span><span class="lPos"> (' + parseFloat(latitude).toFixed(4) + ', '
-            + parseFloat(longitude).toFixed(4) + ' )</span> ');
-    $item.find('.geoLatitude').val(latitude);
-    $item.find('.geoLongitude').val(longitude);
-    $item.find('.locElementName').val(name);
-    $item.find('.locElementId').val(-1);
-    $list.append($item);
-    $item.show('slow');
-
-    // add marker in map only when map is available
-    if(map) {
-      addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), name, "false", 1);
-    }
-
-    // Add location in all locations list (Modal)
-    var $listItem = $('#itemList-template').clone(true).removeAttr("id");
-    $listItem.attr('id', countID);
-    $listItem.attr('name', name);
-    $listItem.find(".item-name").text(name);
-
-    // Round value to max 4 decimals
-    latitude = parseFloat(latitude).toFixed(4);
-    longitude = parseFloat(longitude).toFixed(4);
-
-    $listItem.find(".coordinates").attr('data-lat', latitude);
-    $listItem.find(".coordinates").attr('data-lon', longitude);
-    $listItem.find(".coordinates").text("(" + latitude + ", " + longitude + ")").show();
-    locLevelList.append($listItem);
-
-    // Show and hide Successfully added message
-    $('#alert-succesfully-added').slideDown();
-    setTimeout(function() {
-      $('#alert-succesfully-added').slideUp();
-      $('#addLocationModal').modal('hide');
-    }, 2000);
-
-    // update indexes
-    updateIndex();
-    checkItems($list.parents("#selectsContent"));
-  };
-
-  reverseGeocode(latitude, longitude, function(data) {
-    if(data && data.address && data.address.country_code) {
-      $item.find('input.locElementCountry').val(data.address.country_code.toUpperCase());
-    }
-  }, function() {
-    finalizeLocationAdd();
-  });
-  $('#inputFormWrapper .nameWrapper input').val('');
-}
-
-function updateIndex() {
-  $('.locationsDataTable ').find('.locationLevel').each(function(i,e) {
-    $(e).setNameIndexes(1, i);
-    $.each($(e).find(".locElement"), function(index,element) {
-      $(element).setNameIndexes(2, index);
+  $lcRoot.find('#regionList [data-lc-region]').each(function(k) {
+    $(this).find('input[data-lc-field]').each(function() {
+      this.name = 'project.projectRegions[' + k + ']' + $(this).attr('data-lc-field');
     });
   });
-  // Update component event
   $(document).trigger('updateComponent');
 }
 
-function setMapCenterPosition($item,locId,locName,countID) {
-  /* GET COORDINATES */
-  var url = baseURL + "/geopositionByElement.do";
-  var data = {
-      "locElementID": locId,
-      phaseID: phaseID
+function lcRemoveRow($row) {
+  var $group = $row.closest('[data-lc-group]');
+
+  lcDetachMarker($row.attr('data-uid'));
+  $row.detach();
+  if(!$group.find('[data-lc-row]').exists()) {
+    $group.detach();
+  }
+  lcReindex();
+  lcRefresh();
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Summary, validation and empty states
+ * --------------------------------------------------------------------------------------------- */
+
+function lcRefresh() {
+  var global = lcAnswer('project.projectInfo.locationGlobal');
+  var regional = lcAnswer('project.projectInfo.locationRegional');
+  var $rows = lcRows();
+  var total = $rows.length;
+
+  // Regions picker
+  $lcRoot.find('[data-lc-regions]').prop('hidden', regional !== 'true');
+  lcRenderSuggestionsVisibility(regional === 'true');
+  $lcRoot.find('[data-lc-regions-empty]').prop('hidden',
+      $lcRoot.find('#regionList [data-lc-region], #regionList [data-lc-fs-chip]').exists());
+
+  // Groups: count badges, and a group with no rows left is not shown
+  lcGroups().each(function() {
+    var n = $(this).find('[data-lc-row]').length;
+    $(this).find('[data-lc-group-count]').text(n);
+    $(this).prop('hidden', n === 0);
+  });
+
+  // Count line: "6 locations · 1 country · 5 provinces"
+  var parts = [];
+  lcGroups().each(function() {
+    var n = $(this).find('[data-lc-row]').length;
+    if(n) {
+      parts.push(n + ' ' + lcPluralLevel($(this).attr('data-level-name'), n));
+    }
+  });
+  var countLine = !total ? lcT('countNone') : (total === 1 ? lcT('countOne') : lcT('countOther', [
+    total
+  ]));
+  if(parts.length) {
+    countLine += ' · ' + parts.join(' · ');
+  }
+  $lcRoot.find('[data-lc-count]').text(countLine);
+
+  // Section summary under the title
+  var answer = function(v) {
+    return v === 'true' ? lcT('yes') : (v === 'false' ? lcT('no') : lcT('none'));
   };
+  var countries = lcGroups().filter('[data-level-id="' + lcCountryLevelId + '"]').find('[data-lc-row]').length;
+  var summary = [
+      lcT('summaryGlobal', [
+        answer(global)
+      ]), lcT('summaryRegional', [
+        answer(regional)
+      ])
+  ];
+  if(countries) {
+    summary.push(countries === 1 ? lcT('countriesOne') : lcT('countriesOther', [
+      countries
+    ]));
+  }
+  $lcRoot.find('[data-lc-summary]').text(summary.join(' · '));
+
+  // ProjectLocationValidator: required only when global = No, the list is empty and there are no
+  // funding-source suggestions. An unanswered global question requires nothing.
+  var missing = global === 'false' && total === 0 && !lcHasSuggestions;
+  var flagged = lcServerFlagged && missing && lcEditable;
+  $lcRoot.find('[data-lc-error]').prop('hidden', !flagged);
+  $lcRoot.find('[data-lc-locations]').toggleClass('is-invalid', flagged);
+  $lcRoot.find('[data-lc-global-note]').prop('hidden', !(lcEditable && global === 'true' && total === 0));
+
+  // Empty states
+  var $title = $lcRoot.find('[data-lc-empty-title]');
+  $title.text(global === 'true' ? $title.attr('data-text-global') : $title.attr('data-text-default'));
+  $lcRoot.find('[data-lc-empty]').prop('hidden', !lcEditable || total > 0 || !!lcAdd);
+  $lcRoot.find('[data-lc-empty-ro]').prop('hidden', lcEditable || total > 0);
+
+  lcRefreshMapCaption();
+  lcRefreshSaveState();
+}
+
+function lcRenderSuggestionsVisibility(regional) {
+  $lcRoot.find('[data-lc-fs][data-fs-kind="region"]').each(function() {
+    var selected = $(this).find('[data-lc-fs-check]').is(':checked');
+    $(this).prop('hidden', !regional || (!lcEditable && !selected));
+  });
+  $lcRoot.find('[data-lc-fs-chip]').prop('hidden', !regional);
+  $lcRoot.find('[data-lc-fs-none]').prop('hidden', $lcRoot.find('[data-lc-fs]:not([hidden])').exists());
+}
+
+/** English plural of a location level name, for the count line ("2 provinces", "3 AICCRA sites"). */
+function lcPluralLevel(level,n) {
+  var word = level || '';
+  if(word === 'Country') {
+    return n === 1 ? 'country' : 'countries';
+  }
+  if(word !== word.toUpperCase()) {
+    word = word.toLowerCase();
+  }
+  if(n === 1 || /s$/.test(word)) {
+    return word;
+  }
+  return /[^aeiou]y$/.test(word) ? word.replace(/y$/, 'ies') : word + 's';
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Change tracking and save lock
+ * --------------------------------------------------------------------------------------------- */
+
+/** What the section holds, keyed so that re-indexing does not read as a change. */
+function lcSnapshot() {
+  var rows = lcRows().not('[data-lc-fs-row]').map(function() {
+    var $row = $(this);
+    var level = $row.closest('[data-lc-group]').attr('data-level-id');
+    var id = $row.find('.locElementId').val();
+    return level + ':' + (id && id !== '-1' ? id : $row.attr('data-name') + '@' + $row.attr('data-lat') + ','
+        + $row.attr('data-lon'));
+  }).get();
+  var regions = $lcRoot.find('[data-lc-region]').map(function() {
+    return $(this).attr('data-key');
+  }).get();
+  var fs = $lcRoot.find('[data-lc-fs]').map(function() {
+    return $(this).attr('data-key') + ':' + $(this).find('[data-lc-fs-value]').val();
+  }).get();
+  return {
+      global: lcAnswer('project.projectInfo.locationGlobal'),
+      regional: lcAnswer('project.projectInfo.locationRegional'),
+      rows: rows,
+      regions: regions,
+      fs: fs
+  };
+}
+
+function lcDiffCount(before,now) {
+  var count = 0;
+  var seen = {};
+  $.each(before, function(i,k) {
+    seen[k] = (seen[k] || 0) + 1;
+  });
+  $.each(now, function(i,k) {
+    if(seen[k]) {
+      seen[k]--;
+    } else {
+      count++;
+    }
+  });
+  $.each(seen, function(k,left) {
+    count += left;
+  });
+  return count;
+}
+
+function lcCountChanges() {
+  if(!lcInitialState) {
+    return 0;
+  }
+  var now = lcSnapshot();
+  var count = 0;
+  if(now.global !== lcInitialState.global) {
+    count++;
+  }
+  if(now.regional !== lcInitialState.regional) {
+    count++;
+  }
+  count += lcDiffCount(lcInitialState.rows, now.rows);
+  count += lcDiffCount(lcInitialState.regions, now.regions);
+  // Each toggled suggestion is one change
+  count += lcDiffCount(lcInitialState.fs, now.fs) / 2;
+  return count;
+}
+
+function lcRefreshSaveState() {
+  if(!lcInitialState) {
+    return;
+  }
+  var count = lcCountChanges();
+  var $state = $lcRoot.find('[data-lc-save-state]');
+  $state.toggleClass('is-dirty', count > 0);
+  $state.find('[data-lc-save-text]').text(!count ? lcT('saveClean') : (count === 1 ? lcT('saveOne') : lcT(
+      'saveOther', [
+        count
+      ])));
+
+  // While a location is being added, Save waits for "Add location" or Cancel
+  var drafting = !!lcAdd;
+  $lcRoot.find('.lc-saveBar button[name="save"]').prop('disabled', drafting).toggleClass('is-locked', drafting).attr(
+      'title', drafting ? lcT('saveLocked') : null);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * Add a location
+ * --------------------------------------------------------------------------------------------- */
+
+function lcStartAdd() {
+  if(lcAdd) {
+    return;
+  }
+  lcAdd = {
+      levelId: '',
+      levelName: '',
+      isList: false,
+      picks: {},
+      busy: false
+  };
+  var $panel = $lcRoot.find('[data-lc-add]');
+  $panel.find('[data-lc-level]').val('');
+  $panel.find('[data-lc-add-name], [data-lc-add-lat], [data-lc-add-lon]').val('');
+  $panel.prop('hidden', false);
+  $lcRoot.find('[data-lc-add-start]').prop('disabled', true);
+  lcOnLevel();
+  lcRefresh();
+  $panel.find('[data-lc-level]').trigger('focus');
+}
+
+function lcCancelAdd() {
+  if(!lcAdd) {
+    return;
+  }
+  lcAdd = null;
+  $lcRoot.find('[data-lc-add]').prop('hidden', true);
+  $lcRoot.find('[data-lc-add-start]').prop('disabled', false);
+  lcSetDraft(null);
+  lcRefresh();
+  $lcRoot.find('.lc-card__bar [data-lc-add-start]').trigger('focus');
+}
+
+function lcOnLevel() {
+  if(!lcAdd) {
+    return;
+  }
+  var $panel = $lcRoot.find('[data-lc-add]');
+  var $option = $panel.find('[data-lc-level] option:selected');
+  lcAdd.levelId = $option.val() || '';
+  lcAdd.levelName = $option.attr('data-name') || '';
+  lcAdd.isList = $option.attr('data-list') === 'true';
+  lcAdd.picks = {};
+
+  var none = !lcAdd.levelId;
+  $panel.find('[data-lc-add-none]').prop('hidden', !none);
+  $panel.find('[data-lc-add-list]').prop('hidden', none || !lcAdd.isList);
+  $panel.find('[data-lc-add-coords]').prop('hidden', none || lcAdd.isList);
+  $panel.find('[data-lc-level-hint]').text(none ? lcT('levelHint') : lcT(lcAdd.isList ? 'levelHintList'
+      : 'levelHintCoord', [
+    lcAdd.levelName
+  ]));
+
+  if(!none && lcAdd.isList) {
+    lcLoadListOptions(lcAdd.levelId);
+  }
+  lcRefreshAdd();
+}
+
+/** The options of a list level, from searchCountryListPL.do, cached per level. */
+function lcLoadListOptions(levelId) {
+  var $picks = $lcRoot.find('[data-lc-picks]');
+  if(lcListCache[levelId]) {
+    lcRenderPicks(lcListCache[levelId]);
+    return;
+  }
+  $picks.empty().append($('<span class="lc-help"></span>').text(lcT('listLoading')));
   $.ajax({
-      url: url,
+      url: baseURL + '/searchCountryListPL.do',
       type: 'GET',
-      dataType: "json",
-      data: data
+      dataType: 'json',
+      data: {
+          parentId: levelId,
+          phaseID: phaseID
+      }
   }).done(function(m) {
-
-    if(m.geopositions.length != 0) {
-      latitude = m.geopositions[0].latitude;
-      longitude = m.geopositions[0].longitude;
-      $item.find('.geoLatitude').val(latitude);
-      $item.find('.geoLongitude').val(longitude);
-      if(map) {
-        addMarker(map, (countID), parseFloat(latitude), parseFloat(longitude), locName, "true", 2);
-        var latLng = new google.maps.LatLng(latitude, longitude);
-        map.setCenter(latLng);
-      }
-    } else {
-      var geocoder = new google.maps.Geocoder();
-
-      geocoder.geocode({
-        'address': locName
-      }, function(results,status) {
-        if(status == google.maps.GeocoderStatus.OK && map) {
-          map.setCenter(results[0].geometry.location);
-        }
-      });
+    lcListCache[levelId] = (m && m.locElements) || [];
+    if(lcAdd && lcAdd.levelId === levelId) {
+      lcRenderPicks(lcListCache[levelId]);
     }
+  }).fail(function() {
+    $picks.empty().append($('<span class="lc-help is-error"></span>').text(lcT('listEmpty')));
   });
 }
 
-// Adding locElement into location level(Country and CSVS)
-function addCountryIntoLocLevel(locationId,$locationSelect,locationName) {
-  var locationContent =
-      $(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").parent().find(
-          ".optionSelect-content");
-  // Level location name
-  var locLevelName = $(".locationsDataTable").find("input.locationLevelId[value='" + locationId + "']").next().val();
-
-  // All locations modal lists
-  var locLevelList = $(".list-container").find("ul[name='" + locLevelName + "']");
-
-  $.each($locationSelect.val(), function(i,e) {
-    var $item = $("#location-template").clone(true).removeAttr("id");
-    var locId = e.split("-")[0];
-    var locIso = e.split("-")[1];
-    var locName = e.split("-")[2];
-    // Check if the item doesn't exists into the list
-    if(locationContent.find("input.locElementId[value='" + locId + "']").exists()) {
-      notify(locName + " already exists into the "
-          + locationContent.parent().parent().parent().find(".locationLevelName").val() + " list")
-    } else {
-      countID++;
-      setMapCenterPosition($item, locId, locName, countID);
-
-      $item.attr("id", "location-" + (countID));
-      $item.attr('data-locId', locId);
-      $item.find(".lName").html(locName);
-      $item.find(".locElementName").val(locName);
-      $item.find(".locElementId").val(locId);
-
-      // If is a country
-      if(locationName == "Country") {
-        countries.push(locIso);
-        $item.find(".locElementCountry").val(locIso);
-      }
-      locationContent.find(".countriesList").children().append($item);
-      $item.show("slow");
-
-      // Show and hide Successfully added message
-      $('#alert-succesfully-added').slideDown();
-      setTimeout(function() {
-        $('#alert-succesfully-added').slideUp();
-        $('#addLocationModal').modal('hide');
-      }, 2000);
-
-      // Add location into all locations modal list
-      var $listItem = $('#itemList-template').clone(true).removeAttr("id");
-      $listItem.attr('id', locId);
-      $listItem.attr('name', locName);
-      $listItem.find(".item-name").text(locName);
-      $listItem.find(".coordinates").remove();
-      locLevelList.append($listItem);
-    }
-  });
-  updateIndex();
-  checkItems(locationContent.parents("#selectsContent"));
-  if(locationName == "Country") {
-    layer.setMap(null);
-    mappingCountries();
+function lcRenderPicks(options) {
+  var $picks = $lcRoot.find('[data-lc-picks]').empty();
+  if(!options.length) {
+    $picks.append($('<span class="lc-help"></span>').text(lcT('listEmpty')));
+    return;
   }
-  cleanSelected();
-}
-
-function cleanSelected() {
-  arSelectedLocations = [];
-  var option = $("#locLevelSelect").find("option:selected");
-  // LocElements options using ajax
-  var select = $("#countriesCmvs");
-  var url = baseURL + "/searchCountryListPL.do";
-  var data = {
-      parentId: option.val().split("-")[0],
-      phaseID: phaseID
-  };
-  $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: "json",
-      data: data
-  })
-      .done(
-          function(m) {
-            select.empty();
-            for(var i = 0; i < m.locElements.length; i++) {
-              select.append("<option class='" + m.locElements[i].isoAlpha2 + "' value='" + m.locElements[i].id + "-"
-                  + m.locElements[i].isoAlpha2 + "-" + m.locElements[i].name + "' >" + m.locElements[i].name
-                  + "</option>");
-            }
-          });
-}
-
-function checkItems(block) {
-  var items = $(block).find('.locElement').length;
-  if(items == 0) {
-    $(block).find('p.inf').fadeIn();
-  } else {
-    $(block).find('p.inf').fadeOut();
-  }
-}
-
-// Map events
-
-function addMarker(map,idMarker,latitude,longitude,sites,isList,locType) {
-  // Close info window
-  var drag;
-  if(editable && isList == "false") {
-    drag = true;
-  } else {
-    drag = false;
-  }
-
-  var $item = $("#location-" + idMarker);
-  var marker = new google.maps.Marker({
-      id: idMarker,
-      draggable: drag,
-      position: {
-          lat: latitude,
-          lng: longitude
-      },
-      icon: baseUrl + '/global/images/otherSite-marker.png',
-      name: sites,
-      animation: google.maps.Animation.DROP,
-      list: isList
-  });
-  markers[idMarker] = {
-      gElement: marker,
-      type: locType
-  };
-// To add the marker to the map, call setMap();
-  marker.setMap(map);
-  map.setCenter(marker.getPosition());
-
-  // MARKER EVENTS
-  marker.addListener('click', function() {
-
-    $(".locations").removeClass("selected");
-    $item.find(".locations").addClass("selected");
-
-    var infoWindow = new google.maps.InfoWindow();
-    infoWindow.setOptions({
-        content: sites,
-        position: marker.getPosition()
+  var taken = lcTakenIds(lcAdd.levelId);
+  $.each(options, function(i,o) {
+    var id = String(o.id);
+    var added = !!taken[id];
+    var $btn = $('<button type="button" class="lc-pick" data-lc-pick></button>').text(o.name).attr({
+        'data-id': id,
+        'data-iso': o.isoAlpha2 || '',
+        'data-name': o.name,
+        'aria-pressed': 'false'
     });
-    arInfoWindows.push(infoWindow);
-    infoWindow.open(map);
+    if(added) {
+      $btn.prop('disabled', true).addClass('is-added').attr('title', lcT('alreadyAdded'));
+    }
+    $picks.append($btn);
   });
-
 }
 
-// Delete markers
-function deleteMarkers() {
-  setAllMap(null);
-  markers = [];
-}
-
-// Sets the map on all markers in the array.
-function setAllMap(map) {
-  $.each(markers, function(index,marker) {
-    if(marker.gElement) {
-      marker.gElement.setMap(map);
+/** Element ids a level already holds, its funding-source rows included. */
+function lcTakenIds(levelId) {
+  var taken = {};
+  lcGroups().filter('[data-level-id="' + levelId + '"]').find('[data-lc-row]').each(function() {
+    var id = $(this).find('.locElementId').val();
+    if(id) {
+      taken[id] = true;
+    }
+    var fsKey = $(this).attr('data-fs-key');
+    if(fsKey && fsKey.charAt(0) === 'e') {
+      taken[fsKey.substring(1)] = true;
     }
   });
+  return taken;
 }
 
-// Remove individual marker by id
-function removeMarker(id) {
-  marker = markers[id].gElement;
-  marker.setMap(null);
-  delete markers[id];
-}
-
-// Removes the markers from the map, but keeps them in the array.
-function clearMarkers() {
-  setAllMap(null);
-}
-
-// Shows any markers currently in the array.
-function showMarkers() {
-  setAllMap(map);
-}
-
-// This function is for change the map's div
-// for the "add locations modal" and the "all locations modal"
-function changeMapDiv(selectedButton) {
-  if(!map || !map.getDiv) {
-    notify('Map is still loading. Please try again in a moment.');
+function lcTogglePick($btn) {
+  if(!lcAdd || $btn.prop('disabled')) {
     return;
   }
-
-  // Show search box in map after 2 seconds, to prevent bad visual behavior
-  setTimeout(function() {
-    $("#pac-input").show();
-  }, 2000);
-
-  var mapCurrentNode = map.getDiv();
-  var selectedModal = $(selectedButton).data('target');
-
-  if(selectedModal == '.addLocationModal') {
-    map.setZoom(3);
-    $('#add-location-map').append(mapCurrentNode);
-    $('#map').removeClass('all-locations');
-
-    closeAllInfoWindows();
-
-    var option = $("#locLevelSelect").find("option:selected");
-    if(option.val() == "-1" || option.val().split("-")[0] == "10") {
-      // If the selected option is "Climate Smart Village" hide the center indicator in the map
-      $('#map .centerMarker').hide();
-    } else {
-      $('#map .centerMarker').show();
-    }
-  } else if(selectedModal == '.allLocationsModal') {
-    $('#all-locations-map').append(mapCurrentNode);
-    $('#map').addClass('all-locations');
-    $('#map .centerMarker').hide();
+  var id = $btn.attr('data-id');
+  if(lcAdd.picks[id]) {
+    delete lcAdd.picks[id];
+  } else {
+    lcAdd.picks[id] = {
+        id: id,
+        iso: $btn.attr('data-iso'),
+        name: $btn.attr('data-name')
+    };
   }
+  $btn.toggleClass('is-on', !!lcAdd.picks[id]).attr('aria-pressed', lcAdd.picks[id] ? 'true' : 'false');
+  lcRefreshAdd();
 }
 
-function addSuggestedCountry(locIso,locName,locId) {
-
-  var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
-  var countryList = $(".list-container").find("ul[name='Country']");
-
-  // Add suggested country in locations table
-  var $tableItem = $('#suggestedLocation-template').clone(true).removeAttr("id");
-
-  $tableItem.find(".locationName").attr('id', locIso);
-  $tableItem.find(".lName").text(locName);
-  countryRow.parent().find('.suggestedCountriesList').children().append($tableItem);
-  $tableItem.show('slow');
-
-  // Add suggested country in locations list (all locations modal)
-  var $listItem = $('#itemList-template').clone(true).removeAttr("id");
-  $listItem.attr('id', locId);
-  $listItem.attr('name', locName);
-  $listItem.find(".item-name").text(locName);
-  countryList.append($listItem);
+function lcCoordOk(value,limit) {
+  var v = $.trim(value);
+  var n = Number(v);
+  return v !== '' && isFinite(n) && Math.abs(n) <= limit;
 }
 
-function removeSuggestedCountry(locIso,locId,countryRow,countryList) {
-  var countryRow = $(".locationsDataTable").find("input.locationLevelId[value='2']");
-  var countryList = $(".list-container").find("ul[name='Country']");
-
-  // Remove unmarked location from locations table
-  countryRow.parent().find('.suggestedCountriesList').children().find('#' + locIso).parent().parent().remove();
-
-  // Remove unmarked location from locations list (all locations modal)
-  countryList.find("#" + locId).remove();
+function lcAddValues() {
+  var $panel = $lcRoot.find('[data-lc-add]');
+  return {
+      name: $.trim($panel.find('[data-lc-add-name]').val()),
+      lat: $.trim($panel.find('[data-lc-add-lat]').val()),
+      lon: $.trim($panel.find('[data-lc-add-lon]').val())
+  };
 }
 
-// Set default country to countries select
-function addLocationFromMap() {
-  if(!map) {
-    notify('Map is not available.');
+function lcRefreshAdd() {
+  if(!lcAdd) {
     return;
   }
+  var $panel = $lcRoot.find('[data-lc-add]');
+  var v = lcAddValues();
+  var latOk = lcCoordOk(v.lat, 90);
+  var lonOk = lcCoordOk(v.lon, 180);
+  var badLat = v.lat !== '' && !latOk;
+  var badLon = v.lon !== '' && !lonOk;
+  var picks = Object.keys(lcAdd.picks).length;
+  var valid;
+  var summary = '';
 
-  reverseGeocode(map.getCenter().lat(), map.getCenter().lng(), function(data) {
-    if(data && data.address && data.address.country_code) {
-      var country = data.address.country_code.toUpperCase();
-      var $countrySelect = $("#countriesCmvs");
-      arSelectedLocations.push($countrySelect.find("option." + country).val());
-      $countrySelect.val(arSelectedLocations);
-      $countrySelect.select2().trigger("change");
-    }
+  if(lcAdd.isList) {
+    valid = picks > 0;
+    summary = picks ? lcT('selected', [
+      picks
+    ]) : '';
+  } else {
+    valid = !!lcAdd.levelId && v.name !== '' && latOk && lonOk;
+    summary = valid ? v.name + ' · ' + lcFmt(v.lat) + ', ' + lcFmt(v.lon) : '';
+  }
+
+  $panel.find('[data-lc-add-lat]').toggleClass('is-invalid', badLat).attr('aria-invalid', badLat ? 'true' : 'false');
+  $panel.find('[data-lc-add-lon]').toggleClass('is-invalid', badLon).attr('aria-invalid', badLon ? 'true' : 'false');
+  $panel.find('[data-lc-coord-note]').toggleClass('is-error', badLat || badLon);
+  $panel.find('[data-lc-coord-note-text]').text(badLat || badLon ? lcT('coordError') : lcT('coordHint'));
+  $panel.find('[data-lc-add-summary]').text(summary);
+  $panel.find('[data-lc-add-confirm]').prop('disabled', !valid || lcAdd.busy).text(lcAdd.isList && picks > 1 ? lcT(
+      'confirmMany', [
+        picks
+      ]) : lcT('confirmOne'));
+
+  var placing = !!lcAdd.levelId && !lcAdd.isList;
+  $lcRoot.find('[data-lc-map]').toggleClass('is-placing', placing);
+  lcSetDraft(placing && latOk && lonOk ? [
+      Number(v.lat), Number(v.lon)
+  ] : null);
+  lcRefreshMapCaption();
+}
+
+function lcConfirmAdd() {
+  if(!lcAdd || lcAdd.busy) {
+    return;
+  }
+  var add = lcAdd;
+  add.busy = true;
+  lcRefreshAdd();
+
+  var done = function() {
+    add.busy = false;
+    lcCancelAdd();
+    lcSortGroups();
+    lcReindex();
+    lcRefresh();
+    lcSyncMarkers(true);
+  };
+
+  if(add.isList) {
+    var picks = $.map(add.picks, function(p) {
+      return p;
+    });
+    // The stored coordinates of each picked element, as the previous page posted them
+    var requests = $.map(picks, function(p) {
+      return $.ajax({
+          url: baseURL + '/geopositionByElement.do',
+          type: 'GET',
+          dataType: 'json',
+          data: {
+              locElementID: p.id,
+              phaseID: phaseID
+          }
+      }).then(function(m) {
+        if(m && m.geopositions && m.geopositions.length) {
+          p.lat = m.geopositions[0].latitude;
+          p.lon = m.geopositions[0].longitude;
+        }
+      }, function() {
+        return $.Deferred().resolve();
+      });
+    });
+    $.when.apply($, requests).always(function() {
+      var $group = lcEnsureGroup(add.levelId, add.levelName, true);
+      $.each(picks, function(i,p) {
+        lcAppendRow($group, {
+            id: p.id,
+            name: p.name,
+            iso: add.levelId === lcCountryLevelId ? p.iso : '',
+            lat: p.lat,
+            lon: p.lon
+        });
+      });
+      done();
+    });
+  } else {
+    var v = lcAddValues();
+    lcReverseCountry(v.lat, v.lon, function(iso) {
+      var $group = lcEnsureGroup(add.levelId, add.levelName, false);
+      lcAppendRow($group, {
+          id: '-1',
+          name: v.name,
+          iso: iso,
+          lat: v.lat,
+          lon: v.lon
+      });
+      done();
+    });
+  }
+}
+
+function lcAppendRow($group,data) {
+  var $row = lcNewRow();
+  $row.attr('data-name', data.name).attr('data-key', data.id);
+  if(data.lat !== undefined && data.lat !== null && data.lat !== '' && Number(data.lat) !== 0) {
+    $row.attr('data-lat', data.lat).attr('data-lon', data.lon);
+    $row.find('.geoLatitude').val(data.lat);
+    $row.find('.geoLongitude').val(data.lon);
+  }
+  $row.find('[data-lc-row-name]').text(data.name);
+  $row.find('.locElementId').val(data.id);
+  $row.find('.locElementName').val(data.name);
+  $row.find('.locElementCountry').val(data.iso || '');
+  $row.find('[data-lc-row-remove]').attr('aria-label', lcT('remove', [
+    data.name
+  ]));
+  $group.find('[data-lc-rows]').append($row);
+  lcPrepareRow($row);
+  return $row;
+}
+
+/** The ISO code of the country a picked point sits in (Nominatim, once per point). */
+function lcReverseCountry(lat,lon,callback) {
+  var key = lcFmt(lat) + ',' + lcFmt(lon);
+  if(lcReverseCache[key] !== undefined) {
+    callback(lcReverseCache[key]);
+    return;
+  }
+  $.ajax({
+      url: 'https://nominatim.openstreetmap.org/reverse',
+      dataType: 'json',
+      data: {
+          format: 'jsonv2',
+          lat: lat,
+          lon: lon,
+          zoom: 3,
+          addressdetails: 1
+      }
+  }).done(function(data) {
+    lcReverseCache[key] = (data && data.address && data.address.country_code) ? data.address.country_code
+        .toUpperCase() : '';
+  }).always(function() {
+    callback(lcReverseCache[key] || '');
   });
 }
 
-// Close all info windows
-function closeAllInfoWindows() {
-  for(var i = 0; i < arInfoWindows.length; i++) {
-    arInfoWindows[i].close();
+/* ------------------------------------------------------------------------------------------------
+ * Map (Leaflet + OpenStreetMap)
+ * --------------------------------------------------------------------------------------------- */
+
+function lcWatchMap() {
+  var el = $lcRoot.find('[data-lc-map]')[0];
+  if(!el || typeof L === 'undefined') {
+    return;
+  }
+  if(!('IntersectionObserver' in window)) {
+    lcInitMap(el);
+    return;
+  }
+  var observer = new IntersectionObserver(function(entries) {
+    if(entries[0].isIntersecting) {
+      observer.disconnect();
+      lcInitMap(el);
+    }
+  }, {
+    rootMargin: '200px'
+  });
+  observer.observe(el);
+}
+
+function lcInitMap(el) {
+  if(lcMap) {
+    return;
+  }
+  lcMap = L.map(el, {
+      scrollWheelZoom: false,
+      worldCopyJump: true
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(lcMap);
+  lcMap.on('click', lcOnMapClick);
+  lcSyncMarkers(true);
+  if(lcAdd) {
+    lcRefreshAdd();
+  }
+}
+
+/** Adds and removes markers on the existing map so it matches the rows with coordinates. */
+function lcSyncMarkers(fit) {
+  if(!lcMap) {
+    return;
+  }
+  var live = {};
+  lcRows().filter('.has-point').each(function() {
+    var $row = $(this);
+    var uid = $row.attr('data-uid');
+    live[uid] = true;
+    if(lcMarkers[uid]) {
+      return;
+    }
+    var marker = L.circleMarker([
+        Number($row.attr('data-lat')), Number($row.attr('data-lon'))
+    ], LC_PIN).addTo(lcMap);
+    marker.bindTooltip($row.attr('data-name'), {
+        direction: 'top',
+        offset: [
+            0, -8
+        ],
+        className: 'lc-mapTip'
+    });
+    marker.on('mouseover', function() {
+      lcHover(uid, true);
+    });
+    marker.on('mouseout', function() {
+      lcHover(uid, false);
+    });
+    marker.on('click', function(e) {
+      L.DomEvent.stopPropagation(e);
+      var $hit = lcRows().filter('[data-uid="' + uid + '"]');
+      if($hit[0] && $hit[0].scrollIntoView) {
+        $hit[0].scrollIntoView({
+            block: 'nearest',
+            behavior: 'smooth'
+        });
+      }
+      lcFocusRow($hit);
+    });
+    lcMarkers[uid] = marker;
+  });
+  $.each(lcMarkers, function(uid) {
+    if(!live[uid]) {
+      lcDetachMarker(uid);
+    }
+  });
+  if(fit) {
+    lcFitMap();
+  }
+  lcRefreshMapCaption();
+}
+
+function lcDetachMarker(uid) {
+  if(lcMarkers[uid]) {
+    lcMarkers[uid].remove();
+    delete lcMarkers[uid];
+  }
+}
+
+/** Fits the sites; without any, the stored points of the countries; without those, Africa. */
+function lcFitMap() {
+  if(!lcMap) {
+    return;
+  }
+  var points = $.map(lcMarkers, function(m) {
+    return [
+      m.getLatLng()
+    ];
+  });
+  if(!points.length) {
+    lcRows().each(function() {
+      var lat = $(this).attr('data-lat');
+      if(lat !== undefined) {
+        points.push(L.latLng(Number(lat), Number($(this).attr('data-lon'))));
+      }
+    });
+  }
+  if(!points.length) {
+    lcMap.setView([
+        4, 20
+    ], 3);
+  } else if(points.length === 1) {
+    lcMap.setView(points[0], 7);
+  } else {
+    lcMap.fitBounds(L.latLngBounds(points), {
+        padding: [
+            28, 28
+        ],
+        maxZoom: 9
+    });
   }
 }
 
 /**
- * File upload (blueimp-tmpl)
+ * Shows a location on the map, as clicking it in the previous page's list did: a country fits the
+ * map to the country's extent, a site centres on its point. The extent comes from Nominatim on this
+ * explicit click only (cached per country); without it the map centres on the country's stored point.
  */
-function setFileUploads() {
+function lcFocusRow($row) {
+  if(!$row || !$row.exists()) {
+    return;
+  }
+  var el = $lcRoot.find('[data-lc-map]')[0];
+  if(!lcMap && el && typeof L !== 'undefined') {
+    lcInitMap(el);
+  }
+  if(!lcMap) {
+    return;
+  }
+  lcRows().removeClass('is-focused');
+  $row.addClass('is-focused');
 
-  var containerClass = ".fileUploadContainer";
-  var $uploadBlock = $(containerClass);
+  var uid = $row.attr('data-uid');
+  var lat = $row.attr('data-lat');
+  var point = lat !== undefined ? L.latLng(Number(lat), Number($row.attr('data-lon'))) : null;
+  var isCountry = lcIsCountryGroup($row.closest('[data-lc-group]'));
+
+  if(isCountry) {
+    var iso = $row.find('.locElementCountry').val() || $row.attr('data-iso') || '';
+    lcCountryBounds($row.attr('data-name'), iso, function(bounds) {
+      if(bounds) {
+        lcMap.flyToBounds(bounds, {
+            padding: [
+                16, 16
+            ],
+            duration: 0.6
+        });
+      } else if(point) {
+        lcMap.flyTo(point, 6, {
+          duration: 0.6
+        });
+      }
+    });
+  } else if(point) {
+    lcMap.flyTo(point, Math.max(lcMap.getZoom(), 10), {
+      duration: 0.6
+    });
+  }
+  if(lcMarkers[uid]) {
+    lcMarkers[uid].openTooltip();
+  }
+}
+
+var lcCountryCache = {};
+
+function lcCountryBounds(name,iso,callback) {
+  var key = (iso || name || '').toUpperCase();
+  if(!key) {
+    callback(null);
+    return;
+  }
+  if(lcCountryCache[key] !== undefined) {
+    callback(lcCountryCache[key]);
+    return;
+  }
+  var data = {
+      format: 'jsonv2',
+      q: name,
+      featureType: 'country',
+      limit: 1
+  };
+  if(iso) {
+    data.countrycodes = iso.toLowerCase();
+  }
+  $.ajax({
+      url: 'https://nominatim.openstreetmap.org/search',
+      dataType: 'json',
+      data: data
+  }).done(function(results) {
+    var box = results && results[0] && results[0].boundingbox;
+    // boundingbox is [south, north, west, east]
+    lcCountryCache[key] = box ? L.latLngBounds([
+        Number(box[0]), Number(box[2])
+    ], [
+        Number(box[1]), Number(box[3])
+    ]) : null;
+  }).always(function() {
+    callback(lcCountryCache[key] || null);
+  });
+}
+
+function lcHover(uid,on) {
+  lcRows().filter('[data-uid="' + uid + '"]').toggleClass('is-hover', on);
+  var marker = lcMarkers[uid];
+  if(marker) {
+    marker.setStyle(on ? LC_PIN_HOVER : LC_PIN);
+    if(on) {
+      marker.bringToFront();
+      marker.openTooltip();
+    } else {
+      marker.closeTooltip();
+    }
+  }
+}
+
+function lcOnMapClick(e) {
+  if(!lcAdd || !lcAdd.levelId || lcAdd.isList) {
+    return;
+  }
+  var $panel = $lcRoot.find('[data-lc-add]');
+  var latlng = e.latlng.wrap();
+  $panel.find('[data-lc-add-lat]').val(latlng.lat.toFixed(4));
+  $panel.find('[data-lc-add-lon]').val(latlng.lng.toFixed(4));
+  lcRefreshAdd();
+}
+
+function lcSetDraft(latlng) {
+  if(!lcMap) {
+    return;
+  }
+  if(!latlng) {
+    if(lcDraftMarker) {
+      lcDraftMarker.remove();
+      lcDraftMarker = null;
+    }
+    return;
+  }
+  if(!lcDraftMarker) {
+    lcDraftMarker = L.circleMarker(latlng, {
+        radius: 10,
+        color: '#0277A2',
+        weight: 2,
+        dashArray: '3 3',
+        fillColor: '#0277A2',
+        fillOpacity: 0.18,
+        interactive: false
+    }).addTo(lcMap);
+  } else {
+    lcDraftMarker.setLatLng(latlng);
+  }
+}
+
+function lcRefreshMapCaption() {
+  var sites = lcRows().filter('.has-point').length;
+  var placing = !!(lcAdd && lcAdd.levelId && !lcAdd.isList);
+  var caption = placing ? lcT('captionPlacing') : (!sites ? lcT('captionNone') : (sites === 1 ? lcT('captionOne')
+      : lcT('captionOther', [
+        sites
+      ])));
+  $lcRoot.find('[data-lc-map-caption]').text(caption);
+}
+
+/* ------------------------------------------------------------------------------------------------
+ * CSV of AR4D activities (crp_location_csv_activities), unchanged from the previous page
+ * --------------------------------------------------------------------------------------------- */
+
+function lcSetFileUploads() {
+  var containerClass = '.fileUploadContainer';
+  var $uploadBlock = $lcRoot.find(containerClass);
+  if(!$uploadBlock.exists() || !$.fn.fileupload) {
+    return;
+  }
   var $fileUpload = $uploadBlock.find('.upload');
 
   $fileUpload.fileupload({
       dataType: 'json',
       start: function(e) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.addClass('blockLoading');
+        $(e.target).parents(containerClass).addClass('blockLoading');
       },
       stop: function(e) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.removeClass('blockLoading');
+        $(e.target).parents(containerClass).removeClass('blockLoading');
       },
       done: function(e,data) {
         var r = data.result;
-        console.log(r);
         if(r.saved) {
           var $ub = $(e.target).parents(containerClass);
           $ub.find('.textMessage .contentResult').html(r.fileFileName);
           $ub.find('.textMessage').show();
           $ub.find('.fileUpload').hide();
-          // Set file ID
           $ub.find('input.fileID').val(r.fileID);
-          // Set file URL
-          $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName)
+          $ub.find('.fileUploaded a').attr('href', r.path + '/' + r.fileFileName);
         }
       },
-      fail: function(e,data) {
-        var $ub = $(e.target).parents(containerClass);
-        $ub.animateCss('shake');
+      fail: function(e) {
+        $(e.target).parents(containerClass).animateCss('shake');
       },
       progressall: function(e,data) {
         var $ub = $(e.target).parents(containerClass);
@@ -1597,20 +1294,17 @@ function setFileUploads() {
       }
   });
 
-  // Prepare data
-  $fileUpload.bind('fileuploadsubmit', function(e,data) {
-
-  });
-
-  // Remove file event
   $uploadBlock.find('.removeIcon').on('click', function() {
     var $ub = $(this).parents(containerClass);
-    $ub.find('.textMessage .contentResult').html("");
+    $ub.find('.textMessage .contentResult').html('');
     $ub.find('.textMessage').hide();
     $ub.find('.fileUpload').show();
     $ub.find('input.fileID').val('');
-    // Clear URL
     $ub.find('.fileUploaded a').attr('href', '');
   });
 
+  // Show the CSV box with its Yes / No answer
+  $lcRoot.on('click', '.isCSV .button-label', function() {
+    $lcRoot.find('.csvActivitiesBox').toggle($(this).hasClass('yes-button-label'));
+  });
 }
