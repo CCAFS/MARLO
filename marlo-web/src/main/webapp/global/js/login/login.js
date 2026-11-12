@@ -6,6 +6,10 @@ var username = $("input[name='user.email']");
 var inputPassword = $("input[name='user.password']");
 var crpSession = "";
 var incorrectPasswordCount = 0;
+// A2-2659: Cloudflare Turnstile captcha shown after 3 incorrect passwords. captchaWidgetId is null until the
+// widget is rendered; captchaPending is true while it is on screen and unsolved, and then it owns the
+// "Log in" button. captchaScriptState is "", "loading", "loaded" or "failed"
+var captchaWidgetId = null, captchaPending = false, captchaScriptState = "";
 // Number of crps/centers/platforms actually assigned to the user (data.crps.length from crpByEmail.do),
 // NOT the count of <li> elements in the DOM (which always renders every Global Unit with login=true,
 // regardless of the current user's access)
@@ -926,27 +930,21 @@ function checkPassword(email,password) {
             if(!data.userFound.loginSuccess) {
               if(data.messageEror == "Invalid CGIAR email or password, please try again") {
                 wrongData("incorrectPassword");
-                // Code for the recaptcha to appear after 3 password attempts
-                incorrectPasswordCount++;
-                if (incorrectPasswordCount == 3) {
-                  var loginButton = document.getElementById('login_next');
-                  $('#recaptcha-container').css("margin-top", "40px")
-                  $('.login-form-button').css("margin-top", "-15px")
-                  $('#loginFormContainer .loginForm.max-size').css("height", "500px")
-                  grecaptcha.render('recaptcha-container', {
-                    'sitekey': RECAPTCHAT_SITE_KEY,
-                    'callback': function() {
-                      loginButton.disabled = false;
-                    }
-                  });
-                  
-                }
               } else {
                 wrongData("incorrectPassword", data.messageEror);
               }
+              // A2-2659: every failed password attempt counts, whatever the account type. The captcha is there to
+              // slow down password guessing, and it used to count only the Active Directory message above, which
+              // CGIAR accounts no longer reach since they sign in with Cognito or an emailed code. A local account
+              // with a wrong password gets no message at all. From the 3rd failure on, each one asks for a new
+              // challenge
+              incorrectPasswordCount++;
+              if(incorrectPasswordCount >= 3) {
+                requireCaptcha();
+              }
 
-              // Hide the loading spinner. Runs after the recaptcha block above, so that
-              // updateNextButtonState() sees the incremented counter and keeps the button locked
+              // Hide the loading spinner. Runs after requireCaptcha() above, so that
+              // updateNextButtonState() sees captchaPending and keeps the button locked
               clearLoginButtonLoading();
               updateNextButtonState();
             } else {
@@ -1099,6 +1097,92 @@ function clearLoginButtonLoading() {
   $('.login-back-container .loginBack').attr("disabled", false);
 }
 
+// A2-2659: lock the "Log in" button behind a Cloudflare Turnstile challenge. Called on the 3rd incorrect
+// password and on every one after it: the first call loads the script and renders the widget, the later ones
+// reset it, because a solved challenge must not carry over to the next attempt. The captcha is only enforced
+// in the browser (the server does not call siteverify), so it never blocks the login when it cannot run: with
+// no site key configured, or when the script does not load or the widget is misconfigured, the button is
+// released instead. A challenge the visitor fails is not such a case: the button stays locked
+function requireCaptcha() {
+  if(!TURNSTILE_SITE_KEY || captchaScriptState == "failed") {
+    return;
+  }
+
+  captchaPending = true;
+  $("input#login_next").attr("disabled", true);
+
+  if(captchaWidgetId != null) {
+    turnstile.reset(captchaWidgetId);
+    return;
+  }
+  if(captchaScriptState == "loading") {
+    return;
+  }
+
+  // Loaded on demand rather than from header.ftl, so no page requests the script until a login needs it.
+  // render=explicit because the widget is rendered from renderCaptcha(), not from a .cf-turnstile element
+  captchaScriptState = "loading";
+  var script = document.createElement("script");
+  script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  script.onload = function() {
+    captchaScriptState = "loaded";
+    renderCaptcha();
+  };
+  script.onerror = function() {
+    captchaScriptState = "failed";
+    releaseCaptcha();
+  };
+  document.head.appendChild(script);
+}
+
+function renderCaptcha() {
+  $('#captcha-container').css("margin-top", "40px");
+  $('.login-form-button').css("margin-top", "-15px");
+  $('#loginFormContainer .loginForm.max-size').css("height", "500px");
+
+  try {
+    captchaWidgetId = turnstile.render('#captcha-container', {
+      'sitekey': TURNSTILE_SITE_KEY,
+      'callback': function() {
+        captchaPending = false;
+        updateNextButtonState();
+      },
+      // The token expired, or an interactive challenge was left unanswered: Turnstile refreshes the widget on
+      // its own, and the button waits for the new token
+      'expired-callback': lockForCaptcha,
+      'timeout-callback': lockForCaptcha,
+      // Only an error that means the widget cannot run at all releases the button: 110xxx is a configuration
+      // problem (hostname not allowed in the Cloudflare widget), 200xxx a loading one and 400xxx an invalid
+      // parameter (malformed or disabled site key). Any other code, such as 600xxx, is a failed challenge,
+      // which must keep the button locked while Turnstile retries
+      'error-callback': function(errorCode) {
+        var code = String(errorCode);
+        if(code.indexOf("110") == 0 || code.indexOf("200") == 0 || code.indexOf("400") == 0) {
+          releaseCaptcha();
+          // Tell Turnstile the error was handled, so it does not also throw it
+          return true;
+        }
+        lockForCaptcha();
+        return false;
+      }
+    });
+  } catch(e) {
+    // turnstile.render throws on an invalid configuration, for example a malformed site key
+    captchaScriptState = "failed";
+    releaseCaptcha();
+  }
+}
+
+function lockForCaptcha() {
+  captchaPending = true;
+  $("input#login_next").attr("disabled", true);
+}
+
+function releaseCaptcha() {
+  captchaPending = false;
+  updateNextButtonState();
+}
+
 // BUG-LOGIN-TERMS-001-FN-001/FN-002: the terms gate, shared by both step-3 branches. It replaces the HTML5
 // "required" that used to sit on #terms - see loginForm.ftl for why that attribute could not work on either
 // one. Returns true when the attempt may proceed; shows the message, focuses the checkbox and returns false
@@ -1122,8 +1206,8 @@ function looksLikeEmail(value) {
 // The submit button is shared by the 3 steps: on the email step it stays disabled until something is
 // typed, on the other steps it is always available
 function updateNextButtonState() {
-  // A request is still running, or the recaptcha is on screen and owns the button until its callback
-  if(isSubmitting || incorrectPasswordCount >= 3) {
+  // A request is still running, or the captcha is on screen and owns the button until it is solved
+  if(isSubmitting || captchaPending) {
     return;
   }
 
