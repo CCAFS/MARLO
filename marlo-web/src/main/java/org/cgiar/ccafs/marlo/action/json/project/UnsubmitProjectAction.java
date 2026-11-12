@@ -160,14 +160,13 @@ public class UnsubmitProjectAction extends BaseAction {
 
     ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
 
+    // @akili-spec bugfix/submit-unsubmit-email-defects
+    ProjectPartnerPerson leader = project.getLeaderPerson(this.getActualPhase());
     String toEmail = "";
-    // Add project leader
-    if (project.getLeaderPerson(this.getActualPhase()) != null
-      && project.getLeaderPerson(this.getActualPhase()).getUser().getId() != this.getCurrentUser().getId()) {
-      toEmail = project.getLeaderPerson(this.getActualPhase()).getUser().getEmail();
+    if (leader != null && leader.getUser() != null && leader.getUser().getEmail() != null) {
+      toEmail = leader.getUser().getEmail();
     }
-    
-    // new method
+
     String ccEmail = "";
     ccEmail += this.getCurrentUser().getEmail();
     ProjectPartnerPerson projectLeader = project.getLeaderPersonDB(this.getActualPhase());
@@ -179,6 +178,7 @@ public class UnsubmitProjectAction extends BaseAction {
         ccEmail += ", " + projectLeader.getUser().getEmail();
       }
     }
+    ccEmail = withoutRecipient(ccEmail, toEmail);
 
     
 //    // Old method CC Emails
@@ -273,15 +273,16 @@ public class UnsubmitProjectAction extends BaseAction {
 
     // Building the email message
     String[] values = new String[8];
+    // @akili-spec bugfix/submit-unsubmit-email-defects
     String plName = "";
-    if (project.getLeaderPerson(this.getActualPhase()) != null
-      && project.getLeaderPerson(this.getActualPhase()).getUser().getId() != this.getCurrentUser().getId()) {
-      plName = project.getLeaderPerson(this.getActualPhase()).getUser().getFirstName();
+    if (leader != null && leader.getUser() != null) {
+      plName = StringUtils.trimToEmpty(leader.getUser().getFirstName());
     }
-    values[0] = plName;
+    values[0] = plName.isEmpty() ? texts.getText("email.greeting.everyone") : plName;
     values[1] = this.getCurrentUser().getFirstName();
     values[2] = crp;
-    values[3] = projectInfo.getTitle();
+    values[3] = projectInfo == null || StringUtils.isBlank(projectInfo.getTitle()) ? texts.getText("global.untitled")
+      : projectInfo.getTitle();
 
     values[4] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[5] = String.valueOf(this.getCurrentCycleYear());
@@ -294,6 +295,22 @@ public class UnsubmitProjectAction extends BaseAction {
     if (this.validateEmailNotification(globalUnit)) {
       sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, null, null, null, true);
     }
+  }
+
+  /**
+   * The comma separated list without every address equal to the recipient (trimmed, case-insensitive), in the same
+   * ", " format; empty when nothing remains.
+   */
+  // @akili-spec bugfix/submit-unsubmit-email-defects
+  private static String withoutRecipient(String addresses, String recipient) {
+    List<String> kept = new ArrayList<>();
+    for (String address : addresses.split(",")) {
+      String trimmed = address.trim();
+      if (!trimmed.isEmpty() && !trimmed.equalsIgnoreCase(StringUtils.trimToEmpty(recipient))) {
+        kept.add(trimmed);
+      }
+    }
+    return String.join(", ", kept);
   }
 
   /** The assembled unsubmit email: its subject and its body. */
@@ -335,8 +352,8 @@ public class UnsubmitProjectAction extends BaseAction {
         .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CUSTOM_FILE, unit.getId().longValue());
       return UnitTextProvider.forCustomFile(parameter == null ? null : parameter.getValue());
     } catch (RuntimeException e) {
-      LOG.warn("The texts of the unit owning the project could not be read, the unsubmit email uses the default texts",
-        e);
+      LOG.warn("The texts of the unit {} owning the project could not be read, the unsubmit email uses the default "
+        + "texts", unit == null ? null : unit.getId(), e);
       return this;
     }
   }

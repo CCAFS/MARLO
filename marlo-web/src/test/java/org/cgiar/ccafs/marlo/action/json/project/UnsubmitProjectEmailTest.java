@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction.UnsubmitEmail;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
@@ -141,11 +142,11 @@ public class UnsubmitProjectEmailTest {
     private final Phase phase;
     private final User user;
 
-    DrivenUnsubmit(APConfig config, RecordingSendMail mail, Map<Long, GlobalUnit> units, Map<Long, String> customFiles,
-      List<String> lookups, Phase phase, User user) {
+    DrivenUnsubmit(APConfig config, RecordingSendMail mail, Map<Long, GlobalUnit> units,
+      CustomParameterManager customParameters, Phase phase, User user) {
       super(config, null, null, mail, null,
         EmailSendDoubles.answering(GlobalUnitManager.class, "getGlobalUnitById", args -> units.get(args[0])),
-        EmailSendDoubles.customFiles(customFiles, lookups));
+        customParameters);
       this.phase = phase;
       this.user = user;
     }
@@ -153,6 +154,17 @@ public class UnsubmitProjectEmailTest {
     @Override
     public Phase getActualPhase() {
       return this.phase;
+    }
+
+    /** The action's own texts, answered from the base files because there is no Struts context in a unit test. */
+    @Override
+    public String getText(String key) {
+      return UnitTextProvider.forCustomFile(null).getText(key);
+    }
+
+    @Override
+    public String getText(String key, String[] args) {
+      return UnitTextProvider.forCustomFile(null).getText(key, args);
     }
 
     @Override
@@ -176,7 +188,7 @@ public class UnsubmitProjectEmailTest {
     }
   }
 
-  private static User user(long id, String first, String email) {
+  private static User user(Long id, String first, String email) {
     User user = new User();
     user.setId(id);
     user.setFirstName(first);
@@ -193,8 +205,8 @@ public class UnsubmitProjectEmailTest {
     return unit;
   }
 
-  /** Project 77 created in the origin unit, titled "Soil data", led in the phase by Ana. */
-  private static Project project(Phase phase, GlobalUnit origin) {
+  /** Project 77 created in the origin unit, titled as given, led in the phase by the leader (none when null). */
+  private static Project project(Phase phase, GlobalUnit origin, User leaderUser, String title) {
     GlobalUnitProject link = new GlobalUnitProject();
     link.setId(1L);
     link.setGlobalUnit(origin);
@@ -204,14 +216,15 @@ public class UnsubmitProjectEmailTest {
     leader.setId(2L);
     leader.setActive(true);
     leader.setContactType("PL");
-    leader.setUser(user(12L, "Ana", LEADER));
+    leader.setUser(leaderUser);
     ProjectPartner partner = new ProjectPartner();
     partner.setId(3L);
     partner.setActive(true);
     partner.setPhase(phase);
-    partner.setProjectPartnerPersons(Collections.singleton(leader));
+    partner.setProjectPartnerPersons(
+      leaderUser == null ? Collections.<ProjectPartnerPerson>emptySet() : Collections.singleton(leader));
     ProjectInfo info = new ProjectInfo();
-    info.setTitle("Soil data");
+    info.setTitle(title);
     info.setPhase(phase);
     Project project = new Project();
     project.setId(77L);
@@ -224,6 +237,13 @@ public class UnsubmitProjectEmailTest {
   /** Runs the action's private send path once for project 77 of the origin unit and answers what SendMailS got. */
   private static Sent unsubmit(GlobalUnit origin, Map<Long, String> customFiles, List<String> lookups)
     throws Exception {
+    return unsubmit(origin, EmailSendDoubles.customFiles(customFiles, lookups), user(12L, "Ana", LEADER),
+      user(11L, "Luis", RETURNER), "Soil data");
+  }
+
+  /** The same send path with the scenario's manager, project leader (none when null), actor and title. */
+  private static Sent unsubmit(GlobalUnit origin, CustomParameterManager customParameters, User leader, User actor,
+    String title) throws Exception {
     Phase phase = new Phase();
     phase.setId(501L);
     phase.setYear(2026);
@@ -232,19 +252,35 @@ public class UnsubmitProjectEmailTest {
     Map<Long, GlobalUnit> units = new HashMap<>();
     units.put(origin.getId(), origin);
     DrivenUnsubmit action = new DrivenUnsubmit(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
-      mail, units, customFiles, lookups, phase, user(11L, "Luis", RETURNER));
+      mail, units, customParameters, phase, actor);
     Field justification = UnsubmitProjectAction.class.getDeclaredField("justification");
     justification.setAccessible(true);
     justification.set(action, REASON);
     Method send = UnsubmitProjectAction.class.getDeclaredMethod("sendNotficationEmail", Project.class);
     send.setAccessible(true);
     try {
-      send.invoke(action, project(phase, origin));
+      send.invoke(action, project(phase, origin, leader, title));
     } catch (InvocationTargetException e) {
       throw new AssertionError("the send path threw", e.getCause());
     }
     assertEquals("one email per unsubmission", 1, mail.sent.size());
     return mail.sent.get(0);
+  }
+
+  private static List<String> addresses(String list) {
+    List<String> found = new ArrayList<>();
+    if (list != null) {
+      for (String address : list.split(",")) {
+        if (!address.trim().isEmpty()) {
+          found.add(address.trim().toLowerCase());
+        }
+      }
+    }
+    return found;
+  }
+
+  private static CustomParameterManager noCustomFiles() {
+    return EmailSendDoubles.customFiles(new HashMap<Long, String>(), new ArrayList<String>());
   }
 
   private static Map<Long, String> aiccraFiles() {
@@ -260,7 +296,7 @@ public class UnsubmitProjectEmailTest {
     Sent sent = unsubmit(unit(45L, "AICCRA"), aiccraFiles(), lookups);
 
     assertEquals("TO is the project leader", LEADER, sent.to);
-    assertEquals("CC is the returner, then the project leader", RETURNER + ", " + LEADER, sent.cc);
+    assertEquals("CC is the returner only, the leader is already the TO", RETURNER, sent.cc);
     assertEquals("BCC is the notification address", NOTIFY, sent.bcc);
     assertEquals("[AICCRA] AICCRA cluster [C77] has been returned to the cluster leader for edits", sent.subject);
     assertNull("no attachment", sent.attachment);
@@ -316,5 +352,102 @@ public class UnsubmitProjectEmailTest {
     assertEquals("support address", 1, count(visible, "marlosupport@cgiar.org"));
     assertEquals("do-not-reply notice", 1, count(visible, "do not reply"));
   }
-}
 
+  // ---- BUG-SUBMIT-EMAIL-001 FN-004..FN-007: the leader is always addressed, greeted, never copied ---------------
+
+  @Test
+  public void aLeaderWhoIsTheActorStillGetsTheEmailGreetedAndNotCopied() throws Exception {
+    Long leaderId = Long.valueOf(1082L);
+    Long actorId = Long.valueOf("1082");
+    assertTrue("two distinct Long instances of the same id", leaderId != actorId && leaderId.equals(actorId));
+    Sent sent = unsubmit(unit(50L, "QATEST"), noCustomFiles(), user(leaderId, "Ana", LEADER),
+      user(actorId, "Ana", "  ANA@unit.test"), "Soil data");
+
+    assertEquals("TO is the leader", LEADER, sent.to);
+    assertTrue("CC has no leader address: " + sent.cc, addresses(sent.cc).isEmpty());
+    assertEquals("nothing remains in CC", "", sent.cc);
+    assertTrue(sent.body, sent.body.contains("Dear Ana,"));
+  }
+
+  @Test
+  public void aLeaderWhoIsTheActorWithACachedIdIsAddressedToo() throws Exception {
+    Sent sent = unsubmit(unit(50L, "QATEST"), noCustomFiles(), user(Long.valueOf(16L), "Ana", LEADER),
+      user(Long.valueOf(16L), "Ana", LEADER), "Soil data");
+
+    assertEquals("TO is the leader", LEADER, sent.to);
+    assertTrue("CC has no leader address: " + sent.cc, addresses(sent.cc).isEmpty());
+    assertTrue(sent.body, sent.body.contains("Dear Ana,"));
+    assertFalse(sent.body, sent.body.contains("Dear ,"));
+  }
+
+  @Test
+  public void aDifferentLeaderIsToAndTheActorIsTheOnlyCopy() throws Exception {
+    Sent sent = unsubmit(unit(50L, "QATEST"), noCustomFiles(), user(12L, "Ana", LEADER),
+      user(11L, "Luis", RETURNER), "Soil data");
+
+    assertEquals("TO is the leader", LEADER, sent.to);
+    assertEquals("CC is the actor only", Arrays.asList(RETURNER), addresses(sent.cc));
+    assertEquals(RETURNER, sent.cc);
+    assertTrue(sent.body, sent.body.contains("Dear Ana,"));
+  }
+
+  @Test
+  public void aProjectWithoutALeaderIsGreetedToEveryone() throws Exception {
+    Sent sent = unsubmit(unit(50L, "QATEST"), noCustomFiles(), null, user(11L, "Luis", RETURNER), "Soil data");
+
+    assertEquals("no leader, no TO", "", sent.to);
+    assertEquals(RETURNER, sent.cc);
+    assertTrue(sent.body, sent.body.contains("Dear all,"));
+    assertFalse(sent.body, sent.body.contains("Dear ,"));
+  }
+
+  @Test
+  public void aLeaderWithABlankFirstNameIsGreetedToEveryone() throws Exception {
+    Sent sent = unsubmit(unit(50L, "QATEST"), noCustomFiles(), user(12L, "  ", LEADER),
+      user(11L, "Luis", RETURNER), "Soil data");
+
+    assertEquals("the leader is still addressed", LEADER, sent.to);
+    assertTrue(sent.body, sent.body.contains("Dear all,"));
+    assertFalse(sent.body, sent.body.contains("Dear ,"));
+  }
+
+  @Test
+  public void aProjectWithoutATitleShowsUntitledAndNeverNull() throws Exception {
+    Sent sent = unsubmit(unit(50L, "QATEST"), noCustomFiles(), user(12L, "Ana", LEADER),
+      user(11L, "Luis", RETURNER), null);
+
+    assertTrue(sent.body, sent.body.contains("returned the QATEST project \"Untitled\" (C77)"));
+    assertFalse(sent.body, sent.body.contains("null"));
+  }
+
+  @Test
+  public void aFailingCustomFileLookupWarnsWithTheUnitIdAndStillSends() throws Exception {
+    CustomParameterManager failing = EmailSendDoubles.answering(CustomParameterManager.class,
+      "getCustomParameterByParameterKeyAndGlobalUnitId", args -> {
+        throw new IllegalStateException("lookup failed");
+      });
+    ch.qos.logback.classic.Logger logger =
+      (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(UnsubmitProjectAction.class);
+    ch.qos.logback.core.read.ListAppender<ch.qos.logback.classic.spi.ILoggingEvent> appender =
+      new ch.qos.logback.core.read.ListAppender<>();
+    appender.start();
+    logger.addAppender(appender);
+    Sent sent;
+    try {
+      sent = unsubmit(unit(45L, "AICCRA"), failing, user(12L, "Ana", LEADER), user(11L, "Luis", RETURNER),
+        "Soil data");
+    } finally {
+      logger.detachAppender(appender);
+    }
+
+    assertEquals("the email is still sent", LEADER, sent.to);
+    List<String> warnings = new ArrayList<>();
+    for (ch.qos.logback.classic.spi.ILoggingEvent event : appender.list) {
+      if (event.getLevel() == ch.qos.logback.classic.Level.WARN) {
+        warnings.add(event.getFormattedMessage());
+      }
+    }
+    assertEquals("one WARN: " + warnings, 1, warnings.size());
+    assertTrue("the WARN names the unit id: " + warnings, warnings.get(0).contains("45"));
+  }
+}

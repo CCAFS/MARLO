@@ -9,7 +9,7 @@
 **Depth:** Lite (Bug Mode). Every defect gets a regression test that is red before the fix and green after
 
 > **Answer first.** Five tasks:
-> - T1 measures the real report time on aiccratest. The owner runs it; there is no code.
+> - T1 measures the real report time. Deferred 2026-11-12 to the post-deploy log read in T05.
 > - T2 builds the bounded PDF fetch.
 > - T3 wires the submit to a per-submit summary instance.
 > - T4 fixes unsubmit.
@@ -30,7 +30,7 @@ All gates run after the Implementer reports, never alongside it.
 ---
 
 ### BUG-SUBMIT-EMAIL-001-T01 — Measure the cluster report time on aiccratest
-- **Status:** [ ] · **Size:** XS · **Depends on:** none · **Module:** none (measurement)
+- **Status:** [~] deferred 2026-11-12 (owner: no aiccratest access now; "si, de acuerdo"). The measurement moves to T05's post-deploy check, read from the `fetchClusterReportBytes` INFO line (elapsed ms). Constants start at 10 × 2 000 ms · **Size:** XS · **Depends on:** none · **Module:** none (measurement)
 - **Requirements:** NF-001 (sets the budget values)
 - **Design:** §10, P-9
 - **Scope:**
@@ -50,7 +50,7 @@ All gates run after the Implementer reports, never alongside it.
 - **Skills:** none.
 
 ### BUG-SUBMIT-EMAIL-001-T02 — Bounded PDF fetch in `MicroserviceReportAction`
-- **Status:** [ ] · **Size:** S · **Depends on:** T01 (constants; T02 may start with 10 × 2 000 ms and adopt T01's values when it lands) · **Module:** marlo-web (`action/report/MicroserviceReportAction.java`, test)
+- **Status:** [ ] · **Size:** S · **Depends on:** none (T01 deferred 2026-11-12; constants 10 × 2 000 ms, re-set from the post-deploy log in T05) · **Module:** marlo-web (`action/report/MicroserviceReportAction.java`, test)
 - **Requirements:** FN-001 (bytes obtained), FN-002 (null on every failure), FN-003, NF-001, NF-002
 - **Design:** DD-2, DD-3, DD-4, §2 row 1, §10, §11
 - **Scope:**
@@ -58,7 +58,7 @@ All gates run after the Implementer reports, never alongside it.
     - config copied from `APConfig` into locals; never `loadData()`;
     - return null at once when json, name, queue URL or S3 URL is null or blank;
     - publish with 5 s connect and handshake timeouts;
-    - HEAD poll with the T01 constants, then GET into `byte[]`, each request with 5 s connect and read timeouts;
+    - HEAD poll with 10 × 2 000 ms (re-set in T05 from the post-deploy log), then GET into `byte[]`, each request with 5 s connect and read timeouts;
     - return null on non-200, exception or 0 bytes;
     - on interruption, restore the flag and return null;
     - one INFO line: name, outcome, byte length, elapsed ms.
@@ -155,14 +155,14 @@ All gates run after the Implementer reports, never alongside it.
 - **Skills:** marlo-verify, tdd, marlo-commit.
 
 ### BUG-SUBMIT-EMAIL-001-T04 — Unsubmit always addresses the leader, greets correctly, no self-CC, no "null"
-- **Status:** [ ] · **Size:** S · **Depends on:** none (independent of T02/T03; different file) · **Module:** marlo-web (`UnsubmitProjectAction.java`, `global.properties`, test)
+- **Status:** [x] done 2026-11-12 (execution.md T04) · **Size:** S · **Depends on:** none (independent of T02/T03; different file) · **Module:** marlo-web (`UnsubmitProjectAction.java`, `global.properties`, test)
 - **Requirements:** FN-004, FN-005, FN-006 (unsubmit), FN-007 (unsubmit), NF-003
 - **Design:** DD-6, DD-7, DD-8, P-2, P-8, P-11
 - **Scope:**
   - One `leader` lookup. TO = the leader's email when present.
   - `values[0]` = the leader's first name, or the unit's `email.greeting.everyone`.
   - Remove both `getId() !=` conditions.
-  - CC drops the actor's address when it equals the TO (trimmed, case-insensitive).
+  - CC drops every address equal to the TO (trimmed, case-insensitive) — design §2 row 4 as amended 2026-11-12.
   - Title fallback to `global.untitled` when `projectInfo` or its title is null or blank.
   - The WARN gains the unit id, as a null-safe argument.
   - `global.properties`: add `email.greeting.everyone=all` next to the other `email.*` greeting keys.
@@ -171,7 +171,7 @@ All gates run after the Implementer reports, never alongside it.
   - (a) the leader is the actor with id 1082, built as two distinct `Long` instances (`new Long(1082)` vs
     `Long.valueOf(1082)`) → TO = leader, "Dear <first>,", CC has no leader address;
   - (b) the same with id 16 → same result;
-  - (c) a different leader and actor → TO = leader, CC = actor then leader as today (unchanged);
+  - (c) a different leader and actor → TO = leader, CC argument = actor only (today `"actor, leader"`, which `SendMailS.send` reduces to the actor before sending, so the delivered recipients are unchanged);
   - (d) no leader → "Dear all,", no "Dear ,";
   - (e) the leader with a blank first name → "Dear all,";
   - (f) null title → "Untitled", no `"null"`;
@@ -216,7 +216,7 @@ All gates run after the Implementer reports, never alongside it.
     - One summary download (`reportingSummary.do`), which must still follow its own path: the log shows
       `downloadPDFByURL` / the queue error as today.
     - Clean up the DB copy.
-  - **Post-deploy (owner, after the branch reaches the aiccratest environment):** one planning submit. The email
+  - **Post-deploy (owner, after the branch reaches the aiccratest environment):** read the `fetchClusterReportBytes` INFO lines (outcome + elapsed ms) of the first planning submits; this settles P-9 and T01 (re-set the constants if the slowest successful fetch is near the budget). One planning submit. The email
     carries a non-empty PDF that opens, and the page is the submission page. This also answers Q2. It is recorded
     as an open acceptance item if the deploy happens after archive.
   - Backend route: none — verification.
@@ -242,7 +242,8 @@ All gates run after the Implementer reports, never alongside it.
 ## Dependency Graph
 
 ```
-T01 ─► T02 ─► T03 ─┐
+T01 (deferred to T05 post-deploy)
+T02 ─► T03 ─┐
                    ├─► T05
 T04 ───────────────┘
 ```
@@ -261,7 +262,7 @@ T04 is independent of T01–T03 (different file) and can run in parallel with T0
 | AC FN-005 THEN "Dear all,"; BUT no "Dear ," | T04 (d)(e) |
 | AC FN-006 THEN "Untitled"; BUT no `"null"` (submit and unsubmit) | T03 (e); T04 (f) |
 | AC FN-007 THEN the WARN contains the unit id and the email is still sent | T03 (f); T04 (g) |
-| NF-001 budget bounded and measured | T01; T02 (b)(i) |
+| NF-001 budget bounded and measured | T02 (b)(i); T05 post-deploy log (T01 deferred) |
 | NF-003 i18n | T04 (G-i18n) |
 
 ## Testing Plan
