@@ -18,6 +18,7 @@ package org.cgiar.ccafs.marlo.action.projects;
 import org.cgiar.ccafs.marlo.action.projects.ProjectSubmissionAction.SubmitEmail;
 import org.cgiar.ccafs.marlo.action.summaries.ReportingSummaryAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
 import org.cgiar.ccafs.marlo.data.manager.PhaseManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -46,13 +47,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.opensymphony.xwork2.TextProvider;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -145,35 +153,62 @@ public class ProjectSubmissionEmailTest {
   private static final String BASE_URL = "https://marlo.test";
   private static final byte[] PDF = {37, 80, 68, 70, 1};
 
-  /** A summary action that produces the PDF bytes, or fails as the microservice can. */
+  /**
+   * A summary action as production behaves: execute() leaves the bytes empty, generatePdfBytes() answers the scripted
+   * result or fails as the microservice can, and the project and phase it was given are recorded.
+   */
   private static final class FakeSummary extends ReportingSummaryAction {
 
     private static final long serialVersionUID = 1L;
     private final boolean fails;
+    private final byte[] result;
+    Project givenProject;
+    Phase givenPhase;
+    int generated;
 
-    FakeSummary(boolean fails) {
+    FakeSummary(byte[] result, boolean fails) {
       super(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      this.result = result;
       this.fails = fails;
     }
 
     @Override
     public String execute() throws Exception {
-      if (this.fails) {
-        throw new IllegalStateException("summary service unreachable");
-      }
       return SUCCESS;
     }
 
     @Override
+    public byte[] generatePdfBytes() {
+      this.generated++;
+      if (this.fails) {
+        throw new IllegalStateException("summary service unreachable");
+      }
+      return this.result;
+    }
+
+    @Override
     public byte[] getBytesPDF() {
-      return PDF.clone();
+      // As in production: execute() does not fill the bytes, the summary is generated elsewhere.
+      return new byte[0];
     }
 
     @Override
     public void loadProvider(Map<String, Object> session) {
       // The texts of the summary are not read by the email.
+    }
+
+    @Override
+    public void setProject(Project project) {
+      this.givenProject = project;
+      super.setProject(project);
+    }
+
+    @Override
+    public void setSelectedPhase(Phase selectedPhase) {
+      this.givenPhase = selectedPhase;
+      super.setSelectedPhase(selectedPhase);
     }
   }
 
@@ -186,12 +221,17 @@ public class ProjectSubmissionEmailTest {
     private final GlobalUnit unit;
     private final boolean planning;
 
-    DrivenSubmission(APConfig config, RecordingSendMail mail, ReportingSummaryAction summary,
-      Map<Long, String> customFiles, List<String> lookups, Phase phase, User user, GlobalUnit unit, boolean planning) {
+    private final Supplier<FakeSummary> summaries;
+
+    DrivenSubmission(APConfig config, RecordingSendMail mail, Supplier<FakeSummary> summaries,
+      CustomParameterManager customParameters, Phase phase, User user, GlobalUnit unit, boolean planning,
+      String title) {
       super(config, null,
-        EmailSendDoubles.answering(ProjectManager.class, "getProjectById", args -> project(phase, unit, user)), null,
-        mail, null, null, EmailSendDoubles.answering(PhaseManager.class, "findCycle", args -> phase), null, summary,
-        EmailSendDoubles.customFiles(customFiles, lookups));
+        EmailSendDoubles.answering(ProjectManager.class, "getProjectById", args -> project(phase, unit, user, title)),
+        null,
+        mail, null, null, EmailSendDoubles.answering(PhaseManager.class, "findCycle", args -> phase), null, null,
+        customParameters);
+      this.summaries = summaries;
       this.phase = phase;
       this.user = user;
       this.unit = unit;
@@ -216,6 +256,22 @@ public class ProjectSubmissionEmailTest {
     @Override
     public User getCurrentUser() {
       return this.user;
+    }
+
+    // The fallback texts of the action itself need a Struts context the unit test does not have: answer the key.
+    @Override
+    public String getText(String key) {
+      return key;
+    }
+
+    @Override
+    public String getText(String key, String[] args) {
+      return key;
+    }
+
+    @Override
+    protected ReportingSummaryAction newSummaryAction() {
+      return this.summaries.get();
     }
 
     @Override
@@ -256,7 +312,7 @@ public class ProjectSubmissionEmailTest {
   }
 
   /** Project 77 of the unit, titled "Soil data", led in the phase by Leo. */
-  private static Project project(Phase phase, GlobalUnit unit, User submitter) {
+  private static Project project(Phase phase, GlobalUnit unit, User submitter, String title) {
     GlobalUnitProject origin = new GlobalUnitProject();
     origin.setId(1L);
     origin.setGlobalUnit(unit);
@@ -273,7 +329,7 @@ public class ProjectSubmissionEmailTest {
     partner.setPhase(phase);
     partner.setProjectPartnerPersons(Collections.singleton(leader));
     ProjectInfo info = new ProjectInfo();
-    info.setTitle("Soil data");
+    info.setTitle(title);
     info.setPhase(phase);
     Project project = new Project();
     project.setId(77L);
@@ -295,11 +351,17 @@ public class ProjectSubmissionEmailTest {
    */
   private static Sent submit(String pmu, GlobalUnit unit, Map<Long, String> customFiles, List<String> lookups,
     Phase phase, boolean planning, boolean pdfFails) throws Exception {
+    return submit(pmu, unit, EmailSendDoubles.customFiles(customFiles, lookups), phase, planning,
+      () -> new FakeSummary(PDF.clone(), pdfFails), "Soil data");
+  }
+
+  private static Sent submit(String pmu, GlobalUnit unit, CustomParameterManager customParameters, Phase phase,
+    boolean planning, Supplier<FakeSummary> summaries, String title) throws Exception {
     RecordingSendMail mail = new RecordingSendMail();
     User submitter = user(11L, "Ana", "Perez", SUBMITTER);
-    DrivenSubmission action = new DrivenSubmission(new EnvelopeConfig(pmu, NOTIFY, BASE_URL), mail,
-      new FakeSummary(pdfFails), customFiles, lookups, phase, submitter, unit, planning);
-    set(action, "project", project(phase, unit, submitter));
+    DrivenSubmission action = new DrivenSubmission(new EnvelopeConfig(pmu, NOTIFY, BASE_URL), mail, summaries,
+      customParameters, phase, submitter, unit, planning, title);
+    set(action, "project", project(phase, unit, submitter, title));
     set(action, "loggedCrp", unit);
     set(action, "projectID", 77L);
     Method send = ProjectSubmissionAction.class.getDeclaredMethod("sendNotficationEmail");
@@ -444,5 +506,100 @@ public class ProjectSubmissionEmailTest {
       assertEquals(label + " do-not-reply notice", 1, visibleCount(email.body, "do not reply"));
     }
   }
-}
 
+  private static Sent submitWith(Supplier<FakeSummary> summaries, String title, boolean planning) throws Exception {
+    return submit(PMU, unit(45L, "AICCRA"), EmailSendDoubles.customFiles(aiccraFiles(), new ArrayList<>()),
+      phase(501L, "Planning"), planning, summaries, title);
+  }
+
+  @Test
+  public void thePlanningSendAttachesExactlyTheBytesTheSummaryProduced() throws Exception {
+    byte[] bytes = {37, 80, 68, 70, 45, 49, 46, 55, 9, 8, 7};
+    Sent sent = submitWith(() -> new FakeSummary(bytes, false), "Soil data", true);
+
+    assertArrayEquals("the bytes of the summary are attached", bytes, sent.attachment);
+    assertEquals("application/pdf", sent.mimeType);
+    assertTrue(sent.fileName, sent.fileName.matches("Full_Cluster_Report-AICCRA-C77-\\d{8}-\\d{4}\\.pdf"));
+    assertTrue(sent.body, sent.body.contains("The cluster summary is attached as a PDF."));
+  }
+
+  @Test
+  public void aSummaryWithoutBytesSendsTheNoPdfCopyAndNoAttachment() throws Exception {
+    for (byte[] none : new byte[][] {null, new byte[0]}) {
+      Sent sent = submitWith(() -> new FakeSummary(none, false), "Soil data", true);
+
+      String label = none == null ? "null bytes" : "empty bytes";
+      assertNull(label + ": attachment", sent.attachment);
+      assertNull(label + ": mime type", sent.mimeType);
+      assertNull(label + ": file name", sent.fileName);
+      assertTrue(label + ": " + sent.body, sent.body.contains("download the cluster summary as a PDF</a>"));
+      assertFalse(label + " is never said to be attached: " + sent.body, sent.body.contains("attached"));
+    }
+  }
+
+  @Test
+  public void eachSubmitBuildsItsOwnSummaryWithItsOwnProjectAndPhase() throws Exception {
+    List<FakeSummary> created = new ArrayList<>();
+    Supplier<FakeSummary> factory = () -> {
+      FakeSummary summary = new FakeSummary(PDF.clone(), false);
+      created.add(summary);
+      return summary;
+    };
+    GlobalUnit unit = unit(45L, "AICCRA");
+    submit(PMU, unit, EmailSendDoubles.customFiles(aiccraFiles(), new ArrayList<>()), phase(501L, "Planning"), true,
+      factory, "Soil data");
+    submit(PMU, unit, EmailSendDoubles.customFiles(aiccraFiles(), new ArrayList<>()), phase(502L, "Planning"), true,
+      factory, "Soil data");
+
+    assertEquals("newSummaryAction() once per submit", 2, created.size());
+    assertTrue("two distinct summaries", created.get(0) != created.get(1));
+    assertEquals(Long.valueOf(501L), created.get(0).givenPhase.getId());
+    assertEquals(Long.valueOf(502L), created.get(1).givenPhase.getId());
+    assertEquals(Long.valueOf(77L), created.get(0).givenProject.getId());
+    assertEquals(Long.valueOf(77L), created.get(1).givenProject.getId());
+    assertTrue("each summary got its own project", created.get(0).givenProject != created.get(1).givenProject);
+    assertEquals(1, created.get(0).generated);
+    assertEquals(1, created.get(1).generated);
+  }
+
+  @Test
+  public void aProjectWithoutTitleReadsUntitledAndNeverNull() throws Exception {
+    for (String title : new String[] {null, "  "}) {
+      Sent sent = submitWith(() -> new FakeSummary(PDF.clone(), false), title, true);
+
+      assertTrue(sent.body, sent.body.contains("cluster \"Untitled\" (C77)"));
+      assertFalse(sent.body, sent.body.contains("null"));
+    }
+  }
+
+  @Test
+  public void aFailedUnitTextLookupWarnsWithTheUnitIdAndTheEmailIsStillSent() throws Exception {
+    CustomParameterManager failing = EmailSendDoubles.answering(CustomParameterManager.class,
+      "getCustomParameterByParameterKeyAndGlobalUnitId", args -> {
+        throw new IllegalStateException("lookup failed");
+      });
+    Logger logger = (Logger) LoggerFactory.getLogger(ProjectSubmissionAction.class);
+    ListAppender<ILoggingEvent> capture = new ListAppender<>();
+    capture.start();
+    logger.addAppender(capture);
+    Sent sent;
+    try {
+      sent = submit(PMU, unit(45L, "AICCRA"), failing, phase(501L, "Planning"), true,
+        () -> new FakeSummary(PDF.clone(), false), "Soil data");
+    } finally {
+      logger.detachAppender(capture);
+      capture.stop();
+    }
+
+    List<String> warnings = new ArrayList<>();
+    for (ILoggingEvent event : capture.list) {
+      if (event.getLevel() == Level.WARN) {
+        warnings.add(event.getFormattedMessage());
+      }
+    }
+    assertEquals(warnings.toString(), 1, warnings.size());
+    assertTrue(warnings.get(0), warnings.get(0).contains("unit 45 "));
+    assertNotNull("the email is still sent", sent.body);
+    assertArrayEquals(PDF, sent.attachment);
+  }
+}

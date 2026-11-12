@@ -158,3 +158,63 @@ Leader enforces the 60-call bound by reviewing each report. `akili doctor --agen
 - **Delta:** about 930 LOC after 2 of 5 tasks, against the ~480 tripwire. The projection at completion is about 1 150.
 - **Cause:** test volume (T02 has 517 test lines) plus the two owner-approved T02 hardenings.
 - **Decision:** the owner (Kenji Tanaka) answered "si, haz el commit y sigue con la opción 1". The LOC tripwire is raised to **~1 200**. Tasks (5) and review rounds (7) are unchanged.
+
+### BUG-SUBMIT-EMAIL-001-T03 — Submit attaches the real PDF from a per-submit summary instance
+
+- **Attempt 1 (2026-11-12). Skills / effort:** marlo-verify, tdd; medium.
+  - **Files changed:**
+    - `ReportingSummaryAction.java` (+21/−1): the 2 fields, `generatePdfBytes()` and the guarded line.
+    - `ProjectSubmissionAction.java` (+50/−43): the constructor takes an `ApplicationContext`; adds `newSummaryAction()` and `summaryPdf()`; the bytes are attached only when non-empty; the title falls back to "Untitled"; the WARN carries the unit id.
+    - `ProjectSubmissionEmailTest.java` (+172/−15).
+    - New `ReportingSummarySubmitFlagTest.java`.
+  - **P-10 compile step:** clean compile with the `ApplicationContext` constructor parameter, exit 0.
+  - **Red run, quoted by the Implementer:**
+    - (a) `the bytes of the summary are attached: array lengths differed, expected.length=5 actual.length=0`.
+    - (e) the body contains `submitted the AICCRA cluster "null" (C77)` (`ProjectSubmissionEmailTest.java:473`).
+  - **Falsifiers:**
+    - `getBytesPDF()` after `execute()` → (a) red.
+    - A field-held summary → (d) red, `expected:<2> but was:<0>`.
+    - The flag guard dropped → the download case red, `expected:<[loadData, queue]> but was:<[loadData, fetch]>`.
+  - **Evidence re-run (Leader): MISMATCH → implicit FAIL.**
+    - Tests match the report: clean compile, 6 classes, **64 run, 0 failures**. `ProjectSubmissionEmailTest` run alone gives 16/16, so the single-class VM crash the Implementer saw came from stale classes.
+    - Checkstyle does not match the reported "delta 0". `ReportingSummaryAction.java` goes from HEAD 67 to tree 68 (+1): a new `Line is longer than 120 characters (found 121). [LineLength]` on the new `generatePdfBytes()` Javadoc line. `ProjectSubmissionAction.java` goes from 1 to 0, an improvement.
+  - **Reviewer:** not spawned. A MISMATCH is a FAIL without review.
+  - **Spawns:** implementer: 39 calls, 171 812 tokens, ended complete.
+- **Attempt 2 launched:** fix the 121-character Javadoc line only. Effort raised from medium to high.
+- **Attempt 2 (effort high).**
+  - **Files changed:** `ReportingSummaryAction.java`. The `generatePdfBytes()` Javadoc is rewrapped onto two lines; nothing else changed.
+  - **Implementer verification:**
+    - Checkstyle: `--baseline` gives HEAD 67, tree 67. The sorted message diff against HEAD shows only the FileLength count line.
+    - Tests: `ProjectSubmissionEmailTest` and `ReportingSummarySubmitFlagTest` give 18 run, 0 failures, exit 0.
+  - **Evidence re-run (Leader): VERIFIED.**
+    - Sorted Checkstyle messages against HEAD: only `File length is 11,567` versus `11,588` differs.
+    - `ProjectSubmissionAction`: delta −1. Both test files: delta 0.
+    - Hygiene: one LOG-NULL REVIEW (the guarded ternary) and one LOG-ARGS at `:11436`, which is already in HEAD (`LOG.warn("Unable to resolve project template data via reflection", inner)`; `inner` is an exception, so this is a false positive).
+    - Clean compile 2430 / 1063 / 117, MVN_EXIT=0, 6 classes, **64 run, 0 failures**.
+  - **Reviewer verdict:** PASS (akili-reviewer, opus, effort high, whole diff, 664 lines). It checked:
+    - `ReportingSummaryAction` limited to 2 fields, 1 method and 1 guarded line; the flag has no setter.
+    - Setters identical in order and value; the `project` local was renamed to `summaryProject`.
+    - `createBean` equivalent to today's singleton (Spring-only in both).
+    - FN-003 holds.
+    - Recipients, subject, BCC, the notification gate and the reporting path are untouched.
+    - The tests assert the arguments received, and (d) runs the real setters.
+  - **ADVISORY:**
+    - Reliability: there is no test row for a null `projectInfo`; the guard is in the code.
+    - Reliability: (b) and (c) do not assert that the `.noPDF` link carries `projectID` and `phaseID`.
+    - Readability: the wrapping of `null,` in the `DrivenSubmission` super call, and an inline `java.util.Arrays`.
+    - Resilience: the request thread is held up to about 35 s by design; T05 confirms the timing after deploy.
+  - **Runtime events:** none.
+- **Spawns:**
+  - implementer attempt 2: 8 calls, 86 161 tokens, ended complete
+  - reviewer: 15 calls, 83 270 tokens, ended complete
+- **Final status:** PASS — 2026-11-12, after 2 attempts (one MISMATCH). **Requirements covered:** FN-001, FN-002, FN-003 (submit side), FN-006 (submit), FN-007 (submit), NF-002.
+- **Budget running totals:** 3 of 5 tasks done (T01 deferred).
+  - LOC: about 1 310 against ~1 200 → **TRIPWIRE EXCEEDED AGAIN.** T03 added about 400 lines (production 72, tests 326).
+  - Review rounds: 6 of 7 (T04 1, T02 3, T03 2 counting the MISMATCH).
+  - T05 adds no code. Stop and escalate to the owner.
+
+## Budget Adjustment (after T03)
+
+- **Date:** 2026-11-12.
+- **Delta:** about 1 310 LOC after 3 of 5 tasks, against the ~1 200 tripwire. T05 adds no code.
+- **Decision:** the owner answered "si, haz el commit, agrega los tests y sigue con T05". The LOC tripwire is raised to **~1 350**. Review rounds stay at 7. The owner approved two test rows the T03 Reviewer flagged, recorded as an owner-approved test addition (below), not as a new task.

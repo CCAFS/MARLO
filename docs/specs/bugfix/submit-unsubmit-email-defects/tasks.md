@@ -97,7 +97,7 @@ All gates run after the Implementer reports, never alongside it.
 - **Skills:** marlo-verify, tdd, marlo-commit.
 
 ### BUG-SUBMIT-EMAIL-001-T03 — Submit attaches the real PDF from a per-submit summary instance
-- **Status:** [ ] · **Size:** M · **Depends on:** T02 · **Module:** marlo-web (`ReportingSummaryAction.java`, `ProjectSubmissionAction.java`, tests)
+- **Status:** [x] done 2026-11-12, 2 attempts (execution.md T03) · **Size:** M · **Depends on:** T02 · **Module:** marlo-web (`ReportingSummaryAction.java`, `ProjectSubmissionAction.java`, tests)
 - **Requirements:** FN-001, FN-002, FN-003 (the submit side), FN-006 (submit), FN-007 (submit), NF-002
 - **Design:** DD-1, DD-2, DD-5, DD-8, DD-9, P-3, P-5, P-10
 - **Scope:**

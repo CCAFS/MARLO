@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
 import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
 import org.cgiar.ccafs.marlo.data.model.Submission;
 import org.cgiar.ccafs.marlo.security.Permission;
@@ -38,7 +39,6 @@ import org.cgiar.ccafs.marlo.utils.EmailLayout;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 import org.cgiar.ccafs.marlo.utils.UnitTextProvider;
 
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -52,6 +52,7 @@ import com.opensymphony.xwork2.TextProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 
 /**
@@ -83,12 +84,12 @@ public class ProjectSubmissionAction extends BaseAction {
 
   private Project project;
 
-  private ReportingSummaryAction reportingSummaryAction;
+  private final ApplicationContext applicationContext;
 
   @Inject
   public ProjectSubmissionAction(APConfig config, SubmissionManager submissionManager, ProjectManager projectManager,
     GlobalUnitManager crpManager, SendMailS sendMail, LiaisonUserManager liasonUserManager, RoleManager roleManager,
-    PhaseManager phaseManager, UserManager userManager, ReportingSummaryAction reportingSummaryAction,
+    PhaseManager phaseManager, UserManager userManager, ApplicationContext applicationContext,
     CustomParameterManager customParameterManager) {
     super(config);
     this.submissionManager = submissionManager;
@@ -98,7 +99,7 @@ public class ProjectSubmissionAction extends BaseAction {
     this.roleManager = roleManager;
     this.userManager = userManager;
     this.phaseManager = phaseManager;
-    this.reportingSummaryAction = reportingSummaryAction;
+    this.applicationContext = applicationContext;
     this.customParameterManager = customParameterManager;
   }
 
@@ -217,7 +218,8 @@ public class ProjectSubmissionAction extends BaseAction {
         .getCustomParameterByParameterKeyAndGlobalUnitId(APConstants.CRP_CUSTOM_FILE, loggedCrp.getId().longValue());
       return UnitTextProvider.forCustomFile(parameter == null ? null : parameter.getValue());
     } catch (RuntimeException e) {
-      LOG.warn("The texts of the submitting unit could not be read, the submit email uses the default texts", e);
+      LOG.warn("The texts of the submitting unit {} could not be read, the submit email uses the default texts",
+        loggedCrp == null ? null : loggedCrp.getId(), e);
       return this;
     }
   }
@@ -344,7 +346,9 @@ public class ProjectSubmissionAction extends BaseAction {
     String[] values = new String[7];
     values[0] = this.getCurrentUser().getComposedCompleteName();
     values[1] = crp;
-    values[2] = project.getProjecInfoPhase(this.getActualPhase()).getTitle();
+    ProjectInfo projectInfo = project.getProjecInfoPhase(this.getActualPhase());
+    values[2] = projectInfo == null || StringUtils.isBlank(projectInfo.getTitle()) ? texts.getText("global.untitled")
+      : projectInfo.getTitle();
     values[3] = String.valueOf(project.getStandardIdentifier(Project.EMAIL_SUBJECT_IDENTIFIER));
     values[4] = String.valueOf(this.getActualPhase().getYear());
     values[5] = this.getActualPhase().getDescription().toLowerCase();
@@ -353,51 +357,54 @@ public class ProjectSubmissionAction extends BaseAction {
       + APConstants.PROJECT_REQUEST_ID + "=" + projectID + "&" + APConstants.PHASE_ID + "="
       + this.getActualPhase().getId();
 
-    // Send pdf
-    // Get the PDF from the Project report url.
-    ByteBuffer buffer = null;
-    String fileName = null;
-    String contentType = null;
-    // Allow for Reporting when Reporting-PDF is completed
+    // Send pdf: only in planning, and only when the summary really produced bytes
+    byte[] pdf = null;
     if (this.isPlanningActive()) {
-      try {
-        // Set the parameters that are assigned in the prepare by reportingSummaryAction
-        reportingSummaryAction.setSession(this.getSession());
-        reportingSummaryAction.setSelectedYear(this.getActualPhase().getYear());
-        reportingSummaryAction.setLoggedCrp(loggedCrp);
-        reportingSummaryAction.setSelectedCycle(this.getActualPhase().getDescription());
-        reportingSummaryAction.setProjectID(projectID);
-        Project project = projectManager.getProjectById(projectID);
-        Set<Submission> submissions = new HashSet<>();
-        submissions.add(this.getSubmission());
-        project.setSubmissions(submissions);
-        reportingSummaryAction.setProject(project);
-        reportingSummaryAction.setCrpSession(loggedCrp.getAcronym());
-        reportingSummaryAction.setSelectedPhase(phaseManager.findCycle(reportingSummaryAction.getSelectedCycle(),
-          reportingSummaryAction.getSelectedYear(), this.getActualPhase().getUpkeep(), loggedCrp.getId().longValue()));
-        reportingSummaryAction.setProjectInfo(project.getProjecInfoPhase(reportingSummaryAction.getSelectedPhase()));
-        reportingSummaryAction.loadProvider(this.getSession());
-        reportingSummaryAction.execute();
-        // Getting the file data.
-        //
-        buffer = ByteBuffer.wrap(reportingSummaryAction.getBytesPDF());
-        fileName = this.getFileName();
-        contentType = "application/pdf";
-        //
-      } catch (Exception e) {
-        // // Do nothing.
-        LOG.error("There was an error trying to get the URL to download the PDF file", e);
-      }
+      pdf = this.summaryPdf();
     }
-    boolean pdfAttached = buffer != null && fileName != null && contentType != null;
+    boolean pdfAttached = pdf != null && pdf.length > 0;
     SubmitEmail email = assembleEmail(texts, this.getBaseUrlCdn(), crp, projectAcronym, values, pdfAttached);
     if (this.validateEmailNotification()) {
       if (pdfAttached) {
-        sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, buffer.array(), contentType, fileName,
-          true);
+        sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, pdf, "application/pdf",
+          this.getFileName(), true);
       } else {
         sendMail.send(toEmail, ccEmail, bbcEmails, email.subject, email.body, null, null, null, true);
       }
+    }
+  }
+
+  /** A summary action of its own for one submit: it keeps the project, phase and result of the submission. */
+  // @akili-spec bugfix/submit-unsubmit-email-defects
+  protected ReportingSummaryAction newSummaryAction() {
+    return applicationContext.getAutowireCapableBeanFactory().createBean(ReportingSummaryAction.class);
+  }
+
+  /** The bytes of the cluster summary of the submitted project, or null when they could not be produced. */
+  // @akili-spec bugfix/submit-unsubmit-email-defects
+  protected byte[] summaryPdf() {
+    try {
+      ReportingSummaryAction summary = this.newSummaryAction();
+      // Set the parameters that are assigned in the prepare by reportingSummaryAction
+      summary.setSession(this.getSession());
+      summary.setSelectedYear(this.getActualPhase().getYear());
+      summary.setLoggedCrp(loggedCrp);
+      summary.setSelectedCycle(this.getActualPhase().getDescription());
+      summary.setProjectID(projectID);
+      Project summaryProject = projectManager.getProjectById(projectID);
+      Set<Submission> submissions = new HashSet<>();
+      submissions.add(this.getSubmission());
+      summaryProject.setSubmissions(submissions);
+      summary.setProject(summaryProject);
+      summary.setCrpSession(loggedCrp.getAcronym());
+      summary.setSelectedPhase(phaseManager.findCycle(summary.getSelectedCycle(), summary.getSelectedYear(),
+        this.getActualPhase().getUpkeep(), loggedCrp.getId().longValue()));
+      summary.setProjectInfo(summaryProject.getProjecInfoPhase(summary.getSelectedPhase()));
+      summary.loadProvider(this.getSession());
+      return summary.generatePdfBytes();
+    } catch (Exception e) {
+      LOG.error("There was an error trying to get the URL to download the PDF file", e);
+      return null;
     }
   }
 
