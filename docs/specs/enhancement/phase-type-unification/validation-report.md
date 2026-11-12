@@ -490,6 +490,7 @@ it leaves behind is the old-name debt T11b already plans for. T11b is now unbloc
 |---|---|
 | A-D1 | The two new managers repeat the `getDescription()` replication pattern. A save made *in* a phase still described `Planing` does not replicate. Today those phases are AWPB / Progress 2028–2030 of units 45 and 50 (local copies), none editable or visible. M1 removes the typo. Feed the pattern into `enhancement/phase-cycle-centralization` |
 | A-D2 | Until this spec ships, `main` decides INT-2 by name. In unit 47 the progress phases are still named `UpKeep` (445, 448), so `main` would treat them as non-progress. On `aiccradb1` they are neither editable nor visible, so no user sees it today. Shipping this branch (code + M2) removes the case |
+| A-D3 | The redesign moved the 2019 lock to `crpPhases.ftl:224`; earlier rows of this report cite `:227` as the tree stood then. The contract documents now cite it by content (requirements §9, 2026-11-12); the FTL test already matched by content, so no gate changed |
 
 **Archive readiness:** not yet. Archive after T11b (W11), with W1–W8 accepted or ticketed, and W12 / W2 closed
 at the `staging` deploy. The branch itself is ready to merge into `staging` (0 conflicts).
