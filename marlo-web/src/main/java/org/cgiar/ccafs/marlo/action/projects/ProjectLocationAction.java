@@ -998,6 +998,29 @@ public class ProjectLocationAction extends BaseAction {
 
   }
 
+  /**
+   * Links a location element to the project in the actual phase: creates the project location when the project has
+   * none for it, and reactivates it when it was removed before.
+   *
+   * @param element the saved location element
+   */
+  private void linkProjectLocation(LocElement element) {
+    ProjectLocation existProjectLocation = projectLocationManager.getProjectLocationByProjectAndLocElement(
+      project.getId(), element.getId(), this.getActualPhase().getId());
+
+    if (existProjectLocation == null) {
+      ProjectLocation projectLocation = new ProjectLocation();
+      projectLocation.setProject(project);
+      projectLocation.setLocElement(element);
+      projectLocation.setPhase(this.getActualPhase());
+      projectLocationManager.saveProjectLocation(projectLocation);
+    } else if (!existProjectLocation.isActive()) {
+      existProjectLocation.setActive(true);
+      existProjectLocation.setPhase(this.getActualPhase());
+      projectLocationManager.saveProjectLocation(existProjectLocation);
+    }
+  }
+
   public void projectLocationNewData() {
 
     List<CountryLocationLevel> locationsDataPrew = this.getProjectLocationsData();
@@ -1018,24 +1041,7 @@ public class ProjectLocationAction extends BaseAction {
                   locElementManager.saveLocElement(element);
                 }
 
-                ProjectLocation existProjectLocation = projectLocationManager.getProjectLocationByProjectAndLocElement(
-                  project.getId(), locElement.getId(), this.getActualPhase().getId());
-
-                if (existProjectLocation == null) {
-                  ProjectLocation projectLocation = new ProjectLocation();
-                  projectLocation.setProject(project);
-                  projectLocation.setLocElement(element);
-                  projectLocation.setPhase(this.getActualPhase());
-                  projectLocationManager.saveProjectLocation(projectLocation);
-
-                } else {
-
-                  if (!existProjectLocation.isActive()) {
-                    existProjectLocation.setActive(true);
-                    existProjectLocation.setPhase(this.getActualPhase());
-                    projectLocationManager.saveProjectLocation(existProjectLocation);
-                  }
-                }
+                this.linkProjectLocation(element);
               } else {
                 if (locElement != null) {
                   this.saveGeoProjectLocation(locElement, locationData.getId());
@@ -1085,7 +1091,8 @@ public class ProjectLocationAction extends BaseAction {
                     locGeopositionManager.getLocGeopositionById(locElement.getLocGeoposition().getId()));
                 }
 
-                if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null) {
+                if (element.getLocGeoposition() != null && element.getLocElementType().getCrp() == null
+                  && locElement.getLocGeoposition() != null) {
                   if ((element.getLocGeoposition().getLatitude() != locElement.getLocGeoposition().getLatitude())
                     || (element.getLocGeoposition().getLongitude() != locElement.getLocGeoposition().getLongitude())) {
                     element.getLocGeoposition().setLongitude(locElement.getLocGeoposition().getLongitude());
@@ -1093,19 +1100,10 @@ public class ProjectLocationAction extends BaseAction {
 
                     locGeopositionManager.saveLocGeoposition(element.getLocGeoposition());
                   }
-                } else {
-                  ProjectLocation existProjectLocation =
-                    projectLocationManager.getProjectLocationByProjectAndLocElement(project.getId(), locElement.getId(),
-                      this.getActualPhase().getId());
-                  if (existProjectLocation == null) {
-
-                    ProjectLocation projectLocation = new ProjectLocation();
-                    projectLocation.setProject(project);
-                    projectLocation.setLocElement(element);
-                    projectLocation.setPhase(this.getActualPhase());
-                    projectLocationManager.saveProjectLocation(projectLocation);
-                  }
                 }
+                // A2-2735: a country added to a level the project already had used to stop at the geoposition
+                // sync above and was never linked to the project. Link every posted element it does not have.
+                this.linkProjectLocation(element);
               } else {
                 if (locElement != null) {
                   this.saveGeoProjectLocation(locElement, locationData.getId());
