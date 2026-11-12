@@ -287,4 +287,59 @@ public class EmailLayoutTest {
       assertFalse(customFile + " left a placeholder unfilled", shell.contains("{") || shell.contains("}"));
     }
   }
+
+  @Test
+  public void testOnlyGlobalDefinesTheShellAndACustomFileMayOnlyOptOut() throws Exception {
+    // FN-004: one definition of the shell markup. A unit file may carry email.layout only as the DD-9 opt-out.
+    String global = new String(Files.readAllBytes(Paths.get(EmailLayoutTest.class.getResource("/global.properties")
+      .toURI())), StandardCharsets.ISO_8859_1);
+    int definitions = 0;
+    for (String line : global.split("\\r?\\n")) {
+      if (line.startsWith("email.layout=")) {
+        definitions++;
+      }
+    }
+    assertEquals("global.properties defines email.layout once", 1, definitions);
+    assertTrue("the global definition is the shell", load(null, "/global.properties").getProperty("email.layout")
+      .contains("marlo-logo.png"));
+
+    List<String> problems = new ArrayList<>();
+    File folder = new File(EmailLayoutTest.class.getResource("/custom").toURI());
+    for (File file : folder.listFiles((dir, name) -> name.endsWith(".properties"))) {
+      String own = load(null, "/custom/" + file.getName()).getProperty("email.layout");
+      if (own != null && !own.equals("{0}")) {
+        problems.add(file.getName());
+      }
+    }
+    assertEquals("custom files that define a shell of their own: " + problems, 0, problems.size());
+  }
+
+  @Test
+  public void testCiatAndPabraInheritTheBaseRoleFooterAndShowItOnce() throws Exception {
+    // AC FN-005 names ciat and pabra; they no longer override any email.role.* key, so the scan above skips them.
+    Properties base = load(null, "/global.properties");
+    List<String> problems = new ArrayList<>();
+    for (String unit : new String[] {"ciat.properties", "pabra.properties"}) {
+      for (String key : load(null, "/custom/" + unit).stringPropertyNames()) {
+        if (key.startsWith("email.role.")) {
+          problems.add(unit + " still overrides " + key);
+        }
+      }
+      Properties properties = load(base, "/custom/" + unit);
+      TextProvider texts = texts(properties);
+      for (String admins : new String[] {"", "Jane Admin"}) {
+        String body = texts.getText("email.role.dear", new String[] {"Jane"})
+          + texts.getText(admins.isEmpty() ? "email.role.support.noCrpAdmins" : "email.role.support",
+            new String[] {admins})
+          + texts.getText("email.role.getStarted", new String[] {})
+          + texts.getText("email.role.bye", new String[] {});
+        String email = EmailLayout.wrap(texts, ASSETS_URL, body);
+        assertTrue(unit + " is inside the shell", email.contains("marlo-logo.png") && email.contains(body));
+        assertFalse(unit + " points to another instance", body.contains("aiccra.marlo.cgiar.org"));
+        checkFooterOnce(unit + " (admins='" + admins + "')", email, problems);
+      }
+    }
+    assertEquals("ciat / pabra role emails: " + problems, 0, problems.size());
+  }
 }
+

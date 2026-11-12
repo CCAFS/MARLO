@@ -1306,6 +1306,42 @@ public class OtpMailSenderTest {
     }
   }
 
+  /** Occurrences of the needle in the text a reader sees: markup stripped, so href and link text count once. */
+  private static int visibleCount(String html, String needle) {
+    String visible = html.replaceAll("<[^>]*>", "").toLowerCase();
+    int total = 0;
+    for (int at = visible.indexOf(needle); at >= 0; at = visible.indexOf(needle, at + 1)) {
+      total++;
+    }
+    return total;
+  }
+
+  @Test
+  public void aUnitWithoutACustomFileSendsTheHtmlPartInsideTheBaseShellWithTheFooterOnce() throws Exception {
+    // CHG-EMAIL-LAYOUT-001 FN-001 at the sender: no custom file named, and a named file that does not exist.
+    StubTransport transport = new StubTransport();
+    this.senderWith(transport, "");
+    TextProvider[] providers = {UnitTextProvider.forCustomFile(null), UnitTextProvider.forCustomFile("noSuchFile")};
+
+    for (TextProvider provider : providers) {
+      this.sender.sendAsync(provider, ASSETS_URL, RECIPIENT, CODE, "QATEST", UNIT);
+    }
+
+    assertEquals(providers.length, this.awaitDeliveryLines(providers.length).size());
+    List<EmailLog> rows = this.awaitRows(providers.length);
+    assertEquals(providers.length, transport.delivered.size());
+    for (int i = 0; i < providers.length; i++) {
+      String html = htmlOf(transport.delivered.get(i));
+      assertTrue("wrapped in the base shell: " + html, html.startsWith("<table role=\"presentation\""));
+      assertTrue(html, html.contains("src=\"" + ASSETS_URL + "/global/images/email/marlo-logo.png\""));
+      assertTrue("the whole body sits inside the shell", html.contains(bareBody()));
+      assertEquals("support address once: " + html, 1, visibleCount(html, "marlosupport@cgiar.org"));
+      assertEquals("do-not-reply notice once: " + html, 1, visibleCount(html, "do not reply"));
+      assertEquals("the row stores the wrapped HTML", html, rows.get(i).getMessage());
+      assertFalse("the text part is not wrapped", textOf(transport.delivered.get(i)).contains("<"));
+    }
+  }
+
   @Test
   public void aUnitThatOptsOutOfTheShellSendsTheBareBodyAsBefore() throws Exception {
     StubTransport transport = new StubTransport();

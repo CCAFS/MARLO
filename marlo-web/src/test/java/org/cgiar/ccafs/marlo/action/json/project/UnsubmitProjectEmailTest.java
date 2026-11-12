@@ -16,13 +16,38 @@
 package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction.UnsubmitEmail;
+import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
+import org.cgiar.ccafs.marlo.data.model.ProjectPartnerPerson;
+import org.cgiar.ccafs.marlo.data.model.User;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.EmailSendDoubles;
+import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.EnvelopeConfig;
+import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.RecordingSendMail;
+import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.Sent;
 import org.cgiar.ccafs.marlo.utils.UnitTextProvider;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.opensymphony.xwork2.TextProvider;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -102,4 +127,194 @@ public class UnsubmitProjectEmailTest {
     assertEquals("[AICCRA] AICCRA Technical Implementation Team [P77] has been returned to the Technical "
       + "Implementation Team leader for edits", assemble("aiccra3").subject);
   }
+
+  // ---- The send path of the action: the arguments SendMailS receives (FN-010, FN-011) ------------------------
+
+  private static final String NOTIFY = "notify@unit.test";
+  private static final String RETURNER = "luis@unit.test";
+  private static final String LEADER = "ana@unit.test";
+
+  /** The action with the session-bound reads answered by the scenario. */
+  private static final class DrivenUnsubmit extends UnsubmitProjectAction {
+
+    private static final long serialVersionUID = 1L;
+    private final Phase phase;
+    private final User user;
+
+    DrivenUnsubmit(APConfig config, RecordingSendMail mail, Map<Long, GlobalUnit> units, Map<Long, String> customFiles,
+      List<String> lookups, Phase phase, User user) {
+      super(config, null, null, mail, null,
+        EmailSendDoubles.answering(GlobalUnitManager.class, "getGlobalUnitById", args -> units.get(args[0])),
+        EmailSendDoubles.customFiles(customFiles, lookups));
+      this.phase = phase;
+      this.user = user;
+    }
+
+    @Override
+    public Phase getActualPhase() {
+      return this.phase;
+    }
+
+    @Override
+    public String getBaseUrlCdn() {
+      return CDN;
+    }
+
+    @Override
+    public String getCurrentCycle() {
+      return "Planning";
+    }
+
+    @Override
+    public int getCurrentCycleYear() {
+      return 2026;
+    }
+
+    @Override
+    public User getCurrentUser() {
+      return this.user;
+    }
+  }
+
+  private static User user(long id, String first, String email) {
+    User user = new User();
+    user.setId(id);
+    user.setFirstName(first);
+    user.setLastName("Test");
+    user.setEmail(email);
+    return user;
+  }
+
+  private static GlobalUnit unit(long id, String acronym) {
+    GlobalUnit unit = new GlobalUnit();
+    unit.setId(id);
+    unit.setAcronym(acronym);
+    unit.setCustomParameters(Collections.emptySet());
+    return unit;
+  }
+
+  /** Project 77 created in the origin unit, titled "Soil data", led in the phase by Ana. */
+  private static Project project(Phase phase, GlobalUnit origin) {
+    GlobalUnitProject link = new GlobalUnitProject();
+    link.setId(1L);
+    link.setGlobalUnit(origin);
+    link.setOrigin(true);
+    link.setActive(true);
+    ProjectPartnerPerson leader = new ProjectPartnerPerson();
+    leader.setId(2L);
+    leader.setActive(true);
+    leader.setContactType("PL");
+    leader.setUser(user(12L, "Ana", LEADER));
+    ProjectPartner partner = new ProjectPartner();
+    partner.setId(3L);
+    partner.setActive(true);
+    partner.setPhase(phase);
+    partner.setProjectPartnerPersons(Collections.singleton(leader));
+    ProjectInfo info = new ProjectInfo();
+    info.setTitle("Soil data");
+    info.setPhase(phase);
+    Project project = new Project();
+    project.setId(77L);
+    project.setGlobalUnitProjects(Collections.singleton(link));
+    project.setProjectPartners(Collections.singleton(partner));
+    project.setProjectInfo(info);
+    return project;
+  }
+
+  /** Runs the action's private send path once for project 77 of the origin unit and answers what SendMailS got. */
+  private static Sent unsubmit(GlobalUnit origin, Map<Long, String> customFiles, List<String> lookups)
+    throws Exception {
+    Phase phase = new Phase();
+    phase.setId(501L);
+    phase.setYear(2026);
+    phase.setDescription("Planning");
+    RecordingSendMail mail = new RecordingSendMail();
+    Map<Long, GlobalUnit> units = new HashMap<>();
+    units.put(origin.getId(), origin);
+    DrivenUnsubmit action = new DrivenUnsubmit(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
+      mail, units, customFiles, lookups, phase, user(11L, "Luis", RETURNER));
+    Field justification = UnsubmitProjectAction.class.getDeclaredField("justification");
+    justification.setAccessible(true);
+    justification.set(action, REASON);
+    Method send = UnsubmitProjectAction.class.getDeclaredMethod("sendNotficationEmail", Project.class);
+    send.setAccessible(true);
+    try {
+      send.invoke(action, project(phase, origin));
+    } catch (InvocationTargetException e) {
+      throw new AssertionError("the send path threw", e.getCause());
+    }
+    assertEquals("one email per unsubmission", 1, mail.sent.size());
+    return mail.sent.get(0);
+  }
+
+  private static Map<Long, String> aiccraFiles() {
+    Map<Long, String> files = new HashMap<>();
+    files.put(45L, "aicrra");
+    files.put(47L, "aiccra3");
+    return files;
+  }
+
+  @Test
+  public void theSendPathKeepsRecipientsAndSubjectAndAttachesNothing() throws Exception {
+    List<String> lookups = new ArrayList<>();
+    Sent sent = unsubmit(unit(45L, "AICCRA"), aiccraFiles(), lookups);
+
+    assertEquals("TO is the project leader", LEADER, sent.to);
+    assertEquals("CC is the returner, then the project leader", RETURNER + ", " + LEADER, sent.cc);
+    assertEquals("BCC is the notification address", NOTIFY, sent.bcc);
+    assertEquals("[AICCRA] AICCRA cluster [C77] has been returned to the cluster leader for edits", sent.subject);
+    assertNull("no attachment", sent.attachment);
+    assertNull(sent.mimeType);
+    assertNull(sent.fileName);
+    assertTrue(sent.html);
+    assertTrue(sent.body, sent.body.contains("Dear Ana,"));
+    assertTrue(sent.body, sent.body.contains("Luis has returned the AICCRA cluster \"Soil data\" (C77) to you"));
+    assertTrue(sent.body, sent.body.contains("<em>" + REASON + "</em>"));
+    assertShellOnce("send path", sent.body);
+    assertEquals("the texts are read for the unit the project belongs to", Arrays.asList("crp_custom_file@45"),
+      lookups);
+  }
+
+  @Test
+  public void eachUnsubmissionUsesTheTextsOfTheProjectsUnitWhateverWasSentBefore() throws Exception {
+    List<String> lookups = new ArrayList<>();
+    Map<Long, String> files = aiccraFiles();
+
+    Sent third = unsubmit(unit(47L, "AICCRA_III"), files, lookups);
+    Sent aiccra = unsubmit(unit(45L, "AICCRA"), files, lookups);
+    Sent thirdAgain = unsubmit(unit(47L, "AICCRA_III"), files, lookups);
+    Sent base = unsubmit(unit(50L, "QATEST"), files, lookups);
+
+    for (Sent sent : new Sent[] {third, thirdAgain}) {
+      assertEquals("[AICCRA] AICCRA_III Technical Implementation Team [C77] has been returned to the Technical "
+        + "Implementation Team leader for edits", sent.subject);
+      assertTrue(sent.body, sent.body.contains("Technical Implementation Team \"Soil data\""));
+      assertFalse(sent.body, sent.body.contains("cluster"));
+      assertShellOnce("AICCRA_III", sent.body);
+    }
+    assertFalse("AICCRA after AICCRA_III: " + aiccra.subject, aiccra.subject.contains("Technical Implementation"));
+    assertFalse("AICCRA after AICCRA_III: " + aiccra.body, aiccra.body.contains("Technical Implementation Team"));
+    assertTrue(aiccra.body, aiccra.body.contains("cluster \"Soil data\""));
+    assertEquals("[MARLO] QATEST project C77 has been returned to the project leader for edits", base.subject);
+    assertTrue(base.body, base.body.contains("returned the QATEST project \"Soil data\" (C77)"));
+    assertShellOnce("unit without a custom file", base.body);
+    assertEquals(Arrays.asList("crp_custom_file@47", "crp_custom_file@45", "crp_custom_file@47", "crp_custom_file@50"),
+      lookups);
+  }
+
+  @Test
+  public void aUnitWithTheDocumentedOptOutSendsItPlainWithTheFooterOnce() throws Exception {
+    // AC FN-002 for the unsubmit email: no shell, and the restored footer shows the address and the notice once.
+    TextProvider texts = EmailSendDoubles.documentedOptOut();
+    String[] values = {"Ana", "Luis", "AICCRA", "Soil data", "P77", "2026", "planning", REASON};
+    UnsubmitEmail email = UnsubmitProjectAction.assembleEmail(texts, CDN, "AICCRA", "P77", values);
+    String visible = email.body.replaceAll("<[^>]*>", "").toLowerCase();
+
+    assertFalse("not in the shell: " + email.body, email.body.contains("marlo-logo.png")
+      || email.body.contains("<table"));
+    assertTrue("keeps its copy", email.body.startsWith(texts.getText("unsubmit.email.message", values)));
+    assertEquals("support address", 1, count(visible, "marlosupport@cgiar.org"));
+    assertEquals("do-not-reply notice", 1, count(visible, "do not reply"));
+  }
 }
+
