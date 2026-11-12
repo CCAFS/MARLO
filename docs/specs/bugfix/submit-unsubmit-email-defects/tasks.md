@@ -50,7 +50,7 @@ All gates run after the Implementer reports, never alongside it.
 - **Skills:** none.
 
 ### BUG-SUBMIT-EMAIL-001-T02 — Bounded PDF fetch in `MicroserviceReportAction`
-- **Status:** [ ] · **Size:** S · **Depends on:** none (T01 deferred 2026-11-12; constants 10 × 2 000 ms, re-set from the post-deploy log in T05) · **Module:** marlo-web (`action/report/MicroserviceReportAction.java`, test)
+- **Status:** [x] done 2026-11-12, 3 attempts (execution.md T02) · **Size:** S · **Depends on:** none (T01 deferred 2026-11-12; constants 10 × 2 000 ms, re-set from the post-deploy log in T05) · **Module:** marlo-web (`action/report/MicroserviceReportAction.java`, test)
 - **Requirements:** FN-001 (bytes obtained), FN-002 (null on every failure), FN-003, NF-001, NF-002
 - **Design:** DD-2, DD-3, DD-4, §2 row 1, §10, §11
 - **Scope:**
@@ -61,6 +61,7 @@ All gates run after the Implementer reports, never alongside it.
     - HEAD poll with 10 × 2 000 ms (re-set in T05 from the post-deploy log), then GET into `byte[]`, each request with 5 s connect and read timeouts;
     - return null on non-200, exception or 0 bytes;
     - on interruption, restore the flag and return null;
+    - *(attempt 2, owner 2026-11-12)* a total deadline `SUBMIT_TOTAL_DEADLINE_MS` = 30 000 ms: no step starts after it, each wait and HTTP timeout is cut to the time left; the RabbitMQ connection closes with `close(SUBMIT_CONNECT_TIMEOUT_MS)`; a 0-byte body logs outcome `empty`;
     - one INFO line: name, outcome, byte length, elapsed ms.
   - Package-private seams (publish, HEAD, GET, wait) with production defaults.
   - **Do not modify** `sendClusterReportQueueMessage`, `downloadPDFByURL`, `loadData` or any existing field.
@@ -74,7 +75,9 @@ All gates run after the Implementer reports, never alongside it.
   - (f) null or blank json, name or S3 URL → null, no publish;
   - (g) interrupted during the wait → null and `Thread.currentThread().isInterrupted()` is true;
   - (h) a recording `HttpServletResponse` installed in `ServletActionContext` receives no call in any case;
-  - (i) the timeouts handed to the publish and HTTP seams equal the constants.
+  - (i) the timeouts handed to the publish and HTTP seams equal the constants;
+  - (j) *(attempt 2)* with a fake clock, the deadline stops the polling: no HEAD or wait starts after 30 000 ms, and the timeouts handed to the last HEAD/GET never exceed the time left;
+  - (k) *(attempt 2)* a 0-byte body logs outcome `empty`, not `error`.
   - G-test `MicroserviceReportFetchTest`.
 - **Falsifier:**
   - drop the `isInterrupted` restore → (g) red;

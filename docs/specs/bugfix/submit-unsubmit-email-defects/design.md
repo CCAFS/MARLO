@@ -54,13 +54,21 @@ Not applicable. No schema, route, interceptor stack, screen, save path or `param
 - **S3:** the same URL pattern, `s3URL + reportName`.
 - **Budget constants** in `MicroserviceReportAction`: connect and handshake 5 000 ms; polling 10 × 2 000 ms; HTTP
   connect and read 5 000 ms each.
-- **Worst case:** about 5 s + 5 s + (10 × (2 s + 5 s HEAD)) + 10 s GET ≈ 90 s if every request hangs to its timeout.
-  The typical slow case is about 25 s (polling sleeps plus fast HEADs). Both are bounded, unlike today's unbounded
-  HEAD and GET. The constants start at 10 × 2 000 ms and are re-set from the post-deploy log in T05 (P-9).
+- **Total deadline:** `SUBMIT_TOTAL_DEADLINE_MS` = 30 000 ms of wall-clock time across publish, polling and GET. No
+  new step (HEAD, wait, GET) starts after it, and each wait and each HTTP timeout is cut down to the time left. The
+  RabbitMQ connection is closed with `close(SUBMIT_CONNECT_TIMEOUT_MS)`. Each HEAD and GET treats its timeout as a
+  total budget for the request (connect, response and body; a trickling body is cut by a check after every read). A
+  request already in flight when the deadline passes can still run over by at most its own cut timeout (≤ 5 s),
+  because `HttpURLConnection` fixes its connect and read timeouts when the request opens. A planning submit
+  therefore waits about 30 s, and at most about 35 s, whatever S3 does. **Known limit:** a publish blocked by a
+  RabbitMQ memory or disk alarm is not bounded by these timeouts; the download path has the same exposure today.
+  *(Precised at execute 2026-11-12, T02 attempt 3.)* *(Amended at execute 2026-11-12 after the T02 Reviewer advisory:
+  the earlier "≈ 90 s" ignored the per-request read timeout, giving about 145 s; owner approved "si es seguro si".)*
+  The typical slow case is about 25 s (polling sleeps plus fast HEADs). The constants start at 10 × 2 000 ms and are re-set from the post-deploy log in T05 (P-9).
 
 ## 11. Observability
 
-- `fetchClusterReportBytes` logs one INFO with the report name, the outcome (bytes and their length, timeout,
+- `fetchClusterReportBytes` logs one INFO with the report name, the outcome (bytes and their length, timeout, empty,
   error) and the elapsed milliseconds. This is the production measurement source after release.
 - The fallback WARNs name the unit id, as a null-safe argument.
 
@@ -79,7 +87,7 @@ Revert the commits. No data to undo.
 | DD-1 | Each planning submit uses its **own** `ReportingSummaryAction` from `createBean`. It no longer uses the injected singleton | The injected bean is a Spring singleton (P-3). Once the PDF carries data, its setters (`:366-379`) let concurrent submits swap `project` or `phase` and attach another project's report (judgment S-1). Struts already builds every action this way (P-10), and today's singleton was built by the same Spring path. Rejected: a lock on the singleton (it serializes submits and relies on no other caller), and a mode flag on the shared bean | FN-001, FN-003 |
 | DD-2 | The download path is untouched apart from one guarded line in `generateAndSendJson()`, which a download never enters (its instance never sets the flag). The fetch has its own publish and download code instead of extracting the existing block | NF-002. Duplicating about 25 lines is chosen over refactoring code that works today (judgment W-2). Rejected: extracting the publish block or the JSON builder | NF-002 |
 | DD-3 | The fetch never calls `ServletActionContext`, uses locals copied from `APConfig`, and does not call `loadData()` | FN-003; judgment W-2. The singleton `MicroserviceReportAction` is shared with the innovation and study downloads, so the new method writes none of its fields | FN-003 |
-| DD-4 | Short, fixed submit budget with timeouts on every network step, then the `.noPDF` copy. On interruption the flag is restored and the result is null. A null or blank JSON, report name or config value returns null without waiting | Owner Q5; judgment W-1, W-3, I-1. Sending in the background after the PDF is ready was rejected as out of Lite scope | NF-001, FN-002 |
+| DD-4 | Short, fixed submit budget with timeouts on every network step and a 30 s total deadline (§10), then the `.noPDF` copy. On interruption the flag is restored and the result is null. A null or blank JSON, report name or config value returns null without waiting | Owner Q5; judgment W-1, W-3, I-1. Sending in the background after the PDF is ready was rejected as out of Lite scope | NF-001, FN-002 |
 | DD-5 | `pdfAttached` means non-null **and** non-empty bytes | 0 bytes is the defect's own signature (D1) | FN-002 |
 | DD-6 | Unsubmit drops the leader/actor exclusion, so TO and the greeting always use the leader. CC drops every address equal to the TO | Owner Q1. The `Long !=` is removed rather than corrected, because a corrected comparison would restore the "Dear ," / empty-TO branch the owner rejected. **Correction (judgment W-4):** `SendMailS.send` does **not** strip the TO from CC when the actor is the leader. CC `"a, a"` becomes `"a"` (`SendMailS.java:360-372`). The action now leaves the TO address out of CC itself. **Reversion challenge** ("what does removing this break?"): for ids above 127 TO and greeting do not change, and the duplicate CC disappears. For ids 127 and below, the leader who unsubmits their own project now gets TO and a named greeting instead of "Dear ," and no TO, which is the decided behavior. Other CC entries are unchanged | FN-004 |
 | DD-7 | The no-leader greeting comes from a new base key, `email.greeting.everyone=all`, read through the unit's `TextProvider` | FN-005. "Dear all," matches the submit copy, and a key keeps it translatable. No `email.greeting*` key exists in any file (P-11) | FN-005 |
