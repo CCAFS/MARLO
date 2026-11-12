@@ -17,9 +17,12 @@ package org.cgiar.ccafs.marlo.action.json.project;
 
 import org.cgiar.ccafs.marlo.action.json.project.UnsubmitProjectAction.UnsubmitEmail;
 import org.cgiar.ccafs.marlo.data.manager.CustomParameterManager;
+import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnitProject;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
@@ -42,6 +45,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.opensymphony.xwork2.TextProvider;
 import org.junit.Test;
@@ -449,5 +453,79 @@ public class UnsubmitProjectEmailTest {
     }
     assertEquals("one WARN: " + warnings, 1, warnings.size());
     assertTrue("the WARN names the unit id: " + warnings, warnings.get(0).contains("45"));
+  }
+
+  // ---- Added by /akili-test (BUG-SUBMIT-EMAIL-001): the clauses the author rows do not reach ------------------
+
+  /** Runs the send path once with the project adjusted by the scenario and answers every email SendMailS got. */
+  private static List<Sent> unsubmitAdjusted(GlobalUnit origin, User leader, User actor, Consumer<Project> adjust)
+    throws Exception {
+    Phase phase = new Phase();
+    phase.setId(501L);
+    phase.setYear(2026);
+    phase.setDescription("Planning");
+    RecordingSendMail mail = new RecordingSendMail();
+    Map<Long, GlobalUnit> units = new HashMap<>();
+    units.put(origin.getId(), origin);
+    DrivenUnsubmit action = new DrivenUnsubmit(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
+      mail, units, noCustomFiles(), phase, actor);
+    Field justification = UnsubmitProjectAction.class.getDeclaredField("justification");
+    justification.setAccessible(true);
+    justification.set(action, REASON);
+    Project project = project(phase, origin, leader, "Soil data");
+    adjust.accept(project);
+    Method send = UnsubmitProjectAction.class.getDeclaredMethod("sendNotficationEmail", Project.class);
+    send.setAccessible(true);
+    try {
+      send.invoke(action, project);
+    } catch (InvocationTargetException e) {
+      throw new AssertionError("the send path threw", e.getCause());
+    }
+    return mail.sent;
+  }
+
+  @Test
+  public void aLeaderWhoIsNotActiveInTheCurrentPhaseCountsAsNoLeader() throws Exception {
+    // AC FN-005: "no active PL in the current phase". The PL row exists but is inactive.
+    List<Sent> sent = unsubmitAdjusted(unit(50L, "QATEST"), user(12L, "Ana", LEADER), user(11L, "Luis", RETURNER),
+      project -> project.getProjectPartners().iterator().next().getProjectPartnerPersons().iterator().next()
+        .setActive(false));
+
+    assertEquals(1, sent.size());
+    assertEquals("an inactive leader is not addressed", "", sent.get(0).to);
+    assertTrue(sent.get(0).body, sent.get(0).body.contains("Dear all,"));
+    assertFalse(sent.get(0).body, sent.get(0).body.contains("Dear Ana,") || sent.get(0).body.contains("Dear ,"));
+  }
+
+  @Test
+  public void aLeaderOnlyInAnotherPhaseCountsAsNoLeader() throws Exception {
+    // AC FN-005: the leader of a past phase is not the leader of the current phase.
+    Phase past = new Phase();
+    past.setId(407L);
+    past.setYear(2025);
+    past.setDescription("Planning");
+    List<Sent> sent = unsubmitAdjusted(unit(50L, "QATEST"), user(12L, "Ana", LEADER), user(11L, "Luis", RETURNER),
+      project -> project.getProjectPartners().iterator().next().setPhase(past));
+
+    assertEquals(1, sent.size());
+    assertEquals("a past-phase leader is not addressed", "", sent.get(0).to);
+    assertTrue(sent.get(0).body, sent.get(0).body.contains("Dear all,"));
+    assertFalse(sent.get(0).body, sent.get(0).body.contains("Dear Ana,") || sent.get(0).body.contains("Dear ,"));
+  }
+
+  @Test
+  public void withNotificationsDisabledForTheUnitNoUnsubmitEmailIsSent() throws Exception {
+    Parameter key = new Parameter();
+    key.setKey(APConstants.CRP_EMAIL_NOTIFICATIONS);
+    CustomParameter disabled = new CustomParameter();
+    disabled.setParameter(key);
+    disabled.setValue("false");
+    GlobalUnit origin = unit(50L, "QATEST");
+    origin.setCustomParameters(Collections.singleton(disabled));
+
+    List<Sent> sent = unsubmitAdjusted(origin, user(12L, "Ana", LEADER), user(11L, "Luis", RETURNER), project -> {
+    });
+
+    assertEquals("no unsubmit email when the unit disabled notifications", 0, sent.size());
   }
 }
