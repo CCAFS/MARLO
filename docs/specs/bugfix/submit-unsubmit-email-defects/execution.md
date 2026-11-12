@@ -218,3 +218,97 @@ Leader enforces the 60-call bound by reviewing each report. `akili doctor --agen
 - **Date:** 2026-11-12.
 - **Delta:** about 1 310 LOC after 3 of 5 tasks, against the ~1 200 tripwire. T05 adds no code.
 - **Decision:** the owner answered "si, haz el commit, agrega los tests y sigue con T05". The LOC tripwire is raised to **~1 350**. Review rounds stay at 7. The owner approved two test rows the T03 Reviewer flagged, recorded as an owner-approved test addition (below), not as a new task.
+
+### Owner-approved test addition to T03 (2026-11-12)
+
+- **Scope:** `ProjectSubmissionEmailTest.java` only (+18/−4). Production code unchanged (`git diff --quiet -- marlo-web/src/main` exits 0).
+- **New test:** `aProjectWithoutProjectInfoReadsUntitledAndTheEmailIsStillSent` (DD-8, null `ProjectInfo`).
+- **Strengthened test:** `aSummaryWithoutBytesSendsTheNoPdfCopyAndNoAttachment` now asserts the exact link `projectID=77&phaseID=501` (AC FN-002).
+- **Reds (production mutated, then restored byte-identical):**
+  - Remove the null-`projectInfo` guard → `java.lang.AssertionError: the send path threw` (the NPE from `getTitle()`).
+  - Phase 407 in `values[6]` → `null bytes links the submitted project and phase` red, plus 3 other link tests red.
+- **Evidence re-run (Leader): VERIFIED.** Clean compile, `ProjectSubmissionEmailTest` gives 17 run, 0 failures, MVN_EXIT=0. Checkstyle delta 0.
+
+## REVIEW_SKIPPED: T03 test addition
+
+| Field | Content |
+|---|---|
+| predicate evidence | Each falsifier was executed against the post-change code and went red (quoted above). The verification is deterministic (`mvn … -Dtest=ProjectSubmissionEmailTest`, pass/fail). Consumers: none (the change is a test file only) |
+| overrides checked | (a) no obligation executed by other readers; (b) no enumeration, contract, export, selector, event, response shape or stored field touched; (c) no derived evidence; (d) no reversion; (e) not a rework; (f) no security or data-loss surface; (g) the Leader judges that no review is warranted for two test rows already specified by the T03 Reviewer |
+| evidence re-run | Leader inline: VERIFIED (17 run, 0 failures; production unchanged) |
+| models | Implementer sonnet |
+
+- **Spawns:** implementer: 12 calls, 115 163 tokens, ended complete.
+
+### BUG-SUBMIT-EMAIL-001-T05 — Local end-to-end check and the post-deploy acceptance
+
+- **Attempt 1 (2026-11-12). Skills / effort:** marlo-verify; high.
+- **Pre-check (Leader, `aiccradb_actsave`):** `crp_email_support_team` and `crp_enable_email_notification` are true for units 45, 47 and 50. Port 8080 was free and no worktree existed. `email.notification` is the owner's mailbox.
+- **Setup:** worktree `../MARLO-wt-submit-email` at `f5705638b1`. Throwaway DB `aiccradb_t05_submit`, copied from `aiccradb_actsave`; the pre-check was re-run in the copy and gave true for 45, 47 and 50. Built with `package -DskipTests`, no `install`. Run with `cargo:run`. Log in through curl using the local login file, which was not printed.
+- **Unexpected and favorable:** the microservice was reachable from local, so the result was **consistent with FN-001 locally** (`file_name` set, fetch `bytes>0`). Acceptance of the attachment remains the post-deploy check (T05 Disqualifier).
+- **S1 — planning submit (QATEST 102101, phase 501): PASS.**
+  - `GET …/clusters/QATEST/submit.do?projectID=102101&phaseID=501` → `HTTP/1.1 200`, `Content-Type: text/html;charset=UTF-8`, the submission page, `time_total=5.498821s`.
+  - `email_logs` row 18401: subject `[MARLO] QATEST project C102101 has been submitted`; `file_name=Full_Cluster_Report-QATEST-C102101-20261112-1304.pdf`; "Dear all,"; the link carries `projectID=102101&phaseID=501`; the planning ("attached as a PDF") copy.
+  - Log: `Cluster report fetch for AICCRA-Cluster-102101-Summary-20261112_1304.pdf: outcome=bytes, bytes=396692, elapsedMs=4394`. None of the 3 submit requests logs `Downloading the … PDF from S3` (`MicroserviceReportAction.java:453`, the debug line that runs right before `downloadPDFByURL`, which does not log itself). Request ids `13509fcb767fdc53`, `43d3d99ea4554a48` and `8268e7536e320de2` each give 0 hits; each carries exactly one `Cluster report fetch` line.
+  - Second submit, AICCRA_III 102093 phase 444 (row 18405): `file_name=Full_Cluster_Report-AICCRA_III-C102093-20261112-1309.pdf` and `outcome=bytes, bytes=341446, elapsedMs=3946`.
+- **P-10 — settled (verified).** `ApplicationContext` constructor injection and `createBean(ReportingSummaryAction.class)` worked at runtime on 3 submits. The log has 0 `NoSuchBean`, `UnsatisfiedDependency` or `BeanCreationException`.
+- **P-9 — local evidence only.** The three real fetches against the shared microservice took 4394, 4017 and 3946 ms, well inside the 10 × 2 000 ms polling budget. P-9 stays `UNVERIFIED` until the aiccratest INFO lines are read post-deploy (design §16 *Settled by*).
+- **S2 — unsubmit where the leader is the actor (102101, PL user 1082 = the logged-in user): PASS on greeting, subject and no attachment.** Row 18402: `subject=[MARLO] QATEST project C102101 has been returned to the project leader for edits`, `file_name=NULL`, "Dear MARLO," — the leader's first name (`users` id 1082: `first_name = MARLO`, queried in `aiccradb_actsave`). The JSON reply was `"project unsubmitted","status":"ok"`.
+  - **Not live-verifiable:** the TO/CC before the support-only restriction. `email_logs` stores the restricted recipients (to = notification address, cc = bbc = NULL), so "leader not in CC" rests on T04's recording-double tests (a), (b) and (c).
+- **S3 — unsubmit with no active PL (AICCRA_III 102093, phase 444, only a PC contact): PASS.** Row 18406 has "Dear all,"; `message LIKE '%Dear ,%' = 0`. Row 18404, from an earlier run, is the same.
+- **S4 — summary download smoke: PASS (NF-002).** `GET …/AICCRA_III/reportingSummary.do?projectID=102093&phaseID=444` → `http=200`, `application/pdf`, `size=341446`, body starting `%PDF-1.4`. The log shows `Sending the cluster report … to the microservice` and, at log line 9336 on request `372d4d61ca7768ce`, `Downloading the … PDF from S3`. That is today's queue and download path, and the only `Downloading` hit in the whole log. That request produced no `Cluster report fetch` line.
+- **0-byte check (Falsifier 2):** `email_logs` stores no attachment size. The "no 0-byte attachment" claim rests on `file_name` being set, the fetch lines' `bytes>0`, and DD-5 (`pdfAttached` only when the bytes are non-empty).
+- **Not exercised live:** the failed-PDF branch (`.noPDF`, `file_name` NULL, outcome `error` or `timeout`), because the microservice was reachable. It is covered by `ProjectSubmissionEmailTest` (b), (c) and `MicroserviceReportFetchTest` (b)–(g), (j)–(l).
+- **Observation (pre-existing behavior, not a T05 finding):** row 18403 was a submit of AICCRA_III project 102093 made while the session still held QATEST (login with `crp=AICCRA_III` without loading its dashboard). It went out with QATEST wording and the QATEST file name. The submit names the session unit (`loggedCrp`, archived design P-12). Cross-unit submits through a stale session are out of scope here; recorded for the follow-up list.
+- **Cleanup: done.** Cargo stopped (killed by PID after `pkill` missed it). Port 8080 free. `aiccradb_t05_submit` dropped. Worktree removed; `git worktree list` shows the main checkout only. Main checkout status unchanged. `aiccradb_wt_test` and `~/.m2` untouched.
+- **Evidence re-run (Leader): VERIFIED.**
+  - Over the saved app log (`scratchpad/app-final.log`, 2.2 MB): the 3 `outcome=bytes` lines match the report; wiring errors 0; `Sending the cluster report` 4 (3 submits and 1 download, the same `generateAndSendJson` log line before the guarded call).
+  - Per request id, `Downloading the … PDF from S3` / `Cluster report fetch`: `13509fcb767fdc53` 0 / 1, `43d3d99ea4554a48` 0 / 1, `8268e7536e320de2` 0 / 1, `372d4d61ca7768ce` (download) 1 / 0.
+  - *(Corrected after the T05 Reviewer FAIL: the earlier "`downloadPDFByURL` 0" could not fail, because that method logs nothing.)*
+  - Cleanup confirmed: worktree list, port 8080, no cargo, and the database list without `aiccradb_t05%`.
+- **Post-deploy acceptance:** still open, for the owner after the branch reaches aiccratest. Expect an email with a non-empty PDF that opens, the submission page, and the INFO elapsed-ms lines. T01 and P-9 can be finally confirmed from those lines.
+- **Spawns:** implementer: 57 calls, 151 735 tokens, ended complete.
+- **Reviewer verdict (attempt 1): FAIL** (verbatim in substance):
+  1. The `downloadPDFByURL` count cannot fail, because that method does not log. Use the `Downloading the .* PDF from S3` debug line per request id instead.
+  2. "FN-001 proven live" and "P-9 settled locally" claim more than a local run can show (T05 Disqualifier; design §16 P-9 *Settled by*).
+  - **ADVISORY:** quote `users.first_name` for 1082; state that `email_logs` stores no attachment size.
+- **Attempt 2 (Leader, evidence record only, no code):** both issues and both advisories were corrected in place above, using the per-request-id counts and the users query run by the Leader.
+- **Spawns:** reviewer (attempt 1): 12 calls, 56 549 tokens, ended fail.
+- **Reviewer verdict (attempt 2): PASS** (akili-reviewer, opus, checklist). Both issues are closed and both advisories handled. The per-request-id counts and the timings match the log (lines 8640, 8908, 9155, 9336). The post-deploy check is tracked as open. The ADVISORY wording "consistent with FN-001 locally" is applied above.
+- **Spawns:** reviewer (attempt 2): 6 calls, 43 403 tokens, ended complete.
+- **Final status:** PASS — 2026-11-12, 2 review attempts (evidence record corrected). **Requirements covered (live, local):** FN-002 (copy and link), FN-003, FN-004 (greeting), FN-005, NF-002. P-10 verified. P-9 has local evidence only. The post-deploy acceptance is **open**.
+
+## Summary
+
+- **Status:** T02, T03, T04 and T05 PASS (2026-11-12). T01 is deferred `[~]` and settles with the post-deploy INFO lines. No HALT, no Pivot.
+- **Spec edits at execute, all recorded with closure sweeps:**
+  - CC rule (T04).
+  - T01 deferral.
+  - The 30 s deadline and the per-request budget (T02, owner-approved).
+  - The precise ≤ ~35 s bound and the broker-alarm known limit.
+- **Budget:**
+  - Tasks: 5.
+  - Review rounds: 7 of 7 (T04 1, T02 3, T03 1, T05 2). The T03 MISMATCH was not a Reviewer verdict.
+  - LOC: about 1 330 against the tripwire. The owner raised it twice from ~480: to ~1 200 after T02 and to ~1 350 after T03.
+- **Delivered:**
+  - Planning submit emails attach the real summary PDF, fetched per submit with a bounded budget. The submit page is never overwritten.
+  - Unsubmit always addresses and greets the leader, with no self-CC.
+  - "Dear all," when there is no leader.
+  - "Untitled" instead of "null".
+  - The WARNs name the unit.
+- **Definition of Done:**
+  - All tasks have evidence.
+  - Gates green on the final tree: clean compile 2430 / 1063 / 117, Checkstyle deltas 0, i18n reviewed.
+  - **Full suite: `mvn -o -pl marlo-web -am test` → MVN_EXIT=0, Tests run: 1168, Failures: 0, Errors: 0** (1137 before, plus 31 new).
+  - The `MicroserviceReportAction` diff is additions only. The `ReportingSummaryAction` diff is 2 fields, 1 method and 1 guarded line.
+  - The post-deploy check is tracked as open.
+- **Open for the owner:**
+  - The post-deploy check on aiccratest: a planning submit with a non-empty PDF that opens, the submission page, and the INFO elapsed-ms lines. This settles P-9 and T01.
+  - The `akili doctor --agents --fix` persona refresh on `staging`.
+- **Follow-ups recorded (not in this spec):**
+  - A cross-unit submit through a stale session uses the session unit's texts (row 18403).
+  - A null actor email or name shows "null" in the unsubmit CC and `{1}`.
+  - `SendMailS` CC handling when TO is empty.
+  - A publish blocked by a broker alarm, and slow response headers (needs a watchdog).
+  - `email_logs.fileContent` NULL.
+  - The 143-site `Long` comparison sweep.

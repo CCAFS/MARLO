@@ -152,6 +152,8 @@ public class ProjectSubmissionEmailTest {
   private static final String LEADER = "leo@unit.test";
   private static final String BASE_URL = "https://marlo.test";
   private static final byte[] PDF = {37, 80, 68, 70, 1};
+  /** Passed as the title (compared by identity) to build a project with no ProjectInfo at all. */
+  private static final String NO_INFO = new String("no project info");
 
   /**
    * A summary action as production behaves: execute() leaves the bytes empty, generatePdfBytes() answers the scripted
@@ -328,14 +330,16 @@ public class ProjectSubmissionEmailTest {
     partner.setActive(true);
     partner.setPhase(phase);
     partner.setProjectPartnerPersons(Collections.singleton(leader));
-    ProjectInfo info = new ProjectInfo();
-    info.setTitle(title);
-    info.setPhase(phase);
     Project project = new Project();
+    if (title != NO_INFO) {
+      ProjectInfo info = new ProjectInfo();
+      info.setTitle(title);
+      info.setPhase(phase);
+      project.setProjectInfo(info);
+    }
     project.setId(77L);
     project.setGlobalUnitProjects(Collections.singleton(origin));
     project.setProjectPartners(Collections.singleton(partner));
-    project.setProjectInfo(info);
     return project;
   }
 
@@ -534,6 +538,7 @@ public class ProjectSubmissionEmailTest {
       assertNull(label + ": file name", sent.fileName);
       assertTrue(label + ": " + sent.body, sent.body.contains("download the cluster summary as a PDF</a>"));
       assertFalse(label + " is never said to be attached: " + sent.body, sent.body.contains("attached"));
+      assertLinksOnlyTheSubmittedProject(label, sent.body, "AICCRA", 501L);
     }
   }
 
@@ -570,6 +575,15 @@ public class ProjectSubmissionEmailTest {
       assertTrue(sent.body, sent.body.contains("cluster \"Untitled\" (C77)"));
       assertFalse(sent.body, sent.body.contains("null"));
     }
+  }
+
+  @Test
+  public void aProjectWithoutProjectInfoReadsUntitledAndTheEmailIsStillSent() throws Exception {
+    Sent sent = submitWith(() -> new FakeSummary(PDF.clone(), false), NO_INFO, true);
+
+    assertTrue(sent.body, sent.body.contains("cluster \"Untitled\" (C77)"));
+    assertFalse(sent.body, sent.body.contains("null"));
+    assertArrayEquals("the email is still sent with the PDF", PDF, sent.attachment);
   }
 
   @Test

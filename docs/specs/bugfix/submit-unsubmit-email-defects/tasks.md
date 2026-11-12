@@ -204,7 +204,7 @@ All gates run after the Implementer reports, never alongside it.
 - **Skills:** marlo-verify, tdd, marlo-commit.
 
 ### BUG-SUBMIT-EMAIL-001-T05 — Local end-to-end check and the post-deploy acceptance
-- **Status:** [ ] · **Size:** S · **Depends on:** T03, T04 · **Module:** none (verification)
+- **Status:** [x] done 2026-11-12, local part (execution.md T05); post-deploy acceptance tracked as open · **Size:** S · **Depends on:** T03, T04 · **Module:** none (verification)
 - **Requirements:** FN-002, FN-003 (live), FN-004 / FN-005 (live), NF-002 (download smoke), P-10
 - **Design:** §10, §11, P-10
 - **Scope:**
@@ -286,8 +286,8 @@ Revert the commits. No data to undo.
 
 ## Definition of Done
 
-- [ ] All tasks done with evidence in `execution.md`, including every observed red.
-- [ ] G-compile, G-check, G-i18n and G-hygiene green on the final tree; the full `mvn -q -o -pl marlo-web -am test` green.
-- [ ] `MicroserviceReportAction` diff shows additions only; the `ReportingSummaryAction` diff shows two fields, one
+- [x] All tasks done with evidence in `execution.md`, including every observed red (T01 deferred to the post-deploy check).
+- [x] G-compile, G-check, G-i18n and G-hygiene green on the final tree; the full `mvn -q -o -pl marlo-web -am test` green (1168 / 0 / 0).
+- [x] `MicroserviceReportAction` diff shows additions only; the `ReportingSummaryAction` diff shows two fields, one
   method and one guarded line.
-- [ ] The post-deploy attachment check is recorded, or tracked as open.
+- [x] The post-deploy attachment check is recorded, or tracked as open (open).
