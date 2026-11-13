@@ -115,14 +115,14 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   `false`, as every old type method answers today.
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-004 — Asking the type of any phase object, including one with a null
   `description`, null `upkeep` or null `name`, MUST NOT throw.
-- ENH-PHASE-TYPE-UNIFICATION-001-FN-005 — After the migration, no code in `marlo-web/src/main` outside `rest/`
-  MAY decide a phase's type by comparing its `name` with a literal or a constant. Exceptions: the 2019 lock in
-  `crpPhases.ftl:227` stays as it is (§9, 2026-10-28), and `GlobalUnitCreateAction.applyPhaseTypeOfName`
-  (`"Progress".equals(input.getName())`, `:499`), which parses the admin-typed name into the type of a NEW phase
-  and never classifies an existing one (FN-007, §9, 2026-10-29). The old type methods and the write-only
-  `planningActive` / `reportingActive` fields and setters MUST no longer exist. Time-limited exception (§9,
-  2026-10-29): until T11b, the six old type methods exist in `BaseAction` as `@Deprecated` one-line aliases of the new
-  ones; the fields and setters stay removed.
+- ENH-PHASE-TYPE-UNIFICATION-001-FN-005 — After the migration, no code in `marlo-web/src/main` outside `rest/` MAY
+  decide a phase's type by comparing its `name` with a literal or a constant. Exceptions: the 2019 lock in
+  `crpPhases.ftl` `(phase.name == "POWB")` stays as it is (§9, 2026-10-28), and
+  `GlobalUnitCreateAction.applyPhaseTypeOfName` (`"Progress".equals(input.getName())`, `:499`), which parses the
+  admin-typed name into the type of a NEW phase and never classifies an existing one (FN-007, §9, 2026-10-29). The old
+  type methods and the write-only `planningActive` / `reportingActive` fields and setters MUST no longer exist.
+  Time-limited exception (§9, 2026-10-29): until T11b, the six old type methods exist in `BaseAction` as `@Deprecated`
+  one-line aliases of the new ones; the fields and setters stay removed.
 - ENH-PHASE-TYPE-UNIFICATION-001-FN-006 — The plan, progress and reporting phases of every unit after AICCRA
   MUST be named `Planning`, `Progress` and `Reporting`. AICCRA's phases and those of every earlier unit MUST
   keep their current names.
@@ -183,13 +183,13 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   - A negation of an old null-safe `BaseAction` method (`!isPOWB()`, `!isReportingActive()`, …) MUST stay a
     bare negation of its replacement, because both return `false` on the empty and the null phase (RJ-1).
     The exception is `isUpKeepActive()`, which throws there today and falls under INT-3 (FJ-2).
-- ENH-PHASE-TYPE-UNIFICATION-001-NF-006 — A new comparison of a phase's `name` with a string literal or a
-  constant MUST fail a build gate, in Java and in FTL, so that the name stays free once FN-005 holds. Java: a
-  Checkstyle rule beside the NF-003 rule. FTL, which Checkstyle does not read: a unit test that scans the
-  templates and runs with the suite. Allowed, and listed by the gate as exact exceptions: `crpPhases.ftl:227`
-  (the 2019 lock, §9 2026-10-28), `GlobalUnitCreateAction.applyPhaseTypeOfName` (parsing for a new phase,
-  FN-007) and `rest/`. Comparing a phase's name with another phase's name, a null check, and display are not
-  comparisons with a literal and stay allowed (§9, 2026-10-29).
+- ENH-PHASE-TYPE-UNIFICATION-001-NF-006 — A new comparison of a phase's `name` with a string literal or a constant
+  MUST fail a build gate, in Java and in FTL, so that the name stays free once FN-005 holds. Java: a Checkstyle rule
+  beside the NF-003 rule. FTL, which Checkstyle does not read: a unit test that scans the templates and runs with the
+  suite. Allowed, and listed by the gate as exact exceptions: `crpPhases.ftl` `(phase.name == "POWB")` (the 2019 lock,
+  §9 2026-10-28), `GlobalUnitCreateAction.applyPhaseTypeOfName` (parsing for a new phase, FN-007) and `rest/`.
+  Comparing a phase's name with another phase's name, a null check, and display are not comparisons with a literal and
+  stay allowed (§9, 2026-10-29).
 
 ### Operations
 
@@ -286,9 +286,9 @@ PRD alignment: PRD §7 *phase safety* and the US-ADM-01 phase configuration stor
   callers),
 - And adding a call to a removed method in a Java file MUST fail Checkstyle, unless the line carries one of the two
   exact markers of NF-003 (the aliases and their test only, until T11b),
-- AND IT MUST be shown that no phase-name literal decides a type outside `rest/`, `crpPhases.ftl:227` and
-  `GlobalUnitCreateAction:499` (parsing for a new phase, FN-007), by a
-  grep for `getName()` on phase objects and `.name` on phase variables in FTL, as run.
+- AND IT MUST be shown that no phase-name literal decides a type outside `rest/`,
+  `crpPhases.ftl` `(phase.name == "POWB")` and `GlobalUnitCreateAction:499` (parsing for a new phase, FN-007),
+  by a grep for `getName()` on phase objects and `.name` on phase variables in FTL, as run.
 
 **AC for FN-006, DA-002:**
 - Given a database where AICCRA (45) and AICCRA_III (47) exist,
@@ -507,3 +507,11 @@ command in this repo can see it. It is asked of the BI owner (§8 OQ2) before DA
   `FN-005` and `name` gates were grepped across this folder. Aligned: `requirements.md` NF-006, AC NF-006, D11;
   `tasks.md` coverage map, T16, dependency graph, §8. Left as history: `validation-report.md` (re-validation of
   T16 pending), `execution.md`, `judgment.md`, `proposal.md`.
+- 2026-11-12 — Cite the 2019 lock by content, not by line. The A2-2613 redesign (`72945036ef`) moved it from
+  `crpPhases.ftl:227` to `:224`. The gate never depended on the line: `PhaseNameLiteralFtlTest` matches file and
+  content (`(phase.name == "POWB")`) and requires exactly one use. The rationale still holds: on `aiccradb2`–`4`
+  and `aiccradb_actsave` the only 2019 planning phase not named `POWB` is unit 45's `AWPB`. Closure sweep:
+  `crpPhases.ftl:227` was grepped across this folder. Aligned: `requirements.md` FN-005, NF-006, AC FN-005;
+  `design.md` "Not touched", "Unchanged FTL", DD-7. Left as history: the dated §9 entries above,
+  `validation-report.md` runs before Addendum D, `execution.md`, `call-sites.md`, `judgment.md`, `proposal.md`,
+  `tasks.md` verification notes.

@@ -79,7 +79,7 @@ without breaking FN-004 (§15, DD-2).
 
 ### Not touched
 - `rest/`, every `ManagerImpl` replication method, `PhaseDAO.findCycle`, `getCrpPhase`, `getPhasesByCycles`,
-  and `crpPhases.ftl:227`.
+  and `crpPhases.ftl` `(phase.name == "POWB")`.
 
 ## 3. Data Model Changes
 
@@ -135,7 +135,7 @@ parentheses exactly as they are.
   - `reportingActiveMenu` (`main-menu.ftl:4`; only its right-hand side changes).
 - **JS:** no JS file changes. The globals in `javascript-constants.ftl:30-31` keep their JS names `reportingActive`
   / `upKeepActive`; only the FTL expression on the right-hand side changes.
-- **Unchanged FTL:** `crpPhases.ftl:227`, and every display of `phase.name` / `composedName`.
+- **Unchanged FTL:** `crpPhases.ftl` `(phase.name == "POWB")`, and every display of `phase.name` / `composedName`.
 
 **Resolution mechanism.** Top-level names such as `reportingPhase` resolve through the Struts value stack to the
 action's `isReportingPhase()`, the same mechanism that resolves `reportingActive` today (P-5). The new
@@ -248,7 +248,7 @@ because no non-REST logic reads `name` after S3.
   silent (D3). Requirements NF-001, NF-002.
 - **DD-6 — The shared-cluster exemption is keyed to the progress phase (INT-2).** This is a reversion of the
   lock for non-AICCRA progress phases; the §15a challenge applies.
-- **DD-7 — `crpPhases.ftl:227` is kept.** Requirements §9.
+- **DD-7 — `crpPhases.ftl` `(phase.name == "POWB")` is kept.** Requirements §9.
 - **DD-8 — Creation names by type in the manager.** It covers both the admin path and the text path. An
   unknown-type input phase keeps its copied name. Requirements FN-007; P-7.
 - **DD-9 — Old names are blocked by a Checkstyle regexp rule, written in this spec.** The console-printing

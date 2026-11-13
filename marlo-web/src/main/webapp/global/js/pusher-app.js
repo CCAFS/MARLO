@@ -280,9 +280,15 @@ function removeMousePointer(member){
 function createBadge(member){
   if(!($('#user-badge-'+member.id).exists())){
     var $badge = $('#user-badge-template').clone(true).attr('id','user-badge-'+member.id );
-    $badge.text((member.info.name).replace(/[^A-Z]/g, ''));
-    $badge.attr('title', member.info.name);
-    $badge.css("background-color", member.info.color);
+    var info = member.info || {};
+    var name = $.trim(info.name || '');
+    // First letter of each word: keeping only the capitals left the badge empty for a name typed in lowercase
+    var initials = $.map(name.split(/\s+/), function(word) {
+      return word.charAt(0);
+    }).join('').toUpperCase();
+    $badge.text(initials || '?');
+    $badge.attr('title', name);
+    $badge.css("background-color", info.color);
     $badge.appendTo('.breadcrumb .usersInfo');
     $badge.fadeIn('slow');
   }

@@ -342,3 +342,155 @@ counts in §2 and Addendum A were taken before that and are not comparable with 
 
 **Archive readiness:** unchanged — archive after T11b, or archive with T11b carried as a follow-up spec; W10 is
 closed (spec text updated).
+
+## Addendum C — Integration into `dev` and the DEV deploy (2026-10-30)
+
+> Written by the Leader (T1, `opus`) from the evidence of the merge into `dev`. The independent checks are the
+> Reviewer verdicts named below (`opus`, read-only); the Implementers were `sonnet`. Rows not named below stand as in
+> §2–§12 and Addenda A and B.
+
+**Verdict: PASS WITH WARNINGS stands. The spec is integrated into `dev` and deployed to DEV; 0 FAIL, 0 BLOCKED, no
+new WARN.** `dev` is integration only and never flows into `staging`, so nothing here replaces the verification
+owed at the `staging` merge.
+
+| Item | Value |
+|---|---|
+| Merge commit | `56a79786b7` on `dev`, parents `75f4ccda7f` (dev) and `9138934db4` (this branch), pushed 2026-10-30 |
+| Changes on this branch since Addendum B | `b1dbf76e12` (Addendum B record); `9138934db4` M2 `BINARY p.name` → `CAST(p.name AS BINARY)` (MySQL 8.0.43 warning 1287; equivalence evidence in `execution.md` "Post-validation: M2 BINARY → CAST", Reviewer PASS after one docs-only FAIL) |
+| Where | Worktree `MARLO-devmerge2` from `origin/dev`. No Maven in the main checkout; the local server ran on 8081 against the throwaway `zz_devmerge` |
+| Merge size vs `dev` | 151 files, +7258 / −543. Besides this spec it carries 3 `staging` commits `dev` did not have (`ae2f150772`, `346a6c6a9b`, `76a3e063e8`: role labels, PMC/PMU → PIU), brought in by the earlier `staging` merge into this branch |
+
+### Conflict resolution (owner-approved)
+
+`dev` holds the deliverables and innovations redesign (A2-2607, `xKeCo/a2-2613`). 7 files conflicted. In the 6 FTL, 24
+of the 26 hunks (diff3 count) were this spec's pure renames over regions the redesign rewrote.
+
+| File | Resolution |
+|---|---|
+| `deliverableInfo.ftl`, `deliverableList.ftl`, `projectDeliverable.ftl`, `projectInnovation.ftl`, `innovationTemplates.ftl` | `dev`'s redesign wins in every hunk; its old names (`reportingActive`, `isProgressActive`, …) resolve through the T11a aliases until T11b |
+| `deliverableMacros.ftl` (INT-2) | `[#if !progressPhase && !redesign]` (~385); `isSharedCluster = … && (!progressPhase)` plus `dev`'s `anySubmitted` line (~449). These are the only hunks that change behaviour; taking `dev`'s side fails `PhaseNameLiteralFtlTest` |
+| `aiccra3.properties` | `deliverable.melia.commissioning.help=e.g. PIU` (staging's PIU, dev's "e.g.") |
+
+The owner chose not to revert this spec's renames in those files to spare the redesign branches the conflicts
+(that adaptation was measured to cut them to the 2 INT-2 hunks). Whoever reaches `staging` second resolves the
+same hunks again; this resolution is the reference.
+
+`dev` moved three times while the merge was prepared (`bba4a1620e`, `3135257ced`, `75f4ccda7f`). Each time the merge
+was redone on the new tip and the new tree was proven equal to the reviewed tree plus exactly `dev`'s new commits
+(whole-tree diff compared line for line).
+
+### Gates
+
+| Gate | Result |
+|---|---|
+| Clean compile | Maven exit 0; 2440 (marlo-data) + 1065 (marlo-web) + 118 test sources |
+| Full suite `-am` | 1191 run, 0 failures, 0 errors (with the ProjectFocus stub fix below applied in the worktree; without it `dev`'s own test errors, as it does on `dev` alone) |
+| Checkstyle, 61 Java files changed vs `dev` | `dev` 260 → merge 88; `[RemovedPhaseTypeMethod]` 150 → 0, `[PhaseNameLiteral]` 22 → 0. Tree-wide: 0 for both rules |
+| Reviewer | PASS on the redone merge (resolution as approved, every changed line resolves to an existing method, none of `dev`'s new copy overwritten, `.properties` apostrophes doubled) |
+| Render smoke, local 8081 | PASS: 11 pages 200, no FreeMarker error or raw key; Dissemination tab absent in plan and present in progress/reporting; shared-cluster trainees not locked in progress, locked in reporting; innovation required markers only in reporting; same counts as the first smoke |
+| Last tree change (M2 `CAST`, docs) | SQL and Markdown only; covered by the M2 equivalence evidence, not by a new build |
+
+### `dev`'s ProjectFocus test (W9)
+
+`ProjectFocusManagerImplReplicationTest` (xKeCo, `6ec459d8bc`, branch `staging-front-upload`) stubs
+`ProjectFocusDAO` and returns `null` for every method but `save`. With `staging`'s `d65ccdcb75` the manager calls
+`findActiveByProjectProgramAndPhase`, so both tests error with a NullPointerException wherever the two meet (`dev`
+today, `staging` later). Production is unaffected: the real query never returns `null`.
+
+Because `dev` never flows into `staging`, the fix went where the test travels: commit `81ae461abe` on
+`staging-front-upload`, pushed with the owner's approval. The stub answers that query with the DAO's filter
+(active, project, program, phase) and returns an empty list for any other list method. Evidence: that branch alone
+1107 run, 0 failures; merged with `staging` in a throwaway tree, 2 errors without the fix and 2/2 green with it. The
+merge into `dev` does not carry it, so the test stays red on `dev` until that branch is merged into `dev` again (the
+`dev` deploy does not run tests).
+
+### DEV deploy (OPS-002, OPS-004)
+
+Every push to `dev` now deploys to DEV (`marlo-dev-cicd.yml`, real deploy since `75f4ccda7f`; the build skips
+tests). Run `41089045313` succeeded.
+
+| Step | Evidence (owner ran the SELECTs on the DEV database) |
+|---|---|
+| Before: migrations | Last applied `2.6.0.20261029.0938`; M1 and M2 absent. M1/M2 carry lower versions, and MARLO starts Flyway with `setOutOfOrder(true)` (`MarloFlywayConfiguration.java:95`), so they still apply |
+| Before: M1 capture | 30 rows `Planing` (units 45, 49–52, 6 each) |
+| Before: M2 capture | 66 rows (unit 47: 18; units 49–52: 12 each), equal to the count predicted from the per-unit summary |
+| Reversal prepared | Rule-based by unit (47: Planning/Progress/Reporting → POWB/UpKeep/AR; 49–52: Planning → AWPB, Reporting → AR) plus the 30 M1 ids. Valid only until new phases are created |
+| After: migrations | `2.6.0.20261028.1817` and `2.6.0.20261029.0834`, both `success = 1`, applied 2026-10-30 16:28:54 |
+| After: data | `Planing` rows 0. AICCRA_III phases 444–446 show Planning / Progress / Reporting - 2026; AICCRA keeps AWPB / Progress / AR |
+| After: pages (read-only fetches, no `edit=true`) | Project 102093 deliverable list, deliverable 27311 and innovation 1775 in 444/445/446: all 200, no FreeMarker error, no raw key. Dissemination tab absent in 444, present in 445/446. Innovation visible required markers 7 / 5 / 7 (fewer in progress); deliverable 3 / 3 / 7 |
+
+### Still owed at the `staging` merge
+
+`staging` also receives branches that never went through `dev`, so the `dev` merge is not a rehearsal of it. At
+that merge: compile, full suite, Checkstyle delta and a render smoke again; the release-day capture (OPS-004) on
+the production databases; and T11b once the redesign is in `staging`.
+
+## Addendum D — Re-validation after the staging merge with the A2-2613 redesign (2026-11-11)
+
+> Written by the auditor (T3, `opus`, read-only on the code). It re-runs the gates on the new HEAD and audits what
+> the `staging` merge brought in against the phase-type contract. Rows not named below stand as in §2–§12 and
+> Addenda A–C.
+
+**Verdict: PASS WITH WARNINGS stands. 0 FAIL, 0 BLOCKED, 2 new WARN, W9 closed.** Kevin's redesign (A2-2607 /
+A2-2613) does not change how a phase type is decided, and does not break any variable the spec introduced. What
+it leaves behind is the old-name debt T11b already plans for. T11b is now unblocked.
+
+| Item | Value |
+|---|---|
+| Validated commit | `0fb0b1e68e` on `phase-type-unification`; tree identical to `d0db816942` (merge of `origin/staging` `460ecbd5be`) |
+| `origin/staging` / `origin/main` | `460ecbd5be` / `105dc99d23` (PR #2731 carried `staging` to `main`; the redesign is on `main`, this spec is not) |
+| History note | `73525a83e5` + `6f09567ef7` (a local merge that dropped the `staging` content) are on the branch; `0fb0b1e68e` restores the `d0db816942` tree without a force push. Neither commit is on `dev`, `staging` or `main` |
+| Where | Worktree `MARLO-val`, detached at `0fb0b1e68e`, fresh (no prior `target/`). No Maven in the main checkout, no server started |
+| DB access | SELECT only on `aiccradb1` and `aiccradb_actsave` |
+
+### Gates (re-run by the auditor)
+
+| Gate | Result |
+|---|---|
+| Clean compile | Maven exit 0; 6 (marlo-utils) + 2430 (marlo-data) + 1063 (marlo-web) + 116 test sources |
+| Full suite `-am` | 1166 run, 0 failures, 0 errors, 0 skipped (surefire XML summed); `PhaseNameLiteralFtlTest` 4/0, `PhaseTypeEquivalenceTest` 15/0, `PhaseTypeCharacterizationTest` 18/0, `ProjectFocusManagerImplReplicationTest` 2/0 |
+| Checkstyle, the PR's 58 Java files vs `origin/staging` | `staging` versions with `staging`'s config 86 → branch versions with the branch config 86. Delta 0 |
+| Phase rules tree-wide | `RemovedPhaseTypeMethod` 0, `PhaseNameLiteral` 0. Both rules fire on probes (`b.isReportingActive()`; `phase.getName().equals("Progress")`), so 0 is a real 0 |
+| `CHECKSTYLE.OFF` markers | Only the six T11a aliases in `BaseAction` (8068–8113) and their characterization test |
+| Unchanged since the last audited commit `9138934db4` | M1, M2, `Phase.java` and the phase methods of `BaseAction`: no diff |
+| Migration order | The PR adds only M1 and M2. `staging` already has `V2_6_0_20261029_0938` (after M2); `MarloFlywayConfiguration:95` runs `setOutOfOrder(true)`, the same situation proven on DEV (Addendum C) |
+
+### What the redesign brought in, against the contract
+
+| Area | Finding | Result |
+|---|---|---|
+| INT-2 (`deliverableMacros.ftl`) | `staging` / `main` carry `actualPhase.name != 'Progress'` at 412 and 456. The branch has `!progressPhase && !redesign` and `(!progressPhase)` | PASS |
+| `menu-projects.ftl` preset toggle | `!reportingPhase` (the redesign dropped `completedPreProject \|\| projectEditLeader` on purpose) | PASS |
+| `DeliverableValidator` "On-going at reporting" rule | Uses `action.isReportingPhase()` | PASS |
+| Old names in FTL | 32 hits: 3 are §A3-type identifiers (`javascript-constants.ftl:30-31` JS variables fed from `reportingPhase` / `progressPhase`; `main-menu.ftl:4` local `reportingActiveMenu`); 29 are the redesign's `reportingActive` and `isProgressActive` in 6 files. All resolve through the T11a aliases. `origin/staging` has 226 hits; the branch leaves 32, the same count as `dev` | WARN (W11) |
+| `actualPhase.upkeep` read directly | `deliverableList.ftl`, `projectDeliverable.ftl` (dissemination tabs), as before the redesign. Same value as `progressPhase` | PASS (cleanup candidate for T11b) |
+| Phase name shown as text | `phaseLabel = actualPhase.name + year` in the deliverable and innovation lists. Display only; after M2 units 47–50 show `Planning` / `Progress` / `Reporting` instead of `POWB` / `UpKeep` / `AR`, which is the spec's intent. AICCRA is unchanged | PASS |
+| New replication (Java) | `ProjectInnovationCoDeveloperManagerImpl` and `ProjectInnovationValueChainManagerImpl` add `replicationTarget()` with `APConstants.PLANNING/REPORTING.equals(phase.getDescription())`, the pattern of the other 106 managers. Requirements §9 "No `ManagerImpl` is edited" keeps managers out of scope | PASS (advisory A-D1) |
+| Migrations from `staging` (11) | None reads or writes `phases.name`, `description` or `upkeep` | PASS |
+| JS from `staging` | Only year comparisons (`data-phase-year`); no phase-type logic | PASS |
+| Phase-related FTL vs `dev` | The branch and `dev` differ in 8 FTL, none phase-related (CSS/JS cache params, HellDots, captcha). Every phase-related template is byte-identical to the one rendered locally and on DEV in Addendum C | PASS (evidence carried) |
+
+### Rows changed
+
+| Row | Was | Now | Why |
+|---|---|---|---|
+| W9 (`ProjectFocusManagerImplReplicationTest`) | WARN | **Closed** | `81ae461abe` reached `staging` with the redesign; the test is 2/0 on this tree |
+| T11b | Blocked on A2-2607 / A2-2613 reaching `staging` | **Unblocked, pending** | Both are on `staging` `460ecbd5be` (and on `main`) |
+
+### New WARN
+
+| # | Finding | Recommendation |
+|---|---|---|
+| W11 | FN-005's AC grep is not clean: 29 old-name uses from the redesign (`deliverableList.ftl` 9, `deliverableInfo.ftl` 3, `projectDeliverable.ftl` 2, `deliverableMacros.ftl` 5, `innovationTemplates.ftl` 1 + the `isProgressActive` local at 121 with 7 uses, `projectInnovation.ftl` 113). Allowed only by the time-limited T11a exception | Run T11b next, on this branch or right after it merges to `staging`. T11b is the archive condition stated in Addendum A |
+| W12 | The render smoke owed at the `staging` merge (Addendum C) was not re-run on this tree. It rests on byte-identical phase templates (see the table above) and unchanged phase Java | Verify on the `staging` environment after the merge: migrations applied, 0 `Planing` rows, names per unit, one deliverable and one innovation in plan / progress / reporting. Together with W2 (OPS-004 capture on production) |
+
+### Advisory (not gating)
+
+| # | Note |
+|---|---|
+| A-D1 | The two new managers repeat the `getDescription()` replication pattern. A save made *in* a phase still described `Planing` does not replicate. Today those phases are AWPB / Progress 2028–2030 of units 45 and 50 (local copies), none editable or visible. M1 removes the typo. Feed the pattern into `enhancement/phase-cycle-centralization` |
+| A-D2 | Until this spec ships, `main` decides INT-2 by name. In unit 47 the progress phases are still named `UpKeep` (445, 448), so `main` would treat them as non-progress. On `aiccradb1` they are neither editable nor visible, so no user sees it today. Shipping this branch (code + M2) removes the case |
+| A-D3 | The redesign moved the 2019 lock to `crpPhases.ftl:224`; earlier rows of this report cite `:227` as the tree stood then. The contract documents now cite it by content (requirements §9, 2026-11-12); the FTL test already matched by content, so no gate changed |
+
+**Archive readiness:** not yet. Archive after T11b (W11), with W1–W8 accepted or ticketed, and W12 / W2 closed
+at the `staging` deploy. The branch itself is ready to merge into `staging` (0 conflicts).
