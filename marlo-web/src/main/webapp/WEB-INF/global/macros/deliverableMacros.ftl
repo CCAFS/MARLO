@@ -151,12 +151,6 @@
           <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
           [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=(editable || (deliverableFormRedesign)!false) disabled=!editable/]
           </div>
-          [#elseif !(action.isAiccra())]
-          <div class="col-md-3">
-          <input type="hidden"  name="${customName}.id" value="${(markerElement.id)!}"/>
-          <input type="hidden"  name="${customName}.cgiarCrossCuttingMarker.id" value="${marker.id}"/>
-          [@customForm.select   name="${customName}.repIndGenderYouthFocusLevel.id" value="${(markerElement.repIndGenderYouthFocusLevel.id)!-1}" valueName="${(markerElement.repIndGenderYouthFocusLevel.powbName)!}" className="setSelect2" i18nkey="${marker.name}" listName="focusLevels" keyFieldName="id"  displayFieldName="powbName"  required=true editable=(editable || (deliverableFormRedesign)!false) disabled=!editable/]
-          </div>
           [/#if]
         [#else]
           <p class="col-md-12">No cgiarCrossCuttingMarkers loaded</p>
@@ -990,22 +984,7 @@
     <div class="col-md-6">
       [@metadataField title="publicationDate" encodedName="dc.date" type="input" require=validateIsProgressWithStatus/]
     </div>
-    [#if !action.isAiccra()]
-    <div class="col-md-6">
-      [@metadataField title="language" encodedName="dc.language" type="input" require=false/]
-    </div>
-    [/#if]
   </div>
-  [#if !action.isAiccra()]
-  <div class="form-group row">
-    <div class="col-md-6">
-      [@metadataField title="countries" encodedName="cg:coverage.country" type="input" require=false/]
-    </div>
-    <div class="col-md-6">
-      [@metadataField title="keywords" encodedName="marlo.keywords" type="input" require=false/]
-    </div>
-  </div>
-  [/#if]
   <div class="form-group"> 
     [@metadataField title="citation" encodedName="dc.identifier.citation" type="textArea" require=false/]
   </div>
