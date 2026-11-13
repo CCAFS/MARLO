@@ -448,19 +448,7 @@
         </div>
       [/#if]
 
-      [#-- Contributing cNE/Platforms --]
-      [#if !action.isAiccra()]
-        <div class="dlf-field dlf-divided">
-          [@customForm.elementsListComponent name="innovation.crps" elementType="globalUnit" elementList=innovation.crps label="projectInnovations.contributing"  listName="crpList" keyFieldName="id" displayFieldName="composedName" required=false /]
-        </div>
-      [/#if]
 
-      [#if !action.isAiccra()]
-        [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]
-        <div class="dlf-field dlf-divided">
-          [@customForm.elementsListComponent name="innovation.subIdos" elementType="srfSubIdo" elementList=(innovation.subIdos)![] label="innovation.subIDOs" helpIcon=false listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" required=!isProgressActive hasPrimary=true/]
-        </div>
-      [/#if]
     </section>
 
     [#-- ─── Responsible institution (Contact person) ───────────────────────── --]
