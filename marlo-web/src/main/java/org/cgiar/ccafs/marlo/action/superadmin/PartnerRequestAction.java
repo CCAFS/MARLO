@@ -431,7 +431,7 @@ public class PartnerRequestAction extends BaseAction {
       message.append(this.getText("marloRequestInstitution.office.accept.email", new String[] {loc_elements}));
 
       message.append(this.getText("email.support.noCrpAdmins"));
-      message.append(this.getText("email.getStarted"));
+      message.append(this.getText("email.getStarted", new String[] {this.getBaseUrl()}));
       message.append(this.getText("email.bye"));
       this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
     }

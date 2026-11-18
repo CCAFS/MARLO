@@ -212,7 +212,7 @@ public class UnSubmitImpactpathwayAction extends BaseAction {
 
     message.append(this.getText("impact.unsubmit.email.message", values));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.getStarted", new String[] {this.getBaseUrl()}));
     message.append(this.getText("email.bye"));
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(program.getCrp().getId());
     if (this.validateEmailNotification(globalUnit)) {
