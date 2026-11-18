@@ -231,7 +231,7 @@ public class ImpactSubmissionAction extends BaseAction {
 
     message.append(this.getText("impact.submit.email.message", values));
     message.append(this.getText("email.support", new String[] {crpAdmins}));
-    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.getStarted", new String[] {this.getBaseUrl()}));
     message.append(this.getText("email.bye"));
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(crpProgram.getCrp().getId());
     if (this.validateEmailNotification(globalUnit)) {

@@ -215,6 +215,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T08 — JSON appender
 
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`): `FILE-JSON` writes one JSON
+  object per line behind `log.json`, and `MarloMdcJsonProvider` types the numbers and gates the personal data. Reviewer
+  PASS on attempt 1; see `execution.md`.
 - **Depends on:** T04, T05, T06, T07
 - **Module:** marlo-web, repository root
 - **Files touched:**
@@ -254,10 +257,14 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T09 — Cleanup: the save chain
 
-- **Status:** Partly done, 2026-10-26: the four `printStackTrace()` of `AbstractMarloDAO` now log through `LOG.error`
-  with the exception as the last argument, and its log lines use `{}` placeholders. `AuditLogMySQLDao`,
-  `HibernateAuditLogListener` and the `ProjectInnovation*ManagerImpl` files had no offender left. No
-  `return`, `throw` or condition changed. The JSON check of the verification waits for T08.
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`). On 2026-10-26 the four
+  `printStackTrace()` of `AbstractMarloDAO` were moved to `LOG.error` with the exception as the last argument and
+  `{}` placeholders; `AuditLogMySQLDao` and `HibernateAuditLogListener` had no offender left. On 2026-10-27 the two
+  remaining offenders, both in `ProjectInnovationPartnershipManagerImpl` (a log without the exception and an
+  `e.getMessage()`-only log), now pass the exception. No `return`, `throw` or condition changed. The save-failure
+  check is `SaveChainFailureLoggingTest`. Reopened the same day: a `System.out` split over two lines in
+  `ProjectInnovationContributingOrganizationManagerImpl` had escaped the closing scan; the print-only loop is removed.
+  Reviewer PASS on both; see `execution.md`.
 - **Depends on:** T08 (so the effect is visible in the JSON log)
 - **Module:** marlo-data
 - **Files touched:**
@@ -381,6 +388,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T14 — Checkstyle guardrail
 
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`): rules
+  `LoggingPrintStackTrace` and `LoggingSystemOut`, and explicit suppressions for the 5 files that still carry one.
+  Reviewer PASS on attempt 2; see `execution.md`.
 - **Depends on:** T09, T10, T11, T12 (so the suppressions file is not stale on arrival)
 - **Module:** repository root
 - **Files touched:**
@@ -400,6 +410,8 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T15 — ai-context document
 
+- **Status:** Done, 2026-10-27, through `/akili-execute` (branch `logging-json-appender`):
+  `reports/ai-context/logging-standard.md`. Reviewer PASS on attempt 2; see `execution.md`.
 - **Depends on:** T08, T13
 - **Module:** docs
 - **Files touched:**
@@ -414,7 +426,9 @@
 
 ### ENH-LOGGING-STANDARDIZATION-001-T16 — QA pass against the acceptance criteria
 
-- **Depends on:** T01 … T15
+- **Status:** Open, 2026-10-27 — QA pass run through `/akili-execute`: 20 of 31 rows demonstrated, 3 product
+  findings and 8 checks not demonstrable locally; blocked on user decisions recorded in `execution.md`.
+- **Depends on:** T01 … T15, T17
 - **Module:** —
 - **Files touched:** None; `task.md` updated with verification notes.
 - **Constitutional checks:** Full checklist from `requirements.md` §7 confirmed in the PR.
@@ -423,13 +437,42 @@
   ones (no `user_email` on success, no MDC crossover, no notification duplicate).
 - **Verification:** Recorded per criterion in this file.
 
+### ENH-LOGGING-STANDARDIZATION-001-T17 — REST v2 controllers propagate their errors
+
+- **Status:** Done, 2026-10-28. Batch 1 and batch 2 each closed on Reviewer PASS at attempt 2 (see `execution.md`).
+- **Added:** 2026-10-27, from the T16 QA pass; approved by the user (`requirements.md` §9).
+- **Depends on:** T02, T11
+- **Module:** marlo-web
+- **Files touched:** the `catch` blocks of `rest/controller/v2/controllist/` that log an error and do not propagate
+  it. Batch 1, the controllers: `ProjectPage`, `Expenditures`, `ExpectedStudies`, `ExpectedStudiesOther` (×2),
+  `ParticipantsCapDev`, `Policies`, `ProgressTowards`, `StatusPlannedOutcomes`, plus the item classes their requests
+  reach where a hidden failure needed validating (`ProjectPageItem`, `ExpendituresItem`, `ExpectedStudiesItem`,
+  `ExpectedStudiesOtherItem`, `ParticipantsCapDevItem`, `PolicyItem`, `ProgressTowardsItem`,
+  `StatusPlannedOutcomesItem`; added 2026-10-27 during batch 1). Batch 2, the item classes:
+  `items/Deliverables/DeliverablesItem` (×4), `items/Deliverables/DeliverablesWOSItem`.
+- **Constitutional checks:** REST error handling stays centralized in `rest/errors/ExceptionTranslator` (ADR-8); never
+  expose a stack trace to the client; the `ErrorDTO` shape is unchanged. A successful response MUST NOT change. No
+  change may introduce an exception that is not already thrown today: every value the changed code reads is
+  validated (null receivers, `get(0)` on an empty list, unboxing of a null `Long`), and a `catch` is removed only
+  after reading what its method returns on failure and what its callers expect.
+- **Tests:**
+  - Unit, per changed endpoint: a valid request returns the same status and body as before; an invalid or unknown
+    identifier now reaches `ExceptionTranslator` and answers its status (400 for a field validation error, 404 for
+    not found, 500 for anything else) with exactly one log event carrying `status_code`.
+- **Done when:**
+  - No `catch` in the REST v2 layer logs an error and returns `null` or an empty answer the caller cannot tell from
+    "no data" (FN-006/FN-009 criterion), except fallbacks that are legitimate by design, each documented in place.
+  - Successful responses are unchanged, verified per endpoint.
+- **Verification:** clean compile and full suite with `-am`; Checkstyle delta 0; for each changed endpoint, the
+  unit test above, and a falsifier run showing the test fails against the old `catch`.
+
 ## 4. Dependency Graph
 
 ```
 T01 (delete aspect) ────┐
 T02 (REST handlers) ────┼──────────────────────────► T13 (notification)
 T03 (log.folder) ───────┤                                  ▲
-T04 (environment) ──────┴─► T05 (LoggingContextFilter)      │
+T04 (environment) ──────┴─► T05 (LogContext listener)       │
                                 └─► T06 (user_id)           │
                                       └─► T07 (name/email)  │
                                             └─► T08 (JSON appender) ──┘
@@ -439,7 +482,7 @@ T04 (environment) ──────┴─► T05 (LoggingContextFilter)      �
                                                         └─► T12 (MicroserviceReportAction)
                                                               └─► T14 (Checkstyle + suppressions)
                                                                     └─► T15 (ai-context)
-                                                                          └─► T16 (QA pass)
+                                                                          └─► T16 (QA pass) ◄── T17 (REST errors)
 ```
 
 T03 and T04 are independent and can run in parallel with anything. T01 and T02 are formally independent but
@@ -453,7 +496,8 @@ T08 must come after T05–T07, or the JSON ships with empty context fields and r
 
 - `LogEnvironmentDefiner.resolve()`: each profile maps to its environment; unknown profile yields a safe
   default, never null (T04).
-- `LoggingContextFilter`: `MDC.clear()` runs even when the downstream chain throws (T05).
+- `LogContext`: the context is cleared at the end of every request, even when the chain throws (T05; the
+  `LoggingContextFilter` first planned was replaced by this listener on 2026-10-06).
 - `MarloMdcJsonProvider`: `status_code` and `user_id` are written as numbers; `user_name`/`user_email` are
   written when `status_code` is 400 or above and omitted otherwise, including when `status_code` is absent
   entirely; an unparseable `status_code` is treated as absent and does not throw (T08).

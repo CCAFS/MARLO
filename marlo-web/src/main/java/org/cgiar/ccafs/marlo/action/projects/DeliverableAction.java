@@ -5312,7 +5312,7 @@ public class DeliverableAction extends BaseAction {
 
       message.append(this.getText("email.change.deliverableStatus.body", values));
       message.append(this.getText("email.support.noCrpAdmins"));
-      message.append(this.getText("email.getStarted"));
+      message.append(this.getText("email.getStarted", new String[] {this.getBaseUrl()}));
       message.append(this.getText("email.bye"));
 
       sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);

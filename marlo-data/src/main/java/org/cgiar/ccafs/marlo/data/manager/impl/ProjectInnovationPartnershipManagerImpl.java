@@ -197,7 +197,7 @@ public class ProjectInnovationPartnershipManagerImpl implements ProjectInnovatio
       partnersTmp = projectPartnerManager.findAllByPhaseProjectAndInstitution(projectID, phase.getId(), institutionId);
 
     } catch (Exception e) {
-      logger.error("unable to get partners");
+      logger.error("Unable to get the partners of project {} and institution {}", projectID, institutionId, e);
     }
 
     if (partnersTmp != null && !partnersTmp.isEmpty()) {
@@ -231,7 +231,7 @@ public class ProjectInnovationPartnershipManagerImpl implements ProjectInnovatio
           this.findByInnovation(projectInnovationPartnership.getProjectInnovation().getId());
       } catch (Exception e) {
         // TODO: handle exception
-        logger.error(e.getMessage());
+        logger.error("Unable to find the partnerships of the innovation being saved", e);
       }
 
 

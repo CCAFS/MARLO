@@ -36,8 +36,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -54,7 +52,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 12 - Examples of W1/2 Use")
 public class Expenditures {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Expenditures.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
@@ -117,14 +114,10 @@ public class Expenditures {
     @ApiParam(value = "${Expenditure.Example.GET.id.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${Expenditure.Example.GET.id.param.phase}", required = true) @RequestParam String phase) {
 
-    ResponseEntity<W1W2ExpenditureDTO> response = null;
-    try {
-      response = this.expendituresItem.getExpenditure(id, CGIAREntity, year, phase, this.getCurrentUser());
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("Expenditure.Example.GET.id.404"));
-      }
-    } catch (Exception e) {
-      LOG.error("Could not get the expenditure {}", id, e);
+    ResponseEntity<W1W2ExpenditureDTO> response =
+      this.expendituresItem.getExpenditure(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("Expenditure.Example.GET.id.404"));
     }
     return response;
   }

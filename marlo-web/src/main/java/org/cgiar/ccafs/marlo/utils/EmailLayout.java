@@ -20,9 +20,9 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Puts the body of a notification inside the branded email shell of its Global Unit, held by the i18n key
- * email.layout. The base text of the key is "{0}", so a Global Unit that does not override it sends the body as it
- * is; the ones that do override it with the HTML shell, where {0} is the body and {1} the URL the images of the
- * shell are served from.
+ * email.layout. The base text of the key is the HTML shell, where {0} is the body and {1} the URL the images of the
+ * shell are served from, so every Global Unit sends it by default. A Global Unit that must stay plain opts out by
+ * overriding the key with "{0}" in its custom file, which sends the body as it is.
  * The shell is applied only by the notifications that opt in, which are the role notifications and the welcome
  * email: SendMailS also sends the technical alerts, which must stay without it. The error report to the support
  * team has its own frame, built by ExceptionEmail.
@@ -40,7 +40,7 @@ public final class EmailLayout {
    *
    * @param action the action sending the email, which resolves the key for its Global Unit.
    * @param body the body of the email, as assembled from its i18n keys.
-   * @return the body inside the shell, or the body as it is when the Global Unit has no shell.
+   * @return the body inside the shell, or the body as it is when the Global Unit opted out of the shell.
    */
   public static String wrap(BaseAction action, String body) {
     return wrap(action, action.getBaseUrlCdn(), body);

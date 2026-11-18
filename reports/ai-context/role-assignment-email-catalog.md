@@ -46,19 +46,28 @@ Every role email and every copy of the welcome email (§3) goes out through
 `{0}` = the body above, `{1}` = `getBaseUrlCdn()` (the base URL when there is no CDN), from which the
 shell loads its images.
 
-- **Base** (`global.properties`): `email.layout={0}` — the body goes out as it is. A Global Unit
-  without an override sees no change.
-- **AICCRA** (`aicrra`, `aiccra3`) and **`test`**: the branded HTML shell of the MARLO mockup in Figma —
-  logo and two-line lockup, light-grey card holding `{0}`, rolling-hills band, footer note and the
-  `mailto:` support link. Table layout with inline CSS, 600 px wide. The footer note now carries a
-  second line: "Please do not reply to this email, as it is an automated notification." — this is why
-  AICCRA's `email.role.support`, `email.role.support.noCrpAdmins` and `email.role.getStarted` were
-  emptied out (see Shared blocks below): the address and the do-not-reply notice now live here instead
-  of in the body.
+- **Base** (`global.properties`): `email.layout` IS the branded shell, the default for every Global Unit
+  (moved verbatim from `aicrra` by `changes/email-layout-default`, md5
+  `6b52db6bd9808a9361aa0d0e97c79985`). No custom file defines it: `aicrra`, `aiccra3` and `test` inherit it.
+  It is the MARLO mockup in Figma: logo and two-line lockup, light-grey card holding `{0}`, rolling-hills
+  band, footer note with the "Please do not reply to this email, as it is an automated notification."
+  line and the `mailto:` support link. Table layout with inline CSS, 600 px wide. The shell hardcodes
+  `MARLOSupport@cgiar.org` (DD-10); a unit that needs another address overrides `email.layout`.
+- **Footer once** (DD-2): so the support address and the notice are not printed twice, the base
+  `email.role.support` and `email.role.support.noCrpAdmins` are empty, `email.role.bye` has no
+  do-not-reply notice, `email.role.getStarted` is a paragraph, and `login.otp.email.html` has no
+  "Need help..." sentence.
+- **Opt-out** (DD-9): a unit that must stay plain sets, in its custom file, `email.layout={0}` together
+  with the restored pre-shell `email.role.support`, `email.role.support.noCrpAdmins`, `email.role.bye` and
+  `login.otp.email.html`. The values are kept verbatim in the comment above `email.layout` in
+  `global.properties`. For the OTP email of an opted-out unit the notice may be absent. No unit opts out
+  today (Q1, 2026-11-11).
 - **Images:** `marlo-web/src/main/webapp/global/images/email/` (`marlo-logo.png`, `email-band.png`).
   They are served without a session, as the login page's logo is.
 - **Opt-in, on purpose.** `SendMailS` also sends the technical alerts and every other notification;
-  only the call sites listed in §2 and §3 wrap their body. A new role email must call
+  only the call sites listed in §2 and §3 wrap their body (10 of the 30 mail senders wrap after
+  `email-layout-default`: submit and unsubmit, `ProjectSubmissionAction` and `UnsubmitProjectAction`, now
+  wrap too, with their own unit's texts (DD-6) and the `email.role.*` footer (DD-4)). A new role email must call
   `EmailLayout.wrap()` too, or it goes out without the shell.
   The exception reports to the support team (`UnhandledExceptionAction`, `ExceptionTranslator`) do not
   use this key: `logging/ExceptionEmail` draws the same frame in code, for every Global Unit, with a
@@ -66,7 +75,8 @@ shell loads its images.
 - **Editing the shell:** it is split over continuation lines (`\` at the end of each line). It is a
   `MessageFormat` pattern, so it must hold no `'` and no `{`/`}` other than `{0}` and `{1}`.
   `EmailLayoutTest` loads the real files and fails on an unfilled placeholder.
-- **Rollback:** set the AICCRA override back to `email.layout={0}`.
+- **Rollback:** per unit, add the opt-out block above to its custom file; for the whole change, revert the
+  `email-layout-default` branch.
 - **Plain-text part (every email, not only role ones):** `SendMailS.buildContent()` sends each message as
   `multipart/alternative` with a `text/plain` part before the `text/html` one; with an attachment, that
   alternative sits inside a `multipart/mixed` next to the file. The text comes from
@@ -96,16 +106,16 @@ by A2-2484, shown on the left for reference.
 
 | Key | Base text (`global.properties`) | AICCRA override | `email.role.*` equivalent | AICCRA override |
 |---|---|---|---|---|
-| `dear` | `Dear {0}, <br><br>` | — (no override) | `email.role.dear` — base: same as `email.dear` | `<p style="margin:0 0 24px 0;font-size:20px;line-height:28px;font-weight:bold;">Dear {0},</p>` |
-| `support` | `Should you have any questions, please do not hesitate to contact {0} or the technical MARLO team (MARLOSupport@cgiar.org)` — `{0}` = list of CRP Admins with emails | unchanged by A2-2484 | `email.role.support` — base: same as `email.support` | **empty** — the support line now lives in the shell footer |
-| `support.noCrpAdmins` | `Should you have any questions, please do not hesitate to contact the technical MARLO team (MARLOSupport@cgiar.org)` | unchanged by A2-2484 | `email.role.support.noCrpAdmins` — base: same as `email.support.noCrpAdmins` | **empty** |
-| `getStarted` | `<br><br>Please sign in to MARLO to get started.` (defect 1, fixed by A2-2484 — no longer hardcodes a URL) | unchanged by A2-2484 | `email.role.getStarted` — base: same as `email.getStarted` | **empty** — the sign-in call to action was dropped from the body |
-| `bye` | `<br><br>Best regards, <br><br><b>MARLO Team</b> <br><br> <p>*** Please do not reply to this email as this is an automated notification ***</p>` | unchanged by A2-2484 | `email.role.bye` — base: same as `email.bye` | `<p style="margin:8px 0 24px 0;">Thank you!</p><p style="margin:0;">Kind regards,<br>MARLO Team</p>` |
+| `dear` | `Dear {0}, <br><br>` | — (no override) | `email.role.dear` — base: `<p style="margin:0 0 24px 0;font-size:20px;line-height:28px;font-weight:bold;">Dear {0},</p>` | `<p style="margin:0 0 24px 0;font-size:20px;line-height:28px;font-weight:bold;">Dear {0},</p>` |
+| `support` | `Should you have any questions, please do not hesitate to contact {0} or the technical MARLO team (MARLOSupport@cgiar.org)` — `{0}` = list of CRP Admins with emails | unchanged by A2-2484 | `email.role.support` — base: **empty** (the footer lives in the shell, `email.layout`); opt-out restores the text above | **empty** — the support line now lives in the shell footer |
+| `support.noCrpAdmins` | `Should you have any questions, please do not hesitate to contact the technical MARLO team (MARLOSupport@cgiar.org)` | unchanged by A2-2484 | `email.role.support.noCrpAdmins` — base: **empty**; opt-out restores the text above | **empty** |
+| `getStarted` | `<br><br>Please sign in to MARLO to get started.` (defect 1, fixed by A2-2484 — no longer hardcodes a URL) | unchanged by A2-2484 | `email.role.getStarted` — base: `<p style="margin:0 0 16px 0;">Please sign in to MARLO to get started.</p>` | **empty** — the sign-in call to action was dropped from the body |
+| `bye` | `<br><br>Best regards, <br><br><b>MARLO Team</b> <br><br> <p>*** Please do not reply to this email as this is an automated notification ***</p>` | unchanged by A2-2484 | `email.role.bye` — base: `<p style="margin:8px 0 24px 0;">Thank you!</p><p style="margin:0;">Kind regards,<br>MARLO Team</p>` (no do-not-reply notice; the shell carries it); opt-out restores the `email.bye` text above | `<p style="margin:8px 0 24px 0;">Thank you!</p><p style="margin:0;">Kind regards,<br>MARLO Team</p>` |
 
-`ciat`, `pabra` and `alliance` got their own `email.role.*` copies of their existing `email.*`
-overrides, so those Global Units see no behavior change. Every other Global Unit has no override of
-either set, so `email.role.*` falls back to the `global.properties` text, identical to what
-`email.*` already gave it — no behavior change there either.
+`email-layout-default` (footer once, DD-2, DD-3): the `ciat` and `pabra` `email.role.*` overrides were
+removed; `alliance` keeps only its own `email.role.getStarted`. Every unit now falls back to the
+`global.properties` `email.role.*` texts above, except AICCRA (`aicrra`, `aiccra3`), which keeps its
+own overrides.
 
 > Defect 1 (base `email.getStarted` hardcoding the AICCRA URL) is fixed by A2-2484: the base text is
 > now the neutral "Please sign in to MARLO to get started." with no URL.
