@@ -150,6 +150,11 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   // PDF bytes
   private byte[] bytesPDF;
 
+  // Submit email: when set, the summary is fetched as bytes instead of queued for the download
+  // @akili-spec bugfix/submit-unsubmit-email-defects
+  private boolean pdfForSubmit;
+  private byte[] submitPdf;
+
   // Streams
   InputStream inputStream;
 
@@ -7733,6 +7738,17 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   }
 
   /**
+   * Generates the cluster summary and answers its bytes, or null when it could not be fetched.
+   * Used by the submit email.
+   */
+  // @akili-spec bugfix/submit-unsubmit-email-defects
+  public byte[] generatePdfBytes() {
+    pdfForSubmit = true;
+    this.generateAndSendJson();
+    return submitPdf;
+  }
+
+  /**
    * Generate JSON data and send to microservice for PDF generation.
    * This method is called when the specificity GENERATE_PENTAHO_REPORTING_SUMMARY_REPORT_ACTIVE is false.
    * 
@@ -7866,7 +7882,12 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
       
       LOG.info("Sending the cluster report {} to the microservice", reportName);
       // Using sendClusterReportQueueMessage for cluster/project summary reports
-      this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
+      // @akili-spec bugfix/submit-unsubmit-email-defects
+      if (pdfForSubmit) {
+        submitPdf = this.microserviceReportAction.fetchClusterReportBytes(jsonOutput, reportName);
+      } else {
+        this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
+      }
       
     } catch (final java.io.IOException e) {
       LOG.error("Could not generate the reporting summary JSON", e);
