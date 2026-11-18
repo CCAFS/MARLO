@@ -44,6 +44,78 @@
 </appender>
 
 
+  <!-- ======= JSON log: one JSON object per line, switched by log.json (ENH-LOGGING-STANDARDIZATION-001) =======
+    Every JSON field name is declared in the providers block below (NF-004). The MDC fields that need a type or a
+    condition are written by MarloMdcJsonProvider: status_code and user_id as numbers, user_name and user_email only
+    on a status_code of 400 or more, and never service_affected. The framework logger levels below apply to this
+    appender too, because they are scoped by logger and not by appender.
+    The appender is declared only when log.json is true: logback creates the file of every appender it declares, even
+    one that no logger uses, so a declared FILE-JSON would leave an empty file where the JSON log is switched off. -->
+  <if condition='property("log.json").equalsIgnoreCase("true")'>
+    <then>
+      <appender name="FILE-JSON"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.folder}/marlo-json-${log.instance}.log</file>
+        <!-- like FILE-PRODUCTION, a production server denies all events with a level below INFO -->
+        <if condition='property("log.production").equalsIgnoreCase("true")'>
+          <then>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+              <level>INFO</level>
+            </filter>
+          </then>
+        </if>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+          <providers>
+            <timestamp>
+              <fieldName>timestamp</fieldName>
+              <timeZone>UTC</timeZone>
+            </timestamp>
+            <logLevel>
+              <fieldName>level</fieldName>
+            </logLevel>
+            <globalCustomFields>
+              <customFields>{"environment":"${environment:-UNKNOWN}"}</customFields>
+            </globalCustomFields>
+            <loggerName>
+              <fieldName>module_section</fieldName>
+            </loggerName>
+            <!-- The string fields of the request context. The MDC keys are the field names -->
+            <mdc>
+              <includeMdcKeyName>request_id</includeMdcKeyName>
+              <includeMdcKeyName>tool_name</includeMdcKeyName>
+              <includeMdcKeyName>controller_affected</includeMdcKeyName>
+            </mdc>
+            <provider class="org.cgiar.ccafs.marlo.logging.MarloMdcJsonProvider">
+              <statusCodeFieldName>status_code</statusCodeFieldName>
+              <userIdFieldName>user_id</userIdFieldName>
+              <userNameFieldName>user_name</userNameFieldName>
+              <userEmailFieldName>user_email</userEmailFieldName>
+            </provider>
+            <message>
+              <fieldName>message</fieldName>
+            </message>
+            <!-- SEC-003: the trace is cut at maxLength characters, and each throwable at maxDepthPerThrowable frames -->
+            <stackTrace>
+              <fieldName>stack_trace</fieldName>
+              <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                <maxLength>8192</maxLength>
+                <shortenedClassNameLength>40</shortenedClassNameLength>
+                <rootCauseFirst>true</rootCauseFirst>
+              </throwableConverter>
+            </stackTrace>
+          </providers>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 30 days, daily rollover -->
+            <fileNamePattern>${log.folder}/marlo-json-${log.instance}.%d{yyyy-MM-dd}.zip</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+      </appender>
+    </then>
+  </if>
+
+
   <!-- ======= Filters by levels to print logs in Console ======= -->
 
   <appender name="CONSOLE-PRODUCTION" class="ch.qos.logback.core.ConsoleAppender">
@@ -154,6 +226,12 @@
           </then>
         </if>
 
+      </then>
+    </if>
+
+    <if condition='property("log.json").equalsIgnoreCase("true")'>
+      <then>
+        <appender-ref ref="FILE-JSON" />
       </then>
     </if>
   </root>

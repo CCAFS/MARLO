@@ -13,6 +13,15 @@
 			<property name="max" value="3500" />
 		</module>
 
+			<!-- Pre-existing logging offenders (see marlo-checkstyle-suppressions.xml).
+			The path is relative to the working directory: it resolves for the CLI run from the repo root
+			(checkstyle.sh). Under maven-checkstyle-plugin the working directory is the module, the file is
+			not found and, being optional, no suppression is applied. -->
+			<module name="SuppressionFilter">
+				<property name="file" value="configuration/marlo-checkstyle-suppressions.xml"/>
+				<property name="optional" value="true"/>
+			</module>
+
 		
 		<module name="TreeWalker">
 	
@@ -62,6 +71,25 @@
 			<!-- Checks the padding between the identifier of a method definition, constructor definition, method call, 
 			or constructor invocation; and the left parenthesis of the parameter list -->
 			<module name="MethodParamPad">
+			</module>
+
+
+			<!-- Logging guardrail (OPS-004, trd.md 9.1): console printing and bare printStackTrace() are
+			forbidden; use the class slf4j LOG instead. Any use of System.out / System.err is reported, as is
+			printStackTrace() and printStackTrace(System.xxx). printStackTrace(writer) is a legitimate way to
+			build stack text and is not matched. Commented-out lines are ignored.
+			Files that still carry the pattern are listed in marlo-checkstyle-suppressions.xml. -->
+			<module name="RegexpSinglelineJava">
+				<property name="id" value="LoggingPrintStackTrace"/>
+				<property name="format" value="\.printStackTrace\(\s*(\)|System\b)"/>
+				<property name="ignoreComments" value="true"/>
+				<property name="message" value="Do not call printStackTrace(); log the exception with the slf4j LOG."/>
+			</module>
+			<module name="RegexpSinglelineJava">
+				<property name="id" value="LoggingSystemOut"/>
+				<property name="format" value="System\.(out|err)\b"/>
+				<property name="ignoreComments" value="true"/>
+				<property name="message" value="Do not use System.out/err; use the slf4j LOG."/>
 			</module>
 
 		</module>

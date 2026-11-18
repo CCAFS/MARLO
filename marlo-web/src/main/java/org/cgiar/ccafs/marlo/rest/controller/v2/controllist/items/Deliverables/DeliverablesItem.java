@@ -523,7 +523,10 @@ public class DeliverablesItem<T> {
               }
             }
           } catch (Exception e) {
-            LOG.error("Could not store the WOS metadata of the deliverable", e);
+            // Legitimate fallback: the WOS and altmetric data is optional enrichment from an external service,
+            // fetched after the deliverable was saved, so failing the request here would answer 500 for a record
+            // that exists, and a client retry would create a duplicate.
+            LOG.error("Could not store the WOS metadata of deliverable {}", deliverablesID, e);
           }
         }
 
@@ -896,7 +899,10 @@ public class DeliverablesItem<T> {
               }
             }
           } catch (Exception e) {
-            LOG.error("Could not store the WOS metadata of the deliverable", e);
+            // Legitimate fallback: the WOS and altmetric data is optional enrichment from an external service,
+            // fetched after the deliverable was saved, so failing the request here would answer 500 for a record
+            // that exists, and a client retry would create a duplicate.
+            LOG.error("Could not store the WOS metadata of deliverable {}", deliverablesID, e);
           }
         }
       }
@@ -1198,13 +1204,13 @@ public class DeliverablesItem<T> {
         }
 
 
-      } catch (Exception e) {
-        LOG.error("Could not create the deliverable", e);
-        fieldErrors.add(new FieldErrorDTO("createDeliverable", "Deliverable", "ERROR Creating info"));
-        throw new MARLOFieldValidationException("Field Validation errors", "",
-          fieldErrors.stream()
-            .sorted(Comparator.comparing(FieldErrorDTO::getField, Comparator.nullsLast(Comparator.naturalOrder())))
-            .collect(Collectors.toList()));
+      } catch (MARLOFieldValidationException e) {
+        // The 400 answer for a phase without publications is a client answer, not a failure of this method
+        throw e;
+      } catch (RuntimeException e) {
+        // A server failure: ExceptionTranslator answers 500 and logs it once, with this cause. The message is fixed
+        // because the cause can carry internal class, method and entity names that must not reach the client.
+        throw new IllegalStateException("Could not read the deliverables of the requested phase", e);
       }
 
     } else {
@@ -1751,7 +1757,10 @@ public class DeliverablesItem<T> {
 
             }
           } catch (Exception e) {
-            LOG.error("Could not store the WOS metadata of the deliverable", e);
+            // Legitimate fallback: the WOS and altmetric data is optional enrichment from an external service,
+            // fetched after the deliverable was saved, so failing the request here would answer 500 for an update that
+            // was already applied.
+            LOG.error("Could not store the WOS metadata of deliverable {}", idDeliverableDB, e);
           }
         }
 
@@ -2247,7 +2256,10 @@ public class DeliverablesItem<T> {
               }
             }
           } catch (Exception e) {
-            LOG.error("Could not store the WOS metadata of the deliverable", e);
+            // Legitimate fallback: the WOS and altmetric data is optional enrichment from an external service,
+            // fetched after the deliverable was saved, so failing the request here would answer 500 for an update that
+            // was already applied.
+            LOG.error("Could not store the WOS metadata of deliverable {}", idDeliverableDB, e);
           }
         }
 
