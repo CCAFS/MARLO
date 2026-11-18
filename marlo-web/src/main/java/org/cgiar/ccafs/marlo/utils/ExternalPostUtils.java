@@ -144,8 +144,8 @@ public class ExternalPostUtils {
       if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
         rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       } else {
-        LOG.error("The {} request to {} answered {} {}. Sent parameters: {}", requestMethod, endpoint,
-          connection.getResponseCode(), connection.getResponseMessage(), parameters);
+        LOG.error("The {} request to {} answered {} {} ({} bytes sent)", requestMethod, endpoint,
+          connection.getResponseCode(), connection.getResponseMessage(), parameters.length());
         if (connection.getErrorStream() != null) {
           rd = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
         } else if (connection.getInputStream() != null) {
@@ -204,8 +204,8 @@ public class ExternalPostUtils {
       if (connection.getResponseCode() >= 200 && connection.getResponseCode() < 300) {
         rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       } else {
-        LOG.error("The {} request to {} answered {} {}. Sent parameters: {}", requestMethod, endpoint,
-          connection.getResponseCode(), connection.getResponseMessage(), parameters);
+        LOG.error("The {} request to {} answered {} {} ({} bytes sent)", requestMethod, endpoint,
+          connection.getResponseCode(), connection.getResponseMessage(), parameters.length());
         if (connection.getErrorStream() != null) {
           rd = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
         } else if (connection.getInputStream() != null) {

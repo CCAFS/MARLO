@@ -90,7 +90,7 @@ public class AESConvert {
       return encryptedText;
 
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("The value could not be encrypted", e);
     }
     return null;
   }
