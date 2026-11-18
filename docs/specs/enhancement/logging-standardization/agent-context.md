@@ -195,9 +195,10 @@ grep -rnE 'System\.(out|err)\.print|\.printStackTrace\(' --include='*.java' marl
   `action/projects/PartnersSaveAction.java:574` (JUL call although the class already has an SLF4J `LOG`).
 
 **Trap — two `ExternalPostUtils` with the same FQN.** `org.cgiar.ccafs.marlo.utils.ExternalPostUtils` exists in
-both `marlo-utils` and `marlo-web`. The `marlo-web` copy is the live one: Tomcat loads `WEB-INF/classes` before
-`WEB-INF/lib`. Since `e5e20e5ff9` both log through SLF4J and log the body size, never the body (it carries the
-requester's email for CLARISA partner requests). Change both copies together.
+both `marlo-utils` and `marlo-web`. `marlo-web/pom.xml` sets `archiveClasses`, so both end up as jars side by side
+in `WEB-INF/lib` (`WEB-INF/classes` is empty) and which one loads depends on jar order. Since `e5e20e5ff9` both
+log through SLF4J and log the body size, never the body (it carries the requester's email for CLARISA partner
+requests). Change both copies together.
 
 ## 7. Change Recipes
 
