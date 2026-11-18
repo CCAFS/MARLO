@@ -80,6 +80,10 @@
 .ci-lockBtn:hover,
 .ci-lockBtn[aria-expanded="true"] { background: #F2F5F8; }
 
+/* ---------- Footer ---------- */
+
+.ci-foot__add { margin-left: auto; }
+
 /* ---------- Mapped items panel ---------- */
 
 .ci-rel {
