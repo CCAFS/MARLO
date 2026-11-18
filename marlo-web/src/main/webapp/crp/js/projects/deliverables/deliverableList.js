@@ -1,403 +1,368 @@
-var table;
-var previusTable;
-
+/**
+ * Project / cluster deliverables list (A2-2607 redesign).
+ *
+ * deliverableList.ftl renders every deliverable of both sets (this phase and the
+ * previous ones) as a row with its filter keys in data-* attributes. This script
+ * owns what is shown: the active set, search, status chips, sub-category and year
+ * filters, sorting and pagination. The view state is kept per
+ * project in sessionStorage so coming back from a deliverable lands where it left.
+ */
 $(document).ready(function() {
+  var $root = $('[data-dlv]');
+  if(!$root.length) {
+    return;
+  }
 
-  var $deliverableList = $('.currentDeliverables table.deliverableList');
-  var $previusDdeliverableList = $('.previousDeliverables table.deliverableList');
+  var STATUS_ORDER = ['c', 'o', 'e', 'r', 'x', ''];
+  var STORAGE_KEY = 'dlv:' + $root.data('projectId');
+  var $body = $root.find('[data-dlv-body]');
+  var $chips = $root.find('[data-dlv-chips]');
+  var $sub = $root.find('[data-dlv-sub]');
+  var $year = $root.find('[data-dlv-year]');
+  var $search = $root.find('[data-dlv-search]');
+  var $size = $root.find('[data-dlv-size]');
+  var $pager = $root.find('[data-dlv-pager]');
 
-  $(".fairDiagram").on("click", openDialog);
+  var rows = $body.find('[data-dlv-row]').map(function() {
+    var $row = $(this);
+    return {
+      $el: $row,
+      set: $row.attr('data-set'),
+      id: parseInt($row.attr('data-id'), 10) || 0,
+      title: $row.attr('data-title') || '',
+      status: $row.attr('data-status') || '',
+      year: $row.attr('data-year') || '',
+      sub: $row.attr('data-sub') || '',
+      search: ($row.attr('data-search') || '').toLowerCase()
+    };
+  }).get();
 
-  $(".currentDeliverables .deliverableList a").on("click", saveSearch);
-
-  $(".previousDeliverables .deliverableList a").on("click", saveSearch2);
-
-
-  
-
-  table = $deliverableList.DataTable({
-      "bPaginate": true, // This option enable the table pagination
-      "bLengthChange": true, // This option disables the select table size option
-      "bFilter": true, // This option enable the search
-      "bSort": true, // this option enable the sort of contents by columns
-      "bAutoWidth": false, // This option enables the auto adjust columns width
-      "iDisplayLength": 50, // Number of rows to show on the table
-      language:{
-        searchPlaceholder: "Search..."
+  var defaults = {
+      tab: 'current',
+      q: '',
+      status: 'all',
+      sub: '',
+      year: '',
+      sort: {
+          key: 'year',
+          dir: 1
       },
-      "fnDrawCallback": function() {
-        // This function locates the add activity button at left to the filter box
-        var table = $(this).parent().find("table");
-        if($(table).attr("id") == "currentActivities") {
-          $("#currentActivities_filter").prepend($("#addActivity"));
-        }
-      },
-      "order": [
-        [
-            3, 'asc'
-        ]
-      ],
-      aoColumnDefs: [
-          {
-              bSortable: true,
-              aTargets: [
-                -1
-              ]
-          }, {
-              sType: "natural",
-              aTargets: [
-                0
-              ]
-          }
-      ]
-  });
+      page: 1,
+      size: 25
+  };
+  var state = $.extend(true, {}, defaults, readState());
 
-//hide colums when inizializate table  
-var columnaNames = ['Duplicated','Responsible person']; 
-
-for (var i = 0; i < columnaNames.length; i++) {
-  var columnaName = columnaNames[i];
-  var columns = table.columns().indexes();
-  var columnIndex = -1; 
-
-  columns.each(function(index) {
-    var name = table.column(index).header().textContent.trim();
-    if (name === columnaName) {
-      columnIndex = index;
-      return false;
-    }
-  });
-
-  var column = table.column(columnIndex);
-  if (columnIndex !== -1) {
-    column.visible(false);
+  // Text with {0}, {1}... placeholders, as global.properties writes them
+  function format(text, args) {
+    return String(text || '').replace(/\{(\d+)\}/g, function(match, index) {
+      return args[index] !== undefined ? args[index] : match;
+    });
   }
-}
 
+  function readState() {
+    try {
+      return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY)) || {};
+    } catch(e) {
+      return {};
+    }
+  }
 
+  function saveState() {
+    try {
+      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch(e) {
+      // Storage blocked (private mode): the list still works, it just does not remember
+    }
+  }
 
-$('.containerCurrentDeliverables input[type="checkbox"]').change(function() {
-  var checkbox = $(this);
-  var isChecked = checkbox.prop('checked');
-  var buttonAddColumn = checkbox.closest('.buttonAddColumn');
+  function inSet(row) {
+    return row.set === state.tab;
+  }
 
-  buttonAddColumn.toggleClass('checked', isChecked);
+  // Search, sub-category and year: the base the status chips count from
+  function matchesBase(row) {
+    var q = $.trim(state.q).toLowerCase();
+    return inSet(row) && (!q || row.search.indexOf(q) !== -1) && (!state.sub || row.sub === state.sub)
+      && (!state.year || row.year === state.year);
+  }
 
-  if (isChecked) {
-    buttonAddColumn.find('label').css('font-weight', '500')
-    var columnaNombre = buttonAddColumn.find('label').text();
-    var columnas = table.columns().indexes();
-    var columnaIndex = -1;
+  function compare(a, b) {
+    var key = state.sort.key;
+    var x, y;
+    if(key === 'id') {
+      x = a.id;
+      y = b.id;
+    } else if(key === 'title') {
+      x = a.title;
+      y = b.title;
+    } else if(key === 'status') {
+      x = STATUS_ORDER.indexOf(a.status);
+      y = STATUS_ORDER.indexOf(b.status);
+    } else {
+      x = a.year;
+      y = b.year;
+    }
+    if(x === y) {
+      return (a.id - b.id) * state.sort.dir;
+    }
+    return (x > y ? 1 : -1) * state.sort.dir;
+  }
 
-    columnas.each(function(index) {
-      var nombre = table.column(index).header().textContent.trim();
-      if (nombre === columnaNombre) {
-        columnaIndex = index;
-        return false;
+  function uniqueSorted(values) {
+    return $.grep(values, function(value, index) {
+      return value && $.inArray(value, values) === index;
+    }).sort();
+  }
+
+  // Options follow the active set; a stale choice from the other set is dropped
+  function fillSelect($select, values, current) {
+    $select.find('option').not(':first').remove();
+    $.each(values, function(i, value) {
+      $('<option>').val(value).text(value).appendTo($select);
+    });
+    if($.inArray(current, values) === -1) {
+      current = '';
+    }
+    $select.val(current);
+    return current;
+  }
+
+  function renderChips(base) {
+    var counts = {
+      all: base.length
+    };
+    $.each(base, function(i, row) {
+      counts[row.status] = (counts[row.status] || 0) + 1;
+    });
+    $chips.empty();
+    $.each(['all'].concat(STATUS_ORDER), function(i, key) {
+      if(key !== 'all' && !counts[key] && state.status !== key) {
+        return;
       }
+      var isOn = state.status === key;
+      var label = $chips.attr('data-label-' + (key === 'all' ? 'all' : (key || 'none')));
+      var $chip = $('<button type="button" class="dlv-chip">').toggleClass('is-on', isOn).attr('aria-pressed', isOn)
+        .attr('data-dlv-status', key);
+      if(key !== 'all') {
+        $('<span class="dlv-dot">').addClass('dlv-dot--' + (key || 'none')).appendTo($chip);
+      }
+      $chip.append(document.createTextNode(label));
+      $('<span class="dlv-chip__count">').text(counts[key] || 0).appendTo($chip);
+      $chips.append($chip);
+    });
+  }
+
+  function renderPager(pages, page) {
+    var $prev = $('<button type="button" class="dlv-pager__btn" data-dlv-page="prev">')
+      .attr('aria-label', $pager.attr('data-label-prev')).prop('disabled', page <= 1)
+      .html('<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M8 2.5 4.5 6 8 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+    var $next = $('<button type="button" class="dlv-pager__btn" data-dlv-page="next">')
+      .attr('aria-label', $pager.attr('data-label-next')).prop('disabled', page >= pages)
+      .html('<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2.5 7.5 6 4 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>');
+    $pager.empty().append($prev);
+    var last = 0;
+    for(var n = 1; n <= pages; n++) {
+      // First, last and the two around the current page; the rest collapse into a gap
+      if(n !== 1 && n !== pages && Math.abs(n - page) > 1) {
+        continue;
+      }
+      if(last && n - last > 1) {
+        $pager.append('<span class="dlv-pager__gap" aria-hidden="true">…</span>');
+      }
+      var $btn = $('<button type="button" class="dlv-pager__btn">').attr('data-dlv-page', n).text(n);
+      if(n === page) {
+        $btn.attr('aria-current', 'page');
+      }
+      $pager.append($btn);
+      last = n;
+    }
+    $pager.append($next);
+  }
+
+  function render() {
+    var setRows = $.grep(rows, inSet);
+    state.sub = fillSelect($sub, uniqueSorted($.map(setRows, function(row) {
+      return row.sub;
+    })), state.sub);
+    state.year = fillSelect($year, uniqueSorted($.map(setRows, function(row) {
+      return row.year;
+    })), state.year);
+
+    var base = $.grep(rows, matchesBase);
+    var filtered = $.grep(base, function(row) {
+      return state.status === 'all' || row.status === state.status;
+    }).sort(compare);
+    var pages = Math.max(1, Math.ceil(filtered.length / state.size));
+    state.page = Math.min(Math.max(1, state.page), pages);
+    var from = (state.page - 1) * state.size;
+    var visible = filtered.slice(from, from + state.size);
+
+    // Re-append in sorted order, then show only the current page
+    $.each(rows, function(i, row) {
+      row.$el.prop('hidden', true);
+    });
+    $.each(filtered, function(i, row) {
+      $body.append(row.$el);
+    });
+    $.each(visible, function(i, row) {
+      row.$el.prop('hidden', false);
     });
 
-    if (columnaIndex !== -1) {
-      var columna = table.column(columnaIndex);
-      columna.visible(true);
-    }
-  } else {
-    buttonAddColumn.find('label').css('font-weight', '200')
-    var columnaNombre = buttonAddColumn.find('label').text();
-    var columnas = table.columns().indexes();
-    var columnaIndex = -1;
-
-    columnas.each(function(index) {
-      var nombre = table.column(index).header().textContent.trim();
-      if (nombre === columnaNombre) {
-        columnaIndex = index;
-        return false;
-      }
+    // Tabs, set-only blocks and column headers
+    $root.find('[data-dlv-tab]').each(function() {
+      var isOn = $(this).attr('data-dlv-tab') === state.tab;
+      $(this).toggleClass('is-on', isOn).attr('aria-selected', isOn);
+    });
+    $root.find('[data-dlv-only]').each(function() {
+      $(this).prop('hidden', $(this).attr('data-dlv-only') !== state.tab);
+    });
+    $root.find('[data-dlv-sort-col]').each(function() {
+      var key = $(this).attr('data-dlv-sort-col');
+      $(this).attr('aria-sort', key === state.sort.key ? (state.sort.dir === 1 ? 'ascending' : 'descending') : 'none');
     });
 
-    if (columnaIndex !== -1) {
-      var columna = table.column(columnaIndex);
-      columna.visible(false);
-    }
+    renderChips(base);
+
+    // Empty states: nothing in the set at all, or nothing left after filtering
+    var setEmpty = setRows.length === 0;
+    $root.find('[data-dlv-none]').each(function() {
+      $(this).prop('hidden', !setEmpty || $(this).attr('data-dlv-none') !== state.tab);
+    });
+    $root.find('[data-dlv-empty]').prop('hidden', setEmpty || filtered.length > 0);
+    $root.find('[data-dlv-clear-filters]').prop('hidden',
+      state.status === 'all' && !state.sub && !state.year && !$.trim(state.q));
+
+    $root.find('[data-dlv-showing]').text(filtered.length ? format($root.attr('data-showing'), [
+        from + 1, from + visible.length, filtered.length
+    ]) : $root.attr('data-no-entries'));
+    $size.val(String(state.size));
+    renderPager(pages, state.page);
+
+    saveState();
   }
-});
 
+  function closeConfirms() {
+    $body.find('[data-dlv-confirm]').prop('hidden', true);
+    $body.find('[data-dlv-remove]').attr('aria-expanded', false);
+    $body.find('.dlv-row.is-confirming').removeClass('is-confirming');
+  }
 
+  // ---------- Events ----------
 
-  previusTable = $previusDdeliverableList.DataTable({
-    "bPaginate": true, // This option enable the table pagination
-    "bLengthChange": true, // This option disables the select table size option
-    "bFilter": true, // This option enable the search
-    "bSort": true, // this option enable the sort of contents by columns
-    "bAutoWidth": false, // This option enables the auto adjust columns width
-    "iDisplayLength": 50, // Number of rows to show on the table
-    language:{
-      searchPlaceholder: "Search..."
-    },
-    "fnDrawCallback": function() {
-      // This function locates the add activity button at left to the filter box
-      var table = $(this).parent().find("table");
-      if($(table).attr("id") == "currentActivities") {
-        $("#currentActivities_filter").prepend($("#addActivity"));
-      }
-    },
-    "order": [
-      [
-          3, 'asc'
-      ]
-    ],
-    aoColumnDefs: [
-        {
-            bSortable: true,
-            aTargets: [
-              -1
-            ]
-        }, {
-            sType: "natural",
-            aTargets: [
-              0
-            ]
-        }
-    ]
-});
+  $root.on('click', '[data-dlv-tab]', function() {
+    state.tab = $(this).attr('data-dlv-tab');
+    state.status = 'all';
+    state.page = 1;
+    closeConfirms();
+    render();
+  });
 
-//hide colums when inizializate table  
-var columnaNames2 = ['Duplicated','Responsible person']; 
-
-for (var i = 0; i < columnaNames2.length; i++) {
-  var columnaName2 = columnaNames2[i];
-  var columns2 = previusTable.columns().indexes();
-  var columnIndex2 = -1; 
-  columns2.each(function(index) {
-    var name2 = previusTable.column(index).header().textContent.trim();
-    if (name2 === columnaName2) {
-      columnIndex2 = index;
-      return false;
+  // The form around the list has no submit of its own: Enter must not post it
+  $search.val(state.q).on('input', function() {
+    state.q = this.value;
+    state.page = 1;
+    render();
+  }).on('keydown', function(e) {
+    if(e.key === 'Enter') {
+      e.preventDefault();
     }
   });
 
-  var column2 = previusTable.column(columnIndex2);
-  if (columnIndex2 !== -1) {
-    column2.visible(false);
-  }
-}
-
-$('.containerpreviousDeliverables input[type="checkbox"]').change(function() {
-  var checkbox = $(this);
-  var isChecked = checkbox.prop('checked');
-  var buttonAddColumn = checkbox.closest('.buttonAddColumn');
-
-  buttonAddColumn.toggleClass('checked', isChecked);
-
-  if (isChecked) {
-    buttonAddColumn.find('label').css('font-weight', '500')
-    var columnaNombre = buttonAddColumn.find('label').text();
-    var columnas = previusTable.columns().indexes();
-    var columnaIndex = -1;
-
-    columnas.each(function(index) {
-      var nombre = previusTable.column(index).header().textContent.trim();
-      if (nombre === columnaNombre) {
-        columnaIndex = index;
-        return false;
-      }
-    });
-
-    if (columnaIndex !== -1) {
-      var columna = previusTable.column(columnaIndex);
-      columna.visible(true);
-    }
-  } else {
-    buttonAddColumn.find('label').css('font-weight', '200')
-    var columnaNombre = buttonAddColumn.find('label').text();
-    var columnas = previusTable.columns().indexes();
-    var columnaIndex = -1;
-
-    columnas.each(function(index) {
-      var nombre = previusTable.column(index).header().textContent.trim();
-      if (nombre === columnaNombre) {
-        columnaIndex = index;
-        return false;
-      }
-    });
-
-    if (columnaIndex !== -1) {
-      var columna = previusTable.column(columnaIndex);
-      columna.visible(false);
-    }
-  }
-});
-
-
-
-//Add styles to the table
-  var iconSearch = $("<div></div>").addClass("iconSearch");
-  var containerKeywords = $("<div></div>").addClass("containerKeywords");
-  var containerKeywords2 = $("<div></div>").addClass("containerKeywords");
-  var divDataTables_filter = $('.dataTables_filter').parent();
-  var divDataTables_filter2 = $('.previousDeliverables .dataTables_filter').parent();
-  var keywords = JSON.parse(window.localStorage.getItem('keywords'));
-  var keywordsPreviousDeliverables = JSON.parse(window.localStorage.getItem('keywordsPreviousDeliverables'));
-  var pTag = $('<p>').text('Last searches:');
-  var pTag2 = $('<p>').text('Last searches:');
-  var containerLastSearches = $('<div></div>').addClass("containerLastSearches");
-  var containerLastSearches2 = $('<div></div>').addClass("containerLastSearches");
-  iconSearch.append('<img src="' + baseUrl + '/global/images/search_outline.png" alt="Imagen"  style="width: 24px; margin: auto;" >');
-  iconSearch.prependTo(divDataTables_filter);
-  var divDataTables_length =$('.dataTables_length').parent();
-  divDataTables_length.css("position", "absolute");
-  divDataTables_length.css("bottom", "8px");
-  divDataTables_length.css("margin-left", "45%");
-  divDataTables_length.css("z-index", "1");
-  divDataTables_length.css("width", "25%");
-  pTag.addClass("LastSearches");
-  pTag2.addClass("LastSearches");
-
-  if(keywords){
-    containerLastSearches.insertAfter(divDataTables_filter.parent().parent().children().first());
-    for (var i = 0; i < keywords.length; i++) {
-      var keywordsDiv = $("<div></div>").addClass("keywords");
-      keywordsDiv.text(keywords[i]);
-      keywordsDiv.prependTo(containerKeywords);  
-      containerKeywords.prependTo(containerLastSearches);     
-    }
-    pTag.prependTo(containerLastSearches);
-  }else{
-    $('.currentDeliverables .iconSearch').parent().css("margin", "18px 0 18px 0px")
-  }
-
-
-  if(keywordsPreviousDeliverables){
-    containerLastSearches2.insertAfter(divDataTables_filter2.parent().parent().children().first());
-    for (var i = 0; i < keywordsPreviousDeliverables.length; i++) {
-      var keywordsDiv2 = $("<div></div>").addClass("keywords");
-      keywordsDiv2.text(keywordsPreviousDeliverables[i]);
-      keywordsDiv2.prependTo(containerKeywords2);  
-      containerKeywords2.prependTo(containerLastSearches2);     
-    }
-    pTag2.prependTo(containerLastSearches2);
-  }else{
-    $('.previousDeliverables .iconSearch').parent().css("margin", "18px 0 18px 0px")
-  }
-
-  
-
-$('.currentDeliverables .keywords').on("click", fillInput);
-$('.previousDeliverables .keywords').on("click", fillInpu2);
-
-
-});
-
-function openDialog() {
-  $("#diagramPopup").dialog({
-      title: 'FAIR Diagram',
-      width: '90%',
-      /* heigth: '100%', */
-      modal: true,
-      closeText: ""
+  $chips.on('click', '[data-dlv-status]', function() {
+    state.status = $(this).attr('data-dlv-status');
+    state.page = 1;
+    render();
   });
-}
 
-function fillInput() {
+  $sub.on('change', function() {
+    state.sub = this.value;
+    state.page = 1;
+    render();
+  });
 
-  // $(".keywords").removeClass('active');
+  $year.on('change', function() {
+    state.year = this.value;
+    state.page = 1;
+    render();
+  });
 
-  if ($(this).hasClass('active')) {
-    $(".keywords").removeClass('active');
-  } else {
-    $(".keywords").removeClass('active');
-    $(this).addClass('active');
-  }
+  $root.on('click', '[data-dlv-sort]', function() {
+    var key = $(this).attr('data-dlv-sort');
+    state.sort = {
+        key: key,
+        dir: state.sort.key === key ? -state.sort.dir : 1
+    };
+    state.page = 1;
+    render();
+  });
 
-  var inputValue = $(this).text();
-  var input = $('.currentDeliverables #deliverables_filter input');
-  
-  if(inputValue == input.val()){
-    input.val('');
-    table.search('').draw();
-  }else{
-    input.val(inputValue);
-    table.search(inputValue).draw();
-    
-  }
-  
-}
+  $size.on('change', function() {
+    state.size = parseInt(this.value, 10) || defaults.size;
+    state.page = 1;
+    render();
+  });
 
-function fillInpu2() {
+  $pager.on('click', '[data-dlv-page]', function() {
+    var target = $(this).attr('data-dlv-page');
+    state.page = target === 'prev' ? state.page - 1 : target === 'next' ? state.page + 1 : parseInt(target, 10);
+    render();
+    $root.find('.dlv-table')[0].scrollIntoView({
+      block: 'start',
+      behavior: 'smooth'
+    });
+  });
 
-  // $(".keywords").removeClass('active');
-  if ($(this).hasClass('active')) {
-    $(".previousDeliverables .keywords").removeClass('active');
-  } else {
-    $(".previousDeliverables .keywords").removeClass('active');
-    $(this).addClass('active');
-  }
+  // Clear filters, from the filter row or the empty state: search, status, sub-category and year
+  $root.on('click', '[data-dlv-clear]', function() {
+    state.q = '';
+    state.status = 'all';
+    state.sub = '';
+    state.year = '';
+    state.page = 1;
+    $search.val('');
+    render();
+  });
 
-  var inputValue = $(this).text();
-  var input = $('.previousDeliverables #deliverables_filter input');
-  console.log(input.val())
-  
-  if(inputValue == input.val()){
-    input.val('');
-    previusTable.search('').draw();
-  }else{
-    input.val(inputValue);
-    previusTable.search(inputValue).draw();
-    
-  }
-  
-}
+  // Delete: confirm inline, the Delete link then goes to deleteDeliverable.do
+  $body.on('click', '[data-dlv-remove]', function() {
+    var $row = $(this).closest('[data-dlv-row]');
+    var wasOpen = $(this).attr('aria-expanded') === 'true';
+    closeConfirms();
+    if(!wasOpen) {
+      $row.addClass('is-confirming');
+      $(this).attr('aria-expanded', true);
+      $row.find('[data-dlv-confirm]').prop('hidden', false).find('[data-dlv-keep]').trigger('focus');
+    }
+  });
+  $body.on('click', '[data-dlv-keep]', function() {
+    var $row = $(this).closest('[data-dlv-row]');
+    closeConfirms();
+    $row.find('[data-dlv-remove]').trigger('focus');
+  });
 
+  // Legend toggle
+  $root.on('click', '[data-dlv-legend-toggle]', function() {
+    var open = $(this).attr('aria-expanded') !== 'true';
+    $(this).attr('aria-expanded', open).text($(this).attr(open ? 'data-label-less' : 'data-label-more'));
+    $root.find('#dlv-legend').prop('hidden', !open);
+  });
 
+  // "click here" in the FAIR explanation opens the FAIR diagram
+  $root.find('.dlv-legend__fair u').attr({
+      role: 'button',
+      tabindex: 0
+  }).on('click keydown', function(e) {
+    if(e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+    e.preventDefault();
+    $('#diagramPopup').dialog({
+        title: $('#diagramPopup').attr('title'),
+        width: '90%',
+        modal: true,
+        closeText: ''
+    });
+  });
 
-function saveSearch() {
-  
-  var firstInput = $(this).parents().find('#deliverables_filter input:first');
-  var storedKeywordsJSON = window.localStorage.getItem('keywords');
-  var storedKeywords = [];
-
-  if (storedKeywordsJSON) {
-    storedKeywords = JSON.parse(storedKeywordsJSON);
-  }
-
-  // Add new keyword to array
-  if(firstInput.val() != null && firstInput.val() != "" && firstInput.val() != " " && storedKeywords.map(keyword => keyword.toLowerCase()).indexOf(firstInput.val().toLowerCase()) === -1){
-    storedKeywords.push(firstInput.val());
-  }
-
-  // Check if array exceeds 5 element limit
-  if (storedKeywords.length > 5) {
-    // Delete the first element of the array
-    storedKeywords.shift();
-  }
-
-  // Save the updated fix to localStorage
-  var updatedKeywordsJSON = JSON.stringify(storedKeywords);
-  window.localStorage.setItem('keywords', updatedKeywordsJSON);
-}
-
-function saveSearch2() {
-  
-  var firstInput = $(this).parents().find('#deliverables_filter input:last');
-  var storedKeywordsJSON = window.localStorage.getItem('keywordsPreviousDeliverables');
-  var storedKeywords = [];
-
-  if (storedKeywordsJSON) {
-    storedKeywords = JSON.parse(storedKeywordsJSON);
-  }
-
-  // Add new keyword to array
-  if(firstInput.val() != null && firstInput.val() != "" && firstInput.val() != " " && storedKeywords.map(keyword => keyword.toLowerCase()).indexOf(firstInput.val().toLowerCase()) === -1){
-    storedKeywords.push(firstInput.val());
-  }
-
-  // Check if array exceeds 5 element limit
-  if (storedKeywords.length > 5) {
-    // Delete the first element of the array
-    storedKeywords.shift();
-  }
-
-  // Save the updated fix to localStorage
-  var updatedKeywordsJSON = JSON.stringify(storedKeywords);
-  window.localStorage.setItem('keywordsPreviousDeliverables', updatedKeywordsJSON);
-}
+  render();
+});

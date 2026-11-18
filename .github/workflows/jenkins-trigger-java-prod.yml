@@ -1,9 +1,9 @@
 name: Trigger Jenkins Job Java 17 New Server (PROD)
 
+# Automatic runs on push to main were removed at the MARLO PROD cutover: pushes to main are built by marlo-prod-ci.yml
+# and deployed by the Jenkins CD job marlo-java-17-docker-machine62-cd. Kept as workflow_dispatch to start the legacy job
+# marlo-java-17-docker-machine62 manually (recovery).
 on:
-  push:
-    branches:
-      - "main"
   workflow_dispatch:
 
 jobs:

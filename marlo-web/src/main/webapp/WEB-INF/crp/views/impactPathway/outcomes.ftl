@@ -12,7 +12,7 @@
   ]
 /]
 [#assign customCSS = [
-  "${baseUrlMedia}/css/impactPathway/outcomes.css?20261008",
+  "${baseUrlMedia}/css/impactPathway/outcomes.css?20261104",
   "${baseUrlCdn}/global/css/impactGraphic.css",
   "//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css"
   ]
@@ -467,13 +467,17 @@
 
       [#if isAiccraUI]
         [#-- =================== Disaggregations (design table) =================== --]
+        [#-- The yes/no question of the deliverable and innovation forms: the question with its note
+             under it on the left, the answer on the right (design system Panel + SegmentedControl). --]
         <div class="opi-panel opi-dis__ask">
-          <span class="opi-panel__label">[@s.text name="outcomes.disaggregations.question"/]</span>
+          <span class="opi-dis__askText">
+            <span class="opi-panel__label">[@s.text name="outcomes.disaggregations.question"/]</span>
+            <span class="opi-panel__note" data-opi-disnote data-yes="[@s.text name="outcomes.disaggregations.note.yes"/]" data-no="[@s.text name="outcomes.disaggregations.note.no"/]">[#if hasDis][@s.text name="outcomes.disaggregations.note.yes"/][#else][@s.text name="outcomes.disaggregations.note.no"/][/#if]</span>
+          </span>
           <span class="opi-seg" role="group">
             <button type="button" class="opi-seg__btn opi-dis__yes ${hasDis?string('is-on','')}" aria-pressed="${hasDis?string}" [#if !editable]disabled[/#if]>[@s.text name="outcomes.disaggregations.yes"/]</button>
             <button type="button" class="opi-seg__btn opi-dis__no ${hasDis?string('','is-on')}" aria-pressed="${(!hasDis)?string}" [#if !editable]disabled[/#if]>[@s.text name="outcomes.disaggregations.no"/]</button>
           </span>
-          <span class="opi-panel__note" data-opi-disnote data-yes="[@s.text name="outcomes.disaggregations.note.yes"/]" data-no="[@s.text name="outcomes.disaggregations.note.no"/]">[#if hasDis][@s.text name="outcomes.disaggregations.note.yes"/][#else][@s.text name="outcomes.disaggregations.note.no"/][/#if]</span>
         </div>
 
         <div class="opi-block opi-dis" style="display:${hasDis?string('flex','none')}">
@@ -489,8 +493,8 @@
               [#-- Marked on the column, not on every cell: the grid is compact and the
                    rule is the same for each row. Deliberately not a .requiredTag --
                    opiCountMissing() resolves those against a field, and these have none. --]
-              <span>[@s.text name="outcomes.disaggregations.statement"/] <span class="red" aria-hidden="true">*</span></span>
-              <span>[@s.text name="outcomes.disaggregations.unit"/] <span class="red" aria-hidden="true">*</span></span>
+              <span>[@s.text name="outcomes.disaggregations.statement"/][#if editable] <span class="red" aria-hidden="true">*</span>[/#if]</span>
+              <span>[@s.text name="outcomes.disaggregations.unit"/][#if editable] <span class="red" aria-hidden="true">*</span>[/#if]</span>
               <span>[@s.text name="outcomes.disaggregations.rule"/]</span>
               <span></span>
             </div>

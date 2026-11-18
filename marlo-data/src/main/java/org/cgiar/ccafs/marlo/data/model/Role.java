@@ -101,47 +101,17 @@ public class Role extends MarloBaseEntity implements java.io.Serializable {
 
   }
 
-  public String getAiccraAcronymDimanic() {
-    String acronym = this.getAcronym();
-
-
-    if (this.getCrp() != null) {
-      switch (this.getAcronym()) {
-        case "PL":
-          acronym = "Cluster Leader";
-          break;
-        case "PC":
-          acronym = "Cluster Coordinator";
-          break;
-        case "PMU":
-          acronym = "PMC";
-          break;
-
-        case "FPL":
-          acronym = "Theme Leader";
-          break;
-        case "FPM":
-          acronym = "Theme Manager";
-          break;
-
-        case "CP":
-          acronym = "Contact Point";
-          break;
-        case "G":
-          acronym = "Guest";
-          break;
-        default:
-          if (this.getDescription() != null && !this.getDescription().isEmpty()) {
-            acronym = this.getDescription();
-          } else {
-            acronym = this.getAcronym();
-          }
-          break;
-      }
+  /**
+   * Fallback label of the role, used when the properties define no role.acronym.&lt;acronym&gt; key: the description of
+   * the role when it has one, otherwise its acronym.
+   *
+   * @return the description, the acronym, or null when the role has neither.
+   */
+  public String getAcronymLabel() {
+    if (this.getDescription() != null && !this.getDescription().trim().isEmpty()) {
+      return this.getDescription();
     }
-
-    return acronym;
-
+    return this.getAcronym();
   }
 
   public GlobalUnit getCrp() {

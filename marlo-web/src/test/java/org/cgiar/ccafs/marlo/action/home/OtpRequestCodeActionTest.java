@@ -1441,12 +1441,14 @@ public class OtpRequestCodeActionTest {
   }
 
   @Test
-  public void aUnitWithoutACustomFileGetsTheGlobalTextsAndTheBareShell() {
+  public void aUnitWithoutACustomFileGetsTheGlobalTextsAndTheBaseShell() {
     World world = World.with(State.ELIGIBLE);
 
     world.call(State.ELIGIBLE.submitted(), "7", "true");
 
-    assertEquals("the base shell is {0}: the body as it is", "BODY", layoutOf(world.mails.get(0).texts));
+    String layout = layoutOf(world.mails.get(0).texts);
+    assertTrue("the base shell wraps the body: " + layout,
+      layout.contains("marlo-logo.png") && layout.contains("BODY"));
   }
 
   @Test

@@ -774,19 +774,12 @@ div#impactGraphic-fullscreen {
        its edge lines up with the timeline's rather than with the zoom buttons'.
        44px is exactly the controls row: 34px of button plus its 10px
        margin-bottom, measured, not guessed. If that row ever changes height
-       this has to change with it — the stacked layout below overrides it. */
+       this has to change with it — the stacked layout below overrides it.
+       It applies whether the column holds one panel or two. */
     margin-top: 44px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-
-  /* Two panels are tall enough to reach the frame's bottom edge on their own,
-     so the offset above stops aligning the column and just drops it past the
-     frame. Only a lone panel keeps it (A2-2453). Declared before the stacked
-     layout below, which puts both cases back on the same 12px. */
-  .scheduleCard__side--pair {
-    margin-top: 0;
   }
 
   .scheduleCard__next {

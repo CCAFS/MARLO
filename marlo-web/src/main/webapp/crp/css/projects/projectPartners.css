@@ -519,45 +519,47 @@
 }
 .ptn .ptn-chips__add select.countriesList:focus { outline: none; background: var(--ptn-info-bg); }
 
-/* Linked managing partners: checkbox-like toggle chips */
+/* Linked managing partners: the design system's CheckCard, as in the deliverable form's geographic scope
+   (40px, 500 13.5px, 16px box). The cards sit in a plain wrapping row; when the field fails validation the
+   unchosen cards take the error border instead of a box drawn around the group. */
 .ptn-toggles {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
-  padding: 6px;
-  min-height: 42px;
-  border: 1px solid var(--ptn-border-strong);
-  border-radius: var(--ptn-radius-sm);
-  background: #fff;
 }
-.ptn-toggles.is-invalid { border-color: var(--ptn-err-field); }
+.ptn-toggles.is-invalid .ptn-toggle:not(.is-on) { border-color: var(--ptn-err-field); }
 .ptn-toggles:empty { display: none; }
 .ptn-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 10px;
-  border: 1px solid #DDE3EA;
-  border-radius: 7px;
+  gap: 10px;
+  height: 40px;
+  padding: 0 16px 0 11px;
+  border: 1px solid var(--ptn-border-strong);
+  border-radius: 8px;
   background: #fff;
-  color: var(--ptn-ink-soft);
-  font: 600 12.5px Figtree, sans-serif;
+  color: var(--ptn-ink);
+  font: 500 13.5px Figtree, sans-serif;
   cursor: pointer;
 }
+.ptn-toggle:hover { border-color: #9AA4B0; }
+.ptn .ptn-toggle:focus-visible { outline: none; border-color: var(--ptn-primary); box-shadow: var(--ptn-focus-ring); }
 .ptn-toggle:disabled { cursor: default; }
+.ptn-toggle:disabled:not(.is-on):hover { border-color: var(--ptn-border-strong); }
 .ptn-toggle__box {
-  width: 13px;
-  height: 13px;
-  border-radius: 3px;
+  flex: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1.5px solid #9AA4B0;
   background: #fff;
 }
-.ptn-toggle__box svg { opacity: 0; }
+.ptn-toggle__box svg { width: 10px; height: 10px; opacity: 0; }
 .ptn-toggle.is-on { border-color: var(--ptn-primary); background: var(--ptn-info-bg); color: var(--ptn-primary-dark); }
 .ptn-toggle.is-on .ptn-toggle__box { border-color: var(--ptn-primary); background: var(--ptn-primary); }
 .ptn-toggle.is-on .ptn-toggle__box svg { opacity: 1; }

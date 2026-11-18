@@ -95,13 +95,14 @@ public class IpProjectContributionOverviewMySQLDAO extends AbstractMarloDAO<IpPr
 
   @Override
   public List<IpProjectContributionOverview> getProjectContributionOverviewsSynthesisGlobal(long mogId, int year,
-    long program) {
+    long program, long phaseId) {
     StringBuilder query = new StringBuilder();
     query.append("select * from ip_project_contribution_overviews where YEAR= ");
     query.append(year + " and output_id=" + mogId
       + " and is_active=1 and project_id in (SELECT projects.id FROM projects INNER JOIN ip_global_projects "
-      + "ON ip_global_projects.project_id = projects.id WHERE projects.is_active = 1 AND projects.reporting = 1 "
-      + "AND projects.is_location_global = 1)");
+      + "ON ip_global_projects.project_id = projects.id INNER JOIN projects_info "
+      + "ON projects_info.project_id = projects.id AND projects_info.id_phase = " + phaseId
+      + " WHERE projects.is_active = 1 AND projects_info.reporting = 1 AND projects_info.is_location_global = 1)");
 
 
     List<Map<String, Object>> rList = super.findCustomQuery(query.toString());

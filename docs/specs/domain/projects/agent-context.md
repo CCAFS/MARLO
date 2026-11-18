@@ -11,6 +11,9 @@ Use it to orient quickly, then inspect the actual source files for the target ro
 - Views: `marlo-web/src/main/webapp/WEB-INF/crp/views/projects/`
 - JavaScript: `marlo-web/src/main/webapp/crp/js/projects/`
 - i18n: `marlo-web/src/main/resources/global.properties` and `custom/*.properties`
+- Terminology: the `Project` entity is shown under each program's own label (*Project*, *Cluster*, *Technical
+  Implementation Team*…), chosen by the Global Unit's `crp_custom_file`. Read `REPO_IDENTITY.md` at the root when it
+  exists, then `docs/glossary.md`; never assume one program's label in code, data or specs
 - Formal spec: `docs/specs/domain/projects/requirements.md`, `design.md`, `task.md`
 
 ## Non-Negotiable Rules

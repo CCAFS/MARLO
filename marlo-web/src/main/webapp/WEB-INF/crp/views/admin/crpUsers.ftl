@@ -120,7 +120,7 @@
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if role.description?substring(0, 3) != "API"]
                 [#if usersList?has_content]
-                  <li role=""><a href="#role-${role.id}" aria-controls="role-${role.id}" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${role.aiccraAcronymDimanic}</a></li>
+                  <li role=""><a href="#role-${role.id}" aria-controls="role-${role.id}" role="tab" data-toggle="tab" title="${role.description} (${usersList?size})">${(action.getRoleLabel(role))!}</a></li>
                 [/#if]
               [/#if]
             [/#list]
@@ -209,7 +209,7 @@
               [#assign usersList = (action.getUsersByRole(role.id))![] /]
               [#if usersList?has_content]
                 <div role="tabpanel" class="tab-pane" id="role-${role.id}">
-                  <h4 class="sectionSubTitle ">${role.aiccraAcronymDimanic}</h4>
+                  <h4 class="sectionSubTitle ">${(action.getRoleLabel(role))!}</h4>
                   <p class="help-block">${usersList?size} user(s) with this role</p>
                   <table class="display table table-striped table-hover usersTable" width="100%">
                     <thead>

@@ -1,0 +1,137 @@
+# Reusable: hands a finished CI run over to its Jenkins CD job (asynchronous).
+#
+# Same mechanism as the existing jenkins-trigger*.yml workflows (POST to the job with JENKINS_USERNAME and
+# JENKINS_API_TOKEN), with these additions:
+#   * `buildWithParameters`: Jenkins receives exactly what to deploy (immutable image digests), the commit and
+#     the GitHub Actions run, instead of rebuilding a branch head.
+#   * The request must be ACCEPTED (HTTP 201 with a queue item); otherwise this job fails and the caller's
+#     CI-failure notification covers it. GitHub Actions does NOT wait for the deploy: Jenkins runs it and posts
+#     the final result to Slack. This job only tries, for a few seconds, to show the build number and link.
+#   * HTTPS only: every authenticated call is made with `--proto =https`, no redirect is followed, and the URLs
+#     are always built from the configured https base. The absolute URLs Jenkins returns (which may say
+#     http://) are never called: only the queue item number and the build number are taken from them.
+#   * The credentials reach curl through stdin, never on the command line or in the logs.
+#
+# Jenkins job contract (parameters):
+#   GIT_COMMIT_SHA  40-hex commit the images were built from
+#   GIT_REF         refs/heads/<branch>
+#   GH_RUN_ID       <run id>-<attempt>
+#   GH_RUN_URL      link to this GitHub Actions run attempt
+#   ARTIFACTS       space-separated <unit>=sha256:<64-hex>, e.g. "backend=sha256:… frontend=sha256:…"
+#   DRY_RUN         true: validate only, the target is not changed (the default of this workflow and of the job)
+# The Jenkins job only coordinates the deploy on the target and reports the result to Slack. It never builds,
+# tests or lints.
+name: jenkins-cd (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      jenkins-job:
+        description: Jenkins CD job name, e.g. prms-reporting-tool-dev-cd
+        type: string
+        required: true
+      environment:
+        description: GitHub Environment of the CD hand-over (deployment branch rules apply)
+        type: string
+        required: true
+      artifacts:
+        description: Space-separated <unit>=sha256:<64-hex> list
+        type: string
+        required: true
+      dry-run:
+        description: Ask Jenkins to validate only (no change on the target)
+        type: boolean
+        default: true
+      jenkins-url:
+        description: Jenkins base URL, https only
+        type: string
+        default: https://automation.prms.cgiar.org
+    secrets:
+      JENKINS_USERNAME:
+        required: true
+      JENKINS_API_TOKEN:
+        required: true
+    outputs:
+      build-url:
+        description: Link to the Jenkins build, or to its queue item when the build had not started yet
+        value: ${{ jobs.trigger.outputs.build-url }}
+
+permissions: {}
+
+jobs:
+  trigger:
+    name: trigger ${{ inputs.jenkins-job }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: ${{ inputs.environment }}
+    outputs:
+      build-url: ${{ steps.trigger.outputs.build-url }}
+    steps:
+      - name: Request the Jenkins CD build
+        id: trigger
+        env:
+          JENKINS_USERNAME: ${{ secrets.JENKINS_USERNAME }}
+          JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+          JENKINS_URL: ${{ inputs.jenkins-url }}
+          JOB: ${{ inputs.jenkins-job }}
+          ARTIFACTS: ${{ inputs.artifacts }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          COMMIT: ${{ github.sha }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          JENKINS_URL="${JENKINS_URL%/}"
+          [[ "$JENKINS_URL" =~ ^https://[A-Za-z0-9.-]+(:[0-9]+)?$ ]] || { echo "::error::the Jenkins URL must be https://<host> (fail closed)"; exit 1; }
+          [[ "$JOB" =~ ^[A-Za-z0-9._-]{1,128}$ ]] || { echo "::error::invalid Jenkins job name"; exit 1; }
+          [[ "$COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::invalid commit"; exit 1; }
+          [[ "$DRY_RUN" == "true" || "$DRY_RUN" == "false" ]] || { echo "::error::invalid dry-run"; exit 1; }
+          read -r -a items <<<"$ARTIFACTS"
+          [ "${#items[@]}" -gt 0 ] || { echo "::error::no artifacts to deploy (fail closed)"; exit 1; }
+          for item in "${items[@]}"; do
+            [[ "$item" =~ ^[a-z0-9][a-z0-9-]{0,31}=sha256:[0-9a-f]{64}$ ]] || { echo "::error::invalid artifact '$item'"; exit 1; }
+          done
+          run_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}"
+
+          # Authenticated call to "${JENKINS_URL}<path>". The path is always ours; curl refuses any protocol other
+          # than https (--proto =https) and follows no redirect (no -L). Credentials go through stdin.
+          jenkins() { # jenkins <path> <curl args...>
+            local path="$1"; shift
+            printf 'user = "%s:%s"\n' "$JENKINS_USERNAME" "$JENKINS_API_TOKEN" \
+              | curl --config - --proto '=https' --proto-redir '=https' --max-redirs 0 -sS --max-time 30 "$@" "${JENKINS_URL}${path}"
+          }
+
+          headers="$(mktemp)"
+          code="$(jenkins "/job/${JOB}/buildWithParameters" -o /dev/null -D "$headers" -w '%{http_code}' -X POST \
+            --data-urlencode "GIT_COMMIT_SHA=${COMMIT}" \
+            --data-urlencode "GIT_REF=${REF}" \
+            --data-urlencode "GH_RUN_ID=${run_id}" \
+            --data-urlencode "GH_RUN_URL=${run_url}" \
+            --data-urlencode "ARTIFACTS=${ARTIFACTS}" \
+            --data-urlencode "DRY_RUN=${DRY_RUN}")" || code="000"
+          if [ "$code" != "201" ]; then
+            echo "::error::Jenkins did not accept the build request (HTTP ${code}). 400: the job has no parameters yet; 401/403: credentials or permissions; 3xx: redirect refused (https only)."
+            exit 1
+          fi
+          # Only the queue item NUMBER is taken from the Location header; its scheme and host are ignored.
+          item="$(tr -d '\r' <"$headers" | awk 'tolower($1)=="location:"{print $2}' | tail -n 1 | sed -nE 's#^.*/queue/item/([0-9]+)/?$#\1#p')"
+          rm -f "$headers"
+          [[ "$item" =~ ^[0-9]+$ ]] || { echo "::error::Jenkins accepted the request but returned no queue item"; exit 1; }
+          echo "Jenkins accepted the request: queue item ${item}"
+
+          # Best effort, at most ~20 s: show the build number. The deploy result is Jenkins' job (Slack).
+          build_url="${JENKINS_URL}/queue/item/${item}/"
+          for _ in 1 2 3 4; do
+            sleep 5
+            number="$(jenkins "/queue/item/${item}/api/json?tree=executable%5Bnumber%5D" 2>/dev/null | jq -r '.executable.number // empty' 2>/dev/null || true)"
+            if [[ "$number" =~ ^[0-9]+$ ]]; then build_url="${JENKINS_URL}/job/${JOB}/${number}/"; break; fi
+          done
+          echo "Jenkins: ${build_url}"
+          echo "build-url=${build_url}" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Jenkins CD"
+            echo "- Job: \`${JOB}\` (DRY_RUN=${DRY_RUN})"
+            echo "- Build: ${build_url}"
+            echo "- Artifacts: \`${ARTIFACTS}\`"
+            echo "Jenkins runs the deploy and reports the result to Slack; this run does not wait for it."
+          } >> "$GITHUB_STEP_SUMMARY"

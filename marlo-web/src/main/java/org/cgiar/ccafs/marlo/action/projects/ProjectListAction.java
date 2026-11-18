@@ -519,6 +519,27 @@ public class ProjectListAction extends BaseAction {
   }
 
   /**
+   * Keeps one entry per program, in the original order. project_focuses can hold several active rows for the same
+   * project, program and phase, and each one would otherwise render as a repeated chip in the list.
+   * 
+   * @param programs the programs returned for a project, possibly repeated
+   * @return the programs without repetitions, never null
+   */
+  private List<CrpProgram> distinctPrograms(List<CrpProgram> programs) {
+    List<CrpProgram> distinct = new ArrayList<>();
+    if (programs == null) {
+      return distinct;
+    }
+    Set<Long> seenIds = new HashSet<>();
+    for (CrpProgram program : programs) {
+      if (program != null && program.getId() != null && seenIds.add(program.getId())) {
+        distinct.add(program);
+      }
+    }
+    return distinct;
+  }
+
+  /**
    * load the flagships and regions for each project on list
    * 
    * @param list the list of project
@@ -533,8 +554,8 @@ public class ProjectListAction extends BaseAction {
         List<CrpProgram> regions = projectManager.getPrograms(project.getId(),
           ProgramType.REGIONAL_PROGRAM_TYPE.getValue(), this.getActualPhase().getId());
 
-        project.setFlagships(programs);
-        project.setRegions(regions);
+        project.setFlagships(this.distinctPrograms(programs));
+        project.setRegions(this.distinctPrograms(regions));
 
       } catch (Exception e) {
         project.setFlagships(new ArrayList<>());
@@ -559,8 +580,8 @@ public class ProjectListAction extends BaseAction {
       List<CrpProgram> regions = projectManager.getPrograms(project.getId(),
         ProgramType.REGIONAL_PROGRAM_TYPE.getValue(), project.getProjectInfo().getPhase().getId());
 
-      project.setFlagships(programs);
-      project.setRegions(regions);
+      project.setFlagships(this.distinctPrograms(programs));
+      project.setRegions(this.distinctPrograms(regions));
 
     }
   }

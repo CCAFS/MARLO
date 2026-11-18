@@ -2,7 +2,7 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,800);
 @import url("custom.pickadate.css");
 @import url("custom.bootstrap.css");
-@import url("customLogin.css?20261015");
+@import url("customLogin.css?20261029");
 @import url("customInputsFlat.css");
 @import url("customTrumbowyg.css");
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
@@ -9603,6 +9603,14 @@ img.qaOptionsComment {
   transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 .clusterMenu-status__toggle .button-label:hover { color: #1F2A37; background: rgba(255, 255, 255, .6); }
+/* "Yes" before the pre-set sections are complete: visible, not choosable. */
+.clusterMenu-status__toggle .button-label.is-disabled,
+.clusterMenu-status__toggle .button-label.is-disabled:hover,
+.clusterMenu-status__toggle .button-label.is-disabled:active {
+  color: #9AA4B0;
+  background: transparent;
+  cursor: not-allowed;
+}
 .clusterMenu-status__toggle .button-label.radio-checked,
 .clusterMenu-status__toggle .button-label.radio-checked:hover {
   background: #FFFFFF;

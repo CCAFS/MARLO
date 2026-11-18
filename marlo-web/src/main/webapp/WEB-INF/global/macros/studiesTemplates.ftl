@@ -150,56 +150,12 @@
         </div>
       </div>
       
-      [#-- 3. (Other Studies) Link to Common Results Reporting Indicator #I3 --]
-      [#if !action.isAiccra()]
-        [#if isOutcomeCaseStudy]
-        <div class="form-group">
-          [#-- Does this outcome reflect a contribution of the CGIAR in influencing or modifying policies/ strategies / laws/ regulations/ budgets/ investments or  curricula?  --]
-          <div class="form-group">
-            
-            <label for="">[@s.text name="study.generalInformation.reportingIndicatorThree" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /][@customForm.helpLabel name="study.generalInformation.reportingIndicatorThree.help" showIcon=false editable=editable/]</label>
-            [#assign studyIndicatorThree = "studyIndicatorThree"]
-            [#assign showPolicyIndicator = (element.projectExpectedStudyInfo.isContribution?string)!"" /]
-            [@customForm.radioFlat id="${studyIndicatorThree}-yes" name="${name}.projectExpectedStudyInfo.isContribution" label="Yes" value="true" checked=(showPolicyIndicator == "true") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-yes" editable=editable /]
-            [@customForm.radioFlat id="${studyIndicatorThree}-no" name="${name}.projectExpectedStudyInfo.isContribution" label="No" value="false" checked=(showPolicyIndicator == "false") cssClass="radioType-${studyIndicatorThree}" cssClassLabel="radio-label-no" editable=editable /]
-          </div>        
-          [#-- Disaggregates for CGIAR Indicator   --]
-          <div class="form-group simpleBox block-${studyIndicatorThree}" style="display:${(showPolicyIndicator == "true")?string('block','none')}; position: relative;">
-            [@customForm.elementsListComponent name="${customName}.policies" elementType="projectPolicy" elementList=element.policies label="study.generalInformation.policies"  listName="policyList" keyFieldName="id" displayFieldName="composedNameAlternative"/]
-            [#-- Note --]
-            <div class="note">[@s.text name="study.generalInformation.policies.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/policies'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">clicking here</a>[/@][/@]</div>
-            [#local policiesGuideSheetURL = "https://drive.google.com/file/d/1GYLsseeZOOXF9zXNtpUtE1xeh2gx3Vw2/view" /]
-            <small class="pull-right"><a href="${policiesGuideSheetURL}" target="_blank"> <img src="${baseUrlCdn}/global/images/icon-file.png" alt="" /> #I1 Policies -  Guideline </a> </small>
-            <br>
-          </div>
-        </div>
-        [/#if]
-      [/#if]
 
       [#-- 5. Key Contributors  --]
       <div class="form-group keyContributions">
         [#if isOutcomeCaseStudy || !fromProject]
           <label for="" class="label--2">[@s.text name="study.generalInformation.${isOutcomeCaseStudy?string('keyContributors','keyContributorsOther')}" /]: [@customForm.req required=(editable && !action.isAWPBActive()) /]</label>
           <div class="note"><span class="glyphicon glyphicon-question-sign"></span> [@s.text name="study.generalInformation.ppapartner.note"][@s.param] <a href="[@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]" target="__BLANK">&nbsp;clicking here</a>[/@] [/@]</div>
-        [/#if]
-        [#-- CRPs - To be Removed --]
-        [#if !action.isAiccra()]
-          [#if isOutcomeCaseStudy]
-          <div class="form-group simpleBox">
-            [@customForm.elementsListComponent name="${customName}.crps" elementType="globalUnit" elementList=element.crps label="study.generalInformation.keyContributors.crps"  listName="crps" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-          [/#if]
-        [/#if]
-        [#-- Flagships - To be Removed --]
-        [#if !action.isAiccra()]
-          [#if isOutcomeCaseStudy || !fromProject]
-          <div class="form-group simpleBox stageProcessOne">
-            [#if !fromProject && editable]
-              <p class="note">To the [@s.text name="programManagement.flagship.title"/](s) selected, the system grants permission to edit this ${(element.projectExpectedStudyInfo.studyType.name)!'study'} to their [@s.text name="CrpProgram.leaders"/] and [@s.text name="CrpProgram.managers"/]</p>
-            [/#if]
-            [@customForm.elementsListComponent name="${customName}.flagships" elementType="crpProgram" id="FP" elementList=element.flagships label="study.generalInformation.keyContributors.flagships"  listName="flagshipList" keyFieldName="id" displayFieldName="composedName" required=false /]
-          </div>
-          [/#if]
         [/#if]
         <div class="row">
           [#-- Centers --]
@@ -255,15 +211,6 @@
             <label for="" class="label--2">[@s.text name="study.generalInformation.stratgicResultsLink" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) /]
               [@customForm.helpLabel name="study.generalInformation.stratgicResultsLink.help" showIcon=false editable=editable/]
             </label>
-          [#elseif !action.isAiccra()]
-            <label for="">[@s.text name="study.generalInformation.relevantTo" /]:[@customForm.req required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true)/]
-            </label> 
-          [/#if]
-          [#-- Sub IDOs (maxLimit=3) --]
-          [#if !action.isAiccra()]
-            <div class="form-group simpleBox">
-              [@customForm.elementsListComponent name="${customName}.subIdos" elementType="srfSubIdo" elementList=element.subIdos label="study.generalInformation.stratgicResultsLink.subIDOs"  listName="subIdos" maxLimit=3 keyFieldName="id" displayFieldName="description" hasPrimary=true/]
-            </div> 
           [/#if]
           
           [#-- Sub IDOs (maxLimit=3 -Requested for AR2019) --]      

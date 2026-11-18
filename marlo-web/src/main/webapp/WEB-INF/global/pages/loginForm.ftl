@@ -262,9 +262,9 @@
           <input type="checkbox" name="user.agree" id="terms" class="terms" value="true"> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
         </div>
 
-        [#-- field recaptcha--]
-        <div class="container-recaptcha">
-          <div id="recaptcha-container"></div>
+        [#-- A2-2659: Cloudflare Turnstile captcha, rendered here by login.js after 3 incorrect passwords --]
+        <div class="container-captcha">
+          <div id="captcha-container"></div>
         </div>
 
         [#-- Submit button --]

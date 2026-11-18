@@ -21,6 +21,7 @@ import org.cgiar.ccafs.marlo.data.model.ReportConfiguration;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -472,5 +473,224 @@ public class MicroserviceReportAction extends BaseAction {
     this.setClusterReportName(reportName);
     this.setJsonData(json);
     this.sendClusterReportQueueMessage();
+  }
+
+  /** Network and wait steps of {@link #fetchClusterReportBytes(String, String)}; tests replace them. */
+  interface FetchTransport {
+
+    /** Returns the HTTP status of a HEAD request. */
+    int head(String url, int timeoutMs) throws Exception;
+
+    /** Returns the body of a GET request, or null when the status is not 200. */
+    byte[] get(String url, int timeoutMs) throws Exception;
+
+    /** Publishes the message to the queue, bounding the connection, handshake and RPC waits. */
+    void publish(String queueUrl, String queueName, String message, int timeoutMs) throws Exception;
+
+    /** Monotonic clock in milliseconds, used to enforce the total deadline. */
+    long nowMillis();
+
+    /** Waits between two polls. */
+    void sleep(long millis) throws InterruptedException;
+  }
+
+  static final int SUBMIT_CONNECT_TIMEOUT_MS = 5000;
+  static final int SUBMIT_POLL_ATTEMPTS = 10;
+  static final long SUBMIT_POLL_WAIT_MS = 2000L;
+  static final int SUBMIT_HTTP_TIMEOUT_MS = 5000;
+  static final long SUBMIT_TOTAL_DEADLINE_MS = 30000L;
+
+  private FetchTransport fetchTransport = new DefaultFetchTransport();
+
+  // @akili-spec bugfix/submit-unsubmit-email-defects
+  public byte[] fetchClusterReportBytes(String json, String reportName) {
+    FetchTransport transport = this.fetchTransport;
+    long startedAt = transport.nowMillis();
+    long deadlineAt = startedAt + SUBMIT_TOTAL_DEADLINE_MS;
+    String outcome = "error";
+    byte[] result = null;
+    try {
+      // Locals only: this bean is a singleton shared by the downloads, so no existing field is read or written.
+      String fetchApiKey = this.config.getMicroserviceApiKey();
+      String fetchQueueUrl = this.config.getMicroserviceQueueURL();
+      String fetchQueueName = this.config.getMicroserviceQueueName();
+      String fetchS3Url = this.config.getMicroserviceS3Url();
+      if (json == null || json.trim().isEmpty() || reportName == null || reportName.trim().isEmpty()
+        || fetchQueueUrl == null || fetchQueueUrl.trim().isEmpty() || fetchS3Url == null
+        || fetchS3Url.trim().isEmpty()) {
+        outcome = "skipped";
+        return null;
+      }
+
+      ObjectMapper objectMapper = new ObjectMapper();
+      Map<String, Object> data = objectMapper.readValue(json, Map.class);
+      Object inner = data.get("data");
+      if (inner instanceof Map) {
+        ((Map<String, Object>) inner).put("apiKey", fetchApiKey);
+      }
+      transport.publish(fetchQueueUrl, fetchQueueName, objectMapper.writeValueAsString(data),
+        cutToTimeLeft(SUBMIT_CONNECT_TIMEOUT_MS, deadlineAt - transport.nowMillis()));
+
+      String reportUrl = fetchS3Url + reportName;
+      boolean ready = false;
+      for (int attempt = 1; attempt <= SUBMIT_POLL_ATTEMPTS; attempt++) {
+        // No step starts once the total deadline is reached; each one is cut to the time left.
+        long left = deadlineAt - transport.nowMillis();
+        if (left <= 0) {
+          break;
+        }
+        if (transport.head(reportUrl, cutToTimeLeft(SUBMIT_HTTP_TIMEOUT_MS, left)) == 200) {
+          ready = true;
+          break;
+        }
+        if (attempt < SUBMIT_POLL_ATTEMPTS) {
+          left = deadlineAt - transport.nowMillis();
+          if (left <= 0) {
+            break;
+          }
+          transport.sleep(Math.min(SUBMIT_POLL_WAIT_MS, left));
+        }
+      }
+      long timeLeft = deadlineAt - transport.nowMillis();
+      if (!ready || timeLeft <= 0) {
+        outcome = "timeout";
+        return null;
+      }
+
+      byte[] body = transport.get(reportUrl, cutToTimeLeft(SUBMIT_HTTP_TIMEOUT_MS, timeLeft));
+      if (body != null && body.length > 0) {
+        result = body;
+        outcome = "bytes";
+      } else if (body != null) {
+        outcome = "empty";
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      result = null;
+    } catch (Exception e) {
+      LOG.warn("Could not fetch the cluster report {}", reportName, e);
+      result = null;
+    } finally {
+      long elapsed = transport.nowMillis() - startedAt;
+      int length = result == null ? 0 : result.length;
+      LOG.info("Cluster report fetch for {}: outcome={}, bytes={}, elapsedMs={}", reportName, outcome, length,
+        elapsed);
+    }
+    return result;
+  }
+
+  /** Returns the smaller of the step timeout and the time left, never below one millisecond. */
+  private static int cutToTimeLeft(int timeoutMs, long timeLeftMs) {
+    return (int) Math.max(1L, Math.min((long) timeoutMs, timeLeftMs));
+  }
+
+  void setFetchTransport(FetchTransport fetchTransport) {
+    this.fetchTransport = fetchTransport;
+  }
+
+  /** Production transport: RabbitMQ publish and HttpURLConnection, every step bounded by a timeout. */
+  static final class DefaultFetchTransport implements FetchTransport {
+
+    @Override
+    public byte[] get(String url, int timeoutMs) throws Exception {
+      long deadlineNanos = System.nanoTime() + timeoutMs * 1000000L;
+      HttpURLConnection connection = this.open(url, "GET", deadlineNanos);
+      try {
+        if (connection.getResponseCode() != 200) {
+          return null;
+        }
+        try (InputStream in = connection.getInputStream(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+          byte[] buffer = new byte[8192];
+          int read;
+          // The read timeout bounds each read() call, not the body: the budget is checked around every read.
+          checkBudget(deadlineNanos);
+          while ((read = in.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+            checkBudget(deadlineNanos);
+          }
+          return out.toByteArray();
+        }
+      } finally {
+        connection.disconnect();
+      }
+    }
+
+    @Override
+    public int head(String url, int timeoutMs) throws Exception {
+      long deadlineNanos = System.nanoTime() + timeoutMs * 1000000L;
+      HttpURLConnection connection = this.open(url, "HEAD", deadlineNanos);
+      try {
+        return connection.getResponseCode();
+      } finally {
+        connection.disconnect();
+      }
+    }
+
+    /** Throws once the total budget of the request is spent. */
+    private static void checkBudget(long deadlineNanos) throws java.net.SocketTimeoutException {
+      if (remainingMillis(deadlineNanos) <= 0L) {
+        throw new java.net.SocketTimeoutException("Total request budget exhausted");
+      }
+    }
+
+    /**
+     * Sets both timeouts to the budget left. The JDK applies the read timeout when the connection is established, so it
+     * cannot be shortened afterwards: the request may spend up to the budget connecting and again reading, and the
+     * checks in the body loop stop it once the budget is spent.
+     */
+    private HttpURLConnection open(String url, String method, long deadlineNanos) throws Exception {
+      HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+      // Never 0: zero means an infinite timeout.
+      int budget = (int) Math.max(1L, remainingMillis(deadlineNanos));
+      connection.setConnectTimeout(budget);
+      connection.setReadTimeout(budget);
+      connection.setRequestMethod(method);
+      return connection;
+    }
+
+    private static long remainingMillis(long deadlineNanos) {
+      return (deadlineNanos - System.nanoTime()) / 1000000L;
+    }
+
+    @Override
+    public void publish(String queueUrl, String queueName, String message, int timeoutMs) throws Exception {
+      ConnectionFactory factory = new ConnectionFactory();
+      factory.setUri(queueUrl);
+      factory.setConnectionTimeout(timeoutMs);
+      factory.setHandshakeTimeout(timeoutMs);
+      factory.setChannelRpcTimeout(timeoutMs);
+      Connection connection = factory.newConnection();
+      try {
+        Channel channel = connection.createChannel();
+        try {
+          channel.queueDeclare(queueName, true, false, false, null);
+          channel.basicPublish("", queueName, null, message.getBytes());
+        } finally {
+          try {
+            channel.close();
+          } catch (Exception e) {
+            LOG.warn("Could not close the report queue channel, queue={}", queueName, e);
+          }
+        }
+      } finally {
+        // Bounded close: timeoutMs is SUBMIT_CONNECT_TIMEOUT_MS capped by the time left. The plain close() waits for
+        // the broker without limit. A close failure does not change the publish result.
+        try {
+          connection.close(timeoutMs);
+        } catch (Exception e) {
+          LOG.warn("Could not close the report queue connection, queue={}", queueName, e);
+        }
+      }
+    }
+
+    @Override
+    public long nowMillis() {
+      return System.nanoTime() / 1000000L;
+    }
+
+    @Override
+    public void sleep(long millis) throws InterruptedException {
+      Thread.sleep(millis);
+    }
   }
 }

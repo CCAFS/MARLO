@@ -7,7 +7,7 @@
   var hashScroll = true;
   var forceChange = false;
   
-  var RECAPTCHAT_SITE_KEY="${config.recaptchatSiteKey}"
+  var TURNSTILE_SITE_KEY = "${(config.turnstileSiteKey)!}";
   var PUSHER_KEY = "${config.pushApiKey}";
   
   var MIN_DATE = '2000-01-01';

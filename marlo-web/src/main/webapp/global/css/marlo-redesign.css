@@ -88,6 +88,8 @@
   --marlo-info-solid: #15719b;
   --marlo-success-solid: #2e7d32;
   --marlo-warning-ink: #4a3000;
+  /* Filled badge under white text (Phases management "current"): #e4572e is 3.7:1, this is 5.0:1. */
+  --marlo-danger-solid: #c7401c;
 
   /* Today marker — darker than --marlo-danger so a 2px hairline still reads
      against white. */
@@ -616,8 +618,13 @@ header {
   background: var(--marlo-brand-dark);
 }
 
-#mainMenu .menuContent > .container > ul > li.currentSection {
-  background: var(--marlo-brand-light);
+/* The current tab is a white tab with brand-dark text (7.4:1). It was a #33a0c6 fill under white text, which is
+   3:1 and fails WCAG AA for 14px text. It stays white on hover and keyboard focus, so the dark label never sits on
+   the dark hover fill. */
+#mainMenu .menuContent > .container > ul > li.currentSection,
+#mainMenu .menuContent > .container > ul > li.currentSection:hover,
+#mainMenu .menuContent > .container > ul.hidden-md > li.currentSection:focus-within {
+  background: var(--marlo-surface);
   box-shadow: none;
   font-weight: 600;
 }
@@ -642,6 +649,7 @@ header {
 /* The active item carries the icon and a slightly wider pad in the design. */
 #mainMenu .menuContent > .container > ul > li.currentSection > a {
   padding: 0 16px;
+  color: var(--marlo-brand-dark);
   font-weight: 600;
 }
 
@@ -778,6 +786,11 @@ header {
 #mainMenu .menuContent > .container > ul.hidden-md > li:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.75);
   outline-offset: -4px;
+}
+
+/* A white ring would vanish on the white current tab. */
+#mainMenu .menuContent > .container > ul.hidden-md > li.currentSection:focus-visible {
+  outline-color: var(--marlo-brand);
 }
 
 #mainMenu .menuContent > .container > ul.hidden-md > li:focus-within > ul.subMenu {
@@ -1032,18 +1045,8 @@ header {
   white-space: nowrap;
 }
 
-.phasePill__dates {
-  color: var(--marlo-text-muted);
-  font: 500 11px/1.2 var(--marlo-font-sans);
-  white-space: nowrap;
-}
-
 .phasePill--current .phasePill__name {
   color: #fff;
-}
-
-.phasePill--current .phasePill__dates {
-  color: rgba(255, 255, 255, 0.82);
 }
 
 .phasePill__check {
@@ -1089,17 +1092,19 @@ header {
   color: #fff;
 }
 
+/* Solid badges carry 10px text, so each pair clears WCAG AA (4.5:1). The light hues they used before do not:
+   white on #5bb85c is 2.5:1, #8a5a00 on #f5a623 is 2.9:1, white on a .22 white wash over the brand chip is 3.4:1. */
 .phaseBadge--solid.phaseBadge--open {
-  background: var(--marlo-success);
+  background: var(--marlo-success-text); /* white on #2e6b2f: 6.4:1 */
 }
 
 .phaseBadge--solid.phaseBadge--upcoming {
   background: var(--marlo-warning);
-  color: var(--marlo-warning-text);
+  color: var(--marlo-warning-ink); /* #4a3000 on #f5a623: 6.1:1 */
 }
 
 .phaseBadge--solid.phaseBadge--closed {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--marlo-brand-dark); /* white on #015c7d: 7.4:1 */
 }
 
 /* ---- "All phases" trigger ---- */
@@ -1250,18 +1255,9 @@ header {
   font-style: normal;
 }
 
-.phaseRow__dates {
-  color: var(--marlo-text-muted);
-  font: 400 12px/1.3 var(--marlo-font-sans);
-}
-
 .phaseRow--closed .phaseRow__name {
   color: var(--marlo-text-muted);
   font-weight: 500;
-}
-
-.phaseRow--closed .phaseRow__dates {
-  color: var(--marlo-text-subtle);
 }
 
 .phaseRow--current,

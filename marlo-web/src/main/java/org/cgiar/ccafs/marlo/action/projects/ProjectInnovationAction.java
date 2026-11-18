@@ -72,6 +72,8 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSDGManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSharedManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationToolCategoryManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationCoDeveloperManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectInnovationValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectOutcomeManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectPartnerManager;
@@ -90,6 +92,7 @@ import org.cgiar.ccafs.marlo.data.manager.ScalingReadinessManager;
 import org.cgiar.ccafs.marlo.data.manager.SdgManager;
 import org.cgiar.ccafs.marlo.data.manager.SrfSubIdoManager;
 import org.cgiar.ccafs.marlo.data.manager.ToolFunctionCategoryManager;
+import org.cgiar.ccafs.marlo.data.manager.ValueChainManager;
 import org.cgiar.ccafs.marlo.data.manager.UserManager;
 import org.cgiar.ccafs.marlo.data.model.Actor;
 import org.cgiar.ccafs.marlo.data.model.AllianceLever;
@@ -147,6 +150,8 @@ import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSDG;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationShared;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovationToolCategory;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationCoDeveloper;
+import org.cgiar.ccafs.marlo.data.model.ProjectInnovationValueChain;
 import org.cgiar.ccafs.marlo.data.model.ProjectMilestone;
 import org.cgiar.ccafs.marlo.data.model.ProjectOutcome;
 import org.cgiar.ccafs.marlo.data.model.ProjectPartner;
@@ -168,10 +173,12 @@ import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.Sdg;
 import org.cgiar.ccafs.marlo.data.model.SrfSubIdo;
 import org.cgiar.ccafs.marlo.data.model.ToolFunctionCategory;
+import org.cgiar.ccafs.marlo.data.model.ValueChain;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.AutoSaveReader;
+import org.cgiar.ccafs.marlo.utils.GeographicScopeRules;
 import org.cgiar.ccafs.marlo.validation.projects.ProjectInnovationValidator;
 
 import java.io.BufferedReader;
@@ -210,6 +217,9 @@ public class ProjectInnovationAction extends BaseAction {
 
   private static final long serialVersionUID = 2025842196563364380L;
   private static final long[] EMPTY_ARRAY = {};
+  /** A2-2613: values of the institutional level of the institutions that co-developed a bundle (IRI 1.5) */
+  public static final List<String> INSTITUTIONAL_LEVELS =
+      Collections.unmodifiableList(Arrays.asList("regional", "national", "joint"));
   private static HashMap<String, String> isSaving = new HashMap<>();
 
   public static HashMap<String, String> getIsSaving() {
@@ -289,6 +299,9 @@ public class ProjectInnovationAction extends BaseAction {
   private ProjectInnovationActorManager projectInnovationActorManager;
   private ProjectInnovationToolCategoryManager projectInnovationToolCategoryManager;
   private ToolFunctionCategoryManager toolFunctionCategoryManager;
+  private ValueChainManager valueChainManager;
+  private ProjectInnovationValueChainManager projectInnovationValueChainManager;
+  private ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager;
   private DeliverableTypeManager deliverableTypeManager;
   private DeliverableInfoManager deliverableInfoManager;
   private ImpactAreaScoreManager impactAreaScoreManager;
@@ -353,12 +366,17 @@ public class ProjectInnovationAction extends BaseAction {
   private List<ImpactArea> impactAreaList;
   private List<IntellectualPropertyRightsInstitution> intellectualInstitutionsList;
   private List<ScalingReadiness> scalingReadinessList;
+  // Missing fields per form tab (general, alliance, crossCutting, bundle, knowledge), set by ProjectInnovationValidator
+  private final Map<String, Integer> tabMissingCounts = new HashMap<>();
+  // Form tab to open (1 general ... 5 knowledge); posted by the form and kept in the session across the save redirect
+  private int indexTab;
 
   private List<Actor> actorList;
 
   private List<InstitutionType> institutionTypeList;
 
   private List<ToolFunctionCategory> toolCategoryList;
+  private List<ValueChain> valueChainList;
   private List<DeliverableType> deliverableTypeParent;
   private List<DeliverableType> deliverableSubTypes;
   private List<ProjectInnovation> innovationList;
@@ -425,7 +443,9 @@ public class ProjectInnovationAction extends BaseAction {
       ProjectInnovationComplementarySolutionManager projectInnovationComplementarySolutionManager,
       ProjectInnovationBundleManager projectInnovationBundleManager,
       ProjectInnovationComplementarySolutionFunctionManager projectInnovationComplementarySolutionFunctionManager,
-      PRMSInnovationManager prmsInnovationManager, ProjectInnovationPRMSManager projectInnovationPRMSManager) {
+      PRMSInnovationManager prmsInnovationManager, ProjectInnovationPRMSManager projectInnovationPRMSManager,
+      ValueChainManager valueChainManager, ProjectInnovationValueChainManager projectInnovationValueChainManager,
+      ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager) {
     super(config);
     this.projectInnovationManager = projectInnovationManager;
     this.globalUnitManager = globalUnitManager;
@@ -491,6 +511,9 @@ public class ProjectInnovationAction extends BaseAction {
     this.projectInnovationReferenceComplementarySolutionManager = projectInnovationReferenceComplementarySolutionManager;
     this.projectInnovationActorManager = projectInnovationActorManager;
     this.toolFunctionCategoryManager = toolFunctionCategoryManager;
+    this.valueChainManager = valueChainManager;
+    this.projectInnovationValueChainManager = projectInnovationValueChainManager;
+    this.projectInnovationCoDeveloperManager = projectInnovationCoDeveloperManager;
     this.projectInnovationToolCategoryManager = projectInnovationToolCategoryManager;
     this.deliverableTypeManager = deliverableTypeManager;
     this.institutionLocationManager = institutionLocationManager;
@@ -765,6 +788,10 @@ public class ProjectInnovationAction extends BaseAction {
     return innovation;
   }
 
+  public int getIndexTab() {
+    return indexTab;
+  }
+
   public long getInnovationID() {
     return innovationID;
   }
@@ -909,6 +936,14 @@ public class ProjectInnovationAction extends BaseAction {
 
   public List<SrfSubIdo> getSubIdos() {
     return subIdos;
+  }
+
+  public Map<String, Integer> getTabMissingCounts() {
+    return tabMissingCounts;
+  }
+
+  public List<ValueChain> getValueChainList() {
+    return valueChainList;
   }
 
   public List<ToolFunctionCategory> getToolCategoryList() {
@@ -1125,8 +1160,8 @@ public class ProjectInnovationAction extends BaseAction {
               haveRegions = true;
             }
 
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-                && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
+            if (GeographicScopeRules
+              .needsCountries(projectInnovationGeographicScope.getRepIndGeographicScope().getId())) {
               haveCountries = true;
             }
 
@@ -1442,6 +1477,14 @@ public class ProjectInnovationAction extends BaseAction {
               .filter(o -> o.isActive() && o.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())));
         }
 
+        // Innovation value chains (A2-2613)
+        innovation.setValueChains(new ArrayList<>(
+            projectInnovationValueChainManager.getByInnovationAndPhase(innovation.getId(), phase.getId())));
+
+        // Institutions that co-developed the bundle (A2-2613)
+        innovation.setCoDevelopers(new ArrayList<>(
+            projectInnovationCoDeveloperManager.getByInnovationAndPhase(innovation.getId(), phase.getId())));
+
         // Innovations SDGs
         if (innovation.getProjectInnovationSDGs() != null) {
           innovation.setSdgs(new ArrayList<>(innovation.getProjectInnovationSDGs().stream()
@@ -1631,7 +1674,10 @@ public class ProjectInnovationAction extends BaseAction {
 
       try {
         this.prmsInnovationList = this.prmsInnovationManager.findAll();
-        this.allInnovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase());
+        // A2-2613: an innovation cannot be a component of its own bundle
+        this.allInnovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
+          .filter(i -> i != null && i.getId() != null && i.getId().longValue() != innovationID)
+          .collect(Collectors.toList());
         this.impactAreaScores = this.impactAreaScoreManager.findAll();
         this.allianceLeverList = this.allianceLeverManager.findAll();
         this.innovationList = this.projectInnovationManager.getInnovationsByPhase(this.getActualPhase()).stream()
@@ -1648,6 +1694,7 @@ public class ProjectInnovationAction extends BaseAction {
         this.scalingReadinessList = this.scalingReadinessManager.findAll();
         this.actorList = this.actorManager.findAll();
         this.toolCategoryList = this.toolFunctionCategoryManager.findAll();
+        this.valueChainList = this.valueChainManager.findAll();
         this.optionList = this.repIndOptionsManager.findAll();
         this.projectInnovationFunctionList = this.projectInnovationFunctionManager.findAll();
         try {
@@ -1825,28 +1872,11 @@ public class ProjectInnovationAction extends BaseAction {
 
       phaseResearchList = repIndPhaseResearchPartnershipManager.findAll();
       stageInnovationList = repIndStageInnovationManager.findAll();
+      // A2-2709: all six scopes, broadest first (Global ... Sub-national, then "yet to be determined")
       geographicScopeList = repIndGeographicScopeManager.findAll();
-
-      try {
-        if (geographicScopeList != null && !geographicScopeList.isEmpty()) {
-
-          RepIndGeographicScope geographicDelete;
-          // Remove multi-national
-          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(3);
-          if (geographicDelete != null) {
-            geographicScopeList.remove(geographicDelete);
-          }
-          // Remove sub-national
-          geographicDelete = repIndGeographicScopeManager.getRepIndGeographicScopeById(5);
-          if (geographicDelete != null) {
-            geographicScopeList.remove(geographicDelete);
-          }
-
-          geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
-              .collect(Collectors.toList());
-        }
-      } catch (Exception e) {
-        logger.error("error deleting elements from", e);
+      if (geographicScopeList != null) {
+        geographicScopeList = geographicScopeList.stream().sorted(Comparator.comparing(RepIndGeographicScope::getId))
+          .collect(Collectors.toList());
       }
 
       // Innovation Type
@@ -1874,6 +1904,7 @@ public class ProjectInnovationAction extends BaseAction {
       } catch (Exception e) {
         logger.error("error getting list", e);
       }
+      innovationTypeList = this.withDisplayNames(innovationTypeList);
 
       // Innovation Nature
       innovationNatureList = repIndInnovationNatureManager.findAll().stream().filter(t -> t != null && !t.getOldType())
@@ -2323,6 +2354,12 @@ public class ProjectInnovationAction extends BaseAction {
       if (innovation.getSdgs() != null) {
         innovation.getSdgs().clear();
       }
+      if (innovation.getValueChains() != null) {
+        innovation.getValueChains().clear();
+      }
+      if (innovation.getCoDevelopers() != null) {
+        innovation.getCoDevelopers().clear();
+      }
       if (innovation.getAllianceLevers() != null) {
         innovation.getAllianceLevers().clear();
       }
@@ -2376,14 +2413,28 @@ public class ProjectInnovationAction extends BaseAction {
         innovation.getProjectInnovationInfo().setRepIndDegreeInnovation(null);
         innovation.getProjectInnovationInfo().setLeadOrganization(null);
         innovation.getProjectInnovationInfo().setIntellectualPropertyInstitution(null);
-        innovation.getProjectInnovationInfo().setGenderScore(null);
-        innovation.getProjectInnovationInfo().setClimateChangeScore(null);
-        innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
-        innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
-        innovation.getProjectInnovationInfo().setPovertyScore(null);
+        // A2-2613: the Impact Area scores are only posted where the Cross-cutting alignment tab shows; elsewhere the
+        // stored ones are kept
+        if (this.isCrossCuttingAlignmentActive()) {
+          innovation.getProjectInnovationInfo().setGenderScore(null);
+          innovation.getProjectInnovationInfo().setClimateChangeScore(null);
+          innovation.getProjectInnovationInfo().setFoodSecurityScore(null);
+          innovation.getProjectInnovationInfo().setEnvironmentalScore(null);
+          innovation.getProjectInnovationInfo().setPovertyScore(null);
+        }
         innovation.getProjectInnovationInfo().setHasKnowledgePotential(null);
       } catch (Exception e) {
         logger.error("unable to clean info properties", e);
+      }
+    }
+
+    // Reopen the tab the user saved from: save() leaves it in the session for the page after the redirect
+    Object savedTab = this.getSession().remove("innovationIndexTab");
+    if (savedTab != null) {
+      try {
+        indexTab = Integer.parseInt(savedTab.toString());
+      } catch (NumberFormatException e) {
+        indexTab = 0;
       }
     }
 
@@ -2396,6 +2447,7 @@ public class ProjectInnovationAction extends BaseAction {
   public String save() {
     if (this.hasPermission("canEdit")) {
 
+      this.getSession().put("innovationIndexTab", indexTab);
       ProjectInnovationAction.getIsSaving().put("" + innovationID, "1");
 
       Phase phase = this.getActualPhase();
@@ -2467,7 +2519,15 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveGeographicScope(innovationDB, phase);
       this.saveProjectInnovationPartnership(innovationDB, phase);
       this.saveAllianceLevers(innovationDB, phase);
-      this.saveSDGs(innovationDB, phase);
+      if (this.isValueChainsActive()) {
+        this.saveValueChains(innovationDB, phase);
+      }
+      if (this.isCoDevelopersEditable()) {
+        this.saveCoDevelopers(innovationDB, phase);
+      }
+      if (this.isCrossCuttingAlignmentActive()) {
+        this.saveSDGs(innovationDB, phase);
+      }
       this.saveImpactAreas(innovationDB, phase);
       // this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
@@ -2481,32 +2541,15 @@ public class ProjectInnovationAction extends BaseAction {
       this.saveComplementarySolutions(innovationDB, phase);
       this.savePrmsInnovations(innovationDB, phase);
 
-      boolean haveRegions = false;
-      boolean haveCountries = false;
-
-      if (innovation.getGeographicScopes() != null) {
-        for (ProjectInnovationGeographicScope projectInnovationGeographicScope : innovation.getGeographicScopes()) {
-
-          if (projectInnovationGeographicScope != null
-              && projectInnovationGeographicScope.getRepIndGeographicScope() != null
-              && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != null) {
-
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() == 2) {
-              haveRegions = true;
-            }
-
-            if (projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 1
-                && projectInnovationGeographicScope.getRepIndGeographicScope().getId() != 2) {
-              haveCountries = true;
-            }
-          }
-        }
+      // A2-2709: one scope, read as saveGeographicScope reads it. Regions and countries the scope does not ask for
+      // are cleared, and the "specific countries" answer only stands under a regional scope.
+      Long postedScopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "innovation");
+      boolean haveRegions = GeographicScopeRules.needsRegions(postedScopeId);
+      if (!haveRegions) {
+        innovation.getProjectInnovationInfo().setHasSpecifiedOutputCountries(null);
       }
-
-      if (innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries() != null
-          && innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries()) {
-        haveCountries = true;
-      }
+      boolean haveCountries = GeographicScopeRules.needsCountries(postedScopeId)
+        || (haveRegions && Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getHasSpecifiedOutputCountries()));
 
       if (haveRegions) {
         // Save the Regions List
@@ -2517,26 +2560,28 @@ public class ProjectInnovationAction extends BaseAction {
 
       if (haveCountries) {
         // Save the Countries List (ProjectInnovationcountry)
-        if (innovation.getCountriesIds() != null || !innovation.getCountriesIds().isEmpty()) {
+        // No country chosen posts nothing: an empty list, so the stored countries are removed
+        if (innovation.getCountriesIds() == null) {
+          innovation.setCountriesIds(new ArrayList<>());
+        }
 
-          List<ProjectInnovationCountry> countries = projectInnovationCountryManager
-              .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
-          List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
-          for (String countryIds : innovation.getCountriesIds()) {
-            ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
-            countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
-            countryInn.setProjectInnovation(innovation);
-            countryInn.setPhase(this.getActualPhase());
-            countriesSave.add(countryInn);
-            if (!countries.contains(countryInn)) {
-              projectInnovationCountryManager.saveProjectInnovationCountry(countryInn);
-            }
+        List<ProjectInnovationCountry> countries = projectInnovationCountryManager
+          .getInnovationCountrybyPhase(innovation.getId(), this.getActualPhase().getId());
+        List<ProjectInnovationCountry> countriesSave = new ArrayList<>();
+        for (String countryIds : innovation.getCountriesIds()) {
+          ProjectInnovationCountry countryInn = new ProjectInnovationCountry();
+          countryInn.setLocElement(locElementManager.getLocElementByISOCode(countryIds));
+          countryInn.setProjectInnovation(innovation);
+          countryInn.setPhase(this.getActualPhase());
+          countriesSave.add(countryInn);
+          if (!countries.contains(countryInn)) {
+            projectInnovationCountryManager.saveProjectInnovationCountry(countryInn);
           }
+        }
 
-          for (ProjectInnovationCountry projectInnovationCountry : countries) {
-            if (!countriesSave.contains(projectInnovationCountry)) {
-              projectInnovationCountryManager.deleteProjectInnovationCountry(projectInnovationCountry.getId());
-            }
+        for (ProjectInnovationCountry projectInnovationCountry : countries) {
+          if (!countriesSave.contains(projectInnovationCountry)) {
+            projectInnovationCountryManager.deleteProjectInnovationCountry(projectInnovationCountry.getId());
           }
         }
       } else {
@@ -2558,6 +2603,22 @@ public class ProjectInnovationAction extends BaseAction {
 
       innovation.setModificationJustification(this.getJustification());
       innovation.getProjectInnovationInfo().setPhase(this.getActualPhase());
+      // A2-2613: a field the global unit does not show keeps its stored value, since the form does not post it
+      ProjectInnovationInfo infoDB = innovationDB.getProjectInnovationInfo(this.getActualPhase());
+      ProjectInnovationInfo infoPosted = innovation.getProjectInnovationInfo();
+      // The institutional level only changes where the co-developing fields are shown: a bundle, with the flag
+      // (rule 4.2.5)
+      if (!this.isCoDevelopersEditable()) {
+        infoPosted.setInstitutionalLevel(infoDB != null ? infoDB.getInstitutionalLevel() : null);
+      } else if (!INSTITUTIONAL_LEVELS.contains(infoPosted.getInstitutionalLevel())) {
+        infoPosted.setInstitutionalLevel(null);
+      }
+      // The other value chain only stands while "Other" is one of the value chains
+      if (!this.isValueChainsActive()) {
+        infoPosted.setOtherValueChain(infoDB != null ? infoDB.getOtherValueChain() : null);
+      } else if (this.postedValueChains().stream().noneMatch(ValueChain::isOther)) {
+        infoPosted.setOtherValueChain(null);
+      }
       innovation.getProjectInnovationInfo().setProjectInnovation(innovation);
 
       // Setup focusLevel
@@ -2861,6 +2922,133 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
+  /**
+   * Whether the co-developing institutions of this save are written (A2-2613): only for a bundle, and only for a
+   * global unit with innovation_co_developing_institutions_active.
+   *
+   * @return true when the posted co-developing institutions and institutional level are saved
+   */
+  private boolean isCoDevelopersEditable() {
+    return this.isCoDevelopersActive() && innovation.getProjectInnovationInfo() != null
+        && Boolean.TRUE.equals(innovation.getProjectInnovationInfo().getInnovationBundle());
+  }
+
+  /**
+   * A2-2613: a global unit can show an innovation type under another name without renaming the shared catalog
+   * (projectInnovations.innovationType.displayName.{id} in its custom properties). The renamed ones are detached
+   * copies, so the new name never reaches the database.
+   */
+  private List<RepIndInnovationType> withDisplayNames(List<RepIndInnovationType> types) {
+    List<RepIndInnovationType> displayed = new ArrayList<>();
+    if (types == null) {
+      return displayed;
+    }
+    for (RepIndInnovationType type : types) {
+      String displayName =
+        this.getText("projectInnovations.innovationType.displayName." + type.getId(), type.getName());
+      if (displayName == null || displayName.equals(type.getName())) {
+        displayed.add(type);
+      } else {
+        RepIndInnovationType renamed = new RepIndInnovationType();
+        renamed.setId(type.getId());
+        renamed.setName(displayName);
+        renamed.setDefinition(type.getDefinition());
+        renamed.setOldType(type.getOldType());
+        renamed.setPrmsNameEquivalent(type.getPrmsNameEquivalent());
+        displayed.add(renamed);
+      }
+    }
+    return displayed;
+  }
+
+  /**
+   * Whether the global unit shows the Cross-cutting alignment (One CGIAR Alignment) tab: SDGs and Impact Area scores
+   * (A2-2613).
+   *
+   * @return the innovation_cross_cutting_alignment_active specificity
+   */
+  public boolean isCrossCuttingAlignmentActive() {
+    return this.hasSpecificities(APConstants.INNOVATION_CROSS_CUTTING_ALIGNMENT_ACTIVE);
+  }
+
+  /**
+   * Whether the global unit asks for the value chains of an innovation (A2-2613).
+   *
+   * @return the innovation_value_chains_active specificity
+   */
+  public boolean isValueChainsActive() {
+    return this.hasSpecificities(APConstants.INNOVATION_VALUE_CHAINS_ACTIVE);
+  }
+
+  /**
+   * Whether the global unit asks for the co-developing institutions of a bundle (A2-2613, IRI 1.5).
+   *
+   * @return the innovation_co_developing_institutions_active specificity
+   */
+  public boolean isCoDevelopersActive() {
+    return this.hasSpecificities(APConstants.INNOVATION_CO_DEVELOPING_INSTITUTIONS_ACTIVE);
+  }
+
+  /**
+   * Co-developing institutions the form posted: without repeats, and only the ones that are still contributing
+   * external partners of the innovation, so a partner removed in General Information leaves this list too (rule
+   * 4.2.3).
+   *
+   * @return the posted institutions, an empty list when none was posted
+   */
+  private List<Institution> postedCoDevelopers() {
+    List<Institution> posted = new ArrayList<>();
+    if (innovation.getCoDevelopers() == null) {
+      return posted;
+    }
+    Set<Long> partnerIds = new HashSet<>();
+    if (innovation.getContributingOrganizations() != null) {
+      for (ProjectInnovationContributingOrganization partner : innovation.getContributingOrganizations()) {
+        if (partner != null && partner.getInstitution() != null && partner.getInstitution().getId() != null) {
+          partnerIds.add(partner.getInstitution().getId());
+        }
+      }
+    }
+    Set<Long> seen = new HashSet<>();
+    for (ProjectInnovationCoDeveloper item : innovation.getCoDevelopers()) {
+      if (item == null || item.getInstitution() == null || item.getInstitution().getId() == null
+          || !partnerIds.contains(item.getInstitution().getId()) || !seen.add(item.getInstitution().getId())) {
+        continue;
+      }
+      Institution institution = institutionManager.getInstitutionById(item.getInstitution().getId());
+      if (institution != null) {
+        posted.add(institution);
+      }
+    }
+    return posted;
+  }
+
+  /**
+   * Value chains the form posted, as active catalog entries: without the gaps the unchecked boxes leave, without
+   * repeats, and only "Not value-chain specific" when it came together with other value chains (A2-2613 rule 4.1.2).
+   *
+   * @return the posted value chains, an empty list when none was posted
+   */
+  private List<ValueChain> postedValueChains() {
+    List<ValueChain> posted = new ArrayList<>();
+    if (innovation.getValueChains() == null) {
+      return posted;
+    }
+    Set<Long> seen = new HashSet<>();
+    for (ProjectInnovationValueChain item : innovation.getValueChains()) {
+      if (item == null || item.getValueChain() == null || item.getValueChain().getId() == null
+          || !seen.add(item.getValueChain().getId())) {
+        continue;
+      }
+      ValueChain valueChain = valueChainManager.getValueChainById(item.getValueChain().getId());
+      if (valueChain != null && valueChain.isActive()) {
+        posted.add(valueChain);
+      }
+    }
+    List<ValueChain> notSpecific = posted.stream().filter(ValueChain::isNotSpecific).collect(Collectors.toList());
+    return notSpecific.isEmpty() ? posted : notSpecific;
+  }
+
   public void saveAllianceLevers(ProjectInnovation projectInnovation, Phase phase) {
     try {
       // Search and deleted form Information
@@ -3110,7 +3298,9 @@ public class ProjectInnovationAction extends BaseAction {
             logger.error("unable to rehydrate selectedInnovation", e);
           }
 
-          if (selectedInnovationManaged != null) {
+          // A2-2613: an innovation cannot be a component of its own bundle
+          if (selectedInnovationManaged != null
+            && !selectedInnovationManaged.getId().equals(projectInnovation.getId())) {
             ProjectInnovationBundle bundleToSave = new ProjectInnovationBundle();
 
             try {
@@ -4577,6 +4767,76 @@ public class ProjectInnovationAction extends BaseAction {
    * @param projectInnovation
    * @param phase
    */
+  /**
+   * Save the innovation value chains of the phase (A2-2613): the ones no longer posted are removed and the new ones
+   * added. The manager replicates both to the next phases.
+   *
+   * @param projectInnovation the innovation being saved
+   * @param phase the phase being saved
+   */
+  public void saveValueChains(ProjectInnovation projectInnovation, Phase phase) {
+    List<ValueChain> posted = this.postedValueChains();
+    Set<Long> postedIds = posted.stream().map(ValueChain::getId).collect(Collectors.toSet());
+    List<ProjectInnovationValueChain> saved =
+        projectInnovationValueChainManager.getByInnovationAndPhase(projectInnovation.getId(), phase.getId());
+    Set<Long> savedIds = new HashSet<>();
+    for (ProjectInnovationValueChain valueChainDB : saved) {
+      Long valueChainId = valueChainDB.getValueChain().getId();
+      if (postedIds.contains(valueChainId)) {
+        savedIds.add(valueChainId);
+      } else {
+        projectInnovationValueChainManager.deleteProjectInnovationValueChain(valueChainDB.getId());
+      }
+    }
+    for (ValueChain valueChain : posted) {
+      if (savedIds.contains(valueChain.getId())) {
+        continue;
+      }
+      ProjectInnovationValueChain valueChainSave = new ProjectInnovationValueChain();
+      valueChainSave.setProjectInnovation(projectInnovation);
+      valueChainSave.setValueChain(valueChain);
+      valueChainSave.setPhase(phase);
+      valueChainSave = projectInnovationValueChainManager.saveProjectInnovationValueChain(valueChainSave);
+      // Added so the audit log of the innovation records it
+      projectInnovation.getProjectInnovationValueChains().add(valueChainSave);
+    }
+  }
+
+  /**
+   * Save the institutions that co-developed the bundle in the phase (A2-2613): the ones no longer posted are removed
+   * and the new ones added. The manager replicates both to the next phases.
+   *
+   * @param projectInnovation the innovation being saved
+   * @param phase the phase being saved
+   */
+  public void saveCoDevelopers(ProjectInnovation projectInnovation, Phase phase) {
+    List<Institution> posted = this.postedCoDevelopers();
+    Set<Long> postedIds = posted.stream().map(Institution::getId).collect(Collectors.toSet());
+    List<ProjectInnovationCoDeveloper> saved =
+        projectInnovationCoDeveloperManager.getByInnovationAndPhase(projectInnovation.getId(), phase.getId());
+    Set<Long> savedIds = new HashSet<>();
+    for (ProjectInnovationCoDeveloper coDeveloperDB : saved) {
+      Long institutionId = coDeveloperDB.getInstitution().getId();
+      if (postedIds.contains(institutionId)) {
+        savedIds.add(institutionId);
+      } else {
+        projectInnovationCoDeveloperManager.deleteProjectInnovationCoDeveloper(coDeveloperDB.getId());
+      }
+    }
+    for (Institution institution : posted) {
+      if (savedIds.contains(institution.getId())) {
+        continue;
+      }
+      ProjectInnovationCoDeveloper coDeveloperSave = new ProjectInnovationCoDeveloper();
+      coDeveloperSave.setProjectInnovation(projectInnovation);
+      coDeveloperSave.setInstitution(institution);
+      coDeveloperSave.setPhase(phase);
+      coDeveloperSave = projectInnovationCoDeveloperManager.saveProjectInnovationCoDeveloper(coDeveloperSave);
+      // Added so the audit log of the innovation records it
+      projectInnovation.getProjectInnovationCoDevelopers().add(coDeveloperSave);
+    }
+  }
+
   public void saveSDGs(ProjectInnovation projectInnovation, Phase phase) {
     try {
       // Search and deleted form Information
@@ -4864,6 +5124,10 @@ public class ProjectInnovationAction extends BaseAction {
     this.innovation = innovation;
   }
 
+  public void setIndexTab(int indexTab) {
+    this.indexTab = indexTab;
+  }
+
   public void setInnovationID(long innovationID) {
     this.innovationID = innovationID;
   }
@@ -4989,6 +5253,24 @@ public class ProjectInnovationAction extends BaseAction {
     this.subIdos = subIdos;
   }
 
+  /**
+   * A2-2709: the one geographic scope the form posted, as the list the validator reads.
+   *
+   * @return a list with the posted scope, empty when none was chosen
+   */
+  private List<ProjectInnovationGeographicScope> postedGeographicScopes() {
+    List<ProjectInnovationGeographicScope> scopes = new ArrayList<>();
+    Long scopeId = GeographicScopeRules.postedScopeId(this.getRequest().getParameterMap(), "innovation");
+    RepIndGeographicScope scope =
+      scopeId == null ? null : repIndGeographicScopeManager.getRepIndGeographicScopeById(scopeId);
+    if (scope != null) {
+      ProjectInnovationGeographicScope posted = new ProjectInnovationGeographicScope();
+      posted.setRepIndGeographicScope(scope);
+      scopes.add(posted);
+    }
+    return scopes;
+  }
+
   public void setToolCategoryList(List<ToolFunctionCategory> toolCategoryList) {
     this.toolCategoryList = toolCategoryList;
   }
@@ -5031,6 +5313,11 @@ public class ProjectInnovationAction extends BaseAction {
         }
       } catch (Exception e) {
         logger.error("Error normalizing reference deliverable type params before validation:", e);
+      }
+
+      // A2-2709: the validator reads the posted scope as an object, which Struts does not build
+      if (innovation != null) {
+        innovation.setGeographicScopes(this.postedGeographicScopes());
       }
 
       // Change the parameters for the new way to validate the data

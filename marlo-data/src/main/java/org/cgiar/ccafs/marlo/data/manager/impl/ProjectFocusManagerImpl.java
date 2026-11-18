@@ -50,10 +50,11 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
 
   public void addProjectFocusPhase(Phase next, long projecID, ProjectFocus projectFocus) {
     Phase phase = phaseDAO.find(next.getId());
-    List<ProjectFocus> projectFocuses = phase.getProjectFocuses().stream()
-      .filter(c -> c.isActive() && c.getProject().getId().longValue() == projecID
-        && projectFocus.getCrpProgram().getId().longValue() == c.getCrpProgram().getId().longValue())
-      .collect(Collectors.toList());
+    // Query the database instead of phase.getProjectFocuses(): that collection is loaded once per session and misses
+    // the rows inserted by an earlier replication in the same request (ProjectInfoManagerImpl.saveInfoPhase replicates
+    // once per new phase), which inserted one duplicate per pass.
+    List<ProjectFocus> projectFocuses = projectFocusDAO.findActiveByProjectProgramAndPhase(projecID,
+      projectFocus.getCrpProgram().getId(), phase.getId());
     if (projectFocuses.isEmpty()) {
 
       ProjectFocus projectFocusAdd = new ProjectFocus();
@@ -61,6 +62,9 @@ public class ProjectFocusManagerImpl implements ProjectFocusManager {
       projectFocusAdd.setPhase(phase);
       projectFocusAdd.setProject(projectFocus.getProject());
       projectFocusDAO.save(projectFocusAdd);
+      // Hibernate does not refresh this collection with the new row. Without it, saving the same focus again in this
+      // request (saveInfoPhase does, once per new phase) finds nothing above and inserts a duplicate in every phase.
+      phase.getProjectFocuses().add(projectFocusAdd);
     } else {
       for (ProjectFocus projectFocusBD : projectFocuses) {
         projectFocusBD.setActive(projectFocus.isActive());

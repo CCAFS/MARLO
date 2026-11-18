@@ -8,7 +8,7 @@
   "${baseUrlMedia}/js/projects/projectPartners.js?20261020-1"
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20261020-1"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20261104"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -504,7 +504,7 @@
           <div class="ptn-col">
             [#-- Country office(s) --]
             <div class="ptn-field ptn-field--countries">
-              <span class="ptn-label">[@s.text name="projectPartners.redesign.countryOffices" /][#if partnerOfficeRequired]<span class="ptn-req" aria-hidden="true">*</span>[/#if]</span>
+              <span class="ptn-label">[@s.text name="projectPartners.redesign.countryOffices" /][#if partnerOfficeRequired && editable]<span class="ptn-req" aria-hidden="true">*</span>[/#if]</span>
               <div class="countries-list items-list ptn-chips" listname="${name}.selectedLocations">
                 <ul class="ptn-chips__list">
                   [#if (element.selectedLocations?has_content)!false]
@@ -562,7 +562,7 @@
         [#-- Contacts person(s), grouped by role --]
         <div class="contactsPerson ptn-contacts">
           <div class="ptn-contacts__head">
-            <span class="ptn-label">[@s.text name="projectPartners.projectPartnerContacts" /]<span class="ptn-req requiredTag" aria-hidden="true" style="display:${isPPA?string('inline','none')}">*</span></span>
+            <span class="ptn-label">[@s.text name="projectPartners.projectPartnerContacts" /][#if editable]<span class="ptn-req requiredTag" aria-hidden="true" style="display:${isPPA?string('inline','none')}">*</span>[/#if]</span>
             <span class="ptn-muted" data-ptn-people></span>
           </div>
           <div class="ptn-contacts__none" data-ptn-no-contacts hidden>[@s.text name="projectPartners.redesign.contacts.empty" /]</div>

@@ -1115,9 +1115,10 @@ public class CrpUsersAction extends BaseAction {
       if (userRole.getUser() != null && userRole.getUser().getId() == userID) {
         Role role = userRole.getRole();
         if (role != null && role.getAcronym() != null) {
-          if (role.getAiccraAcronymDimanic() != null) {
-            if (!roleAcronyms.contains(role.getAiccraAcronymDimanic())) {
-              roleAcronyms.add(role.getAiccraAcronymDimanic());
+          String roleLabel = this.getRoleLabel(role);
+          if (roleLabel != null) {
+            if (!roleAcronyms.contains(roleLabel)) {
+              roleAcronyms.add(roleLabel);
             }
           } else if (role.getAcronymDimanic() != null) {
             if (!roleAcronyms.contains(role.getAcronymDimanic())) {

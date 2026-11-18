@@ -150,6 +150,13 @@ public class EditInnovationInterceptor extends AbstractInterceptor implements Se
       baseAction.setCanEdit(canEdit);
       baseAction.setCanSwitchProject(canSwitchProject);
 
+      // Allow Superadmin edit, closed phases included, as the deliverable and project interceptors do (A2-2613)
+      if (baseAction.canAccessSuperAdmin() && editParameter
+        && !parameters.get(APConstants.TRANSACTION_ID).isDefined()) {
+        baseAction.setEditableParameter(true);
+        baseAction.setCanEdit(true);
+      }
+
     } else {
       throw new NullPointerException();
     }
