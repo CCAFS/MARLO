@@ -114,7 +114,7 @@ public class EmailLayoutTest {
     assertTrue(base.getProperty("email.support").contains("MARLOSupport@cgiar.org"));
     assertTrue(base.getProperty("email.support.noCrpAdmins").contains("MARLOSupport@cgiar.org"));
     assertTrue(base.getProperty("email.bye").contains("Please do not reply to this email"));
-    assertEquals("<br><br>Please sign in to MARLO to get started.", base.getProperty("email.getStarted"));
+    assertEquals("<br><br>Please sign in to MARLO at {0} to get started.", base.getProperty("email.getStarted"));
   }
 
   /**
