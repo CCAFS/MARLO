@@ -11,7 +11,7 @@
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectsContributionToLP6.css",
   "${baseUrlMedia}/css/projects/deliverableList.css?20261019-4",
-  "${baseUrlMedia}/css/projects/contributionsCrpList.css?20261118-1"
+  "${baseUrlMedia}/css/projects/contributionsCrpList.css?20261118-2"
   ] /]
 [#assign currentStage = "contributionsCrpList" /]
 [#assign isListSection = true /]
@@ -331,9 +331,15 @@
         [/#if]
       </div>
 
-      [#-- Footer: count --]
+      [#-- Footer: count and a second Add, so a long list does not need a scroll back up --]
       <div class="dlv-foot" data-ci-foot>
         <span class="dlv-foot__showing" data-ci-showing aria-live="polite"></span>
+        [#if anyCanAdd]
+          <button type="button" class="dlv-btn dlv-btn--primary ci-foot__add" data-ci-open-add
+            data-ci-add-sets="[#list sets as set][#if set.canAdd]${set.key} [/#if][/#list]">
+            [@ciIcon "plus" /][@s.text name="form.buttons.addOutcome" /]
+          </button>
+        [/#if]
       </div>
     </div>
 
