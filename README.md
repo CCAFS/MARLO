@@ -7,7 +7,9 @@
 
 MARLO is an open-source, web-based research management platform that supports the full Planning, Monitoring, Reporting, and Learning (PMRL) cycle of complex multi-country, multi-stakeholder research programs. Originally built within the CGIAR system and now actively maintained by the IBD Team at the Alliance of Bioversity International and CIAT, MARLO is the system of record for annual planning, deliverables, innovations, outcome impact case reports (OICRs), and indicator contributions across one or more research programs.
 
-This repository hosts the **AICCRA** production line of MARLO. The platform has been deployed at scale on programs such as **CCAFS** (2017+) and **AICCRA** (2021–present), where it powered planning and reporting for 11 clusters across multiple African countries and supported the generation of 1,440+ knowledge products with 95%+ open-access compliance and 92%+ quality ratings.
+The baseline repository, `CCAFS/MARLO`, hosts the **AICCRA** production line of MARLO. The platform has been deployed at scale on programs such as **CCAFS** (2017+) and **AICCRA** (2021–present), where it powered planning and reporting for 11 clusters across multiple African countries and supported the generation of 1,440+ knowledge products with 95%+ open-access compliance and 92%+ quality ratings.
+
+> **Forks and terminology.** This codebase is also used by forks that serve other programs, and each program sees the same entities under its own labels (a `Project` can be shown as *Cluster* or *Technical Implementation Team*). If a [`REPO_IDENTITY.md`](./REPO_IDENTITY.md) file exists at the root of your checkout, read it first: it states which program(s) that checkout serves. If there is no `REPO_IDENTITY.md`, the checkout is `CCAFS/MARLO` itself: the baseline repository that the forks are created from, which mainly serves the `AICCRA` Global Unit (`crp_custom_file` `aicrra`). For the label each `custom/*.properties` file shows, see [`docs/glossary.md`](./docs/glossary.md).
 
 ---
 
@@ -217,6 +219,7 @@ The `reports/ai-context/` folder holds authoritative operational guides for the 
 - [`struts-critical-routing-catalog.md`](./reports/ai-context/struts-critical-routing-catalog.md) — Struts routing catalog with action classes and view results.
 - [`interceptor-validator-playbook.md`](./reports/ai-context/interceptor-validator-playbook.md) — interceptor stacks and `Action.validate()` patterns.
 - [`deployment-checklist.md`](./reports/ai-context/deployment-checklist.md) — pre-deploy / deploy / post-deploy checklist, including the mandatory application restart for i18n changes.
+- [`docs/glossary.md`](./docs/glossary.md) — internal entity names versus the label each `custom/*.properties` file shows, and how `crp_custom_file` selects the file.
 - [`EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md`](./EXPANDABLE_BLOCKS_AGENT_INSTRUCTIONS.md) — debugging accordion-style list UIs.
 
 ---

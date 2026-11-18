@@ -41,8 +41,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -59,7 +57,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 10 - Monitoring, Evaluation, Learning and Impact Assessment (MELIA)")
 public class ExpectedStudiesOther {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ExpectedStudies.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
@@ -121,12 +118,7 @@ public class ExpectedStudiesOther {
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.year}", required = true) @RequestParam Integer year,
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.all.param.phase}", required = true) @RequestParam String phase) {
     List<MeliaARDTO> meliaList = new ArrayList<MeliaARDTO>();
-    try {
-      meliaList =
-        this.expectedStudiesOtherItem.findAllMeliaByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
-    } catch (Exception e) {
-      LOG.error("Could not list the MELIA studies", e);
-    }
+    meliaList = this.expectedStudiesOtherItem.findAllMeliaByGlobalUnit(CGIAREntity, year, phase, this.getCurrentUser());
     return meliaList;
   }
 
@@ -142,15 +134,10 @@ public class ExpectedStudiesOther {
     @ApiParam(value = "${ExpectedStudies.MELIA.GET.id.param.phase}", required = true) @RequestParam String phase) {
 
 
-    ResponseEntity<MeliaDTO> response = null;
-    try {
-      response =
-        this.expectedStudiesOtherItem.findExpectedStudyById(id, CGIAREntity, year, phase, this.getCurrentUser());
-      if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-        throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.MELIA.GET.id.404"));
-      }
-    } catch (Exception e) {
-      LOG.error("Could not get the MELIA study {}", id, e);
+    ResponseEntity<MeliaDTO> response =
+      this.expectedStudiesOtherItem.findExpectedStudyById(id, CGIAREntity, year, phase, this.getCurrentUser());
+    if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+      throw new NotFoundException("404", this.env.getProperty("ExpectedStudies.MELIA.GET.id.404"));
     }
 
     return response;

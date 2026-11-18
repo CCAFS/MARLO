@@ -13,9 +13,10 @@
 			<property name="max" value="3500" />
 		</module>
 
-		<!-- Excludes rest/ from the PhaseNameLiteral rule (NF-006). The path is relative to the directory Checkstyle is
-		     started from (the repository root); optional, so a run from elsewhere still works and only loses the
-		     rest/ exclusion, which can then over-report, never under-report. -->
+		<!-- Suppressions for the PhaseNameLiteral rule (NF-006, rest/ and src/test) and the pre-existing logging
+		     offenders (OPS-004), see marlo-checkstyle-suppressions.xml. The path is relative to the directory Checkstyle is
+		     started from (the repository root, as checkstyle.sh does); optional, so a run from elsewhere (maven-checkstyle-plugin
+		     runs from the module) finds no file and applies no suppression: it can over-report, never under-report. -->
 		<module name="SuppressionFilter">
 			<property name="file" value="configuration/marlo-checkstyle-suppressions.xml"/>
 			<property name="optional" value="true"/>
@@ -110,6 +111,24 @@
 				<property name="commentFormat" value="CHECKSTYLE\.OFF\: RegexpSinglelineJava - (deprecated alias until T11b|alias under test)"/>
 				<property name="checkFormat" value="^RemovedPhaseTypeMethod$"/>
 				<property name="influenceFormat" value="0"/>
+			</module>
+
+			<!-- Logging guardrail (OPS-004, trd.md 9.1): console printing and bare printStackTrace() are
+			forbidden; use the class slf4j LOG instead. Any use of System.out / System.err is reported, as is
+			printStackTrace() and printStackTrace(System.xxx). printStackTrace(writer) is a legitimate way to
+			build stack text and is not matched. Commented-out lines are ignored.
+			Files that still carry the pattern are listed in marlo-checkstyle-suppressions.xml. -->
+			<module name="RegexpSinglelineJava">
+				<property name="id" value="LoggingPrintStackTrace"/>
+				<property name="format" value="\.printStackTrace\(\s*(\)|System\b)"/>
+				<property name="ignoreComments" value="true"/>
+				<property name="message" value="Do not call printStackTrace(); log the exception with the slf4j LOG."/>
+			</module>
+			<module name="RegexpSinglelineJava">
+				<property name="id" value="LoggingSystemOut"/>
+				<property name="format" value="System\.(out|err)\b"/>
+				<property name="ignoreComments" value="true"/>
+				<property name="message" value="Do not use System.out/err; use the slf4j LOG."/>
 			</module>
 
 		</module>
