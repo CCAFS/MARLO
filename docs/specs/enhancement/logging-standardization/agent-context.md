@@ -134,6 +134,11 @@ nothing stops a new offender from landing (see §6.1).
 
 ### 6.1 Remaining Offenders Inventory (measured 2026-10-08, on `staging`)
 
+> **Status 2026-11-18:** `src/main` has no live `System.out` / `System.err` and no `printStackTrace()` left.
+> `e5e20e5ff9` closed the last five, in `marlo-utils`, and their Checkstyle suppressions were removed. The two
+> `printStackTrace(new PrintWriter(...))` in `UnhandledExceptionAction` and `ExceptionEmail` build the error email
+> text and are not offenders. The inventory below is the 2026-10-08 snapshot, kept as history.
+
 Production sources only (`marlo-{core,data,utils,web}/src/main/java`), lines starting with `//` or `*` excluded.
 `src/test` has no `System.out`. Re-measure before quoting — these numbers move with every cleanup commit:
 
@@ -190,8 +195,9 @@ grep -rnE 'System\.(out|err)\.print|\.printStackTrace\(' --include='*.java' marl
   `action/projects/PartnersSaveAction.java:574` (JUL call although the class already has an SLF4J `LOG`).
 
 **Trap — two `ExternalPostUtils` with the same FQN.** `org.cgiar.ccafs.marlo.utils.ExternalPostUtils` exists in
-both `marlo-utils` (uses `System.out`) and `marlo-web` (uses `LOG`). Which one loads depends on classpath order.
-Settle which is live before cleaning the `marlo-utils` copy.
+both `marlo-utils` and `marlo-web`. The `marlo-web` copy is the live one: Tomcat loads `WEB-INF/classes` before
+`WEB-INF/lib`. Since `e5e20e5ff9` both log through SLF4J and log the body size, never the body (it carries the
+requester's email for CLARISA partner requests). Change both copies together.
 
 ## 7. Change Recipes
 

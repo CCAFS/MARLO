@@ -11,10 +11,6 @@
   "files" must match the whole absolute path, hence the leading and trailing .*
 -->
 <suppressions>
-  <!-- marlo-utils: remaining printStackTrace() calls. -->
-  <suppress id="LoggingPrintStackTrace" files=".*[\\/]marlo-utils[\\/]src[\\/]main[\\/]java[\\/].*[\\/]utils[\\/](ExternalPostUtils|AESConvert|SendMail)\.java"/>
-  <!-- marlo-utils: ExternalPostUtils still prints the request line to System.out. -->
-  <suppress id="LoggingSystemOut" files=".*[\\/]marlo-utils[\\/]src[\\/]main[\\/]java[\\/].*[\\/]utils[\\/]ExternalPostUtils\.java"/>
   <!-- marlo-web tests: ClientIpResolverTest prints diagnostics; SaveChainFailureLoggingTest redirects System.err. -->
   <suppress id="LoggingSystemOut" files=".*[\\/]marlo-web[\\/]src[\\/]test[\\/]java[\\/].*[\\/](ClientIpResolverTest|SaveChainFailureLoggingTest)\.java"/>
 </suppressions>
