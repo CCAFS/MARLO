@@ -195,3 +195,122 @@
   - Review rounds: 3 / ~20.
   - Not exceeded, but 81 % of the LOC estimate is used after 2 of 12 tasks. An overrun is expected around T03 and will stop the run at that gate.
 - **Final verification:** VERIFIED by the Leader's clean re-run (compile + full suite).
+- **Commit:** `7e2be0b4d5` (owner-approved).
+
+### CHG-PARTREQ-001-T03 — `PartnerRequestAction` on the manager (accept partner, office accept / reject)
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-11-19
+- **Attempts:** 2
+- **Effort:** xhigh, the security and email-ordering contract. **effort ceiling: held xhigh** on the rework: the task started at the T2 ceiling, and no in-host Reviewer model differs from `opus` while being at least as strong. A fresh Implementer ran with the full Attempt History.
+- **Skills assigned:** `marlo-verify`, `error-handling-patterns` (the task list; `marlo-commit` was kept with the Leader).
+- **Review mode:**
+  - Attempt 1: parallel lens Reviewers, SECURITY+RISK and RELIABILITY.
+  - Attempt 2: a single Reviewer covering all three lenses over the whole diff. This is a deviation from parallel mode, recorded because the fix was a narrow log change and override (e) only requires *a* Reviewer.
+
+#### Attempt 1 — FAIL
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/superadmin/PartnerRequestAction.java` (CRLF kept)
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/superadmin/PartnerRequestReviewGuardTest.java` (new, 12 tests)
+- **Baseline (red run, observed):** `grep -c "EmailLayout"` → `0`; `grep -c "isHttpPost"` → `0`. After the change: `PartnerRequestEmails` 7, `isHttpPost` 3.
+- **Implementer verification:**
+  - Clean compile 2431 / 1065 / 144.
+  - Guard test 12 / 0.
+  - Full suite 1331 / 0.
+  - Checkstyle delta -2 (HEAD 2 → 0).
+  - Hygiene: no FIX findings.
+- **Falsifiers (reverted):**
+  1. `isHttpPost` neutralised → `the manager must not be called on a GET expected:<[]> but was:<[acceptPartnerRequest]>` (offices: `but was:<[acceptOfficeRequests, rejectOfficeRequests]>`).
+  2. Mail on every outcome → `a request that was already handled must not be mailed again`.
+  3. Outcome object in the map → `outcomes must hold strings only, but held class org.cgiar.ccafs.marlo.data.model.PartnerRequestOutcome`.
+- **Evidence re-run (Leader-inline):** clean wipe + `mvn -o -pl marlo-data,marlo-web -am test` → exit 0; 2431 / 1065 / 144; guard test `Tests run: 12, Failures: 0`; suite 1331 / 0; CRLF preserved. **VERIFIED.**
+- **Reviewer verdicts:** SECURITY+RISK **FAIL** and RELIABILITY **FAIL**, both on the same issue. It is reproduced verbatim from the RELIABILITY report:
+
+  > 1. **Discovered Issue:** When `addCountryOffices` or `rejectCountryOffices` fails, the log line names only the institution id, never the request ids. The lines are `LOG.error("Could not accept the office requests of institution {}", this.requestedInstitutionId(), e)` and `"Could not reject the office requests of institution {}"`. The early-return WARN lines (`"... received no institution or no office request ids"`) name neither the institution nor the ids, even when ids were posted (the test fixture posts `"31"`). The request ids are available in `countryOfficePOJO.getIds()`. A `NumberFormatException` from `parseRequestIds` or a manager rollback therefore leaves a log line that cannot be traced to the failing requests.
+  >    * **Violated Rule:** `requirements.md` CHG-PARTREQ-001-OPS-001 says: "Every failure in a request, a review write … MUST produce one log line naming the action and the request id". AC OPS-001 says: "A forced failure in each review action produces one ERROR/WARN line with the action and request id". The task scope says: "failures logged with action + request id".
+  >    * **Remediation Suggestion:** Add a null-safe helper for the raw ids, for example `countryOfficePOJO == null ? null : countryOfficePOJO.getIds()`. Log it next to the institution id in both catch blocks and in both early-return WARN lines, and name the action literally (`addCountryOffices` / `rejectCountryOffices`), as `recordOutcomes` already does. Optionally, add an assertion in a test that captures the logs.
+
+  The SECURITY+RISK report states the same issue with the same rule. Its remediation also asks to strip CR/LF from the raw posted ids, to make the early-exit wording name what was missing, and to add a forced-exception test.
+- **Leader adjudication:** in scope; the task text says "failures logged with action + request id". Rework attempt 2 consumed.
+- **runtime events:** none
+
+#### Attempt 2 — PASS
+
+- **Files changed:** the same two files.
+  - All four office failure lines name the action literally, the posted request ids (via the null-safe, CR/LF-stripping `postedRequestIds()`), and the institution id.
+  - The early exit says the institution was missing.
+  - Advisory-grade extras were taken inside methods already touched:
+    - (a) `addPartner` treats a null result or null status as `failed`;
+    - (b) an external requester with no name is greeted with the creator's first name (legacy fallback);
+    - (c) the cc join is null-safe.
+  - 6 new tests capture the log lines through logback `ListAppender` (as in `CognitoLogHygieneTest`).
+- **New log lines:**
+  - `addCountryOffices: could not accept the office requests 31, 32 of institution 500`
+  - `rejectCountryOffices: could not reject the office requests 31,32 of institution 500`
+  - `rejectCountryOffices: nothing decided, the posted selection has no institution (request ids 31)`
+- **Falsifier (reverted, file byte-identical afterwards):** the ids were removed from the accept catch, and 2 tests went red: `expected:<...the office requests [31, 32 ]of institution 500> but was:<...the office requests []of institution 500>`; `testUnparsableIdsAreLoggedRawWithoutLineBreaks` likewise.
+- **Implementer verification:** clean compile 2431 / 1065 / 144; full suite 1337 / 0; Checkstyle delta -2; 609 of 609 lines CRLF.
+- **Evidence re-run (Leader-inline):** clean wipe + `mvn -o -pl marlo-data,marlo-web -am test` → exit 0; 2431 / 1065 / 144; `Tests run: 1337, Failures: 0, Errors: 0`; CRLF preserved. **VERIFIED.**
+- **Reviewer verdict:** **PASS**. OPS-001 is met on every review-write failure path. SEC-002, FN-004, FN-005, FN-008, FN-010, DD-4 and the §4 JSON contract were re-checked over the whole diff. The legacy senders and `validateEmailNotification` are removed. No Struts XML, FTL or JS was touched.
+- **runtime events:** none
+- **spawns:**
+  - implementer (attempt 1): 38 calls, 187955 tokens, ended complete
+  - reviewer (security+risk): 10 calls, 83755 tokens, ended fail
+  - reviewer (reliability): 7 calls, 78120 tokens, ended fail
+  - implementer (attempt 2): 15 calls, 140566 tokens, ended complete
+  - reviewer (attempt 2): 7 calls, 72427 tokens, ended complete
+
+#### ADVISORY (4R, non-gating)
+
+- **Refusal log.** `refuseNonPost` logs the non-POST refusal without the posted ids; `addPartner`'s refusal does include them. A refusal is not a write failure.
+- **`recordOutcomes` and email grouping in the outer try.** A `null` list element, or a grouping error after commit, would show `failed` for a decision that was actually applied. The manager contract prevents this today.
+- **Full exceptions logged.** The error logs pass the full exception. A future mail exception whose message carries an address would leak it into the log. There is no current evidence of this.
+- **Raw i18n keys until T08.** The `marloRequestInstitution.ui.outcome.*` action-message keys are added only in T08 (PR 2). Until then the redirect page shows raw keys.
+- **Redirect message store.** `addPartner` action messages must survive the redirect. Verify the `superAdminStack` / result message store in T07 and T11a.
+- **Untested paths.** The office emails with the notification switch off, and a batch that is entirely `SKIPPED_EXISTING`, are not tested.
+- **Unused fields.** `institutionManager` and `institutionLocationManager` are now unused in `PartnerRequestAction`. Follow-up; cleanup scope stays literal.
+- **Behaviour fixes relative to legacy:**
+  - a blank external mail no longer becomes an empty "To";
+  - a missing send-notification parameter no longer wipes the justification;
+  - `countryOfficePOJO` is null-checked before it is used.
+
+#### Spec tension (presented to the owner at this gate)
+
+- **AC FN-008 vs design §10 / FN-010.** AC FN-008 says "each requester gets one office-accepted email". The code groups office emails per Global Unit, because §10 ties the texts and the switch to the request's unit, and FN-010 must honour a mixed switch. A requester whose requests in one batch span two units gets two emails. The proposed amendment is AC FN-008 "…each requester gets one email per Global Unit of their requests". Awaiting the owner.
+
+#### Forward pointers (to be copied into later briefs)
+
+- **→ T07:** check that `addPartner` action messages survive the `redirectAction` to `superadmin/marloInstitutions` (message-store interceptor or a result that preserves them).
+- **→ T08:** the `marloRequestInstitution.ui.outcome.*` keys are already used by `addPartner` (`done`, `alreadyHandled`, `notFound`, `wrongKind`, `skippedExisting`, `notAllowed`, `failed`) and must be added in T08.
+- **→ T11a (PR 1):** the raw `marloRequestInstitution.ui.outcome.*` keys render until T08 lands. Either accept this for PR 1 or move the keys forward; this is the owner's decision at this gate.
+- **→ T12:** follow-ups to record:
+  - the unused `institutionManager` / `institutionLocationManager` fields;
+  - the full-exception logging note.
+
+- **Requirements covered:** FN-004, FN-005, FN-008 (action level), FN-010 (office emails now gated; C5 closed), SEC-002 (accept partner / offices), OPS-001 (these three actions).
+- **Decisions made:** these Implementer choices are accepted:
+  - overall office `outcome` = `done` if any request was applied, else `skippedExisting` if any was skipped, else the first status;
+  - `success` = true when a request was applied or skipped-existing;
+  - a mail failure after commit is logged and does not turn the decision into `failed`;
+  - office countries in the email are comma-joined (the builder escapes them).
+  
+  No spec edits (the FN-008 amendment awaits the owner).
+- **Issues encountered:** a stale-class `cannot access APConfig` compile error appeared during a falsifier cycle. The falsifiers were redone from a wiped compile.
+- **Budget (running), design §15 tripwire: EXCEEDED.**
+  - Tasks: 3 / 12.
+  - LOC added (code + tests + i18n): T01 966 + T02 353 + T03 950 = **2,269**, against ~1,650.
+    - Java prod 957 against ~420 for the whole spec;
+    - tests 1,304 against ~380 for the whole spec;
+    - i18n 8.
+  - Review rounds: 6 / ~20.
+- **Final verification:** VERIFIED by the Leader's clean re-run (compile + full suite 1337 / 0).
+
+## Budget Tripwire: after CHG-PARTREQ-001-T03
+
+- **Delta:** 2,269 LOC added after 3 of 12 tasks, against an estimate of ~1,650 for all 12 (+37 % already). On the same trend the spec lands around 4,500–5,500 LOC.
+- **Cause:**
+  1. Java production code runs at about 2.3× the estimate. The manager carries six methods with refusal rules, and the action rewrite keeps the legacy recipient routing, null guards and log lines (OPS-001 rework).
+  2. Tests run at about 3.4× the estimate. Each task proves its falsifiers with doubles that assert their arguments (KZ auth-flow-2), plus log-capture tests.
+  3. The design budget did not count the test fixtures needed to meet the task-level disqualifiers.
+- **Status:** stopped at the T03 gate for the owner's decision. Not logged `auto-approved`.

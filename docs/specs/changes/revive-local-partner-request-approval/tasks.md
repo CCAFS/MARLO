@@ -86,7 +86,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T03 — `PartnerRequestAction` on the manager (accept partner, office accept / reject)
 
-- **Status:** pending · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
+- **Status:** [x] done 2026-11-19 (PASS attempt 2 — `execution.md`) · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
 - **Requirements:** FN-004, FN-005 (superadmin told "already handled"), FN-008 (each requester one email; SKIPPED_EXISTING mailed; notify on reject optional), FN-010, SEC-002 (accept partner / office on POST), OPS-001, AC FN-004/FN-005/DA-001 (repeat → no institution, message), AC FN-008
 - **Design refs:** §2 action rows, §4 JSON contract, §6 recipients rule, §7, §8, §10 envelope, DD-4, DD-7
 - **Scope:** `addPartner` → `isHttpPost()` else action error; `acceptPartnerRequest`; action message per status; email only for `DONE`. `addCountryOffices` / `rejectCountryOffices` → `isHttpPost()`; manager office methods; null check of `countryOfficePOJO` before use; `outcome` + `outcomes` (`Map<String,String>` id → status string) properties; emails for `DONE` and office `SKIPPED_EXISTING`, gated by `isEnabled(request.getCrp())`; failures logged with action + request id (no email); remove the three private legacy senders.
