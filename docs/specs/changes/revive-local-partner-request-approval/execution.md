@@ -585,3 +585,89 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - LOC added: 3,060 + 119 = **3,179**.
   - Review rounds: 9.
 - **Final verification:** VERIFIED by the Leader's clean re-run (1351 / 0).
+- **Commit:** `d4dd9c8a3b` (owner-approved).
+
+### CHG-PARTREQ-001-T04 — Live proof of atomicity and locking (settles P-5, P-21)
+
+- **Final status:** PASS
+- **Date:** 2026-11-19
+- **Attempts:** 1
+- **Effort:** xhigh
+- **Skills assigned:** `marlo-verify`, `systematic-debugging` (task list).
+- **Review mode:** single evidence Reviewer (`Review: full`).
+- **Environment (owner-approved at the T07 gate):**
+  - Throwaway copy `aiccradb_partreq_test` was made from `aiccradb2` with `mysqldump --single-transaction`. It holds 623 tables, 10974 institutions and 5079 partner requests.
+  - `marlo-dev.properties` was pointed at the copy temporarily and then restored byte-for-byte.
+  - The MySQL `general_log` was enabled per capture and restored to `0` / `TABLE`.
+
+#### Attempt 1
+
+- **Files changed:**
+  - `design.md` §16: P-5 and P-21 rows cite the probes; the count line was updated.
+  - New files under `probes/`: `README.md` (T04 section), `t04-probe.py`, `t04-falsifier-lockonly-gate.out`, `t04-a-fault-injection.out`, `t04-b-concurrent-gate.out`, `t04-b-concurrent-natural.out`, `t04-c-ordering.out`, `t04-office-batch.out`.
+  - No product code changed.
+- **Falsifier, run first (red):**
+  - Change: `refresh` replaced by `buildLockRequest(PESSIMISTIC_WRITE).lock(entity)`, so the row is locked but its state is not re-read.
+  - Run: two POSTs to `addPartner`, released together from a third connection's lock gate. Starts were 0.3 ms apart and the requests overlapped.
+  - Result: **2 institutions** (11898, 11899) and 2 HQ locations for one request; `institutions` 10974 → 10976. JD-1 is reproduced.
+- **(a) Fault injection:**
+  - Change: an `IllegalStateException` thrown after the institution, location and copy saves.
+  - Result: the log shows the inserts, then `ROLLBACK`. Counts are unchanged and the request is still pending (`acepted=NULL`). The action logged the failure and redirected. **DA-001 holds.**
+- **(b) Concurrent accepts, clean code:**
+  - Gated run: starts 1.3 ms apart, overlapping (`data_lock_waits` = 2 at release). Result: +1 institution, one `DONE` and one `ALREADY_HANDLED`.
+  - Three natural races, 0.1 ms apart: +1 institution each time.
+  - SQL: `select partnerreq0_.id as id1_200_0_ … from partner_requests partnerreq0_ where partnerreq0_.id=5134 for update`, issued from both connections 48 µs apart.
+  - **FN-005 and P-21 hold.**
+- **(c) Commit before mail:**
+  - A second connection polled 208 times, about 3 ms apart. Its first sighting already showed the institution, the location and `acepted=1`; no partial state was ever visible.
+  - `COMMIT` at 17:02:27.484; message built at .541, 58 ms after the commit.
+  - `email_logs` row 18271 was written. **DD-4 and P-5 hold.**
+- **Office batch:** `{"5143":"done","5144":"skippedExisting"}`, and `institutions_locations` +1 (exactly one row).
+- **Cleanup verified by the Leader (non-author re-check):**
+  - `git diff -- marlo-data marlo-web` is empty (0 lines).
+  - No extra worktree remains.
+  - `marlo-dev.properties` has `mysql.database=aiccradb2`.
+  - `@@general_log` is `0` and `log_output` is `TABLE`.
+  - `aiccradb2` is unchanged: 10974 institutions, 5079 partner requests.
+  - No `cargo:run` process; port 8080 is closed.
+  - No DB password in the probe files.
+  - A credentials-file string match in `t04-falsifier-lockonly-gate.out` was a false positive: a 3-character value matched timestamp digits.
+  
+  **VERIFIED.**
+- **Reviewer verdict:** **PASS.**
+  - The probes prove the claims and no disqualifier applies.
+  - The lock-only variant is the faithful falsifier: DD-3 defines "lock without refresh" as the defect, and removing the line outright would also have removed the lock.
+  - The requests were truly parallel: barrier threads with separate sessions, and `data_lock_waits` = 2.
+  - The probe refuses any schema not named `*partreq_test*`.
+  - The `created_by` ALTER on the copy does not affect transaction, lock or commit semantics.
+- **runtime events:** none
+- **spawns:** implementer: 96 calls, 250733 tokens, ended complete; reviewer: 12 calls, 68098 tokens, ended complete.
+
+#### Environment deviations (recorded)
+
+- **Builds ran from a throwaway `git worktree`.** In the main checkout, the VS Code Java language server (`redhat.java`) had overwritten about 20 classes in `marlo-web/target/classes` with Eclipse-compiler stubs, including `WebAppInitializer`, so the app would not start. The worktree was removed afterwards, and the main `target/classes` was deleted because it held a stale lock-only class. **Lesson:** close VS Code, or wipe the classes, before any local run from the main checkout.
+- **Schema change on the copy only.** `ALTER TABLE institutions ALTER COLUMN created_by SET DEFAULT 0` was run on `aiccradb_partreq_test` only (see P-25).
+- **Real mail sent.** Mail is actually sent locally. Five test mails went to the configured `email.notification`.
+
+#### Execute-time spec edits (recorded when made)
+
+- `design.md` §16, P-5 and P-21: changed from UNVERIFIED to the probe citations. The Implementer made this edit as the task's deliverable. The Leader appended the copy-schema note to both rows.
+- `design.md` §16: a new row **P-25** (High, UNVERIFIED). Production accept relies on non-strict SQL mode: `institutions.created_by` is NOT NULL with no default and is not mapped by the entity. This is pre-existing, since the legacy `addPartner` saved the same entity. The count line now reads `Verified 24 · UNVERIFIED 1`. The meaning of no requirement changes.
+- `probes/README.md`: Leader notes on the missing first run (it failed on `created_by`) and on the doubled log lines.
+
+#### ADVISORY (non-gating)
+
+- **P-25 is a release risk.** If production runs in strict mode, every accept fails. The fix options are a guarded Flyway migration adding `DEFAULT 0` (via `marlo-migration`) or mapping `created_by` in `Institution`. This needs an owner decision (Pivot-class spec gap; presented at this gate).
+
+- **Requirements covered:** DA-001 (live), FN-005 (concurrent, live), AC FN-004/FN-005/DA-001 "leave no institution behind", FN-008 office batch (live), DD-3 / DD-4 confirmed.
+- **Budget (running, amended ceiling ~5,000 LOC / ~30 rounds):**
+  - Tasks: 7 / 12.
+  - LOC (product + tests + i18n): unchanged at **3,179**; the probe driver of ~400 lines is evidence and is not counted.
+  - Review rounds: 10.
+- **Final verification:** VERIFIED (cleanup re-check by the Leader; probe evidence reviewed).
+
+### Owner decisions at the T04 gate (2026-11-19)
+
+1. **P-25 becomes a release precondition.** The owner checks production `@@GLOBAL.sql_mode` before the release, together with OPS-002. If the mode is strict, the release stops and the spec is reopened (DA-002 amendment). No code change is made now. The precondition is recorded in `tasks.md` §7.
+2. **Commit** of the T04 evidence, approved by the owner.
+3. **T11a** goes ahead on `aiccradb_partreq_test`.

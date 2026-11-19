@@ -1,0 +1,9 @@
+== office-batch label=T04 probe office 1 institution=11897 country=78 requests=[5143, 5144] db=aiccradb_partreq_test
+  counts before                institutions=10981, institutions_locations=11302, partner_requests=5095, pending_partner_copies=1
+  locations of the institution in the country before: 0
+  requests before: req 5143 active=1 acepted=NULL institution=11897 office=1; req 5144 active=1 acepted=NULL institution=11897 office=1
+  HTTP 200 body={"outcome":"done","outcomes":{"5143":"done","5144":"skippedExisting"},"success":true}
+  counts after                 institutions=10981, institutions_locations=11303, partner_requests=5095, pending_partner_copies=1
+  locations of the institution in the country after: 1
+  requests after: req 5143 active=0 acepted=1 institution=11897 office=1; req 5144 active=0 acepted=0 institution=11897 office=1
+  accepted flags (DONE -> 1, SKIPPED_EXISTING -> 0): [['5143', '1', ''], ['5144', '0', 'The InstitutionLocation ID:12915 already exist in the system']]

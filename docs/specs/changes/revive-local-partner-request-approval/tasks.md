@@ -105,7 +105,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T04 — Live proof of atomicity and locking (settles P-5, P-21)
 
-- **Status:** pending · **Size:** S · **Depends on:** T01, T03 · **Module:** local run (no prod code unless a Pivot)
+- **Status:** [x] done 2026-11-19 (PASS attempt 1 — `execution.md`) · **Size:** S · **Depends on:** T01, T03 · **Module:** local run (no prod code unless a Pivot)
 - **Requirements:** DA-001 (all or nothing), FN-005 (concurrent repeat), AC FN-004/FN-005/DA-001 "AND IT MUST leave no institution behind"
 - **Design refs:** §6 transaction model, P-5, P-21, R-8, DD-3 fallback
 - **Scope:** on the throwaway DB: (a) temporary, uncommitted fault injection after the institution save in `acceptPartnerRequest` → POST `addPartner` → `institutions` and `institution_locations` unchanged, request still pending; (b) remove the fault; two concurrent POSTs to `addPartner` for the same request → exactly one new institution, the other `ALREADY_HANDLED`; MySQL general log / Hibernate SQL shows `for update`; (c) a second DB connection sees the institution row before the decision email is queued (`email_logs` timestamp after commit). If (a), (b) or (c) fails → **Pivot**: switch `findForUpdate` to the native `SELECT … FOR UPDATE` state read (design DD-3) and re-run.
@@ -327,6 +327,7 @@ T01 ∥ T02 can run in parallel. T04 gates PR 1's merge: a Pivot there changes T
 ## 7. Operational Steps
 
 - **Before release (OPS-002):** owner runs on production `SELECT DATE(added), COUNT(*), MIN(id), MAX(id) FROM institutions WHERE added >= '<last known sync>' GROUP BY 1;` — must return no rows. Otherwise stop.
+- **Before release (P-25, added 2026-11-19 at the T04 gate, owner approval):** owner runs on production `SELECT @@GLOBAL.sql_mode;` (and `SHOW CREATE TABLE institutions`). If it contains `STRICT_TRANS_TABLES` (or `STRICT_ALL_TABLES`), stop: every accept would fail on `institutions.created_by` (NOT NULL, no default, unmapped) — reopen the spec for a guarded migration or an entity mapping (needs a DA-002 amendment).
 - No migration, no specificity, no config change.
 - Release note: AICCRA partner requests are approved inside MARLO again; the support mailbox receives alerts.
 
