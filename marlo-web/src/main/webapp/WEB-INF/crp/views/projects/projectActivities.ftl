@@ -4,14 +4,14 @@
 [#assign pageLibs = ["select2"] /]
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
-  "${baseUrlMedia}/js/projects/projectActivities.js?20261119"
+  "${baseUrlMedia}/js/projects/projectActivities.js?20261119-3"
   ]
 /]
 [#-- The shell of the page (header, note, toolbar, confirm, empty state) reuses the deliverables list redesign
      (A2-2607); projectActivities.css only adds what is new here --]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/deliverableList.css?20261019-4",
-  "${baseUrlMedia}/css/projects/projectActivities.css?20261119-3"
+  "${baseUrlMedia}/css/projects/projectActivities.css?20261119-4"
   ]
 /]
 [#assign currentStage = "activities" /]
@@ -284,7 +284,10 @@
   data-error-leader="[@s.text name="project.activities.redesign.error.leader" /]"
   data-remove-deliverable="[@s.text name="project.activities.redesign.deliverables.remove" /]"
   data-not-mapped="[@s.text name="project.activities.redesign.deliverables.notMapped" /]"
-  data-date-invalid="[@s.text name="project.activities.dateInvalidFormat" /]"></div>
+  data-date-invalid="[@s.text name="project.activities.dateInvalidFormat" /]"
+  data-date-placeholder="[@s.text name="project.activities.redesign.date.placeholder" /]"
+  data-prev-year="[@s.text name="project.activities.redesign.date.prevYear" /]"
+  data-next-year="[@s.text name="project.activities.redesign.date.nextYear" /]"></div>
 
 [#-- Progress labels, one per status (customForm draws the first one; the script swaps the text) --]
 [#if reportingActive]
@@ -434,14 +437,13 @@
               [#if editable]
                 <select id="act-${uid}-leader" name="${customName}.projectPartnerPerson.id" class="form-control input-sm activityLeader">
                   <option value="-1">[@s.text name="project.activities.redesign.leader.placeholder"][@s.param]${sectionNoun}[/@s.param][/@s.text]</option>
+                  [#-- One flat list, by partner; each option already names its institution --]
                   [#list leaderGroups as groupName]
-                    <optgroup label="${groupName}">
-                      [#list partnerPersons as person]
-                        [#if ((person.projectPartner.institution.acronymName)!"") == groupName]
-                          <option value="${person.id?c}" data-name="${(person.user.composedCompleteName)!}" data-institution="${groupName}"[#if ((leader.id)!-1) == person.id] selected[/#if]>${(person.user.composedCompleteName)!}[#if groupName?has_content] · ${groupName}[/#if]</option>
-                        [/#if]
-                      [/#list]
-                    </optgroup>
+                    [#list partnerPersons as person]
+                      [#if ((person.projectPartner.institution.acronymName)!"") == groupName]
+                        <option value="${person.id?c}" data-name="${(person.user.composedCompleteName)!}" data-institution="${groupName}"[#if ((leader.id)!-1) == person.id] selected[/#if]>${(person.user.composedCompleteName)!}[#if groupName?has_content] · ${groupName}[/#if]</option>
+                      [/#if]
+                    [/#list]
                   [/#list]
                 </select>
               [#else]

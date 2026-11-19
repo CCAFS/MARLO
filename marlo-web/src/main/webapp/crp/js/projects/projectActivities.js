@@ -79,14 +79,18 @@ function initActivities() {
       });
 
   // ---- Deliverables of an activity ----
-  $root.on('focus input', '[data-cac-combo-input]', function() {
+  // A click opens the list too: after a pick the input can still hold the focus, and focus would not fire again
+  $root.on('focus input click', '[data-cac-combo-input]', function() {
     openCombo($(this).closest('[data-cac-combo]'));
   });
   $root.on('keydown', '[data-cac-combo-input]', comboKeys);
   $root.on('mousedown', '[data-cac-combo-list] [role="option"]', function(e) {
     // Before the input loses the focus, which would close the list
     e.preventDefault();
+    var $input = $(this).closest('[data-cac-combo]').find('[data-cac-combo-input]');
     pickDeliverable($(this));
+    // A pick with the mouse ends the search; a pick with Enter keeps the focus for the next one
+    $input.trigger('blur');
   });
   $root.on('click', '[data-cac-dl-remove]', removeDeliverable);
   $(document).on('mousedown', function(e) {
@@ -108,6 +112,16 @@ function initActivities() {
   });
   // Capture phase, so it runs before the global Save handler turns the button into its saving state
   document.addEventListener('click', blockSaveOnInvalidDates, true);
+
+  // A month panel closes when the pointer or the focus goes anywhere else
+  $(document).on('mousedown.cacMonthpick focusin.cacMonthpick', function(e) {
+    $.each(cacMonthPickers, function(i,picker) {
+      if(!picker.contains(e.target)) {
+        picker.close(false);
+      }
+    });
+  });
+  showReadOnlyMonths($root);
 
   initSaveState($root);
   stripLabelColons($root);
@@ -160,8 +174,219 @@ function initActivityControls($card,editable) {
     $end.attr('id', uid + '-end');
     $start.closest('.input').find('label').attr('for', uid + '-start');
     $end.closest('.input').find('label').attr('for', uid + '-end');
-    date('#' + uid + '-start', '#' + uid + '-end');
+    buildMonthPicker($start, $end, false);
+    buildMonthPicker($end, $start, true);
   }
+}
+
+/* ---------------------------------------------------------------------------------------------------------------- */
+/* Month picker (Start / End date) */
+
+// Activity dates have month precision: the start is stored as the 1st and the end as the last day of the month.
+// The old jQuery UI picker hid its days table while the field still showed a day nobody could choose. One trigger
+// shows the month; its panel is a year header and a grid of the 12 months. The original input stays, visually
+// hidden, as the posted value that the validator and the save read. Same component as the General Information
+// section (A2-2734), under this section's prefix.
+var cacMonthPickers = [];
+var CAC_MONTH_MIN_YEAR = 2015;
+
+function monthNames(short) {
+  var regional = $.datepicker && $.datepicker.regional[''] || {};
+  return (short ? regional.monthNamesShort : regional.monthNames) || [];
+}
+
+function padMonth(n) {
+  return (n < 10 ? '0' : '') + n;
+}
+
+function parseActivityDate(value) {
+  value = $.trim(value || '');
+  if(!isValidActivityDate(value)) {
+    return null;
+  }
+  var parts = value.split('-');
+  return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+}
+
+function monthLabel(date) {
+  return (monthNames()[date.getMonth()] || padMonth(date.getMonth() + 1)) + ' ' + date.getFullYear();
+}
+
+// Month index since year 0, to compare months without days
+function monthKey(date) {
+  return date ? date.getFullYear() * 12 + date.getMonth() : null;
+}
+
+function closeMonthPickers(except) {
+  $.each(cacMonthPickers, function(i,picker) {
+    if(picker !== except) {
+      picker.close(false);
+    }
+  });
+}
+
+/**
+ * Replaces a start or end date input by a month trigger and its month-grid panel.
+ * @param $input the start or end date input, which keeps the posted yyyy-mm-dd value
+ * @param $other the other end of the range, which bounds the months offered here
+ * @param isEnd true for the end date (stored as the last day of the month)
+ */
+function buildMonthPicker($input,$other,isEnd) {
+  if($input.next('.cac-monthpick').length) {
+    return;
+  }
+  if($input.hasClass('hasDatepicker')) {
+    $input.datepicker('destroy');
+  }
+  var $label = $input.closest('.input').find('label').first();
+  var triggerId = $input.attr('id') + '-picker';
+  var saved = parseActivityDate($input.val());
+  var lastYear = window.globalMaxYear || 2031;
+  // A saved year outside the range stays reachable, so loading the page never rewrites it
+  var minYear = Math.min(CAC_MONTH_MIN_YEAR, saved ? saved.getFullYear() : CAC_MONTH_MIN_YEAR);
+  var maxYear = Math.max(lastYear, saved ? saved.getFullYear() : lastYear);
+  var shownYear;
+
+  var $wrap = $('<div class="cac-monthpick"></div>');
+  var $trigger = $('<button type="button" class="cac-monthpick__trigger" aria-haspopup="dialog" aria-expanded="false"></button>')
+    .attr('id', triggerId);
+  var $text = $('<span class="cac-monthpick__text"></span>');
+  $trigger.append($text, '<svg class="cac-monthpick__icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">'
+      + '<rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>'
+      + '<path d="M2 6.5h12M5.5 1.5v3M10.5 1.5v3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>');
+
+  var $panel = $('<div class="cac-monthpick__panel" role="dialog" hidden></div>')
+    .attr('aria-label', $.trim($label.clone().children().remove().end().text()));
+  var $prev = $('<button type="button" class="cac-monthpick__nav" data-step="-1"></button>')
+    .attr('aria-label', cacTexts.prevYear).html('<span aria-hidden="true">&#8249;</span>');
+  var $next = $('<button type="button" class="cac-monthpick__nav" data-step="1"></button>')
+    .attr('aria-label', cacTexts.nextYear).html('<span aria-hidden="true">&#8250;</span>');
+  var $year = $('<span class="cac-monthpick__year" aria-live="polite"></span>');
+  var $grid = $('<div class="cac-monthpick__grid"></div>');
+  for(var m = 0; m < 12; m++) {
+    $grid.append($('<button type="button" class="cac-monthpick__month"></button>').attr('data-month', m)
+      .attr('aria-label', monthNames()[m] || '').text(monthNames(true)[m] || padMonth(m + 1)));
+  }
+  $panel.append($('<div class="cac-monthpick__head"></div>').append($prev, $year, $next), $grid);
+  $wrap.append($trigger, $panel);
+
+  // The label pointed at the input that is now hidden; it names the trigger instead
+  $label.attr('for', triggerId);
+  $input.addClass('cac-month__value').attr({ 'aria-hidden': 'true', tabindex: '-1' }).after($wrap);
+
+  function current() {
+    return parseActivityDate($input.val());
+  }
+
+  function refreshTrigger() {
+    var date = current();
+    $text.text(date ? monthLabel(date) : cacTexts.datePlaceholder).toggleClass('is-empty', !date);
+  }
+
+  // The other end bounds this one, as the old picker's minDate / maxDate did
+  function renderPanel() {
+    var selected = monthKey(current());
+    var limit = monthKey(parseActivityDate($other.val()));
+    $year.text(shownYear);
+    $prev.prop('disabled', shownYear <= minYear);
+    $next.prop('disabled', shownYear >= maxYear);
+    $grid.children().each(function() {
+      var key = shownYear * 12 + Number($(this).attr('data-month'));
+      var outOfOrder = limit !== null && (isEnd ? key < limit : key > limit);
+      $(this).prop('disabled', outOfOrder && key !== selected).attr('aria-pressed', key === selected ? 'true' : 'false')
+        .toggleClass('is-selected', key === selected);
+    });
+  }
+
+  function focusMonth() {
+    var $target = $grid.children('.is-selected:not(:disabled)').first();
+    if(!$target.length) {
+      $target = $grid.children(':not(:disabled)').first();
+    }
+    ($target.length ? $target : $next).trigger('focus');
+  }
+
+  var picker = {
+      open: function() {
+        closeMonthPickers(picker);
+        var date = current() || parseActivityDate($other.val());
+        shownYear = date ? date.getFullYear() : Math.min(Math.max(new Date().getFullYear(), minYear), maxYear);
+        renderPanel();
+        $panel.prop('hidden', false);
+        $trigger.attr('aria-expanded', 'true');
+        $wrap.addClass('is-open');
+        focusMonth();
+      },
+      close: function(returnFocus) {
+        if($panel.prop('hidden')) {
+          return;
+        }
+        $panel.prop('hidden', true);
+        $trigger.attr('aria-expanded', 'false');
+        $wrap.removeClass('is-open');
+        if(returnFocus) {
+          $trigger.trigger('focus');
+        }
+      },
+      contains: function(node) {
+        return $.contains($wrap[0], node);
+      }
+  };
+  cacMonthPickers.push(picker);
+
+  $trigger.on('click', function() {
+    if($panel.prop('hidden')) {
+      picker.open();
+    } else {
+      picker.close(true);
+    }
+  });
+  $panel.on('click', '.cac-monthpick__nav', function() {
+    shownYear += Number($(this).attr('data-step'));
+    renderPanel();
+  });
+  $grid.on('click', '.cac-monthpick__month', function() {
+    var month = Number($(this).attr('data-month'));
+    var day = isEnd ? new Date(shownYear, month + 1, 0).getDate() : 1;
+    $input.val(shownYear + '-' + padMonth(month + 1) + '-' + padMonth(day)).trigger('change');
+    picker.close(true);
+  });
+  // Arrow keys move through the grid (4 columns); Escape closes
+  $panel.on('keydown', function(e) {
+    if(e.key === 'Escape') {
+      e.preventDefault();
+      picker.close(true);
+      return;
+    }
+    var steps = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -4, ArrowDown: 4 };
+    var $month = $(e.target).closest('.cac-monthpick__month');
+    if(!$month.length || !steps[e.key]) {
+      return;
+    }
+    e.preventDefault();
+    var $months = $grid.children();
+    var index = $months.index($month) + steps[e.key];
+    while(index >= 0 && index < 12 && $months.eq(index).prop('disabled')) {
+      index += steps[e.key] > 0 ? 1 : -1;
+    }
+    if(index >= 0 && index < 12) {
+      $months.eq(index).trigger('focus');
+    }
+  });
+  $input.on('change', refreshTrigger);
+  refreshTrigger();
+}
+
+/* Read only: customForm prints the stored yyyy-mm-dd as text; show the month the value means */
+function showReadOnlyMonths($scope) {
+  $scope.find('input.startDate[type="hidden"], input.endDate[type="hidden"]').each(function() {
+    var date = parseActivityDate(this.value);
+    // The value's own <p> follows the input; the field's first <p> is the QA comment bubble
+    var $text = $(this).nextAll('p').first();
+    if(date && $text.length && $.trim($text.text()) === this.value.substring(0, 10)) {
+      $text.text(monthLabel(date));
+    }
+  });
 }
 
 /* customForm ends every label with a colon ("Title:*"); the design's labels carry none */
@@ -955,54 +1180,6 @@ function initSaveState($root) {
 
 /* ---------------------------------------------------------------------------------------------------------------- */
 /* Dates */
-
-function date(start,end) {
-  var dateFormat = 'yy-mm-dd';
-  var maxYear = window.globalMaxYear || 2031;
-  var maxDate = maxYear + '-12-31';
-
-  $(start).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2015-01-01',
-      maxDate: maxDate,
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth, 1);
-        $(this).datepicker('setDate', selectedDate);
-        $(end).datepicker('option', 'minDate', selectedDate);
-        // setDate fires no change event, and the minDate option clears an unreadable end date
-        validateActivityDate($(start));
-        validateActivityDate($(end));
-        $(start).trigger('change');
-      },
-      onSelect: function() {
-        $(this).trigger('change');
-      }
-  });
-
-  $(end).datepicker({
-      dateFormat: dateFormat,
-      minDate: '2015-01-01',
-      maxDate: maxDate,
-      changeMonth: true,
-      numberOfMonths: 1,
-      changeYear: true,
-      onChangeMonthYear: function(year,month,inst) {
-        var selectedDate = new Date(inst.selectedYear, inst.selectedMonth + 1, 0);
-        $(this).datepicker('setDate', selectedDate);
-        $(start).datepicker('option', 'maxDate', selectedDate);
-        // setDate fires no change event, and the maxDate option clears an unreadable start date
-        validateActivityDate($(start));
-        validateActivityDate($(end));
-        $(end).trigger('change');
-      },
-      onSelect: function() {
-        $(this).trigger('change');
-      }
-  });
-}
 
 /**
  * Flags a start or end date whose text is not a real yyyy-mm-dd date. The server cannot convert such a value, and
