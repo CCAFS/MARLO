@@ -67,7 +67,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T02 — `PartnerRequestEmails` builder and email keys
 
-- **Status:** pending · **Size:** M · **Depends on:** — · **Module:** marlo-web
+- **Status:** [x] done 2026-11-19 (PASS attempt 1 — `execution.md`) · **Size:** M · **Depends on:** — · **Module:** marlo-web
 - **Requirements:** FN-002, FN-003 (alert content, subject from i18n), FN-009 (six emails in the shell, i18n only), FN-010 (switch), NF-002, AC FN-009/FN-010 (no legacy footer; none sent when off)
 - **Design refs:** §10 email catalogue, §5.5 Emails row, DD-5, P-12, P-23
 - **Scope:** `utils/PartnerRequestEmails.java` (new): one method per email returning subject + `EmailLayout.wrap(texts, assetsUrl, body)`, body = `email.role.dear` + body key + `email.role.bye`; body arguments HTML-escaped, subject arguments not; `isEnabled(GlobalUnit)` = today's `validateEmailNotification` rule; `unitTexts(GlobalUnit)` via `UnitTextProvider.forCustomFile` (as `UnsubmitProjectAction`). Keys in `global.properties`: `marloRequestInstitution.mail.newPartner`, `.newOffice`, `.accepted`, `.rejected`, `.officeAccepted`, `.officeRejected`, `.supportName`, written in the `email.role.*` inline-style copy (catalog `reports/ai-context/role-assignment-email-catalog.md`).
