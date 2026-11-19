@@ -86,6 +86,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   // 1 = "0 - Not Targeted", 4 = "Too early to tell" / "N/A - Not applicable"
   private static final Set<Long> NOT_TARGETED_FOCUS_LEVEL_IDS = new HashSet<>(Arrays.asList(1L, 4L));
 
+  // A blank cell must still carry visible content (a non-breaking space), see addRowWithVisibleCells
+  private static final String BLANK_CELL = "<font size=2 face='Segoe UI' color='#000000'>&nbsp;</font>";
+  private static final Pattern HTML_TAG = Pattern.compile("<[^>]*>");
+
   // Variables
   private long startTime;
   private Boolean hasW1W2Co;
@@ -235,6 +239,25 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   }
 
   /**
+   * Adds a row after giving every blank text cell a non-breaking space. Pentaho renders a cell with no visible text
+   * as a box shorter than its neighbours, which splits the row into two Excel rows joined by merged regions; POI then
+   * validates every new merged region against all the previous ones, so generation time grew with the square of the
+   * row count (17393 merged regions and about 70 s for 1746 deliverables).
+   *
+   * @param model the table model receiving the row
+   * @param row the row values, in the model column order
+   */
+  private void addRowWithVisibleCells(TypedTableModel model, Object[] row) {
+    for (int i = 0; i < row.length; i++) {
+      if (model.getColumnClass(i) == String.class
+        && (row[i] == null || HTML_TAG.matcher((String) row[i]).replaceAll("").trim().isEmpty())) {
+        row[i] = BLANK_CELL;
+      }
+    }
+    model.addRow(row);
+  }
+
+  /**
    * Builds the case-insensitive pattern that finds any of the user keys. Each key is quoted, so a key holding regex
    * metacharacters such as "(" is searched literally instead of throwing PatternSyntaxException. Lookarounds keep the
    * whole-word behaviour of \b while also working for keys that start or end with a non-word character.
@@ -380,8 +403,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                 insLeader += "</font>";
               }
               Long phaseID = this.getSelectedPhase().getId();
-              model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate, insLeader,
-                leader, projectU, phaseID});
+              this.addRowWithVisibleCells(model, new Object[] {projectId, projectTitle, actId, actTit, actDesc,
+                startDate, endDate, insLeader, leader, projectU, phaseID});
             }
           }
         }
@@ -549,8 +572,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               }
 
               Long phaseID = projectInfo.getPhase().getId();
-              model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
-                projectUrl, devUrl, phaseID, gender, youth, capacityDevelopment});
+              this.addRowWithVisibleCells(model, new Object[] {projectId, title, devId, devTitle, devType, devSubType,
+                leadIns, leader, projectUrl, devUrl, phaseID, gender, youth, capacityDevelopment});
             }
           }
         }
@@ -807,8 +830,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
             String projectUrl = project.getId().toString();
             Long phaseID = projectInfo.getPhase().getId();
-            model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
-              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID, gender, youth, capacityDevelopment});
+            this.addRowWithVisibleCells(model, new Object[] {projectId, title, summary, startDate, endDate, flagships,
+              regions, insLeader, leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID, gender, youth,
+              capacityDevelopment});
           }
         }
       }
