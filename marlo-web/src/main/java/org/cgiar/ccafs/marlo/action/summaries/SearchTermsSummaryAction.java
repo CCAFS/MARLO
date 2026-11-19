@@ -607,8 +607,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
-      new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl", "phaseID"},
-      new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class, Long.class});
+      new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl", "phaseID", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class, Long.class,
+        String.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -623,8 +624,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     // set CIAT imgage URL from repo
     String imageUrl =
       this.getBaseUrl() + "/images/global/crps/" + this.getLoggedCrp().getAcronym().toLowerCase() + ".png";
-    model.addRow(
-      new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl, this.getSelectedPhase().getId()});
+    // baseUrl feeds the project, activity and deliverable links in the subreports (passed through the "*" mapping),
+    // so each environment links to its own instance instead of production
+    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl,
+      this.getSelectedPhase().getId(), this.getBaseUrl()});
     return model;
   }
 
