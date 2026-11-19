@@ -54,6 +54,14 @@ public interface PartnerRequestDAO {
    */
   public List<PartnerRequest> findAll();
 
+  /**
+   * Loads a partner request and locks its row for the rest of the current transaction. The entity is refreshed under
+   * the lock, so the state returned is the committed one even when the session already held a stale copy.
+   * 
+   * @param id is the partnerRequest identifier.
+   * @return the locked and refreshed PartnerRequest, or null when no row has that id.
+   */
+  public PartnerRequest findForUpdate(long id);
 
   /**
    * This method saves the information of the given partnerRequest

@@ -45,7 +45,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T01 — Transactional manager, locking DAO and outcome type
 
-- **Status:** pending · **Size:** M · **Depends on:** — · **Module:** marlo-data (+ test in marlo-web)
+- **Status:** [x] done 2026-11-19 (PASS attempt 1 — `execution.md`) · **Size:** M · **Depends on:** — · **Module:** marlo-data (+ test in marlo-web)
 - **Requirements:** FN-004 (create institution + HQ, close rows), FN-005 (accept once), FN-006 (reject fields, close both), FN-007 (edit copy only; BUT not pending → nothing), FN-008 (office add once, skip existing, reject justification), DA-001 (atomic), DA-002 (no schema), AC FN-001 (two rows created together)
 - **Design refs:** §2 marlo-data, §6 (method table, "copy"/"pending" definitions, lock order), DD-2, DD-3, P-14, P-21
 - **Scope:**
