@@ -276,7 +276,9 @@
   font: 600 12.5px Figtree, sans-serif;
   color: var(--dlv-ink);
 }
-.cac .cac-act__spacer { flex: none; width: 30px; }
+/* Without a remove button (Completed / Cancelled, or no permission) the status closes the row: it takes the
+   body's 20px right inset (12px head padding + 8px) instead of keeping room for the button */
+.cac .cac-act__status:last-child { min-width: 0; margin-right: 8px; }
 .cac .cac-confirm { margin: 0 12px 12px; }
 
 /* ---------- Activity form ---------- */

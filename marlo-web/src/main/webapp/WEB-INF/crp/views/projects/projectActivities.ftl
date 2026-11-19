@@ -11,7 +11,7 @@
      (A2-2607); projectActivities.css only adds what is new here --]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/deliverableList.css?20261019-4",
-  "${baseUrlMedia}/css/projects/projectActivities.css?20261119-4"
+  "${baseUrlMedia}/css/projects/projectActivities.css?20261119-6"
   ]
 /]
 [#assign currentStage = "activities" /]
@@ -368,8 +368,6 @@
           aria-label="[@s.text name="project.activities.redesign.remove"][@s.param]${label}[/@s.param][/@s.text]">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.4h10M6.4 4.4V3h3.2v1.4M4.4 4.4l.6 8.6h6l.6-8.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </button>
-      [#else]
-        <span class="cac-act__spacer" aria-hidden="true"></span>
       [/#if]
     </div>
 
