@@ -55,9 +55,12 @@
               <span class="glyphicon glyphicon-pencil"></span> Edit Request
             </a>
             [#-- Accept --]
-            <a class="btn btn-success btn-sm" onclick="return confirm('[@s.text name="marloRequestInstitution.confirmAccept" /]');" href="[@s.url namespace="" action="superadmin/addPartner"][@s.param name='requestID']${partner.id?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
-              <span class="glyphicon glyphicon-ok"></span> Accept
-            </a>
+            <form class="acceptRequestForm" method="post" style="display:inline-block" onsubmit="return confirm('[@s.text name="marloRequestInstitution.confirmAccept" /]');" action="[@s.url namespace="" action="superadmin/addPartner"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
+              <input type="hidden" name="requestID" value="${partner.id?c}"/>
+              <button type="submit" class="btn btn-success btn-sm">
+                <span class="glyphicon glyphicon-ok"></span> Accept
+              </button>
+            </form>
             [#-- Reject --]
             <a class="btn btn-danger btn-sm rejectRequest partnerRequestId-${partner.id}" href="#">
                <span class="glyphicon glyphicon-remove"></span> Reject

@@ -29,6 +29,7 @@ $(document).ready(function() {
     
     $.ajax({
         url: baseURL + '/rejectPartnerRequest.do',
+        type: 'POST',
         data: {
             requestID: requestID,
             justification: justificationText,
@@ -78,6 +79,7 @@ $(document).ready(function() {
 
     $.ajax({
         url: baseURL + '/editPartnerRequest.do',
+        type: 'POST',
         data: $request.find('.editForm').serializeObject(),
         beforeSend: function() {
           $request.find('.loading').fadeIn();
@@ -152,6 +154,7 @@ $(document).ready(function() {
     }
     $.ajax({
         url: baseURL + '/rejectOfficesRequest.do',
+        type: 'POST',
         data: formData,
         beforeSend: function() {
           $rejectOfficeRequest.find('.loading').fadeIn();
@@ -196,6 +199,7 @@ $(document).ready(function() {
     
     $.ajax({
         url: baseURL + '/acceptOfficesRequest.do',
+        type: 'POST',
         data: formData,
         beforeSend: function() {
           $request.find('.loading').fadeIn();

@@ -37,7 +37,12 @@ import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.EnvelopeConfig;
 import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.RecordingSendMail;
 import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.Sent;
 
+import java.io.IOException;
 import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -868,6 +873,67 @@ public class PartnerRequestReviewGuardTest {
     this.loggedLine(Level.ERROR, "rejectPartnerRequest: could not reject partner request 20");
     for (ILoggingEvent event : this.logged.list) {
       assertFalse("no address in the logs", event.getFormattedMessage().contains("@"));
+    }
+  }
+
+  private static final String[] GUARDED_STACK_REFS = {"defaultStack", "crpAdminStack"};
+
+  /** The marlo-web resources folder, whether the build runs from the repository root or from marlo-web. */
+  private static Path resource(String name) {
+    Path fromModule = Paths.get("src", "main", "resources", name);
+    return Files.exists(fromModule) ? fromModule : Paths.get("marlo-web").resolve(fromModule);
+  }
+
+  /** The text of one {@code <action name="...">} element, from its opening tag to its closing tag. */
+  private static String actionBlock(String file, String actionName) throws IOException {
+    String xml = new String(Files.readAllBytes(resource(file)), StandardCharsets.UTF_8);
+    int start = xml.indexOf("<action name=\"" + actionName + "\"");
+    assertTrue(actionName + " is declared in " + file, start >= 0);
+    assertEquals(actionName + " is declared once in " + file, -1,
+      xml.indexOf("<action name=\"" + actionName + "\"", start + 1));
+    int end = xml.indexOf("</action>", start);
+    assertTrue(actionName + " has a closing tag", end > start);
+    return xml.substring(start, end);
+  }
+
+  private static void assertGuardBeforeStack(String file, String actionName) throws IOException {
+    String block = actionBlock(file, actionName);
+    int guard = block.indexOf("<interceptor-ref name=\"superAdminValidation\"");
+    assertTrue(actionName + " lists superAdminValidation inside its own action", guard >= 0);
+    int stack = -1;
+    for (String ref : GUARDED_STACK_REFS) {
+      int at = block.indexOf("<interceptor-ref name=\"" + ref + "\"");
+      if (at >= 0) {
+        stack = at;
+      }
+    }
+    assertTrue(actionName + " lists a stack after the guard", stack >= 0);
+    assertTrue(actionName + ": superAdminValidation must come before the stack (guard " + guard + ", stack " + stack
+      + ")", guard < stack);
+  }
+
+  @Test
+  public void testReviewRoutesRunTheSuperAdminGuardBeforeTheStack() throws Exception {
+    assertGuardBeforeStack("struts-json.xml", "rejectPartnerRequest");
+    assertGuardBeforeStack("struts-json.xml", "editPartnerRequest");
+    assertGuardBeforeStack("struts-json.xml", "acceptOfficesRequest");
+    assertGuardBeforeStack("struts-json.xml", "rejectOfficesRequest");
+    assertGuardBeforeStack("struts-admin.xml", "{crp}/marloInstitutions");
+  }
+
+  @Test
+  public void testJsonReviewRoutesKeepTheFullGuardChainAndExposeTheOutcome() throws Exception {
+    String[] names = {"rejectPartnerRequest", "editPartnerRequest", "acceptOfficesRequest", "rejectOfficesRequest"};
+    for (String name : names) {
+      String block = actionBlock("struts-json.xml", name);
+      int previous = -1;
+      for (String ref : new String[] {"logErrorStatus", "requireUser", "validPhase", "superAdminValidation",
+        "defaultStack", "SecurityControl"}) {
+        int at = block.indexOf("<interceptor-ref name=\"" + ref + "\"");
+        assertTrue(name + " lists " + ref + " after the previous one", at > previous);
+        previous = at;
+      }
+      assertTrue(name + " exposes success and outcome", block.contains("success,outcome"));
     }
   }
 }

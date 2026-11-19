@@ -58,7 +58,7 @@ the manager and the email assembly moved out of four actions into one builder.
 | `action/json/superadmin/EditPartnerRequestAction.java` | `isHttpPost()`; calls `editPartnerRequest`; `outcome` status string in the result (§4 JSON contract); log failures |
 | `action/json/superadmin/RejectPartnerRequestAction.java` | `isHttpPost()`; calls `rejectPartnerRequest`; `outcome` status string in the result; email through the builder; log failures |
 | `resources/struts-json.xml` | `rejectPartnerRequest`, `editPartnerRequest`, `acceptOfficesRequest`, `rejectOfficesRequest`: interceptor list as the `globalUnitLogoUpload` precedent (guard before the stack); `includeProperties` per the §4 JSON contract — edit / reject gain `success,outcome`, office results become `success,outcome,outcomes.*` |
-| `resources/struts-admin.xml` | `{crp}/marloInstitutions`: `logErrorStatus`, `i18nFile`, `requireUser`, `superAdminValidation`, then `crpAdminStack` (an anonymous user still gets the login flow; a non-superadmin never reaches `prepare()`), and its result becomes a `redirectAction` with `namespace=/superadmin`, `actionName=marloInstitutions` (precedent: `struts-home.xml:158`) |
+| `resources/struts-admin.xml` | `{crp}/marloInstitutions`: `i18nFile`, `requireUser`, `superAdminValidation`, then `crpAdminStack` (no explicit `logErrorStatus`: `crpAdminStack` already runs it and `ErrorStatusLogStackCoverageTest` requires it exactly once — amended at execute 2026-11-19, T07) (an anonymous user still gets the login flow; a non-superadmin never reaches `prepare()`), and its result becomes a `redirectAction` with `namespace=/superadmin`, `actionName=marloInstitutions` (precedent: `struts-home.xml:158`) |
 | `resources/global.properties` | New `marloRequestInstitution.mail.*` body keys, `marloRequestInstitution.ui.*` page / JS keys, `marloRequestCreation.saveFailed`, request-page success keys (§5.5) |
 | `webapp/WEB-INF/global/views/superadmin/marloInstitutions.ftl` | Redesigned page: `.prq` scope, header + counts, outcome notes, two lists; drop the diff libs from `pageLibs`; new cache-busters |
 | `webapp/WEB-INF/global/macros/institutionRequestMacro.ftl` | Rewritten markup: request card, original-vs-edited rows, inline edit form, office card, empty states; accept as POST form |
@@ -92,7 +92,7 @@ None (DA-002). `partner_requests`, `institutions`, `institution_locations` are u
 | `rejectPartnerRequest.do` | same | **POST only** | Reject partner |
 | `acceptOfficesRequest.do` | same | **POST only** | Accept offices; JSON `success` + `outcome` |
 | `rejectOfficesRequest.do` | same | **POST only** | Reject offices; JSON `success` + `outcome` |
-| `admin/{crp}/marloInstitutions` | `logErrorStatus`, `i18nFile`, `requireUser`, `superAdminValidation`, then `crpAdminStack` | GET | Redirects to `/superadmin/marloInstitutions` |
+| `admin/{crp}/marloInstitutions` | `i18nFile`, `requireUser`, `superAdminValidation`, then `crpAdminStack` (which runs `logErrorStatus`; amended 2026-11-19) | GET | Redirects to `/superadmin/marloInstitutions` |
 
 The guard sits before `defaultStack`, so a refused call never reaches `prepare()` (the precedent order,
 `struts-json.xml:704-711`). The JSON package maps `"403"` to HTTP 403 (`struts-json.xml:56-59`; `BaseAction.java:179`).

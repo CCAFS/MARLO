@@ -492,3 +492,96 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - Review rounds: 8.
   - Within the ceiling.
 - **Final verification:** VERIFIED by the Leader's clean re-run (1349 / 0).
+- **Commit:** `c209aa74d0` (owner-approved).
+
+### CHG-PARTREQ-001-T07 — Struts security config and menus (+ outcome keys and POST bridge, owner-moved)
+
+- **Final status:** PASS
+- **Date:** 2026-11-19
+- **Attempts:** 1
+- **Effort:** medium
+- **Skills assigned:** `marlo-verify` (task list). `marlo-commit` stays with the Leader.
+- **Review mode:** lens checklist, single Reviewer. A `Review: checklist` claim did not skip review, because overrides (b) and (f) apply: shared contract and security surface.
+
+#### Attempt 1
+
+- **Files changed** (all LF, as at HEAD):
+  - `struts-json.xml` (+28 / −2)
+  - `struts-admin.xml` (+6 / −1)
+  - `global.properties` (+7 `marloRequestInstitution.ui.outcome.*`)
+  - `menu-superadmin.ftl` (1 line uncommented)
+  - `menu-admin.ftl` (−1)
+  - `institutionRequestMacro.ftl` (accept link → `method="post"` form; confirm moved to `onsubmit`)
+  - `superadmin/marloInstitutions.ftl` (cache-buster `?20261119`)
+  - `marloInstitutions.js` (+4 `type: 'POST'`)
+  - `PartnerRequestReviewGuardTest.java` (+2 static tests)
+- **Baselines (observed) → after:**
+  - Guard counts: `0 0 0 0` / admin `0` → all present.
+  - `menu-superadmin.ftl:34`: was `[#--` → live.
+  - `menu-admin.ftl:14`: was live → removed.
+  - `grep -c "type: *'POST'"`: `0` → `4`.
+- **Implementer verification:**
+  - Full suite: 1351 tests, 0 failures.
+  - `xmllint --noout`: OK.
+  - Checkstyle delta 0.
+  - i18n and hygiene: no FIX findings.
+  - The cache-bust script flagged a comment in `rejectInstitutionPopup.ftl:48`. It is a false positive.
+- **Falsifier (reverted):** moving `superAdminValidation` after `defaultStack` in `rejectPartnerRequest` gives `AssertionError: rejectPartnerRequest: superAdminValidation must come before the stack (guard 294, stack 251)`.
+- **Evidence re-run (Leader-inline):**
+  - `xmllint --noout` on both XML files: OK.
+  - `grep -c "type: *'POST'"`: `4`.
+  - Clean wipe + `mvn -o -pl marlo-data,marlo-web -am test` → exit 0: compiled 2431 / 1065 / 145; `Tests run: 1351, Failures: 0, Errors: 0`.
+  - All files LF, as at HEAD.
+  
+  **VERIFIED.**
+- **Reviewer verdict: PASS.**
+  - JSON chain is `logErrorStatus → requireUser → validPhase → superAdminValidation → defaultStack → SecurityControl`, as in §4.
+  - `includeProperties` is as specified.
+  - The admin route follows the amended §4 row and redirects to `/superadmin`.
+  - Menus, keys and the POST bridge match the amended scope.
+  - No new `*.json` path (Hard rule 3).
+  - The static tests isolate each `<action>` element, so the disqualifier does not apply.
+  - SEC-003 holds. The guard refuses before `prepare()`, and an anonymous user is still stopped by `requireUser`. The order is the same as `superAdminStack`.
+  - `searchInstitutionsName.do` is a shared read-only institution search, outside SEC-001.
+- **runtime events:** none
+- **spawns:**
+  - implementer: 20 calls, 122110 tokens, ended complete
+  - reviewer: 15 calls, 63553 tokens, ended complete
+
+#### Execute-time spec edit (recorded when made)
+
+- `design.md` §2 (`struts-admin.xml` row) and §4 (admin route row), and `tasks.md` T07 scope: the admin route lists no explicit `logErrorStatus`.
+  - **Why:** `crpAdminStack` already runs it, and the existing `ErrorStatusLogStackCoverageTest` requires it exactly once. The spec's list failed that test with "admin/{crp}/marloInstitutions must run logErrorStatus exactly once ... was:<2>".
+  - **Requirement meaning:** unchanged. SEC-003 is unaffected.
+  - **Closure sweep:**
+    - Forward grep of `logErrorStatus` across the spec: the `design.md` §2 and §4 and `tasks.md` T07 hits are amended. The JSON rows keep it correctly.
+    - `judgment.md` is historical and was not edited.
+    - Backward: nothing cites the admin route's interceptor list.
+
+#### ADVISORY (4R, non-gating)
+
+- **Observability.** On the admin route `logErrorStatus` runs inside the stack, after the guards, so a 401 or 403 refusal there is not logged. Authorization is unaffected.
+- **Readability.**
+  - `i18nFile` and `requireUser` run twice on the admin route. This is harmless and follows the precedent; a one-line XML comment would explain it.
+  - The test checks `contains("success,outcome")`, which the offices value also satisfies. An exact per-action value would catch a dropped `outcomes.*`.
+
+#### Forward pointers
+
+- **→ T11a**, live proof of:
+  - the 403 for a non-superadmin on all five routes;
+  - the admin redirect;
+  - `addPartner` messages surviving the redirect (`superAdminStack` includes `keepRedirectMessages`, verified from config only);
+  - the accept form and the four AJAX POSTs from the current screen;
+  - the AICCRA superadmin menu entry.
+- **→ T12 follow-up:** log the admin-route refusals.
+
+- **Requirements covered:** SEC-001, SEC-002 and SEC-003 (configuration level; behaviour is proven in T11a), FN-011.
+- **Decisions made:** the admin-route amendment above. The other Implementer choices are accepted:
+  - `searchInstitutionsName.do` left GET and unguarded;
+  - keys without placeholders.
+- **Issues encountered:** none.
+- **Budget (running, amended ceiling ~5,000 LOC / ~30 rounds):**
+  - Tasks: 6 / 12.
+  - LOC added: 3,060 + 119 = **3,179**.
+  - Review rounds: 9.
+- **Final verification:** VERIFIED by the Leader's clean re-run (1351 / 0).

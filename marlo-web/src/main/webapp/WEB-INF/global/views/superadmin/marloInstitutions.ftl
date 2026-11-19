@@ -3,7 +3,7 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "flag-icon-css", "google-diff-match-patch", "jquery-pretty-text-diff", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20181122" 
+  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20261119" 
   ] 
 /]
 [#assign customCSS = [ 
