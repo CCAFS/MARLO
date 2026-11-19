@@ -314,3 +314,88 @@
   2. Tests run at about 3.4× the estimate. Each task proves its falsifiers with doubles that assert their arguments (KZ auth-flow-2), plus log-capture tests.
   3. The design budget did not count the test fixtures needed to meet the task-level disqualifiers.
 - **Status:** stopped at the T03 gate for the owner's decision. Not logged `auto-approved`.
+
+### Owner decisions at the T03 gate (2026-11-19)
+
+1. **Budget.** Continue. The ceiling is amended in `design.md` §15 to ~5,000 LOC and ~30 review rounds. Later test tasks reuse the existing doubles.
+2. **AC FN-008.** Amended in `requirements.md` §6 and the Decision Log: one email per requester **per Global Unit** of their requests. The closure sweep is recorded in the Decision Log. The `tasks.md` T03 requirements line and the §5 Coverage row were updated.
+3. **Action-message keys.** The seven `marloRequestInstitution.ui.outcome.*` keys used by `addPartner` move from T08 to T07 (`tasks.md` T07 and T08 scope). `.outcome.notAuthorized` stays in T08.
+4. **Commit.** T03 committed as `b861a90688`.
+
+These are execute-time spec edits. They must be carried as named conformance checks in the next Reviewer brief (T05) and in the one after it.
+
+### CHG-PARTREQ-001-T05 — Edit and reject JSON actions on the manager
+
+- **Final status:** PASS
+- **Date:** 2026-11-19
+- **Attempts:** 1
+- **Effort:** high
+- **Skills assigned:** `marlo-verify`, `error-handling-patterns` (task list). `marlo-commit` stays with the Leader.
+- **Review mode:** lens checklist, single Reviewer. The `Review: checklist` claim did not skip review, because override (f) applies: SEC-002 is a security surface.
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/superadmin/EditPartnerRequestAction.java` (LF kept, +74 / −47)
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/superadmin/RejectPartnerRequestAction.java` (CRLF kept, +122 / −54)
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/superadmin/PartnerRequestReviewGuardTest.java` (+262, 8 tests; reuses the T03 doubles)
+- **Baseline (red run, observed):** `grep -c "isHttpPost"` → `0`, `0` before the change; `1`, `1` after.
+- **Implementer verification:**
+  - Clean compile: 2431 / 1065 / 144.
+  - Guard test: 26 tests, 0 failures.
+  - Full suite: 1345 tests, 0 failures.
+  - Checkstyle delta 0.
+  - Hygiene: no FIX lines.
+- **Falsifiers (reverted):**
+  1. `sendNotification` forced to true → `AssertionError: send notification was unchecked`.
+  2. Edit `isHttpPost()` disabled → `the manager must not be called on a GET expected:<[]> but was:<[editPartnerRequest]>`.
+- **Evidence re-run (Leader-inline):** clean wipe, then `mvn -o -pl marlo-data,marlo-web -am test` → exit 0. Compiled 2431 / 1065 / 144; `Tests run: 1345, Failures: 0, Errors: 0`; LF and CRLF preserved. **VERIFIED.**
+- **Reviewer verdict: PASS.**
+  - SEC-002, design §8 and DD-7: a non-POST request is refused and writes nothing.
+  - Writes go through the manager (§2, §6), and statuses map to the §4 strings.
+  - The reject email is sent only after a `DONE`, with `sendNotification` checked and `isEnabled` on the request's managed unit (DD-4, §10, FN-006).
+  - The legacy sender and `validateEmailNotification` are removed.
+  - OPS-001: every log line names the action and the request id; no log line contains `@`; CR/LF are stripped.
+  - `sendNotification` binding has not regressed: it is still read from `getParameters()` in `prepare()`.
+  - Named checks for the execute-time spec edits pass: nothing contradicts the amended AC FN-008, and no `.properties` file is touched (T07/T08 split respected).
+- **runtime events:** none
+- **spawns:** implementer 35 calls, 162539 tokens, ended complete; reviewer 10 calls, 72780 tokens, ended complete
+
+#### ADVISORY (4R, non-gating)
+
+- **Duplicated status mapping.** `statusName` now exists in three actions; it could move into `PartnerRequestOutcome`.
+- **Unused dependencies.** `institutionTypeManager` and `locElementManager` in `EditPartnerRequestAction` are no longer used. Removing them changes the injection signature, so it is an owner decision and goes on the follow-up list.
+- **Checkbox value.** `Boolean.valueOf` reads a bare `"on"` as false, so T09's JS must post the literal `true` for the notify checkbox.
+- **Logging gaps.**
+  - A GET that also fails in `prepare()` logs two lines.
+  - A skipped email (switch off, or no unit) logs nothing, while the T03 office path logs a WARN.
+- **Edit with nothing to change.** It returns `success=true` with `outcome=done`. This is the legacy behaviour.
+- **Fail closed in `prepare()`.** The actions now fail closed when `prepare()` cannot read the posted fields; before, they continued with partial data.
+
+#### Forward pointers
+
+- **→ T09:**
+  - Post `sendNotification` as the literal `true`, not `on`.
+  - Add `type: 'POST'` to all four AJAX calls.
+- **→ T12 follow-ups:**
+  - Unused managers in `EditPartnerRequestAction`.
+  - Shared `statusName`.
+
+#### Plan gap found at this gate (presented to the owner)
+
+- **The current UI breaks if PR 1 ships alone.** `marloInstitutions.js` calls `rejectPartnerRequest.do`, `editPartnerRequest.do`, `rejectOfficesRequest.do` and `acceptOfficesRequest.do` with no `type` (lines 31, 80, 154 and 198), so jQuery sends GET. The accept partner button is also a GET link (`institutionRequestMacro.ftl:58`). T03 and T05 make all five actions POST-only, but the POST conversions are planned in T08 and T09, which ship in PR 2. With PR 1 merged and PR 2 not yet merged, every decision on the current screen answers `notAllowed`. T11a did not catch this because it uses hand-crafted POSTs.
+
+- **Requirements covered:** FN-006, FN-007 (action level), SEC-002 (edit / reject), OPS-001 (edit / reject).
+- **Decisions made:** the Implementer's choices are accepted.
+  - Fail closed in `prepare()`.
+  - Unused manager fields left in place (cleanup scope stays literal).
+  - Reject recipient logic duplicated from T03 rather than shared.
+  
+  No spec edits.
+- **Issues encountered:** one full-suite run crashed with `NoClassDefFoundError: Institution`, a stale build. It was clean after a wipe.
+- **Budget (running, against the amended ceiling of ~5,000 LOC and ~30 rounds):**
+  - Tasks: 4 / 12.
+  - LOC added: 2,269 + 458 = **2,727**.
+  - Review rounds: 7.
+  - Within the ceiling.
+- **Final verification:** VERIFIED by the Leader's clean re-run (1345 / 0).

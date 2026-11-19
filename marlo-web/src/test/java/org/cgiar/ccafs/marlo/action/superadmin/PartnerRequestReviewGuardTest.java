@@ -15,8 +15,12 @@
 
 package org.cgiar.ccafs.marlo.action.superadmin;
 
+import org.cgiar.ccafs.marlo.action.json.superadmin.EditPartnerRequestAction;
+import org.cgiar.ccafs.marlo.action.json.superadmin.RejectPartnerRequestAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
+import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
+import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.CountryOfficePOJO;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
@@ -151,7 +155,11 @@ public class PartnerRequestReviewGuardTest {
   private GlobalUnit unit;
   private Institution institution;
   private Logger actionLogger;
+  private Logger editLogger;
+  private Logger rejectLogger;
   private Level originalLevel;
+  private Level editOriginalLevel;
+  private Level rejectOriginalLevel;
   private ListAppender<ILoggingEvent> logged;
 
   private static User user(Long id, String first, String email) {
@@ -210,12 +218,24 @@ public class PartnerRequestReviewGuardTest {
     this.logged = new ListAppender<>();
     this.logged.start();
     this.actionLogger.addAppender(this.logged);
+    this.editLogger = (Logger) LoggerFactory.getLogger(EditPartnerRequestAction.class);
+    this.editOriginalLevel = this.editLogger.getLevel();
+    this.editLogger.setLevel(Level.TRACE);
+    this.editLogger.addAppender(this.logged);
+    this.rejectLogger = (Logger) LoggerFactory.getLogger(RejectPartnerRequestAction.class);
+    this.rejectOriginalLevel = this.rejectLogger.getLevel();
+    this.rejectLogger.setLevel(Level.TRACE);
+    this.rejectLogger.addAppender(this.logged);
   }
 
   @After
   public void tearDown() {
     this.actionLogger.detachAppender(this.logged);
     this.actionLogger.setLevel(this.originalLevel);
+    this.editLogger.detachAppender(this.logged);
+    this.editLogger.setLevel(this.editOriginalLevel);
+    this.rejectLogger.detachAppender(this.logged);
+    this.rejectLogger.setLevel(this.rejectOriginalLevel);
   }
 
   /** The one logged line at the level that contains the needle; fails when there is none or more than one. */
@@ -607,5 +627,247 @@ public class PartnerRequestReviewGuardTest {
 
     assertEquals(1, this.mail.sent.size());
     assertTrue(this.mail.sent.get(0).body, this.mail.sent.get(0).body.contains("Dear Ana,"));
+  }
+
+  // ---- Edit and reject JSON actions (CHG-PARTREQ-001-T05: FN-006, FN-007, SEC-002, OPS-001) -------------------------
+
+  private static HttpServletRequest requestOf(String httpMethod) {
+    return (HttpServletRequest) Proxy.newProxyInstance(HttpServletRequest.class.getClassLoader(),
+      new Class<?>[] {HttpServletRequest.class}, (proxy, method, args) -> {
+        if (method.getName().equals("getMethod")) {
+          return httpMethod;
+        }
+        throw new UnsupportedOperationException("HttpServletRequest." + method.getName());
+      });
+  }
+
+  /** The posted fields of the review page, one value per name. */
+  private static Map<String, org.apache.struts2.dispatcher.Parameter> posted(String... namesAndValues) {
+    Map<String, org.apache.struts2.dispatcher.Parameter> parameters = new HashMap<>();
+    for (int i = 0; i < namesAndValues.length; i += 2) {
+      parameters.put(namesAndValues[i],
+        new org.apache.struts2.dispatcher.Parameter.Request(namesAndValues[i], namesAndValues[i + 1]));
+    }
+    return parameters;
+  }
+
+  private static Map<String, org.apache.struts2.dispatcher.Parameter> editFields(String requestId) {
+    return posted(APConstants.PARTNER_REQUEST_ID, requestId, APConstants.INSTITUTION_NAME, " New Name ",
+      "institutionAcronym", "NN", "institutionWebPage", "https://new.test", APConstants.INSTITUTION_TYPE_REQUEST_ID,
+      "7", APConstants.COUNTRY_REQUEST_ID, "KE", APConstants.JUSTIFICATION_REQUEST, "Fixed the name");
+  }
+
+  private static Map<String, org.apache.struts2.dispatcher.Parameter> rejectFields(String requestId,
+    String notify) {
+    return posted(APConstants.PARTNER_REQUEST_ID, requestId, APConstants.JUSTIFICATION_REQUEST, "Not an institution",
+      APConstants.PARTNER_REQUEST_SEND_NOTIFICATION, notify);
+  }
+
+  private final class DrivenEdit extends EditPartnerRequestAction {
+
+    private static final long serialVersionUID = 1L;
+    private final String httpMethod;
+    private final Map<String, org.apache.struts2.dispatcher.Parameter> requestParameters;
+
+    DrivenEdit(String httpMethod, Map<String, org.apache.struts2.dispatcher.Parameter> requestParameters) {
+      super(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
+        PartnerRequestReviewGuardTest.this.manager.proxy(),
+        EmailSendDoubles.answering(InstitutionTypeManager.class, "none", args -> null),
+        EmailSendDoubles.answering(LocElementManager.class, "none", args -> null));
+      this.httpMethod = httpMethod;
+      this.requestParameters = requestParameters;
+    }
+
+    @Override
+    public Map<String, org.apache.struts2.dispatcher.Parameter> getParameters() {
+      return this.requestParameters;
+    }
+
+    @Override
+    public HttpServletRequest getRequest() {
+      return requestOf(this.httpMethod);
+    }
+  }
+
+  private final class DrivenReject extends RejectPartnerRequestAction {
+
+    private static final long serialVersionUID = 1L;
+    private final String httpMethod;
+    private final Map<String, org.apache.struts2.dispatcher.Parameter> requestParameters;
+
+    DrivenReject(String httpMethod, Map<String, org.apache.struts2.dispatcher.Parameter> requestParameters) {
+      super(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
+        PartnerRequestReviewGuardTest.this.manager.proxy(),
+        EmailSendDoubles.answering(GlobalUnitManager.class, "getGlobalUnitById",
+          args -> PartnerRequestReviewGuardTest.this.units.get(args[0])),
+        PartnerRequestReviewGuardTest.this.mail);
+      this.httpMethod = httpMethod;
+      this.requestParameters = requestParameters;
+    }
+
+    @Override
+    public String getBaseUrlCdn() {
+      return CDN;
+    }
+
+    @Override
+    public User getCurrentUser() {
+      return user(9L, "Admin", APPROVER);
+    }
+
+    @Override
+    public Map<String, org.apache.struts2.dispatcher.Parameter> getParameters() {
+      return this.requestParameters;
+    }
+
+    @Override
+    public HttpServletRequest getRequest() {
+      return requestOf(this.httpMethod);
+    }
+  }
+
+  private void answerReject(Status status) {
+    PartnerRequest copy = request(20L, this.unit, user(11L, "Ana", "ana@unit.test"), "Kenya", "Acme Seeds Ltd");
+    this.manager.answers.put("rejectPartnerRequest",
+      args -> new PartnerRequestOutcome((Long) args[0], status, copy, null));
+  }
+
+  @Test
+  public void testGetToEditAndRejectNeverReachesTheManager() throws Exception {
+    DrivenEdit edit = new DrivenEdit("GET", editFields("20"));
+    edit.prepare();
+    assertEquals("success", edit.execute());
+
+    DrivenReject reject = new DrivenReject("GET", rejectFields("20", "true"));
+    reject.prepare();
+    assertEquals("success", reject.execute());
+
+    assertEquals("the manager must not be called on a GET", Collections.emptyList(), this.manager.calls);
+    assertFalse(edit.isSuccess());
+    assertEquals("notAllowed", edit.getOutcome());
+    assertFalse(reject.isSuccess());
+    assertEquals("notAllowed", reject.getOutcome());
+    assertTrue("a GET must not send mail", this.mail.sent.isEmpty());
+    this.loggedLine(Level.WARN, "editPartnerRequest refused for request 20: not an HTTP POST");
+    this.loggedLine(Level.WARN, "rejectPartnerRequest refused for request 20: not an HTTP POST");
+  }
+
+  @Test
+  public void testEditPassesThePostedFieldsToTheManagerAndReportsDone() throws Exception {
+    PartnerRequest copy = request(20L, this.unit, user(11L, "Ana", "ana@unit.test"), "Kenya", "Acme Seeds Ltd");
+    this.manager.answers.put("editPartnerRequest",
+      args -> new PartnerRequestOutcome((Long) args[0], Status.DONE, copy, null));
+    DrivenEdit edit = new DrivenEdit("POST", editFields("20"));
+    edit.prepare();
+
+    assertEquals("success", edit.execute());
+
+    assertEquals(Arrays.asList("editPartnerRequest"), this.manager.calls);
+    assertEquals(Arrays.<Object>asList(20L, "New Name", "NN", "https://new.test", 7L, "KE", "Fixed the name"),
+      Arrays.asList(this.manager.arguments.get(0)));
+    assertTrue(edit.isSuccess());
+    assertEquals("done", edit.getOutcome());
+  }
+
+  @Test
+  public void testEditOfARequestThatIsNoLongerPendingReportsAlreadyHandled() throws Exception {
+    PartnerRequest copy = request(20L, this.unit, user(11L, "Ana", "ana@unit.test"), "Kenya", "Acme Seeds Ltd");
+    this.manager.answers.put("editPartnerRequest",
+      args -> new PartnerRequestOutcome((Long) args[0], Status.ALREADY_HANDLED, copy, null));
+    DrivenEdit edit = new DrivenEdit("POST", editFields("20"));
+    edit.prepare();
+
+    assertEquals("success", edit.execute());
+
+    assertEquals("the manager decides, once", Arrays.asList("editPartnerRequest"), this.manager.calls);
+    assertEquals("alreadyHandled", edit.getOutcome());
+    assertFalse(edit.isSuccess());
+    this.loggedLine(Level.WARN, "editPartnerRequest: request 20 was not edited: ALREADY_HANDLED");
+  }
+
+  @Test
+  public void testEditThatThrowsIsReportedAsFailedAndLogged() throws Exception {
+    this.manager.answers.put("editPartnerRequest", args -> {
+      throw new IllegalStateException("db down");
+    });
+    DrivenEdit edit = new DrivenEdit("POST", editFields("20"));
+    edit.prepare();
+
+    assertEquals("success", edit.execute());
+
+    assertEquals(Arrays.asList("editPartnerRequest"), this.manager.calls);
+    assertEquals("failed", edit.getOutcome());
+    assertFalse(edit.isSuccess());
+    this.loggedLine(Level.ERROR, "editPartnerRequest: could not edit partner request 20");
+  }
+
+  @Test
+  public void testRejectWithSendNotificationUncheckedSendsNothing() throws Exception {
+    this.answerReject(Status.DONE);
+    DrivenReject reject = new DrivenReject("POST", rejectFields("20", "false"));
+    reject.prepare();
+
+    assertEquals("success", reject.execute());
+
+    assertEquals(Arrays.asList("rejectPartnerRequest"), this.manager.calls);
+    assertEquals(20L, this.manager.arguments.get(0)[0]);
+    assertEquals("Not an institution", this.manager.arguments.get(0)[1]);
+    assertEquals(APPROVER, ((User) this.manager.arguments.get(0)[2]).getEmail());
+    assertTrue(reject.isSuccess());
+    assertEquals("done", reject.getOutcome());
+    assertTrue("send notification was unchecked", this.mail.sent.isEmpty());
+  }
+
+  @Test
+  public void testRejectWithSendNotificationMailsTheRequesterOnceWithTheJustification() throws Exception {
+    this.answerReject(Status.DONE);
+    DrivenReject reject = new DrivenReject("POST", rejectFields("20", "true"));
+    reject.prepare();
+
+    assertEquals("success", reject.execute());
+
+    assertEquals(Arrays.asList("rejectPartnerRequest"), this.manager.calls);
+    assertEquals(1, this.mail.sent.size());
+    Sent sent = this.mail.sent.get(0);
+    assertEquals("ana@unit.test", sent.to);
+    assertEquals(APPROVER, sent.cc);
+    assertEquals(NOTIFY, sent.bcc);
+    assertEquals("[MARLO] Partner verification - Rejected Acme Seeds Ltd", sent.subject);
+    assertTrue(sent.body, sent.body.contains("Dear Ana,"));
+    assertTrue(sent.body, sent.body.contains("Not an institution"));
+    assertTrue(sent.html);
+  }
+
+  @Test
+  public void testRejectOfARequestAlreadyHandledSendsNoEmailEvenWhenAskedTo() throws Exception {
+    this.answerReject(Status.ALREADY_HANDLED);
+    DrivenReject reject = new DrivenReject("POST", rejectFields("20", "true"));
+    reject.prepare();
+
+    assertEquals("success", reject.execute());
+
+    assertEquals(Arrays.asList("rejectPartnerRequest"), this.manager.calls);
+    assertEquals("alreadyHandled", reject.getOutcome());
+    assertFalse(reject.isSuccess());
+    assertTrue("nothing was rejected, so nobody is told so", this.mail.sent.isEmpty());
+  }
+
+  @Test
+  public void testRejectThatThrowsIsFailedLoggedWithoutTheRecipientAndSendsNothing() throws Exception {
+    this.manager.answers.put("rejectPartnerRequest", args -> {
+      throw new IllegalStateException("db down");
+    });
+    DrivenReject reject = new DrivenReject("POST", rejectFields("20", "true"));
+    reject.prepare();
+
+    assertEquals("success", reject.execute());
+
+    assertEquals("failed", reject.getOutcome());
+    assertFalse(reject.isSuccess());
+    assertTrue(this.mail.sent.isEmpty());
+    this.loggedLine(Level.ERROR, "rejectPartnerRequest: could not reject partner request 20");
+    for (ILoggingEvent event : this.logged.list) {
+      assertFalse("no address in the logs", event.getFormattedMessage().contains("@"));
+    }
   }
 }

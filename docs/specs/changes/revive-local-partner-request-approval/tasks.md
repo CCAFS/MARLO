@@ -123,7 +123,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T05 — Edit and reject JSON actions on the manager
 
-- **Status:** pending · **Size:** S · **Depends on:** T01, T02 · **Module:** marlo-web
+- **Status:** [x] done 2026-11-19 (PASS attempt 1 — `execution.md`) · **Size:** S · **Depends on:** T01, T02 · **Module:** marlo-web
 - **Requirements:** FN-006 (justification, user, date, close both; notify optional), FN-007 (+ BUT not pending), SEC-002 (edit / reject POST), OPS-001, AC FN-006, AC FN-007
 - **Design refs:** §2, §4 JSON contract, §6, DD-7
 - **Scope:** `EditPartnerRequestAction`: `isHttpPost()`; `editPartnerRequest`; `outcome` string; log failures. `RejectPartnerRequestAction`: `isHttpPost()`; `rejectPartnerRequest`; reject email via the builder when `sendNotification` and `DONE`, gated by `isEnabled(request.getCrp())`; remove the legacy sender.
