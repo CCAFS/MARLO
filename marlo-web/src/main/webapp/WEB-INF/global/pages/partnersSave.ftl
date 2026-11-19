@@ -22,7 +22,7 @@
       <p class="alert alert-danger text-center col-xs-12">[@s.text name="saving.fields.required" /]</p>
     [/#if]
     [#if (action.requestFailed)!false]
-      <p class="alert alert-danger text-center col-xs-12">[@s.text name="marloRequestCreation.sendFailed" /]</p>
+      <p class="alert alert-danger text-center col-xs-12">[@s.text name="marloRequestCreation.saveFailed" /]</p>
     [/#if]
     <div class="slideshow-container col-xs-12 form-group">
       [#-- SLIDE 1 --]

@@ -142,7 +142,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T06 — Local request creation and the two alerts (remove CLARISA)
 
-- **Status:** pending · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
+- **Status:** [x] done 2026-11-19 (PASS attempt 1 — `execution.md`) · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
 - **Requirements:** FN-001 (+ BUT no CLARISA call; AND same in non-AICCRA unit), FN-002, FN-003 (subject from i18n), FN-010 (alerts on the session unit), NF-001 (no unit check), OPS-001, AC FN-001, AC FN-002/FN-003 (BUT switch off → stored, not sent)
 - **Design refs:** §2, §7, §10 (alert rows), DD-1, DD-8, P-1, P-7
 - **Scope:** `PartnersSaveAction`: delete `sendPartnerRequest`, the `isAiccra()` branch, imports (`ExternalPostUtils`, Apache HTTP, `JSONObject`) and the commented legacy mail block; call `createPartnerRequest`; on exception log + `requestFailed` + `INPUT`; alert via the builder gated by `isEnabled(loggedCrp)`. Add `marloRequestCreation.saveFailed` and switch the FTL message key (FTL redesign itself is T10). `RequestCountryOfficeAction`: subject + body via the builder; log failures; keep its result contract.

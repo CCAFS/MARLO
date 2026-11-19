@@ -45,8 +45,10 @@ import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudy;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInfo;
 import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.ReportSynthesis;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
-import org.cgiar.ccafs.marlo.utils.ExternalPostUtils;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails.Email;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.ArrayList;
@@ -58,14 +60,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +105,7 @@ public class PartnersSaveAction extends BaseAction {
   private long locationId;
   private GlobalUnit loggedCrp;
   private boolean messageSent;
-  // True when the partner request could not be sent to CLARISA, so the page shows the form again with an error
+  // True when the partner request could not be saved, so the page shows the form again with an error
   private boolean requestFailed;
   // True when the form arrived without the institution type or the country, so it is shown again with an error
   private boolean missingRequiredFields;
@@ -382,7 +376,6 @@ public class PartnersSaveAction extends BaseAction {
   @Override
   public String save() {
     String institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage;
-    String subject;
     StringBuilder message = new StringBuilder();
 
     // The request needs a partner with a type and a country: without them the form is shown again with an error
@@ -439,36 +432,7 @@ public class PartnersSaveAction extends BaseAction {
       partnerRequestModifications.setWebPage(partnerWebPage);
     }
 
-    // message subject
-    subject = this.getText("marloRequestInstitution.email.subject",
-      new String[] {this.getCrpSession().toUpperCase(), institutionName});
-    // Message Content
-    message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
-    message.append("(" + this.getCurrentUser().getEmail() + ") ");
-    message.append("is requesting to add the following partner information:");
-    message.append("</br></br>");
-    message.append("Partner Name: ");
-    message.append(institutionName);
-    message.append("</br>");
-    message.append("Acronym: ");
-    message.append(institutionAcronym);
-    message.append(" </br>");
-    message.append("Partner type: ");
-    message.append(institutionTypeName);
-    message.append(" </br>");
-
-    message.append("Headquarter country location: ");
-    message.append(countryName);
-    message.append(" </br>");
-
-    // Is there a web page?
-    if (partnerWebPage != null && !partnerWebPage.isEmpty()) {
-      message.append("Web Page: ");
-      message.append(partnerWebPage);
-      message.append(" </br>");
-    }
-    message.append(" </br>");
-
+    // The add*Message methods set the source of the request on both copies; the text they append is not used.
     // A page opened without any id has no request name; switching on null would throw
     switch (pageRequestName != null ? pageRequestName : "") {
       case "projects":
@@ -507,68 +471,28 @@ public class PartnersSaveAction extends BaseAction {
         break;
     }
 
-    if (projectInfo == null && projectID != 0) {
-      Project requestProject = projectManager.getProjectById(projectID);
-      projectInfo = requestProject != null ? requestProject.getProjecInfoPhase(this.getActualPhase()) : null;
-    }
-
-    // Get project information
-    Project project = projectInfo != null ? projectInfo.getProject() : null;
-
-    boolean postFailed = false;
-    if (this.isAiccra()) {
-
-      // setting requestSource CLARISA parameter
-      String requestSource;
-      if (project != null && project.getAcronym() != null) {
-        requestSource = project.getAcronym() + " Cluster";
-      } else if (project != null && project.getProjectInfo() != null && project.getProjectInfo().getTitle() != null) {
-        requestSource = project.getProjectInfo().getTitle() + " Cluster";
-      } else {
-        requestSource = "Request made from MARLO";
-      }
-
-      postFailed = !this.sendPartnerRequest(partnerRequestModifications, requestSource);
-
-    } else {
-      partnerRequest = partnerRequestManager.savePartnerRequest(partnerRequest);
-      partnerRequestModifications.setPartnerRequest(partnerRequest);
-      partnerRequestModifications.setModified(false);
-      partnerRequestModifications = partnerRequestManager.savePartnerRequest(partnerRequestModifications);
-    }
-
-    message.append(".</br>");
-    message.append("</br>");
-
+    // The original and its editable copy are saved together, in one transaction, for every Global Unit
     try {
-      /*
-       * if (this.validateEmailNotification()) {
-       * sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-       * null, null, null, true);
-       * }
-       */
+      partnerRequestManager.createPartnerRequest(partnerRequest, partnerRequestModifications);
     } catch (Exception e) {
-      LOG.error("unable to send mail", e);
-      /**
-       * Original code swallows the exception and didn't even log it. Now
-       * we at least log it, but we need to revisit to see if we should
-       * continue processing or re-throw the exception.
-       */
-    }
-    if (postFailed) {
-      // The form is shown again, with an error, instead of the "sent" message
+      LOG.error("Could not save the partner request of the Global Unit {}",
+        loggedCrp == null ? null : loggedCrp.getId(), e);
       messageSent = false;
       requestFailed = true;
       return INPUT;
     }
 
+    // The alert goes out only after the request is saved; a failure to send it never fails the request
+    this.sendNewPartnerAlert(institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage,
+      partnerRequest.getRequestSource());
+
     messageSent = true;
 
     if (projectID != 0) {
-      LOG.info("A partner request was sent for the project {}", projectID);
+      LOG.info("A partner request was saved for the project {}", projectID);
     }
     if (fundingSourceID != 0) {
-      LOG.info("A partner request was sent for the funding source {}", fundingSourceID);
+      LOG.info("A partner request was saved for the funding source {}", fundingSourceID);
     }
 
     Collection<String> messages = this.getActionMessages();
@@ -578,61 +502,27 @@ public class PartnersSaveAction extends BaseAction {
   }
 
   /**
-   * send request to CLARISA,to create a partner
-   *
-   * @param PartnerRequest partnerRequest
-   * @param String requestSource
-   * @return true when CLARISA accepted the request (status 2xx); false when it rejected it or could not be reached
-   * @author IBD
+   * Tells the support mailbox that a partner was requested, with the link to review it. The Global Unit is the one
+   * the page was opened in, as the database holds it, and its switch decides whether anything is sent.
    */
-  public boolean sendPartnerRequest(PartnerRequest partnerRequest, String requestSource) {
-
+  private void sendNewPartnerAlert(String name, String acronym, String type, String country, String website,
+    String source) {
     try {
-
-      ExternalPostUtils epu = new ExternalPostUtils();
-      epu.setUsername(config.getClarisaAPIUsername());
-      epu.setPassword(config.getClarisaAPIPassword());
-      JSONObject jsonObject = new JSONObject();
-
-
-      jsonObject.put("name", partnerRequest.getPartnerName());
-      jsonObject.put("acronym", partnerRequest.getAcronym());
-      jsonObject.put("websiteLink", partnerRequest.getWebPage());
-      jsonObject.put("institutionTypeCode", partnerRequest.getInstitutionType().getId());
-      jsonObject.put("hqCountryIso", partnerRequest.getLocElement().getIsoAlpha2());
-
-      jsonObject.put("requestSource", requestSource);
-
-      jsonObject.put("misAcronym", "aiccra");
-      jsonObject.put("userId", this.getCurrentUser().getId());
-      jsonObject.put("externalUserMail", this.getCurrentUser().getEmail());
-      jsonObject.put("externalUserName", this.getCurrentUser().getUsername());
-      jsonObject.put("externalUserComments", "Request made from MARLO");
-
-      HttpPost httpPost = new HttpPost(config.getClarisaAPIHost() + "/api/partner-requests/create");
-
-      // 2024/08/01 cgamboa Format is added to the request made
-      httpPost.setEntity(new StringEntity(jsonObject.toString(), "UTF-8"));
-
-      httpPost.setHeader("Accept", "application/json");
-      httpPost.setHeader("Content-Type", "application/json");
-      httpPost.addHeader(BasicScheme.authenticate(new UsernamePasswordCredentials(epu.getUsername(), epu.getPassword()),
-        "UTF-8", false));
-
-      // Closing the response and the client releases the connection; only the status is logged, never the headers
-      try (CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpResponse response = httpClient.execute(httpPost)) {
-        int statusCode = response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : -1;
-        if (statusCode >= 200 && statusCode < 300) {
-          LOG.info("CLARISA accepted the partner request with status {}", statusCode);
-          return true;
-        }
-        LOG.warn("CLARISA did not accept the partner request, status {}", statusCode);
-        return false;
+      if (!PartnerRequestEmails.isEnabled(loggedCrp)) {
+        return;
       }
+      User requester = this.getCurrentUser();
+      String requesterName =
+        requester == null ? null : StringUtils.trim(requester.getFirstName() + " " + requester.getLastName());
+      String requesterEmail = requester == null ? null : requester.getEmail();
+      String reviewUrl = this.getBaseUrl() + "/superadmin/marloInstitutions.do";
+      Email email = PartnerRequestEmails.newPartner(loggedCrp, this.getBaseUrlCdn(), requesterName, requesterEmail,
+        name, acronym, type, country, website, source, reviewUrl);
+      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), email.getSubject(),
+        email.getBody(), null, null, null, true);
     } catch (Exception e) {
-      LOG.error("Could not send the partner request to CLARISA", e);
-      return false;
+      LOG.error("Could not send the new partner alert of the Global Unit {}",
+        loggedCrp == null ? null : loggedCrp.getId(), e);
     }
   }
 

@@ -399,3 +399,96 @@ These are execute-time spec edits. They must be carried as named conformance che
   - Review rounds: 7.
   - Within the ceiling.
 - **Final verification:** VERIFIED by the Leader's clean re-run (1345 / 0).
+- **Commits:** spec amendments `dcefd59db6`; T05 `529a1c0bf8` (owner-approved).
+
+### Owner decisions at the T05 gate (2026-11-19)
+
+1. **POST bridge moved into T07.** `type: 'POST'` is added to the four AJAX calls, and `sendNotification` is posted as a literal `true` / `false`. The accept link becomes a minimal POST form. This was recorded in the `requirements.md` Decision Log with its closure sweep, and the T07 scope and tests and the T09 scope and red-run baseline were updated in `tasks.md`.
+2. **Task order.** The order is now T06 → T07 → T04 → T11a, so the two live tasks share one throwaway DB copy and one app start. T04 still gates the merge of PR 1. A T04 Pivot would change only the `findForUpdate` implementation, which T06 and T07 do not depend on.
+
+The next Reviewer briefs carry these execute-time spec edits as named checks: T07 scope as amended, and the Decision Log entry.
+
+### CHG-PARTREQ-001-T06 — Local request creation and the two alerts (remove CLARISA)
+
+- **Final status:** PASS
+- **Date:** 2026-11-19
+- **Attempts:** 1
+- **Effort:** high
+- **Skills assigned:** `marlo-verify`, `error-handling-patterns` (task list). `marlo-commit` stays with the Leader.
+- **Review mode:** lens checklist, single Reviewer (`Review: full`; removes a delivered integration).
+
+#### Attempt 1
+
+- **Files changed:**
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveAction.java` (LF, +32 / −142)
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/json/project/RequestCountryOfficeAction.java` (CRLF, +31 / −33)
+  - `marlo-web/src/main/resources/global.properties`: +1, `marloRequestCreation.saveFailed` = "Your request could not be saved. Please try again or contact the MARLO technical team."
+  - `marlo-web/src/main/webapp/WEB-INF/global/pages/partnersSave.ftl`: one key line, `sendFailed` → `saveFailed`
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveActionRequestTest.java` (new, 4 tests)
+- **Baselines (observed) → after:**
+  - `isAiccra()\|sendPartnerRequest\|ExternalPostUtils` in `PartnersSaveAction`: `5` → `0`
+  - `"[MARLO-"` in `RequestCountryOfficeAction`: `1` → `0`
+  - the commented legacy mail block: `1` → `0`
+- **Implementer verification:**
+  - Clean compile: 2431 / 1065.
+  - `-Dtest=PartnersSaveAction*Test`: 7 tests (3 existing + 4 new), 0 failures.
+  - Full suite: 1349 tests, 0 failures.
+  - Checkstyle delta −1.
+  - Hygiene and i18n: no FIX findings.
+- **Falsifier (reverted):** reintroducing `if (this.isAiccra()) { return SUCCESS; }` before the save gives `Tests run: 4, Failures: 4`, including `java.lang.AssertionError: the manager must be called once expected:<1> but was:<0>` for the AICCRA-unit case.
+- **Evidence re-run (Leader-inline):** clean wipe, then `mvn -o -pl marlo-data,marlo-web -am test` → exit 0.
+  - Compiled 2431 / 1065 / 145.
+  - `Tests run: 1349, Failures: 0, Errors: 0`.
+  - Both greps return `0`.
+  - LF and CRLF line endings preserved.
+  
+  **VERIFIED.**
+- **Reviewer verdict:** **PASS**.
+  - The CLARISA branch, its imports and the commented-out block are removed. Every unit now goes through `createPartnerRequest`.
+  - A save failure logs, sets `requestFailed` and returns `INPUT`, with no mail.
+  - The alerts are sent only after the save returns and only when the session unit (re-read from the database) has the switch on. Each goes To plus bcc `email.notification`, with builder arguments as in §10. The review URL is built server-side (P-15).
+  - The request-source assumption holds: `add*Message` still sets `requestSource`.
+  - `validate()` is untouched.
+  - The tests run with an AICCRA unit and assert the arguments the double receives.
+  - The named checks pass: no conflict with the T07 POST bridge or with the AC FN-008 amendment.
+- **runtime events:** none
+- **spawns:** implementer: 33 calls, 178175 tokens, ended complete. reviewer: 9 calls, 60140 tokens, ended complete.
+
+#### ADVISORY (4R, non-gating)
+
+- **Dead `StringBuilder`.** `save()` builds a `StringBuilder` that nothing reads, and the name `add*Message` hides that these methods now only set the source. Candidate for a rename or cleanup.
+- **Orphaned key.** `marloRequestCreation.sendFailed` has no users left in `partnersSave.ftl`. Check for other users before any removal.
+- **Source not asserted.** No test sets `pageRequestName`, so the source that reaches the alert is `null` in every test.
+- **Working-directory-dependent test.** `testNoReferenceToTheExternalServiceRemains` reads paths relative to `marlo-web/`, so it fails when the IDE runs it from the repository root.
+- **`RequestCountryOfficeAction` untested.** Its switch gate moved to `isEnabled(loggedCrp)`, and no test covers that.
+- **Behaviour changes:**
+  - The unused project lookup was removed.
+  - `RequestCountryOfficeAction` still answers `result=1` when the mail fails or the switch is off.
+  - The INFO log now records the user id instead of the email.
+
+#### Follow-ups for T12 (P-7 dead code; not deleted, cleanup scope stays literal)
+
+- `APConfig.getClarisaAPIHost`, `getClarisaAPIUsername`, `getClarisaAPIPassword`
+- `ExternalPostUtils` (both copies)
+- `marloRequestCreation.sendFailed`
+- The `add*Message` naming and the unused `StringBuilder` in `PartnersSaveAction`
+
+#### Forward pointers
+
+- **→ T11a:** check the office-alert switch-off path live, since it has no unit test. Also check that the new-partner alert's source line is filled for each opener module.
+- **→ T10:** keep `requestFailed` and the `saveFailed` key in the redesigned page. `sendFailed` becomes orphaned.
+
+- **Requirements covered:** FN-001, FN-002, FN-003, FN-010 (alerts), NF-001, OPS-001 (request actions), AC FN-001 (unit level).
+- **Decisions made:** the Implementer's choices are accepted:
+  - the source string for an office request is `"P" + projectID`;
+  - `RequestCountryOfficeAction` keeps its `result` contract;
+  - office rows are still saved one per country (design §4).
+  
+  No spec edits.
+- **Issues encountered:** a stale-class compile error in the falsifier run, cleared by a wipe.
+- **Budget (running, amended ceiling ~5,000 LOC / ~30 rounds):**
+  - Tasks: 5 / 12.
+  - LOC added: 2,727 + 333 = **3,060**.
+  - Review rounds: 8.
+  - Within the ceiling.
+- **Final verification:** VERIFIED by the Leader's clean re-run (1349 / 0).
