@@ -154,9 +154,9 @@ Current behavior, each claim with its evidence (run on `staging` `3e4d08bd7e`, l
 
 **AC FN-008 — Offices**
 - WHEN a superadmin accepts office requests for countries A and B, and A already exists for the institution
-- THEN only B is added (non-HQ), every request is closed, and each requester gets one office-accepted email
+- THEN only B is added (non-HQ), every request is closed, and each requester gets one office-accepted email per Global Unit of their requests
 - WHEN rejecting with a justification
-- THEN every request records it and, if asked, each requester gets one office-rejected email
+- THEN every request records it and, if asked, each requester gets one office-rejected email per Global Unit of their requests
 
 **AC FN-009 / FN-010 — Emails**
 - THEN each of the six emails is wrapped by the shell and contains no legacy footer text (`email.support.noCrpAdmins`, `email.bye`)
@@ -237,4 +237,6 @@ Current behavior, each claim with its evidence (run on `staging` `3e4d08bd7e`, l
 - 2026-11-19 — New-request alerts go to the `email.notification` property of each environment — owner decision (proposal Q1).
 - 2026-11-19 — No specificity flag: the CLARISA branch is removed for every unit — the decision is instance-wide; a per-unit flag would model the wrong thing (proposal §10, Option 1).
 - 2026-11-19 — No requests are pending in CLARISA; nothing to migrate — owner statement (proposal Q3).
+- 2026-11-19 (execute, T03 gate) — AC FN-008: "one email per requester" becomes "one email per requester **per Global Unit** of their requests" — owner approval; the email texts and the notification switch belong to each request's unit (design §10, FN-010), so one mixed email would bypass one unit's switch. Closure sweep: forward grep of "each requester" / "one email" / "one office" across `requirements.md`, `design.md`, `tasks.md` — hits at `tasks.md` T03 Requirements line and §5 Coverage row updated; `design.md` §10 "each requester" (recipient column) is unaffected; backward: no other spec cites FN-008.
+- 2026-11-19 (execute, T05 gate) — PR 1 must work on the current screen: the minimal POST bridge (`type: 'POST'` on the four AJAX calls, accept link → POST form) moves from T08 / T09 into T07 — owner approval; T03 / T05 made the five review actions POST-only while the current JS / macro still send GET. Closure sweep: forward grep of `type: 'POST'` / "POST form" across the spec — `tasks.md` T07 scope + tests, T09 scope updated; T08 "accept as POST form" kept (redesign rewrite); backward: SEC-002 unchanged.
 - 2026-11-19 — The review screen and the partner request page follow the Partners / Innovations redesign (UI-001…006) — owner request at Phase 2; the proposal non-goal "redesigning the review screen" is withdrawn. Closure sweep: forward grep of "redesign" / "confirm()" across `proposal.md`, `requirements.md`, `design.md` — all hits updated; backward: no other spec cites these sections.

@@ -87,7 +87,7 @@ those files change; `.properties` apostrophes doubled.
 ### CHG-PARTREQ-001-T03 — `PartnerRequestAction` on the manager (accept partner, office accept / reject)
 
 - **Status:** [x] done 2026-11-19 (PASS attempt 2 — `execution.md`) · **Size:** M · **Depends on:** T01, T02 · **Module:** marlo-web
-- **Requirements:** FN-004, FN-005 (superadmin told "already handled"), FN-008 (each requester one email; SKIPPED_EXISTING mailed; notify on reject optional), FN-010, SEC-002 (accept partner / office on POST), OPS-001, AC FN-004/FN-005/DA-001 (repeat → no institution, message), AC FN-008
+- **Requirements:** FN-004, FN-005 (superadmin told "already handled"), FN-008 (each requester one email per Global Unit — amended 2026-11-19; SKIPPED_EXISTING mailed; notify on reject optional), FN-010, SEC-002 (accept partner / office on POST), OPS-001, AC FN-004/FN-005/DA-001 (repeat → no institution, message), AC FN-008
 - **Design refs:** §2 action rows, §4 JSON contract, §6 recipients rule, §7, §8, §10 envelope, DD-4, DD-7
 - **Scope:** `addPartner` → `isHttpPost()` else action error; `acceptPartnerRequest`; action message per status; email only for `DONE`. `addCountryOffices` / `rejectCountryOffices` → `isHttpPost()`; manager office methods; null check of `countryOfficePOJO` before use; `outcome` + `outcomes` (`Map<String,String>` id → status string) properties; emails for `DONE` and office `SKIPPED_EXISTING`, gated by `isEnabled(request.getCrp())`; failures logged with action + request id (no email); remove the three private legacy senders.
   - `Backend route: stack other; implement lead existing design support none — project conventions; error-model lead error-handling-patterns support none — project conventions; test-suite lead the spec's scenarios support none — project conventions`
@@ -164,8 +164,8 @@ those files change; `.properties` apostrophes doubled.
 - **Status:** pending · **Size:** S · **Depends on:** T03, T05 · **Module:** marlo-web (XML, FTL)
 - **Requirements:** SEC-001, SEC-003, FN-011, AC SEC (non-superadmin refused, no row changes; no CRP-admin entry), AC FN-011
 - **Design refs:** §4 interceptor and JSON tables, DD-6, DD-9, P-10, P-22, P-24
-- **Scope:** `struts-json.xml`: the four review actions get `logErrorStatus`, `requireUser`, `validPhase`, `superAdminValidation`, `defaultStack`, `SecurityControl`; `includeProperties` `success,outcome` (edit / reject) and `success,outcome,outcomes.*` (offices). `struts-admin.xml` `{crp}/marloInstitutions`: `logErrorStatus`, `i18nFile`, `requireUser`, `superAdminValidation`, `crpAdminStack`; result `redirectAction` namespace `/superadmin`, action `marloInstitutions`. `menu-superadmin.ftl:34` uncommented; `menu-admin.ftl:14` removed.
-- **Tests:** `PartnerRequestReviewGuardTest` static check reading `struts-json.xml` / `struts-admin.xml`: each of the five routes lists `superAdminValidation` before `defaultStack` / `crpAdminStack`.
+- **Scope:** `struts-json.xml`: the four review actions get `logErrorStatus`, `requireUser`, `validPhase`, `superAdminValidation`, `defaultStack`, `SecurityControl`; `includeProperties` `success,outcome` (edit / reject) and `success,outcome,outcomes.*` (offices). `struts-admin.xml` `{crp}/marloInstitutions`: `logErrorStatus`, `i18nFile`, `requireUser`, `superAdminValidation`, `crpAdminStack`; result `redirectAction` namespace `/superadmin`, action `marloInstitutions`. `menu-superadmin.ftl:34` uncommented; `menu-admin.ftl:14` removed. **Moved from T08 (owner, 2026-11-19, T03 gate):** add to `global.properties` the seven action-message keys `addPartner` already uses — `marloRequestInstitution.ui.outcome.done`, `.alreadyHandled`, `.notFound`, `.wrongKind`, `.skippedExisting`, `.notAllowed`, `.failed` — so PR 1 renders no raw key; `.outcome.notAuthorized` (JS only) stays in T08. **Also moved into T07 (owner, 2026-11-19, T05 gate) — minimal POST bridge so PR 1 works on the current screen:** `marloInstitutions.js` — add `type: 'POST'` to the four AJAX calls (`rejectPartnerRequest`, `editPartnerRequest`, `rejectOfficesRequest`, `acceptOfficesRequest`) and post `sendNotification` as the literal `true` / `false`; `institutionRequestMacro.ftl` — the accept-partner GET link becomes a minimal POST form to `superadmin/addPartner` with the same `requestID`, keeping the existing confirm step. No restyling; T08 / T09 rewrite these lines in the redesign. Cache-buster of `marloInstitutions.js` bumped.
+- **Tests:** `PartnerRequestReviewGuardTest` static check reading `struts-json.xml` / `struts-admin.xml`: each of the five routes lists `superAdminValidation` before `defaultStack` / `crpAdminStack`. POST bridge: static `grep -c "type: *'POST'" marloInstitutions.js` → `4`; the accept control in `institutionRequestMacro.ftl` is a `method="post"` form; live check in T11a from the current screen.
 - **Verification:** compile gate; test; app boots (Struts config parses) in T11a.
 - **Falsifier:** move `superAdminValidation` after `defaultStack` in one action → static-order test red.
 - **Red run:** baseline observed: `superAdminValidation` count inside each of the four actions → `0 0 0 0`; admin route → `0`; `menu-superadmin.ftl:34` begins `[#--`; `menu-admin.ftl:14` is the live `institutions` entry.
@@ -182,7 +182,7 @@ those files change; `.properties` apostrophes doubled.
 - **Status:** pending · **Size:** L · **Depends on:** T03, T05, T07 · **Module:** marlo-web (FTL, CSS)
 - **Requirements:** UI-001 (+ BUT no legacy markup), UI-002 (header + counts, cards, empty states), UI-003 (changed fields only), UI-006 (focus, contrast, 390 px), AC UI-001/002/003
 - **Design refs:** §5.1–5.2 (component mapping, token mapping), §5.3 (accept POST form, redirect notes), §5.5 Review keys, §5.6, DD-10, DD-11, P-17, P-18, P-20
-- **Scope:** rewrite superadmin `marloInstitutions.ftl`, `institutionRequestMacro.ftl`, `rejectInstitutionPopup.ftl`, `allInstitutionsPopup.ftl` markup and `marloInstitutions.css` in the `.prq` scope with the design's token mapping; accept as POST form; action messages as `.prq-note`; `marloRequestInstitution.ui.*` page keys; drop the diff libs from `pageLibs`; new cache-busters.
+- **Scope:** rewrite superadmin `marloInstitutions.ftl`, `institutionRequestMacro.ftl`, `rejectInstitutionPopup.ftl`, `allInstitutionsPopup.ftl` markup and `marloInstitutions.css` in the `.prq` scope with the design's token mapping; accept as POST form; action messages as `.prq-note`; `marloRequestInstitution.ui.*` page keys (except the seven `.outcome.*` keys moved to T07); drop the diff libs from `pageLibs`; new cache-busters.
   - `Design route: load impeccable-bridge → design-routing.md; playbook layout, typeset, colorize, harden; ENV-2; mode Operate; polish light; motion none`
 - **Tests:** rendered checks in T11b; static: `grep -c "list-group\|btn-success\|btn-danger\|glyphicon"` on the four FTL → `0`.
 - **Verification:** static grep; **baseline first** — measure `document.documentElement.scrollWidth` vs `clientWidth` on the current (old) page at 390×844 and record it, so a pre-existing overflow is not blamed on or hidden by the change; then screenshots at 1280×800 and 390×844 attached to `execution.md` and `scrollWidth <= clientWidth` at both widths (effective CSS px, browser zoom 100 %), with Figtree confirmed loaded.
@@ -201,12 +201,12 @@ those files change; `.properties` apostrophes doubled.
 - **Status:** pending · **Size:** M · **Depends on:** T08 · **Module:** marlo-web (JS, FTL data attributes)
 - **Requirements:** UI-004 (inline edit; dialogs; reject justification required; notify option; outcome notes; BUT no `confirm`/`alert`), UI-006 (dialog keyboard), SEC-002 (AJAX POST), AC UI-004, AC UI-006 dialogs clause
 - **Design refs:** §4 JSON contract (statuses, 403 / 401), §5.3, §5.4, §5.5, DD-12
-- **Scope:** `marloInstitutions.js`: `type: 'POST'` on the four calls; `prqDialog` (role, aria-modal, aria-labelledby, focus in, Tab trap, Escape, return focus); status → note key mapping incl. `error` handler for 403 / 401; strings from `data-` attributes; no `confirm(` / `alert(` / `noty(`.
+- **Scope:** `marloInstitutions.js`: `type: 'POST'` on the four calls (already bridged in T07 — keep them through the rewrite); `prqDialog` (role, aria-modal, aria-labelledby, focus in, Tab trap, Escape, return focus); status → note key mapping incl. `error` handler for 403 / 401; strings from `data-` attributes; no `confirm(` / `alert(` / `noty(`.
   - `Design route: load impeccable-bridge → design-routing.md; playbook harden, clarify; ENV-2; mode Operate; polish light; motion none`
 - **Tests:** browser checks in T11b (keyboard: Tab cycles inside the dialog, Escape closes, focus returns to the opener); static `grep -c "confirm(\|alert(\|noty(" marloInstitutions.js` → `0`, `grep -c "type: *'POST'"` → `4`.
 - **Verification:** static greps; live keyboard walk recorded (GIF or step log).
 - **Falsifier:** remove the Tab trap → focus leaves the dialog on the 4th Tab in the live check; keep one `confirm(` → grep `1`.
-- **Red run:** baseline observed: `grep -c "confirm(\|alert(\|noty("` → `6`; `grep -c "type: *'POST'"` → `0`.
+- **Red run:** baseline observed: `grep -c "confirm(\|alert(\|noty("` → `6`; `grep -c "type: *'POST'"` → `0` at `3e4d08bd7e` (→ `4` after the T07 POST bridge; T09 must keep `4`).
 - **Disqualifier:** a keyboard check done with the mouse focusing the dialog first is invalid — start from the opener button with keyboard only.
 - **Consumers:** the T08 markup; JSON fields from T03 / T05 / T07.
 - **Review:** `full` — security-relevant (POST) and accessibility.
@@ -294,7 +294,7 @@ T01 ∥ T02 can run in parallel. T04 gates PR 1's merge: a Pivot there changes T
 | DA-001 AND IT MUST leave nothing on mid-way failure | T04 |
 | FN-006 reject fields, both inactive, email with justification; BUT unchecked → no email | T01, T05, T11a |
 | FN-007 edit copy, original unchanged; BUT not pending → nothing | T01, T05, T11a |
-| FN-008 A existing → only B added, all closed, each requester one email (incl. skipped); reject justification + optional email | T01, T03, T11a |
+| FN-008 A existing → only B added, all closed, each requester one email per Global Unit (incl. skipped; amended 2026-11-19); reject justification + optional email | T01, T03, T11a |
 | FN-009 shell, no legacy footer, i18n only | T02, T11b (render) |
 | FN-010 / switch off → none sent | T02, T03, T05, T06, T11a |
 | FN-011 AICCRA superadmin menu entry | T07, T11a |

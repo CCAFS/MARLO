@@ -353,6 +353,7 @@ Low volume (historic peak ≈ 2,000 requests/year across 18 units). `PartnerRequ
 | Tasks | 12 (9 backend / email / config + 3 UI: review markup + CSS, review JS + dialogs, request page) |
 | LOC | ~1,650 (Java prod ~420, tests ~380, i18n ~70, FTL ~300, CSS ~350, JS ~130) |
 | Review rounds | ~20 |
+| **Amended 2026-11-19 (execute, T03 gate — owner approval)** | Tripwire exceeded at 2,269 LOC after 3 / 12 tasks (Java prod 957, tests 1,304, i18n 8). New ceiling **~5,000 LOC** and **~30 review rounds**; cause: falsifier-backed tests with argument-asserting doubles and OPS-001 log tests were not in the estimate. Later test tasks reuse the existing doubles. Crossing the new ceiling stops the run again. |
 
 > Over ~400 LOC: Phase 3 will recommend two PRs (backend + emails first, UI second).
 
