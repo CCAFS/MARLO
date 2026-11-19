@@ -1,67 +1,644 @@
-.activityIndex {
-    padding: 1px 16px;
-    position: absolute;
-    top: -12px;
-    left: 44%;
-    cursor: default;
-    border: 1px solid #d1d1d1;
-    background-color: #ffffff;
-    border-radius: 10px;
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster activities (A2-2742 redesign).
+ *
+ * Rendered by projectActivities.ftl under `.dlv.cac`: the page shell (header, note, toolbar, confirm, empty
+ * state, buttons) comes from deliverableList.css, loaded first; this file adds the activity cards and their form.
+ * The fields keep the markup customForm (forms.ftl) emits, because fieldsValidation.js and the word counters
+ * read it; only its presentation is restated here, at class weight, since global.css styles bare buttons,
+ * labels and inputs on every page.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.cac {
+  --cac-required: #C7401C;
+  --cac-issue: #D48A6A;
+  --cac-warn-bg: #FDF3E4;
+  --cac-warn-border: #F3DCAE;
+  --cac-warn-row: #F7EEDC;
+  --cac-field-bg: #FAFBFC;
 }
 
-.projectActivity {
-    padding-top: 14px;
-    margin-bottom: 8px;
+.cac,
+.cac p, .cac a, .cac span, .cac label, .cac li, .cac h1,
+.cac input, .cac textarea, .cac select, .cac button {
+  font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.cac .glyphicon { font-family: 'Glyphicons Halflings'; }
+.cac ul { margin: 0; padding: 0; list-style: none; }
+
+/* ---------- Status dots (ProjectStatusEnum ids) ---------- */
+
+.cac .cac-dot--2 { background: var(--dlv-warn-dot); }
+.cac .cac-dot--3 { background: var(--dlv-ok); }
+.cac .cac-dot--4 { background: var(--dlv-subtle); }
+.cac .cac-dot--5 { background: var(--dlv-danger); }
+
+/* ---------- Deliverable id and title, shared by every list here ---------- */
+
+.cac .cac-dlId {
+  flex: none;
+  width: 58px;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlv-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.cac .cac-dlTitle {
+  flex: 1;
+  min-width: 0;
+  font: 400 13px/1.45 Figtree, sans-serif;
+  color: var(--dlv-ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.cac .cac-dlTitle:hover,
+.cac .cac-dlTitle:focus { color: var(--dlv-primary); text-decoration: underline; }
+
+.cac .cac-tagWarn {
+  flex: none;
+  padding: 1px 7px;
+  border: 1px solid var(--cac-warn-border);
+  border-radius: 5px;
+  background: var(--cac-warn-bg);
+  font: 600 11px Figtree, sans-serif;
+  color: var(--dlv-warn);
+  white-space: nowrap;
 }
 
-.activitiesOG-content {
-    margin-top: 30px;
+/* ---------- Info note: the planning guidance behind the toggle ---------- */
+
+.cac .cac-note__more { padding-top: 8px; border-top: 1px solid #DCEEF6; font-size: 13px; }
+/* The toggle is 26px tall: line the icon and the first text line up on its centre, so a collapsed note reads as
+   one centred row and expanding it only adds lines below, without moving anything already on screen. */
+.cac .dlv-note__icon { margin-top: 3px; }
+.cac .dlv-note__body { padding-top: 2.5px; }
+
+/* ---------- Deliverables not mapped to any activity ---------- */
+
+.cac .cac-missing {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--cac-warn-border);
+  border-radius: var(--dlv-radius);
+  background: var(--cac-warn-bg);
+}
+.cac .cac-missing__head { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; }
+.cac .cac-missing__icon { flex: none; margin-top: 1px; color: var(--dlv-warn-dot); }
+.cac .cac-missing__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cac .cac-missing__title { font: 600 13.5px Figtree, sans-serif; color: var(--dlv-ink); }
+.cac .cac-missing__text { font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlv-ink-soft); text-wrap: pretty; }
+.cac .cac-missing__toggle,
+.cac .cac-missing__toggle:focus {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  height: 30px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid #E6C98E;
+  border-radius: 7px;
+  background: #fff;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlv-warn);
+  cursor: pointer;
+}
+.cac .cac-missing__toggle:hover { background: #FFFBF2; color: var(--dlv-warn); }
+.cac .cac-missing__caret { transition: transform .15s ease; }
+.cac .cac-missing__toggle[aria-expanded="true"] .cac-missing__caret { transform: rotate(180deg); }
+.cac .cac-missing__list {
+  margin: 0 12px 12px;
+  border: 1px solid var(--cac-warn-border);
+  border-radius: 9px;
+  background: #fff;
+  /* Exactly seven rows (6 x 47px + 46px for the last, borderless one, + 2px border): the scroll starts at the eighth */
+  max-height: 330px;
+  overflow: auto;
+}
+.cac .cac-missing__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 8px 12px;
+  border-bottom: 1px solid var(--cac-warn-row);
+}
+.cac .cac-missing__row:last-child { border-bottom: 0; }
+.cac .cac-missing__row .cac-dlTitle { flex: 1; }
+.cac .cac-missing__open,
+.cac .cac-missing__open:focus {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: var(--dlv-primary);
+}
+.cac .cac-missing__open:hover { background: var(--dlv-info-hover); color: var(--dlv-primary); }
+
+/* ---------- List ---------- */
+
+.cac .cac-list { display: flex; flex-direction: column; gap: 8px; }
+.cac .cac-list > .dlv-empty { border: 1px solid var(--dlv-border); }
+
+.cac .cac-addBottom,
+.cac .cac-addBottom:focus {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  margin: 0;
+  border: 1.5px dashed #9CC9DC;
+  border-radius: var(--dlv-radius);
+  background: #F7FBFD;
+  font: 600 14px Figtree, sans-serif;
+  color: var(--dlv-primary-dark);
+  cursor: pointer;
+}
+.cac .cac-addBottom:hover { border-color: var(--dlv-primary); background: var(--dlv-info-hover); color: var(--dlv-primary-dark); }
+.cac [data-cac-add]:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- One activity ---------- */
+
+.cac .cac-act {
+  background: var(--dlv-surface);
+  border: 1px solid var(--dlv-border);
+  border-radius: var(--dlv-radius);
+  box-shadow: var(--dlv-shadow);
+}
+.cac .cac-act.is-new { border-color: var(--dlv-info-border); }
+
+.cac .cac-act__head { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 10px; }
+.cac .cac-act__caret,
+.cac .cac-act__caret:focus {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: var(--dlv-chip);
+  color: var(--dlv-ink-soft);
+  cursor: pointer;
+}
+.cac .cac-act__caret:hover { background: #DDE5EC; color: var(--dlv-ink-soft); }
+.cac .cac-act__caret svg { transition: transform .15s ease; }
+.cac .cac-act.is-open .cac-act__caret svg { transform: rotate(90deg); }
+
+.cac .cac-act__summary,
+.cac .cac-act__summary:hover,
+.cac .cac-act__summary:focus {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cac .cac-act__titleLine { display: flex; align-items: baseline; gap: 8px; min-width: 0; width: 100%; }
+.cac .cac-act__code {
+  flex: none;
+  font: 600 14.5px Figtree, sans-serif;
+  color: var(--dlv-ink);
+  font-variant-numeric: tabular-nums;
+}
+.cac .cac-act__code:empty { display: none; }
+.cac .cac-act__name {
+  flex: 1;
+  min-width: 0;
+  font: 400 14px Figtree, sans-serif;
+  color: var(--dlv-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cac .cac-act__name.is-empty { color: var(--dlv-subtle); }
+.cac .cac-act__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px 14px;
+  flex-wrap: wrap;
+  font: 500 12.5px Figtree, sans-serif;
+  color: var(--dlv-ink-soft);
+}
+.cac .cac-act__metaItem { display: inline-flex; align-items: center; gap: 6px; }
+.cac .cac-act__metaItem svg { color: var(--dlv-muted); }
+.cac .cac-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #E3E8EE;
+  color: var(--dlv-ink-soft);
+  font: 700 9px Figtree, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.cac .cac-issues {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid var(--cac-warn-border);
+  border-radius: 11px;
+  background: var(--cac-warn-bg);
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlv-warn);
+  white-space: nowrap;
+}
+.cac .cac-issues::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dlv-warn-dot);
+}
+.cac .cac-act__status {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 96px;
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlv-ink);
+}
+.cac .cac-act__spacer { flex: none; width: 30px; }
+.cac .cac-confirm { margin: 0 12px 12px; }
 
-.activityIndex span {
-    color: #ccc;
+/* ---------- Activity form ---------- */
+
+.cac .cac-act__body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px 20px 20px 50px;
+  border-top: 1px solid var(--dlv-border-soft);
+}
+.cac .cac-act__body[hidden] { display: none; }
+.cac .cac-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 170px) minmax(150px, 170px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
 
-.blockContent {
-    margin-top: 20px;
+/* flow-root keeps the floats of a field (word counter, feedback bubble) inside it */
+.cac .cac-field { display: flow-root; position: relative; min-width: 0; }
+.cac .cac-field .form-group { margin-bottom: 0; }
+.cac .cac-field .feedback-flex-items { align-items: flex-start; gap: 8px; }
+
+.cac .cac-act__body label,
+.cac .cac-statusBox__label {
+  display: block;
+  margin: 0 0 6px;
+  padding: 0;
+  font: 600 13px/1.4 Figtree, sans-serif;
+  color: var(--dlv-ink);
+}
+/* Read only, every label keeps the same weight: customForm marks its own labels .readOnly, the selects drawn
+   here do not */
+.cac .cac-act__body label.readOnly { color: var(--dlv-ink); }
+.cac .cac-act__body .requiredTag { margin-left: 4px; font-weight: 700; color: var(--cac-required); }
+.cac .cac-act__body label br { display: none; }
+
+.cac .cac-act__body input.form-control,
+.cac .cac-act__body textarea.form-control {
+  width: 100%;
+  height: 40px;
+  padding: 0 11px;
+  border: 1px solid var(--dlv-border-strong);
+  border-radius: var(--dlv-radius-sm);
+  background: #fff;
+  box-shadow: none;
+  font: 400 14px Figtree, sans-serif;
+  color: var(--dlv-ink);
+}
+.cac .cac-act__body textarea.form-control { height: auto; min-height: 96px; padding: 9px 11px; line-height: 1.6; resize: vertical; }
+.cac .cac-act__body input.form-control:focus,
+.cac .cac-act__body textarea.form-control:focus { border-color: var(--dlv-primary); box-shadow: var(--dlv-focus-ring); outline: none; }
+.cac .cac-act__body input.form-control::placeholder,
+.cac .cac-act__body textarea.form-control::placeholder { color: var(--dlv-subtle); }
+
+/* A field the save would flag, and the server's own marks after a save */
+.cac .cac-field.has-issue input.form-control,
+.cac .cac-field.has-issue textarea.form-control,
+.cac .cac-act__body input.form-control.fieldError,
+.cac .cac-act__body textarea.form-control.fieldError,
+.cac .cac-field.has-issue .select2-container--default .select2-selection--single,
+.cac .cac-act__body .select2-selection.missingSelect2 { border-color: var(--cac-issue); }
+
+/* customForm prints a committed answer as a <p>; global.css justifies it with break-all */
+.cac .cac-act__body .input > p,
+.cac .cac-act__body .textArea > p,
+.cac .cac-act__body .select > p,
+.cac .cac-act__body .cac-readValue {
+  margin: 0;
+  font: 400 14px/1.55 Figtree, sans-serif;
+  color: var(--dlv-ink);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+.cac .cac-act__body .fieldEmpty { color: var(--dlv-subtle); font-style: normal; }
+
+/* Word counters (applyWordCounter, utils.js): a quiet caption under the control's right edge */
+.cac .cac-act__body .charCount {
+  float: none;
+  display: block;
+  width: auto;
+  margin: 5px 0 0;
+  font-size: 12px !important;
+  line-height: 1.4;
+  color: var(--dlv-muted);
+  text-align: right !important;
+}
+.cac .cac-act__body .charCount.fieldError { color: var(--cac-required); }
+
+.cac .cac-hint,
+.cac .cac-error { display: block; margin-top: 6px; font: 500 12px/1.4 Figtree, sans-serif; }
+.cac .cac-hint { color: var(--dlv-muted); }
+.cac .cac-error { color: var(--cac-required); }
+.cac .cac-error:empty,
+.cac .cac-hint[hidden],
+.cac .cac-error[hidden] { display: none; }
+/* The word counter sits on the same line as the error, on its right */
+.cac .cac-field:has(.charCount) > .cac-error { margin-top: -17px; max-width: calc(100% - 210px); }
+
+.cac .help-block.activityDateError { margin: 6px 0 0; font: 500 12px/1.4 Figtree, sans-serif; color: var(--cac-required); }
+.cac .has-error input.form-control { border-color: var(--cac-issue); }
+
+/* select2 single selects as the design's native-looking selects */
+.cac .cac-act__body .select2-container--default .select2-selection--single {
+  height: 40px;
+  border: 1px solid var(--dlv-border-strong);
+  border-radius: var(--dlv-radius-sm);
+  background: #fff;
+}
+.cac .cac-act__body .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 32px 0 11px;
+  font: 400 14px/38px Figtree, sans-serif;
+  color: var(--dlv-ink);
+}
+.cac .cac-act__body .select2-container--default .select2-selection--single .select2-selection__arrow { top: 7px; right: 8px; height: 24px; }
+.cac .cac-act__body .select2-container--default.select2-container--focus .select2-selection--single,
+.cac .cac-act__body .select2-container--default.select2-container--open .select2-selection--single { border-color: var(--dlv-primary); box-shadow: var(--dlv-focus-ring); }
+/* Catalog entries another activity already took */
+.select2-container .select2-results__option[aria-disabled="true"] { color: #9AA4B0; }
+.select2-container .select2-dropdown .select2-search--dropdown .select2-search__field { margin-right: 0; }
+
+/* ---------- Status ---------- */
+
+.cac .cac-statusBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--dlv-border-soft);
+  border-radius: 10px;
+  background: var(--cac-field-bg);
+}
+.cac .cac-statusBox.is-overdue { border-color: var(--dlv-danger-border); }
+.cac .cac-statusBox__row { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.cac .cac-statusBox__label { margin: 0; }
+
+.cac .cac-seg { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 9px; background: var(--dlv-chip); }
+.cac .cac-seg__opt { position: relative; margin: 0; padding: 0; font-weight: 500; }
+.cac .cac-seg__opt input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.cac .cac-seg__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 13px;
+  border-radius: 7px;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlv-ink-soft);
+  white-space: nowrap;
+}
+.cac .cac-seg__btn .dlv-dot { width: 8px; height: 8px; }
+.cac .cac-seg__opt:hover .cac-seg__btn { color: var(--dlv-ink); }
+.cac .cac-seg__opt input:checked + .cac-seg__btn {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(31, 42, 55, .14);
+  font-weight: 600;
+  color: var(--dlv-ink);
+}
+.cac .cac-seg__opt input:focus-visible + .cac-seg__btn { outline: 2px solid var(--dlv-primary); outline-offset: 1px; }
+.cac .cac-statusRead { display: inline-flex; align-items: center; gap: 7px; font: 600 13px Figtree, sans-serif; color: var(--dlv-ink); }
+.cac .cac-statusRead .dlv-dot { width: 8px; height: 8px; }
+.cac .cac-moves { font: 500 12.5px Figtree, sans-serif; color: var(--dlv-primary-dark); }
+
+.cac .cac-overdue {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--dlv-danger-border);
+  border-radius: var(--dlv-radius-sm);
+  background: var(--dlv-danger-bg);
+  color: var(--dlv-danger);
+}
+.cac .cac-overdue[hidden] { display: none; }
+.cac .cac-overdue svg { flex: none; margin-top: 2px; }
+.cac .cac-overdue__text { flex: 1; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlv-ink); text-wrap: pretty; }
+.cac .cac-overdue__btn,
+.cac .cac-overdue__btn:focus {
+  flex: none;
+  height: 28px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--dlv-border-strong);
+  border-radius: 7px;
+  background: #fff;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlv-ok);
+  cursor: pointer;
+}
+.cac .cac-overdue__btn:hover { background: var(--dlv-ok-bg); color: var(--dlv-ok); }
+
+/* ---------- Deliverables of an activity ---------- */
+
+.cac .cac-dls { display: flex; flex-direction: column; gap: 8px; }
+.cac .cac-dls__head { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--dlv-border-soft); }
+.cac .cac-dls__title { font: 600 13px Figtree, sans-serif; color: var(--dlv-ink); }
+.cac .cac-dls__count { font: 500 12.5px Figtree, sans-serif; color: var(--dlv-muted); }
+.cac .cac-dls__empty { margin: 0; font: 400 13px Figtree, sans-serif; color: var(--dlv-muted); }
+.cac .cac-dl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  padding: 5px 4px 5px 2px;
+  border-bottom: 1px solid var(--dlv-border-row);
+}
+.cac .cac-dl__remove { width: 26px; height: 26px; flex: none; }
+
+.cac .cac-combo { position: relative; max-width: 560px; }
+.cac .cac-combo__field { position: relative; display: flex; align-items: center; }
+.cac .cac-combo__field svg { position: absolute; left: 11px; color: var(--dlv-muted); pointer-events: none; }
+.cac .cac-combo__input { padding-left: 33px; }
+.cac .cac-combo__list,
+.cac .cac-combo__none {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid #DCE2E9;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(31, 42, 55, .14);
+}
+.cac .cac-combo__list { max-height: 280px; overflow: auto; }
+.cac .cac-combo__list[hidden],
+.cac .cac-combo__none[hidden] { display: none; }
+.cac .cac-combo__none { display: block; padding: 12px; font: 400 13px Figtree, sans-serif; color: var(--dlv-ink-soft); }
+.cac .cac-combo__option {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--dlv-border-row);
+  cursor: pointer;
+}
+.cac .cac-combo__option:last-child { border-bottom: 0; }
+.cac .cac-combo__option:hover,
+.cac .cac-combo__option[aria-selected="true"] { background: var(--dlv-info-bg); }
+.cac .cac-combo__option .cac-dlId { width: 54px; }
+.cac .cac-combo__title { flex: 1; min-width: 0; font: 400 13px/1.45 Figtree, sans-serif; color: var(--dlv-ink); }
+
+/* ---------- Save bar ----------
+ * The bar of the other redesigned sections: it follows the scroll 12px off the viewport
+ * bottom and settles at the end of the form. */
+.cac .cac-saveBar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 14px;
+  margin-top: 4px;
+  padding: 10px 12px 10px 18px;
+  background: var(--dlv-surface);
+  border: 1px solid var(--dlv-border);
+  border-radius: var(--dlv-radius);
+  box-shadow: 0 6px 18px rgba(31, 42, 55, .12);
+}
+.cac .cac-saveBar__info { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
+.cac .cac-saveBar__state { display: flex; align-items: center; gap: 8px; font: 600 13px Figtree, sans-serif; color: var(--dlv-ok); }
+.cac .cac-saveBar__dot { flex: none; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--dlv-ok); }
+.cac .cac-saveBar.is-dirty .cac-saveBar__state { color: var(--dlv-warn); }
+.cac .cac-saveBar.is-dirty .cac-saveBar__dot { background: var(--dlv-warn-dot); }
+.cac .cac-saveBar__actions { flex: none; margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.cac .cac-saveBar .clearfix { display: none; }
+.cac .cac-saveBar .buttons,
+.cac .cac-saveBar .buttons-content {
+  float: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+/* global.js pins .buttons-content to the viewport on scroll; inside the sticky bar it stays put */
+.cac .cac-saveBar .buttons-content.positionFixedBot { position: static; bottom: auto; right: auto !important; }
+.cac .cac-saveBar .buttons-content.animated { animation: none; }
+.cac .cac-saveBar .button-save,
+.cac .cac-saveBar .button-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--dlv-radius-sm);
+  background: var(--dlv-primary);
+  color: #fff;
+  font: 600 14px Figtree, sans-serif;
+  text-decoration: none;
+}
+.cac .cac-saveBar .button-save:hover,
+.cac .cac-saveBar .button-save:focus,
+.cac .cac-saveBar .button-save:active,
+.cac .cac-saveBar .button-edit:hover,
+.cac .cac-saveBar .button-edit:focus,
+.cac .cac-saveBar .button-edit:active { border: 0; background: var(--dlv-primary-dark); color: #fff; }
+.cac .cac-saveBar .button-cancel,
+.cac .cac-saveBar .button-history,
+.cac .cac-saveBar .form-button:not(.button-save):not(.button-edit) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--dlv-border-strong);
+  border-radius: var(--dlv-radius-sm);
+  background: #fff;
+  color: var(--dlv-ink-soft);
+  font: 600 13px Figtree, sans-serif;
+  text-decoration: none;
 }
 
-.simpleBox hr {
-    margin-bottom: 30px;
+.cac .cac-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 30px;
+  padding: 0 6px 0 12px;
+  border-radius: var(--dlv-radius-sm);
+  background: #2D3339;
+  font: 500 12.5px Figtree, sans-serif;
+  color: #fff;
 }
-
-.activitiesC-content {
-    margin-top: 20px;
+.cac .cac-toast[hidden] { display: none; }
+.cac .cac-toast__undo,
+.cac .cac-toast__undo:focus {
+  height: 22px;
+  margin: 0;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .14);
+  font: 600 12px Figtree, sans-serif;
+  color: #fff;
+  cursor: pointer;
 }
+.cac .cac-toast__undo:hover { background: rgba(255, 255, 255, .24); color: #fff; }
 
-.deliverableActivity {
-    list-style: none;
-    padding: 1px 4px 0px 6px;
-    background-color: #F7F7F7;
-    border: 1px solid #E0E0E0 !important;
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    margin-bottom: 5px;
-    position: relative;
-}
+/* ---------- Narrow column ---------- */
 
-.deliverableActivity:hover {
-    background-color: rgb(240, 240, 240);
-}
-
-.addActivity {
-    margin-top: 15px;
-}
-
-.blockTitle {
-    font-size: 1em;
-}
-
-.select2-container--default .select2-results__option[aria-selected=true] {
-    display: none;
-}
-
-#guide-button{
-    display: block;
+@media (max-width: 991px) {
+  .cac .cac-act__body { padding-left: 20px; }
+  .cac .cac-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cac .cac-grid > .cac-field:last-child { grid-column: 1 / -1; }
+  .cac .cac-act__head { flex-wrap: wrap; }
 }
