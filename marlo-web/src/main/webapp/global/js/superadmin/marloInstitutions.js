@@ -136,10 +136,16 @@ $(document).ready(function() {
   var $page = $('#prqPage');
   var $notes = $('#prqNotes');
   var PENDING_NOTES = 'prqPendingNotes';
+  var PENDING_FILTER = 'prqPendingFilter';
   var MAX_PAGE_NOTES = 5;
   // A request in one of these statuses is no longer pending: its card (or office row) leaves the list
   var CLOSED = {done: true, alreadyHandled: true, notFound: true, skippedExisting: true};
   var pending = null; // what the open dialog will decide
+  var KINDS = ['partners', 'offices'];
+  var SEARCH_DELAY = 150;
+  var filter = {q: '', seg: 'all'}; // q is the normalised query; the field keeps what was typed
+  var searchTimer = null;
+  var $search = $('#prqSearch');
 
   /* ---------- text, notes and counts ---------- */
 
@@ -228,19 +234,196 @@ $(document).ready(function() {
     });
   }
 
+  // The pending total of each kind; a list that ran out of cards swaps to its "nothing pending" state
   function refreshCounts() {
-    $.each(['partners', 'offices'], function(i, kind) {
+    $.each(KINDS, function(i, kind) {
       var $list = $('[data-prq-list="' + kind + '"]');
-      var total = $list.children('li').length;
-      $('[data-prq-count="' + kind + '"]').text(total);
-      $('[data-prq-summary="' + kind + '"]').text(
-          $.trim(text('text-' + kind + (total === 1 ? '-one' : '-many')).replace('{0}', total)));
-      if (total === 0) {
+      if ($list.children('li').length === 0) {
         $list.prop('hidden', true);
         $list.siblings('[data-prq-empty]').prop('hidden', false);
       }
     });
+    applyFilter();
   }
+
+  /* ---------- search and kind filter (client-side: the cards are all in the page) ---------- */
+
+  // Lower case, no accents, single spaces: the same form for the query and for the text of a card
+  function normalize(value) {
+    var out = String(value || '').toLowerCase();
+    if (out.normalize) {
+      out = out.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+    return $.trim(out.replace(/\s+/g, ' '));
+  }
+
+  // What a card answers to: its own data-prq-search plus the one of each office row still in it
+  function searchTextOf($card) {
+    var parts = [$card.attr('data-prq-search') || ''];
+    $card.find('.officeCountryRequest').each(function() {
+      parts.push($(this).attr('data-prq-search') || '');
+    });
+    return normalize(parts.join(' '));
+  }
+
+  function fill(template, first, second) {
+    return template.replace('{0}', first).replace('{1}', second);
+  }
+
+  function filterActive() {
+    return filter.q !== '' || filter.seg !== 'all';
+  }
+
+  // Shows the cards that match the query and the kind, and keeps every count consistent with them.
+  // Counts say "x of y" only for a section the filter narrowed; the rest show the plain total.
+  function applyFilter() {
+    var tokens = filter.q ? filter.q.split(' ') : [];
+    var matched = {};
+    var totals = {};
+
+    $.each(KINDS, function(i, kind) {
+      var kindOn = filter.seg === 'all' || filter.seg === kind;
+      var total = 0;
+      var found = 0;
+      $('[data-prq-list="' + kind + '"]').children('li').each(function() {
+        var $card = $(this);
+        var hay = tokens.length ? searchTextOf($card) : '';
+        var ok = true;
+        $.each(tokens, function(j, token) {
+          ok = hay.indexOf(token) > -1;
+          return ok;
+        });
+        total++;
+        found += ok ? 1 : 0;
+        $card.prop('hidden', !(ok && kindOn));
+      });
+      matched[kind] = found;
+      totals[kind] = total;
+
+      var narrowed = found < total;
+      var $section = $('[data-prq-section="' + kind + '"]');
+      $section.prop('hidden', !kindOn);
+      $section.find('[data-prq-nomatch]').prop('hidden', !(kindOn && total > 0 && found === 0));
+      $('[data-prq-count="' + kind + '"]').text(narrowed ? fill(text('text-of'), found, total) : total);
+
+      var $summary = $('[data-prq-summary="' + kind + '"]');
+      $summary.prop('hidden', !kindOn);
+      if (narrowed) {
+        $summary.text($.trim(fill(text('text-filtered-' + kind), found, total)));
+      } else {
+        $summary.text($.trim(text('text-' + kind + (total === 1 ? '-one' : '-many')).replace('{0}', total)));
+      }
+    });
+
+    $('.prq-head__sep').prop('hidden', filter.seg !== 'all');
+    $('[data-prq-seg-count="all"]').text(matched.partners + matched.offices);
+    $('[data-prq-seg-count="partners"]').text(matched.partners);
+    $('[data-prq-seg-count="offices"]').text(matched.offices);
+    $('[data-prq-seg]').each(function() {
+      var on = $(this).attr('data-prq-seg') === filter.seg;
+      $(this).toggleClass('is-on', on).attr('aria-pressed', on ? 'true' : 'false');
+    });
+    $('[data-prq-toolbar] [data-prq-clear]').prop('hidden', !filterActive());
+  }
+
+  // The filter survives the reload an edit does, through the URL hash
+  function syncHash() {
+    var parts = [];
+    var typed = $.trim($search.val());
+    if (typed !== '') {
+      parts.push('q=' + encodeURIComponent(typed));
+    }
+    if (filter.seg !== 'all') {
+      parts.push('seg=' + filter.seg);
+    }
+    try {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search
+          + (parts.length ? '#' + parts.join('&') : ''));
+    } catch (err) {
+      // The filter still works without the hash
+    }
+  }
+
+  // The accept is a full-page POST that ends in a redirect to a URL without the hash: keep the filter for the next page
+  function saveFilterForReload() {
+    try {
+      window.sessionStorage.setItem(PENDING_FILTER, window.location.hash);
+    } catch (err) {
+      // Without storage the filter resets, as after any navigation
+    }
+  }
+
+  // Parses a hash value ("#q=...&seg=..."): q goes in through .val(), seg only if it is one of the two kinds
+  function parseFilter(hash) {
+    var typed = '';
+    $.each(String(hash).replace(/^#/, '').split('&'), function(i, part) {
+      var pair = part.split('=');
+      try {
+        if (pair[0] === 'q') {
+          typed = decodeURIComponent(pair.slice(1).join('='));
+        } else if (pair[0] === 'seg' && (pair[1] === 'partners' || pair[1] === 'offices')) {
+          filter.seg = pair[1];
+        }
+      } catch (err) {
+        typed = '';
+      }
+    });
+    $search.val(typed);
+    filter.q = normalize(typed);
+  }
+
+  // The URL hash wins; without one, the filter saved before a redirect is applied once and discarded
+  function readHash() {
+    var hash = window.location.hash;
+    var saved = '';
+    try {
+      saved = window.sessionStorage.getItem(PENDING_FILTER) || '';
+      window.sessionStorage.removeItem(PENDING_FILTER);
+    } catch (err) {
+      saved = '';
+    }
+    var restored = !hash && saved !== '';
+    parseFilter(restored ? saved : hash);
+    if (restored) {
+      syncHash();
+    }
+  }
+
+  // Applies what is in the field right now (a pending debounce included)
+  function commitFilter() {
+    window.clearTimeout(searchTimer);
+    filter.q = normalize($search.val());
+    applyFilter();
+    syncHash();
+  }
+
+  $search.on('input', function() {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(commitFilter, SEARCH_DELAY);
+  });
+
+  $search.on('keydown', function(e) {
+    if (e.key === 'Escape' && $search.val() !== '') {
+      e.preventDefault();
+      $search.val('');
+      commitFilter();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      commitFilter();
+    }
+  });
+
+  $page.on('click', '[data-prq-seg]', function() {
+    filter.seg = $(this).attr('data-prq-seg');
+    commitFilter();
+  });
+
+  $page.on('click', '[data-prq-clear]', function() {
+    filter.seg = 'all';
+    $search.val('');
+    commitFilter();
+    $search.focus();
+  });
 
   function removeCard($card) {
     $card.remove();
@@ -459,6 +642,7 @@ $(document).ready(function() {
     lock(pending.$card, true);
     spin(pending.$card, true);
     // A full-page POST and redirect: addPartner answers with an action message that the page shows as a note
+    saveFilterForReload();
     form.submit();
   }
 
@@ -650,17 +834,22 @@ $(document).ready(function() {
     var $badge = $card.find('.prq-badge--count');
     $badge.text($badge.text().replace(/\d+/, left));
 
+    // The card may no longer match the query (its rows changed): counts and the filter are reapplied
+    applyFilter();
     var $first = null;
     var cardLeaves = left === 0;
+    var cardHidden = $card.prop('hidden');
     $.each(groups, function(i, status) {
       var label = decision.name + ': ' + byStatus[status].join(', ');
-      var $note = cardLeaves ? pageNote(status, label) : cardNote($card, status, label);
+      var $note = (cardLeaves || cardHidden) ? pageNote(status, label) : cardNote($card, status, label);
       $first = $first || $note;
     });
 
-    if (cardLeaves) {
+    if (cardLeaves || cardHidden) {
       prqDialog.close({focus: false});
-      removeCard($card);
+      if (cardLeaves) {
+        removeCard($card);
+      }
       $first.focus();
       return;
     }
@@ -740,6 +929,8 @@ $(document).ready(function() {
     }
   });
 
+  readHash();
+  applyFilter();
   showQueuedNotes();
   findSameness();
 });

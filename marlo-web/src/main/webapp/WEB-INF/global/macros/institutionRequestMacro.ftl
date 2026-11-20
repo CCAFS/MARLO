@@ -170,7 +170,7 @@
     <ul class="prq-list" data-prq-list="partners">
       [#list partners as partner]
         [#local id = partner.id?c /]
-        <li id="partnerRequestItem-${id}" class="prq-card prq-card--partner partnerRequestItem" data-request-id="${id}" data-prq-name="${(partner.partnerName)!""}">
+        <li id="partnerRequestItem-${id}" class="prq-card prq-card--partner partnerRequestItem" data-request-id="${id}" data-prq-name="${(partner.partnerName)!""}" data-prq-search="${(partner.partnerName)!""} ${(partner.acronym)!""} ${(partner.partnerInfo)!""} ${personName((partner.createdBy)!{})} ${(partner.externalUserName)!""} ${(partner.requestSource)!""} ${(partner.locElement.name)!""}">
           <div class="loading" style="display:none"></div>
           <div class="prq-card__head">
             <div class="prq-card__title">
@@ -226,7 +226,7 @@
       [#list partners as partner]
         [#local institutionId = partner.institution.id?c /]
         [#local customName = "countryOfficePOJO" /]
-        <li id="officesRequestItem-${institutionId}" class="prq-card prq-card--office officesRequestItem" data-institution-id="${institutionId}" data-prq-name="${(partner.institution.composedName)!""}">
+        <li id="officesRequestItem-${institutionId}" class="prq-card prq-card--office officesRequestItem" data-institution-id="${institutionId}" data-prq-name="${(partner.institution.composedName)!""}" data-prq-search="${(partner.institution.composedName)!""}">
           <div class="loading" style="display:none"></div>
           <form class="prq-officeForm" data-prq-form="offices" novalidate>
             <input type="hidden" class="institutionID" name="${customName}.institution.id" value="${institutionId}" />
@@ -260,7 +260,7 @@
                 <ul class="prq-offices">
                   [#list partner.partnerRequest as officeRequest]
                     [#local officeId = officeRequest.id?c /]
-                    <li class="prq-office officeCountryRequest">
+                    <li class="prq-office officeCountryRequest" data-prq-search="${(officeRequest.locElement.name)!""} ${personName((officeRequest.createdBy)!{})} ${(officeRequest.externalUserName)!""} ${(officeRequest.requestSource)!""}">
                       <label class="prq-office__pick" for="officeRequest-${officeId}">
                         <input type="checkbox" class="prq-checkbox officeRequest" name="${customName}.partnerRequest.id" id="officeRequest-${officeId}" value="${officeId}" />
                         <span class="prq-office__country">[@flagCountry request=officeRequest /]</span>

@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20261120" 
+  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20261120-2" 
   ] 
 /]
 [#assign customCSS = [ 
   "${baseUrlCdn}/global/css/superadmin/superadmin.css",
-  "${baseUrlCdn}/global/css/superadmin/marloInstitutions.css?20261120"
+  "${baseUrlCdn}/global/css/superadmin/marloInstitutions.css?20261120-1"
   ] 
 /]
 [#assign currentSection = "superadmin" /]
@@ -55,7 +55,10 @@
           data-text-partners-one="[@institutionRequest.attrText key='marloRequestInstitution.ui.summary.partners.one' /]"
           data-text-partners-many="[@institutionRequest.attrText key='marloRequestInstitution.ui.summary.partners.many' /]"
           data-text-offices-one="[@institutionRequest.attrText key='marloRequestInstitution.ui.summary.offices.one' /]"
-          data-text-offices-many="[@institutionRequest.attrText key='marloRequestInstitution.ui.summary.offices.many' /]">
+          data-text-offices-many="[@institutionRequest.attrText key='marloRequestInstitution.ui.summary.offices.many' /]"
+          data-text-of="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.of' /]"
+          data-text-filtered-partners="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.summary.partners' /]"
+          data-text-filtered-offices="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.summary.offices' /]">
 
           <header class="prq-head">
             <div class="prq-head__main">
@@ -75,6 +78,22 @@
             </button>
           </header>
 
+          [#-- Search and kind filter: client-side only, applied by marloInstitutions.js to the cards below --]
+          <div class="prq-toolbar" data-prq-toolbar>
+            <div class="prq-search">
+              <svg class="prq-search__icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="4.75" stroke="currentColor" stroke-width="1.5"/><path d="M10.6 10.6L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input type="text" class="prq-input" id="prqSearch" data-prq-search-input autocomplete="off" spellcheck="false" enterkeyhint="search"
+                aria-label="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.search' /]"
+                placeholder="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.search' /]" />
+            </div>
+            <div class="prq-seg" role="group" aria-label="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.group' /]">
+              <button type="button" class="prq-seg__btn is-on" data-prq-seg="all" aria-pressed="true">[@s.text name="marloRequestInstitution.ui.filter.all" /] <span class="prq-seg__count" data-prq-seg-count="all">${(partnerCount + officeCount)?c}</span></button>
+              <button type="button" class="prq-seg__btn" data-prq-seg="partners" aria-pressed="false">[@s.text name="marloRequestInstitution.ui.filter.partners" /] <span class="prq-seg__count" data-prq-seg-count="partners">${partnerCount?c}</span></button>
+              <button type="button" class="prq-seg__btn" data-prq-seg="offices" aria-pressed="false">[@s.text name="marloRequestInstitution.ui.filter.offices" /] <span class="prq-seg__count" data-prq-seg-count="offices">${officeCount?c}</span></button>
+            </div>
+            <button type="button" class="prq-btn prq-btn--ghost prq-toolbar__clear" data-prq-clear hidden>[@s.text name="marloRequestInstitution.ui.filter.clear" /]</button>
+          </div>
+
           [#-- Outcome of the last decision (a redirected accept) and errors: the only message on this screen --]
           <div class="prq-notes" id="prqNotes" role="status" aria-live="polite">
             [#list (actionMessages)![] as message]
@@ -87,21 +106,29 @@
           </div>
 
           [#-- Requested institutions --]
-          <section class="prq-section" aria-labelledby="prqPartnersTitle">
+          <section class="prq-section" data-prq-section="partners" aria-labelledby="prqPartnersTitle">
             <div class="prq-section__head">
               <h2 class="prq-section__title" id="prqPartnersTitle">[@s.text name="marloRequestInstitution.ui.section.partners" /]</h2>
               <span class="prq-count" data-prq-count="partners">${partnerCount?c}</span>
             </div>
             [@institutionRequest.partnersList partners=partners  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
+            <div class="prq-empty prq-empty--filtered" data-prq-nomatch hidden>
+              <p class="prq-empty__title">[@s.text name="marloRequestInstitution.ui.filter.empty" /]</p>
+              <button type="button" class="prq-btn prq-btn--ghost" data-prq-clear>[@s.text name="marloRequestInstitution.ui.filter.clear" /]</button>
+            </div>
           </section>
 
           [#-- Requested office locations --]
-          <section class="prq-section" aria-labelledby="prqOfficesTitle">
+          <section class="prq-section" data-prq-section="offices" aria-labelledby="prqOfficesTitle">
             <div class="prq-section__head">
               <h2 class="prq-section__title" id="prqOfficesTitle">[@s.text name="marloRequestInstitution.ui.section.offices" /]</h2>
               <span class="prq-count" data-prq-count="offices">${officeCount?c}</span>
             </div>
             [@institutionRequest.officesRequest partners=countryOfficesList  canEdit=editable namespace="/marloInstitutions" defaultAction="${(crpSession)!}/marloInstitutions"/]
+            <div class="prq-empty prq-empty--filtered" data-prq-nomatch hidden>
+              <p class="prq-empty__title">[@s.text name="marloRequestInstitution.ui.filter.empty" /]</p>
+              <button type="button" class="prq-btn prq-btn--ghost" data-prq-clear>[@s.text name="marloRequestInstitution.ui.filter.clear" /]</button>
+            </div>
           </section>
 
           [#-- Decision dialogs --]

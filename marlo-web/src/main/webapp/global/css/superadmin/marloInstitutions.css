@@ -28,6 +28,7 @@
 
 /* Undo the bare-button styling of global.css */
 .prq-btn,
+.prq-seg__btn,
 .prq-dialog__x {
   padding: 0;
   border: 0;
@@ -51,6 +52,53 @@
 .prq-head__title { margin: 0; font-size: 22px; font-weight: 600; line-height: 1.25; color: var(--marlo-ink); }
 .prq-head__summary { margin: 0; font-size: 13.5px; color: var(--marlo-text-muted); }
 .prq-head__sep { margin: 0 6px; }
+
+/************* SEARCH AND KIND FILTER ***************/
+
+.prq-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.prq-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 340px;
+  color: var(--marlo-text-muted);
+}
+.prq-search__icon { position: absolute; left: 11px; flex: none; pointer-events: none; }
+.prq-search .prq-input { padding-left: 34px; }
+.prq-search .prq-input::placeholder { color: var(--marlo-text-muted); opacity: 1; }
+
+.prq-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-neutral-bg);
+}
+.prq-seg__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--marlo-radius-md);
+  background: transparent;
+  color: var(--marlo-text);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.prq-seg__btn:hover { color: var(--marlo-ink); }
+.prq-seg__btn.is-on { background: var(--marlo-surface); color: var(--marlo-ink); font-weight: 600; box-shadow: var(--marlo-shadow-card); }
+.prq-seg__count { font-size: 12px; font-weight: 500; color: var(--marlo-text-muted); }
+.prq-toolbar__clear { height: 32px; padding: 0 12px; font-size: 13px; }
+
+.prq-empty--filtered .prq-btn { margin-top: 8px; }
 
 /************* NOTES ***************/
 
@@ -332,6 +380,7 @@
 
 /* Visible focus on every control (a ring on the field plus an outline for the keyboard) */
 .prq-btn:focus-visible,
+.prq-seg__btn:focus-visible,
 .prq-dialog__x:focus-visible,
 .prq-card__link a:focus-visible,
 .prq-reasons__summary:focus-visible,
@@ -435,6 +484,12 @@ html.prq-dialogOpen body { overflow: hidden; }
 /************* NARROW SCREENS ***************/
 
 @media (max-width: 600px) {
+  .prq-toolbar { align-items: stretch; flex-direction: column; gap: 10px; }
+  .prq-search { flex: none; max-width: none; }
+  .prq-search .prq-input { height: 40px; }
+  .prq-seg { display: flex; }
+  .prq-seg__btn { flex: 1 1 0; height: 32px; padding: 0 8px; }
+  .prq-toolbar__clear { align-self: flex-start; }
   .prq-ro__row { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .prq-diff__row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .prq-diff__field { padding-top: 0; }
