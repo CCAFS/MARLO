@@ -255,7 +255,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T12 — Documentation
 
-- **Status:** pending · **Size:** S · **Depends on:** T11b · **Module:** docs
+- **Status:** [x] done 2026-11-20 (PASS attempt 2 — `execution.md`) · **Size:** S · **Depends on:** T11b · **Module:** docs
 - **Requirements:** OPS-002 (release note text), traceability
 - **Design refs:** §2 Docs, R-7, DD-13, P-7 follow-ups
 - **Scope:** `docs/specs/domain/admin/agent-context.md` — new `marloInstitutions` section (flow, manager methods, guard order, JSON contract, REST writer caveat R-7); `reports/ai-context/role-assignment-email-catalog.md` — the six partner-request emails; follow-up list in `execution.md`: dead `getClarisaAPI*` / both `ExternalPostUtils` copies, unrendered admin view, `docs/ux-ui/design.md` §7 drift (epic), CLARISA REST guards (R-7); release-note line for OPS-002.

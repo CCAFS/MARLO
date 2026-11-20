@@ -1416,3 +1416,103 @@ The owner reviews `probes/t11b-review.html`: the screenshots of both pages, the 
   - Tasks: 12 / 12 code and verification tasks are done except T12 (docs).
   - LOC: **~5,490**.
   - Review rounds: 27.
+
+### CHG-PARTREQ-001-T12 — Documentation
+
+- **Written:** `docs/specs/domain/admin/agent-context.md` (new § *Partner Requests (`marloInstitutions`)*; `marloInstitutions` removed from "Does not cover") and `reports/ai-context/role-assignment-email-catalog.md` (new §17, the six partner-request emails). Both describe the code on HEAD `c6462c4234`, read file by file.
+- **Found while writing:** `marloRequestInstitution.accept.email` / `.reject.email` are still read by the REST writer `InstitutionItem`; `office.accept.email` / `office.reject.email` are read by no Java code (follow-up 17).
+
+## Follow-ups
+
+One line each: item, then owner / next step. None blocks the release.
+
+1. Dead `APConfig.getClarisaAPIHost` / `getClarisaAPIUsername` / `getClarisaAPIPassword` and both `ExternalPostUtils` copies (`marlo-utils`, `marlo-web`) have no caller (P-7). Owner: cleanup ticket, delete together.
+2. `crp/views/admin/marloInstitutions.ftl` is no longer rendered (DD-9) and has no cache-buster. Owner: cleanup ticket, delete the view or add the buster before anyone renders it again.
+3. `docs/ux-ui/design.md` §7 contradicts the shipped `--marlo-*` tokens and Figtree (DD-13). Owner: constitutional epic, not this spec.
+4. The CLARISA REST endpoints (`Institutions` → `InstitutionItem`, `CountryOfficeRequestItem`) accept / reject requests without the pending guard, lock or superadmin rule (R-7). Owner: follow-up ticket; route them through `PartnerRequestManager`.
+5. Unused injected managers: `institutionManager` and `institutionLocationManager` in `PartnerRequestAction`; `institutionTypeManager` and `locElementManager` in `EditPartnerRequestAction`. Owner: cleanup ticket.
+6. `statusName(Status)` is copied in `PartnerRequestAction`, `RejectPartnerRequestAction` and `EditPartnerRequestAction`. Owner: move it onto `PartnerRequestOutcome`.
+7. `marloRequestCreation.sendFailed` and `marloRequestCreation.webSiteLink` are now unused (kept on purpose). Owner: cleanup ticket.
+8. `PartnersSaveAction` keeps an unused `StringBuilder` and the `add*Message` naming, though they now only set the request source. Owner: cleanup ticket.
+9. Other source labels are still hardcoded: Capdev, Funding Source, PowbSynthesis, Report Synthesis. Owner: give them `marloRequestCreation.source.*` keys like the project one.
+10. The office-accepted email lists a skipped country as added (T11b Q3). Owner: decide whether to list only the added countries.
+11. The cookie banner covers the primary action at short viewport heights (T11b Q6, site-wide). Owner: site-wide UI ticket.
+12. The office chip appears only after a reload (T11b Q7). Owner: UI follow-up.
+13. When `sessionStorage` is unavailable, the edit fallback removes the card (T09 advisory). Owner: UI follow-up.
+14. `RequestCountryOfficeAction.sendNewOfficeAlert` could be package-private. Owner: cleanup ticket.
+15. Refusals on the admin route (`superAdminValidation`) are not logged (T07). Owner: add a log line.
+16. Full-exception logging could expose a mail address if a future exception carries one (T03). Owner: review when such an exception appears.
+17. `marloRequestInstitution.office.accept.email` and `office.reject.email` are loaded in every file but read by no code. Owner: remove with the other unused keys (item 7).
+18. The Javadoc of `PartnerRequestEmails.isEnabled` says a unit "with an empty value" sends; the code (`getValue() == null || equalsIgnoreCase("true")`) does not send for an empty string, and `SendMailS.isNotificationDisabled` behaves the same. Owner: fix the Javadoc (or the rule, if empty should send) in a code change.
+
+19. `PartnerRequestEmails` class Javadoc (line 31) still says "the mail sender never suppresses mail to the notification mailbox" — narrower than `SendMailS.isNotificationDisabled` (answers 3–6 can be dropped); fold into item 18. Spec-history copies of the "six `@Transactional`" wording (`proposal.md`, `design.md:12`, `tasks.md:54`) are left as history.
+20. `SendMailS` evaluates the switch against the **session** unit (`getRequestCrpID()`), not the request's own unit, and sends when that CRP is null or the lookup throws — for a superadmin reviewing another unit's request the second check may read a different unit's switch (the action's own `isEnabled(request unit)` check is the authoritative one). Document or align.
+
+## Release note
+
+**OPS-002 line for users:** AICCRA partner requests are approved inside MARLO again; the support mailbox receives the alerts.
+
+Also state in the note: a batch that repeats a country now closes the repeat as not accepted, with a justification (it used to close as accepted).
+
+**Pre-release checks (owner, on production, before the first accept):**
+
+1. **OPS-002 — no CLARISA sync is still adding rows.** Must return **no rows**; if it returns any, stop and decide with the CLARISA owner (id collision risk):
+   ```sql
+   SELECT DATE(added), COUNT(*), MIN(id), MAX(id) FROM institutions WHERE added >= '<last known sync>' GROUP BY 1;
+   ```
+2. **P-25 — the server is not in strict SQL mode.** Stop if the value contains `STRICT_TRANS_TABLES` or `STRICT_ALL_TABLES`, because `institutions.created_by` is `NOT NULL` with no default and every accept would fail:
+   ```sql
+   SELECT @@GLOBAL.sql_mode;
+   ```
+
+### CHG-PARTREQ-001-T12 — Leader record
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-11-20
+- **Attempts:** 2
+- **Effort:** medium on attempt 1, high on attempt 2.
+- **Skills:** `cognitive-doc-design`.
+- **Files changed:**
+  - `docs/specs/domain/admin/agent-context.md` (+94 / −3): new § "Partner Requests (`marloInstitutions`)", removed from "Does not cover".
+  - `reports/ai-context/role-assignment-email-catalog.md` (+79 / −1): new §17, six emails.
+  - This file: T12 entry, `## Follow-ups` (20 items), `## Release note`.
+- **Baseline (observed):** `grep -c "marloInstitutions" agent-context.md` was `1` and is now `10`.
+- **Existence greps:** every named method, file, key and selector returns ≥ 1. Leader re-run on a sample: `findForUpdate` 3, `acceptPartnerRequest` 5, `rejectOfficeRequests` 3, `editPartnerRequest` 6, `createPartnerRequest` 5, `acceptOfficeRequests` 3, `rejectPartnerRequest` 5, `sendNewOfficeAlert` 1, `buildRequestSource` 1, `statusOfError` 1, `superAdminValidation` 3, `prqDialog` 3.
+- **Falsifier:** grepping for a deliberately wrong name, `acceptPartnerRequestNOPE`, returns 0.
+- **Privacy:** no personal data was added.
+- **Attempt 1 Reviewer:** **FAIL**, verbatim:
+  - "`agent-context.md` § *Manager and outcomes* says: 'six `@Transactional` write methods; each takes the row lock first, then decides'. That is false for `createPartnerRequest` (`PartnerRequestManagerImpl.java:148-154`) … `deletePartnerRequest` (157) and `savePartnerRequest` (321) are `@Transactional` writes too."
+  - "Catalog §17 'Switch' says 'a unit without the parameter, or with an empty value, sends'. The code (`PartnerRequestEmails.isEnabled`, line 105) is `c.getValue() == null || c.getValue().equalsIgnoreCase("true")` … an empty-string value therefore does not send."
+  - Violated rule: the T12 disqualifier, "describe HEAD's code".
+- **Attempt 2:**
+  - Both statements were fixed against the code.
+  - Advisory applied: the "no recipient → warning" rule is limited to emails 3 and 4; for emails 5 and 6 such a request is skipped silently.
+  - Sweep corrections:
+    - The `isHttpPost()` claim is narrowed to the five decision actions.
+    - The refusal order now names "the five decision methods".
+    - The mail-sender switch is described correctly: answers 3–6 can be dropped, while alerts 1–2 are exempt.
+  - Follow-up 18 added for the wrong `isEnabled` Javadoc.
+  - **Reviewer: PASS.** Every corrected sentence matches HEAD:
+    - eight `@Transactional` methods, of which only the five decision methods call `findForUpdate`;
+    - `isEnabled` at lines 99–105;
+    - `SendMailS.isNotificationDisabled` at lines 297–322;
+    - `isHttpPost` only in the three review actions.
+    
+    No old wording survives in the three files. The Leader added follow-ups 19 and 20 from its advisory.
+- **runtime events:** none
+- **spawns:**
+  - implementer: attempt 1, 38 calls, 193230 tokens, ended complete; attempt 2 (resumed), 6 calls, 202941 tokens, ended complete.
+  - reviewer: attempt 1, 19 calls, 75914 tokens, ended fail; attempt 2, 10 calls, 57263 tokens, ended complete.
+
+## Summary
+
+- **Status:** all 12 tasks are `[x]` (2026-11-19 → 2026-11-20).
+  - **PR 1:** T01–T07 + T11a.
+  - **PR 2:** T08–T10 + T11b + T12.
+  - The owner gave visual approval for T11b.
+- **Budget (final):** about 5,490 LOC added in product, test and i18n code (ceiling amended twice: 1,650 → 5,000 → 5,800), plus about 200 doc lines. 29 review rounds (ceiling 35).
+- **Live proofs:**
+  - T04: atomic accept, lock + refresh (P-5 and P-21 settled).
+  - T11a / T11b: every AC.
+- **Pre-release (owner):** the OPS-002 and P-25 production checks; see `## Release note`.
+- **Not pushed:** the branch has local commits beyond `origin` (`d4dd9c8a3b`). The owner decides when to push and open the PRs.
