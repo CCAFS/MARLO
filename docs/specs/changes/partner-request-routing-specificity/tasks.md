@@ -52,7 +52,7 @@
 
 ### CHG-PARTROUTE-001-T01 — Specificity seed: migration, constants, parity test
 
-- **Status:** [ ] · **Size:** S · **Depends on:** — · **Module:** marlo-web, marlo-data
+- **Status:** [x] · **Size:** S · **Depends on:** — · **Module:** marlo-web, marlo-data
 - **Requirements:**
   - MIG-001 and AC MIG-001 ("exactly one row per existing type 1–4"; "AND `custom_parameters` gains no rows").
   - NF-001 (constant in both `APConstants`, value = `parameters.key`).
