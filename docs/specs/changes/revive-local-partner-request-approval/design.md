@@ -210,7 +210,7 @@ JS reads its strings from `data-` attributes rendered by the FTL with `[@s.text]
 | Screen | Loading | Empty | Error | Success |
 |---|---|---|---|---|
 | Review | Card-level spinner during AJAX (buttons disabled) | One empty state per list | Inline danger / warning note (failed, not authorized, already handled) | Inline success note; the card leaves the list |
-| Request page | Submit disabled after click | — | Field errors + warning note; `saveFailed` danger note | Success card |
+| Request page | Submit disabled after click (amended at execute 2026-11-20, T10: `aria-disabled` + a submit guard, not the `disabled` attribute — a disabled submit drops `name="save"` from the form data, §5.3) | — | Field errors + warning note; `saveFailed` danger note | Success card |
 
 ## 6. Persistence & Phase Replication Plan
 
@@ -354,6 +354,7 @@ Low volume (historic peak ≈ 2,000 requests/year across 18 units). `PartnerRequ
 | LOC | ~1,650 (Java prod ~420, tests ~380, i18n ~70, FTL ~300, CSS ~350, JS ~130) |
 | Review rounds | ~20 |
 | **Amended 2026-11-19 (execute, T03 gate — owner approval)** | Tripwire exceeded at 2,269 LOC after 3 / 12 tasks (Java prod 957, tests 1,304, i18n 8). New ceiling **~5,000 LOC** and **~30 review rounds**; cause: falsifier-backed tests with argument-asserting doubles and OPS-001 log tests were not in the estimate. Later test tasks reuse the existing doubles. Crossing the new ceiling stops the run again. |
+| **Amended again 2026-11-19 (execute, T09 gate — owner approval)** | At 4,826 LOC after 10 / 12 tasks (T10 request page and T12 docs left), the ceiling is raised to **~5,800 LOC** and **~35 review rounds**, so T10 does not stop mid-closure; cause: the redesign's CSS + JS (T08 +964, T09 +674) on top of the falsifier-backed tests. Crossing it stops the run again. |
 
 > Over ~400 LOC: Phase 3 will recommend two PRs (backend + emails first, UI second).
 

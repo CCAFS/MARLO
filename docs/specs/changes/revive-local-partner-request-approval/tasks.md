@@ -217,7 +217,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T10 — Partner request page redesign
 
-- **Status:** pending · **Size:** M · **Depends on:** T06 · **Module:** marlo-web (FTL, CSS, JS, i18n)
+- **Status:** [x] done 2026-11-20 (PASS attempt 1 — `execution.md`) · **Size:** M · **Depends on:** T06 · **Module:** marlo-web (FTL, CSS, JS, i18n)
 - **Requirements:** UI-001, UI-005 (form card, field errors, success, saveFailed), UI-006, AC UI-005, AC UI-006 width clause
 - **Design refs:** §5.2 request page rows, §5.3 binding contract, §5.5 Request page keys, §5.6, DD-8
 - **Scope:** `partnersSave.ftl`, `partnersSave.css`, `partnersSave.js` in `.prq`; keep every bound name, the hidden ids, `context`, `phaseID` and the submit `name="save"`; help slideshow → one help note; hardcoded English success copy → `marloRequestCreation.success.*` keys; cache-busters.

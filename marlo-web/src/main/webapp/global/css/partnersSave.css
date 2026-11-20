@@ -1,54 +1,212 @@
-form#partnerSave {
-    padding: 15px;
+/*
+ * Partner request page (the popup opened from projects, funding sources, studies, innovations, capdev, POWB and AR).
+ *
+ * Everything is scoped under .prq and built on the shared design tokens of global/css/marlo-redesign.css
+ * (--marlo-*). The class names (prq-card, prq-field, prq-note, prq-btn ...) are the ones of the Institutions review
+ * screen (superadmin/marloInstitutions.css), so both pages read as one family.
+ *
+ * global.css paints every bare <button> blue with a 3px bottom border, so the reset names the class (not the element).
+ * The only literal left is the focus ring, which has no shared token.
+ */
+
+.prq {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  font-family: var(--marlo-font-sans);
+  color: var(--marlo-ink);
 }
 
-button#partnerSave_save {
-    border-radius: 8px;
-    padding: 6px;
-    margin-top: 30px;
+.prq *,
+.prq *::before,
+.prq *::after { box-sizing: border-box; }
+.prq [hidden] { display: none !important; }
+
+/* Undo the bare-button styling of global.css */
+.prq-btn {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-decoration: none;
 }
 
-h3{
-	border-bottom: 1px dashed #cccccc;
-	padding-bottom: 16px;
-	color: #777;
+/************* CARD ***************/
+
+.prq-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  border: 1px solid var(--marlo-border);
+  border-radius: var(--marlo-radius-xl);
+  background: var(--marlo-surface);
+  box-shadow: var(--marlo-shadow-card);
+}
+.prq-card__head { padding: 20px 24px 4px; }
+.prq-request__title { margin: 0; font-size: 22px; font-weight: 600; line-height: 1.25; color: var(--marlo-ink); }
+
+/************* NOTES ***************/
+
+.prq-request__notes { display: flex; flex-direction: column; gap: 8px; padding: 12px 24px 0; }
+.prq-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--marlo-brand-tint-border);
+  border-radius: var(--marlo-radius-lg);
+  background: var(--marlo-brand-tint);
+  color: var(--marlo-info-text);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.prq-note__text { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.prq-note--warning { border-color: var(--marlo-warning-border); background: var(--marlo-warning-bg); color: var(--marlo-warning-text); }
+.prq-note--danger { border-color: var(--marlo-danger-border); background: var(--marlo-danger-bg); color: var(--marlo-danger-text); }
+
+/************* FORM ***************/
+
+.prq-request__form { margin: 0; padding: 16px 24px 24px; }
+.prq-request__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.prq-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.prq-field--wide { grid-column: 1 / -1; }
+.prq-label { display: flex; align-items: baseline; gap: 4px; margin: 0; font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--marlo-ink); }
+.prq-req { font-size: 13px; font-weight: 700; color: var(--marlo-danger-solid); }
+.prq-error { margin: 0; font-size: 12px; font-weight: 500; line-height: 1.45; color: var(--marlo-danger-text); }
+
+.prq-input,
+.prq-select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-surface);
+  box-shadow: none;
+  color: var(--marlo-ink);
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.prq-input:focus,
+.prq-select:focus {
+  border-color: var(--marlo-brand);
+  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+  outline: none;
+}
+.prq-input.is-invalid,
+.prq-select.is-invalid { border-color: var(--marlo-danger-solid); }
+
+/* Select2 (the type and country lists), drawn like .prq-input. The dropdown is mounted inside .prq (JS). */
+.prq .prq-field > .select2-container { width: 100% !important; }
+.prq .select2-container--default .select2-selection--single {
+  height: 36px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-surface);
+}
+.prq .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 30px 0 11px;
+  color: var(--marlo-ink);
+  font-size: 13.5px;
+  line-height: 34px;
+}
+.prq .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px; right: 6px; }
+.prq .select2-container--default.select2-container--focus .select2-selection--single,
+.prq .select2-container--default.select2-container--open .select2-selection--single {
+  border-color: var(--marlo-brand);
+  box-shadow: 0 0 0 3px rgba(2, 119, 162, .12);
+}
+.prq .select2-selection--single:focus-visible { outline: 2px solid var(--marlo-brand); outline-offset: 2px; }
+.prq .prq-select.is-invalid + .select2-container .select2-selection--single { border-color: var(--marlo-danger-solid); }
+.prq .select2-dropdown {
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-md);
+  background: var(--marlo-surface);
+  box-shadow: var(--marlo-shadow-popover);
+  font-size: 13.5px;
+}
+/* The search box of the open list would otherwise add scrollable width to the page on narrow screens */
+.prq .select2-search--dropdown { overflow: hidden; }
+.prq .select2-container--default .select2-search--dropdown .select2-search__field {
+  height: 34px;
+  border: 1px solid var(--marlo-border-strong);
+  border-radius: var(--marlo-radius-sm);
+}
+.prq .select2-container--default .select2-search--dropdown .select2-search__field:focus-visible {
+  outline: 2px solid var(--marlo-brand);
+  outline-offset: 1px;
+}
+.prq .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background: var(--marlo-brand-tint);
+  color: var(--marlo-ink);
+}
+.prq .select2-container--default .select2-results__option[aria-selected=true] { background: var(--marlo-surface-sunken); color: var(--marlo-ink); }
+
+/************* BUTTONS ***************/
+
+.prq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: var(--marlo-radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.prq-btn--primary { background: var(--marlo-brand); color: var(--marlo-surface); }
+.prq-btn--primary:hover { background: var(--marlo-brand-dark); color: var(--marlo-surface); }
+.prq-btn--ghost { border-color: var(--marlo-border-strong); background: var(--marlo-surface); color: var(--marlo-ink); }
+.prq-btn--ghost:hover { background: var(--marlo-surface-sunken); color: var(--marlo-ink); }
+.prq-btn:disabled,
+.prq-btn[aria-disabled="true"] { border-color: var(--marlo-border); background: var(--marlo-neutral-bg); color: var(--marlo-text-muted); cursor: not-allowed; }
+.prq-btn:focus-visible,
+.prq-input:focus-visible,
+.prq-select:focus-visible {
+  outline: 2px solid var(--marlo-brand);
+  outline-offset: 2px;
 }
 
-/* The dots/bullets/indicators */
-.dot {
-  cursor:pointer;
-  height: 13px;
-  width: 13px;
-  margin: 0 2px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  transition: background-color 0.6s ease;
+.prq-request__foot { display: flex; justify-content: flex-end; margin-top: 24px; }
+
+/************* SUCCESS ***************/
+
+.prq-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  text-align: center;
 }
+.prq-success__icon { color: var(--marlo-success-solid); }
+.prq-success__title { margin: 8px 0 0; font-size: 20px; font-weight: 600; line-height: 1.3; color: var(--marlo-ink); }
+.prq-success__text { max-width: 44ch; margin: 0; font-size: 14px; line-height: 1.55; color: var(--marlo-text); }
+.prq-success__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 16px; }
 
-.active, .dot:hover {
-  background-color: #717171;
-}
+/************* NARROW SCREENS ***************/
 
-.fades {
-  -webkit-animation-name: fade;
-  -webkit-animation-duration: 2s;
-  animation-name: fade;
-  animation-duration: 2s;
-}
-
-
-
-@-webkit-keyframes fade {
-  from {opacity: 0} 
-  to {opacity: 1}
-}
-
-@keyframes fade {
-  from {opacity: 0} 
-  to {opacity: 1}
-}
-
-.mySlides {
-    margin-bottom: 8px;
+@media (max-width: 520px) {
+  .prq { padding: 16px 16px 32px; }
+  .prq-card__head { padding: 16px 16px 4px; }
+  .prq-request__notes { padding: 12px 16px 0; }
+  .prq-request__form { padding: 16px 16px 20px; }
+  .prq-request__grid { grid-template-columns: minmax(0, 1fr); }
+  .prq-request__foot .prq-btn,
+  .prq-success__actions .prq-btn { flex: 1 1 auto; }
+  .prq-success { padding: 24px 16px; }
 }

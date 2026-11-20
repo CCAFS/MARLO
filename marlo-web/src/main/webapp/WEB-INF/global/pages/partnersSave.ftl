@@ -1,76 +1,102 @@
 [#ftl]
 [#assign title = "Request new institution" /]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
-[#assign customJS = ["${baseUrlCdn}/global/js/partnersSave.js"] /]
-[#assign customCSS = ["${baseUrlCdn}/global/css/partnersSave.css"] /]
-[#import "/WEB-INF/global/macros/forms.ftl" as customForm /]
+[#assign customJS = ["${baseUrlCdn}/global/js/partnersSave.js?20261120"] /]
+[#assign customCSS = ["${baseUrlCdn}/global/css/partnersSave.css?20261120"] /]
 [#assign includeHeader = "false" /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 
 [#include "/WEB-INF/global/pages/header.ftl" /]
 
-  <section> 
-    <article>
-    [#-- title --]
-    <div class="title col-xs-12">
-      <h3 class=" text-center form-group">[@s.text name="marloRequestCreation.title" /]</h3>
-    </div>  
-    
+[#-- The error of one field, written by the action's validate(): the text sits under the field and is read with it --]
+[#macro prqError name id]
+  [#local errors = (action.fieldErrors[name])![] /]
+  [#if errors?has_content]
+    <p class="prq-error" id="${id}">[#list errors as error]${error}[#sep] [/#list]</p>
+  [/#if]
+[/#macro]
+
+[#assign nameErrors = (action.fieldErrors["activityPartner.partner.name"])![] /]
+[#assign typeErrors = (action.fieldErrors["activityPartner.partner.institutionType.id"])![] /]
+[#assign countryErrors = (action.fieldErrors["locationId"])![] /]
+[#assign selectedType = (activityPartner.partner.institutionType.id)!-1 /]
+[#assign hasFormErrors = (action.hasFieldErrors())!false || (action.missingRequiredFields)!false /]
+
+<main class="prq prq--request" id="prqRequest">
+  <section class="prq-card prq-request" aria-labelledby="prqRequestTitle">
     [#if !messageSent]
-    [#if (action.missingRequiredFields)!false]
-      <p class="alert alert-danger text-center col-xs-12">[@s.text name="saving.fields.required" /]</p>
-    [/#if]
-    [#if (action.requestFailed)!false]
-      <p class="alert alert-danger text-center col-xs-12">[@s.text name="marloRequestCreation.saveFailed" /]</p>
-    [/#if]
-    <div class="slideshow-container col-xs-12 form-group">
-      [#-- SLIDE 1 --]
-      <div class="mySlides fades">
-        <p  class="helpMessage ">
-          <span> [@s.text name="marloRequestCreation.helpMessage" /] </span> <br/>
-          <span> [@s.text name="marloRequestCreation.helpMessage.example" /] </span> 
-        </p>
+      <div class="prq-card__head prq-request__head">
+        <h1 class="prq-request__title" id="prqRequestTitle">[@s.text name="marloRequestCreation.title" /]</h1>
       </div>
-    
-      [@s.form action="${crpSession}/partnerSave" cssClass="pure-form "]
-      <div class="clearfix"></div>
-      <hr  />
-      <div class="col-md-12"> 
-        [#-- Partner Acronym --]
-        <div id="partnerAcronym" class="col-xs-3 form-group">
-          [@customForm.input name="activityPartner.partner.acronym"  type="text" i18nkey="Acronym" /]
+
+      <div class="prq-request__notes">
+        [#if hasFormErrors]
+          <p class="prq-note prq-note--warning" role="alert" id="prqFormErrors"><span class="prq-note__text">[@s.text name="saving.fields.required" /]</span></p>
+        [/#if]
+        [#if (action.requestFailed)!false]
+          <p class="prq-note prq-note--danger" role="alert"><span class="prq-note__text">[@s.text name="marloRequestCreation.saveFailed" /]</span></p>
+        [/#if]
+        <div class="prq-note prq-note--info">
+          <p class="prq-note__text">[@s.text name="marloRequestCreation.helpMessage" /]<br />[@s.text name="marloRequestCreation.helpMessage.example" /]</p>
         </div>
-        [#-- Partner Name --]
-        <div id="partnerName" class="col-xs-9 form-group">
-          [@customForm.input name="activityPartner.partner.name" required=true className="col-md-6" type="text" i18nkey="Name" /]
-        </div> 
-        
-        [#-- Partner types list --]
-        <div id="partnerTypes" class="col-xs-6 form-group">
-          [@customForm.select name="activityPartner.partner.institutionType.id" className="institutionTypes" required=true label="" i18nkey="Type" listName="institutionTypesList" keyFieldName="id"  displayFieldName="name" /]
-          <div style="display:none">
-            [#list institutionTypesList as type]
-              <div id="institutionType-${type.id}">
-                <strong>${(type.acronym)!} ${(type.name)!'No Name'}</strong><br />
-                <i>${(type.description)!''}</i>
-              </div>
-            [/#list]
+      </div>
+
+      [@s.form action="${crpSession}/partnerSave" cssClass="prq-request__form"]
+        <div class="prq-request__grid">
+          [#-- Partner name --]
+          <div class="prq-field prq-field--wide" id="partnerName">
+            <label class="prq-label" for="activityPartner.partner.name" id="prqNameLabel">[@s.text name="Name" /]<span class="prq-req" aria-hidden="true">*</span></label>
+            <input type="text" class="prq-input[#if nameErrors?has_content] is-invalid[/#if]" id="activityPartner.partner.name" name="activityPartner.partner.name" value="${(activityPartner.partner.name)!}" autocomplete="off" aria-required="true"[#if nameErrors?has_content] aria-invalid="true" aria-describedby="prqNameError"[/#if] />
+            [@prqError name="activityPartner.partner.name" id="prqNameError" /]
+          </div>
+
+          [#-- Partner types list --]
+          <div class="prq-field prq-field--wide" id="partnerTypes">
+            <label class="prq-label" for="activityPartner.partner.institutionType.id" id="prqTypeLabel">[@s.text name="Type" /]<span class="prq-req" aria-hidden="true">*</span></label>
+            <select class="prq-select institutionTypes[#if typeErrors?has_content] is-invalid[/#if]" id="activityPartner.partner.institutionType.id" name="activityPartner.partner.institutionType.id" aria-required="true"[#if typeErrors?has_content] aria-invalid="true" aria-describedby="prqTypeError"[/#if]>
+              <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+              [#list institutionTypesList as type]
+                <option value="${type.id?c}"[#if selectedType == type.id] selected="selected"[/#if]>${(type.name)!''}</option>
+              [/#list]
+            </select>
+            [@prqError name="activityPartner.partner.institutionType.id" id="prqTypeError" /]
+            <div hidden>
+              [#list institutionTypesList as type]
+                <div id="institutionType-${type.id?c}">
+                  <strong>${(type.acronym)!} ${(type.name)!'No Name'}</strong><br />
+                  <i>${(type.description)!''}</i>
+                </div>
+              [/#list]
+            </div>
+          </div>
+
+          [#-- Partner acronym --]
+          <div class="prq-field" id="partnerAcronym">
+            <label class="prq-label" for="activityPartner.partner.acronym">[@s.text name="Acronym" /]</label>
+            <input type="text" class="prq-input" id="activityPartner.partner.acronym" name="activityPartner.partner.acronym" value="${(activityPartner.partner.acronym)!}" autocomplete="off" />
+          </div>
+
+          [#-- Countries list --]
+          <div class="prq-field" id="partnerCountry">
+            <label class="prq-label" for="locationId" id="prqCountryLabel">[@s.text name="Country" /]<span class="prq-req" aria-hidden="true">*</span></label>
+            <select class="prq-select[#if countryErrors?has_content] is-invalid[/#if]" id="locationId" name="locationId" aria-required="true"[#if countryErrors?has_content] aria-invalid="true" aria-describedby="prqCountryError"[/#if]>
+              <option value="-1">[@s.text name="form.select.placeholder" /]</option>
+              [#list countriesList as country]
+                <option value="${country.id?c}"[#if (locationId!0) == country.id] selected="selected"[/#if]>${(country.name)!''}</option>
+              [/#list]
+            </select>
+            [@prqError name="locationId" id="prqCountryError" /]
+          </div>
+
+          [#-- Web page link --]
+          <div class="prq-field prq-field--wide" id="partnerPage">
+            <label class="prq-label" for="activityPartner.partner.websiteLink">[@s.text name="marloRequestCreation.webSiteLink" /]</label>
+            <input type="text" class="prq-input" id="activityPartner.partner.websiteLink" name="activityPartner.partner.websiteLink" value="${(activityPartner.partner.websiteLink)!}" placeholder="[@s.text name="marloRequestCreation.webSiteLink.placeholder" /]" inputmode="url" autocomplete="off" />
           </div>
         </div>
-        
-        [#-- Countries list --]
-        <div id="partnerCountry" class="col-xs-6 form-group">
-          [@customForm.select name="locationId" required=true label="" i18nkey="Country" listName="countriesList" keyFieldName="id"  displayFieldName="name" /]        
-        </div>
-        
-        [#-- Web page link --]
-        <div id="partnerPage" class="col-xs-12 form-group">
-          [@customForm.input name="activityPartner.partner.websiteLink" type="text"  i18nkey="marloRequestCreation.webSiteLink" placeholder="marloRequestCreation.webSiteLink.placeholder" /]
-        </div>
-        
-        [#-- Hidden input with message of success --]
-        <input type="hidden" id="message.success" value="[@s.text name="partnersSave.successMessage" /]"/>
+
+        [#-- Where the request was made from: the identifiers the action reads --]
         [#if projectID??]<input type="hidden" name="projectID" value="${projectID}"/>[/#if]
         [#if fundingSourceID??]<input type="hidden" name="fundingSourceID" value="${fundingSourceID}"/>[/#if]
         [#if expectedID??]<input type="hidden" name="expectedID" value="${expectedID}"/>[/#if]
@@ -79,51 +105,40 @@
         [#if synthesisID??]<input type="hidden" name="synthesisID" value="${(synthesisID)!}"/>[/#if]
         <input type="hidden" name="context" value="${(context)!}" />
         <input type="hidden" name="phaseID" value="${(actualPhase.id)!}"/>
-        <div class="clearfix"></div>
-        <br />
-        <div class="form-group text-center">
-          [@s.submit type="button" name="save"] <span class="glyphicon glyphicon-send"></span> [@s.text name="form.buttons.savePartner.request" /][/@s.submit]
-        </div> 
-      </div>
-      [/@s.form]
-      
-      [#else]
-      
-        <div class="col-md-12">
-          [#-- Message --]
-          <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
-          <p  class="text-center col-md-12"> 
-            The new partner request was sent succesfully. <br />
-            You will receive a confirmation message as soon as it has been processed.
-          </p>
-          
-          <br />
-          <br />
-          [#-- Buttons --]
-          <div class="text-center">
-            [#if projectID?? && (projectID != 0)]<a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="btn btn-primary">Request a new one</a>[/#if]
-            [#if fundingSourceID?? && (fundingSourceID != 0)]<a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][/@s.url]" class="btn btn-primary">Request a new one</a>[/#if]
-            <a href="#" class="btn btn-danger" onClick="window.close()">Close</a>
-          </div>
+
+        <div class="prq-request__foot">
+          [@s.submit type="button" name="save" cssClass="prq-btn prq-btn--primary"][@s.text name="form.buttons.savePartner.request" /][/@s.submit]
         </div>
-        
-      [/#if]
-      
-    </article>
-  </section> 
-  
-  
-    [#-- Importing JavaScript files --]
-    [#if globalLibs??]
-      [#list globalLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
+      [/@s.form]
+
+    [#else]
+
+      <div class="prq-success" role="status">
+        <svg class="prq-success__icon" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 12.5l3.2 3.2L17 8.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h1 class="prq-success__title" id="prqRequestTitle">[@s.text name="marloRequestCreation.success.title" /]</h1>
+        <p class="prq-success__text">[@s.text name="marloRequestCreation.success.text" /]</p>
+        <div class="prq-success__actions">
+          [#if projectID?? && (projectID != 0)]<a href="[@s.url][@s.param name="projectID" value=projectID /][/@s.url]" class="prq-btn prq-btn--ghost">[@s.text name="marloRequestCreation.success.again" /]</a>[/#if]
+          [#if fundingSourceID?? && (fundingSourceID != 0)]<a href="[@s.url][@s.param name="fundingSourceID" value=fundingSourceID /][/@s.url]" class="prq-btn prq-btn--ghost">[@s.text name="marloRequestCreation.success.again" /]</a>[/#if]
+          <button type="button" class="prq-btn prq-btn--primary" data-prq-close>[@s.text name="marloRequestCreation.success.close" /]</button>
+        </div>
+      </div>
+
     [/#if]
-    
-    [#-- Importing JavaScript files --]
-    [#if pageLibs??]
-      [#list pageLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
-    [/#if]
-    [#-- import the custom JS and CSS --]
-    [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
+  </section>
+</main>
+
+  [#-- Importing JavaScript files --]
+  [#if globalLibs??]
+    [#list globalLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
+  [/#if]
+
+  [#-- Importing JavaScript files --]
+  [#if pageLibs??]
+    [#list pageLibs as libraryName][@components.js_imports libraryName=libraryName/][/#list]
+  [/#if]
+  [#-- import the custom JS and CSS --]
+  [#if customJS??][#list customJS as js]<script src="${js}"></script>[/#list][/#if]
 [#-- Closes #pageContent, opened by header.ftl. This page does not include
      footer.ftl, which is where every other page closes the wrapper. --]
 </div>

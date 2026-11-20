@@ -1064,3 +1064,105 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - Review rounds: 19.
   - T10 (request page: FTL, CSS, JS, i18n) will cross the ~5,000 ceiling, which will stop the run at T10's gate unless the owner raises the ceiling first.
 - **Final verification:** VERIFIED. Leader re-runs on both attempts; Gate 3 `ok` on attempt 2.
+- **Commit:** see the T09 commit (owner-approved).
+
+### Owner decisions at the T09 gate (2026-11-19)
+
+1. **Budget ceiling raised** to ~5,800 LOC and ~30 → ~35 review rounds. This is recorded in `design.md` §15 as a second amendment. Crossing the new ceiling stops the run again.
+2. **T10 proceeds.** The date moved to 2026-11-20, so the cache-busters for T10's files are `?20261120`.
+
+### CHG-PARTREQ-001-T10 — Partner request page redesign
+
+- **Final status:** PASS
+- **Date:** 2026-11-20
+- **Attempts:** 1
+- **Effort:** high
+- **Skills:** `impeccable-bridge` (route: layout, clarify, harden; ENV-2; Operate; polish light; motion none), `marlo-verify`.
+- **Review mode:** lens checklist, single Reviewer (`Review: full`), screenshots read.
+
+#### Attempt 1
+
+- **Files changed** (all LF, as at HEAD):
+
+| File | Change |
+|---|---|
+| `partnersSave.ftl` | +116 / −101; `.prq` form card; one help note; success card |
+| `partnersSave.css` | +195 / −37 |
+| `partnersSave.js` | +57 / −44 |
+| `global.properties` | +4 `marloRequestCreation.success.title/.text/.again/.close` |
+
+  New probe files: `probes/t10-live.out`, `t10-baseline-old.out`, and 11 `t10-*.png` (old, new, errors, success, savefailed, dropdown; at 390 and 1280).
+- **Greps (before → after):**
+  - `sent succesfully`: `1` → `0`
+  - legacy markup: `3` → `0`
+  - `name="save"`: `1` → `1`
+- **Overflow:**
+  - Old page at 390: 390 / 390, Helvetica, Figtree not loaded.
+  - New page: 390 / 390, 1280 / 1280 and 600 / 600; the success card and the open select list are also clean.
+  - Figtree is loaded. Contrast ≥ 4.5.
+- **Live checks** (copy DB only; email switch of unit 45 off during the run and then restored; 0 new `email_logs` rows):
+  - **All fields missing:** a field error under name, type and country, plus a warning note. Nothing stored.
+  - **Country only missing:** one error under country; the typed values are kept.
+  - **Valid submit:** 2 rows and the success card. A double click still stores 2 rows. Enter also submits.
+  - **Forced failure:** a temporary `BEFORE INSERT` trigger on the copy, dropped afterwards (0 triggers left). Result: `saveFailed` danger note, values kept, `ERROR` log line.
+- **Falsifier:** with `name="save"` removed, a valid submit stores 0 rows (red). Restored, it stores 2 rows (green).
+- **Openers exercised:**
+  - Project partners.
+  - Innovation (`context` carried into `request_source`).
+  - Study.
+  - Funding source, opened by URL: on the copy the page is not editable, so the link is not rendered.
+  - Capdev, POWB and AR not exercised, because the copy has no editable page for them. This is deferred to T11b.
+- **Implementer completion items:**
+  - Playbooks run: layout, clarify, harden.
+  - Polish light fixed three defects:
+    - a header border inherited from global styles;
+    - a 6 px overflow from the select-list search box at 390;
+    - an `outline:none` that hid the select focus ring.
+  - `finish review: not run (AKILI execute)`.
+  - The impeccable source scan had no findings. The URL scans are Unevaluated (login needed).
+- **Evidence re-run (Leader-inline):**
+  - Greps `0` / `1` / `0`.
+  - All 13 bound names present.
+  - `node --check` OK.
+  - Gate 3 `ok … partnersSave.ftl:5 - ?20261120` (CSS) and `:4 - ?20261120` (JS).
+  - Keys without apostrophes. LF.
+  - No personal data in `t10-*`.
+  - Clean environment, no trigger left, `aiccradb2` unchanged.
+  
+  **VERIFIED.**
+- **Reviewer: PASS.**
+  - `.prq` on existing `--marlo-*` tokens (about 27 checked).
+  - §5.3 binding kept exactly.
+  - The help slideshow is now one note.
+  - The success copy comes from the §5.5 keys.
+  - Every UI-005 state is present and matches AC UI-005 / UI-006 in the screenshots.
+  - `aria-disabled` plus a guard is correct, because `save` is load-bearing.
+  - Removing `message.success` is safe (no reference to it).
+  - No client-side blocking, so the server errors stay the source.
+  - The raw `${…}` values are auto-escaped (Struts 6.8 `dashboard.ftl:211-214`).
+- **runtime events:** none
+- **spawns:** implementer 124 calls, 288973 tokens, ended complete; reviewer 22 calls, 81908 tokens, ended complete
+
+#### Execute-time spec edit (recorded when made)
+
+- `design.md` §5.6, request page "Loading": implemented with `aria-disabled` and a guard instead of the `disabled` attribute, because a disabled submit drops `save` (§5.3). Requirement meaning is unchanged.
+
+#### ADVISORY (non-gating)
+
+- **i18n, pre-existing.** The labels "Name", "Type", "Acronym" and "Country" look up keys that do not exist and render fallback text. The page title `[#assign title = "Request new institution" /]` (`partnersSave.ftl:2`) is hardcoded. Both are outside the closed §5.5 key list. → Owner decision at this gate: a §5.5 amendment adding `marloRequestCreation.label.*` (and "Headquarters country" per UI-005), or a T12 follow-up.
+- **Duplicate rule.** `.prq-btn` is declared twice in `partnersSave.css`.
+- **Opener regression.** Capdev, POWB and AR are still to be checked in T11b.
+
+#### Forward pointers
+
+- **→ T11b:**
+  - Opener regression for capdev, POWB and AR.
+  - Owner review of the request page at 1280, 390 and the short heights.
+- **→ T12:** the orphaned `marloRequestCreation.sendFailed` key; the label keys and the title, if not amended now.
+
+- **Requirements covered:** UI-001, UI-005, UI-006 (request page), NF-002.
+- **Budget (running, ceiling ~5,800 LOC / ~35 rounds):**
+  - Tasks: 11 / 12 (T11b and T12 left).
+  - LOC added: 4,826 + 372 = **5,198**.
+  - Review rounds: 20.
+- **Final verification:** VERIFIED.
