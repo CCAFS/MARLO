@@ -352,3 +352,173 @@ No owed item and no blocker, so this is not a continuation.
 - **Budget running totals:** tasks 4 / 5 · LOC 1,047 (T01 148 + T02 809 + T04 39 + T03 51), within the
   owner-accepted ~1,050 · review rounds 5 / 7.
 - **Final verification:** compile and the full suite green (second Leader run), greps reproduce, Checkstyle delta 0.
+
+### CHG-PARTROUTE-001-T05 — Live proof of both modes (settles P-10 first)
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-11-20
+- **Effort:** high (attempt 1) · **Skills:** `marlo-verify`, `playwright-cli`
+- **Environment pre-check (Leader):** port 8080 free, no `cargo:run` process, `mysqld` up, local credentials file
+  present.
+- **Owner approvals (2026-11-20):**
+  - the throwaway DB and run script, with `marlo-dev.properties` restored afterwards;
+  - **one** live CLARISA call (P-10). The Leader added a guard: call only a host classified as a test host.
+
+**Attempt 1: FAIL**
+
+- Files changed: none tracked. Evidence lives in the session scratchpad: 23 screenshots and `run.log`…`run4.log`.
+- Setup: throwaway DB `partroute_t05_tmp` (copy of `aiccradb`). Flyway reached `2.6.0.20261120.1306`, with 4
+  `parameters` rows for the key and 0 `custom_parameters` rows at start. Units: 45 AICCRA and 47 AICCRA_III.
+- Red run: `partner_requests` = 5079 before step 3, and no `partner_requests_to_clarisa` row existed.
+- Evidence:
+
+  | Step | What happened | Result |
+  |---|---|---|
+  | 1 (P-10) | The host's first label contains `test`. The live submit got `CLARISA did not accept … Global Unit 45, status 401` | **P-10 = accepted risk**: the test host is reachable but rejects the credentials, so the 2024 contract is not proven |
+  | 1b | Host set to `http://127.0.0.1:9` through `MAVEN_OPTS=-Dclarisa.api.host` and a cargo restart: `Could not send … HttpHostConnectException`. "could not be sent" shown, count stayed 5081 | pass |
+  | Falsifier | `true` row inserted in the DB for unit 45 with no re-login. The submit was not stored (5079), 401 was logged and "could not be sent" shown. The row was then removed | pass: DD-2 is live |
+  | 3 | MARLO mode: 5079 → 5081 (ids 5125 original, 5126 copy). Alert logged to the dev recipient. Menu entry visible; DOM shows 15 office triggers | pass, except the office link screenshot (see FAIL) |
+  | 4 | Parameters → Specificities → Yes → Save gave `custom_parameters (45, true)`. The same save added a `false` row for unit 47, and no other unit became true | pass. P-6 confirmed live |
+  | 5 | Submit with no re-login: count unchanged at 5081, 401, "could not be sent". The Reviewer placed it in `run2.log` at 19:32:19, after the 19:29:21 login and the 19:32:00 Parameters save | pass |
+  | 6 | After a re-login: menu entry 0, triggers 0, mailto text in the DOM. Office request stored locally (`is_office` 222 → 224) | pass on the DOM; **no visible screenshot of the office line** |
+  | 7 | The pending request is listed and rejected: copy 5126 `acepted=0`, original 5125 `is_active=0` | pass |
+  | 8 | Unit 47 with no row: stored 5083 → 5085. Menu entry visible | pass (D11 at runtime) |
+  | 9 | Non-superadmin got "Permission denied". A superadmin GET left the checksums unchanged | pass |
+
+- Log greps: `Authorization` 0 and requester email 0 across all four logs (the Leader repeated the `Authorization`
+  grep and got 0). This closes T02's HttpClient-logging advisory at runtime.
+- Cleanup, checked by the Leader:
+  - app stopped, port 8080 free;
+  - `cmp` of the backup against `marlo-dev.properties` is identical;
+  - `SHOW DATABASES LIKE 'partroute%'` is empty;
+  - `aiccradb` untouched: 5079 `partner_requests` and 0 `parameters` rows for the key;
+  - `git status` clean.
+- **Live CLARISA calls: 3, not the 1 approved.** The Implementer reported 2. The Leader's log check found three
+  distinct 401 WARN events: 19:22:43 (`run.log`, step 1 / falsifier), 19:32:19 (`run2.log`, step 5) and 19:33:41
+  (`run3.log`, a submit 11 s after a fresh login, not mentioned in the report). The extra calls happened because
+  editing `marlo-dev.properties` or `target/classes` does not change the running config (it is read from the jar
+  inside the war). All three got 401, so CLARISA created nothing. This was reported to the owner.
+- Evidence re-run (Leader, non-author): cleanup state, log lines and screenshot presence were re-checked. Outcomes are
+  consistent, apart from the corrected live-call count.
+- Reviewer verdict: **FAIL**.
+  1. **Discovered Issue:** `s3-marlo-office-link.png` and `s6-clarisa-office-mailto.png` show the same Cluster
+     Partners page with every partner block collapsed. Neither "Request it here." (MARLO mode) nor "Email
+     MARLOSupport@cgiar.org." with its `mailto:` link (CLARISA mode) is visible. UI-002 rests only on the
+     Implementer's DOM counts, and the owner has nothing to check visually.
+     - **Violated Rule:** `tasks.md` §CHG-PARTROUTE-001-T05 *Verification*: "for every step, a screenshot plus the
+       DB count or log line … Owner visual check at the HITL pause". `requirements.md` §7 D8: "the behaviour itself
+       is a human check at the HITL pause on the local stack, both modes, recorded with screenshots".
+     - **Remediation Suggestion:** on a throwaway DB again, expand a partner block on the editable Project Partners
+       page and capture the office-link line in each mode. For MARLO mode, use a unit with no row and a fresh login.
+       For CLARISA mode, set `true` and log in again. Record the DOM count (`[data-target="#requestModal"]` = 0 in
+       CLARISA mode) next to each screenshot. No other step needs to be redone.
+- runtime events: none
+- spawns: implementer 106 calls, 217779 tokens, ended complete; reviewer 20 calls, 84790 tokens, ended fail
+- **ADVISORY (attempt 1):**
+  - The 19:33:41 call must not be read as step 5 evidence; step 5 is the 19:32:19 call.
+  - UI-003's MARLO-mode "could not be saved" text was not shown live; it rests on T02 and T03.
+  - The first Parameters save writes default rows for every missing parameter (ids 2731+), which is existing P-6
+    behaviour and worth a release-note line.
+- **Not Done / Assumptions (Implementer):**
+  - The live call count, corrected above.
+  - Two cargo restarts with no rebuild. Step 5 was measured before them.
+  - Step 4 was run twice, with the same result both times.
+  - Test-data changes inside the throwaway DB only: user 22's password hash, and the unit 47 `false` row deleted
+    for step 8.
+  - P-9 was not testable, because CLARISA rejected the credentials.
+
+**Attempt 2:** rework limited to the UI-002 screenshots. Effort raised from high to xhigh (the per-retry bump).
+**No partner request is submitted, so there are no CLARISA calls.**
+
+- Files changed: none tracked.
+- Scope: only the UI-002 screenshots, per the FAIL remediation. **No `partnerSave` POST and no CLARISA call.**
+- Setup: throwaway DB `partroute_t05b_tmp` (copy of `aiccradb`). Page
+  `/marlo-web/clusters/AICCRA/partners.do?projectID=102076&edit=true&phaseID=431` (`Editable: true`), with the
+  first partner block (ILRI) expanded.
+
+  | Mode | DB state | Visible line | `#requestModal` triggers (page / blocks / expanded) | `mailto:MARLOSupport` (page / blocks / expanded) |
+  |---|---|---|---|---|
+  | MARLO | unit 45 has no row; fresh login | "Missing a country office? Request it here." | 15 / 15 / 1 | 1 / 0 / 0 |
+  | CLARISA | `custom_parameters` id 2722 (parameter 440, `true`, active); cookies cleared and re-login | "Missing a country office? Email MARLOSupport@cgiar.org." (link) | 0 / 0 / 0 | 16 / 15 / 1 |
+
+  Screenshots: `s3b-marlo-office-link-expanded.png` with its `-clip.png`, and
+  `s6b-clarisa-office-mailto-expanded.png` with its `-clip.png`.
+- Evidence re-run (Leader, non-author):
+  - `grep -cE "CLARISA (did not accept|accepted)|Could not send the partner request|partnerSave" run5.log` → 0.
+  - Port 8080 free; `cmp` of `marlo-dev.properties` against its backup is identical.
+  - `SHOW DATABASES LIKE 'partroute%'` is empty, and `aiccradb` has 0 rows for the key.
+  - The Leader viewed both clip images: each mode's line is shown under "Country office(s)" (Senegal).
+  - Result: **VERIFIED**.
+- Reviewer verdict: **PASS**. Attempt 2 closes the FAIL, and together with attempt 1 the task's Done when holds:
+  - all 9 steps are evidenced;
+  - P-10 is an accepted risk (401);
+  - P-6 is confirmed live.
+- runtime events: none
+- spawns: implementer 21 calls, 124617 tokens, ended complete; reviewer 9 calls, 46820 tokens, ended complete
+- **ADVISORY (attempt 2):**
+  - The screenshots live only in the session scratchpad, so their hashes are recorded below.
+  - The MARLO "Request it here." trigger was rendered but not clicked. T03 did not change the dialog; the owner can
+    click it at the HITL pause.
+- **Not Done / Assumptions (Implementer):** the full screenshots show the dev-only Debug Panel; the `-clip`
+  images are clean.
+
+**T05 summary**
+- **Requirements covered (live):**
+  - FN-005 / UI-003 (CLARISA mode), FN-006 (DD-2), FN-007, FN-008, FN-009, UI-001, UI-002, SEC-001, SEC-002 (logs);
+  - D2 (live call, 401), D8, D9, D11 at runtime.
+- **P-10:** **accepted risk.** The configured test host is reachable, but it answers 401 to the configured
+  credentials, so the 2024 contract is not proven. **P-6:** confirmed live. **P-9:** untested (401), handed to the
+  owner.
+- **Live CLARISA calls: 3** (19:22:43, 19:32:19, 19:33:41 UTC), all 401, against the 1 the owner approved. Reported
+  to the owner.
+- **Decisions made:**
+  - Effort went from high to xhigh on the rework (the per-retry bump).
+  - The rework scope was narrowed to the FAIL's remediation.
+  - The no-submit rule was added so that no further live calls could happen.
+- **Budget running totals:** tasks 5 / 5 · LOC 1,047 (T05 adds no code), within the owner-accepted ~1,050 · review
+  rounds **7 / 7** (T05: 2).
+- **Evidence integrity:** SHA-256 of the key screenshots, in
+  `/private/tmp/claude-502/-Users-ktanaka-Documents-MARLO-PROJECT-GitHub-MARLO/60e9f9aa-4e0b-492b-9376-51aa93202ec4/scratchpad/`:
+
+    4198dfd90f1e3e94059d093b767f472be8406ad1cf690207148f9fcee9358d2a  s1-falsifier-result.png
+    287f8fef0a807eb5a58f106b7fb3f16fe263c3610583089b22e1f600541e08b5  s1b-unreachable-result.png
+    3fa40becbd5a0a856afbb083e2b548ae240d634b4bd67c89cb073928ab124d8e  s3-marlo-menu-entry.png
+    1d2196a6f0dbbdc4ba3d3aa6d2eea9e26ea7f84cdbf33481c4aea2965e2b6f57  s3-marlo-submit-result.png
+    2e4f509acefd13f7cd0df1ad99d6167cfdb4eae090c6e7141364af0429ec22db  s3b-marlo-office-link-expanded-clip.png
+    28862392aebc3989e754d3094cdc5d540bc2cd49c3529944ecdce0e4a63f29b3  s4-parameters-set-true.png
+    bf190e78de643524aad83af8f6f1f2cd3c86e2f07101279101eadd2eeb775885  s4-parameters-after-save.png
+    e50f44a577d9046f3752f779e875fb6bf010b2789fa7d3446d2b91d55bd0f034  s5-clarisa-submit-result.png
+    ec8ad5462b4c1ce81a95ed4aa934d57a5cae12dee9806ab767d2ce9c787cd07a  s6-clarisa-menu-hidden.png
+    601016d1786a0c65a34c7e80a20dcfdda77136a9f2a2d10351738180e63d9af5  s6b-clarisa-office-mailto-expanded-clip.png
+    e64714bd05f390674c86c9733610d44dd0a70c0ce538eea3877477e1510bea94  s7-pending-listed.png
+    7e8a4bab0f8731af766ea3fbd7b9804b0f513d7a70546f2b7f53a5090253cce3  s7-after-reject.png
+    2a2476485290be2e57df621d09f87daa1b08f17c0565168a3fd0a0bc1ad2a131  s8-second-unit-result.png
+    c08093b1d683ad12332ad96deee43b04b7048a50a0c63f0080a4a11d67cc60a0  s9-nonsuperadmin-refused.png
+
+## Summary
+
+All 5 tasks are complete.
+
+| Task | Result | Attempts | Commit |
+|---|---|---|---|
+| T01 Specificity seed | PASS | 1 | `97954adbe3` |
+| T02 Routing + both-mode tests | PASS (2 lens reviewers) | 1 | `b7a564a475` |
+| T03 Templates | PASS | 1 | `9ed5666173` |
+| T04 Admin agent-context | PASS | 1 | `9ed5666173` |
+| T05 Live proof | PASS | 2 | this commit (evidence only) |
+
+- **Gates:** clean compile (2431 / 1065 / 148), full `marlo-web` suite 1385 / 0 / 0 with `-am`, Checkstyle delta 0,
+  no `.properties` change.
+- **Budget:** LOC 1,047 against the original ~470. The tripwire fired at T02, and the owner accepted ~1,050. Review
+  rounds 7 of 7; tasks 5 of 5.
+- **Open items for the owner:**
+  - P-9: `misAcronym` for non-AICCRA units and `AICCRA_III`; confirm with the CLARISA team before switching such
+    a unit on.
+  - P-10: accepted risk. Valid CLARISA credentials are needed per environment before any unit is switched on.
+  - Visual check at the HITL pause (screenshots above), including clicking "Request it here." in MARLO mode.
+- **Pending on `staging` (not on this branch):** `akili doctor --agents` persona drift (all 4 personas UNMARKED).
+- **Kaizen candidates for `/akili-archive`:**
+  - `OtpMailSenderTest` is timing-flaky under heavy load.
+  - A running cargo app reads the config from the jar inside the war, so editing `marlo-dev.properties` does not
+    redirect it. This caused the extra live calls.
+  - Implementer self-reports under-counted outbound calls; the Leader's log check caught it.

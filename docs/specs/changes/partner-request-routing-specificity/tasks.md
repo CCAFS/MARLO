@@ -256,7 +256,7 @@
 
 ### CHG-PARTROUTE-001-T05 — Live proof of both modes (settles P-10 first)
 
-- **Status:** [ ] · **Size:** M · **Depends on:** T01, T02, T03 · **Module:** — (verification)
+- **Status:** [x] · **Size:** M · **Depends on:** T01, T02, T03 · **Module:** — (verification)
 - **Requirements:** requirements §7 D2 (live call), D8, D9 and D11 runtime. Each AC below is checked on the running app:
   - **FN-008:** Parameters screen saves per unit; the next submit follows the change without a new login; BUT other units are untouched.
   - **FN-009:** pending requests stay listed and decidable.
