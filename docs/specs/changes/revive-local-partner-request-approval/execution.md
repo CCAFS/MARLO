@@ -1166,3 +1166,46 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - LOC added: 4,826 + 372 = **5,198**.
   - Review rounds: 20.
 - **Final verification:** VERIFIED.
+- **Commit:** `07060a8ef0` (owner-approved).
+
+### Owner decisions at the T10 gate (2026-11-20)
+
+1. **Label and title keys added now.** `marloRequestCreation.label.name/.acronym/.type/.country/.website` and `.pageTitle` are added, and T10 is reopened (`[~]`) to do it. The change is recorded in the `requirements.md` Decision Log, the `design.md` §5.5 request-page row and the `tasks.md` T10 scope, with the closure sweep.
+2. **Next task.** T11b follows once T10 is closed again.
+
+### CHG-PARTREQ-001-T10 (reopened) — Label and title keys
+
+- **Final status:** PASS (reopening, attempt 1)
+- **Date:** 2026-11-20
+- **Effort:** medium
+- **Skills:** `marlo-verify`
+- **Review:** single Reviewer; override (e) applies, as this reopens a closed task.
+- **Files changed:**
+  - `partnersSave.ftl`, 6 lines:
+    - The title now uses `[#assign title][@s.text name="marloRequestCreation.pageTitle" /][/#assign]`, the same pattern as `globalUnitManagement.ftl` and `error/privatePage.ftl`.
+    - The labels now use `marloRequestCreation.label.name`, `.type`, `.acronym`, `.country` and `.website`.
+  - `global.properties`, +6 keys: Name / Acronym / Institution type / Headquarters country / Website / Request a new institution.
+  - Both files are still LF.
+- **Implementer verification:**
+  - Old label keys in the FTL: `4` → `0`.
+  - New key references: `6`.
+  - Each key appears exactly once in `global.properties`.
+  - i18n gate: no FIX findings.
+  - No CSS or JS changed, so no cache-buster was needed.
+- **Evidence re-run (Leader-inline):** the same greps were re-run, and the title pattern was confirmed in existing views. **VERIFIED.**
+- **Reviewer: PASS.**
+  - The keys and references match the amended §5.5, the T10 scope and the Decision Log entry.
+  - The §5.6 `aria-disabled` amendment matches `partnersSave.js:52/57`.
+  - Dropping the website guidance sentence keeps UI-005 met: the page-level help note remains, and the field keeps its placeholder.
+  - Open item: the rendered `<title>` is not yet confirmed. → T11b
+- **Notes:**
+  - `marloRequestCreation.webSiteLink` is no longer used by any FTL or Java file. It is kept because several `custom/*.properties` override it. → T12 follow-up.
+  - None of the new keys has a custom override, so every unit falls back to the global value.
+- **runtime events:** none
+- **spawns:**
+  - implementer: 6 calls, 86983 tokens, ended complete
+  - reviewer: 7 calls, 43008 tokens, ended complete
+- **Budget (running, ceiling ~5,800 LOC / ~35 rounds):**
+  - Tasks: 11 / 12.
+  - LOC added: 5,198 + 12 = **5,210**.
+  - Review rounds: 21.

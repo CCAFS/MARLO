@@ -217,10 +217,10 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T10 — Partner request page redesign
 
-- **Status:** [x] done 2026-11-20 (PASS attempt 1 — `execution.md`) · **Size:** M · **Depends on:** T06 · **Module:** marlo-web (FTL, CSS, JS, i18n)
+- **Status:** [x] done 2026-11-20 (PASS; reopened for the label / title keys at the T10 gate, PASS — `execution.md`) · **Size:** M · **Depends on:** T06 · **Module:** marlo-web (FTL, CSS, JS, i18n)
 - **Requirements:** UI-001, UI-005 (form card, field errors, success, saveFailed), UI-006, AC UI-005, AC UI-006 width clause
 - **Design refs:** §5.2 request page rows, §5.3 binding contract, §5.5 Request page keys, §5.6, DD-8
-- **Scope:** `partnersSave.ftl`, `partnersSave.css`, `partnersSave.js` in `.prq`; keep every bound name, the hidden ids, `context`, `phaseID` and the submit `name="save"`; help slideshow → one help note; hardcoded English success copy → `marloRequestCreation.success.*` keys; cache-busters.
+- **Scope:** `partnersSave.ftl`, `partnersSave.css`, `partnersSave.js` in `.prq`; keep every bound name, the hidden ids, `context`, `phaseID` and the submit `name="save"`; help slideshow → one help note; hardcoded English success copy → `marloRequestCreation.success.*` keys; cache-busters. **Added 2026-11-20 (owner, T10 gate):** field labels and the page title on the new `marloRequestCreation.label.*` / `.pageTitle` keys (design §5.5).
   - `Design route: load impeccable-bridge → design-routing.md; playbook layout, clarify, harden; ENV-2; mode Operate; polish light; motion none`
 - **Tests:** live in T11b: submit with missing name / type / country → field errors, nothing stored; valid submit → success card and two rows; forced save failure → `saveFailed` note.
 - **Verification:** `grep -c "sent succesfully" partnersSave.ftl` → `0`; `grep -c 'name="save"\|name=.save' partnersSave.ftl` ≥ 1; legacy-markup grep → `0`; screenshots 1280 / 390.

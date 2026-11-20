@@ -1,5 +1,5 @@
 [#ftl]
-[#assign title = "Request new institution" /]
+[#assign title][@s.text name="marloRequestCreation.pageTitle" /][/#assign]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
 [#assign customJS = ["${baseUrlCdn}/global/js/partnersSave.js?20261120"] /]
 [#assign customCSS = ["${baseUrlCdn}/global/css/partnersSave.css?20261120"] /]
@@ -46,14 +46,14 @@
         <div class="prq-request__grid">
           [#-- Partner name --]
           <div class="prq-field prq-field--wide" id="partnerName">
-            <label class="prq-label" for="activityPartner.partner.name" id="prqNameLabel">[@s.text name="Name" /]<span class="prq-req" aria-hidden="true">*</span></label>
+            <label class="prq-label" for="activityPartner.partner.name" id="prqNameLabel">[@s.text name="marloRequestCreation.label.name" /]<span class="prq-req" aria-hidden="true">*</span></label>
             <input type="text" class="prq-input[#if nameErrors?has_content] is-invalid[/#if]" id="activityPartner.partner.name" name="activityPartner.partner.name" value="${(activityPartner.partner.name)!}" autocomplete="off" aria-required="true"[#if nameErrors?has_content] aria-invalid="true" aria-describedby="prqNameError"[/#if] />
             [@prqError name="activityPartner.partner.name" id="prqNameError" /]
           </div>
 
           [#-- Partner types list --]
           <div class="prq-field prq-field--wide" id="partnerTypes">
-            <label class="prq-label" for="activityPartner.partner.institutionType.id" id="prqTypeLabel">[@s.text name="Type" /]<span class="prq-req" aria-hidden="true">*</span></label>
+            <label class="prq-label" for="activityPartner.partner.institutionType.id" id="prqTypeLabel">[@s.text name="marloRequestCreation.label.type" /]<span class="prq-req" aria-hidden="true">*</span></label>
             <select class="prq-select institutionTypes[#if typeErrors?has_content] is-invalid[/#if]" id="activityPartner.partner.institutionType.id" name="activityPartner.partner.institutionType.id" aria-required="true"[#if typeErrors?has_content] aria-invalid="true" aria-describedby="prqTypeError"[/#if]>
               <option value="-1">[@s.text name="form.select.placeholder" /]</option>
               [#list institutionTypesList as type]
@@ -73,13 +73,13 @@
 
           [#-- Partner acronym --]
           <div class="prq-field" id="partnerAcronym">
-            <label class="prq-label" for="activityPartner.partner.acronym">[@s.text name="Acronym" /]</label>
+            <label class="prq-label" for="activityPartner.partner.acronym">[@s.text name="marloRequestCreation.label.acronym" /]</label>
             <input type="text" class="prq-input" id="activityPartner.partner.acronym" name="activityPartner.partner.acronym" value="${(activityPartner.partner.acronym)!}" autocomplete="off" />
           </div>
 
           [#-- Countries list --]
           <div class="prq-field" id="partnerCountry">
-            <label class="prq-label" for="locationId" id="prqCountryLabel">[@s.text name="Country" /]<span class="prq-req" aria-hidden="true">*</span></label>
+            <label class="prq-label" for="locationId" id="prqCountryLabel">[@s.text name="marloRequestCreation.label.country" /]<span class="prq-req" aria-hidden="true">*</span></label>
             <select class="prq-select[#if countryErrors?has_content] is-invalid[/#if]" id="locationId" name="locationId" aria-required="true"[#if countryErrors?has_content] aria-invalid="true" aria-describedby="prqCountryError"[/#if]>
               <option value="-1">[@s.text name="form.select.placeholder" /]</option>
               [#list countriesList as country]
@@ -91,7 +91,7 @@
 
           [#-- Web page link --]
           <div class="prq-field prq-field--wide" id="partnerPage">
-            <label class="prq-label" for="activityPartner.partner.websiteLink">[@s.text name="marloRequestCreation.webSiteLink" /]</label>
+            <label class="prq-label" for="activityPartner.partner.websiteLink">[@s.text name="marloRequestCreation.label.website" /]</label>
             <input type="text" class="prq-input" id="activityPartner.partner.websiteLink" name="activityPartner.partner.websiteLink" value="${(activityPartner.partner.websiteLink)!}" placeholder="[@s.text name="marloRequestCreation.webSiteLink.placeholder" /]" inputmode="url" autocomplete="off" />
           </div>
         </div>
