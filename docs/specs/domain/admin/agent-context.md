@@ -273,15 +273,46 @@ have been CGIAR or local.
 
 ## Partner Requests (`marloInstitutions`)
 
-As built by `changes/revive-local-partner-request-approval` (CHG-PARTREQ-001). A user who cannot find an institution
-asks for it; a **superadmin** reviews it on `/superadmin/marloInstitutions.do`. Approval happens inside MARLO — no
-CLARISA call is made on this path. Email texts: `reports/ai-context/role-assignment-email-catalog.md` §17.
+As built by `changes/revive-local-partner-request-approval` (CHG-PARTREQ-001) and
+`changes/partner-request-routing-specificity` (CHG-PARTROUTE-001). A user who cannot find an institution asks for it.
+**Where a partner request goes depends on its Global Unit** — see § *Routing mode*: in MARLO mode (the default) a
+**superadmin** reviews it on `/superadmin/marloInstitutions.do` and approval happens inside MARLO, with no CLARISA call
+on the review path; in CLARISA mode the request is POSTed to CLARISA at submit and never stored. Country-office
+requests are always local. Email texts: `reports/ai-context/role-assignment-email-catalog.md` §17.
+
+### Routing mode (`partner_requests_to_clarisa`)
+
+| Item | Fact |
+|---|---|
+| Key / constant | `partner_requests_to_clarisa`; `APConstants.PARTNER_REQUESTS_TO_CLARISA` in `marlo-data/.../config/APConstants.java:135` and `marlo-web/.../config/APConstants.java:159`. Seed: `V2_6_0_20261120_1306__AddPartnerRequestsToClarisaSpecificity.sql` — one `parameters` row per Global Unit type 1-4 that exists, default `false`, **no** `custom_parameters` row, so deploying changes no unit |
+| MARLO mode (off, default) | partner request stored as original + copy (`createPartnerRequest`, `PartnersSaveAction.java:521`), reviewed by a superadmin; support alert sent |
+| CLARISA mode (on) | `save()` calls `sendToClarisa` (`PartnersSaveAction.java:512-513`, POST via `postToClarisa`, `:582`); nothing is stored. A failed send re-shows the form (`requestFailed`) and **never falls back to MARLO** (design §15 DD-4). The "Request Institutions" menu entry is hidden (design DD-6) |
+| Who flips it | a superadmin, per unit: Superadmin → Parameters → Specificities (FN-008). Only an **active** `custom_parameters` row whose value parses `true` turns it on |
+| No unit | `loggedCrp == null` → nothing stored or sent, form re-shown (`PartnersSaveAction.java:503-509`, FN-010) |
+| Office requests | `RequestCountryOfficeAction` is not touched by the switch: stored locally in both modes (FN-007) |
+
+**Two readers, one lag (design §9, DD-2, DD-3, R-4).** The **submit** reads the unit's *stored* parameters
+(`readClarisaMode()`, `PartnersSaveAction.java:605-617`, called at `:511`; exposed to the page by `isClarisaMode()`,
+`:292`), so a switch applies to the very next submission. The **templates** (`menu-superadmin.ftl` entry,
+`projectPartners.ftl` office link) use `action.hasSpecificities('partner_requests_to_clarisa')`, which reads the
+**session**: they follow a switch only at the next login, unit switch or crp refresh. A stale template only shows or
+hides a link; it cannot send data. The session can also hold another unit's `true` after a unit switch (design P-4),
+which is why the submit does not use it.
+
+**Leftover pending requests (FN-009).** Requests stored while a unit was in MARLO mode stay in `partner_requests`
+after the unit moves to CLARISA mode. The review screen and the decide routes still work for them, but the menu entry
+is hidden while the session unit is in CLARISA mode — reach them by URL, or switch the unit back.
+
+**Open question P-9 (UNVERIFIED).** CLARISA's `misAcronym` is now `loggedCrp.getAcronym()` lower-cased
+(`PartnersSaveAction.java:639`, `buildClarisaPayload` `:556-566`); pre-switch it was the literal `"aiccra"`. Unit 45
+`AICCRA` still sends `aiccra`; unit 47 `AICCRA_III` would send `aiccra_iii`, which CLARISA may not know. Confirm with
+the CLARISA team before switching any non-AICCRA unit on (design §16 P-9, R-5).
 
 ### Flow
 
 | Step | Code (read it, do not trust this table blindly) | Writes |
 |---|---|---|
-| Ask for a **partner** | `PartnersSaveAction.save()` → `partnerRequestManager.createPartnerRequest(original, copy)`; view `partnersSave.ftl`; route `{crp}/partnerSave` (`projectsStack`) | two `partner_requests` rows: the **original** (never edited) and its editable **copy** (`partnerRequest` parent set) |
+| Ask for a **partner** (MARLO mode; CLARISA mode sends instead, § *Routing mode*) | `PartnersSaveAction.save()` → `partnerRequestManager.createPartnerRequest(original, copy)`; view `partnersSave.ftl`; route `{crp}/partnerSave` (`projectsStack`) | two `partner_requests` rows: the **original** (never edited) and its editable **copy** (`partnerRequest` parent set) |
 | Ask for **country offices** | `RequestCountryOfficeAction.execute()` → `savePartnerRequest` once per country; route `requestCountryOffice` (struts-json) | one office row per country (`office=true`, no parent) |
 | Support alert | `sendNewPartnerAlert()` / `sendNewOfficeAlert()`, **after** the save, best effort | email to `<notification mailbox>` |
 | Review | `PartnerRequestAction.prepare()` lists active rows: partners = copies (`!office`, parent set), offices grouped by institution | nothing |

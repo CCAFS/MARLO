@@ -40,6 +40,8 @@ import static org.junit.Assert.assertTrue;
  * <li>exactly one migration seeds the key, for the Global Unit types 1 to 4 and guarded by {@code NOT EXISTS};</li>
  * <li>that migration writes no {@code custom_parameters} row;</li>
  * <li>the seeded description holds no apostrophe, since it sits in a single-quoted SQL literal.</li>
+ * <li>(T03) the templates: both {@code institutions} menu entries carry the hide condition, the office help keeps the
+ * {@code #requestModal} trigger out of the CLARISA branch, and the request page reads both failure keys.</li>
  * </ul>
  * The expected key is a literal of this test, never read from a file under test. Both {@code APConstants} sources are
  * read because the two classes share one fully qualified name.
@@ -51,6 +53,9 @@ public class PartnerRoutingSpecificityParityTest {
   private static final String[] AP_CONSTANTS = {"src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java",
     "../marlo-data/src/main/java/org/cgiar/ccafs/marlo/config/APConstants.java"};
   private static final Path MIGRATIONS = Paths.get("src/main/resources/database/migrations");
+  private static final Path MENU = Paths.get("src/main/webapp/WEB-INF/global/views/superadmin/menu-superadmin.ftl");
+  private static final Path OFFICE = Paths.get("src/main/webapp/WEB-INF/crp/views/projects/projectPartners.ftl");
+  private static final Path REQUEST_PAGE = Paths.get("src/main/webapp/WEB-INF/global/pages/partnersSave.ftl");
 
   private static String read(Path file) throws IOException {
     return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
@@ -114,5 +119,43 @@ public class PartnerRoutingSpecificityParityTest {
     String description = seed.group(1);
     assertFalse("the description holds no apostrophe: " + description, description.contains("'"));
     assertTrue("the description is not empty", description.length() > 0);
+  }
+
+  @Test
+  public void bothInstitutionsMenuEntriesAreHiddenInClarisaMode() throws IOException {
+    String condition = "&& !action.hasSpecificities('" + KEY + "')";
+    int entries = 0;
+    for (String line : read(MENU).split("\\r?\\n")) {
+      if (line.contains("'slug': 'institutions'")) {
+        entries++;
+        assertTrue("the institutions entry carries the condition: " + line.trim(), line.contains(condition));
+      }
+    }
+    assertEquals("the menu defines the institutions entry in both branches", 2, entries);
+  }
+
+  @Test
+  public void theOfficeHelpKeepsTheRequestTriggerOutOfTheClarisaBranch() throws IOException {
+    String template = read(OFFICE);
+    String open = "[#if action.hasSpecificities('" + KEY + "')]";
+    int start = template.indexOf(open);
+    assertTrue("the office help tests the key", start >= 0);
+    int otherwise = template.indexOf("[#else]", start);
+    assertTrue("the key has an [#else] branch", otherwise > start);
+    int close = template.indexOf("[/#if]", otherwise);
+    assertTrue("the [#else] branch is closed", close > otherwise);
+    String clarisaBranch = template.substring(start, otherwise);
+    String marloBranch = template.substring(otherwise, close);
+    assertTrue("CLARISA branch links the support mailbox", clarisaBranch.contains("mailto:MARLOSupport@cgiar.org"));
+    assertFalse("CLARISA branch has no request trigger", clarisaBranch.contains("data-target=\"#requestModal\""));
+    assertTrue("MARLO branch keeps the request trigger", marloBranch.contains("data-target=\"#requestModal\""));
+  }
+
+  @Test
+  public void theRequestPageReadsBothFailureKeysByMode() throws IOException {
+    String template = read(REQUEST_PAGE);
+    assertTrue("saveFailed is referenced", template.contains("marloRequestCreation.saveFailed"));
+    assertTrue("sendFailed is referenced", template.contains("marloRequestCreation.sendFailed"));
+    assertTrue("the failure text keys on the mode", template.contains("[#if action.clarisaMode]"));
   }
 }

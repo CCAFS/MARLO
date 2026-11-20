@@ -35,7 +35,7 @@
           <p class="prq-note prq-note--warning" role="alert" id="prqFormErrors"><span class="prq-note__text">[@s.text name="saving.fields.required" /]</span></p>
         [/#if]
         [#if (action.requestFailed)!false]
-          <p class="prq-note prq-note--danger" role="alert"><span class="prq-note__text">[@s.text name="marloRequestCreation.saveFailed" /]</span></p>
+          <p class="prq-note prq-note--danger" role="alert"><span class="prq-note__text">[#if action.clarisaMode][@s.text name="marloRequestCreation.sendFailed" /][#else][@s.text name="marloRequestCreation.saveFailed" /][/#if]</span></p>
         [/#if]
         <div class="prq-help">
           <p class="prq-help__text">[@s.text name="marloRequestCreation.helpMessage" /]<br />[@s.text name="marloRequestCreation.helpMessage.example" /]</p>

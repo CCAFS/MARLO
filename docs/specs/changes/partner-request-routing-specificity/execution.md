@@ -237,3 +237,118 @@ No owed item and no blocker, so this is not a continuation.
 - **Owner decision (2026-11-20):** the overrun is accepted ("sí, acepta el sobrecosto, haz el commit y continúa con
   T03"). The new working budget is about 1,050 LOC for the spec, the projection above. Review rounds and tasks are
   unchanged.
+
+### CHG-PARTROUTE-001-T04 — Admin agent-context: the two modes
+
+- **Final status:** PASS
+- **Date:** 2026-11-20
+- **Implementer attempts:** 1 (ran in parallel with T03: disjoint files, no build in T04)
+- **Effort:** low · **Skills:** `cognitive-doc-design` (`marlo-commit` kept by the Leader)
+
+**Attempt 1**
+
+- Files changed: `docs/specs/domain/admin/agent-context.md` (+35 / −4). The § *Partner Requests* intro was rewritten,
+  a new `### Routing mode (partner_requests_to_clarisa)` subsection was added, and the "Ask for a partner" flow row
+  was qualified.
+- Red run (sweep before editing): `grep -n "CLARISA\|every Global Unit"` → 2 hits. The variant sweep (`never sent`,
+  `only destination`, `always stored`, `no CLARISA`, `isAiccra`) → 0.
+- Sweep hits and actions:
+  - `:106` `CLARISA_ACRONYM_PMU` (REST v2): kept, because it is unrelated.
+  - Old `:278` "no CLARISA call is made on this path": **rewritten**. It now reads "no CLARISA call on the review
+    path; in CLARISA mode the request is POSTed to CLARISA at submit and never stored". This was the absolute claim
+    the falsifier targets.
+  - `:315` flow row: qualified to "MARLO mode; CLARISA mode sends instead".
+  - "every Global Unit": 0 hits before and after.
+- Code citations: `PartnersSaveAction.java` `:292`, `:503-509`, `:511-513`, `:521`, `:582`, `:605-617`, `:639`, and
+  `APConstants` `:135` / `:159`. The templates are cited by name and design §5 / DD-6 only, because T03 was editing
+  them at the time.
+- Evidence re-run (Leader inline): both sweeps reproduce. The sampled citations (`:292`, `:503`, `:511-513`, `:521`,
+  `:582`, `:605`, `:639`) point at the stated code → **VERIFIED**.
+- Reviewer verdict: **PASS**. All six scope items are present and cited, and no sentence contradicts the spec. The
+  behaviour claims match `b7a564a475`. The sweep covers the old absolute claims, so the Disqualifier does not apply.
+  The template behaviour is left to T05's live check.
+- runtime events: none
+- spawns: implementer 9 calls, 96255 tokens, ended complete; reviewer 7 calls, 45116 tokens, ended complete
+- **Not Done / Assumptions (Implementer):** template line numbers are not cited, since T03 was editing those files;
+  "menu hidden in CLARISA mode" is taken from DD-6 and FN-009. Neither is an owed item.
+- **Requirements covered:** FN-008 (documentation); proposal §5 "Docs".
+- **Decisions made:** T04 ran in parallel with T03 (Step 1 *Parallel Execution*: disjoint write sets, and T04 runs no
+  build). The Reviewer's advisory from T02 about "two active rows" was **not** added, because it is not in T04's
+  scope (*Advisory Never Becomes A Task*).
+- **Budget running totals:** tasks 3 / 5 · LOC 996 (T01 148 + T02 809 + T04 39), within the owner-accepted ~1,050 ·
+  review rounds 4 / 7.
+- **Final verification:** sweep clean; citations verified.
+
+### CHG-PARTROUTE-001-T03 — Templates: menu entry, office link, failure text
+
+- **Final status:** PASS
+- **Date:** 2026-11-20
+- **Implementer attempts:** 1 (ran in parallel with T04)
+- **Effort:** medium · **Skills:** `marlo-verify` (`marlo-commit` kept by the Leader)
+
+**Attempt 1**
+
+- Files changed (FTL +8 / −4, test +43):
+  - `menu-superadmin.ftl`: both `institutions` entries end in `&& !action.hasSpecificities('partner_requests_to_clarisa')`.
+    The original `?then` ternary is wrapped in parentheses so that the `&&` binds to all of it.
+  - `projectPartners.ftl`: `[#if action.hasSpecificities('partner_requests_to_clarisa')]` wraps the office help. The
+    CLARISA branch holds `country.email` + `mailto:MARLOSupport@cgiar.org` + "."; the `[#else]` branch keeps today's
+    `#requestModal` trigger.
+  - `partnersSave.ftl`: `[#if action.clarisaMode]` → `sendFailed`, otherwise `saveFailed`.
+  - `PartnerRoutingSpecificityParityTest.java`: 3 static pins (the class now has 7 tests). Expected strings are literals.
+  - No `.properties`, JS, CSS or struts change.
+- Implementer verification:
+  - Compile exit 0 and suite 1385 / 0 / 0.
+  - Greps: `partner_requests_to_clarisa` 2 in the menu and 1 in `projectPartners.ftl`; `sendFailed` 1; no `struts-*.xml`
+    in the diff.
+  - Checkstyle delta 0.
+- Red run: baseline at `0edf846105`, `grep -c partner_requests_to_clarisa` → 0 in all three templates, and `sendFailed`
+  → 0 (spec).
+- Falsifiers (observed red, then green after revert):
+  - (a) Condition removed from one `institutions` entry → `bothInstitutionsMenuEntriesAreHiddenInClarisaMode:
+    AssertionError: the institutions entry carries the condition`. (The task's wording is "edit only the `[#else]`
+    branch"; the pin requires both entries, so either form goes red.)
+  - (b) Trigger moved into the CLARISA branch → `theOfficeHelpKeepsTheRequestTriggerOutOfTheClarisaBranch:
+    AssertionError: CLARISA branch has no request trigger`.
+  - (c) `sendFailed` replaced by `requestFailed` → `theRequestPageReadsBothFailureKeysByMode: AssertionError:
+    sendFailed is referenced`.
+- Evidence re-run (Leader inline, non-author):
+  - Clean compile exit 0 (2431 / 1065 / 148), and the greps reproduce.
+  - First full suite, run under extreme machine load (load average about 115–280, 17½ minutes): 1385 run, **2
+    failures and 1 error, all in `OtpMailSenderTest`**: `theCodeLineFollowsTheFlagReadForThatSend expected:<0> but
+    was:<1>`, `successDeliversOnceToTheSubmittedRecipientAndLogsDelivered expected:<1> but was:<11>`, and an error in
+    `aFullQueueLogsEmailFailedAndTheCallerIsNotAffected`. T03 does not touch that class, and its assertions depend on
+    timing (async mail queue).
+  - Diagnosis: `OtpMailSenderTest` run alone → `Tests run: 43, Failures: 0, Errors: 0`.
+  - Second full suite on the same clean-compiled classes → `Tests run: 1385, Failures: 0, Errors: 0, Skipped: 0`,
+    BUILD SUCCESS.
+  - Result: **VERIFIED**. The first-run mismatch was load-induced flakiness in an unrelated class, not caused by the
+    change, so no rework attempt was charged.
+  - A session restart (Orca) interrupted the diagnosis between the two runs. Nothing was lost: the tree was intact
+    and no Maven process was left running.
+- Reviewer verdict: **PASS**.
+  - The CLARISA office markup matches design §5.
+  - The `visible` expression is valid FreeMarker, with the same edit in both branches.
+  - FN-010 shows `saveFailed`, because the action returns before `clarisaMode` is set (a primitive `false`).
+  - The pins use literals and catch (a)–(c).
+  - No guard or struts change (SEC-001). The Disqualifier gap (no render proof) belongs to T05.
+- runtime events: none on the attempt (the Leader's re-run was interrupted by a session restart and resumed)
+- spawns: implementer 11 calls, 100127 tokens, ended complete; reviewer 9 calls, 50062 tokens, ended complete
+- Completion line: `Design route: none — no playbook run`
+
+**ADVISORY (4R, not gating)**
+- Reliability: `theRequestPageReadsBothFailureKeysByMode` would still pass if the two branches were swapped. Asserting
+  the exact `[#if action.clarisaMode]…sendFailed…[#else]` text would close that.
+- Reliability: the office pin cuts at the first `[#else]` / `[/#if]`. A nested `[#if]` added to the CLARISA branch
+  later would shift the cut. Not reachable today.
+- Readability: `MARLOSupport@cgiar.org` is literal in the template, restored verbatim by design §5. It is an address,
+  not an i18n string.
+- Flakiness: `OtpMailSenderTest` is timing-sensitive under heavy load. That is outside this spec, recorded for kaizen
+  at archive.
+
+- **Not Done / Assumptions (Implementer):** falsifier (a) was applied to the first entry, not only the `[#else]` one;
+  the static pins do not prove rendering (T05). Neither is an owed item.
+- **Requirements covered:** UI-001, UI-002, UI-003, SEC-001 (static); behaviour is proven in T05.
+- **Budget running totals:** tasks 4 / 5 · LOC 1,047 (T01 148 + T02 809 + T04 39 + T03 51), within the
+  owner-accepted ~1,050 · review rounds 5 / 7.
+- **Final verification:** compile and the full suite green (second Leader run), greps reproduce, Checkstyle delta 0.

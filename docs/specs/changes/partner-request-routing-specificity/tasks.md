@@ -187,7 +187,7 @@
 
 ### CHG-PARTROUTE-001-T03 — Templates: menu entry, office link, failure text
 
-- **Status:** [ ] · **Size:** S · **Depends on:** T01, T02 · **Module:** marlo-web (FTL)
+- **Status:** [x] · **Size:** S · **Depends on:** T01, T02 · **Module:** marlo-web (FTL)
 - **Requirements:**
   - UI-001 and its AC: CLARISA → hidden; AND IT MUST show in MARLO mode; BUT the guards are unchanged.
   - UI-002 and its AC: CLARISA → `country.email` + `mailto:MARLOSupport@cgiar.org` + "."; BUT no `#requestModal` trigger; AND MARLO keeps the trigger.
@@ -232,7 +232,7 @@
 
 ### CHG-PARTROUTE-001-T04 — Admin agent-context: the two modes
 
-- **Status:** [ ] · **Size:** XS · **Depends on:** T02 · **Module:** docs
+- **Status:** [x] · **Size:** XS · **Depends on:** T02 · **Module:** docs
 - **Requirements:** FN-008 (the switch and its timing documented); proposal §5 "Docs".
 - **Design refs:** §9, §14, DD-2, DD-3, R-4, R-5.
 - **Scope:** `docs/specs/domain/admin/agent-context.md` § *Partner requests*. Add:
