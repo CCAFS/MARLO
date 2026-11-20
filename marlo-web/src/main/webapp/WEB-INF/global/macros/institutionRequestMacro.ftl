@@ -196,7 +196,7 @@
 
           <div class="prq-card__foot" data-prq-actions>
             <button type="button" class="prq-btn prq-btn--ghost" data-prq-action="edit" aria-expanded="false" aria-controls="prq-edit-${id}">[@s.text name="marloRequestInstitution.ui.action.edit" /]</button>
-            <button type="button" class="prq-btn prq-btn--danger" data-prq-action="reject" data-request-id="${id}">[@s.text name="marloRequestInstitution.ui.action.reject" /]</button>
+            <button type="button" class="prq-btn prq-btn--danger-outline" data-prq-action="reject" data-request-id="${id}">[@s.text name="marloRequestInstitution.ui.action.reject" /]</button>
             [#-- Accept: a POST form; the confirmation dialog is attached to it by marloInstitutions.js --]
             <form class="acceptRequestForm prq-inlineForm" method="post" data-prq-confirm="prqAcceptDialog" action="[@s.url namespace="" action="superadmin/addPartner"][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url]">
               <input type="hidden" name="requestID" value="${id}" />
@@ -264,7 +264,7 @@
             </div>
 
             <div class="prq-card__foot" data-prq-actions>
-              <button type="button" class="prq-btn prq-btn--danger" data-prq-action="reject-offices" data-institution-id="${institutionId}">[@s.text name="marloRequestInstitution.ui.action.rejectSelected" /]</button>
+              <button type="button" class="prq-btn prq-btn--danger-outline" data-prq-action="reject-offices" data-institution-id="${institutionId}">[@s.text name="marloRequestInstitution.ui.action.rejectSelected" /]</button>
               <button type="button" class="prq-btn prq-btn--primary" data-prq-action="accept-offices" data-institution-id="${institutionId}">[@s.text name="marloRequestInstitution.ui.action.acceptSelected" /]</button>
             </div>
           </form>

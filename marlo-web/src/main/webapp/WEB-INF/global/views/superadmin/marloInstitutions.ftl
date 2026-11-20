@@ -3,12 +3,12 @@
 [#assign currentSectionString = "${actionName?replace('/','-')}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "flag-icon-css", "datatables.net", "datatables.net-bs"] /]
 [#assign customJS = [ 
-  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20261119-1" 
+  "${baseUrlCdn}/global/js/superadmin/marloInstitutions.js?20261120" 
   ] 
 /]
 [#assign customCSS = [ 
   "${baseUrlCdn}/global/css/superadmin/superadmin.css",
-  "${baseUrlCdn}/global/css/superadmin/marloInstitutions.css?20261119"
+  "${baseUrlCdn}/global/css/superadmin/marloInstitutions.css?20261120"
   ] 
 /]
 [#assign currentSection = "superadmin" /]
@@ -47,6 +47,7 @@
           data-outcome-skippedexisting="[@institutionRequest.attrText key='marloRequestInstitution.ui.outcome.skippedExisting' /]"
           data-outcome-notallowed="[@institutionRequest.attrText key='marloRequestInstitution.ui.outcome.notAllowed' /]"
           data-outcome-notauthorized="[@institutionRequest.attrText key='marloRequestInstitution.ui.outcome.notAuthorized' /]"
+          data-outcome-sessionexpired="[@institutionRequest.attrText key='marloRequestInstitution.ui.outcome.sessionExpired' /]"
           data-outcome-failed="[@institutionRequest.attrText key='marloRequestInstitution.ui.outcome.failed' /]"
           data-text-managing="[@institutionRequest.attrText key='marloRequestInstitution.ui.similar.managing' /]"
           data-text-required="[@institutionRequest.attrText key='marloRequestInstitution.ui.error.required' /]"

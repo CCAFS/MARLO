@@ -106,7 +106,7 @@ The guard sits before `defaultStack`, so a refused call never reaches `prepare()
 
 Status strings: `done`, `alreadyHandled`, `notFound`, `wrongKind`, `skippedExisting`, `notAllowed` (non-POST),
 `failed` (exception). A guard refusal is an HTTP 403 (the `httpheader` result may carry a container error page): the AJAX `error`
-handler keys on the status, maps 403 to `.outcome.notAuthorized` and 401 (expired session) to the same note. `addPartner` turns the same statuses into an action message / error on redirect.
+handler keys on the status, maps 403 to `.outcome.notAuthorized` and 401 (expired session) to `.outcome.sessionExpired` (amended at execute 2026-11-20, owner T11b review; was: the same note). `addPartner` turns the same statuses into an action message / error on redirect.
 
 ## 5. Frontend Composition
 
@@ -143,7 +143,7 @@ incumbent has no such variant and `.prq` defines it.
 | Original vs edited (UI-003) | `.inf-ro` rows | `.prq-diff__row`: label · original (muted, struck) · edited (ink on brand tint). Only changed fields |
 | Similar institutions | `.ptn-note` (`projectPartners.css:199-224`, no variants) | `.prq-note--info` (new) |
 | Outcome / validation messages | none with variants | `.prq-note--success`, `--warning`, `--danger` (new) on the status tokens |
-| Actions | `.ptn-btn--primary`, `--ghost`, `--danger` (`projectPartners.css:73-127`) | `.prq-btn--primary`, `--ghost`, `--danger` |
+| Actions | `.ptn-btn--primary`, `--ghost`, `--danger` (`projectPartners.css:73-127`) | `.prq-btn--primary`, `--ghost`, `--danger`; `--danger-outline` (amended 2026-11-20, T11b owner review: card Reject / Reject selected use the outline variant; solid `--danger` only on the dialog confirm) |
 | Inline edit form, request form fields | `.ptn-field`, `.ptn-label`, `.ptn-req`, `.ptn-help`, `.ptn-error`, `.ptn-input` (`projectPartners.css:59-69,128-145,436`) | `.prq-field` family; `customForm` markup restyled inside `.prq` as `.dlf-card` does (**amended at execute 2026-11-19, T08:** the inline edit form uses plain `.prq-*` inputs with per-card unique ids and bound labels instead of `customForm.select`, which emitted duplicate ids `type` / `country` on every card — UI-006) |
 | Dialogs (confirm, reject, all institutions) | `.dlf-typesGuide` shell (`deliverableForm.css:410-475`); also `.ui-dialog.deliverableTypesDialog` (`deliverableForm.css:401-404`) | `.prq-dialog`, `__panel`, `__head`, `__body`, `__foot` |
 | Office card (existing locations, requested countries) | `.ptn-chips` (`projectPartners.css:447-458`) | `.prq-chips`, checkbox list |
@@ -199,9 +199,9 @@ justification is a labelled, required textarea; submitting it empty shows `.prq-
 
 | Group | Keys (all new, `global.properties`) |
 |---|---|
-| Review page | `marloRequestInstitution.ui.title`, `.summary` (`{0}` requests, `{1}` institutions — **amended at execute 2026-11-19, T08:** shipped as `.summary.partners.one` / `.many` and `.summary.offices.one` / `.many`, because one `{0}`/`{1}` key cannot pluralise "1 partner request" / "2 partner requests"), `.badge.pending`, `.badge.edited`, `.original`, `.edited`, `.requester`, `.source`, `.date`, `.similar`, `.empty.partners`, `.empty.offices`, `.action.accept`, `.action.edit`, `.action.reject`, `.dialog.accept.title`, `.dialog.accept.text`, `.dialog.reject.title`, `.dialog.reject.justification`, `.dialog.reject.notify`, `.dialog.cancel`, `.outcome.done`, `.outcome.alreadyHandled`, `.outcome.notFound`, `.outcome.wrongKind`, `.outcome.skippedExisting`, `.outcome.notAllowed`, `.outcome.notAuthorized`, `.outcome.failed` |
+| Review page | `marloRequestInstitution.ui.title`, `.summary` (`{0}` requests, `{1}` institutions — **amended at execute 2026-11-19, T08:** shipped as `.summary.partners.one` / `.many` and `.summary.offices.one` / `.many`, because one `{0}`/`{1}` key cannot pluralise "1 partner request" / "2 partner requests"), `.badge.pending`, `.badge.edited`, `.original`, `.edited`, `.requester`, `.source`, `.date`, `.similar`, `.empty.partners`, `.empty.offices`, `.action.accept`, `.action.edit`, `.action.reject`, `.dialog.accept.title`, `.dialog.accept.text`, `.dialog.reject.title`, `.dialog.reject.justification`, `.dialog.reject.notify`, `.dialog.cancel`, `.outcome.done`, `.outcome.alreadyHandled`, `.outcome.notFound`, `.outcome.wrongKind`, `.outcome.skippedExisting`, `.outcome.notAllowed`, `.outcome.notAuthorized`, `.outcome.failed`; `.outcome.sessionExpired` (added 2026-11-20, owner T11b review) |
 | Request page | `marloRequestCreation.saveFailed`, `marloRequestCreation.success.title`, `.success.text`, `.success.again`, `.success.close`; **added at execute 2026-11-20 (owner, T10 gate):** `marloRequestCreation.label.name`, `.label.acronym`, `.label.type`, `.label.country` ("Headquarters country", UI-005), `.label.website`, and `marloRequestCreation.pageTitle` for the hardcoded `[#assign title = "Request new institution" /]` — the field labels looked up keys that never existed (`Name`, `Type`, `Acronym`, `Country`) |
-| Emails | `marloRequestInstitution.mail.newPartner`, `.newOffice`, `.accepted`, `.rejected`, `.officeAccepted`, `.officeRejected`, `.supportName` (§10) |
+| Emails | `marloRequestInstitution.mail.newPartner`, `.newOffice`, `.accepted`, `.rejected`, `.officeAccepted`, `.officeRejected`, `.supportName` (§10); `marloRequestInstitution.mail.notProvided` (added 2026-11-20, owner T11b review: shown for an empty website or acronym in the new-partner alert); `marloRequestCreation.source.project` (added 2026-11-20: `Project P{0} - {1}`, overridden in `custom/aicrra` / `custom/aiccra3` as `Cluster C{0} - {1}`) |
 
 JS reads its strings from `data-` attributes rendered by the FTL with `[@s.text]`. Apostrophes are doubled (`''`).
 
@@ -284,6 +284,7 @@ come from `UnitTextProvider.forCustomFile(<unit custom file>)`, as `UnsubmitProj
 | Office accepted | request's unit | each requester / approver / `email.notification` | `marloRequestInstitution.office.accept.email.subject` → institution | `marloRequestInstitution.mail.officeAccepted` → institution, countries |
 | Office rejected | request's unit | same | `marloRequestInstitution.office.reject.email.subject` → institution | `marloRequestInstitution.mail.officeRejected` → institution, countries, justification |
 
+- **Unit words (amended 2026-11-20, owner T11b review):** the new-office alert's source, a project request's stored source and an office request's stored source (third round, 2026-11-20) use the unit's word and id letter from its texts (global `project` / `P`, AICCRA and AICCRA_III `cluster` / `C`); the action passes the bare id.
 - The two alerts greet the support team: `email.role.dear` with the name from a new key
   `marloRequestInstitution.mail.supportName`.
 - **Switch (FN-010):** `PartnerRequestEmails.isEnabled(unit)` — same rule as today's

@@ -325,6 +325,8 @@
 .prq-btn--ghost:hover { background: var(--marlo-surface-sunken); color: var(--marlo-ink); }
 .prq-btn--danger { background: var(--marlo-danger-solid); color: var(--marlo-surface); }
 .prq-btn--danger:hover { background: var(--marlo-danger-text); color: var(--marlo-surface); }
+.prq-btn--danger-outline { border-color: var(--marlo-danger-solid); background: var(--marlo-surface); color: var(--marlo-danger-text); }
+.prq-btn--danger-outline:hover { background: var(--marlo-danger-bg); color: var(--marlo-danger-text); }
 .prq-btn:disabled,
 .prq-btn.is-disabled { border-color: var(--marlo-border); background: var(--marlo-neutral-bg); color: var(--marlo-text-muted); cursor: not-allowed; }
 

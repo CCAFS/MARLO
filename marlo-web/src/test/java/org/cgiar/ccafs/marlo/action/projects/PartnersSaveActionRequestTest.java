@@ -19,6 +19,7 @@ import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.InstitutionTypeManager;
 import org.cgiar.ccafs.marlo.data.manager.LocElementManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
+import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
 import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -28,20 +29,25 @@ import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.Parameter;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
 import org.cgiar.ccafs.marlo.data.model.Phase;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.EmailSendDoubles;
 import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.EnvelopeConfig;
 import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.RecordingSendMail;
 import org.cgiar.ccafs.marlo.utils.EmailSendDoubles.Sent;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -68,17 +74,38 @@ public class PartnersSaveActionRequestTest {
   private static final String NOTIFY = "notify@unit.test";
   private static final String REQUESTER_EMAIL = "ana@unit.test";
   private static final String PARTNER = "Acme Seeds Ltd";
+  private static final String PROJECT_TITLE = "Climate smart villages";
 
   /** The action with everything session-bound answered by the scenario; it reports the AICCRA unit, as one does. */
   private static final class DrivenAction extends PartnersSaveAction {
 
     private static final long serialVersionUID = 1L;
 
-    DrivenAction(PartnerRequestManager manager, RecordingSendMail mail, InstitutionType type, LocElement country) {
+    /** The texts of the unit: global.properties, over which the unit's custom file (when it has one) is laid. */
+    private final Properties texts = new Properties();
+
+    DrivenAction(PartnerRequestManager manager, RecordingSendMail mail, InstitutionType type, LocElement country,
+      String customFile) {
       super(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
         EmailSendDoubles.answering(LocElementManager.class, "getLocElementById", args -> country),
-        EmailSendDoubles.answering(InstitutionTypeManager.class, "getInstitutionTypeById", args -> type), null, null,
-        manager, null, null, mail, null, null, null, null);
+        EmailSendDoubles.answering(InstitutionTypeManager.class, "getInstitutionTypeById", args -> type), null,
+        EmailSendDoubles.answering(ProjectManager.class, "getProjectById", args -> {
+          Project project = new Project();
+          project.setProjectInfo(projectInfo(PROJECT_TITLE));
+          return project;
+        }), manager, null, null, mail, null, null, null, null);
+      this.load("global");
+      if (customFile != null) {
+        this.load("custom/" + customFile);
+      }
+    }
+
+    private void load(String name) {
+      try (InputStream in = Files.newInputStream(Paths.get("src/main/resources/" + name + ".properties"))) {
+        this.texts.load(in);
+      } catch (java.io.IOException e) {
+        throw new IllegalStateException(e);
+      }
     }
 
     @Override
@@ -107,6 +134,11 @@ public class PartnersSaveActionRequestTest {
     }
 
     @Override
+    public String getText(String key, String[] args) {
+      return new MessageFormat(this.texts.getProperty(key)).format(args);
+    }
+
+    @Override
     public boolean isAiccra() {
       return true;
     }
@@ -118,6 +150,12 @@ public class PartnersSaveActionRequestTest {
   private Logger actionLogger;
   private Level originalLevel;
   private ListAppender<ILoggingEvent> logged;
+
+  private static ProjectInfo projectInfo(String title) {
+    ProjectInfo info = new ProjectInfo();
+    info.setTitle(title);
+    return info;
+  }
 
   private static GlobalUnit unit(boolean notificationsOn) {
     GlobalUnit unit = new GlobalUnit();
@@ -155,6 +193,11 @@ public class PartnersSaveActionRequestTest {
 
   /** A filled-in request page for the unit, with a manager that answers as the scenario says. */
   private DrivenAction action(GlobalUnit unit, boolean managerFails) throws Exception {
+    return this.action(unit, managerFails, null);
+  }
+
+  /** The same page, with the texts of the given custom file (null: the global texts only). */
+  private DrivenAction action(GlobalUnit unit, boolean managerFails, String customFile) throws Exception {
     PartnerRequestManager manager =
       EmailSendDoubles.answering(PartnerRequestManager.class, "createPartnerRequest", args -> {
         if (managerFails) {
@@ -170,7 +213,7 @@ public class PartnersSaveActionRequestTest {
     LocElement country = new LocElement();
     country.setId(30L);
     country.setName("Kenya");
-    DrivenAction action = new DrivenAction(manager, this.mail, type, country);
+    DrivenAction action = new DrivenAction(manager, this.mail, type, country, customFile);
     Institution partner = new Institution();
     partner.setName(PARTNER);
     partner.setAcronym("ACME");
@@ -223,6 +266,42 @@ public class PartnersSaveActionRequestTest {
     assertTrue(sent.body, sent.body.contains("Research institute"));
     assertTrue(sent.body, sent.body.contains("https://marlo.test/superadmin/marloInstitutions.do"));
     assertTrue(sent.html);
+  }
+
+  /** The request page opened from project 77: the source names the unit's word and letter, whatever the unit. */
+  private void saveFromProject(DrivenAction action) throws Exception {
+    action.setProjectID(77);
+    action.setContext("Partner request");
+    Field page = PartnersSaveAction.class.getDeclaredField("pageRequestName");
+    page.setAccessible(true);
+    page.set(action, "projects");
+    assertEquals("success", action.save());
+  }
+
+  @Test
+  public void testAiccraUnitsNameTheProjectSourceAsClusterC() throws Exception {
+    for (String file : new String[] {"aicrra", "aiccra3"}) {
+      this.created.clear();
+      this.originals.clear();
+      this.saveFromProject(this.action(unit(true), false, file));
+
+      String expected = "Partner request Cluster C77 - " + PROJECT_TITLE;
+      assertEquals(file, expected, this.originals.get(0).getRequestSource());
+      assertEquals(file, expected, this.created.get(0).getRequestSource());
+    }
+  }
+
+  @Test
+  public void testOtherUnitsNameTheProjectSourceAsProjectP() throws Exception {
+    for (String file : new String[] {null, "pabra"}) {
+      this.created.clear();
+      this.originals.clear();
+      this.saveFromProject(this.action(unit(true), false, file));
+
+      String expected = "Partner request Project P77 - " + PROJECT_TITLE;
+      assertEquals(String.valueOf(file), expected, this.originals.get(0).getRequestSource());
+      assertEquals(String.valueOf(file), expected, this.created.get(0).getRequestSource());
+    }
   }
 
   @Test

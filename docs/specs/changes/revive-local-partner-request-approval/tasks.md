@@ -236,10 +236,11 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T11 — End-to-end verification on a throwaway DB (T11a after PR 1, T11b after PR 2)
 
-- **Status:** [~] T11a done 2026-11-19 (PASS attempt 3 — `execution.md`); T11b pending (PR 2) · **Size:** M · **Depends on:** T11a: T01–T07; T11b: T08–T10, T11a · **Module:** local run
+- **Status:** [x] done 2026-11-20 (T11a PASS 2026-11-19; T11b PASS + owner visual approval 2026-11-20 — `execution.md`) · **Size:** M · **Depends on:** T11a: T01–T07; T11b: T08–T10, T11a · **Module:** local run
 - **Requirements:** every AC; FN-010 / AC switch-off; SEC-001 / SEC-002 / SEC-003 live; OPS-001 (forced failure → one log line, no email address); UI-001…006 rendered; FN-009 render
 - **Design refs:** requirements §6 and §7; design R-2, R-6, P-15, P-24
 - **Scope:** **T11a (PR 1):** as a non-superadmin user, hand-crafted POSTs to the five review routes → 403 and no row change; GET to each as superadmin → nothing changes; AICCRA request → two rows, alert in `email_logs` inside the shell, no CLARISA call (network / log check); accept / reject / edit / offices flows → DB state per ACs and decision emails; switch off → stored, no email; repeat accept → `alreadyHandled`; menu entry in AICCRA superadmin, absent in CRP admin, `admin/{crp}/marloInstitutions` redirects; review URL works without `phaseID` (P-15). **T11b (PR 2):** the same flows through the redesigned UI; screenshots of both pages at 1280×800, 390×844, and short heights 1366×768 / 375×667 for the primary action; keyboard dialog walk; the six emails rendered (from `email_logs` HTML) for the **owner's visual approval at the HITL pause**.
+- **T11b fixes (owner, 2026-11-20, after the review sheet):** card Reject → outline danger button; duplicated unit prefix removed from the alert subjects; "Not provided" for an empty website or acronym in the new-partner alert; 401 → `.outcome.sessionExpired` note; AICCRA / AICCRA_III **cluster / C** in the new-office alert source, the project request source and the office request source (i18n, no unit check in Java). Re-checked live (screens + the two alert emails + a 401) and shown in an updated review sheet before the owner closes T11b.
 - **Tests:** live; evidence under the spec folder `probes/`.
 - **Verification:** each AC ticked in `execution.md` with its evidence row.
 - **Falsifier:** run the non-superadmin POST against `staging` code first → it is accepted (C8 reproduced), then against the branch → 403.

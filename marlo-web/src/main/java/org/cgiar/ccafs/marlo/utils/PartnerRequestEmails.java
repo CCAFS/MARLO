@@ -53,6 +53,7 @@ public final class PartnerRequestEmails {
   }
 
   static final String SUPPORT_NAME_KEY = "marloRequestInstitution.mail.supportName";
+  static final String NOT_PROVIDED_KEY = "marloRequestInstitution.mail.notProvided";
 
   private PartnerRequestEmails() {
   }
@@ -118,9 +119,10 @@ public final class PartnerRequestEmails {
   public static Email newPartner(GlobalUnit unit, String assetsUrl, String requesterName, String requesterEmail,
     String name, String acronym, String type, String country, String website, String source, String reviewUrl) {
     TextProvider texts = unitTexts(unit);
+    String notProvided = texts.getText(NOT_PROVIDED_KEY);
     return build(texts, assetsUrl, "marloRequestInstitution.email.subject", new String[] {acronym(unit), name},
       texts.getText(SUPPORT_NAME_KEY), "marloRequestInstitution.mail.newPartner", requesterName, requesterEmail, name,
-      acronym, type, country, website, source, reviewUrl);
+      orDefault(acronym, notProvided), type, country, orDefault(website, notProvided), source, reviewUrl);
   }
 
   /** The answer to the requester of an accepted country office. */
@@ -174,6 +176,11 @@ public final class PartnerRequestEmails {
 
   private static String acronym(GlobalUnit unit) {
     return unit == null ? null : unit.getAcronym();
+  }
+
+  /** The value, or the default text when the requester left the optional field empty. */
+  private static String orDefault(String value, String defaultText) {
+    return value == null || value.trim().isEmpty() ? defaultText : value;
   }
 
   private static String[] plainAll(String[] values) {

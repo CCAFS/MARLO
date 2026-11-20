@@ -25,6 +25,8 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails;
@@ -101,6 +103,7 @@ public class RequestCountryOfficeAction extends BaseAction {
 
       String countriesName = null;
       String countriesISO2Code = null;
+      String requestSource = this.buildRequestSource(this.projectTitle());
 
       for (String string : countries) {
         if (countriesName == null) {
@@ -113,8 +116,7 @@ public class RequestCountryOfficeAction extends BaseAction {
         // Add Partner Request information.
         PartnerRequest partnerRequest = new PartnerRequest();
         partnerRequest.setInstitution(institutionManager.getInstitutionById(institutionID));
-        partnerRequest.setRequestSource("Project: (" + projectID + ") - "
-          + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+        partnerRequest.setRequestSource(requestSource);
         partnerRequest.setLocElement(locElementManager.getLocElementByISOCode((string)));
         partnerRequest.setOffice(true);
         partnerRequest.setCrp(loggedCrp);
@@ -143,6 +145,15 @@ public class RequestCountryOfficeAction extends BaseAction {
 
   }
 
+  /**
+   * The source text stored on each request: the unit's own word and letter for the requesting project ("Project P7 -
+   * Title", "Cluster C7 - Title"). This action runs without an i18n file, so the unit's texts are read directly.
+   */
+  String buildRequestSource(String title) {
+    return PartnerRequestEmails.unitTexts(loggedCrp).getText("marloRequestCreation.source.project",
+      new String[] {String.valueOf(projectID), title == null ? "" : title});
+  }
+
   public Map<String, Object> getSucess() {
     return sucess;
   }
@@ -168,6 +179,13 @@ public class RequestCountryOfficeAction extends BaseAction {
   }
 
 
+  /** The title of the project in the current phase; empty when the project or its phase info is missing. */
+  private String projectTitle() {
+    Project project = projectManager.getProjectById(projectID);
+    ProjectInfo info = project == null ? null : project.getProjecInfoPhase(this.getActualPhase());
+    return info == null || info.getTitle() == null ? "" : info.getTitle();
+  }
+
   /**
    * Tells the support mailbox that country offices were requested. The Global Unit is the one of the session, as the
    * database holds it, and its switch decides whether anything is sent. A failure is logged and never reaches the
@@ -183,7 +201,7 @@ public class RequestCountryOfficeAction extends BaseAction {
         requester == null ? null : StringUtils.trim(requester.getFirstName() + " " + requester.getLastName());
       String requesterEmail = requester == null ? null : requester.getEmail();
       Email email = PartnerRequestEmails.newOffice(loggedCrp, this.getBaseUrlCdn(), requesterName, requesterEmail,
-        institutionName, countriesName, countriesIso, "P" + projectID);
+        institutionName, countriesName, countriesIso, String.valueOf(projectID));
       sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), email.getSubject(),
         email.getBody(), null, null, null, true);
     } catch (Exception e) {

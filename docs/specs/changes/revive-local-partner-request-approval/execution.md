@@ -1209,3 +1209,210 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - Tasks: 11 / 12.
   - LOC added: 5,198 + 12 = **5,210**.
   - Review rounds: 21.
+- **Commit:** `efbf01c7c7` (owner-approved).
+
+### CHG-PARTREQ-001-T11 (part T11b) — End-to-end verification of PR 2
+
+- **Status:** evidence PASS (attempt 2). **Owner visual approval pending** at the HITL pause; "Done when" requires it.
+- **Date:** 2026-11-20
+- **Attempts:** 2
+- **Effort:** high
+- **Skills:** `marlo-verify`, `playwright-cli`, `impeccable-bridge`.
+
+#### Attempt 1
+
+- **Files:**
+  - 45 `probes/t11b-*` files and `probes/t11b-assets/`. They include the owner review sheet `probes/t11b-review.html`, `t11b-live.out`, `t11b-keyboard-walk.out` and `t11b-email-<kind>.html/.png`.
+  - `probes/README.md` § T11b.
+  - No product code.
+- **AC evidence (worker):** FN-001 through FN-009 and UI-001 through UI-006 PASS through the redesigned UI. SEC-001..003, OPS-001, FN-010 and FN-011 were not re-run; T11a stands, because T08–T10 changed only views, JS, CSS and i18n.
+- **Screenshots:** both pages at 1280×800, 390×844, 1366×768 and 375×667; empty states; all four dialogs; outcomes; expired session; checkbox focus ring; the no-offices chip case.
+- **Keyboard walk:** PASS. Focus moves into the dialog and Tab is trapped there; Escape closes it and focus returns to the opener. An empty justification is blocked. The checkbox shows a 2 px `:focus-visible` ring.
+- **Opener regression:**
+  - Project and AR: real clicks, two rows each.
+  - POWB and capdev: their link targets were opened directly, two rows each. The copy shows no link for either.
+  - The `<title>` reads "Request a new institution" (`marloRequestCreation.pageTitle`).
+- **Expired session:** HTTP 401 with an empty body. The page shows the `notAuthorized` note; the card stays and nothing changes.
+- **Office chip:** for an institution with no offices, the accepted-country chip appears only after a reload.
+- **Emails:** 16 `email_logs` rows (18304–18319), all to the notification mailbox, no cc or bcc. Row 18316 was created by the approver test user and also went to the mailbox. The six kinds:
+
+| Email | `email_logs` id |
+|---|---|
+| New partner | 18304 |
+| New office | 18307 |
+| Accepted | 18309 |
+| Rejected | 18308 |
+| Office accepted | 18310 |
+| Office rejected | 18314 (AICCRA), 18315 (AICCRA_III) |
+
+- **Privacy:**
+  - The test users show as "Test Requester" / "Test Approver".
+  - The mailbox address is replaced by `<notification mailbox>` in the renders.
+  - Master data stays visible: project titles in "Source" and one existing institution name in the similar-institutions card. This is institution and project data, not personal data.
+- **Cleanup (worker):**
+  - The 62 pending requests deactivated for the run were reactivated; the checksum of the id list matches.
+  - Fixtures were deleted. The 3 touched users are identical to their saved originals.
+  - Phase 405 `editable` was restored. `general_log` is back to 0.
+- **Leader re-check:**
+  - `git diff -- marlo-web marlo-data` is empty.
+  - No home or scratchpad paths, owner name or personal email in `t11b-*` and `t11b-assets/` (only the public `MARLOSupport@cgiar.org`).
+  - No app and no worktree.
+  - `marlo-dev.properties` points at `aiccradb2`, which is unchanged at 5079 rows.
+  
+  **VERIFIED.**
+- **Reviewer: FAIL.** Two rows were marked PASS although the measurements contradict the literal AC wording, and no reading of that wording was recorded:
+  - AC UI-001 — "no … glyphicon appears in the rendered page": one glyphicon is present, the Admin cog in the shared header.
+  - AC UI-005 — "the request is not sent": an empty submit sends a POST, and the server validation then stores nothing.
+  - Remediation: add both points as open questions in `t11b-review.html`, mark both rows pending the owner's reading, and have the owner record the clarified wording at HITL.
+
+#### Attempt 2 — Leader documentation fix
+
+- Review sheet questions 8 (UI-001: the shared header is out of the two pages' scope) and 9 (UI-005: "not sent" means no request is stored) were added.
+- The README § T11b rows UI-001 and UI-005 now read "PASS, pending the owner's reading".
+- **Reviewer: PASS.** The remediation is complete, and no line in § T11b contradicts it.
+- **runtime events:** none
+- **spawns:**
+  - implementer: 105 calls, 288976 tokens, ended complete.
+  - reviewer attempt 1: 20 calls, 80473 tokens, ended fail.
+  - reviewer attempt 2: 5 calls, 47674 tokens, ended complete.
+
+#### ADVISORY (non-gating)
+
+- **Readability:** the keyboard-walk §2 request id (5296) is out of order.
+- **Reliability:** the UI-004 "failed" outcome rests on T09's simulated 500.
+- **Readability:** the POWB and capdev opener links were not exercised; only their targets were.
+- **Risk:** the cookie banner covers the primary action at 375×667 and 1366×768. It is site-wide chrome, below or outside the 390 / 1280 floor.
+
+#### Owner HITL pause (pending)
+
+The owner reviews `probes/t11b-review.html`: the screenshots of both pages, the six email renders and nine open questions.
+
+1. Solid red Reject next to blue Accept.
+2. Subject prefixes: `[AICCRA - AICCRA]` on the alerts, and `[AICCRA]` for unit 47.
+3. A skipped country listed as added in the office-accepted email.
+4. An empty "Website:" line in the alert.
+5. Expired-session wording.
+6. The cookie banner at short heights.
+7. The office chip shown only after a reload.
+8. The UI-001 reading.
+9. The UI-005 reading.
+
+- **Budget (running, ceiling ~5,800 LOC / ~35 rounds):**
+  - Tasks: 11 / 12 (T11b awaits the owner; T12 left).
+  - LOC: **5,210**.
+  - Review rounds: 23.
+
+#### T11b — owner-requested fixes (2026-11-20)
+
+- **Owner answers to the review sheet:**
+  - Q8 and Q9 readings agreed (Decision Log).
+  - Q1, Q2, Q4 and Q5 fixed now.
+  - Q3, Q6 and Q7 deferred to the T12 follow-ups.
+  - Second round:
+    - the "Not provided" default also covers the acronym;
+    - AICCRA and AICCRA_III use **cluster / C** (the other units keep project / P) in the new-office alert source and in the stored project-request source, through i18n.
+- **Execute-time spec edits, recorded when made:**
+  - `requirements.md` Decision Log: two entries, "T11b owner review" and "… second round".
+  - `design.md`:
+    - §4: 401 → `.outcome.sessionExpired`;
+    - §5.2 Actions row: `--danger-outline`;
+    - §5.5 keys: `ui.outcome.sessionExpired`, `mail.notProvided`, `marloRequestCreation.source.project`;
+    - §10: new "Unit words" bullet.
+  - `tasks.md`: T11 "T11b fixes" line.
+- **Round 1 — files changed:**
+  - `institutionRequestMacro.ftl` and `marloInstitutions.css`: outline Reject.
+  - `marloInstitutions.ftl`: cache-busters `?20261120`, `data-outcome-sessionexpired`.
+  - `marloInstitutions.js`: 401 → `sessionExpired`.
+  - `custom/aicrra`, `custom/aiccra3` and `custom/pabra` `.properties`: ` - {0}` dropped from the two alert subject keys. PABRA had the same duplicate.
+  - `PartnerRequestEmails.newPartner`: "Not provided" for an empty website or acronym.
+  - `global.properties`: +2 keys.
+  - `PartnerRequestEmailsTest`: +2 cases; the AICCRA subject assertion was updated.
+  - Falsifiers: removing the website default turns its test red; mapping 401 back makes a real 401 show "not allowed".
+  - Live (`probes/t11b-fixes-*`): `email_logs` 18320 `[AICCRA] Partner verification - …`, body "Website: Not provided"; 18321 office alert without the duplicated prefix; a real 401 shows the session-expired note; outline Reject at 1280 / 390.
+- **Round 1 Reviewer:** **FAIL**, on two points:
+  - (1) The acronym default went beyond the "website" wording. Resolved by the owner's approval and the spec widening.
+  - (2) §5.2 was missing `--danger-outline`. The Leader amended it.
+- **Round 2 — files changed:**
+  - `RequestCountryOfficeAction.java` (CRLF): passes the bare id.
+  - `PartnersSaveAction.addProjectMessage`: the source now comes from `getText("marloRequestCreation.source.project", …)`; the `context` prefix is unchanged.
+  - `global.properties`: `mail.newOffice` reads "project: P{4}"; `source.project=Project P{0} - {1}` added.
+  - `custom/aicrra` and `custom/aiccra3`: `mail.newOffice` with "cluster: C{4}" and `source.project=Cluster C{0} - {1}`.
+  - Tests: `PartnersSaveActionRequestTest`, `PartnerRequestEmailsTest`, and the new `RequestCountryOfficeActionAlertTest`. The new test reaches the private `sendNewOfficeAlert` by reflection.
+  - Falsifiers: both bugs reintroduced turn 4 tests red (`expected Project P77, got Cluster: (77)` and others).
+  - Live (`probes/t11b-fixes2-*`):
+    - AICCRA project request stored as `Cluster C102076 - …`; email 18322 "Requested from: Cluster C102076 …".
+    - AICCRA office alert "Requested from cluster: C102076"; email 18323.
+    - CCAFS `Project P1 - …`; email 18325 `[MARLO - CCAFS] …`.
+    - All mail went to the notification mailbox only.
+- **Evidence re-run (Leader-inline, after round 2):**
+  - Clean wipe, including `maven-status`: compiled 2431 / 1065 / 146.
+  - `Tests run: 1358, Failures: 0, Errors: 0`.
+  - `"P" +` and `isAiccra` in the two actions: 0.
+  - CRLF kept.
+  - Checkstyle `--baseline` on the 6 changed or new Java files: HEAD=0, working tree=0, **delta 0**.
+  - No personal data in the probe files. Clean environment. `aiccradb2` unchanged.
+  - **VERIFIED.**
+- **Round 2 Reviewer (whole fix set):** **PASS**.
+  - The code matches every named amendment: §4, §5.2, §5.5, §10, the Decision Log and the tasks line.
+  - FN-002, FN-003, FN-009, UI-004 and NF-001 keep their meaning.
+  - The reflection seam is acceptable.
+- **runtime events:** none.
+- **spawns:**
+  - implementer, round 1: 88 calls, 244096 tokens, ended complete.
+  - reviewer, round 1: 8 calls, 55268 tokens, ended fail.
+  - implementer, round 2: 72 calls, 216381 tokens, ended complete.
+  - reviewer, round 2: 8 calls, 61862 tokens, ended complete.
+- **ADVISORY:**
+  - `sendNewOfficeAlert` could be package-private, so the test would not need reflection.
+  - A non-AICCRA project's stored source changes format from `Cluster: (id)` to `Project P{id}`. Existing rows keep the old text.
+- **Open scope question for the owner:** the stored **office-request** source in `RequestCountryOfficeAction` (~line 116) still reads `Project: (id) - title` for AICCRA. The review card therefore shows "Project: (102076)" while the alert shows "cluster C102076". This is outside the amended wording.
+- **Budget (running, ceiling ~5,800 LOC / ~35 rounds):**
+  - LOC added: 5,210 + about 230 (T11b fixes, including tests) = **~5,440**.
+  - Review rounds: 26.
+
+#### T11b — owner approval and third round (2026-11-20)
+
+- **Owner approval (HITL).** The owner wrote "apruebo todo". This approves the T11b screenshots of both pages, the six email renders with the changes requested in rounds 1–2, and the review sheet `probes/t11b-review.html`.
+- **Third round, approved by the owner.** The stored office-request source also uses the unit word and letter, so the review card reads the same as the alert. The change is recorded in the Decision Log, design §10 and the tasks line.
+- **Third round, files changed:**
+  - `RequestCountryOfficeAction.java` (CRLF kept):
+    - the hardcoded `"Project: (" + id + ") - " + title` is gone;
+    - new package-private `buildRequestSource(title)` reads `marloRequestCreation.source.project` through `PartnerRequestEmails.unitTexts(loggedCrp)` (P-23: `jsonStack` has no `i18nFile`);
+    - new null-safe `projectTitle()`;
+    - the source is computed once, before the country loop.
+  - `RequestCountryOfficeActionAlertTest`: +2 tests (the cluster text for `aicrra`; the project text and a null title for a unit with no custom file).
+- **Third round, falsifier:** with the hardcoded text restored, the new tests fail (`expected:<[Cluster C77] - My title> but was:<[Project: (77)] - My title>`, and the project variant likewise). Reverted.
+- **Third round, evidence re-run (Leader-inline):**
+  - The first run hit a `maven-resources-plugin` copy failure on `ProjectInnovationPDF.prpt`. This was an environment flake, not the code. The second clean run was green.
+  - Compile: 2431 / 1065 / 146.
+  - Tests: `Tests run: 1360, Failures: 0, Errors: 0`.
+  - `"Project: ("` 0; `isAiccra` 0; CRLF kept.
+  - Checkstyle `--baseline` delta 0.
+  
+  **VERIFIED.**
+- **Third round, Reviewer: PASS.**
+  - The code matches §10, the Decision Log and the tasks line. NF-001 and P-23 hold.
+  - `loggedCrp` is the same managed unit the alert uses.
+  - A null unit falls back to the global text without an exception.
+  - Nothing parses `requestSource`.
+- **Third round, behaviour note:** when a project or its phase info is missing, the action used to throw and return `result 0`. It now saves the office rows with an empty title.
+- **Third round, spawns:**
+  - implementer: 12 calls, 97488 tokens, ended complete.
+  - reviewer: 7 calls, 47373 tokens, ended complete.
+
+#### T11 closure
+
+- **T11a:** PASS (2026-11-19).
+- **T11b:** evidence PASS. The owner-requested fixes (rounds 1–3) are reviewed and PASS. Owner visual approval was given on 2026-11-20.
+- **Status:** **PASS.** All ACs are evidenced. The owner approved the screenshots and the six email renders.
+- **Follow-ups for T12:**
+  - Q3: the office-accepted email lists a skipped country as "added".
+  - Q6: the cookie banner covers the primary action at short heights (site-wide).
+  - Q7: the office chip appears only after a reload.
+  - The other hardcoded source labels (Capdev, Funding Source, PowbSynthesis, Report Synthesis).
+  - `sendNewOfficeAlert` could be package-private.
+  - `crp/views/admin/marloInstitutions.ftl` has no cache-buster (not rendered, DD-9).
+- **Budget (running, ceiling ~5,800 LOC / ~35 rounds):**
+  - Tasks: 12 / 12 code and verification tasks are done except T12 (docs).
+  - LOC: **~5,490**.
+  - Review rounds: 27.

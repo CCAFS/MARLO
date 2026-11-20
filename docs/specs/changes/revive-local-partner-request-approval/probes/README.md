@@ -165,3 +165,94 @@ Debug Panel and the cookie banner of the test environment were hidden in the scr
 
 Not measured here: the detector (`impeccable detect`) was unevaluated, the launcher failed with `spawnSync ... EAGAIN` on every call (`engine-probe`
 answered `impeccable-engine 0.1.18` but `detect` did not run).
+
+## T11b - End-to-end verification of PR 2 and material for the owner's visual review
+
+Run on 2026-11-20, 08:13-09:20 local (UTC-5), HEAD `efbf01c7c7` (no working-tree change to product code). Application built and run from a throwaway `git worktree`
+outside the repository, pointed at `aiccradb_partreq_test`; the worktree was removed and the checkout's `marlo-dev.properties` was never edited. Browser: Chromium through
+`playwright-cli`; every click came after `jQuery.isReady`; the keyboard walk never focused a dialog with the mouse. `aiccradb2` re-read at the end: unchanged (institutions 10974,
+partner_requests 5079).
+
+**Fixtures on the copy (all removed or restored).** Requester = COPY user 2491 renamed "Test Requester" (its email is the notification mailbox, `external_user_mail` empty on every request);
+approver = COPY user 1082 renamed "Test Approver" with an `example.invalid` email. Every other pending request was set inactive during the run and reactivated (62 ids, checksum equal
+to the saved list); probe institutions, locations and requests (ids above the starting maxima) were deleted: institutions 10990, locations 11316, partner_requests max id 5272 as at the start.
+User rows differ from the saved originals: 0. Phase 405 `editable` set to 1 for one opener attempt and restored to 0. `general_log` stayed 0/TABLE.
+
+**Email safety.** `marlo.production=false`: `SendMailS` addresses every message to `email.notification` only. All 16 `email_logs` rows of the run (18304-18319) have `to_email` = the notification
+mailbox, no cc, no bcc, `succes_email=1`. One alert (18316, the annual-report opener) was created by user 1082 (not 2491) before the session was switched; it was an alert to the mailbox
+and the request was never decided.
+
+### Files
+
+| File | What it is | Result |
+|---|---|---|
+| `t11b-live.out` | Measurements (overflow, primary-action outcome with the consent banner visible, legacy-markup check, `<title>`, opener regression, flow results, email ids) | See below |
+| `t11b-keyboard-walk.out` | Keyboard-only walk of the reject and accept dialogs, plus the checkbox focus ring | Focus moves in, is trapped, Escape closes and returns focus; empty justification shows the error and sends nothing |
+| `t11b-review-{1280,390,1366x768,375x667}.png`, `t11b-empty-{1280,390}.png`, `t11b-similar-card-1280.png` | Review screen at four viewports, empty states, similar-institutions note | No horizontal overflow at any width |
+| `t11b-request-{1280,390,1366x768,375x667}.png`, `t11b-request-errors-1280.png`, `t11b-request-success-1280.png` | Request page at four viewports and its states | Primary action covered by the cookie banner at 375x667 only |
+| `t11b-dialog-*.png`, `t11b-outcome-*.png`, `t11b-expired-session-1280.png`, `t11b-focus-checkbox-1280.png`, `t11b-office-chip-nolocations-1280.png` | Dialogs, inline outcomes, expired session, focus ring, office chip case | See findings |
+| `t11b-email-<kind>.html` / `.png`, `t11b-assets/` | The six emails as sent (`email_logs.message`, mailbox written as `<notification mailbox>`, images made relative), and their renders | All in the shell, no raw key, no unresolved placeholder |
+| `t11b-review.html` | Review sheet for the owner: screenshots, the six emails side by side with their subjects, open visual questions | Open in a browser from this folder |
+| `t11b-ui-helpers.sh`, `t11b-cookie.py` | The helpers used (paths shown as `<repo>`, `<scratchpad>`) | - |
+
+### AC evidence
+
+| AC | Evidence | Result |
+|---|---|---|
+| FN-001 (through the redesigned page) | opener regression in `t11b-live.out`: project, AR (real clicks), POWB and capdev (link target) each stored an original + copy, both active | PASS |
+| FN-002 / FN-003 | emails 18304, 18307 (subjects and bodies in the sheet) | PASS |
+| FN-004 / FN-005 / DA-001 | keyboard accept of 5294: +1 institution, +1 headquarters location, copy `acepted=1`; replay: "already handled", nothing created | PASS |
+| FN-006 | reject with notify (email 18308), reject without notify (no new email row) | PASS |
+| FN-007 | edit from the new inline form: copy changed and marked modified, original unchanged, card shows the diff | PASS |
+| FN-008 | accept batch (skippedExisting + done), reject batch across two units (emails 18314, 18315) | PASS |
+| FN-009 | six emails rendered from `email_logs.message` | PASS (owner to approve the look) |
+| FN-010, SEC-001..003, OPS-001, FN-011 | not re-run: the redesign touches views, JS and CSS only (T11a evidence stands) | not re-run |
+| UI-001 | rendered DOM: 0 `list-group`, 0 `btn-success`, 0 `btn-danger`; no `confirm(`/`alert(`/`noty` in the JS; 1 glyphicon in the shared header | PASS, pending the owner's reading (shared header out of the two pages' scope — review sheet question 8) |
+| UI-002 / UI-003 | review screenshots, similar-institutions card | PASS |
+| UI-004 | dialogs, empty justification error, inline outcomes done / already handled / not authorized (401) | PASS |
+| UI-005 | request page screenshots, errors, success; save failure state evidenced in T10; an empty submit sends a POST and stores nothing (server validation) | PASS, pending the owner's reading ("not sent" = no request stored — review sheet question 9) |
+| UI-006 | scrollWidth = clientWidth at 390, 375, 1280, 1366; focus ring; keyboard walk | PASS; but see the cookie banner finding |
+
+### Findings (outside the ACs)
+
+1. The consent banner covers the primary action at 375x667 (request page) and the first card's Accept at 1366x768 (review). Both clear after one click on the banner.
+2. After a session expires the server answers 401 with an empty body and the page shows "You are not allowed to review these requests." (no "sign in again").
+3. Accepting offices for an institution with no offices shows no "Existing offices" chip until reload.
+4. The office-accepted email lists a skipped (already present) country as added.
+5. Subjects: alerts read `[AICCRA - AICCRA]`; the office decision emails of both units (AICCRA, AICCRA_III) read `[AICCRA]`.
+6. The new-partner alert prints an empty "Website:" line when no website was given.
+7. A decision made with the keyboard moves focus to the success note (documented in `t11b-keyboard-walk.out`).
+8. Validation on the request page is a server round trip (a POST is sent and nothing is stored), not a client-side block.
+
+### T11b fixes after the owner's review (2026-11-20)
+
+Four changes, re-checked live on a throwaway worktree (HEAD + the uncommitted diff) against `aiccradb_partreq_test`; worktree and app removed, fixtures restored. Email safety as above:
+`marlo.production=false`, the requester's address is the notification mailbox, no cc/bcc. Email ids 18320 and 18321 (both to the notification mailbox, `succes_email=1`).
+
+| File | What it is | Result |
+|---|---|---|
+| `t11b-fixes-live.out` | Computed styles, the two alert subjects and bodies, the 401 note, falsifier (b) | Outline Reject; subjects without the repeated unit; "Website: Not provided"; 401 shows the session-expired note |
+| `t11b-fixes-falsifier-a.out` | Website default removed: the new test goes red | 1 failure |
+| `t11b-fixes-review-{1280,390}.png`, `t11b-fixes-dialog-reject-{1280,390}.png`, `t11b-fixes-dialog-reject-offices-1280.png` | Review screen and dialogs | Outline Reject on both card kinds; dialog confirm stays solid |
+| `t11b-fixes-expired-session-1280.png`, `t11b-fixes-falsifier-401-old-mapping-1280.png` | A real 401 (session cleared) with the fix, and with the old mapping | New text / old text |
+| `t11b-fixes-email-{newpartner,newoffice}.{html,png}` | The two alerts from `email_logs.message` (mailbox replaced) | Subjects `[AICCRA] Partner verification - ...` / `[AICCRA] Add office location (KE, PE) to ...` |
+| `t11b-fixes-dialog.sh`, `t11b-fixes-expire.sh` | Helpers used | - |
+
+`t11b-review.html` now opens with "Changes after your review" and marks each of the nine questions (changed / follow-up T12 / agreed).
+
+### T11b fixes, second round (2026-11-20)
+
+AICCRA and AICCRA_III say "cluster" with the letter C in the new-office alert and in the project request source; every other unit says "project" with the letter P. All of it comes from i18n
+(`marloRequestInstitution.mail.newOffice`, `marloRequestCreation.source.project`, global value plus overrides in `custom/aicrra.properties` and `custom/aiccra3.properties`); no unit check in Java (NF-001).
+Re-checked live on a throwaway worktree (HEAD + the uncommitted diff) against `aiccradb_partreq_test`; worktree and app removed, fixtures restored. Email safety as above (`marlo.production=false`,
+requester address = notification mailbox, `external_user_mail` empty). Email ids 18322, 18323, 18325 (deleted from the copy at cleanup).
+
+| File | What it is | Result |
+|---|---|---|
+| `t11b-fixes2-live.out` | The three live cases: stored source, alert subject and body, review card | (i) "Cluster C102076 - ..." (ii) "Requested from cluster: C102076" (iii) "Project P1 - ..." |
+| `t11b-fixes2-email-{newpartner-aiccra,newoffice-aiccra,newpartner-ccafs}.{html,png}` | The three alerts from `email_logs.message` (mailbox replaced) | As above |
+| `t11b-fixes2-review-1280.png` | Review screen with the partner cards of AICCRA and CCAFS and one office card | Source line follows the unit's word |
+
+Finding for the owner: the stored source of an office request is still `Project: (<id>) - <title>` for AICCRA too (`RequestCountryOfficeAction`, line 116), so the office card on the review screen says
+"Project: (102076)" while the alert says "cluster C102076". Not changed here (not in the task); candidate for T12.
+

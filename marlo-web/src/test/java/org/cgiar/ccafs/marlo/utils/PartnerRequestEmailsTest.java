@@ -124,6 +124,51 @@ public class PartnerRequestEmailsTest {
   }
 
   @Test
+  public void testNewPartnerAlertShowsNotProvidedForEmptyOptionalFields() {
+    Email empty = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "Acme", "", "NGO",
+      "Kenya", "", "P1", "https://marlo.test/r");
+    assertTrue(empty.getBody(), empty.getBody().contains("<li>Website: Not provided</li>"));
+    assertTrue(empty.getBody(), empty.getBody().contains("<li>Acronym: Not provided</li>"));
+    Email nullWebsite = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "Acme", "AC",
+      "NGO", "Kenya", null, "P1", "https://marlo.test/r");
+    assertTrue(nullWebsite.getBody(), nullWebsite.getBody().contains("<li>Website: Not provided</li>"));
+    Email filled = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "Acme", "AC", "NGO",
+      "Kenya", "https://a.org", "P1", "https://marlo.test/r");
+    assertTrue(filled.getBody(), filled.getBody().contains("<li>Website: https://a.org</li>"));
+    assertTrue(filled.getBody(), filled.getBody().contains("<li>Acronym: AC</li>"));
+    assertFalse(filled.getBody(), filled.getBody().contains("Not provided"));
+  }
+
+  @Test
+  public void testUnitPrefixIsNotDuplicatedInTheAlertSubjects() {
+    String[][] units = {{"aicrra", "AICCRA"}, {"aiccra3", "AICCRA"}, {"pabra", "PABRA"}, {"global", "CCAFS"}};
+    for (String[] pair : units) {
+      GlobalUnit unit = unit(pair[1], pair[0], null);
+      String duplicated = "[" + pair[1] + " - " + pair[1] + "]";
+      Email partner = PartnerRequestEmails.newPartner(unit, CDN, "R", "r@x.org", "Acme", "AC", "NGO", "Kenya",
+        "https://a.org", "P1", "https://marlo.test/r");
+      Email office = PartnerRequestEmails.newOffice(unit, CDN, "R", "r@x.org", "Acme", "Kenya", "KE", "P1");
+      assertFalse(partner.getSubject(), partner.getSubject().contains(duplicated));
+      assertFalse(office.getSubject(), office.getSubject().contains(duplicated));
+    }
+    Email aiccra = PartnerRequestEmails.newOffice(unit("AICCRA", "aicrra", null), CDN, "R", "r@x.org", "Acme",
+      "Kenya", "KE", "P1");
+    assertEquals("[AICCRA] Add office location (KE) to Acme", aiccra.getSubject());
+  }
+
+  @Test
+  public void testNewOfficeNamesTheRequestingProjectOrClusterFromTheUnitTexts() {
+    String[][] units = {{"CCAFS", null, "project: P77"}, {"PABRA", "pabra", "project: P77"},
+      {"AICCRA", "aicrra", "cluster: C77"}, {"AICCRA", "aiccra3", "cluster: C77"}};
+    for (String[] unit : units) {
+      Email office = PartnerRequestEmails.newOffice(unit(unit[0], unit[1], null), CDN, "R", "r@x.org", "Acme",
+        "Kenya", "KE", "77");
+      assertTrue(unit[1] + ": " + office.getBody(),
+        office.getBody().contains("<li>Requested from " + unit[2] + "</li>"));
+    }
+  }
+
+  @Test
   public void testSubjectsUseTheReusedKeysWithTheirArguments() {
     GlobalUnit unit = unit("UNIT-A", "global", null);
     Map<String, Email> emails = sixEmails(unit);
@@ -143,7 +188,7 @@ public class PartnerRequestEmailsTest {
     assertEquals("[MARLO] Partner verification - Approved Acme", base.getSubject());
     Email aiccraAlert = PartnerRequestEmails.newPartner(unit("UNIT-A", "aicrra", null), CDN, "R", "r@x.org", "Acme",
       "AC", "NGO", "Kenya", "https://a.org", "P1", "https://marlo.test/r");
-    assertEquals("[AICCRA - UNIT-A] Partner verification - Acme", aiccraAlert.getSubject());
+    assertEquals("[AICCRA] Partner verification - Acme", aiccraAlert.getSubject());
   }
 
   @Test

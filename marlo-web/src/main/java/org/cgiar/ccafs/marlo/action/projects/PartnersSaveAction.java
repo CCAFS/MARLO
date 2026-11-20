@@ -183,8 +183,8 @@ public class PartnersSaveAction extends BaseAction {
       Project requestProject = projectManager.getProjectById(projectID);
       projectInfo = requestProject != null ? requestProject.getProjecInfoPhase(this.getActualPhase()) : null;
     }
-    String sourceMessage =
-      "" + context + " Cluster: (" + projectID + ") - " + (projectInfo != null ? projectInfo.getTitle() : "");
+    String sourceMessage = "" + context + " " + this.getText("marloRequestCreation.source.project",
+      new String[] {String.valueOf(projectID), projectInfo != null ? projectInfo.getTitle() : ""});
     message.append(sourceMessage);
     partnerRequest.setRequestSource(sourceMessage);
     partnerRequestModifications.setRequestSource(sourceMessage);

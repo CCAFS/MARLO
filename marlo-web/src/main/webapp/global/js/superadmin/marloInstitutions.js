@@ -165,9 +165,12 @@ $(document).ready(function() {
     return data && data.success ? 'done' : 'failed';
   }
 
-  // A refused call (403) and an expired session (401) are the same to the reviewer: not allowed
+  // A refused call (403) is "not allowed"; an expired session (401) asks the reviewer to sign in again
   function statusOfError(xhr) {
-    return (xhr && (xhr.status === 403 || xhr.status === 401)) ? 'notAuthorized' : 'failed';
+    if (xhr && xhr.status === 401) {
+      return 'sessionExpired';
+    }
+    return (xhr && xhr.status === 403) ? 'notAuthorized' : 'failed';
   }
 
   function buildNote(status, label) {
