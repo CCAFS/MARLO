@@ -525,11 +525,7 @@
                 <span data-ptn-country-note></span>
                 [#if editable]
                   [@s.text name="projectPartners.redesign.country.missing" /]
-                  [#if !action.isAiccra()]
-                    <a href="#" data-toggle="modal" data-target="#requestModal">[@s.text name="projectPartners.redesign.country.request" /]</a>
-                  [#else]
-                    [@s.text name="projectPartners.redesign.country.email" /] <a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a>.
-                  [/#if]
+                  <a href="#" data-toggle="modal" data-target="#requestModal">[@s.text name="projectPartners.redesign.country.request" /]</a>
                 [/#if]
               </span>
             </div>
