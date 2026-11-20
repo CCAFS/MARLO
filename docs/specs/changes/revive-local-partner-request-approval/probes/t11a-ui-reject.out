@@ -1,0 +1,19 @@
+# T11a UI: reject from the CURRENT screen (modal + AJAX POST). Branch cad7c5d4e4, COPY DB.
+(Trimmed for the repository: the 13 lines of the first pass whose inline reads failed on shell quoting, and a Python traceback of the helper, were removed. Every measured line below is unchanged; the final verification read at the end carries the DB values of the two rejects.)
+(first attempts clicked under the cookie banner and sent nothing; one debug reject, copy 5200, ran via dispatchEvent: email_logs 18285; the two runs below are the clean ones)
+fixtures: notify copy=5204 ; quiet copy=5202 (created by COPY user 2491)
+[notify=true]
+### Result{"notifyChecked":true,"requests":["POST 200"],"cardStillVisible":false}
+  rows: req 5203 active=0 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a ui reject notify2'; req 5204 active=0 acepted=0 institution=NULL modified=0 justification='NULL' name='T11a ui reject notify2'
+== email_logs since id 18285: 1 row(s)
+  id=18286 2026-11-19 17:58:30 | subject=[AICCRA] Partner verification - Rejected T11a ui reject notify2 | to=<notification mailbox> | source=/rejectPartnerRequest | succes_email=1
+[notify=false]
+### Result{"notifyChecked":false,"requests":["POST 200"],"cardStillVisible":false}
+  rows: req 5201 active=0 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a ui reject quiet'; req 5202 active=0 acepted=0 institution=NULL modified=0 justification='NULL' name='T11a ui reject quiet'
+--- verification read after the runs above (the inline reads of the first pass failed on shell quoting):
+notify copy 5204: acepted / rejected_by / rejected_date set / reject_justification = 0	1082	1	T11a probe reason: already exists in MARLO
+quiet  copy 5202: acepted / rejected_by / rejected_date set / reject_justification = 0	1082	1	T11a probe quiet reason
+originals 5203 / 5201 inactive: 0,0
+== email_logs since id 18285: 1 row(s)
+  id=18286 2026-11-19 17:58:30 | subject=[AICCRA] Partner verification - Rejected T11a ui reject notify2 | to=<notification mailbox> | source=/rejectPartnerRequest | succes_email=1
+(the quiet reject, copy 5202, produced no email_logs row: ids above are the only ones after 18285)

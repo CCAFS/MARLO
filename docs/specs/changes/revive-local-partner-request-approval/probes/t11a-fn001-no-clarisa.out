@@ -1,0 +1,8 @@
+# T11a FN-001: no CLARISA call when a partner request is stored (AICCRA, real browser submit, COPY DB). Branch cad7c5d4e4
+request: browser submit of /clusters/AICCRA/partnerSave.do (request_id d6a6ff2b11efaf4c in the application log), rows 5185/5186
+application log lines of that request (all levels): 10
+  of which mention clarisa / RestConnectionUtil / an outbound HTTP client: 0
+  PartnersSaveAction lines of that request:
+2026-11-19T22:50:22 [PartnersSaveAction] The request partner section was loaded for the project 102076
+source: references to clarisa in PartnersSaveAction.java on this branch: 0; isAiccra(): 0
+rows stored: req 5185 active=0 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a probe ui aiccra'; req 5186 active=0 acepted=1 institution=11908 modified=0 justification='NULL' name='T11a probe ui aiccra'

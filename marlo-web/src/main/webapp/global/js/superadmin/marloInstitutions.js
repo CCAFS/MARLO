@@ -80,7 +80,15 @@ $(document).ready(function() {
     $.ajax({
         url: baseURL + '/editPartnerRequest.do',
         type: 'POST',
-        data: $request.find('.editForm').serializeObject(),
+        data: {
+          requestID: $request.find('input[name="requestID"]').val(),
+          institutionName: name,
+          institutionAcronym: $request.find('input[name="acronym"]').val(),
+          institutionWebPage: $request.find('input[name="webPage"]').val(),
+          institutionTypeID: typeValue,
+          countryID: countryValue,
+          justification: modificationJustification
+        },
         beforeSend: function() {
           $request.find('.loading').fadeIn();
         },

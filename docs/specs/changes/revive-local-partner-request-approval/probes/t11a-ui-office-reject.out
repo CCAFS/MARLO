@@ -1,0 +1,13 @@
+# T11a UI: reject country offices from the CURRENT screen (modal + AJAX POST). Branch cad7c5d4e4, COPY DB.
+fixture: institution 11912, office requests 5211 and 5212 (BF, GH; notify=true) and 5213 (NE; notify=false), created through requestCountryOffice.do by COPY user 2491 (alerts email_logs 18289, 18290)
+[notify=true]
+### Result{"notifyChecked":true,"url":"/superadmin/marloInstitutions.do"}
+5211	0	0	T11a probe office reject reason	1082	1
+5212	0	0	T11a probe office reject reason	1082	1
+== email_logs since id 18290: 1 row(s)
+  id=18291 2026-11-19 18:01:39 | subject=[AICCRA] Country office(s) verification - Rejected T11A - T11a ui accept | to=<notification mailbox> | source=/rejectOfficesRequest | succes_email=1
+[notify=false]
+### Result{"notifyChecked":false,"url":"/superadmin/marloInstitutions.do"}
+5213	0	0	T11a probe office quiet reason	1082	1
+== email_logs since id 18291: 0 row(s)
+locations of 11912 unchanged by rejects: 78 hq=1,113 hq=0

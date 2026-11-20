@@ -1,0 +1,15 @@
+# T11a UI: accept country offices from the CURRENT screen (checkboxes + confirm + AJAX POST). Branch cad7c5d4e4, COPY DB.
+fixture: institution 11912 ('T11a ui accept', France HQ already), office requests 5209 (Kenya) and 5210 (France, already a location), created through requestCountryOffice.do by COPY user 2491
+locations before: 78 hq=1
+"complete cards=12 offices=2"
+  dialog shown: "confirm" dialog with message "Are you sure you want to accept this request?"
+after accept: response.text: Protocol error (Network.getResponseBody): No resource with given identifier found
+Response body is not available for a response that was navigated away from. Read response.body() before triggering any navigation.
+    at _Page.<anonymous> (evalmachine.<anonymous>:4:149)
+"{\"url\":\"/superadmin/marloInstitutions.do\",\"actionMessages\":[],\"errors\":[]}"
+locations after: 78 hq=1,113 hq=0
+rows: req 5209 active=0 acepted=1 institution=11912 modified=NULL justification='NULL' name='NULL'; req 5210 active=0 acepted=0 institution=11912 modified=NULL justification='The InstitutionLocation ID:12922 already' name='NULL'
+5209	1	0	11912	NULL
+5210	0	0	11912	The InstitutionLocation ID:12922 already exist in the system.
+== email_logs since id 18287: 1 row(s)
+  id=18288 2026-11-19 18:00:26 | subject=[AICCRA] Country office(s) verification - Approved T11A - T11a ui accept | to=<notification mailbox> | source=/acceptOfficesRequest | succes_email=1

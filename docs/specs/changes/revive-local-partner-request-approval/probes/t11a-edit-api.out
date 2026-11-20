@@ -1,0 +1,15 @@
+# Branch code cad7c5d4e4
+== edit label=T11a edit api db=aiccradb_partreq_test (superadmin POST, the field names read by EditPartnerRequestAction)
+  fixture original=5207 copy=5208
+  original before:  id=5207 name='T11a edit api' acronym='T11A' web='https://t11a.example' type=31 country=78 modified=NULL justification='NULL' active=1 acepted=NULL
+  copy before:      id=5208 name='T11a edit api' acronym='T11A' web='https://t11a.example' type=31 country=78 modified=0 justification='NULL' active=1 acepted=NULL
+  POST edit (pending) -> HTTP 200 {"outcome":"done","success":true}
+  original after:   id=5207 name='T11a edit api' acronym='T11A' web='https://t11a.example' type=31 country=78 modified=NULL justification='NULL' active=1 acepted=NULL
+  copy after:       id=5208 name='T11a probe edited ok' acronym='T11E' web='https://t11a-edited.example' type=31 country=78 modified=1 justification='T11a probe edit justification' active=1 acepted=NULL
+  POST edit with empty type and unknown country ZZ -> HTTP 200 {"outcome":"done","success":true}
+  copy after blank/unknown edit:  id=5208 name='T11a probe edited blank' acronym='T11E' web='https://t11a-edited.example' type=31 country=78 modified=1 justification='T11a probe edit justification' active=1 acepted=NULL
+  (unchanged type/country? type kept, country 78)
+  POST edit of a request that is no longer pending -> HTTP 200 {"outcome":"alreadyHandled","success":false}
+  copy unchanged by the late edit: True
+  POST edit of an unknown id -> HTTP 200 {"outcome":"notFound","success":false}
+  POST edit with the screen's field names (name/type/country/...) -> HTTP 200 {"outcome":"failed","success":false}

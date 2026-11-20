@@ -1,0 +1,27 @@
+# T11a FN-009: the six emails as SENT (email_logs.message, the HTML the mail thread built), branch cad7c5d4e4, COPY DB
+# checks: wrapped by the shell (shell greeting/sign-off from email.layout: the 'MARLO Managing ...' header and the 'You are receiving this email' footer),
+# no legacy footer text (email.support.noCrpAdmins / email.bye resolved or raw), no raw i18n key, no unresolved {n} placeholder
+
+[new partner alert] email_logs id=18277 subject='[AICCRA - AICCRA] Partner verification - T11a probe ui aiccra'
+  shell=True legacy-footer=none raw-keys=none unresolved-placeholders=none greeting='Dear MARLO support team,'
+  text: MARLO Managing Agricultural Research for Learning and Outcomes   Dear MARLO support team, A new partner has been requested in MARLO and is waiting for your review. Requested by: <requester> ( ) Institution: T11a probe ui aiccra Acronym: T11AUI Type: NGO International (General) Country: France Website: https://t11a-ui.example Requested from: Cluster: (102076) - Senegal: Activities led by ILRI Review the request in Superadmin, Institutions: http://localhost:8080/marlo-web/superadmin/marloInstitutions.do Thank you! K
+
+[new office alert] email_logs id=18287 subject='[AICCRA - AICCRA] Add office location (KE, FR) to T11a ui accept'
+  shell=True legacy-footer=none raw-keys=none unresolved-placeholders=none greeting='Dear MARLO support team,'
+  text: MARLO Managing Agricultural Research for Learning and Outcomes   Dear MARLO support team, A new country office has been requested in MARLO and is waiting for your review. Requested by: <requester> ( ) Institution: T11a ui accept Countries: Kenya, France Requested from project: P102076 Thank you! Kind regards, MARLO Team     You are receiving this email because you are registered in the MARLO Platform as a user. Please do not reply to this email, as it is an automated notification. MARLOSupport@cgiar.org
+
+[partner accepted] email_logs id=18278 subject='[AICCRA] Partner verification - Approved T11a probe ui aiccra'
+  shell=True legacy-footer=none raw-keys=none unresolved-placeholders=none greeting='Dear <requester>,'
+  text: MARLO Managing Agricultural Research for Learning and Outcomes   Dear <requester>, We have added the following institution to MARLO, as you requested: T11AUI - T11a probe ui aiccra Thank you! Kind regards, MARLO Team     You are receiving this email because you are registered in the MARLO Platform as a user. Please do not reply to this email, as it is an automated notification. MARLOSupport@cgiar.org
+
+[partner rejected] email_logs id=18286 subject='[AICCRA] Partner verification - Rejected T11a ui reject notify2'
+  shell=True legacy-footer=none raw-keys=none unresolved-placeholders=none greeting='Dear <requester>,'
+  text: MARLO Managing Agricultural Research for Learning and Outcomes   Dear <requester>, We were unable to approve your request to add the institution T11a ui reject notify2 . The reason given was: T11a probe reason: already exists in MARLO Thank you! Kind regards, MARLO Team     You are receiving this email because you are registered in the MARLO Platform as a user. Please do not reply to this email, as it is an automated notification. MARLOSupport@cgiar.org
+
+[office accepted] email_logs id=18288 subject='[AICCRA] Country office(s) verification - Approved T11A - T11a ui accept'
+  shell=True legacy-footer=none raw-keys=none unresolved-placeholders=none greeting='Dear <requester>,'
+  text: MARLO Managing Agricultural Research for Learning and Outcomes   Dear <requester>, We have added the following country office(s) of T11A - T11a ui accept to MARLO, as you requested: Kenya, France Thank you! Kind regards, MARLO Team     You are receiving this email because you are registered in the MARLO Platform as a user. Please do not reply to this email, as it is an automated notification. MARLOSupport@cgiar.org
+
+[office rejected] email_logs id=18291 subject='[AICCRA] Country office(s) verification - Rejected T11A - T11a ui accept'
+  shell=True legacy-footer=none raw-keys=none unresolved-placeholders=none greeting='Dear <requester>,'
+  text: MARLO Managing Agricultural Research for Learning and Outcomes   Dear <requester>, We were unable to approve your request to add the following country office(s) of T11A - T11a ui accept : Burkina Faso, Ghana The reason given was: T11a probe office reject reason Thank you! Kind regards, MARLO Team     You are receiving this email because you are registered in the MARLO Platform as a user. Please do not reply to this email, as it is an automated notification. MARLOSupport@cgiar.org

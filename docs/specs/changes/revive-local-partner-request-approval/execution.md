@@ -671,3 +671,183 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
 1. **P-25 becomes a release precondition.** The owner checks production `@@GLOBAL.sql_mode` before the release, together with OPS-002. If the mode is strict, the release stops and the spec is reopened (DA-002 amendment). No code change is made now. The precondition is recorded in `tasks.md` §7.
 2. **Commit** of the T04 evidence, approved by the owner.
 3. **T11a** goes ahead on `aiccradb_partreq_test`.
+- **Commit:** `cad7c5d4e4` (owner-approved).
+
+### CHG-PARTREQ-001-T11 (part T11a) — End-to-end verification of PR 1 on a throwaway DB
+
+- **Status:** PASS on attempt 3. All PR-1 ACs are evidenced.
+  - Attempt 1: FN-007 was red on the current screen (a pre-existing field-name mismatch).
+  - The owner decided at the T11a gate to fix it in T07; after that bridge FN-007 passes (`t11a-ui-edit-rerun.out`).
+  - Attempt 2 added the FN-001 page-message evidence and the privacy scrub.
+  - Attempt 3 corrected two stale verdict lines.
+- **Date:** 2026-11-19
+- **Attempts:** 3
+- **Effort:** high
+- **Skills assigned:** `marlo-verify`, `playwright-cli`.
+
+#### Attempt 1
+
+- **runtime events:** provider/session death ×1 → rung 3 (resume-by-message).
+  - The host (Orca) restarted mid-run.
+  - **Leader tree probe before resuming:** no app on 8080, no extra worktree, `marlo-dev.properties` on `aiccradb2`, `general_log` 0, HEAD `cad7c5d4e4`, clean tree.
+  - **The copy was untouched by T11a:** `partner_requests` max 5144, `email_logs` max 18272 (T04's), 0 users or parameters differing from `aiccradb2`.
+  - The worker's context survived and the worker was resumed by message.
+- **Files written:**
+  - 21 `probes/t11a-*` files (drivers and outputs).
+  - `probes/README.md` § T11a.
+  - No product code (`git diff -- marlo-data marlo-web` is empty).
+- **Staging falsifier (red, observed):** `staging` `3e4d08bd7e` was built in a throwaway worktree. A non-superadmin (copy user 22, CRP-Admin of AICCRA) sent hand-crafted POSTs to the five review routes. All five were accepted and rows changed, including a new institution, so **C8 is reproduced** (`t11a-falsifier-staging.out`). The same script on the branch got 403 on the four JSON routes. `addPartner` returns a 200 "Permission denied" page, and no row changed (`t11a-sec-nonsa-branch.out`).
+- **AC results:**
+
+| AC | Evidence | Result |
+|---|---|---|
+| FN-001 | rows: `t11a-switch-off.out` (AICCRA 5214/5215), `t11a-fn001-non-aiccra.out` (CCAFS 5223/5224); no CLARISA: `t11a-fn001-no-clarisa.out`; "request sent" message and the rows read right after submit: `t11a-fn001-message.out` (attempt 2) | **PASS.** AICCRA (project 102076, rows 5249/5250) and CCAFS (project 1, rows 5251/5252): after the `messageSent=true` redirect the page renders "The new partner request was sent succesfully. You will receive a confirmation message as soon as it has been processed." (a literal in `partnersSave.ftl`, no i18n key; T10 replaces it with `marloRequestCreation.success.*`). The rows read right after submit show the original with `partner_request_id` NULL and the copy pointing to it, both active. No CLARISA reference in the source or the logs |
+| FN-002 / FN-003 | `t11a-fn002-new-partner-alert.html`, `t11a-ui-office-accept.out`, `t11a-switch-off.out` | PASS. The alert carries requester, data, source "Cluster: (102076)…" and the review link. The office alert is sent. With the switch off, nothing is sent and the request is still stored |
+| FN-004 / FN-005 / DA-001 | `t11a-ui-accept.out`, `t11a-ops001.out` | PASS. Accept from the screen creates one institution and one HQ location, and both rows are closed. A replay gives "This request was already handled." and no second institution. A forced failure leaves nothing behind |
+| FN-006 | `t11a-ui-reject.out` | PASS. Notify checked sends one email, unchecked sends none. Justification, user and date are recorded |
+| FN-007 | `t11a-ui-edit.out` (red, before the bridge), `t11a-edit-api.out`, **`t11a-ui-edit-rerun.out`** (after the T07 edit-field bridge) | **PASS after the bridge** (4 / 4): a valid edit from the screen gives `done`, the copy is changed and `is_modified=1`, and the original is unchanged; the reload shows the edited values; a stale-page edit of a handled request gives `alreadyHandled` with no change; a missing justification is blocked client-side (0 calls). Before the bridge it was red: the field names did not match. The same mismatch exists on `staging`, so it is pre-existing |
+| FN-008 | `t11a-ui-office-accept.out`, `t11a-ui-office-reject.out`, `t11a-office-multiunit.out` | PASS. Kenya is added once as non-HQ, and France is skipped as existing. Reject honours notify. A batch over units 45 and 47 sends 2 emails, as amended in AC FN-008 |
+| FN-009 / FN-010 | `t11a-emails-fn009.out`, `t11a-switch-off.out` | PASS. The six emails were read from the sent HTML: shell present, no legacy footer, no raw key. With the switch off, 0 emails |
+| SEC-001 / SEC-002 | `t11a-sec-nonsa-branch.out`, `t11a-sec-sa-get-branch.out` | PASS. A non-superadmin gets 403 / Permission denied with no row change. A superadmin GET changes nothing |
+| SEC-003 | `t11a-menus-branch.out` | PASS. There is no CRP-admin entry in AICCRA or CCAFS. The admin route redirects a superadmin and refuses a CRP admin |
+| FN-011 / P-15 | `t11a-menus-branch.out` | PASS. "Request Institutions" is in the AICCRA superadmin menu, and the page opens without `phaseID` |
+| OPS-001 | `t11a-ops001.out` | PASS for the five actions. Each logs one ERROR with the action and request id and no email address. A failure during email build or dispatch was not forced |
+| Redirect messages (T03/T07) | `t11a-ui-accept.out` | PASS. The messages render as text, not raw keys |
+
+- **Email safety:**
+  - Probe requests were created by copy user 2491. Its copy email was set to the notification mailbox, and `external_user_mail` was empty.
+  - `marlo.production=false` makes `SendMailS` send only to `email.notification`, with no cc or bcc.
+  - Every `email_logs` row of the run (18277–18296) went to the notification mailbox.
+  - The emails of users 1082 and 22 were set to `example.invalid` on the copy for the run.
+- **Cleanup (worker-reported; spot-checked by the Leader):**
+  - Users 2491, 22 and 1082 and switch 2184 restored on the copy (0 rows differ from `aiccradb2`).
+  - Checkout `marlo-dev.properties` never edited; the worktrees carried their own copy.
+  - `general_log` never enabled. App stopped. Worktrees removed.
+  - `aiccradb2` unchanged.
+- **Leader privacy check of the probe files:**
+  - No DB password.
+  - The owner's own address (the local `email.notification`) appeared in `t04-c-ordering.out:26`, a file already committed in `cad7c5d4e4`, which is local and unpushed. It is scrubbed to `<notification mailbox>` in the working tree; amending the history is pending the owner's decision.
+  - `MARLOSupport@cgiar.org` (the public support contact inside the email shell) is kept.
+- **spawns:** implementer: 121 calls, 321443 tokens, ended complete (after one `died` → resumed).
+
+#### Findings outside the ACs (recorded)
+
+1. **Superadmin is a global privilege, not a per-unit one.** User 2491 is PC in AICCRA and SuperAdmin in other units, and was accepted on all five routes (`t11a-sec-nonsa-branch-user2491-superadmin-elsewhere.out`). This matches SEC-001 as written (`canAccessSuperAdmin()` = `FULL_PRIVILEGES`, design §8). It is recorded for `agent-context.md` (T12).
+2. **Misleading save message on the review page.** After a decision, the page also shows the generic "The Information was correctly saved. Please keep in mind that the fields highlighted below are missing or incorrect." This is pre-existing. → T08: the redesigned page must not render the generic save note.
+3. **Browser `confirm()` on accept** (current screen). PR 2 removes it (T09).
+4. **Edit with an empty type or unknown country.** It returns `done`, keeps the old type and country, and applies the other fields (T05 pointer confirmed live).
+
+### Owner decisions at the T11a gate (2026-11-19)
+
+1. **FN-007 is fixed in PR 1.** The edit AJAX call now sends the parameter names the action reads. T07 is reopened (`[~]`) for this edit-field bridge. The decision is recorded in the `requirements.md` Decision Log and in the `tasks.md` T07 / T09 scope, with its closure sweep. After the fix, the FN-007 live check is re-run and T11a is closed.
+2. **Privacy fix.** `cad7c5d4e4` was amended to `8dd63c27a9` so that only the scrubbed `probes/t04-c-ordering.out` changes (the owner's address → `<notification mailbox>`). The commit was local and unpushed, and `HEAD` is now clean of the address.
+3. **T11a evidence** is committed after the FN-007 re-run.
+
+### CHG-PARTREQ-001-T07 (reopened) — Edit-field bridge
+
+- **Final status:** PASS (reopening, attempt 1)
+- **Date:** 2026-11-19
+- **Effort:** medium
+- **Skills:** `marlo-verify`
+- **Review:** single Reviewer; override (e) applies because this is rework of a closed task.
+
+#### What changed
+
+- **Files:** `marloInstitutions.js`. The edit call's `data:` no longer uses `serializeObject()`; it is an explicit object built from the same card's fields. `superadmin/marloInstitutions.ftl` cache-buster changed `?20261119` → `?20261119b`. Both files LF.
+- **Field mapping.** The JS keys match the action's parameter names. Constants were resolved in the web `APConstants`.
+
+| JS key | Source | Form field |
+|---|---|---|
+| `requestID` | `PARTNER_REQUEST_ID` = "requestID" | hidden `requestID` |
+| `institutionName` | `INSTITUTION_NAME` = "institutionName" | `name` |
+| `institutionAcronym` | literal in the action | `acronym` |
+| `institutionWebPage` | literal in the action | `webPage` |
+| `institutionTypeID` | `INSTITUTION_TYPE_REQUEST_ID` = "institutionTypeID" | `type` (id) |
+| `countryID` | `COUNTRY_REQUEST_ID` = "countryID" | `country` (ISO alpha-2, the same format `editPartnerRequest(..., countryIso, ...)` expects) |
+| `justification` | `JUSTIFICATION_REQUEST` = "justification" | `modificationJustification` |
+
+#### Verification
+
+- **Falsifier (static):** the brief's prediction `grep -c institutionName` → `0` before did not hold. The count was `2` before because the reject popup already uses that name, and `3` after, the new hit being in the edit `data:` block. The live FN-007 check is the real falsifier: `t11a-ui-edit.out` was red before this change.
+- **Evidence re-run (Leader-inline):**
+  - `node --check` OK.
+  - `grep -c "type: *'POST'"` = `4`.
+  - The 7 keys equal the resolved constants and literals.
+  
+  **VERIFIED.**
+- **Reviewer verdict:** **PASS**.
+  - The values come from the same card (`$request` scope).
+  - The names match `EditPartnerRequestAction.java:150-157`.
+  - The country is ISO alpha-2 end to end: select → action → `locElementDAO.findISOCode`.
+  - Scope held: no macro rename, no restyle.
+  - The named checks for the T11a-gate Decision Log entry and the T07/T09 scope amendments pass.
+- **runtime events:** none
+- **spawns:** implementer 6 calls, 89671 tokens, ended complete; reviewer 6 calls, 41965 tokens, ended complete.
+- **Advisory:** the `marlo-verify` cache-bust script flags `rejectInstitutionPopup.ftl:48`, which is pre-existing and out of scope.
+- **Budget (running):**
+  - Tasks: 7 / 12 (T07 closed again).
+  - LOC added: 3,179 + 9 = **3,188**.
+  - Review rounds: 12.
+
+#### T11a — attempts 2 and 3, and the final verdict
+
+- **Attempt 1 Reviewer: FAIL.**
+  - (1) The AC FN-001 clause "the page shows the 'request sent' message" was not evidenced: only `messageSent=true` appeared in a redirect URL, and the cited rows had been read after the accept.
+  - (2) The FN-007 row was stale.
+  - Advisory: scrub the personal data.
+- **Attempt 2 (worker resumed):**
+  - `t11a-fn001-message.out`: the page message was captured in AICCRA and CCAFS, and the rows were read right after submit, with the switch off and 0 mails.
+  - Privacy scrub of the `t11a-*` files:
+    - requester names → `<requester>`;
+    - home and scratchpad paths → `<home>` / `<scratchpad>`;
+    - the default username in the driver removed;
+    - the traceback trimmed from `t11a-ui-reject.out`.
+    
+    No measured value changed.
+  - The Leader updated the FN-001 and FN-007 rows.
+  - **Reviewer: FAIL.** Two stale verdict lines still said FN-007 failed (correction-note sweep).
+- **Attempt 3:** the Leader rewrote the T11a status line and the `probes/README.md` § T11a verdict.
+  - **Reviewer: PASS.** Every PR-1 AC is evidenced and the record is internally consistent.
+- **Leader re-checks (each attempt):**
+  - no app and no worktree;
+  - `aiccradb2` unchanged (10974 / 5079);
+  - `general_log` 0;
+  - `git diff -- marlo-data` empty;
+  - the marlo-web diff equals the reviewed T07 bridge;
+  - in the probe files: 0 hits for home paths, `/private/tmp` or the owner's name, and the only email address is the public `MARLOSupport@cgiar.org`.
+- **runtime events:** provider/session death ×1 → rung 3 (resume-by-message). Recorded in attempt 1.
+- **spawns:**
+  - implementer: resumed ×3 (FN-007 re-run 37 calls / 364639 tokens; attempt 2 11 calls / 391323 tokens), each ended complete;
+  - reviewer: attempt 1 29 calls / 76194 tokens, ended fail; attempt 2 12 / 53889, ended fail; attempt 3 5 / 43858, ended complete.
+
+#### ADVISORY (non-gating, from the T11a reviews)
+
+- **SKIPPED_EXISTING office email.** The office-accepted email lists a skipped country (France, already present) as "added". Per design §6 that requester does get the office-accepted email; the follow-up is for the copy to list only the countries actually added. → T12 follow-up.
+- **Unit in office email subjects.** Per-unit office emails for unit 47 carry the subject prefix `[AICCRA]`. The new-partner alert subject repeats the unit: `[AICCRA - AICCRA]`. → owner review of the email renders in T11b.
+- **DA-001 evidence.** `t11a-ops001.out` may fail before the insert, so it is not the DA-001 proof. DA-001 is proven by T04 (`t04-a-fault-injection.out`).
+- **Legacy review macro.** It throws on a request with no institution type, which cuts the page off. Seen on COPY fixture 5226. → T08: the rewritten macro must tolerate a missing type or country.
+- **Literal "request sent" text.** The message is a literal in `partnersSave.ftl` (with the typo "succesfully"). T10 replaces it with `marloRequestCreation.success.*` keys.
+
+#### Forward pointers
+
+- **→ T08:**
+  - tolerate a request with no type or country;
+  - do not render the generic "Information was correctly saved" note;
+  - keep the T07 POST-form accept.
+- **→ T09:** keep the edit-call parameter names and the four `type: 'POST'`.
+- **→ T11b:** owner review of the email subjects (unit prefix).
+- **→ T12:**
+  - superadmin is a global privilege;
+  - the SKIPPED_EXISTING email copy;
+  - the earlier follow-ups.
+
+- **Requirements covered (live):**
+  - FN-001 to FN-011;
+  - SEC-001 to SEC-003 (staging falsifier C8 reproduced → branch 403);
+  - OPS-001 (review actions);
+  - DA-001 via T04.
+- **Budget (running):**
+  - Tasks: 8 / 12 (T11a done; T11b pending).
+  - LOC: **3,188**.
+  - Review rounds: 15.
+- **PR 1 scope complete:** T01–T07 + T11a.
