@@ -94,7 +94,7 @@
 
 ### CHG-PARTROUTE-001-T02 — Routing in `PartnersSaveAction` with both-mode tests
 
-- **Status:** [ ] · **Size:** L · **Depends on:** T01 · **Module:** marlo-web
+- **Status:** [x] · **Size:** L · **Depends on:** T01 · **Module:** marlo-web
 - **Requirements:**
   - FN-001 and its AC (absent row → MARLO; BUT `"TRUE "` / `yes` / empty → MARLO).
   - FN-002 and AC FN-002 / NF-002 (AND IT MUST NOT contact CLARISA).

@@ -30,6 +30,7 @@ import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisManager;
 import org.cgiar.ccafs.marlo.data.model.ActivityPartner;
 import org.cgiar.ccafs.marlo.data.model.CapacityDevelopment;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.FundingSource;
 import org.cgiar.ccafs.marlo.data.model.FundingSourceInfo;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
@@ -51,15 +52,26 @@ import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails;
 import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails.Email;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,6 +92,15 @@ public class PartnersSaveAction extends BaseAction {
 
   // Logger
   private static final Logger LOG = LoggerFactory.getLogger(PartnersSaveAction.class);
+
+  // Path of the CLARISA partner-request service, appended to the configured CLARISA host
+  private static final String CLARISA_CREATE_PATH = "/api/partner-requests/create";
+  // Source sent to CLARISA when the page was opened without an item (design values, adjustable here)
+  private static final String CLARISA_DEFAULT_SOURCE = "Request made from MARLO";
+  // Timeouts of the CLARISA call, in milliseconds
+  private static final int CLARISA_CONNECT_TIMEOUT_MS = 10000;
+  private static final int CLARISA_CONNECTION_REQUEST_TIMEOUT_MS = 10000;
+  private static final int CLARISA_SOCKET_TIMEOUT_MS = 30000;
 
   private ActivityPartner activityPartner;
 
@@ -107,6 +128,8 @@ public class PartnersSaveAction extends BaseAction {
   private boolean messageSent;
   // True when the partner request could not be saved, so the page shows the form again with an error
   private boolean requestFailed;
+  // True when the submit was handled in CLARISA mode, read by the page to pick the failure message
+  private boolean clarisaMode;
   // True when the form arrived without the institution type or the country, so it is shown again with an error
   private boolean missingRequiredFields;
   private String partnerWebPage;
@@ -264,6 +287,10 @@ public class PartnersSaveAction extends BaseAction {
 
   public int getSynthesisID() {
     return synthesisID;
+  }
+
+  public boolean isClarisaMode() {
+    return clarisaMode;
   }
 
   public boolean isMessageSent() {
@@ -471,34 +498,158 @@ public class PartnersSaveAction extends BaseAction {
         break;
     }
 
-    // The original and its editable copy are saved together, in one transaction, for every Global Unit
-    try {
-      partnerRequestManager.createPartnerRequest(partnerRequest, partnerRequestModifications);
-    } catch (Exception e) {
-      LOG.error("Could not save the partner request of the Global Unit {}",
-        loggedCrp == null ? null : loggedCrp.getId(), e);
+    // @akili-spec changes/partner-request-routing-specificity
+    // Without a Global Unit nothing is stored or sent: the mode of a unit that is not known cannot be guessed
+    if (loggedCrp == null) {
+      LOG.error("The partner request has no Global Unit; nothing was stored or sent");
       messageSent = false;
       requestFailed = true;
       return INPUT;
     }
 
-    // The alert goes out only after the request is saved; a failure to send it never fails the request
-    this.sendNewPartnerAlert(institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage,
-      partnerRequest.getRequestSource());
+    // The mode is read from the stored parameters of the unit, never from the session (see readClarisaMode)
+    clarisaMode = this.readClarisaMode();
+    if (clarisaMode) {
+      if (!this.sendToClarisa(partnerRequestModifications)) {
+        messageSent = false;
+        requestFailed = true;
+        return INPUT;
+      }
+    } else {
+      // The original and its editable copy are saved together, in one transaction
+      try {
+        partnerRequestManager.createPartnerRequest(partnerRequest, partnerRequestModifications);
+      } catch (Exception e) {
+        LOG.error("Could not save the partner request of the Global Unit {}", loggedCrp.getId(), e);
+        messageSent = false;
+        requestFailed = true;
+        return INPUT;
+      }
+
+      // The alert goes out only after the request is saved; a failure to send it never fails the request
+      this.sendNewPartnerAlert(institutionName, institutionAcronym, institutionTypeName, countryName, partnerWebPage,
+        partnerRequest.getRequestSource());
+
+      if (projectID != 0) {
+        LOG.info("A partner request was saved for the project {}", projectID);
+      }
+      if (fundingSourceID != 0) {
+        LOG.info("A partner request was saved for the funding source {}", fundingSourceID);
+      }
+    }
 
     messageSent = true;
-
-    if (projectID != 0) {
-      LOG.info("A partner request was saved for the project {}", projectID);
-    }
-    if (fundingSourceID != 0) {
-      LOG.info("A partner request was saved for the funding source {}", fundingSourceID);
-    }
 
     Collection<String> messages = this.getActionMessages();
     this.addActionMessage("message:" + this.getText("saving.saved"));
     messages = this.getActionMessages();
     return SUCCESS;
+  }
+
+  /**
+   * Builds the JSON body CLARISA expects for a partner request.
+   *
+   * @param request the editable copy of the request, with its source already set
+   * @param misAcronym the acronym of the submitting Global Unit, lower case
+   * @return the JSON text
+   */
+  String buildClarisaPayload(PartnerRequest request, String misAcronym) {
+    User requester = this.getCurrentUser();
+    JSONObject json = new JSONObject();
+    json.put("name", request.getPartnerName());
+    json.put("acronym", request.getAcronym());
+    json.put("websiteLink", request.getWebPage());
+    json.put("institutionTypeCode", request.getInstitutionType() == null ? null : request.getInstitutionType().getId());
+    json.put("hqCountryIso", request.getLocElement() == null ? null : request.getLocElement().getIsoAlpha2());
+    json.put("requestSource",
+      StringUtils.isBlank(request.getRequestSource()) ? CLARISA_DEFAULT_SOURCE : request.getRequestSource());
+    json.put("misAcronym", misAcronym);
+    json.put("userId", requester == null ? null : requester.getId());
+    json.put("externalUserMail", requester == null ? null : requester.getEmail());
+    json.put("externalUserName", requester == null ? null : requester.getUsername());
+    json.put("externalUserComments", CLARISA_DEFAULT_SOURCE);
+    return json.toString();
+  }
+
+  /**
+   * Posts the request to CLARISA. This is the only line that touches the network; tests override it.
+   *
+   * @param url the full URL of the CLARISA partner-request service
+   * @param json the request body
+   * @return the HTTP status code, or -1 when the response had no status line
+   * @throws IOException when CLARISA cannot be reached or does not answer in time
+   */
+  protected int postToClarisa(String url, String json) throws IOException {
+    RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(CLARISA_CONNECT_TIMEOUT_MS)
+      .setConnectionRequestTimeout(CLARISA_CONNECTION_REQUEST_TIMEOUT_MS).setSocketTimeout(CLARISA_SOCKET_TIMEOUT_MS)
+      .build();
+    String credentials = config.getClarisaAPIUsername() + ":" + config.getClarisaAPIPassword();
+    HttpPost httpPost = new HttpPost(url);
+    httpPost.setEntity(new StringEntity(json, "UTF-8"));
+    httpPost.setHeader("Accept", "application/json");
+    httpPost.setHeader("Content-Type", "application/json");
+    httpPost.setHeader("Authorization",
+      "Basic " + Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8)));
+    // Closing the response and the client releases the connection; only the status is read
+    try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+      CloseableHttpResponse response = httpClient.execute(httpPost)) {
+      return response.getStatusLine() != null ? response.getStatusLine().getStatusCode() : -1;
+    }
+  }
+
+  /**
+   * Reads the mode of the Global Unit from its stored parameters: only an active row of the switch whose value is
+   * "true" (ignoring case, nothing else) turns CLARISA mode on. The session is not used because it can hold another
+   * unit's value after a unit switch.
+   */
+  private boolean readClarisaMode() {
+    if (loggedCrp == null || loggedCrp.getCustomParameters() == null) {
+      return false;
+    }
+    for (CustomParameter row : loggedCrp.getCustomParameters()) {
+      if (row != null && row.isActive() && row.getParameter() != null
+        && APConstants.PARTNER_REQUESTS_TO_CLARISA.equals(row.getParameter().getKey())) {
+        return Boolean.parseBoolean(row.getValue());
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Sends the request to CLARISA. Every failure writes one line of this class's logger with no request data and no
+   * throwable, so neither the requester nor the credentials can reach the log.
+   *
+   * @return true when CLARISA accepted the request (status 2xx)
+   */
+  private boolean sendToClarisa(PartnerRequest request) {
+    Long unitId = loggedCrp.getId();
+    String host = config.getClarisaAPIHost();
+    String username = config.getClarisaAPIUsername();
+    String password = config.getClarisaAPIPassword();
+    if (StringUtils.isBlank(host) || StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+      LOG.error("The CLARISA connection is not configured; the partner request of the Global Unit {} was not sent",
+        unitId);
+      return false;
+    }
+    if (StringUtils.isBlank(loggedCrp.getAcronym())) {
+      LOG.error("The Global Unit {} has no acronym; the partner request was not sent to CLARISA", unitId);
+      return false;
+    }
+    try {
+      String json = this.buildClarisaPayload(request, loggedCrp.getAcronym().toLowerCase(Locale.ROOT));
+      int status = this.postToClarisa(host + CLARISA_CREATE_PATH, json);
+      if (status >= 200 && status < 300) {
+        LOG.info("CLARISA accepted the partner request of the Global Unit {} with status {}", unitId, status);
+        return true;
+      }
+      LOG.warn("CLARISA did not accept the partner request of the Global Unit {}, status {}", unitId, status);
+      return false;
+    } catch (Exception e) {
+      // The throwable is not passed on purpose: its message could carry the requester or the credentials
+      LOG.error("Could not send the partner request of the Global Unit {} to CLARISA: {}", unitId,
+        e.getClass().getSimpleName());
+      return false;
+    }
   }
 
   /**

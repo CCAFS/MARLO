@@ -94,3 +94,146 @@ No owed item and no blocker, so this is not a continuation.
 - **Issues encountered:** `aiccradb1` is absent locally, so `aiccradb` was the source of the copy.
 - **Budget running totals:** tasks 1 / 5 · LOC 148 / ~470 · review rounds 1 / 7. Within budget.
 - **Final verification:** compile and the full suite green (Leader re-run), Checkstyle delta 0, DB counts as above.
+
+### CHG-PARTROUTE-001-T02 — Routing in `PartnersSaveAction` with both-mode tests
+
+- **Final status:** PASS (two parallel lens Reviewers, both PASS)
+- **Date:** 2026-11-20
+- **Implementer attempts:** 1
+- **Effort:** xhigh (security surface, external send, many failure paths) · **Skills:** `marlo-verify`,
+  `error-handling-patterns`, `tdd` (`marlo-commit` kept by the Leader)
+
+**Attempt 1**
+
+- Files changed:
+  - `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveAction.java` (+166 / −15)
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveActionRequestTest.java` (+35 / −8)
+  - `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveActionClarisaModeTest.java` (new, +585)
+- What was built:
+  - FN-010 guard at the routing point, after the existing type / country guard and before any store or send.
+  - `readClarisaMode()`, plus the `clarisaMode` field read through `isClarisaMode()`.
+  - `sendToClarisa()`, `buildClarisaPayload()` and the `protected int postToClarisa(url, json)` seam. The seam uses
+    Basic auth, JSON headers, named 10 / 10 / 30 s timeouts and try-with-resources.
+  - Log lines exactly as in design §11.
+  - The MARLO branch is unchanged.
+  - DD-5: the pin was rewritten, and `testMarloModeNeverCallsClarisaEvenForAnAiccraUnit` was added.
+- Implementer verification:
+  - Clean compile exit 0: 2431 / 1065 / 148 test files.
+  - Suite: 1382 run, 0 failures, 0 errors.
+  - `grep -c "isAiccra()"` → 0 and `grep -cE "\"(Cluster|AICCRA|aiccra)\""` → 0 on `PartnersSaveAction.java`.
+  - Checkstyle delta 0 (HEAD 0, tree 0). All files LF.
+- Red run:
+  - Baseline `grep -ci clarisa PartnersSaveAction.java` → 0 at `0edf846105` (spec).
+  - The new tests were written **after** the code, so there was no test-first red. The falsifier reds below are the
+    red evidence.
+- Falsifiers (each observed red, then reverted; the final full suite ran after all reverts):
+  - (a) `if (!clarisaMode)` → 22 failures and errors across both suites, e.g.
+    `testAiccraUnitSavesTheOriginalAndTheEditableCopyAndAlertsSupport expected:<[success]> but was:<[input]>` and
+    `testClarisaModeSendsOnceAndStoresNothing: the seam is called once expected:<1> but was:<0>`.
+  - (b) `this.hasSpecificities(...)` → `testStoredFalseWinsOverATrueInTheSession: the seam is never called`, + 9.
+  - (c) `e` passed to `LOG.error` → `testTimeoutIsAVisibleFailureAndItsMessageStaysOutOfTheLog: no throwable is
+    attached expected null, but was:<ThrowableProxy…>`. `testConnectionFailureIsAVisibleFailureLoggedByClassName` fails
+    the same way.
+  - (d) hardcoded `"aiccra"` → `testPayloadAcronymIsTheLowerCaseAcronymOfTheUnit: expected:<aiccra[_iii]> but
+    was:<aiccra[]>`; `testPayloadSourceIsTheGlobalTextForAUnitWithoutAnOverride` (`expected:<[pab]ra> but was:<[aicc]ra>`).
+  - (e) **stand-in:** "Cluster C" replaced by "Project P" in the source text →
+    `testPayloadCarriesEveryFieldAndTheUnitsOwnSourceText: expected:<Partner request [Cluster C]77 - …> but
+    was:<Partner request [Project P]77 - …>`. The literal mutation "build the source from the global texts only" cannot
+    be applied in production code, because the action never chooses a bundle; `getText` does. Reviewer 1 judged the
+    stand-in adequate: it proves the assertion tells the unit's wording apart from the global one, and the global-only
+    case is a separate test.
+  - (f) store before branching → `testClarisaModeSendsOnceAndStoresNothing: CLARISA mode: the manager must not be
+    called`, + 11.
+- Test → gate map:
+  - D1: `testClarisaModeSendsOnceAndStoresNothing`, `testMarloModeAiccraUnitStoresOnceAndNeverCallsClarisa`,
+    `testMarloModeNeverCallsClarisaEvenForAnAiccraUnit`.
+  - D2: `testPayloadCarriesEveryFieldAndTheUnitsOwnSourceText` (real `custom/aicrra.properties`, URL and 11 fields as
+    literals), `testPayloadAcronymIsTheLowerCaseAcronymOfTheUnit` (unit 47),
+    `testPayloadSourceIsTheGlobalTextForAUnitWithoutAnOverride`, `testPayloadSourceFallsBackWhenThePageHadNoItem`.
+  - D3: `testRejectionIsAVisibleFailureWithOneWarning` (400), `testConnectionFailureIsAVisibleFailureLoggedByClassName`,
+    `testTimeoutIsAVisibleFailureAndItsMessageStaysOutOfTheLog`, `testMissingConfigurationFailsWithoutCallingClarisa`,
+    `testUnitWithoutAcronymFailsWithoutCallingClarisa`, `testNoUnitStoresNothingSendsNothingAndLogsOnce`.
+  - D4: `onlyEvent()` used by every failure test. It asserts one event on the action's logger, no throwable, and no
+    email, username, password or `Authorization`. The exception messages carry those values.
+  - D11: `testStoredFalseWinsOverATrueInTheSession`, `testAnythingButTrueInTheStoredValueIsMarloMode` (`"TRUE "`, `yes`,
+    `""`, null), `testATrueOnAnInactiveRowIsMarloMode`, `testIncompleteRowsAreSkippedAndAMissingRowIsMarloMode`.
+  - `isClarisaMode`: `testThePageSeesTheModeThatHandledTheSubmit`.
+- Evidence re-run (Leader inline, non-author):
+  - Clean compile exit 0, 2431 / 1065 / 148.
+  - `mvn -o -pl marlo-web -am test` → `Tests run: 1382, Failures: 0, Errors: 0, Skipped: 0`, BUILD SUCCESS.
+  - Both greps → 0.
+  - Result: **VERIFIED**.
+- Reviewer verdicts: parallel lens mode, because the effort is xhigh and the task touches a security surface.
+  - **Lens 1, conformance + reliability / resilience: PASS.** Routing, FN-010, `readClarisaMode()` and the §11 lines
+    match the spec. D1–D4, D11 and DD-5 are covered, and no Disqualifier applies. Leader questions:
+    - (1) `postToClarisa` reads the credentials a second time. That is forced by the task's `(url, json)` signature
+      and design §10's "Basic auth from `config…`". The check-once goal holds, because the second read comes after
+      the non-blank check, so the P-16 getters cannot log.
+    - (2) The (e) stand-in is adequate.
+    - (3) The D2 assertions are literals.
+  - **Lens 2, conformance + risk / security / readability: PASS.**
+    - SEC-002, OPS-001 (six lines matching §11, one event, no throwable) and NF-001 hold.
+    - D4 is strong: the appender sits on the action's logger and is restored afterwards.
+    - Timeouts and try-with-resources are present.
+    - Every log argument is null-safe.
+- runtime events: none
+- spawns: implementer 27 calls, 202989 tokens, ended complete; reviewer (lens 1) 17 calls, 90892 tokens, ended
+  complete; reviewer (lens 2) 15 calls, 80889 tokens, ended complete
+
+**ADVISORY (4R, not gating)**
+- Risk, SEC-002 in shared logging: the root logger in `logback.xml` is set to `ALL`, and nothing caps `org.apache.http`.
+  **Leader probe:** `mvn dependency:list` on marlo-web shows `commons-logging:1.2` and `httpclient:4.5.3`, with **no**
+  `jcl-over-slf4j`. So HttpClient logs through JUL at its default INFO level, and its DEBUG header and wire output does
+  not reach logback by default. The `log4j-jul` bridge is present, but it is only active if
+  `java.util.logging.manager` is set. Low risk, and it predates this diff. It is not live-verified; T05 can grep the
+  log for `Authorization` after the live call.
+- Reliability: `org.json` `put(key, null)` drops the key. With no website, type or user, the body omits that field
+  instead of sending null. Check against what CLARISA expects (P-10).
+- Reliability: the two existing "Failed to get projectInfo" `LOG.error` lines in `save()` run before routing. One
+  submission can therefore produce two events on the action's logger. This is outside the OPS-001 count.
+- Resilience: the Basic-auth header building in `postToClarisa` is exercised by no unit test, since every suite
+  overrides the seam. T05's live call is its only check. Timeouts are present but untested (recorded gap).
+- Reliability: two active rows for the key would make the mode depend on `HashSet` order. A unique (unit, parameter)
+  constraint likely prevents that; this is a T04 note.
+- Readability: `CLARISA_DEFAULT_SOURCE` fills both the `requestSource` fallback and `externalUserComments`, but its
+  comment names only one use. The no-acronym check uses `isBlank`, which is stricter than "null".
+
+**Not Done / Assumptions (Implementer)**
+- Timeouts are named constants only and are not unit-tested (recorded gap, per the Disqualifier).
+- `postToClarisa` re-reads the username and password from `config` (see Lens 1, answer 1).
+- Basic auth is built with `Base64` instead of the deprecated `BasicScheme.authenticate`. The header content is the
+  same.
+- A blank acronym counts as no acronym.
+- A null-unit MARLO-mode request is no longer stored with a null unit (FN-010, NF-002's stated exception).
+
+No owed item and no blocker, so this is not a continuation.
+
+- **Requirements covered:** FN-001…FN-006, FN-010, SEC-002, OPS-001, NF-001 (no `isAiccra`, no literal, constant
+  used), NF-002.
+- **Decisions made:** parallel lens review, because the effort is xhigh and the task touches a security surface
+  (Step 2.3 table).
+- **Issues encountered:** two falsifier runs, (b) and (d), first failed on a dirty-tree compile error. A full wipe and
+  rerun produced the reds quoted above.
+- **Budget running totals:** tasks 2 / 5 · LOC **957** (T01 148 + T02 809) against ~470 · review rounds 3 / 7 (T01: 1,
+  T02: 2 lens verdicts). **LOC TRIPWIRE EXCEEDED, see the block below.**
+- **Final verification:** compile and the full suite green (Leader re-run), greps 0, Checkstyle delta 0.
+
+## Budget Tripwire: CHG-PARTROUTE-001-T02
+
+- **Measure:** LOC. Estimate ~470 for the whole spec (design §15: Java ~130, tests ~270, SQL ~35, FTL ~12, docs ~25).
+  Actual after 2 of 5 tasks: **957**, a delta of +487, about 2×.
+- **Cause:**
+  - The tests: T02 alone added 620 test lines against the ~270 test estimate for the whole spec.
+    `PartnersSaveActionClarisaModeTest` is 585 lines with about 20 cases. Each case maps to a row the gate map
+    requires (D1–D4, D11, `isClarisaMode`), and each carries the literal payload and log-text assertions the
+    Disqualifiers demand.
+  - Java: +166 / −15 against ~130.
+  - T01's parity test (~120 lines) was also unbudgeted beyond the "~270 tests" line.
+- **Other measures:** tasks 2 / 5 and review rounds 3 / 7 are within budget.
+- **Remaining estimate:** T03 (FTL ~12, plus static pins in the parity test of about 60), T04 (docs ~25), T05 (no
+  code). Projected total about 1,050 LOC.
+- **Status:** stopped for the owner. Per `/akili-execute` §2.4, *"No mandate widens pre-approval … the budget
+  tripwire … still stop"*. Not auto-approved.
+- **Owner decision (2026-11-20):** the overrun is accepted ("sí, acepta el sobrecosto, haz el commit y continúa con
+  T03"). The new working budget is about 1,050 LOC for the spec, the projection above. Review rounds and tasks are
+  unchanged.

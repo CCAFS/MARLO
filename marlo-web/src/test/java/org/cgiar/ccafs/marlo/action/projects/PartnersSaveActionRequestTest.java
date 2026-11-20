@@ -84,6 +84,8 @@ public class PartnersSaveActionRequestTest {
     /** The texts of the unit: global.properties, over which the unit's custom file (when it has one) is laid. */
     private final Properties texts = new Properties();
 
+    transient int clarisaCalls;
+
     DrivenAction(PartnerRequestManager manager, RecordingSendMail mail, InstitutionType type, LocElement country,
       String customFile) {
       super(new EnvelopeConfig("pmu@unit.test", NOTIFY, "https://marlo.test"),
@@ -141,6 +143,13 @@ public class PartnersSaveActionRequestTest {
     @Override
     public boolean isAiccra() {
       return true;
+    }
+
+    /** MARLO mode must never reach CLARISA: a call is recorded and fails the test at once. */
+    @Override
+    protected int postToClarisa(String url, String json) {
+      this.clarisaCalls++;
+      throw new AssertionError("the CLARISA call was made in MARLO mode");
     }
   }
 
@@ -334,14 +343,32 @@ public class PartnersSaveActionRequestTest {
   }
 
   @Test
+  public void testMarloModeNeverCallsClarisaEvenForAnAiccraUnit() throws Exception {
+    GlobalUnit unit = unit(true);
+    assertTrue("the unit of this case reports AICCRA", unit.isAiccra());
+    DrivenAction action = this.action(unit, false);
+
+    assertEquals("success", action.save());
+
+    assertEquals("the request is stored", 1, this.created.size());
+    assertEquals("the CLARISA call is never made", 0, action.clarisaCalls);
+    assertFalse(action.isClarisaMode());
+  }
+
+  /** CHG-PARTROUTE-001 DD-5: the office request stays local, and no unit is recognised by a hardcoded check. */
+  @Test
   public void testNoReferenceToTheExternalServiceRemains() throws Exception {
-    for (String file : new String[] {"src/main/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveAction.java",
-      "src/main/java/org/cgiar/ccafs/marlo/action/json/project/RequestCountryOfficeAction.java"}) {
-      String source = new String(Files.readAllBytes(Paths.get(file)), StandardCharsets.UTF_8);
-      assertFalse(file, source.toLowerCase().contains("clarisa"));
-      assertFalse(file, source.contains("ExternalPostUtils"));
-      assertFalse(file, source.contains("isAiccra()"));
-      assertFalse(file, source.contains("sendPartnerRequest"));
-    }
+    String office = new String(Files.readAllBytes(
+      Paths.get("src/main/java/org/cgiar/ccafs/marlo/action/json/project/RequestCountryOfficeAction.java")),
+      StandardCharsets.UTF_8);
+    assertFalse(office.toLowerCase().contains("clarisa"));
+    assertFalse(office.contains("ExternalPostUtils"));
+    assertFalse(office.contains("isAiccra()"));
+    assertFalse(office.contains("sendPartnerRequest"));
+
+    String partners = new String(
+      Files.readAllBytes(Paths.get("src/main/java/org/cgiar/ccafs/marlo/action/projects/PartnersSaveAction.java")),
+      StandardCharsets.UTF_8);
+    assertFalse(partners.contains("isAiccra()"));
   }
 }
