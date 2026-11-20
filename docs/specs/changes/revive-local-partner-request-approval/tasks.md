@@ -179,7 +179,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T08 — Review screen markup and CSS (`.prq`)
 
-- **Status:** pending · **Size:** L · **Depends on:** T03, T05, T07 · **Module:** marlo-web (FTL, CSS)
+- **Status:** [x] done 2026-11-19 (PASS attempt 2 — `execution.md`) · **Size:** L · **Depends on:** T03, T05, T07 · **Module:** marlo-web (FTL, CSS)
 - **Requirements:** UI-001 (+ BUT no legacy markup), UI-002 (header + counts, cards, empty states), UI-003 (changed fields only), UI-006 (focus, contrast, 390 px), AC UI-001/002/003
 - **Design refs:** §5.1–5.2 (component mapping, token mapping), §5.3 (accept POST form, redirect notes), §5.5 Review keys, §5.6, DD-10, DD-11, P-17, P-18, P-20
 - **Scope:** rewrite superadmin `marloInstitutions.ftl`, `institutionRequestMacro.ftl`, `rejectInstitutionPopup.ftl`, `allInstitutionsPopup.ftl` markup and `marloInstitutions.css` in the `.prq` scope with the design's token mapping; accept as POST form; action messages as `.prq-note`; `marloRequestInstitution.ui.*` page keys (except the seven `.outcome.*` keys moved to T07); drop the diff libs from `pageLibs`; new cache-busters.

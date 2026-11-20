@@ -136,3 +136,32 @@ FN-007 was red on the first run: the edit form sent different field names from t
 | `t11a-fn001-message.out` | **FN-001 'request sent' message**, real browser, AICCRA and CCAFS, email switch off for both units on the COPY, rows read right after each submit | **PASS**: the page shows 'The new partner request was sent succesfully. You will receive a confirmation message as soon as it has been processed.' (literal in `partnersSave.ftl`, no i18n key); two rows each (original `partner_request_id` NULL, copy pointing to it, both active); 0 emails |
 
 In the helper files `t11a-cookie.py` and `t11a-ui-helpers.sh`, `<home>` and `<scratchpad>` stand for the local home and scratch paths; names of the COPY users are shown as `<requester>`.
+
+## T08 - Review screen markup and CSS (`.prq`)
+
+Run on 2026-11-19, 20:20-21:05 local (UTC-5), base commit `d7378d5cda` plus the uncommitted T08 change. The application was built and run from a
+throwaway `git worktree` outside the repository, pointed at `aiccradb_partreq_test` (a copy of `aiccradb2`); the worktree was removed afterwards
+and the checkout's `marlo-dev.properties` was never edited. Browser: Chrome through `playwright-cli`, device pixel ratio 1, effective CSS px.
+
+**Fixtures on the copy (removed afterwards).** Two pending partner requests (one edited: name, institution type and country differ from the original)
+and one institution with two pending office requests, all named `T08 probe ...`. For the capture every other pending request on the copy was
+temporarily set inactive (restored afterwards) and the requester shown is the copy user renamed `Test Requester` (restored afterwards). The
+Debug Panel and the cookie banner of the test environment were hidden in the screenshots.
+
+### Files
+
+| File | What it is | Result |
+|---|---|---|
+| `t08-baseline-old.out` | **Baseline, taken before editing.** The old page (HEAD) with the same fixtures: `scrollWidth` vs `clientWidth` at 390x844 and 1280x800, Figtree check | 390: 390 vs 390; 1280: 1280 vs 1280. The old page did not overflow; `document.fonts.check('600 16px Figtree')` true |
+| `t08-measure-new.out` | The new page, same fixtures, same measurement | 390: 390 vs 390 (`overflow` false); 1280: 1280 vs 1280; Figtree 600 and 400 loaded |
+| `t08-measure-empty.out` | The new page with nothing pending (both lists empty), plus its text | No overflow at either width; "0 partner requests · 0 institutions with office requests" and one empty state per list |
+| `t08-falsifier.out` | **Falsifiers, executed and reverted.** (1) one `btn-success` left in the macro; (2) `.prq-card { min-width: 600px }` | (1) legacy grep `1`, back to `0` after the revert; (2) at 390 px `scrollWidth` 632 vs `clientWidth` 390, `overflow` true (red), and 390 vs 390 again after the revert |
+| `t08-edge-null-and-escape.out` | A request with no institution type, no country, no requester and a name containing `<b>`, `&` and quotes (temporary fixture) | The card renders ("Unknown", "Not provided"), the edit selects fall back to the placeholder, the name is escaped (no injected `<b>`), and no "changes" block is drawn when nothing differs. The first run of this probe found a defect (the requester helper received a string where it expects a hash, HTTP 500); fixed |
+| `t08-focus-contrast.out` | Focus ring on every control type, contrast ratios of the main text/background pairs, JS errors on load | Every control matches `:focus-visible` with a 2 px brand outline (the checkbox had the browser's default ring until its rule was raised); ratios 4.67-6.98 (all at or above 4.5:1); the only console errors are the external chat widget (CORS) |
+| `t08-review-1280.png`, `t08-review-390.png` | Full-page screenshots of the review page with the fixtures | Header with counts, two partner cards (one edited, original vs edited for the three changed fields only), one office card |
+| `t08-edit-form-1280.png` | The edited card with its inline edit form open (the form is `hidden` until T09's JS opens it; opened here from the console) | Fields prefilled from the copy |
+| `t08-empty-1280.png`, `t08-empty-390.png` | Both empty states | One empty state per list |
+| `t08-dialog-reject-390.png`, `t08-dialog-reject-1280.png` | The reject dialog markup, opened from the console (`hidden` removed) because the JS that opens it is T09 | Required marker, help text, notify checkbox (checked), common reasons |
+
+Not measured here: the detector (`impeccable detect`) was unevaluated, the launcher failed with `spawnSync ... EAGAIN` on every call (`engine-probe`
+answered `impeccable-engine 0.1.18` but `detect` did not run).

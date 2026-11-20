@@ -144,7 +144,7 @@ incumbent has no such variant and `.prq` defines it.
 | Similar institutions | `.ptn-note` (`projectPartners.css:199-224`, no variants) | `.prq-note--info` (new) |
 | Outcome / validation messages | none with variants | `.prq-note--success`, `--warning`, `--danger` (new) on the status tokens |
 | Actions | `.ptn-btn--primary`, `--ghost`, `--danger` (`projectPartners.css:73-127`) | `.prq-btn--primary`, `--ghost`, `--danger` |
-| Inline edit form, request form fields | `.ptn-field`, `.ptn-label`, `.ptn-req`, `.ptn-help`, `.ptn-error`, `.ptn-input` (`projectPartners.css:59-69,128-145,436`) | `.prq-field` family; `customForm` markup restyled inside `.prq` as `.dlf-card` does |
+| Inline edit form, request form fields | `.ptn-field`, `.ptn-label`, `.ptn-req`, `.ptn-help`, `.ptn-error`, `.ptn-input` (`projectPartners.css:59-69,128-145,436`) | `.prq-field` family; `customForm` markup restyled inside `.prq` as `.dlf-card` does (**amended at execute 2026-11-19, T08:** the inline edit form uses plain `.prq-*` inputs with per-card unique ids and bound labels instead of `customForm.select`, which emitted duplicate ids `type` / `country` on every card — UI-006) |
 | Dialogs (confirm, reject, all institutions) | `.dlf-typesGuide` shell (`deliverableForm.css:410-475`); also `.ui-dialog.deliverableTypesDialog` (`deliverableForm.css:401-404`) | `.prq-dialog`, `__panel`, `__head`, `__body`, `__foot` |
 | Office card (existing locations, requested countries) | `.ptn-chips` (`projectPartners.css:447-458`) | `.prq-chips`, checkbox list |
 | Empty state per list | `.ptn-empty` (`projectPartners.css:797-809`), `.cycEmpty` (`crpPhases.css:651-672`) | `.prq-empty` |
@@ -166,7 +166,7 @@ read from `marlo-redesign.css:13-112` (`:root`) and the scoped blocks `.ptn` (`p
 | Required marker (`#c7401c`) | `--ptn-required` / `--dlf-required` | `--marlo-danger-solid` (`#c7401c`, same value) |
 | Success / warning / danger notes | `--ptn-ok*`, `--ptn-warn*`, `--ptn-danger*` | `--marlo-success-bg/-border/-text`, `--marlo-warning-bg/-border/-text`, `--marlo-danger-bg/-border/-text` |
 | Info note | `--ptn-info-bg`, `--ptn-info-border` | `--marlo-brand-tint`, `--marlo-brand-tint-border` (same values as the incumbent), text `--marlo-info-text` |
-| Radius / shadow / focus ring | `--ptn-radius` (12px), `--ptn-radius-sm` (8px), `--ptn-shadow`, `--ptn-focus-ring` | `--marlo-radius-xl`, `--marlo-radius-md`, `--marlo-shadow-card`; focus ring as the literal `0 0 0 3px rgba(2,119,162,.12)` (no shared token exists) |
+| Radius / shadow / focus ring | `--ptn-radius` (12px), `--ptn-radius-sm` (8px), `--ptn-shadow`, `--ptn-focus-ring` | `--marlo-radius-xl`, `--marlo-radius-md`, `--marlo-shadow-card`; focus ring as the literal `0 0 0 3px rgba(2,119,162,.12)` (no shared token exists); dialog scrim as the literal `rgba(31, 42, 55, .45)` (no shared token; added at execute 2026-11-19, T08) |
 | Font | inherited | `--marlo-font-sans` |
 
 The exact `--marlo-*` names are taken from `marlo-redesign.css:13-112` at execute; a name missing there is a spec
@@ -199,7 +199,7 @@ justification is a labelled, required textarea; submitting it empty shows `.prq-
 
 | Group | Keys (all new, `global.properties`) |
 |---|---|
-| Review page | `marloRequestInstitution.ui.title`, `.summary` (`{0}` requests, `{1}` institutions), `.badge.pending`, `.badge.edited`, `.original`, `.edited`, `.requester`, `.source`, `.date`, `.similar`, `.empty.partners`, `.empty.offices`, `.action.accept`, `.action.edit`, `.action.reject`, `.dialog.accept.title`, `.dialog.accept.text`, `.dialog.reject.title`, `.dialog.reject.justification`, `.dialog.reject.notify`, `.dialog.cancel`, `.outcome.done`, `.outcome.alreadyHandled`, `.outcome.notFound`, `.outcome.wrongKind`, `.outcome.skippedExisting`, `.outcome.notAllowed`, `.outcome.notAuthorized`, `.outcome.failed` |
+| Review page | `marloRequestInstitution.ui.title`, `.summary` (`{0}` requests, `{1}` institutions — **amended at execute 2026-11-19, T08:** shipped as `.summary.partners.one` / `.many` and `.summary.offices.one` / `.many`, because one `{0}`/`{1}` key cannot pluralise "1 partner request" / "2 partner requests"), `.badge.pending`, `.badge.edited`, `.original`, `.edited`, `.requester`, `.source`, `.date`, `.similar`, `.empty.partners`, `.empty.offices`, `.action.accept`, `.action.edit`, `.action.reject`, `.dialog.accept.title`, `.dialog.accept.text`, `.dialog.reject.title`, `.dialog.reject.justification`, `.dialog.reject.notify`, `.dialog.cancel`, `.outcome.done`, `.outcome.alreadyHandled`, `.outcome.notFound`, `.outcome.wrongKind`, `.outcome.skippedExisting`, `.outcome.notAllowed`, `.outcome.notAuthorized`, `.outcome.failed` |
 | Request page | `marloRequestCreation.saveFailed`, `marloRequestCreation.success.title`, `.success.text`, `.success.again`, `.success.close` |
 | Emails | `marloRequestInstitution.mail.newPartner`, `.newOffice`, `.accepted`, `.rejected`, `.officeAccepted`, `.officeRejected`, `.supportName` (§10) |
 

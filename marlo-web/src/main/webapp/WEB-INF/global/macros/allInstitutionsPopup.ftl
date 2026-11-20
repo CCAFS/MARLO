@@ -1,31 +1,29 @@
-[#ftl] 
-[#-- All institutions MODAL --]
-<div class="modal fade" id="allInstitutions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">All Institutions & location offices</h4>
-      </div>
-      <div class="modal-body">
-        [#-- All institutions table --]
-        <table id="allInstitutionsTable" class="display table table-striped table-hover" width="100%">
-          <thead>
-            <tr>
-                <th>ID</th>
-                <th>Acronym</th>
-                <th>Name</th>
-                <th>Type</th> 
-            </tr>
-          </thead> 
-        </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
+[#ftl]
+[#-- All institutions dialog (CHG-PARTREQ-001): the table is filled by allInstitutionsPopup.js (DataTables); --]
+[#-- marloInstitutions.js (prqDialog) opens it from the page header button. --]
+<div class="prq-dialog" id="allInstitutions" data-prq-dialog="all" hidden>
+  <div class="prq-dialog__panel prq-dialog__panel--wide" tabindex="-1">
+    <div class="prq-dialog__head">
+      <h2 class="prq-dialog__title" id="allInstitutionsTitle">[@s.text name="marloRequestInstitution.ui.dialog.all.title" /]</h2>
+      <button type="button" class="prq-dialog__x" data-prq-close aria-label="[@s.text name="marloRequestInstitution.ui.dialog.close" /]"></button>
+    </div>
+    <div class="prq-dialog__body">
+      [#-- All institutions table --]
+      <table id="allInstitutionsTable" class="display prq-table" width="100%">
+        <thead>
+          <tr>
+            <th>[@s.text name="marloRequestInstitution.ui.table.id" /]</th>
+            <th>[@s.text name="marloRequestInstitution.ui.field.acronym" /]</th>
+            <th>[@s.text name="marloRequestInstitution.ui.field.name" /]</th>
+            <th>[@s.text name="marloRequestInstitution.ui.field.type" /]</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <div class="prq-dialog__foot">
+      <button type="button" class="prq-btn prq-btn--ghost" data-prq-close>[@s.text name="marloRequestInstitution.ui.dialog.close" /]</button>
     </div>
   </div>
 </div>
-[#--  Funding Source Popup JS --]
+[#-- All institutions table script --]
 [#assign customJS =  [ "${baseUrlCdn}/global/js/allInstitutionsPopup.js?20201123" ]  + customJS/]
-  

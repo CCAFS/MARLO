@@ -851,3 +851,133 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - LOC: **3,188**.
   - Review rounds: 15.
 - **PR 1 scope complete:** T01–T07 + T11a.
+- **Commit:** `d7378d5cda` (owner-approved). The PR 1 scope is complete on the branch. No push and no PR yet; the owner has not asked for either.
+
+### CHG-PARTREQ-001-T08 — Review screen markup and CSS (`.prq`)
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-11-19
+- **Attempts:** 2
+- **Effort:** high on attempt 1; xhigh on attempt 2 (rework bump).
+- **Skills:** `impeccable-bridge` (design route: playbooks layout, typeset, colorize and harden; ENV-2; mode Operate; polish light; motion none), `marlo-verify`.
+- **Review mode:** lens checklist, single Reviewer (`Review: full`), with the screenshots read.
+
+#### Attempt 1 — FAIL
+
+- **Files changed** (all LF, as at HEAD):
+
+| File | Lines | Change |
+|---|---|---|
+| `institutionRequestMacro.ftl` | +249 / −171 | rewritten |
+| `rejectInstitutionPopup.ftl` | +104 / −63 | reject and accept dialogs |
+| `allInstitutionsPopup.ftl` | +25 / −27 | rewritten |
+| `views/superadmin/marloInstitutions.ftl` | +75 / −23 | header and counts, `#prqNotes`, diff libs dropped from `pageLibs`, no `generalMessages.ftl` |
+| `marloInstitutions.css` | +437 / −17 | `.prq` on `--marlo-*` |
+| `global.properties` | +74 | 73 `marloRequestInstitution.ui.*` keys, `.outcome.notAuthorized` included |
+
+  Evidence: 13 `probes/t08-*` files and `probes/README.md` § T08.
+- **Baseline legacy-markup grep (observed):** macro, view, reject popup, all-institutions popup → `13 / 1 / 3 / 0` before, `0 / 0 / 0 / 0` after.
+- **Overflow baseline:** the old page at 390 px measured 390 vs 390, so there was no overflow before the change. The new page measured 390 vs 390 and 1280 vs 1280, with the empty state also clean. Figtree `600 16px` was loaded (`t08-baseline-old.out`, `t08-measure-new.out`, `t08-measure-empty.out`).
+- **Falsifiers (reverted, `t08-falsifier.out`):**
+  - A `btn-success` left in the macro → grep `1`.
+  - `.prq-card { min-width: 600px }` → 632 vs 390 at 390 px.
+- **Screenshots:**
+  - `t08-review-1280.png`, `t08-review-390.png`
+  - `t08-edit-form-1280.png`
+  - `t08-empty-1280.png`, `t08-empty-390.png`
+  - `t08-dialog-reject-390.png`, `t08-dialog-reject-1280.png`
+  
+  Only the probe fixtures are shown: the other pending requests on the copy were deactivated during the capture, then restored. The requester is shown as "Test Requester".
+- **Edge probe (`t08-edge-null-and-escape.out`):**
+  - A request with no type, no country or no requester renders "Unknown" / "Not provided".
+  - An injected `<b>` is escaped.
+  - Attempt 1's own first draft returned a 500 on a request with no requester; it was fixed and verified. That failed render sent 2 test-env "Exception occurred" mails to the notification mailbox. Their `email_logs` rows were deleted on the copy.
+- **Evidence re-run (Leader-inline):**
+  - Legacy-markup grep `0 0 0 0`, and no `confirm(` in the new markup.
+  - The 74 added `.properties` lines have no undoubled apostrophe and no non-numeric braces.
+  - All files LF.
+  - The probe files contain no personal data.
+  - No app, no worktree, main `marlo-dev.properties` on `aiccradb2`, and `aiccradb2.partner_requests` still 5079.
+  
+  **VERIFIED.**
+- **Reviewer: FAIL.** Verbatim:
+
+  > 1. **Discovered Issue:** The stylesheet reference uses `marloInstitutions.css?20261120`, but the edit date is 2026-11-19. If T09 edits this CSS tomorrow (2026-11-20), the convention gives it `?20261120`, the URL stays the same and the cache is not busted. That is the exact failure the convention exists to stop. The gate's script would also flag this reference: `cache-bust-check.sh` accepts only today's date or today plus a suffix.
+  >    * **Violated Rule:** `design.md` §5.3 "Cache-busting: new `?YYYYMMDD` on every CSS/JS file touched". `marlo-verify` skill Gate 3 (named in T08 Skills): "Convention is `?YYYYMMDD`, with a suffix for a second bump the same day".
+  >    * **Remediation Suggestion:** Set the reference to the real edit date, `?20261119`, or `?20261119-1` to match the same-day suffix style. Re-run `.claude/skills/marlo-verify/scripts/cache-bust-check.sh` and record its `ok` line.
+
+- **Leader note:** the cause was the Leader's own brief, which said "`?20261120` or later". The convention is the edit date.
+
+#### Attempt 2 — PASS
+
+- **Changes:**
+  - `marloInstitutions.ftl:11`: `?20261120` → `?20261119`.
+  - [advisory-grade] `institutionRequestMacro.ftl:128`: the country `selected` comparison is null-safe on both sides.
+  - [advisory-grade] `marloInstitutions.css:58`: `.prq-notes:empty` → `.prq-notes:not(:has(*))`.
+  
+  The screenshots stay valid: the layout is unchanged with fixtures present.
+- **Evidence re-run (Leader-inline):**
+  - `cache-bust-check.sh` → `ok  .../superadmin/marloInstitutions.ftl:11 - ?20261119`. The admin view's `STALE` line is out of scope (DD-9).
+  - Legacy grep `0 0 0 0`.
+  - No `20261120` left in the diff.
+  
+  **VERIFIED.**
+- **Reviewer: PASS.**
+  - The fix matches §5.3 and Gate 3.
+  - Both advisory edits are within scope.
+  - The three spec amendments match the shipped code and change no meaning in UI-001…006.
+- **runtime events:** none
+- **spawns:**
+  - implementer, attempt 1: 111 calls, 321841 tokens, ended complete
+  - reviewer, attempt 1: 26 calls, 112057 tokens, ended fail
+  - implementer, attempt 2: 10 calls, 88531 tokens, ended complete
+  - reviewer, attempt 2: 9 calls, 45158 tokens, ended complete
+
+#### Execute-time spec edits (recorded when made, from the attempt-1 advisories)
+
+- `design.md` §5.5 "Review page" row: the summary shipped as `.summary.partners.one` / `.many` and `.summary.offices.one` / `.many`, because one key cannot handle singular and plural.
+- `design.md` §5.2 "Inline edit form" row: plain `.prq-*` inputs with unique ids, instead of `customForm.select`, which duplicated the ids `type` / `country` on every card (UI-006).
+- `design.md` §5.2 token row: the dialog scrim literal `rgba(31, 42, 55, .45)` is recorded beside the focus-ring literal.
+- No requirement meaning changes.
+
+#### Completion report items (required by "Done when")
+
+- **Playbooks run:** layout, typeset, colorize, harden.
+- **Polish light:** fixed a centred legend, an empty "changes" block on an edited request with no differing fields, a checkbox focus rule overridden by Bootstrap, and the null-requester crash.
+- `finish review: not run (AKILI execute)`.
+- **Detector:** `impeccable detect` failed with `spawnSync … EAGAIN`, so it is **Unevaluated**, not passed. To be run in `/akili-validate`.
+
+#### ADVISORY (non-gating)
+
+- **Card actions.** A solid red Reject beside a solid blue Accept on every card. The incumbent uses solid danger only inside dialogs. → owner review in T11b.
+- **Checkbox focus evidence.** `t08-focus-contrast.out` records the checkbox's default ring captured before the fix. Re-capture it in T11b.
+- **Admin view.** The admin view's CSS reference has no cache-buster. It is not rendered and is out of scope (DD-9).
+
+#### Forward pointers → T09 (selectors broken by the new markup; copy into the T09 brief)
+
+- **Removed ids and classes:**
+  - `#myModal` and `#rejectOfficeRequest` are now `#prqRejectDialog`, `#prqRejectOfficesDialog`, `#prqAcceptDialog`, `#prqAcceptOfficesDialog` and `#allInstitutions`.
+  - `.rejectButton`, `.sendEmailInput`, `.requestInfo`, `.btn-group`, `.editForm` and `.hiddenTitle` are gone.
+- **Controls are buttons with `data-prq-action`:**
+  - Values: `edit`, `reject`, `accept`, `reject-offices`, `accept-offices`, `save-edit`, `cancel-edit`.
+  - Dialogs use `data-prq-close` and `data-prq-confirm`; the all-institutions trigger is `data-prq-open=allInstitutions`.
+  - Request and institution ids come from `data-request-id` / `data-institution-id`, not from classes.
+- **Edit form:**
+  - Inputs are already named with the action's names (`requestID`, `institutionName`, `institutionAcronym`, `institutionWebPage`, `institutionTypeID`, `countryID`, `justification`).
+  - Ids are `prq-edit-*-<id>`.
+  - `type="submit"` with no `action`, so the JS must call `preventDefault`.
+- **`hidden` attribute.** Forms, dialogs and `[data-prq-similar]` use the `hidden` attribute, and `.prq [hidden] { display: none !important }`. `.show()` / `.modal()` / `slideDown` will not reveal them, so the JS must toggle the attribute.
+- **Similar institutions.** `findSameness` must read the name from `data-prq-name`; `.hiddenTitle` is gone. The block keeps the `.sameness` class and its inner `ul`.
+- **Strings.** JS strings come from `data-outcome-*` and `data-text-*` on `#prqPage`.
+- **Page updates.** Notes go into `#prqNotes`; summary and counts are `[data-prq-summary]` and `[data-prq-count]`.
+- **Kept selectors:** `.partnerRequestItem`, `#partnerRequestItem-<id>`, `#officesRequestItem-<id>`, `.officeRequest`, `input.institutionID`, `.acceptRequestForm`, `.loading`.
+- **Office card.** A checkbox's `label` is no longer the only label in its parent.
+- **Accept.** The accept form currently submits with no confirmation; T09's `prqDialog` must gate it.
+
+- **Requirements covered:** UI-001, UI-002, UI-003, UI-006 (markup and CSS), NF-002 (keys).
+- **Budget (running, amended ceiling ~5,000 LOC / ~30 rounds):**
+  - Tasks: 9 / 12.
+  - LOC added: 3,188 + 964 = **4,152**.
+  - Review rounds: 17.
+  - Still under the ceiling, with T09, T10, T11b and T12 left. T10 (request page FTL + CSS + JS) is likely to cross ~5,000, which would stop the run at that gate.
+- **Final verification:** VERIFIED (Leader re-runs, attempts 1 and 2).
