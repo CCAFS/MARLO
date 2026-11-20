@@ -981,3 +981,86 @@ The next Reviewer briefs carry these execute-time spec edits as named checks: T0
   - Review rounds: 17.
   - Still under the ceiling, with T09, T10, T11b and T12 left. T10 (request page FTL + CSS + JS) is likely to cross ~5,000, which would stop the run at that gate.
 - **Final verification:** VERIFIED (Leader re-runs, attempts 1 and 2).
+- **Commit:** `cdcd092d62` (owner-approved).
+
+### CHG-PARTREQ-001-T09 — Review screen behaviour: `prqDialog`, POST, inline outcomes
+
+- **Final status:** PASS (attempt 2)
+- **Date:** 2026-11-19
+- **Attempts:** 2
+- **Effort:** high on attempt 1; xhigh on attempt 2 (rework bump).
+- **Skills:** `impeccable-bridge` (design route: playbooks harden and clarify; ENV-2; mode Operate; polish light; motion none), `marlo-verify`.
+- **Review mode:** single Reviewer covering SECURITY, ACCESSIBILITY / RELIABILITY and spec conformance. The parallel-lens mode was not used, because the xhigh effort came only from the rework bump on a one-token cache-buster fix; this deviation is recorded here.
+
+#### Attempt 1 — implicit FAIL (Leader evidence re-run)
+
+- **Files changed:**
+  - `marloInstitutions.js` rewritten (+673 / −195).
+  - Cache-buster in `superadmin/marloInstitutions.ftl`: `?20261119b` → `?20261119c`.
+  - New probes: `probes/t09-keyboard-walk.out`, `t09-outcomes-1280.png`, `t09-card-note-1280.png`.
+- **Greps, before → after:** `confirm(|alert(|noty(` went `6` → `0`. `type: 'POST'` stayed at `4`.
+- **Falsifiers:**
+  - With the Tab trap removed (on the served copy only), the first Tab left the dialog (`inOpenDialog=false`). The task predicted the 4th Tab, but the dialog has only three focusable stops. With the trap restored, focus stays inside and Escape returns it to the opener.
+  - A kept `confirm(` on a scratch copy gives grep `1`.
+- **Keyboard walk (keyboard only, from the opener):**
+  - The dialog has `role=dialog`, `aria-modal` and `aria-labelledby`. Focus moves to the justification, Tab cycles inside, and Escape returns focus to the opener.
+  - Reject with an empty justification shows a field error and sends nothing. With notify off, it makes one POST, shows a `done` note, removes the card, updates the count (4 → 3) and sends 0 email.
+  - Accept goes through the dialog, then a full-page POST and a redirect note.
+  - A valid edit posts the action's names, gives `done` and shows the note after the reload.
+  - A simulated 403 or 401 shows `notAuthorized`; a 500 shows `failed`.
+  - Offices: nothing selected shows an error. Accept returns `{"5269":"done","5270":"skippedExisting"}`. Reject empties the list and shows the empty state.
+- **Email safety:** the probe requester on the copy has the notification address. `marlo.production=false`. The run produced 2 `email_logs` rows, both to that mailbox.
+- **Leader evidence re-run:**
+  - Passed: `node --check` OK, greps `0` / `4`, the edit names and `sendNotification` present, LF, no line over 120 characters, no personal data in `t09-*`, clean environment, `aiccradb2` unchanged.
+  - **Gate 3 failed:** `STALE  .../superadmin/marloInstitutions.ftl:6 - ?20261119c (today is 20261119)`. The script accepts only `?YYYYMMDD` or a same-day `-N` suffix. The letter suffix came from the Leader's brief, and `?20261119b` in the T07 reopening had the same defect (that one is superseded now). This counts as an implicit FAIL and consumed attempt 1.
+
+#### Attempt 2 — PASS
+
+- **Change:** `?20261119c` → `?20261119-1` (the committed `?20261119b` is replaced).
+- **Leader re-run:** Gate 3 reports `ok … superadmin/marloInstitutions.ftl:6 - ?20261119-1`. The other lines the script flags are FTL comment text and the admin view (DD-9), all out of scope. **VERIFIED.**
+- **Reviewer:** **PASS**. Points checked:
+  - SEC-002: four POST calls. Accept is gated by `#prqAcceptDialog` and then a native `form.submit()`, which cannot loop.
+  - The seven edit names are kept.
+  - `sendNotification` is a literal `true` / `false`.
+  - §5.4 is fully met: role and aria attributes, the opener is remembered, focus moves in, the Tab / Shift+Tab trap holds, Escape and close work unless a request is in flight, focus returns to the opener, and an empty justification shows `.prq-error` with `aria-invalid` and sends nothing.
+  - §4: 403 and 401 map to `notAuthorized`.
+  - XSS: every note is built with `.text()` / `createTextNode`. The old `findSameness` HTML concatenation of `composedName` was removed, which closes a pre-existing XSS path.
+  - Strings come only from `data-` attributes.
+  - The walk is valid: it is keyboard-only from the opener.
+  - The Implementer's assumptions are accepted. Cards leave on statuses that are no longer pending (§5.3). The edit reloads the page. Notes are prefixed with the request name. The 403 is simulated here; the real one is T11a's evidence.
+- **runtime events:** none
+- **spawns:**
+  - implementer, attempt 1: 80 calls, 257004 tokens, ended complete.
+  - implementer, attempt 2: 4 calls, 83196 tokens, ended complete.
+  - reviewer: 14 calls, 89711 tokens, ended complete.
+
+#### Completion report items
+
+- **Playbooks:** harden, clarify.
+- **Polish light:** the in-card note sat flush against the card edges; it now goes at the end of the card body. Checked again on a screenshot.
+- `finish review: not run (AKILI execute)`.
+- **Detector:** not run. The engine reported `consent needed`, so the launcher-unavailable path was followed. To be run in `/akili-validate`.
+
+#### ADVISORY (non-gating)
+
+- **Edit fallback, RELIABILITY.** If the `sessionStorage` write fails, `finishEdit` removes the edited card even though the request is still pending. The fix is to show the card note and close the form when status is `done` and the note cannot be queued. → T12 follow-up list.
+- **Expired session, RESILIENCE.** If `requireUser` answers with an HTML login page (200) rather than a 401, the user sees `failed` instead of `notAuthorized`. → check live in T11b.
+- **Unknown statuses, READABILITY.** An unknown status shows the `failed` text in a warning-styled note.
+- **Office accept with no existing locations, RELIABILITY.** The accepted-country chip does not appear until the page reloads.
+
+#### Forward pointers
+
+- **→ T11b:**
+  - Real expired-session behaviour (401 vs a login redirect) on the AJAX calls.
+  - Owner review of the screenshots and dialogs.
+  - Re-capture the checkbox focus ring (T08 advisory).
+  - The office-chip behaviour.
+- **→ T12:** the edit-fallback defect and the office-chip refresh go on the follow-up list.
+
+- **Requirements covered:** UI-004, UI-006 (dialogs), SEC-002 (AJAX POST).
+- **Budget (running, amended ceiling ~5,000 LOC / ~30 rounds):**
+  - Tasks: 10 / 12.
+  - LOC added: 4,152 + 674 = **4,826**.
+  - Review rounds: 19.
+  - T10 (request page: FTL, CSS, JS, i18n) will cross the ~5,000 ceiling, which will stop the run at T10's gate unless the owner raises the ceiling first.
+- **Final verification:** VERIFIED. Leader re-runs on both attempts; Gate 3 `ok` on attempt 2.

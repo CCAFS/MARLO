@@ -198,7 +198,7 @@ those files change; `.properties` apostrophes doubled.
 
 ### CHG-PARTREQ-001-T09 — Review screen behaviour: `prqDialog`, POST, inline outcomes
 
-- **Status:** pending · **Size:** M · **Depends on:** T08 · **Module:** marlo-web (JS, FTL data attributes)
+- **Status:** [x] done 2026-11-19 (PASS attempt 2 — `execution.md`) · **Size:** M · **Depends on:** T08 · **Module:** marlo-web (JS, FTL data attributes)
 - **Requirements:** UI-004 (inline edit; dialogs; reject justification required; notify option; outcome notes; BUT no `confirm`/`alert`), UI-006 (dialog keyboard), SEC-002 (AJAX POST), AC UI-004, AC UI-006 dialogs clause
 - **Design refs:** §4 JSON contract (statuses, 403 / 401), §5.3, §5.4, §5.5, DD-12
 - **Scope:** `marloInstitutions.js`: `type: 'POST'` on the four calls and the edit-call parameter names (both bridged in T07 — keep them through the rewrite); `prqDialog` (role, aria-modal, aria-labelledby, focus in, Tab trap, Escape, return focus); status → note key mapping incl. `error` handler for 403 / 401; strings from `data-` attributes; no `confirm(` / `alert(` / `noty(`.

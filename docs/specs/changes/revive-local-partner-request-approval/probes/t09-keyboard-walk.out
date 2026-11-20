@@ -1,0 +1,65 @@
+CHG-PARTREQ-001-T09 keyboard walk, 2026-11-19, base commit cdcd092d62 + the T09 working tree.
+Live app from a throwaway worktree, throwaway database copy (*_partreq_test), 1280x800, Chromium (Playwright).
+Every request in this walk was created by the test requester ("Test Requester"), whose email on the COPY is the
+<notification mailbox>; external_user_mail empty. Mail check: 2 rows in email_logs, both to <notification mailbox>, no cc, no bcc.
+Method: the opener button is reached with Tab (first step) or focused by script, then ONLY keyboard events
+(Tab, Shift+Tab, Enter, Space, Escape, typing). The dialog is never focused or clicked with the mouse.
+
+== 1. Reject dialog (partner request)
+Tab x3 from "All institutions" -> BUTTON [reject] of the card (card=partnerRequestItem-5262)
+Enter                          -> TEXTAREA#prqRejectJustification, inOpenDialog=true
+                                  panel role=dialog aria-modal=true aria-labelledby=prqRejectDialogTitle (title "Reject this request")
+Tab x9 (cycle)                 -> notify checkbox, details summary, Cancel, Reject (confirm), X (wrapped), textarea,
+                                  notify checkbox, summary, Cancel ... every stop inOpenDialog=true
+Shift+Tab x2                   -> summary, notify checkbox (still inside)
+Enter on Reject, textarea empty-> focus back on the textarea, is-invalid + aria-invalid=true, .prq-error "A justification is
+                                  required." visible, dialog stays open, cards=4, requests sent: [] (none)
+Escape                         -> dialog hidden, focus on BUTTON [reject] of the same card, html.prq-dialogOpen removed
+Enter, type justification, Tab, Space (notify unchecked), Tab x3, Enter
+  request: POST /rejectPartnerRequest.do requestID=5262&justification=...&sendNotification=false&phaseID=431
+  result : note "T09 Reject Kbd The request was processed." (prq-note--success), card gone, count 4 -> 3,
+           summary "3 partner requests", focus on the note; DB: is_active=0 acepted=0; email_logs unchanged (0 mails)
+
+== 2. Accept (partner request)
+Tab x4 from the note -> BUTTON [accept] (card 5264); Enter -> dialog #prqAcceptDialog, focus on the confirm button
+  (role=dialog, aria-labelledby=prqAcceptDialogTitle, target "T09 Accept Kbd"); Tab cycle: X, Cancel, confirm, X (trapped)
+Escape -> dialog hidden, focus on BUTTON [accept]; requests sent: [] (the accept form did NOT submit)
+Enter, Enter on confirm -> POST /superadmin/addPartner.do requestID=5264 (full page), redirect to the review screen,
+  note "The request was processed." (prq-note--success from the action message), cards 2
+
+== 3. Edit inline
+Enter on [edit] -> form shown (aria-expanded=true), focus on the name input; the card buttons are hidden while editing
+Tab through: acronym, type, country, web page, justification, Cancel, Save
+Enter on Save with type "-1" and empty justification -> focus moves to the first invalid field (type), errors shown for
+  type and justification, requests sent: [] (none)
+After choosing the type (script selectOption; ArrowDown on a closed select does not change it in headless Chromium)
+and typing a justification: Enter on Save ->
+  POST /editPartnerRequest.do requestID=5266&institutionName=...&institutionAcronym=...&institutionWebPage=...&institutionTypeID=39&countryID=FR&justification=...
+  result: page reloaded by the server (changed fields + "Edited" badge render server side), note
+  "T09 Edit Kbd The request was processed." carried over the reload; Enter on Cancel returned focus to [edit].
+
+== 4. Refused / failed responses (the reject POST fulfilled by the test with a fixed status)
+HTTP 403 -> card note (role=alert, prq-note--warning) "You are not allowed to review these requests."; card stays;
+            dialog closed; focus on BUTTON [reject]; buttons re-enabled
+HTTP 401 -> the same note (.outcome.notAuthorized)
+HTTP 500 -> prq-note--danger "The request could not be processed. Nothing was changed."; card stays
+(A real 403 from the server for a non-superadmin is proven by T11a: t11a-sec-nonsa-branch.out.)
+
+== 5. Office requests (institution card with four pending rows: Andorra x2, United Arab Emirates, Afghanistan)
+Accept with nothing selected -> focus on the first checkbox, .prq-error shown, fieldset aria-describedby set, no dialog, no request
+Space on the two Andorra checkboxes, Tab to [accept-offices], Enter -> confirm dialog (target "<institution>: Andorra, Andorra"), Enter
+  POST /acceptOfficesRequest.do countryOfficePOJO.institution.id=11897&countryOfficePOJO.ids=5269,5270
+  JSON {"outcome":"done","outcomes":{"5269":"done","5270":"skippedExisting"},"success":true}
+  two card notes: success "The request was processed." and warning "The location already exists for this institution;
+  the request was closed."; both rows left the card, badge "2 requested", chip "Andorra" added, focus back on [accept-offices]
+Reject offices: Space on the two remaining checkboxes, [reject-offices], Enter -> dialog, focus on the textarea
+  Enter on confirm with empty justification -> error, no request; type, Tab, Space (notify off), Tab x3, Enter
+  POST /rejectOfficesRequest.do countryOfficePOJO.institution.id=11897&justification=...&sendNotification=false&countryOfficePOJO.ids=5271,5272
+  result: no row left -> the card left, page note success, count 1 -> 0, summary "0 institutions with office requests",
+  empty state shown, focus on the note
+
+== 6. Falsifier (run on the served copy only; the repository file was never modified)
+Tab trap removed (the Tab branch of the keydown handler skipped), accept dialog opened by keyboard:
+  open: BUTTON [confirm] inOpenDialog=true; Tab 1..5: A [] inOpenDialog=false (focus left the dialog on the first Tab)  RED
+Restored, same steps: Tab 1..5: close, close, confirm, close, close (all inOpenDialog=true); Shift+Tab stays inside;
+  Escape -> BUTTON [accept]                                                                                        GREEN
