@@ -256,3 +256,61 @@ requester address = notification mailbox, `external_user_mail` empty). Email ids
 Finding for the owner: the stored source of an office request is still `Project: (<id>) - <title>` for AICCRA too (`RequestCountryOfficeAction`, line 116), so the office card on the review screen says
 "Project: (102076)" while the alert says "cluster C102076". Not changed here (not in the task); candidate for T12.
 
+## Validate (design gate)
+
+Run on 2026-11-20 for `/akili-validate`, HEAD `2380642ca0`, no product-code change. Skill source `vendored (4.8.0)` (hash check: every listed file matches; one unlisted file, the
+engine binary `scripts/bin/darwin-arm64/impeccable`), engine `ready (location 2, engine 0.1.18)`, every launcher call with `IMPECCABLE_BIN` pinned, `DO_NOT_TRACK=1`,
+`IMPECCABLE_NO_UPDATE_CHECK=1`; nothing downloaded. Application from a throwaway `git worktree` outside the repository, pointed at `aiccradb_partreq_test`; worktree and app removed.
+
+**Fixtures on the copy (all removed or restored).** Two partner requests (original + copy each, one copy edited by the approver with a reason) and one institution with two pending
+office requests, all created by COPY user 2491 renamed "Test Requester" for the run. The 62 other pending requests were set inactive and reactivated (id list equal to the saved one);
+fixture rows deleted, `AUTO_INCREMENT` reset, user name restored. No decision was taken, so no email: `email_logs` max id 18319 before and after. `aiccradb2` unchanged
+(institutions 10974, partner_requests 5079).
+
+**How the authenticated pages were scanned.** The detector takes no cookie, so URL scans used `detect --cdp`: a headless Chrome with a fresh profile per capture (no stored consent),
+a superadmin session cookie set through `playwright-cli attach`, viewport set by device-metrics emulation and read back from a separate CDP session during and after each scan.
+
+| File | What it is | Result |
+|---|---|---|
+| `validate-detector.out` | Source scan (9 files) and the URL scan matrix: both screens x 1280x800 / 390x844 x default / first-visit flags, every finding with selector | Source: exit 0, 0 findings. URL: exit 2 on all 8 passes. Review: 20-22 primary findings, all in shared chrome or the test-only debug panel; request: 1 `nested-cards` (info note inside the form card) |
+| `validate-first-visit.out` | Capture conditions and CTA outcome per screen x viewport (1280x800, 390x844, 1366x768, 375x667) | Review: pass, below fold (y=1293), pass, below fold (y=1293). Request: pass, pass, pass, covered by the cookie banner at 375x667 |
+| `validate-fv-<screen>-<WxH>.png` | Fold screenshots as measured (cookie banner and debug panel visible) | - |
+| `validate-review-{1280,390}.png`, `validate-request-{1280,390}.png` | Full-page screenshots for the critique (banner and debug panel hidden) | No horizontal overflow at any width |
+| `validate-critique.md` | Impeccable `critique` + `audit` of both screens (Operate) | See the file |
+
+`docs/ux-ui/design.md` has no *Design Waivers* section, so no waiver covers the detector findings or the first-visit outcomes.
+
+### Validate remediation: F2 (unvalidated `href`) and F3 (`nested-cards`), 2026-11-20
+
+Fixed on this branch (uncommitted). Live check on a throwaway `git worktree` (HEAD + the diff, outside the repository) against `aiccradb_partreq_test`; worktree and app removed. Fixtures: three partner
+requests (original + edited copy each) and one office request, all created by COPY user 2491 renamed "Test Requester" for the run; website values `javascript:alert(1)`, `https://example.org` and
+`  HTTPS://Example.org/Path?a=1&b=2`, plus an office institution whose `website_link` was set to `javascript:alert(3)`. The 62 other pending requests were set inactive and reactivated (id list equal to
+the saved one), fixtures deleted, `AUTO_INCREMENT` reset, institution and user restored. No decision taken, so no email: `email_logs` max id 18319 before and after.
+
+| File | What it is | Result |
+|---|---|---|
+| `validate-fix-live-guarded.json` | Review cards DOM with the guard | `javascript:` website and office link: `<span>` text, no `<a>`; `https://` and mixed-case `HTTPS://` (leading spaces): `<a>` |
+| `validate-fix-live-falsifier.json` | Same page with the guard forced to `[#if true]` in the running copy | `<a href="javascript:alert(1)">` and `<a href="javascript:alert(3)">` render: the check is red without the guard |
+| `validate-fix-live-restored.json` | Guard restored | back to text; zero `href="javascript`: |
+| `validate-fix-detector.out` | Detector: source scan (exit 0, 0 findings) and request-page URL scans at 1280x800 and 390x844, default and first-visit | `nested-cards` gone; exit 0 on all four; only the shared cookie-banner advisory remains |
+| `validate-fix-request-{1280,390}.png`, `validate-fix-fv-request-{1280x800,390x844}.png` | Request page after F3 | The help text is plain text, no border, radius, shadow or fill |
+
+The first run of the capture helper wrote to the `validate-*` names and overwrote `validate-fv-request-1280x800.png` and `validate-request-1280.png` with a login-redirect page; both were removed.
+The other request-page captures of the validate run are unchanged.
+
+#### F2 rework (attempt 2): the all-institutions popup
+
+The Reviewer found the same sink one step later: an accepted request copies its website into the institution, and `allInstitutionsPopup.js` (a second script, added by the `allInstitutionsPopup.ftl` macro)
+built the table cells by string joining. Fixed in `global/js/allInstitutionsPopup.js`: id, acronym and type are HTML-escaped (display only), the name cell is built with `createTextNode` and jQuery
+(`.attr()`), and the "Web page" link exists only for an `http://` or `https://` value (any other scheme gets no link). Column output is otherwise the same (flag, name, link); the link gains
+`rel="noopener noreferrer"`. The macro's script reference was `?20201123`, now `?20261120`. The same macro is included by `crp/views/admin/marloInstitutions.ftl`, which benefits too.
+
+Live check on a throwaway worktree (HEAD + diff) against `aiccradb_partreq_test`; app and worktree removed. Four existing institutions inside the popup's first 100 rows were edited for the run (name,
+acronym, website) and restored byte for byte (hex compare); no request rows, no decision, no email (`email_logs` max id 18319, `partner_requests` 5215 rows / max id 5272, as before).
+
+| File | What it is | Result |
+|---|---|---|
+| `validate-fix2-static.out` | `node --check`, Gate 3, detector on the two files, sweep of every script on the page, follow-up path | all ok; one follow-up outside the page |
+| `validate-fix2-live-guarded.json` | DataTable DOM, guard in place | `javascript:` row and `x' onmouseover='alert(2)` row: no `<a>`; name `<img src=x onerror=alert(3)>` and acronym `<b>` shown as text (no `<img>`, no `on*`); `https://` row: `<a>`; zero dialogs |
+| `validate-fix2-live-falsifier.json` | Same page with the HEAD script | `<a href="javascript:alert(1)">`; `<a href="x" onmouseover="alert(2)">`; a real `<img>` with `onerror` injected (red) |
+| `validate-fix2-live-restored.json` | Guard restored | same as guarded |

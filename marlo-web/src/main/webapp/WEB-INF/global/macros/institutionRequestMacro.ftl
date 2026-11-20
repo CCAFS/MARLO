@@ -5,6 +5,16 @@
 [#-- Text of a key, escaped for an HTML attribute --]
 [#macro attrText key][@s.text name=key escapeHtml=true /][/#macro]
 
+[#-- A website the requester typed: a link only for http:// or https://, plain escaped text for any other scheme (javascript:, data:) --]
+[#macro websiteLink url=""]
+  [#local text = (url)!""]
+  [#if text?trim?lower_case?starts_with("http://") || text?trim?lower_case?starts_with("https://")]
+    <a href="${text?trim}" target="_blank" rel="noopener noreferrer">${text}</a>
+  [#else]
+    <span>${text}</span>
+  [/#if]
+[/#macro]
+
 [#-- "3 Dec 2026"; empty when there is no date --]
 [#function shortDate value=""]
   [#if value?has_content]
@@ -171,7 +181,7 @@
                 [#if (partner.locElement.name)?has_content][@flagCountry request=partner /][#else]<span class="prq-muted">[@s.text name="marloRequestInstitution.ui.unknown" /]</span>[/#if]
               </p>
               [#if (partner.webPage)?has_content]
-                <p class="prq-card__link"><a href="${partner.webPage}" target="_blank" rel="noopener noreferrer">${partner.webPage}</a></p>
+                <p class="prq-card__link">[@websiteLink url=partner.webPage /]</p>
               [/#if]
             </div>
             <div class="prq-card__badges">
@@ -224,7 +234,7 @@
               <div class="prq-card__title">
                 <h3 class="prq-card__name">${(partner.institution.composedName)!""}</h3>
                 [#if (partner.institution.websiteLink)?has_content]
-                  <p class="prq-card__link"><a href="${partner.institution.websiteLink}" target="_blank" rel="noopener noreferrer">${partner.institution.websiteLink}</a></p>
+                  <p class="prq-card__link">[@websiteLink url=partner.institution.websiteLink /]</p>
                 [/#if]
               </div>
               <div class="prq-card__badges">

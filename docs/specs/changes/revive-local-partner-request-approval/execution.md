@@ -1448,6 +1448,22 @@ One line each: item, then owner / next step. None blocks the release.
 19. `PartnerRequestEmails` class Javadoc (line 31) still says "the mail sender never suppresses mail to the notification mailbox" — narrower than `SendMailS.isNotificationDisabled` (answers 3–6 can be dropped); fold into item 18. Spec-history copies of the "six `@Transactional`" wording (`proposal.md`, `design.md:12`, `tasks.md:54`) are left as history.
 20. `SendMailS` evaluates the switch against the **session** unit (`getRequestCrpID()`), not the request's own unit, and sends when that CRP is null or the lookup throws — for a superadmin reviewing another unit's request the second check may read a different unit's switch (the action's own `isEnabled(request unit)` check is the authoritative one). Document or align.
 
+
+21. **Pending authority write (staging):** add a *Design Waivers* section to `docs/ux-ui/design.md` with the three owner-approved F1 rows (`validation-report.md` §11.1). Do it through `/akili-constitution` on `staging`, together with the DD-13 §7 token drift and the missing viewport declarations (W4).
+22. Site-wide follow-ups behind those waivers:
+    - the cookie banner covers primary actions at short heights;
+    - the shared admin side menu sits before the content on mobile;
+    - contrast and text size in the shared chrome.
+23. Design-critique P2 items (`probes/validate-critique.md`):
+    - a check for duplicate or similar institutions before submit;
+    - insertable "Common reasons" in the reject dialog;
+    - a more specific accept outcome text;
+    - Cancel on the request form;
+    - select-all for office countries.
+
+24. `swagger/dist/js/request.js:524` builds an `href` from data by string concatenation, the same unsafe pattern F2 fixed in the review UI. It sits outside the review page.
+25. Check the website scheme on save (`PartnersSaveAction.validate()`, `editPartnerRequest`), so that future render sites do not each need their own guard. Do not reuse `escapeCell` (from `allInstitutionsPopup.js`) inside HTML attributes, because it does not escape quotes.
+
 ## Release note
 
 **OPS-002 line for users:** AICCRA partner requests are approved inside MARLO again; the support mailbox receives the alerts.
@@ -1516,3 +1532,31 @@ Also state in the note: a batch that repeats a country now closes the repeat as 
   - T11a / T11b: every AC.
 - **Pre-release (owner):** the OPS-002 and P-25 production checks; see `## Release note`.
 - **Not pushed:** the branch has local commits beyond `origin` (`d4dd9c8a3b`). The owner decides when to push and open the PRs.
+
+## Validation remediation (2026-11-20)
+
+The `/akili-validate` first pass reported 3 FAILs (`validation-report.md`); the owner chose "fix all".
+
+- **F2: unvalidated `href` scheme (P1 security, pre-existing).**
+  - **Attempt 1:** a `websiteLink` macro in `institutionRequestMacro.ftl`, applied at both card sites.
+  - **Reviewer, attempt 1: FAIL.** The same sink remained in `allInstitutionsPopup.js:31`, which builds the link by string concatenation without escaping (unescaped name at line 40).
+  - **Attempt 2:** five unsafe sites in `allInstitutionsPopup.js` fixed (link built with `.attr()` behind the http(s) check, the name as a text node, the other cells escaped); cache-buster `?20201123` → `?20261120`.
+  - **Proof:** live with a falsifier; the HEAD script re-injects all three payloads.
+  - **Reviewer, attempt 2: PASS.**
+- **F3: `nested-cards`.** The request page's help note became `.prq-help`, with cache-buster `?20261120-1`. The detector re-scan exits 0. Reviewer PASS (in the same reviews).
+- **F1: owner-approved waivers.** Recorded in `validation-report.md` §11.1 and the Decision Log, pending the authority write on `staging` (follow-up 21).
+- **Leader evidence re-runs:**
+  - Gate 3 `ok` for both references.
+  - `node --check` OK.
+  - No string-built HTML from `full.`/`data` left in the popup script.
+  - No personal data in the `validate-*` probes.
+  - Clean environment; `aiccradb2` unchanged; `email_logs` unchanged at max id 18319.
+  
+  **VERIFIED.**
+- **spawns:**
+  - Design-gate tester: 75 calls, 210826 tokens, ended complete.
+  - Implementer, attempt 1: 99 calls, 245243 tokens, ended complete.
+  - Implementer, attempt 2 (resumed): 25 calls, 282369 tokens, ended complete.
+  - Reviewer, attempt 1: 13 calls, 51017 tokens, ended fail.
+  - Reviewer, attempt 2: 13 calls, 54218 tokens, ended complete.
+

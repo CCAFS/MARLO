@@ -1,0 +1,91 @@
+{
+ "rows": [
+  {
+   "id": "236",
+   "acronymHTML": "TAAS",
+   "nameCellHTML": "Academy of Agricultural Sciences of the Republic of Tajikistan <br>  <i title=\"TJ\" class=\"flag-icon flag-icon-tj\"></i><a style=\"margin: 20px;\" href=\"javascript:alert(1)\" target=\"_blank\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"javascript:alert(1)\">Web page</a>",
+   "typeHTML": "University",
+   "anchors": [
+    {
+     "href": "javascript:alert(1)",
+     "attrs": [
+      "style",
+      "href",
+      "target",
+      "data-toggle",
+      "data-placement",
+      "title"
+     ]
+    }
+   ],
+   "injectedImg": 0,
+   "onAttrs": 0
+  },
+  {
+   "id": "1040",
+   "acronymHTML": "AU",
+   "nameCellHTML": "Aarhus University <br>  <i title=\"DK\" class=\"flag-icon flag-icon-dk\"></i><a style=\"margin: 20px;\" href=\"x\" onmouseover=\"alert(2)\" target=\"_blank\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"x\">Web page</a>",
+   "typeHTML": "University",
+   "anchors": [
+    {
+     "href": "x",
+     "attrs": [
+      "style",
+      "href",
+      "onmouseover",
+      "target",
+      "data-toggle",
+      "data-placement",
+      "title"
+     ]
+    }
+   ],
+   "injectedImg": 0,
+   "onAttrs": 1
+  },
+  {
+   "id": "1070",
+   "acronymHTML": "<b>ACR</b>",
+   "nameCellHTML": "Aa FIX3 <img src=\"x\" onerror=\"alert(3)\"> <br>  <i title=\"NL\" class=\"flag-icon flag-icon-nl\"></i><a style=\"margin: 20px;\" href=\"http://www.acaciawater.com/\" target=\"_blank\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"http://www.acaciawater.com/\">Web page</a>",
+   "typeHTML": "Private company (other than financial)",
+   "anchors": [
+    {
+     "href": "http://www.acaciawater.com/",
+     "attrs": [
+      "style",
+      "href",
+      "target",
+      "data-toggle",
+      "data-placement",
+      "title"
+     ]
+    }
+   ],
+   "injectedImg": 1,
+   "onAttrs": 1
+  },
+  {
+   "id": "1310",
+   "acronymHTML": "<i><i></i></i>",
+   "nameCellHTML": "1,000 Days <br>  <i title=\"US\" class=\"flag-icon flag-icon-us\"></i><a style=\"margin: 20px;\" href=\"https://example.org\" target=\"_blank\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"https://example.org\">Web page</a>",
+   "typeHTML": "International NGO",
+   "anchors": [
+    {
+     "href": "https://example.org",
+     "attrs": [
+      "style",
+      "href",
+      "target",
+      "data-toggle",
+      "data-placement",
+      "title"
+     ]
+    }
+   ],
+   "injectedImg": 0,
+   "onAttrs": 0
+  }
+ ],
+ "totalRows": 100,
+ "servedScriptHasGuard": true
+}

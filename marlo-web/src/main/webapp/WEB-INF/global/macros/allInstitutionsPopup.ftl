@@ -1,5 +1,5 @@
 [#ftl]
-[#-- All institutions dialog (CHG-PARTREQ-001): the table is filled by allInstitutionsPopup.js (DataTables); --]
+[#-- All institutions dialog (CHG-PARTREQ-001): the table is filled by the all-institutions popup script (DataTables); --]
 [#-- marloInstitutions.js (prqDialog) opens it from the page header button. --]
 <div class="prq-dialog" id="allInstitutions" data-prq-dialog="all" hidden>
   <div class="prq-dialog__panel prq-dialog__panel--wide" tabindex="-1">
@@ -26,4 +26,4 @@
   </div>
 </div>
 [#-- All institutions table script --]
-[#assign customJS =  [ "${baseUrlCdn}/global/js/allInstitutionsPopup.js?20201123" ]  + customJS/]
+[#assign customJS =  [ "${baseUrlCdn}/global/js/allInstitutionsPopup.js?20261120" ]  + customJS/]

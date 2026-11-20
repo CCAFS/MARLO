@@ -2,7 +2,7 @@
 [#assign title][@s.text name="marloRequestCreation.pageTitle" /][/#assign]
 [#assign pageLibs = ["jquery", "noty","select2"] /]
 [#assign customJS = ["${baseUrlCdn}/global/js/partnersSave.js?20261120"] /]
-[#assign customCSS = ["${baseUrlCdn}/global/css/partnersSave.css?20261120"] /]
+[#assign customCSS = ["${baseUrlCdn}/global/css/partnersSave.css?20261120-1"] /]
 [#assign includeHeader = "false" /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
@@ -37,8 +37,8 @@
         [#if (action.requestFailed)!false]
           <p class="prq-note prq-note--danger" role="alert"><span class="prq-note__text">[@s.text name="marloRequestCreation.saveFailed" /]</span></p>
         [/#if]
-        <div class="prq-note prq-note--info">
-          <p class="prq-note__text">[@s.text name="marloRequestCreation.helpMessage" /]<br />[@s.text name="marloRequestCreation.helpMessage.example" /]</p>
+        <div class="prq-help">
+          <p class="prq-help__text">[@s.text name="marloRequestCreation.helpMessage" /]<br />[@s.text name="marloRequestCreation.helpMessage.example" /]</p>
         </div>
       </div>
 

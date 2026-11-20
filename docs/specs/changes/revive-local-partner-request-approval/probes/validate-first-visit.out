@@ -1,0 +1,30 @@
+/akili-validate design gate - first-visit pass, 2026-11-20, HEAD 2380642ca0, DB aiccradb_partreq_test (copy), Chrome 158 headless over CDP driven by playwright-cli.
+Each capture: fresh browser profile (no stored consent: cookieconsent_status absent), logged in as superadmin (session cookie only), viewport by device-metrics emulation,
+measured after jQuery.isReady + document.fonts.ready + 2.5 s, BEFORE anything is hidden. Fold screenshot validate-fv-<screen>-<WxH>.png shows the page as measured (banner and debug panel visible).
+First-visit viewports: 1280x800 and 390x844 (scan matrix defaults), 1366x768 and 375x667 (short-height pair defaults); docs/ux-ui/design.md §9 declares no viewport, no Primary CTA column, no Primary CTA style.
+CTA method: first main action, with the selector named by the Leader (assumption): review = first card's Accept (form.acceptRequestForm button[data-prq-action=accept]);
+request = the submit (form.prq-request__form button[type=submit], text "Request to add new institution"). The literal rule (first a|button in <main>) gives the same element on the
+request page; the review page has no <main> element, so the literal rule finds nothing there.
+Consent banner: cookieconsent (.cc-window), found in the UI source (shared footer); visible in every capture.
+Measurement: computed display/visibility/opacity + getBoundingClientRect; hit-test document.elementFromPoint at the box centre. Outcome order per impeccable-bridge item 3.
+Test-environment artefact: #debugPanel (top-left tab, y=3..147) is rendered on the review page; it did not intersect any CTA box.
+
+review 1280x800 {"viewport":"1280x800","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=729..800","debugPanel":"visible y=3..147","overflowX":false,"title":"AICCRA | MARLO Admin [Testing Environment] (AR - 2026)","literalFirstMainAction":"no <main> element","ctaText":"Accept","ctaBox":[1139,542,75,36],"cta":"pass"}
+review 390x844 {"viewport":"390x844","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=654..844","debugPanel":"visible y=3..147","overflowX":false,"title":"AICCRA | MARLO Admin [Testing Environment] (AR - 2026)","literalFirstMainAction":"no <main> element","ctaText":"Accept","ctaBox":[248,1293,80,36],"cta":"below fold (y=1293)"}
+review 1366x768 {"viewport":"1366x768","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=697..768","debugPanel":"visible y=3..147","overflowX":false,"title":"AICCRA | MARLO Admin [Testing Environment] (AR - 2026)","literalFirstMainAction":"no <main> element","ctaText":"Accept","ctaBox":[1225,542,75,36],"cta":"pass"}
+review 375x667 {"viewport":"375x667","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=477..667","debugPanel":"visible y=3..147","overflowX":false,"title":"AICCRA | MARLO Admin [Testing Environment] (AR - 2026)","literalFirstMainAction":"no <main> element","ctaText":"Accept","ctaBox":[238,1293,75,36],"cta":"below fold (y=1293)"}
+request 1280x800 {"viewport":"1280x800","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=729..800","debugPanel":"absent","overflowX":false,"title":"AICCRA | Request a new institution [Testing Environment] (AR - 2026)","literalFirstMainAction":"BUTTON.prq-btn prq-btn--primary \"Request to add new institution\"","ctaText":"Request to add new institution","ctaBox":[700,509,219,36],"cta":"pass"}
+request 390x844 {"viewport":"390x844","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=654..844","debugPanel":"absent","overflowX":false,"title":"AICCRA | Request a new institution [Testing Environment] (AR - 2026)","literalFirstMainAction":"BUTTON.prq-btn prq-btn--primary \"Request to add new institution\"","ctaText":"Request to add new institution","ctaBox":[33,622,324,36],"cta":"pass"}
+request 1366x768 {"viewport":"1366x768","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=697..768","debugPanel":"absent","overflowX":false,"title":"AICCRA | Request a new institution [Testing Environment] (AR - 2026)","literalFirstMainAction":"BUTTON.prq-btn prq-btn--primary \"Request to add new institution\"","ctaText":"Request to add new institution","ctaBox":[743,509,219,36],"cta":"pass"}
+request 375x667 {"viewport":"375x667","locale":"en-US","reducedMotion":"no-preference","consentCookie":"none stored","banner":"visible y=477..667","debugPanel":"absent","overflowX":false,"title":"AICCRA | Request a new institution [Testing Environment] (AR - 2026)","literalFirstMainAction":"BUTTON.prq-btn prq-btn--primary \"Request to add new institution\"","ctaText":"Request to add new institution","ctaBox":[33,643,294,36],"cta":"covered (DIV.cc-window.cc-banner.cc-type-info.cc-them)"}
+
+Summary (screen x viewport -> outcome):
+review   1280x800  pass
+review   390x844   below fold (y=1293)   the shared admin side menu stacks above the content at this width
+review   1366x768  pass                  (T11b, other fixtures: covered by the banner; here the first card is shorter)
+review   375x667   below fold (y=1293)
+request  1280x800  pass
+request  390x844   pass                  centre y=640 above the banner top 654
+request  1366x768  pass
+request  375x667   covered (DIV.cc-window, the cookie banner)   box y=643..679, banner y=477..667
+No docs/ux-ui/design.md "Design Waivers" section exists, so no first-visit waiver covers any row.

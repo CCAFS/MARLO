@@ -67,6 +67,16 @@
   line-height: 1.55;
 }
 .prq-note__text { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+/* The help text is plain inline text (no border, radius, shadow or fill) so it does not nest a card in the form card */
+.prq-help {
+  margin: 0;
+  padding: 8px 0;
+  background: transparent;
+  color: var(--marlo-info-text);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.prq-help__text { min-width: 0; margin: 0; overflow-wrap: anywhere; }
 .prq-note--warning { border-color: var(--marlo-warning-border); background: var(--marlo-warning-bg); color: var(--marlo-warning-text); }
 .prq-note--danger { border-color: var(--marlo-danger-border); background: var(--marlo-danger-bg); color: var(--marlo-danger-text); }
 
