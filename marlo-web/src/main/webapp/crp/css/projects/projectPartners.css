@@ -6,7 +6,8 @@
  * reset here at a higher weight.
  * ────────────────────────────────────────────────────────────────────────── */
 
-.ptn {
+.ptn,
+.ptn-modal {
   --ptn-primary: #0277A2;
   --ptn-primary-dark: #015C7D;
   --ptn-ink: #1F2A37;
@@ -37,6 +38,8 @@
   --ptn-radius: 12px;
   --ptn-radius-sm: 8px;
   --ptn-shadow: 0 1px 3px rgba(31, 42, 55, .06);
+}
+.ptn {
   font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ptn-ink);
   display: flex;
@@ -988,3 +991,112 @@
 }
 .ptn-addCard:hover { background: #E8F4F9; border-color: var(--ptn-primary); }
 .ptn-addCard:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---------- Note variants (the request dialog) ---------- */
+
+.ptn-note--ok { border-color: var(--ptn-ok-border); background: var(--ptn-ok-bg); }
+.ptn-note--ok .ptn-note__icon { background: var(--ptn-ok); }
+.ptn-note--danger { border-color: var(--ptn-danger-border); background: var(--ptn-danger-bg); }
+.ptn-note--danger .ptn-note__icon { background: var(--ptn-danger); }
+
+/* ---------- Request country offices dialog ----------
+ * A Bootstrap modal that sits outside .ptn, so it carries the page tokens itself (see the
+ * token rule at the top) and the same dialog language as the institutions review dialog. */
+
+.ptn-modal { font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ptn-ink); }
+.ptn-modal *,
+.ptn-modal *::before,
+.ptn-modal *::after { box-sizing: border-box; }
+.ptn-modal [hidden] { display: none !important; }
+.ptn-modal .modal-dialog { max-width: 520px; margin: 48px auto; }
+.ptn-modal__panel {
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: var(--ptn-surface);
+  box-shadow: 0 12px 32px rgba(31, 42, 55, .22);
+}
+.ptn-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--ptn-primary);
+}
+.ptn-modal__heading { min-width: 0; }
+.ptn-modal__title { margin: 0; font: 600 16px/1.4 Figtree, sans-serif; color: #fff; }
+.ptn-modal__target { margin: 2px 0 0; font: 500 13px/1.4 Figtree, sans-serif; color: #D9EEF6; overflow-wrap: anywhere; }
+.ptn-modal__target:empty { display: none; }
+.ptn-modal__x {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ptn-radius-sm);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.ptn-modal__x:hover { background-color: var(--ptn-primary-dark); }
+.ptn-modal__x:focus-visible,
+.ptn-modal .ptn-btn:focus-visible {
+  outline: 2px solid var(--ptn-primary);
+  outline-offset: 2px;
+}
+.ptn-modal__x:focus-visible { outline-color: #fff; outline-offset: -2px; }
+.ptn-modal__form { margin: 0; }
+.ptn-modal__body { display: flex; flex-direction: column; gap: 14px; padding: 18px; }
+.ptn-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  border-top: 1px solid var(--ptn-border);
+}
+.ptn-modal .ptn-btn { height: 36px; margin: 0; line-height: 1; text-decoration: none; }
+.ptn-modal .ptn-btn--primary:disabled { opacity: 1; }
+
+/* The countries field: the shared select macro, drawn as the page's multi-select combobox */
+.ptn-modal__field .feedback-flex-items { display: none; }
+.ptn-modal__field .select,
+.ptn-modal__field .selectList { margin: 0; padding: 0; }
+.ptn-modal__field .ptn-help,
+.ptn-modal__field .ptn-error { margin: 0; }
+.ptn-modal__field .select2-container .select2-selection--multiple {
+  min-height: 40px;
+  padding: 3px 6px;
+  border: 1px solid var(--ptn-border-strong);
+  border-radius: var(--ptn-radius-sm);
+  background: #fff;
+}
+.ptn-modal__field.is-invalid .select2-container .select2-selection--multiple { border-color: var(--ptn-err-field); }
+.ptn-modal__field .select2-container--focus .select2-selection--multiple,
+.ptn-modal__field .select2-container--open .select2-selection--multiple {
+  border-color: var(--ptn-primary);
+  box-shadow: var(--ptn-focus-ring);
+  outline: 0;
+}
+.ptn-modal__field .select2-container .select2-selection--multiple .select2-selection__rendered {
+  font-family: Figtree, sans-serif;
+  font-size: 13.5px;
+  color: var(--ptn-ink);
+}
+.ptn-modal__field .select2-container .select2-selection--multiple .select2-selection__choice {
+  margin-top: 4px;
+  border: 1px solid var(--ptn-info-border);
+  border-radius: 6px;
+  background: var(--ptn-info-bg);
+  color: var(--ptn-primary-dark);
+}
+.ptn-modal__field .select2-container .select2-search--inline .select2-search__field {
+  margin-top: 6px;
+  font-family: Figtree, sans-serif;
+  font-size: 13.5px;
+}
+
+@media (max-width: 767px) {
+  .ptn-modal .modal-dialog { margin: 12px; max-width: none; }
+  .ptn-modal__foot .ptn-btn { flex: 1; }
+}

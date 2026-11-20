@@ -26,18 +26,21 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.CountryOfficePOJO;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.Institution;
-import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.InstitutionType;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequestOutcome;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequestOutcome.Status;
 import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails.Email;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +68,13 @@ public class PartnerRequestAction extends BaseAction {
   private static final long serialVersionUID = -4592281983603538935L;
 
   private static Logger LOG = LoggerFactory.getLogger(PartnerRequestAction.class);
+
+  /** Status string of a decision that was refused because the request was not an HTTP POST. */
+  static final String OUTCOME_NOT_ALLOWED = "notAllowed";
+  /** Status string of a decision that ended in an exception. */
+  static final String OUTCOME_FAILED = "failed";
+  private static final String OUTCOME_TEXT_PREFIX = "marloRequestInstitution.ui.outcome.";
+
   private final PartnerRequestManager partnerRequestManager;
   private final InstitutionManager institutionManager;
   private final InstitutionTypeManager institutionTypeManager;
@@ -81,6 +91,11 @@ public class PartnerRequestAction extends BaseAction {
   private final SendMailS sendMail;
   private boolean success;
   private boolean sendNotification;
+
+  // Overall result of the last review decision, as one status string (design section 4, JSON contract)
+  private String outcome;
+  // Result of each request of an office decision: request id -> status string (strings only, never entities)
+  private Map<String, String> outcomes = new LinkedHashMap<>();
 
   // Justification for reject office(s)
   private String justification;
@@ -111,7 +126,8 @@ public class PartnerRequestAction extends BaseAction {
 
   /**
    * Add a list of office request and send an email to the users who requested
-   * the Countries (The full list of locations is send to each user)
+   * the Countries (The full list of locations is send to each user). The decision is taken by the manager in one
+   * transaction; the emails are sent afterwards, only for the requests it applied.
    * 
    * @author avalencia - CCAFS
    * @date Oct 18, 2017
@@ -119,100 +135,64 @@ public class PartnerRequestAction extends BaseAction {
    * @return
    */
   public String addCountryOffices() {
+    if (!this.isHttpPost()) {
+      return this.refuseNonPost("addCountryOffices");
+    }
     try {
-      String[] partnerRequestIds = this.countryOfficePOJO.getIds().split(",");
-      if (this.countryOfficePOJO != null) {
-        Institution institution =
-          this.institutionManager.getInstitutionById(this.countryOfficePOJO.getInstitution().getId());
-        Set<User> users = new HashSet<User>();
-        Set<LocElement> locElements = new HashSet<LocElement>();
-        for (String partnerRequestId : partnerRequestIds) {
-          PartnerRequest partnerRequest =
-            this.partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
-          partnerRequest.setAcepted(new Boolean(true));
-          partnerRequest.setAceptedDate(new Date());
-          partnerRequest.setActive(false);
-          // Store the list of user to send the email
-          users.add(partnerRequest.getCreatedBy());
-          // If the request comes from CLARISA, include external mail
-          if (partnerRequest.getExternalUserMail() != null
-            && !"".equalsIgnoreCase(partnerRequest.getExternalUserMail())) {
-            User externalUser = new User();
-            externalUser.setEmail(partnerRequest.getExternalUserMail());
-            externalUser.setFirstName(partnerRequest.getExternalUserName());
-            users.add(externalUser);
-          }
-          // verify if the location has been added previously
-          if (locElements.contains(partnerRequest.getLocElement())) {
-            LOG.warn("LocElement duplicated: " + partnerRequest.getLocElement().getId() + " will be skipped");
-          } else {
-            locElements.add(partnerRequest.getLocElement());
-            InstitutionLocation institutionLocation = new InstitutionLocation();
-            if (this.institutionLocationManager.findByLocation(partnerRequest.getLocElement().getId(),
-              partnerRequest.getInstitution().getId()) == null) {
-              institutionLocation =
-                new InstitutionLocation(partnerRequest.getInstitution(), partnerRequest.getLocElement(), false);
-              this.institutionLocationManager.saveInstitutionLocation(institutionLocation);
-            } else {
-              String warningMessage = "The InstitutionLocation ID:" + this.institutionLocationManager
-                .findByLocation(partnerRequest.getLocElement().getId(), partnerRequest.getInstitution().getId()).getId()
-                + " already exist in the system.";
-              LOG.warn(warningMessage);
-              partnerRequest.setAcepted(new Boolean(false));
-              partnerRequest.setModificationJustification(warningMessage);
-              partnerRequest.setActive(false);
-            }
-          }
-          this.partnerRequestManager.savePartnerRequest(partnerRequest);
-        }
-        // Send notification email
-        this.sendAcceptedOfficeNotficationEmail(users, locElements, institution);
+      if (this.countryOfficePOJO == null || this.countryOfficePOJO.getInstitution() == null
+        || this.countryOfficePOJO.getInstitution().getId() == null) {
+        LOG.warn("addCountryOffices: nothing decided, the posted selection has no institution (request ids {})",
+          this.postedRequestIds());
+        this.recordFailure();
+        return SUCCESS;
       }
+      long institutionId = this.countryOfficePOJO.getInstitution().getId();
+      List<PartnerRequestOutcome> results =
+        this.partnerRequestManager.acceptOfficeRequests(this.parseRequestIds(), institutionId);
+      this.recordOutcomes("addCountryOffices", institutionId, results);
+      this.sendOfficeEmails("addCountryOffices", results, true);
     } catch (Exception e) {
-      this.success = false;
+      LOG.error("addCountryOffices: could not accept the office requests {} of institution {}",
+        this.postedRequestIds(), this.requestedInstitutionId(), e);
+      this.recordFailure();
     }
     return SUCCESS;
   }
 
+  /**
+   * Accepts a pending partner request. Only a POST is accepted; the answer is an action message or error on the
+   * redirect to the review page, never a rendered page, because after a rolled-back write the entities loaded in
+   * prepare() are detached.
+   * 
+   * @return always SUCCESS (the redirect).
+   */
   public String addPartner() {
-    PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(this.requestID);
-
-    Institution institution = new Institution();
-    // Create institution
-    institution.setName(partnerRequest.getPartnerName());
-    institution.setAcronym(partnerRequest.getAcronym());
-    institution.setWebsiteLink(partnerRequest.getWebPage());
-
-    InstitutionType institutionType =
-      this.institutionTypeManager.getInstitutionTypeById(partnerRequest.getInstitutionType().getId());
-    institution.setInstitutionType(institutionType);
-
-    LocElement locElement = this.locElementManager.getLocElementById(partnerRequest.getLocElement().getId());
-    institution.setAdded(new Date());
-
-    this.institutionManager.saveInstitution(institution);
-
-    // Create institution location
-    InstitutionLocation institutionLocation = new InstitutionLocation();
-    institutionLocation.setInstitution(institution);
-    institutionLocation.setLocElement(locElement);
-    institutionLocation.setHeadquater(new Boolean(true));
-    this.institutionLocationManager.saveInstitutionLocation(institutionLocation);
-
-    partnerRequest.setAcepted(new Boolean(true));
-    partnerRequest.setAceptedDate(new Date());
-    partnerRequest.setActive(false);
-    partnerRequest.setInstitution(institution);
-    this.partnerRequestManager.savePartnerRequest(partnerRequest);
-    // inactive the parent partnerRequest
-    PartnerRequest partnerRequestParent =
-      this.partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
-    partnerRequestParent.setActive(false);
-    this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
-
-    // Send notification email
-    this.sendAcceptedNotficationEmail(partnerRequest);
-
+    if (!this.isHttpPost()) {
+      LOG.warn("addPartner refused for request {}: not an HTTP POST", this.requestID);
+      this.outcome = OUTCOME_NOT_ALLOWED;
+      this.addActionError(this.getText(OUTCOME_TEXT_PREFIX + OUTCOME_NOT_ALLOWED));
+      return SUCCESS;
+    }
+    PartnerRequestOutcome result;
+    try {
+      result = this.partnerRequestManager.acceptPartnerRequest(this.requestID);
+      if (result == null || result.getStatus() == null) {
+        throw new IllegalStateException("The manager returned no outcome");
+      }
+    } catch (Exception e) {
+      LOG.error("Could not accept partner request {}", this.requestID, e);
+      this.outcome = OUTCOME_FAILED;
+      this.addActionError(this.getText(OUTCOME_TEXT_PREFIX + OUTCOME_FAILED));
+      return SUCCESS;
+    }
+    this.outcome = statusName(result.getStatus());
+    if (result.getStatus() == Status.DONE) {
+      this.addActionMessage(this.getText(OUTCOME_TEXT_PREFIX + this.outcome));
+      this.sendPartnerAcceptedEmail(result);
+    } else {
+      LOG.warn("Partner request {} was not accepted: {}", this.requestID, result.getStatus());
+      this.addActionError(this.getText(OUTCOME_TEXT_PREFIX + this.outcome));
+    }
     return SUCCESS;
   }
 
@@ -235,6 +215,14 @@ public class PartnerRequestAction extends BaseAction {
   @Override
   public String getJustification() {
     return this.justification;
+  }
+
+  public String getOutcome() {
+    return this.outcome;
+  }
+
+  public Map<String, String> getOutcomes() {
+    return this.outcomes;
   }
 
   public List<PartnerRequest> getPartners() {
@@ -297,6 +285,8 @@ public class PartnerRequestAction extends BaseAction {
   /**
    * Reject a list of office requests and send an email to the users who
    * requested the Countries (The full list of locations is send to each user)
+   * when the superadmin asked for it. The decision is taken by the manager in one transaction; the emails are sent
+   * afterwards.
    * 
    * @author avalencia - CCAFS
    * @date Oct 19, 2017
@@ -304,171 +294,290 @@ public class PartnerRequestAction extends BaseAction {
    * @return
    */
   public String rejectCountryOffices() {
+    if (!this.isHttpPost()) {
+      return this.refuseNonPost("rejectCountryOffices");
+    }
     try {
-      try {
-        Map<String, Parameter> parameters = this.getParameters();
-        this.justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
-        this.sendNotification = Boolean.valueOf(
-          StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
-      } catch (Exception e) {
-        this.justification = "";
-      }
+      Map<String, Parameter> parameters = this.getParameters();
+      String justificationValue = parameterValue(parameters, APConstants.JUSTIFICATION_REQUEST);
+      this.justification = justificationValue == null ? "" : justificationValue;
+      this.sendNotification =
+        Boolean.valueOf(parameterValue(parameters, APConstants.PARTNER_REQUEST_SEND_NOTIFICATION));
 
-      String[] partnerRequestIds = this.countryOfficePOJO.getIds().split(",");
-      if (this.countryOfficePOJO != null) {
-        Institution institution =
-          this.institutionManager.getInstitutionById(this.countryOfficePOJO.getInstitution().getId());
-        Set<User> users = new HashSet<User>();
-        Set<LocElement> locElements = new HashSet<LocElement>();
-        for (String partnerRequestId : partnerRequestIds) {
-          PartnerRequest partnerRequest =
-            this.partnerRequestManager.getPartnerRequestById(Long.valueOf(partnerRequestId));
-          // Store the list of user to send the email
-          users.add(partnerRequest.getCreatedBy());
-          // If the request comes from CLARISA, include external mail
-          if (partnerRequest.getExternalUserMail() != null
-            && !"".equalsIgnoreCase(partnerRequest.getExternalUserMail())) {
-            User externalUser = new User();
-            externalUser.setEmail(partnerRequest.getExternalUserMail());
-            externalUser.setFirstName(partnerRequest.getExternalUserName());
-            users.add(externalUser);
-          }
-          locElements.add(partnerRequest.getLocElement());
-          partnerRequest.setAcepted(new Boolean(false));
-          partnerRequest.setActive(false);
-          partnerRequest.setRejectedBy(this.getCurrentUser());
-          partnerRequest.setRejectJustification(this.justification);
-          partnerRequest.setRejectedDate(new Date());
-          this.partnerRequestManager.savePartnerRequest(partnerRequest);
-        }
-        // Send notification email
-        if (this.sendNotification) {
-          this.sendRejectOfficeNotificationEmail(users, locElements, institution);
-        }
+      if (this.countryOfficePOJO == null || this.countryOfficePOJO.getInstitution() == null
+        || this.countryOfficePOJO.getInstitution().getId() == null) {
+        LOG.warn("rejectCountryOffices: nothing decided, the posted selection has no institution (request ids {})",
+          this.postedRequestIds());
+        this.recordFailure();
+        return SUCCESS;
+      }
+      long institutionId = this.countryOfficePOJO.getInstitution().getId();
+      List<PartnerRequestOutcome> results = this.partnerRequestManager.rejectOfficeRequests(this.parseRequestIds(),
+        institutionId, this.justification, this.getCurrentUser());
+      this.recordOutcomes("rejectCountryOffices", institutionId, results);
+      if (this.sendNotification) {
+        this.sendOfficeEmails("rejectCountryOffices", results, false);
       }
     } catch (Exception e) {
-      this.success = false;
+      LOG.error("rejectCountryOffices: could not reject the office requests {} of institution {}",
+        this.postedRequestIds(), this.requestedInstitutionId(), e);
+      this.recordFailure();
     }
     return SUCCESS;
   }
 
-  private void sendAcceptedNotficationEmail(PartnerRequest partnerRequest) {
-    String toEmail = "";
-
-    // CC Email: User who accepted the request
-    String ccEmail = this.getCurrentUser().getEmail();
-
-    // ToEmail: User who requested the partner or the mail received by CLARISA
-    if (partnerRequest.getExternalUserMail() != null) {
-      toEmail = partnerRequest.getExternalUserMail();
-      ccEmail = ccEmail + ", " + partnerRequest.getCreatedBy().getEmail();
-    } else {
-
-      toEmail = partnerRequest.getCreatedBy().getEmail();
+  /**
+   * The ids of the office requests the page sent, separated by commas.
+   */
+  private List<Long> parseRequestIds() {
+    List<Long> ids = new ArrayList<>();
+    String raw = this.countryOfficePOJO.getIds();
+    if (raw == null) {
+      return ids;
     }
-
-    // BBC: Our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-
-    // subject
-    String subject =
-      this.getText("marloRequestInstitution.accept.email.subject", new String[] {partnerRequest.getPartnerName()});
-
-    // Building the email message
-    StringBuilder message = new StringBuilder();
-    String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
-      : partnerRequest.getExternalUserName();
-    message.append(this.getText("email.dear", new String[] {userName}));
-    message
-      .append(this.getText("marloRequestInstitution.accept.email", new String[] {partnerRequest.getPartnerInfo()}));
-
-    message.append(this.getText("email.support.noCrpAdmins"));
-    // message.append(this.getText("email.getStarted"));
-    message.append(this.getText("email.bye"));
-    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
-    if (this.validateEmailNotification(globalUnit)) {
-      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+    for (String part : raw.split(",")) {
+      String trimmed = part.trim();
+      if (!trimmed.isEmpty()) {
+        ids.add(Long.valueOf(trimmed));
+      }
     }
-
+    return ids;
   }
 
   /**
-   * Sends an email to all users who requested the office(s) for an specific
-   * institution
-   * 
-   * @author avalencia - CCAFS
-   * @date Oct 19, 2017
-   * @time 10:29:39 AM
-   * @param users: ToEmail - User who requested the office
-   * @param locElements: Offices (countries) requested
-   * @param institution
+   * The raw ids of the posted office requests, for a log line: null when nothing was posted, line breaks removed
+   * because the value is request input.
    */
-  private void sendAcceptedOfficeNotficationEmail(Set<User> users, Set<LocElement> locElements,
-    Institution institution) {
-    // CC Email: User who accepted the request
-    String ccEmail = this.getCurrentUser().getEmail();
+  private String postedRequestIds() {
+    String raw = this.countryOfficePOJO == null ? null : this.countryOfficePOJO.getIds();
+    return raw == null ? null : raw.replaceAll("[\\r\\n]", " ");
+  }
 
-    // BBC: Our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-
-    // subject
-    String subject =
-      this.getText("marloRequestInstitution.office.accept.email.subject", new String[] {institution.getComposedName()});
-    // Prepare loc elements to send in html format
-    String loc_elements = "";
-    for (LocElement locElement : locElements) {
-      loc_elements += "<li>" + locElement.getName() + "</li>";
+  /**
+   * The institution id of the posted office request, for a log line; 0 when the page sent none.
+   */
+  private long requestedInstitutionId() {
+    if (this.countryOfficePOJO == null || this.countryOfficePOJO.getInstitution() == null
+      || this.countryOfficePOJO.getInstitution().getId() == null) {
+      return 0;
     }
-    // Send message to the users who requested the office(s)
-    for (User user : users) {
-      String toEmail = "";
-      // ToEmail: User who requested the partner
-      toEmail = user.getEmail();
-      // Building the email message
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+    return this.countryOfficePOJO.getInstitution().getId();
+  }
 
-      message.append(this.getText("marloRequestInstitution.office.accept.email", new String[] {loc_elements}));
+  /**
+   * Answers a decision that did not come as an HTTP POST: nothing is written, nothing is sent.
+   */
+  private String refuseNonPost(String action) {
+    LOG.warn("{} refused: not an HTTP POST", action);
+    this.success = false;
+    this.outcome = OUTCOME_NOT_ALLOWED;
+    this.outcomes = new LinkedHashMap<>();
+    return SUCCESS;
+  }
 
-      message.append(this.getText("email.support.noCrpAdmins"));
-      message.append(this.getText("email.getStarted", new String[] {this.getBaseUrl()}));
-      message.append(this.getText("email.bye"));
-      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  private void recordFailure() {
+    this.success = false;
+    this.outcome = OUTCOME_FAILED;
+    this.outcomes = new LinkedHashMap<>();
+  }
+
+  /**
+   * Publishes the results of an office decision as strings only and logs every request the manager refused.
+   */
+  private void recordOutcomes(String action, long institutionId, List<PartnerRequestOutcome> results) {
+    Map<String, String> byRequest = new LinkedHashMap<>();
+    boolean anyDone = false;
+    boolean anySkipped = false;
+    String first = null;
+    for (PartnerRequestOutcome result : results) {
+      String status = statusName(result.getStatus());
+      byRequest.put(String.valueOf(result.getRequestId()), status);
+      if (first == null) {
+        first = status;
+      }
+      if (result.getStatus() == Status.DONE) {
+        anyDone = true;
+      } else {
+        if (result.getStatus() == Status.SKIPPED_EXISTING) {
+          anySkipped = true;
+        }
+        LOG.warn("{}: request {} of institution {} was {}", action, result.getRequestId(), institutionId,
+          result.getStatus());
+      }
+    }
+    this.outcomes = byRequest;
+    if (anyDone) {
+      this.outcome = statusName(Status.DONE);
+    } else if (anySkipped) {
+      this.outcome = statusName(Status.SKIPPED_EXISTING);
+    } else {
+      this.outcome = first == null ? statusName(Status.NOT_FOUND) : first;
+    }
+    this.success = anyDone || anySkipped;
+  }
+
+  /**
+   * The status as the one string the JSON actions and the page messages use.
+   */
+  static String statusName(Status status) {
+    switch (status) {
+      case DONE:
+        return "done";
+      case ALREADY_HANDLED:
+        return "alreadyHandled";
+      case NOT_FOUND:
+        return "notFound";
+      case WRONG_KIND:
+        return "wrongKind";
+      case SKIPPED_EXISTING:
+        return "skippedExisting";
+      default:
+        return OUTCOME_FAILED;
     }
   }
 
-  private void sendRejectOfficeNotificationEmail(Set<User> users, Set<LocElement> locElements,
-    Institution institution) {
-    // CC Email: User who accepted the request
-    String ccEmail = this.getCurrentUser().getEmail();
-
-    // BBC: Our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-
-    // subject
-    String subject =
-      this.getText("marloRequestInstitution.office.reject.email.subject", new String[] {institution.getComposedName()});
-    // Prepare loc elements to send in html format
-    String loc_elements = "";
-    for (LocElement locElement : locElements) {
-      loc_elements += "<li>" + locElement.getName() + "</li>";
+  /**
+   * The first value of a request parameter, trimmed; null when the parameter was not sent.
+   */
+  private static String parameterValue(Map<String, Parameter> parameters, String name) {
+    Parameter parameter = parameters == null ? null : parameters.get(name);
+    if (parameter == null || parameter.getMultipleValues() == null || parameter.getMultipleValues().length == 0) {
+      return null;
     }
-    // Send message to the users who requested the office(s)
-    for (User user : users) {
-      String toEmail = "";
-      // ToEmail: User who requested the partner
-      toEmail = user.getEmail();
-      // Building the email message
-      StringBuilder message = new StringBuilder();
-      message.append(this.getText("email.dear", new String[] {user.getFirstName()}));
+    return StringUtils.trim(parameter.getMultipleValues()[0]);
+  }
 
-      message.append(
-        this.getText("marloRequestInstitution.office.reject.email", new String[] {loc_elements, this.justification}));
+  /**
+   * The unit of the request as the database holds it: the builder reads its lazy parameters, which a detached
+   * instance cannot.
+   */
+  private GlobalUnit managedUnit(PartnerRequest request) {
+    if (request == null || request.getCrp() == null) {
+      return null;
+    }
+    return this.globalUnitManager.getGlobalUnitById(request.getCrp().getId());
+  }
 
-      message.append(this.getText("email.support.noCrpAdmins"));
-      // message.append(this.getText("email.getStarted"));
-      message.append(this.getText("email.bye"));
-      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
+  private String approverEmail() {
+    User approver = this.getCurrentUser();
+    return approver == null ? null : approver.getEmail();
+  }
+
+  /**
+   * Tells the requester that the partner was added. Recipients as they have always been: the requester (or the mail
+   * received from CLARISA) with the approver in copy, plus the creator when the request is external, and our
+   * notification mailbox in blind copy. A failure is logged and never reaches the superadmin: the decision is
+   * already committed.
+   */
+  private void sendPartnerAcceptedEmail(PartnerRequestOutcome result) {
+    try {
+      PartnerRequest request = result.getRequest();
+      GlobalUnit unit = this.managedUnit(request);
+      if (!PartnerRequestEmails.isEnabled(unit)) {
+        return;
+      }
+      User creator = request.getCreatedBy();
+      String creatorEmail = creator == null ? null : creator.getEmail();
+      String toEmail;
+      String ccEmail = this.approverEmail();
+      String dearName;
+      if (StringUtils.isNotBlank(request.getExternalUserMail())) {
+        toEmail = request.getExternalUserMail();
+        if (StringUtils.isNotBlank(creatorEmail)) {
+          ccEmail = StringUtils.isBlank(ccEmail) ? creatorEmail : ccEmail + ", " + creatorEmail;
+        }
+        dearName = StringUtils.isNotBlank(request.getExternalUserName()) ? request.getExternalUserName()
+          : (creator == null ? null : creator.getFirstName());
+      } else {
+        toEmail = creatorEmail;
+        dearName = creator == null ? null : creator.getFirstName();
+      }
+      if (StringUtils.isBlank(toEmail)) {
+        LOG.warn("Partner request {} was accepted but has no requester to notify", result.getRequestId());
+        return;
+      }
+      Institution institution = result.getInstitution();
+      String institutionName = institution == null ? request.getPartnerInfo() : institution.getComposedName();
+      Email email = PartnerRequestEmails.partnerAccepted(unit, this.getBaseUrlCdn(), dearName, institutionName,
+        request.getPartnerName());
+      this.sendMail.send(toEmail, ccEmail, this.config.getEmailNotification(), email.getSubject(), email.getBody(),
+        null, null, null, true);
+    } catch (Exception e) {
+      LOG.error("Could not send the accepted email of partner request {}", result.getRequestId(), e);
+    }
+  }
+
+  /**
+   * Tells each requester of an office decision, once per Global Unit of the requests, with the full list of the
+   * countries of that unit's requests. Only the requests the manager applied (or found already in the institution)
+   * are notified. Failures are logged per recipient and never reach the superadmin.
+   */
+  private void sendOfficeEmails(String action, List<PartnerRequestOutcome> results, boolean accepted) {
+    Map<Long, List<PartnerRequestOutcome>> byUnit = new LinkedHashMap<>();
+    for (PartnerRequestOutcome result : results) {
+      if (!result.isNotifiable() || result.getRequest() == null) {
+        continue;
+      }
+      GlobalUnit crp = result.getRequest().getCrp();
+      if (crp == null) {
+        LOG.warn("{}: request {} has no Global Unit, so its requester is not notified", action,
+          result.getRequestId());
+        continue;
+      }
+      byUnit.computeIfAbsent(crp.getId(), id -> new ArrayList<>()).add(result);
+    }
+    for (List<PartnerRequestOutcome> group : byUnit.values()) {
+      this.sendOfficeEmailsOfUnit(action, group, accepted);
+    }
+  }
+
+  private void sendOfficeEmailsOfUnit(String action, List<PartnerRequestOutcome> group, boolean accepted) {
+    String requestIds = group.stream().map(r -> String.valueOf(r.getRequestId())).collect(Collectors.joining(","));
+    try {
+      GlobalUnit unit = this.managedUnit(group.get(0).getRequest());
+      if (!PartnerRequestEmails.isEnabled(unit)) {
+        return;
+      }
+      // One recipient per mailbox, with the name to greet; the full list of countries goes to each of them.
+      Map<String, String> recipients = new LinkedHashMap<>();
+      Set<String> countries = new LinkedHashSet<>();
+      Institution institution = null;
+      for (PartnerRequestOutcome result : group) {
+        PartnerRequest request = result.getRequest();
+        if (request.getCreatedBy() != null) {
+          addRecipient(recipients, request.getCreatedBy().getEmail(), request.getCreatedBy().getFirstName());
+        }
+        // If the request comes from CLARISA, include external mail
+        addRecipient(recipients, request.getExternalUserMail(), request.getExternalUserName());
+        if (request.getLocElement() != null && request.getLocElement().getName() != null) {
+          countries.add(request.getLocElement().getName());
+        }
+        if (institution == null) {
+          institution = result.getInstitution() != null ? result.getInstitution() : request.getInstitution();
+        }
+      }
+      String institutionName = institution == null ? "" : institution.getComposedName();
+      String countryList = String.join(", ", countries);
+      for (Map.Entry<String, String> recipient : recipients.entrySet()) {
+        Email email;
+        if (accepted) {
+          email = PartnerRequestEmails.officeAccepted(unit, this.getBaseUrlCdn(), recipient.getValue(),
+            institutionName, countryList);
+        } else {
+          email = PartnerRequestEmails.officeRejected(unit, this.getBaseUrlCdn(), recipient.getValue(),
+            institutionName, countryList, this.justification);
+        }
+        this.sendMail.send(recipient.getKey(), this.approverEmail(), this.config.getEmailNotification(),
+          email.getSubject(), email.getBody(), null, null, null, true);
+      }
+    } catch (Exception e) {
+      LOG.error("{}: could not send the office emails of requests {}", action, requestIds, e);
+    }
+  }
+
+  private static void addRecipient(Map<String, String> recipients, String email, String firstName) {
+    if (StringUtils.isNotBlank(email)) {
+      recipients.putIfAbsent(email.trim(), firstName);
     }
   }
 
@@ -495,13 +604,6 @@ public class PartnerRequestAction extends BaseAction {
 
   public void setSuccess(boolean success) {
     this.success = success;
-  }
-
-  private boolean validateEmailNotification(GlobalUnit globalUnit) {
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
-    return crpNotification;
   }
 
 }

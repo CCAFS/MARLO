@@ -1,0 +1,6 @@
+# Branch code cad7c5d4e4: the same request page, a NON-AICCRA unit (CCAFS, unit 1, no email-notification custom parameter => notifications on by default). COPY user 2491 (login unit CCAFS)
+  POST /clusters/CCAFS/partnerSave.do (T11a probe ccafs) -> HTTP 302 Location=/marlo-web/clusters/CCAFS/partnerSave.do?projectID=1&fundingSourceID=0&expectedID=0&messageSent=true
+  new row: id=5223 partner_request_id=NULL is_active=1 global_unit_id=1 created_by=2491 id_phase=297 source=' Cluster: (1) - '
+  new row: id=5224 partner_request_id=5223 is_active=1 global_unit_id=1 created_by=2491 id_phase=297 source=' Cluster: (1) -'
+== email_logs since id 18291: 1 row(s)
+  id=18292 2026-11-19 18:02:42 | subject=[MARLO - CCAFS] Partner verification - T11a probe ccafs | to=<notification mailbox> | source=/clusters/CCAFS/partnerSave | succes_email=1

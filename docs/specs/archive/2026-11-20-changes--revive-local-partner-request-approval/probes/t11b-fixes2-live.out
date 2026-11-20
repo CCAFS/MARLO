@@ -1,0 +1,20 @@
+CHG-PARTREQ-001-T11b fixes, second round, live re-check 2026-11-20, HEAD efbf01c7c7 + uncommitted diff, throwaway worktree + copy aiccradb_partreq_test.
+Email safety: marlo.production=false; requester (copy user 2491, renamed "Test Requester") email = the configured notification mailbox; external_user_mail NULL on every row.
+Every email below was addressed to <notification mailbox> only (no cc; the application's own bcc is the same mailbox), succes_email=1.
+
+(i) AICCRA project partner request (real popup submit from the project partners page, page JS initialised)
+  rows 5320 (original) and 5321 (copy), unit 45: request_source = " Cluster C102076 - Senegal: Activities led by ILRI" on both (no grouping separator in the id)
+  email_logs 18322  subject: [AICCRA] Partner verification - T11b Fix2 Probe Partner   body: "Requested from: Cluster C102076 - Senegal: Activities led by ILRI"
+  review card (superadmin): "Source  Cluster C102076 - Senegal: Activities led by ILRI"  (t11b-fixes2-review-1280.png)
+
+(ii) AICCRA office request (real requestCountryOffice.do call from the project partners page, institution 1, KE and PE)
+  email_logs 18323  subject: [AICCRA] Add office location (KE, PE) to Wageningen University and Research Centre   body: "Requested from cluster: C102076"
+  stored office rows 5322, 5323: request_source = "Project: (102076) - Senegal: Activities led by ILRI"  <- still hardcoded in RequestCountryOfficeAction (line 116), NOT changed (outside this task); the review card shows it
+
+(iii) Non-AICCRA unit (CCAFS, project 1; the request page opened directly, because the CCAFS partners page of project 1 throws a NullPointerException on this copy: no project info in the current phase; email_logs 18324 was that exception notice)
+  rows 5324 and 5325, unit 1: request_source = " Project P1 - (ICRISAT WA) Capacitating science-policy exchange platforms to mainstream climate change into national agricultural and food security policy plans"
+  email_logs 18325  subject: [MARLO - CCAFS] Partner verification - T11b Fix2 Probe CCAFS   body: "Requested from: Project P1 - (ICRISAT WA) ..."
+  review card: "Source  Project P1 - (ICRISAT WA) ..."
+
+Cleanup: partner_requests above id 5272 deleted (5320-5325 and the ones between); email_logs above 18319 deleted (18322-18325); the 62 requests set inactive restored; users 2491 and 1082 re-read byte-identical to the saved rows;
+institutions 10990 / locations 11316 / email_logs max 18319 / partner_requests max 5272, count 5215 as at the start; aiccradb2 unchanged (institutions 10974, partner_requests 5079); worktree and app removed.

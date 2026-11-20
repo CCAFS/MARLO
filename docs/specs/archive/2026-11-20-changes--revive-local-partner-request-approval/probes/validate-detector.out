@@ -1,0 +1,139 @@
+/akili-validate design gate - detector evidence, 2026-11-20, HEAD 2380642ca0, engine impeccable-engine 0.1.18 (vendored skill 4.8.0).
+App: throwaway git worktree of HEAD outside the repo, run with scripts/run-marlo-java17.sh, DB aiccradb_partreq_test (copy). <skill-dir> = the global impeccable skill folder.
+
+## 1. Source scan (one pass, pattern rules only)
+IMPECCABLE_BIN=<skill-dir>/scripts/bin/darwin-arm64/impeccable DO_NOT_TRACK=1 IMPECCABLE_NO_UPDATE_CHECK=1 <skill-dir>/scripts/impeccable detect --json <9 files: superadmin/marloInstitutions.ftl, institutionRequestMacro.ftl, rejectInstitutionPopup.ftl, allInstitutionsPopup.ftl, partnersSave.ftl, marloInstitutions.css, partnersSave.css, marloInstitutions.js, partnersSave.js>
+exit=0, findings=0 ([]). The engine states that .ftl/.css are scanned with regex rules only (element rules like tiny-text, low-contrast do not run on source).
+Positive control (scratch file, not in repo): a .ftl with gradient text gave exit=2, 1 gradient-text finding, so .ftl files are read.
+
+## 2. URL scans (authenticated)
+The detector takes no cookie/header, so the authenticated page was reached with --cdp: a headless Chrome on a local DevTools port, fresh profile per capture (no stored consent),
+superadmin session cookie set through playwright-cli attach (cookie obtained by a login POST; never printed). Viewport set by Playwright device-metrics emulation; a separate CDP session read
+innerWidth x innerHeight = the requested viewport during and after every scan (poll during one scan: 8/8 reads 390x844).
+Command: IMPECCABLE_BIN=<skill-dir>/scripts/bin/darwin-arm64/impeccable DO_NOT_TRACK=1 IMPECCABLE_NO_UPDATE_CHECK=1 <skill-dir>/scripts/impeccable detect --json --cdp <port> --target <page path> [--no-consent-hiding --no-overlay-hiding]
+Viewports: desktop 1280x800, mobile 390x844 (defaults: docs/ux-ui/design.md §9 declares none). Every non-2 exit stderr: none (all exits 2; stderr empty).
+
+### review 1280x800 default pass: exit=2, primary=20 {'low-contrast': 10, 'undersized-ui-text': 8, 'tiny-text': 2}, advisory=3 {'low-contrast': 3}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI low-contrast         span.label.label-danger | 4.0:1 (need 4.5:1) — text #ffffff on #d9534f
+  ADV low-contrast         ol.breadcrumb > li:nth-of-type(1) > a | 4.2:1 (need 4.5:1) — text #337ab7 on #f5f5f5
+  PRI low-contrast         ol.breadcrumb > li.active | 4.1:1 (need 4.5:1) — text #777777 on #f5f5f5
+  PRI low-contrast         #user-badge-<uuid> | 1.7:1 (need 4.5:1) — text #ffffff on #1ee087
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(1) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(2) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(3) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(1) | 3.9:1 (need 4.5:1) — text #d1e7ee on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(2) | 2.7:1 (need 4.5:1) — text #93c5d7 on #0277a2
+  ADV low-contrast         a > b | 4.3:1 (need 4.5:1) — text #467eaf on #ffffff
+  PRI low-contrast         #ui-id-1 | 2.8:1 (need 4.5:1) — text #ffffff on #2ba6cb
+  PRI undersized-ui-text   #ui-id-1 | 9.975px functional text "Debug Panel" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(1) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(1) > strong | 9.975px functional text "canEdit:" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(2) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(2) > strong | 9.975px functional text "Editable:" (below 11px floor)
+  PRI tiny-text            ul.list-unstyled > li:nth-of-type(3) | 9.975px body text
+  PRI tiny-text            li:nth-of-type(3) > strong | 9.975px body text
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(4) | 9.975px functional text "true" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(4) > strong | 9.975px functional text "canEditPhase:" (below 11px floor)
+  PRI low-contrast         #ui-id-3 | 2.6:1 (need 4.5:1) — text #f7f7f7 on #2ba6cb
+  PRI undersized-ui-text   #ui-id-3 | 9.975px functional text "Form outputs" (below 11px floor)
+
+### review 1280x800 first-visit pass: exit=2, primary=20 {'low-contrast': 10, 'undersized-ui-text': 8, 'tiny-text': 2}, advisory=3 {'low-contrast': 3}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI low-contrast         span.label.label-danger | 4.0:1 (need 4.5:1) — text #ffffff on #d9534f
+  ADV low-contrast         ol.breadcrumb > li:nth-of-type(1) > a | 4.2:1 (need 4.5:1) — text #337ab7 on #f5f5f5
+  PRI low-contrast         ol.breadcrumb > li.active | 4.1:1 (need 4.5:1) — text #777777 on #f5f5f5
+  PRI low-contrast         #user-badge-<uuid> | 1.7:1 (need 4.5:1) — text #ffffff on #1ee087
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(1) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(2) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(3) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(1) | 3.9:1 (need 4.5:1) — text #d1e7ee on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(2) | 2.7:1 (need 4.5:1) — text #93c5d7 on #0277a2
+  ADV low-contrast         a > b | 4.3:1 (need 4.5:1) — text #467eaf on #ffffff
+  PRI low-contrast         #ui-id-1 | 2.8:1 (need 4.5:1) — text #ffffff on #2ba6cb
+  PRI undersized-ui-text   #ui-id-1 | 9.975px functional text "Debug Panel" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(1) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(1) > strong | 9.975px functional text "canEdit:" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(2) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(2) > strong | 9.975px functional text "Editable:" (below 11px floor)
+  PRI tiny-text            ul.list-unstyled > li:nth-of-type(3) | 9.975px body text
+  PRI tiny-text            li:nth-of-type(3) > strong | 9.975px body text
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(4) | 9.975px functional text "true" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(4) > strong | 9.975px functional text "canEditPhase:" (below 11px floor)
+  PRI low-contrast         #ui-id-3 | 2.6:1 (need 4.5:1) — text #f7f7f7 on #2ba6cb
+  PRI undersized-ui-text   #ui-id-3 | 9.975px functional text "Form outputs" (below 11px floor)
+
+### review 390x844 default pass: exit=2, primary=22 {'low-contrast': 10, 'tiny-text': 3, 'undersized-ui-text': 9}, advisory=5 {'low-contrast': 3, 'straggler': 1, 'unbalanced-heading': 1}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI low-contrast         span.label.label-danger | 4.0:1 (need 4.5:1) — text #ffffff on #d9534f
+  ADV low-contrast         ol.breadcrumb > li:nth-of-type(1) > a | 4.2:1 (need 4.5:1) — text #337ab7 on #f5f5f5
+  PRI low-contrast         ol.breadcrumb > li.active | 4.1:1 (need 4.5:1) — text #777777 on #f5f5f5
+  PRI tiny-text            #usersOnline | 9px body text
+  PRI undersized-ui-text   #usersOnline | 9px functional text "user(s) online on this section" (below 11px floor)
+  PRI low-contrast         #user-badge-<uuid> | 1.7:1 (need 4.5:1) — text #ffffff on #1ee087
+  ADV straggler            #prqSummary | "requests" alone on the last of 2 lines (19% of the measure)
+  ADV unbalanced-heading   #partnerRequestItem-5329 > div.prq-card__head > div.prq-card__title > h3.prq-card__name | last of 2 lines is 16% as wide as the line above
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(1) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(2) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(3) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(1) | 3.9:1 (need 4.5:1) — text #d1e7ee on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(2) | 2.7:1 (need 4.5:1) — text #93c5d7 on #0277a2
+  ADV low-contrast         a > b | 4.3:1 (need 4.5:1) — text #467eaf on #ffffff
+  PRI low-contrast         #ui-id-1 | 2.8:1 (need 4.5:1) — text #ffffff on #2ba6cb
+  PRI undersized-ui-text   #ui-id-1 | 9.975px functional text "Debug Panel" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(1) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(1) > strong | 9.975px functional text "canEdit:" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(2) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(2) > strong | 9.975px functional text "Editable:" (below 11px floor)
+  PRI tiny-text            ul.list-unstyled > li:nth-of-type(3) | 9.975px body text
+  PRI tiny-text            li:nth-of-type(3) > strong | 9.975px body text
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(4) | 9.975px functional text "true" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(4) > strong | 9.975px functional text "canEditPhase:" (below 11px floor)
+  PRI low-contrast         #ui-id-3 | 2.6:1 (need 4.5:1) — text #f7f7f7 on #2ba6cb
+  PRI undersized-ui-text   #ui-id-3 | 9.975px functional text "Form outputs" (below 11px floor)
+
+### review 390x844 first-visit pass: exit=2, primary=22 {'low-contrast': 10, 'tiny-text': 3, 'undersized-ui-text': 9}, advisory=5 {'low-contrast': 3, 'straggler': 1, 'unbalanced-heading': 1}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI low-contrast         span.label.label-danger | 4.0:1 (need 4.5:1) — text #ffffff on #d9534f
+  ADV low-contrast         ol.breadcrumb > li:nth-of-type(1) > a | 4.2:1 (need 4.5:1) — text #337ab7 on #f5f5f5
+  PRI low-contrast         ol.breadcrumb > li.active | 4.1:1 (need 4.5:1) — text #777777 on #f5f5f5
+  PRI tiny-text            #usersOnline | 9px body text
+  PRI undersized-ui-text   #usersOnline | 9px functional text "user(s) online on this section" (below 11px floor)
+  PRI low-contrast         #user-badge-<uuid> | 1.7:1 (need 4.5:1) — text #ffffff on #1ee087
+  ADV straggler            #prqSummary | "requests" alone on the last of 2 lines (19% of the measure)
+  ADV unbalanced-heading   #partnerRequestItem-5329 > div.prq-card__head > div.prq-card__title > h3.prq-card__name | last of 2 lines is 16% as wide as the line above
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(1) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(2) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.col-md-4.infoLinks:nth-of-type(3) > strong | 3.4:1 (need 4.5:1) — text #b8d9e5 on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(1) | 3.9:1 (need 4.5:1) — text #d1e7ee on #0277a2
+  PRI low-contrast         div.copyRight > span:nth-of-type(2) | 2.7:1 (need 4.5:1) — text #93c5d7 on #0277a2
+  ADV low-contrast         a > b | 4.3:1 (need 4.5:1) — text #467eaf on #ffffff
+  PRI low-contrast         #ui-id-1 | 2.8:1 (need 4.5:1) — text #ffffff on #2ba6cb
+  PRI undersized-ui-text   #ui-id-1 | 9.975px functional text "Debug Panel" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(1) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(1) > strong | 9.975px functional text "canEdit:" (below 11px floor)
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(2) | 9.975px functional text "false" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(2) > strong | 9.975px functional text "Editable:" (below 11px floor)
+  PRI tiny-text            ul.list-unstyled > li:nth-of-type(3) | 9.975px body text
+  PRI tiny-text            li:nth-of-type(3) > strong | 9.975px body text
+  PRI undersized-ui-text   ul.list-unstyled > li:nth-of-type(4) | 9.975px functional text "true" (below 11px floor)
+  PRI undersized-ui-text   li:nth-of-type(4) > strong | 9.975px functional text "canEditPhase:" (below 11px floor)
+  PRI low-contrast         #ui-id-3 | 2.6:1 (need 4.5:1) — text #f7f7f7 on #2ba6cb
+  PRI undersized-ui-text   #ui-id-3 | 9.975px functional text "Form outputs" (below 11px floor)
+
+### request 1280x800 default pass: exit=2, primary=1 {'nested-cards': 1}, advisory=1 {'low-contrast': 1}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI nested-cards         div.prq-note.prq-note--info | Card inside card
+
+### request 1280x800 first-visit pass: exit=2, primary=1 {'nested-cards': 1}, advisory=1 {'low-contrast': 1}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI nested-cards         div.prq-note.prq-note--info | Card inside card
+
+### request 390x844 default pass: exit=2, primary=1 {'nested-cards': 1}, advisory=1 {'low-contrast': 1}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI nested-cards         div.prq-note.prq-note--info | Card inside card
+
+### request 390x844 first-visit pass: exit=2, primary=1 {'nested-cards': 1}, advisory=1 {'low-contrast': 1}
+  ADV low-contrast         a.cc-btn.cc-dismiss | 4.3:1 (need 4.5:1) — text #ffffff on #1983ab
+  PRI nested-cards         div.prq-note.prq-note--info | Card inside card
+

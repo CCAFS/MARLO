@@ -1,0 +1,20 @@
+# T11a FN-001 message re-run: submit a partner request from a project's partners page in a REAL BROWSER (Playwright, page JS initialised: jQuery.isReady and the select2 widgets present) in AICCRA and in CCAFS. Code: HEAD 8dd63c27a9 + t07b.diff (throwaway worktree), COPY DB. Email-notification switch OFF for both units on the COPY for this run (custom_parameters 2184 unit 45 set to false; a row 2722 for unit 1 inserted with false), so no mail is sent; both restored/removed afterwards. Requester: COPY user 2491 (its email is <notification mailbox>).
+Where the text comes from: marlo-web/src/main/webapp/WEB-INF/global/pages/partnersSave.ftl, branch [#else] of [#if !messageSent]: the success text is a literal in the template (no i18n key); the page shows it when the redirect carries messageSent=true.
+switch rows (id, unit, value): 2184 45 false;2722 1 false;
+(a first and a second pass of this script, each with a flaw in the helper, created rows 5245-5248 and no email; the rows below are from the final pass)
+
+== AICCRA: browser submit of the request page (project 102076)
+### Result
+{"url":"/clusters/AICCRA/partnerSave.do?projectID=102076&fundingSourceID=0&expectedID=0&messageSent=true","title":"Request creation of new institution","successMessageShown":true,"successText":"The new partner request was sent succesfully. You will receive a confirmation message as soon as it has been processed. Request a new one Close","successMarkup":"The new partner request was sent succesfully. <br> You will receive a confirmation message as soon as it has been processed.","formStillShown":0,"failureNote":false,"requiredNote":false}
+rows read immediately after the submit (id, partner_request_id, is_active, global_unit_id, created_by, id_phase, name):
+5249	NULL	1	45	2491	431	T11a message aiccra final
+5250	5249	1	45	2491	431	T11a message aiccra final
+emails created: 0
+
+== CCAFS: browser submit of the request page (project 1)
+### Result
+{"url":"/clusters/CCAFS/partnerSave.do?projectID=1&fundingSourceID=0&expectedID=0&messageSent=true","title":"Request creation of new institution","successMessageShown":true,"successText":"The new partner request was sent succesfully. You will receive a confirmation message as soon as it has been processed. Request a new one Close","successMarkup":"The new partner request was sent succesfully. <br> You will receive a confirmation message as soon as it has been processed.","formStillShown":0,"failureNote":false,"requiredNote":false}
+rows read immediately after the submit (id, partner_request_id, is_active, global_unit_id, created_by, id_phase, name):
+5251	NULL	1	1	2491	297	T11a message ccafs final
+5252	5251	1	1	2491	297	T11a message ccafs final
+emails created: 0

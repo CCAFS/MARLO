@@ -1,0 +1,21 @@
+/akili-validate remediation (F2, F3) - detector evidence, 2026-11-20, base HEAD 2380642ca0 + uncommitted fix diff, engine impeccable-engine 0.1.18 (vendored skill 4.8.0).
+Pinned: IMPECCABLE_BIN=<skill-dir>/scripts/bin/darwin-arm64/impeccable DO_NOT_TRACK=1 IMPECCABLE_NO_UPDATE_CHECK=1 <skill-dir>/scripts/impeccable detect --json ...
+
+## Source scan (9 files, same set as validate-detector.out section 1; first attempt with a 3px border-left note reported 1 side-tab, so the note became a borderless inline block)
+exit=0, findings=[]
+
+## URL scan, request page (/marlo-web/clusters/AICCRA/partnerSave.do?projectID=102076), same --cdp method as validate-detector.out (fresh headless Chrome profile, requester session, viewport via device-metrics emulation, read back = requested)
+Before (validate-detector.out): 1280x800 exit 2 {nested-cards: 1}, 390x844 exit 2 {nested-cards: 1}
+After:
+detector request 1280x800 default exit=0 viewportAfter="1280x800" stderr: none
+detector request 1280x800 first-visit exit=0 viewportAfter="1280x800" stderr: none
+detector request 390x844 default exit=0 viewportAfter="390x844" stderr: none
+detector request 390x844 first-visit exit=0 viewportAfter="390x844" stderr: none
+  request-1280x800-default.json: findings=1 [('low-contrast', 'advisory', 'a.cc-btn.cc-dismiss', '4.3:1 (need 4.5:1) — text #ffffff on #1983ab')]
+  request-1280x800-first-visit.json: findings=1 [('low-contrast', 'advisory', 'a.cc-btn.cc-dismiss', '4.3:1 (need 4.5:1) — text #ffffff on #1983ab')]
+  request-390x844-default.json: findings=1 [('low-contrast', 'advisory', 'a.cc-btn.cc-dismiss', '4.3:1 (need 4.5:1) — text #ffffff on #1983ab')]
+  request-390x844-first-visit.json: findings=1 [('low-contrast', 'advisory', 'a.cc-btn.cc-dismiss', '4.3:1 (need 4.5:1) — text #ffffff on #1983ab')]
+nested-cards: gone in all four passes. Remaining: one advisory low-contrast on the shared cookie banner (a.cc-btn.cc-dismiss, 4.3:1), part of the shared-chrome waiver set; not changed.
+First-visit CTA (request): 1280x800 pass, 390x844 pass (banner visible, debug panel absent).
+
+Note: the first run of the capture helper wrote to the validate-* screenshot names by mistake, so validate-fv-request-1280x800.png and validate-request-1280.png from the validate run were overwritten (with a login-redirect page); the post-fix captures are validate-fix-*.

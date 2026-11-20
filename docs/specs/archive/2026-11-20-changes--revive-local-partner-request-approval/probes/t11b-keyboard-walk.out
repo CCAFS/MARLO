@@ -1,0 +1,29 @@
+CHG-PARTREQ-001-T11b keyboard walk, 2026-11-20, HEAD efbf01c7c7 (no working-tree change).
+Live app from a throwaway worktree, throwaway database copy (*_partreq_test), 1280x800, Chromium (Playwright).
+Requests were created by the test requester ("Test Requester", email = the <notification mailbox>, external_user_mail empty).
+Method: the opener button is focused by script (the mouse never touches the dialog), then ONLY keyboard events
+(Tab, Shift+Tab, Enter, Escape, typing). Every focus position is read back from document.activeElement.
+
+== 1. Reject dialog (partner request 5296)
+opener                      BUTTON [reject] of the card
+Enter                       focus TEXTAREA#prqRejectJustification, in dialog prqRejectDialog
+aria                        role=dialog aria-modal=true aria-labelledby=prqRejectDialogTitle (title "Reject this request")
+Tab x10 (cycle)             notify checkbox, details summary, Cancel, Reject (confirm), X, textarea, notify checkbox,
+                            summary, Cancel, Reject: every stop inside the dialog, none OUTSIDE
+Shift+Tab x2                Cancel... stays inside
+Enter on Reject, empty      focus stays on #prqRejectJustification, aria-invalid=true, "A justification is required." shown,
+                            dialog stays open, POST requests sent: none
+Escape                      dialog hidden, focus back on BUTTON [reject] of the same card, html.prq-dialogOpen removed
+Enter, type justification, 4x Tab to "Reject request" (notify checked), Enter
+                            POST /rejectPartnerRequest.do requestID=5296&justification=...&sendNotification=true&phaseID=431
+                            note "T11b Probe Beta Foundation The request was processed." (success), card gone, summary
+                            "1 partner request", focus on the note; email_logs 18308 (rejected, to the mailbox)
+
+== 2. Accept dialog (partner request 5296, then 5294)
+Enter on [accept]           dialog prqAcceptDialog, focus on the confirm button; 4 Tab stops all inside; Escape closes,
+                            focus back on [accept]; no addPartner POST sent by the Escape
+Enter, Enter on confirm     POST /superadmin/addPartner.do requestID=5294 (full page), redirect, note "The request was processed."
+
+== 3. Office checkbox focus ring (T08 pointer)
+Tab / Shift+Tab onto #officeRequest-5299: matches :focus-visible, outline solid 2px rgb(2, 119, 162); screenshot
+t11b-focus-checkbox-1280.png shows the ring around the checkbox.

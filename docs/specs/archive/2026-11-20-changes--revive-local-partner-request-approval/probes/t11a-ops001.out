@@ -1,0 +1,24 @@
+# Branch code cad7c5d4e4, OPS-001 forced failures
+== ops label=T11a ops db=aiccradb_partreq_test
+  [addPartner, accept of a request without country and type (id 5226)] -> HTTP 302 -> /marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+     WARN/ERROR lines from the review classes: 1
+       2026-11-19T23:03:37 [ERROR] [MARLO] [dev] [PartnerRequestAction] request_id=4c57606de1da674a Could not accept partner request 5226
+     email address in those lines: no
+  [rejectPartnerRequest, requestID not a number] -> HTTP 200 {"outcome":"failed","success":false}
+     WARN/ERROR lines from the review classes: 1
+       2026-11-19T23:03:40 [ERROR] [MARLO] [dev] [RejectPartnerRequestAction] request_id=8e006f5a462764f2 rejectPartnerRequest: could not reject partner request abc
+     email address in those lines: no
+  [editPartnerRequest, fields the action cannot read (request 5226)] -> HTTP 200 {"outcome":"failed","success":false}
+     WARN/ERROR lines from the review classes: 1
+       2026-11-19T23:03:44 [ERROR] [MARLO] [dev] [EditPartnerRequestAction] request_id=e188be015eec0efc editPartnerRequest: could not read the posted fields of request 5226
+     email address in those lines: no
+  [acceptOfficesRequest, ids not numbers (institution 11912)] -> HTTP 200 {"outcome":"failed","outcomes":{},"success":false}
+     WARN/ERROR lines from the review classes: 1
+       2026-11-19T23:03:47 [ERROR] [MARLO] [dev] [PartnerRequestAction] request_id=b2ca57622793adc8 addCountryOffices: could not accept the office requests abc,def of institution 11912
+     email address in those lines: no
+  [rejectOfficesRequest, ids not numbers (institution 11912)] -> HTTP 200 {"outcome":"failed","outcomes":{},"success":false}
+     WARN/ERROR lines from the review classes: 1
+       2026-11-19T23:03:51 [ERROR] [MARLO] [dev] [PartnerRequestAction] request_id=4d2a812c375301d7 rejectCountryOffices: could not reject the office requests abc,def of institution 11912
+     email address in those lines: no
+  email_logs unchanged by the failures: True
+  institutions unchanged by the failures: True
