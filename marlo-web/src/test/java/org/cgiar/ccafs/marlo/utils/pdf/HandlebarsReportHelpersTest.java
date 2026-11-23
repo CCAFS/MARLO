@@ -15,7 +15,9 @@
 
 package org.cgiar.ccafs.marlo.utils.pdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,6 +110,112 @@ public class HandlebarsReportHelpersTest {
     }
     assertEquals("Java output differs from Handlebars.js on " + failures.size() + " of " + rows.size()
       + " rows:\n" + String.join("\n", failures), 0, failures.size());
+  }
+
+  private static String resourceText(String path) throws Exception {
+    try (InputStream in = HandlebarsReportHelpersTest.class.getResourceAsStream(path)) {
+      assertNotNull("missing test resource " + path, in);
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      byte[] buffer = new byte[8192];
+      for (int read = in.read(buffer); read >= 0; read = in.read(buffer)) {
+        out.write(buffer, 0, read);
+      }
+      return new String(out.toByteArray(), StandardCharsets.UTF_8);
+    }
+  }
+
+  /**
+   * The HTML the local engine builds from each production fixture template is byte-identical to what Handlebars.js
+   * 4.7.8 builds (stored in <code>expected-html/</code>, produced by <code>generate-expected-html.js</code>): the
+   * PhantomJS renderer must see the same bytes production sees, standalone-line stripping included.
+   */
+  @Test
+  @SuppressWarnings("unchecked")
+  public void fixtureHtmlIsByteIdenticalToHandlebarsJs() throws Exception {
+    Handlebars handlebars = HandlebarsReportHelpers.newHandlebars();
+    for (String name : new String[] {"oicr", "innovation", "project"}) {
+      Map<String, Object> payload = new ObjectMapper().readValue(resourceText("/pdf/payloads/" + name
+        + "-payload.json"), Map.class);
+      Map<String, Object> data = (Map<String, Object>) ((Map<String, Object>) payload.get("data")).get("data");
+      String actual = HandlebarsReportHelpers.apply(handlebars.compileInline(resourceText("/pdf/templates/" + name
+        + ".html")), data);
+      String expected = resourceText("/pdf/expected-html/" + name + ".html");
+      if (!expected.equals(actual)) {
+        int at = 0;
+        while (at < expected.length() && at < actual.length() && expected.charAt(at) == actual.charAt(at)) {
+          at++;
+        }
+        int from = Math.max(0, at - 60);
+        throw new AssertionError(name + " differs from Handlebars.js at char " + at + " (lengths expected "
+          + expected.length() + ", actual " + actual.length() + ")\nexpected: <"
+          + expected.substring(from, Math.min(expected.length(), at + 60)) + ">\nactual:   <"
+          + actual.substring(from, Math.min(actual.length(), at + 60)) + ">");
+      }
+    }
+  }
+
+  /** The log events of {@link HandlebarsReportHelpers} while <code>body</code> runs. */
+  private static List<String> warningsDuring(Runnable body) {
+    ch.qos.logback.classic.Logger logger =
+      (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(HandlebarsReportHelpers.class);
+    ch.qos.logback.core.read.ListAppender<ch.qos.logback.classic.spi.ILoggingEvent> appender =
+      new ch.qos.logback.core.read.ListAppender<ch.qos.logback.classic.spi.ILoggingEvent>();
+    appender.start();
+    logger.addAppender(appender);
+    try {
+      body.run();
+    } finally {
+      logger.detachAppender(appender);
+    }
+    List<String> warnings = new ArrayList<String>();
+    for (ch.qos.logback.classic.spi.ILoggingEvent event : appender.list) {
+      if (event.getLevel() == ch.qos.logback.classic.Level.WARN) {
+        warnings.add(event.getFormattedMessage());
+      }
+    }
+    return warnings;
+  }
+
+  private static void compileQuietly(final String template) {
+    try {
+      HandlebarsReportHelpers.newHandlebars().compileInline(template);
+    } catch (Exception expected) {
+      // Handlebars.java may reject the template afterwards; the test is about the warning
+    }
+  }
+
+  @Test
+  public void aTemplateLeftUnstrippedIsWarnedOnceWithTheReasonAndNeverItsText() {
+    String[][] cases = {{"a\n{{{{raw}}}}\nSECRET-TEXT\n{{{{/raw}}}}\nb", "raw block"},
+      {"a\n{{#if x}}\nSECRET-TEXT\n", "unbalanced block tags"},
+      {"a\n{{/if}}\nSECRET-TEXT\n", "unbalanced block tags"},
+      {"a\n{{^x}}\nSECRET-TEXT\n{{else}}\nb\n{{/x}}", "inverse block with else"},
+      {"a\n{{x SECRET-TEXT", "unterminated tag"}};
+    for (final String[] test : cases) {
+      List<String> warnings = warningsDuring(new Runnable() {
+
+        @Override
+        public void run() {
+          compileQuietly(test[0]);
+        }
+      });
+      assertEquals(test[0], 1, warnings.size());
+      assertTrue(warnings.get(0), warnings.get(0).contains(test[1]));
+      assertTrue(warnings.get(0), !warnings.get(0).contains("SECRET-TEXT"));
+    }
+  }
+
+  @Test
+  public void aStrippedTemplateIsNotWarnedAbout() {
+    List<String> warnings = warningsDuring(new Runnable() {
+
+      @Override
+      public void run() {
+        compileQuietly("a\n{{#if x}}\nb\n{{/if}}\nc");
+        compileQuietly("plain text");
+      }
+    });
+    assertEquals(warnings.toString(), 0, warnings.size());
   }
 
   @Test

@@ -168,6 +168,24 @@ public class ReportTemplateSubsetTest {
   }
 
   @Test
+  public void flagsRawBlocksBecauseTheEngineCannotStripStandaloneLinesAroundThem() throws Exception {
+    assertFlagged("raw block", "{{{{raw}}}}", "a\n{{{{raw}}}}\n{{x}}\n{{{{/raw}}}}\nb");
+    assertTrue(readTemplate("oicr").indexOf("{{{{") < 0);
+    assertTrue(readTemplate("innovation").indexOf("{{{{") < 0);
+    assertTrue(readTemplate("project").indexOf("{{{{") < 0);
+  }
+
+  @Test
+  public void flagsAnInverseBlockWithAnElseWhichHandlebarsJavaCannotCompile() {
+    assertFlagged("inverse block with else", "{{^x}}", "{{^x}}a{{else}}b{{/x}}");
+    assertFlagged("inverse block with else", "{{^x}}", "{{^x}}a{{^}}b{{/x}}");
+    assertFlagged("inverse block with else", "{{^x}}", "{{^x}}a{{else y}}b{{/x}}");
+    assertSupported("{{^x}}a{{/x}}");
+    assertSupported("{{#x}}a{{else}}b{{/x}}{{#y}}a{{^}}b{{/y}}");
+    assertSupported("{{^x}}{{#y}}a{{else}}b{{/y}}{{/x}}");
+  }
+
+  @Test
   public void productionTemplatesAreInsideTheSubset() throws Exception {
     for (String name : new String[] {"oicr", "innovation", "project"}) {
       String template = readTemplate(name);

@@ -636,4 +636,89 @@ add('{{#each m}}[{{@odd}}][{{@even}}]{{/each}}', { m: { a: 1, b: 2 } });
 add('{{#each xs}}{{#with this}}[{{@odd}}][{{@even}}]{{/with}}{{/each}}', { xs: [{ a: 1 }, { a: 2 }] });
 add('{{#each m}}{{#each list}}[{{@key}}]{{/each}}{{/each}}', { m: { a: { list: ['x', 'y'] }, b: { list: ['z'] } } });
 add('{{#each m}}{{#each list}}[{{@key}}][{{@../key}}]{{/each}}|{{/each}}', { m: { a: { list: ['x', 'y'] }, b: { list: ['z'] } } });
+// standalone lines (Handlebars.js strips a line that holds only a block tag, else, comment or partial)
+const ST = [
+  'a\n{{#if x}}\nb\n{{/if}}\nc',
+  'a\n  {{#if x}}  \n  b\n  {{/if}}  \nc',
+  'a\n{{#if x}}\nb\n{{else}}\nc\n{{/if}}\nd',
+  'a\n  {{#if x}}\n  b\n  {{else}}\n  c\n  {{/if}}\nd',
+  'a\r\n{{#if x}}\r\nb\r\n{{/if}}\r\nc',
+  '{{#if x}}\nb\n{{/if}}',
+  '{{#if x}}\nb\n{{/if}}\n',
+  '  {{#if x}}\nb\n{{/if}}',
+  'a {{#if x}}\nb\n{{/if}}\nc',
+  'a\n{{#if x}}\nb\n{{/if}} c\nd',
+  'a\n{{#if x}} b\n{{/if}}\nc',
+  'a\n{{#if x}}\nb {{/if}}\nc',
+  'a\n{{#if x}}{{/if}}\nb',
+  'a\n{{#if x}} {{/if}}\nb',
+  'a\n{{#if x}}\n{{/if}}\nb',
+  'a\n{{#if x}}\n\n{{/if}}\nb',
+  '{{#if x}} {{/if}}',
+  'a\n{{! comment }}\nb',
+  'a\n  {{!-- comment --}}  \nb',
+  'a {{! comment }}\nb',
+  'a\n{{! comment }} b\nc',
+  '{{! comment }}',
+  'a\n{{x}}\nb',
+  'a\n{{{x}}}\nb',
+  'a\n{{&x}}\nb',
+  'a\n{{#each xs}}\n- {{this}}\n{{/each}}\nb',
+  'a\n{{#each xs}}\n  {{#if this}}\n  - {{this}}\n  {{/if}}\n{{/each}}\nb',
+  'a\n{{#each xs}}\n- {{this}}\n{{else}}\nnone\n{{/each}}\nb',
+  'a\n{{^x}}\nb\n{{/x}}\nc',
+  'a\n{{#x}}\nb\n{{^}}\nc\n{{/x}}\nd',
+  'a\n{{#if x}}\nb\n{{else if y}}\nc\n{{else}}\nd\n{{/if}}\ne',
+  'a\n{{#unless x}}\nb\n{{/unless}}\nc',
+  'a\n{{#with o}}\n{{x}}\n{{/with}}\nb',
+  'a\n{{~#if x}}\nb\n{{/if}}\nc',
+  'a\n{{#if x~}}\nb\n{{/if}}\nc',
+  'a  \n\t{{#if x}}\t\nb\n\t{{/if}}\t\nc',
+  '<table>\n  {{#each rows}}\n  <tr><td>{{this}}</td></tr>\n  {{/each}}\n</table>\n',
+  '<pre>\n{{#if x}}\n  kept\n{{/if}}\n</pre>',
+  'a\n\n{{#if x}}\n\nb\n\n{{/if}}\n\nc',
+  'a\n{{#if x}}\nb\n{{/if}}\n{{#if x}}\nc\n{{/if}}\nd',
+  'a\n{{#if x}}\n{{#if y}}\nb\n{{/if}}\n{{/if}}\nc',
+  'a\n{{#safeEmpty}}\n{{x}}\n{{/safeEmpty}}\nb',
+  'a\n{{#percentage}}\n0.5\n{{/percentage}}\nb',
+  '{{#if x}}\n  a\n{{/if}}\n  {{#if x}}\n  b\n  {{/if}}',
+  'a\n{{#if x}}\nb\n{{/if}}   ',
+  'a\n   {{#if x}}\nb\n{{/if}}',
+  'a\n{{#if x}}\nb\n   {{/if}}\nc',
+];
+const SC = [{}, { x: true, y: false, xs: ['p', 'q'], o: { x: 1 } }, { x: false, y: true, xs: [], o: {} }, { x: true, y: true, xs: ['p'], o: { x: 'z' } }];
+ST.forEach((t) => SC.forEach((c) => add(t, c)));
+// ifCond with block tags on their own lines and with more operand types
+const IC = 'a\n{{#ifCond x "===" y}}\nsame\n{{else}}\ndiff\n{{/ifCond}}\nb';
+[{ x: 1, y: 1 }, { x: 1, y: 2 }, { x: '1', y: 1 }, { x: null, y: null }, {}, { x: [], y: [] }, { x: {}, y: 'x' }].forEach((c) => add(IC, c));
+['==', '!=', '<', '>=', '&&', '||', '??', '==='].forEach((op) => [{ x: 0, y: '' }, { x: 'a', y: 'b' }, { x: 2, y: 10 }, { x: '2', y: '10' }].forEach((c) => add(`{{#ifCond x "${op}" y}}\n  T\n{{else}}\n  F\n{{/ifCond}}\n`, c)));
+// (an inverse block with an else, {{^x}}a{{else}}b{{/x}}, renders in Handlebars.js but Handlebars.java cannot compile it at all,
+// stripping or not: listed as a limit, no row)
+// regex dialect (JS `$` is the end of the text only, JS \s holds nbsp and friends) and tags that must not merge
+const DI = [
+  'a  \n{{#if x}}\nb\n{{/if}}\nc',
+  'a  \n{{#if x}}\nb  \n{{/if}}\nc',
+  'a \r\n{{! c }}\r\nb',
+  'a\n\u00a0{{#if x}}\nb\n{{/if}}\nc',
+  '\ufeff{{#if x}}\nb\n{{/if}}',
+  'a\n\u2003{{#if x}}\u2003\nb\n{{/if}}\u3000\nc',
+  'a\n{{#if x}}\u00a0\nb\n{{/if}}\nc',
+  '.a {\n  {{#if x}}\n  color: red;\n  {{/if}}\n}',
+  '{{#if x}}\n}\n{{/if}}',
+  '{{#if x~}}\n  }{{/if}}',
+  '{{! c }}\n}',
+  '{ {{~x}}',
+  '{\n  {{~x}}',
+  'C:\\\r\n\t{{~x}}',
+  '{  {{~x}}',
+  '{\n  {{~x}}',
+  'C:\\ {{~x}}',
+  'C:\\\\ {{~x}}',
+  'a{ {{~#if x}}b{{/if}}',
+  '{{#if x}}a{ {{~else}}b\\ {{~/if}}',
+  '{{#if x~}} }b{{/if}}',
+  '{{x~}} }',
+  '{{#if x}}\n{{^x}}\n}\n{{/x}}\n{{/if}}',
+];
+DI.forEach((t) => SC.forEach((c) => add(t, c)));
 module.exports = R;

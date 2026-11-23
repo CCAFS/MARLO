@@ -15,6 +15,10 @@ const dir = process.argv[2];
 function classify(template) {
   const ast = Handlebars.parse(template);
   const cats = new Set();
+  // offset of a loc position (line counts \r\n, \r and \n as the lexer does), to read the source of a block's opener
+  const starts = [0];
+  template.replace(/\r\n?|\n/g, (m, at) => { starts.push(at + m.length); return m; });
+  const sourceAt = (loc) => template.slice(starts[loc.start.line - 1] + loc.start.column);
   const walk = (n) => {
     if (Array.isArray(n)) { n.forEach(walk); return; }
     if (!n || typeof n !== 'object') { return; }
@@ -28,6 +32,10 @@ function classify(template) {
         if (n.data && (n.parts[0] === 'odd' || n.parts[0] === 'even')) { cats.add('data variable @' + n.parts[0]); }
         break;
       case 'BlockStatement':
+        // a raw block ({{{{x}}}}) has an empty openStrip; every other block has {open, close}
+        if (n.openStrip && n.openStrip.open === undefined) { cats.add('raw block'); }
+        // {{^x}}a{{else}}b{{/x}}: Handlebars.js swaps its programs, Handlebars.java cannot compile it
+        if (n.program && n.inverse && /^\{\{~?\^/.test(sourceAt(n.loc))) { cats.add('inverse block with else'); }
         if (n.path && n.path.type === 'PathExpression' && (n.path.original === 'if' || n.path.original === 'unless')
           && n.params.length === 0) {
           cats.add(n.path.original + ' without argument');

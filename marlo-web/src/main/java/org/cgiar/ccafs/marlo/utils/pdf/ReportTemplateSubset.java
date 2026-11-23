@@ -32,7 +32,9 @@ import java.util.regex.Pattern;
  * Reported constructs: parent paths (<code>../</code>), block parameters (<code>as |x|</code>), partials, inline
  * partials and decorators (<code>{{&gt;</code>, <code>{{#&gt;</code>, <code>{{#*inline</code>), the data variables
  * <code>@odd</code> and <code>@even</code>, a path segment named <code>null</code> (<code>x.null</code>,
- * <code>x.[null]</code>) and <code>if</code> / <code>unless</code> blocks without a positional argument. The bare
+ * <code>x.[null]</code>), <code>if</code> / <code>unless</code> blocks without a positional argument, raw blocks
+ * (<code>{{{{x}}}}</code>, which also keep the engine from stripping standalone lines) and an inverse block with an
+ * else (<code>{{^x}}a{{else}}b{{/x}}</code>, which Handlebars.java cannot compile). The bare
  * literal <code>null</code> as an argument is supported and is not reported.
  * <p>
  * How it reads a template: it does not search the text with expressions of its own. {@link Lexer} is a port of the
@@ -140,8 +142,13 @@ final class ReportTemplateSubset {
     List<Token> tokens = Lexer.tokenize(template);
     int size = tokens.size();
     int index = 0;
+    // open blocks: {rule of the opener, its quoted tag, whether the else was already reported}
+    Deque<Object[]> blocks = new ArrayDeque<Object[]>();
     while (index < size) {
       Token open = tokens.get(index);
+      if (open.rule == R_INVERSE || open.rule == R_ELSE) {
+        reportElse(blocks, findings);
+      }
       if (!isOpener(open.rule)) {
         index++;
         continue;
@@ -152,14 +159,36 @@ final class ReportTemplateSubset {
       }
       boolean closed = end < size && isCloser(tokens.get(end).rule);
       Token last = closed ? tokens.get(end) : tokens.get(end - 1);
-      if (open.rule != R_OPEN_ENDBLOCK) {
+      String quoted = excerpt(template.substring(open.start, last.end));
+      if (open.rule == R_OPEN_ENDBLOCK) {
+        if (!blocks.isEmpty()) {
+          blocks.pop();
+        }
+      } else {
         Reader reader = new Reader(tokens.subList(index + 1, end));
         reader.readMustache();
-        reader.report(open, excerpt(template.substring(open.start, last.end)), findings);
+        reader.report(open, quoted, findings);
+        if (open.rule == R_OPEN_BLOCK || open.rule == R_OPEN_PARTIAL_BLOCK || open.rule == R_OPEN_INVERSE) {
+          blocks.push(new Object[] {open.rule, quoted, Boolean.FALSE});
+        } else if (open.rule == R_OPEN_INVERSE_CHAIN) {
+          reportElse(blocks, findings);
+        }
       }
       index = closed ? end + 1 : end;
     }
     return findings;
+  }
+
+  /**
+   * An else inside <code>{{^x}}</code>: Handlebars.js swaps the two programs of such a block, and Handlebars.java
+   * cannot compile it at all, so the guard names it before the render fails.
+   */
+  private static void reportElse(Deque<Object[]> blocks, List<String> findings) {
+    Object[] top = blocks.peek();
+    if (top != null && ((Integer) top[0]).intValue() == R_OPEN_INVERSE && !Boolean.TRUE.equals(top[2])) {
+      top[2] = Boolean.TRUE;
+      findings.add("inverse block with else: " + top[1]);
+    }
   }
 
   private static String excerpt(String tag) {
@@ -379,7 +408,7 @@ final class ReportTemplateSubset {
         default:
           break;
       }
-      if (rule >= R_LPAREN && rule != R_SPACE && rule != R_INVERSE && rule != R_ELSE && rule != R_COMMENT_START
+      if (rule >= R_LPAREN && rule != R_SPACE && rule != R_COMMENT_START
         && rule != R_COMMENT_SHORT && rule != R_INVALID) {
         tokens.add(new Token(rule, start, end, text));
       }
@@ -570,6 +599,9 @@ final class ReportTemplateSubset {
     /** Adds what the mustache held, once per construct and in a fixed order. */
     void report(Token open, String excerpt, List<String> findings) {
       boolean decorator = open.text.indexOf('*') >= 0;
+      if (open.rule == R_OPEN_RAW_BLOCK) {
+        findings.add("raw block: " + excerpt);
+      }
       if (open.rule == R_OPEN_PARTIAL || open.rule == R_OPEN_PARTIAL_BLOCK || decorator) {
         findings.add("partial: " + excerpt);
       }

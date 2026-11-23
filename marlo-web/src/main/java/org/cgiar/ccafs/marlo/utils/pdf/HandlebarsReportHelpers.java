@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.Collator;
 import java.text.ParseException;
 import java.text.RuleBasedCollator;
@@ -49,6 +50,10 @@ import com.github.jknack.handlebars.PathExpression;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.ValueResolver;
 import com.github.jknack.handlebars.context.MapValueResolver;
+import com.github.jknack.handlebars.io.StringTemplateSource;
+import com.github.jknack.handlebars.io.TemplateSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handlebars engine configured like the reports microservice (<code>pdf.module.ts</code>): the same 17 helpers with
@@ -281,6 +286,8 @@ final class HandlebarsReportHelpers {
     }
   }
 
+  private static final Logger LOG = LoggerFactory.getLogger(HandlebarsReportHelpers.class);
+
   private static final String NULL_LITERAL = "null";
 
   static final JsNull JS_NULL = new JsNull();
@@ -312,9 +319,26 @@ final class HandlebarsReportHelpers {
   private static final ObjectMapper JSON_PARSER =
     new ObjectMapper().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
 
-  /** Builds the engine: the 17 helpers plus JavaScript printing of numbers, lists, maps and null. */
+  /**
+   * Builds the engine: the 17 helpers (<code>ifCond</code> among them) plus JavaScript printing of numbers, lists,
+   * maps and null, and Handlebars.js standalone-line stripping (see {@link StandaloneLines}).
+   */
   static Handlebars newHandlebars() {
-    Handlebars handlebars = new Handlebars();
+    Handlebars handlebars = new Handlebars() {
+
+      @Override
+      public Template compile(TemplateSource source, String startDelimiter, String endDelimiter)
+        throws IOException {
+        List<String> fallbacks = new ArrayList<String>();
+        String text = StandaloneLines.strip(source.content(StandardCharsets.UTF_8), fallbacks);
+        for (String reason : fallbacks) {
+          // the compile cache of the service makes this once per template; never the template text
+          LOG.warn("Template compiled without standalone-line stripping ({}): its HTML can differ from Handlebars.js",
+            reason);
+        }
+        return super.compile(new StringTemplateSource(source.filename(), text), startDelimiter, endDelimiter);
+      }
+    };
     handlebars.with(new Formatter() {
 
       @Override

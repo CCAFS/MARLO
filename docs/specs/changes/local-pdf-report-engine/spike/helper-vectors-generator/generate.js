@@ -1,8 +1,8 @@
 // Generates marlo-web/src/test/resources/pdf/helper-vectors.json with REAL Handlebars.js.
-// Usage: node generate.js <pdf.module.ts> <output.json>
+// Usage: NODE_MODULES=<dir holding handlebars 4.7.8> node generate.js <pdf.module.ts> <output.json>
 const fs = require('fs');
 const path = require('path');
-const BASE = path.resolve(__dirname, '../baseline/node_modules');
+const BASE = path.resolve(process.env.NODE_MODULES || path.join(__dirname, '../baseline/node_modules'));
 const Handlebars = require(path.join(BASE, 'handlebars'));
 const rows = require('./rows.js');
 const [tsFile, outFile] = process.argv.slice(2);
@@ -38,7 +38,7 @@ rows.forEach((r) => {
   push(r.template, ser(r.context, false));
   if (hasNumber(r.context)) { push(r.template, ser(r.context, true)); }
 });
-const gen = 'node generate.js <reports-microservice>/src/domain/api/pdf/pdf.module.ts <repo>/marlo-web/src/test/resources/pdf/helper-vectors.json'
+const gen = 'NODE_MODULES=<dir holding handlebars> node generate.js <reports-microservice>/src/domain/api/pdf/pdf.module.ts <repo>/marlo-web/src/test/resources/pdf/helper-vectors.json'
   + ' (script kept with the spec evidence; handlebars ' + Handlebars.VERSION + '; helpers copied from pdf.module.ts at 6f16514;'
   + ' every row with a number is emitted twice, integral numbers as 1 and as 1.0, so Java sees Integer and Double)';
 fs.mkdirSync(path.dirname(outFile), { recursive: true });
