@@ -1,0 +1,2094 @@
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibility.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibility.java
+index 45cdb7e93e..bf66acab18 100644
+--- a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibility.java
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibility.java
+@@ -20,17 +20,25 @@ import java.io.IOException;
+ import java.io.InputStream;
+ import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.HashSet;
+ import java.util.List;
+ import java.util.Locale;
++import java.util.Map;
++import java.util.concurrent.ConcurrentHashMap;
++import java.util.Set;
++import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
+ import org.jsoup.Jsoup;
+ import org.jsoup.helper.W3CDom;
++import org.jsoup.nodes.Comment;
+ import org.jsoup.nodes.DataNode;
+ import org.jsoup.nodes.Document;
+ import org.jsoup.nodes.Element;
+ import org.jsoup.nodes.Node;
+ import org.jsoup.nodes.TextNode;
++import org.jsoup.select.Elements;
+ 
+ /**
+  * Makes the HTML that Handlebars produced render like html-pdf (PhantomJS) when it goes through OpenHTMLtoPDF
+@@ -42,12 +50,66 @@ final class HtmlPdfCompatibility {
+ 
+   private static final String COMPAT_CSS_RESOURCE = "/pdf/html-pdf-compat.css";
+ 
++  /** The browser defaults of WebKit, loaded before every rule of the template (task T11). */
++  private static final String DEFAULTS_CSS_RESOURCE = "/pdf/html-pdf-defaults.css";
++
+   /** A CSS length as html-pdf reads it from the page options, for example {@code 40mm} or {@code 1.5cm}. */
+-  private static final Pattern CSS_LENGTH = Pattern.compile("^(?:0|\\d+(?:\\.\\d+)?(?:px|mm|cm|in|pt|pc))$");
++  private static final Pattern CSS_LENGTH = Pattern.compile("^(?:0|(\\d+(?:\\.\\d+)?)(px|mm|cm|in|pt|pc))$");
+ 
+   private static final String ZERO = "0";
+ 
+-  private static volatile String compatCss;
++  private static final Pattern BORDER_WIDTH = Pattern.compile("(?:^|\\s)(\\d+(?:\\.\\d+)?)px(?:\\s|$)");
++
++  private static final Pattern PIXELS = Pattern.compile("(\\d+(?:\\.\\d+)?)(?:px)?");
++
++  /** An inline {@code height: 100%} declaration; group 1 is what precedes it. */
++  private static final Pattern FULL_HEIGHT = Pattern.compile("(^|;|\\s)height\\s*:\\s*100%");
++
++  /** Elements that stay inside the line of their parent and hold text of their own. */
++  private static final Set<String> INLINE_TEXT_TAGS = new HashSet<String>(Arrays.asList("a", "abbr", "b", "big",
++    "cite", "code", "em", "font", "i", "kbd", "label", "mark", "q", "s", "samp", "small", "span", "strike",
++    "strong", "sub", "sup", "tt", "u", "var"));
++
++  /** Blocks whose default top margin WebKit ignores at the top of a table cell in quirks mode (html.css, __qem). */
++  private static final Set<String> QUIRK_BEFORE_TAGS = new HashSet<String>(Arrays.asList("h1", "h2", "h3", "h4",
++    "h5", "h6", "p", "ul", "ol"));
++
++  /** Blocks whose default bottom margin WebKit ignores at the end of a table cell in quirks mode. */
++  private static final Set<String> QUIRK_AFTER_TAGS = new HashSet<String>(Arrays.asList("p"));
++
++  /** Elements left as they are: a list item draws its marker with its own metrics, tables and rows are structural. */
++  private static final Set<String> KEEP_FONT_TAGS = new HashSet<String>(Arrays.asList("body", "br", "html", "li",
++    "ol", "table", "tbody", "tfoot", "thead", "tr", "ul"));
++
++  /** Properties a 0 font size would shrink for the children that inherit them, when they are measured in em. */
++  private static final String[] EM_INHERITED = {"letter-spacing", "word-spacing", "text-indent"};
++
++  /** Wrappers that pass the margin of their first or last block through, unless the author gave them a boundary. */
++  private static final Set<String> TRANSPARENT_TAGS = new HashSet<String>(Arrays.asList("article", "aside", "center",
++    "div", "font", "form", "header", "main", "nav", "section", "span"));
++
++  /** Parents whose text is not rendered as flowing text, or must keep its exact shape. */
++  private static final Set<String> VERBATIM_TAGS =
++    new HashSet<String>(Arrays.asList("pre", "script", "style", "textarea", "title", "option"));
++
++  /**
++   * A4 as PhantomJS prints it, in CSS pixels: html-pdf maps one CSS pixel to one PDF point and rounds A4 to whole
++   * points (spike F2, task T11), so the layout width is 595 px and not the 793.7 px of a screen.
++   */
++  private static final String A4_PORTRAIT = "595px 842px";
++
++  private static final String A4_LANDSCAPE = "842px 595px";
++
++  private static final double A4_SHORT_SIDE = 595;
++
++  private static final double A4_LONG_SIDE = 842;
++
++  /** One inch in PDF points, which are CSS pixels for html-pdf. */
++  private static final double POINTS_PER_INCH = 72.0;
++
++  private static final double MM_PER_INCH = 25.4;
++
++  private static final Map<String, String> CSS_CACHE = new ConcurrentHashMap<String, String>();
+ 
+   /**
+    * Applies the compatibility edits to {@code html}.
+@@ -68,18 +130,33 @@ final class HtmlPdfCompatibility {
+     }
+ 
+     trimWhitespaceBesideBr(doc);
++    AuthorStyles styles = new AuthorStyles(doc);
++    dropBreakEndingInlineText(doc, styles);
++    applyOutlineHeadingDefaults(doc, styles);
++    compensateCollapsedBorders(doc, styles);
++    truncateMarginsAtForcedBreaks(doc, styles);
++    ignoreQuirkMargins(doc, styles);
++    ignoreStrutOfTextFreeBoxes(doc, styles);
++    wrapTextBesideInlineElements(doc);
+ 
+     StringBuilder pageCss = new StringBuilder();
+     StringBuilder firstPageCss = new StringBuilder();
+     List<Element> running = new ArrayList<Element>();
+     boolean landscape = orientation != null && "landscape".equals(orientation.trim().toLowerCase(Locale.ROOT));
+ 
+-    pageCss.append("@page { size: A4 ").append(landscape ? "landscape" : "portrait").append("; margin: ")
++    pageCss.append("@page { size: ").append(landscape ? A4_LANDSCAPE : A4_PORTRAIT).append("; margin: ")
+       .append(cssLength(headerHeight)).append(" 0 ").append(cssLength(footerHeight)).append(" 0;");
+ 
+-    addSlot(doc, "pageHeader", "@top-center", "pdfHeader", " vertical-align: top;", pageCss, firstPageCss, running);
+-    addSlot(doc, "pageFooter", "@bottom-center", "pdfFooter", "", pageCss, firstPageCss, running);
++    addSlot(doc, "pageHeader", "@top-center", "pdfHeader", lengthInPoints(headerHeight), styles, pageCss,
++      firstPageCss, running);
++    addSlot(doc, "pageFooter", "@bottom-center", "pdfFooter", lengthInPoints(footerHeight), styles, pageCss,
++      firstPageCss, running);
+     pageCss.append(" }");
++    // WebKit resolves height: 100% of the cover block against the page area, the renderer against nothing (F7).
++    double areaHeight = (landscape ? A4_SHORT_SIDE : A4_LONG_SIDE) - lengthInPoints(headerHeight)
++      - lengthInPoints(footerHeight);
++    pageCss.append("\n.first-page { height: ").append(String.format(Locale.ROOT, "%.3fpx", Math.max(0, areaHeight)))
++      .append("; }");
+     if (firstPageCss.length() > 0) {
+       pageCss.append("\n@page :first { ").append(firstPageCss).append("}");
+     }
+@@ -91,8 +168,9 @@ final class HtmlPdfCompatibility {
+       doc.body().prependChild(element);
+     }
+ 
++    doc.head().prependElement("style").appendChild(new DataNode(css(DEFAULTS_CSS_RESOURCE)));
+     doc.head().appendElement("style").appendChild(new DataNode(pageCss.toString()));
+-    doc.head().appendElement("style").appendChild(new DataNode(compatCss()));
++    doc.head().appendElement("style").appendChild(new DataNode(css(COMPAT_CSS_RESOURCE)));
+     return doc;
+   }
+ 
+@@ -108,20 +186,24 @@ final class HtmlPdfCompatibility {
+    * Registers the default and the first-page variant of one slot (header or footer): the element becomes a running
+    * element and a margin box is generated for it.
+    */
+-  private static void addSlot(Document doc, String id, String marginBox, String runningName, String extraBoxCss,
+-    StringBuilder pageCss, StringBuilder firstPageCss, List<Element> running) {
++  private static void addSlot(Document doc, String id, String marginBox, String runningName, double slotHeight,
++    AuthorStyles styles, StringBuilder pageCss, StringBuilder firstPageCss, List<Element> running) {
+     Element regular = doc.getElementById(id);
+     Element first = doc.getElementById(id + "-1");
+     if (first == null) {
+       first = doc.getElementById(id + "-first");
+     }
+     if (regular != null) {
++      String extraBoxCss = alignment(regular, styles);
++      resolvePercentHeights(regular, slotHeight);
+       makeRunning(regular, runningName);
+       running.add(regular);
+       pageCss.append(' ').append(marginBox).append(" { content: element(").append(runningName)
+         .append("); width: 100%;").append(extraBoxCss).append(" }");
+     }
+     if (first != null) {
++      String extraBoxCss = alignment(first, styles);
++      resolvePercentHeights(first, slotHeight);
+       makeRunning(first, runningName + "First");
+       running.add(first);
+       firstPageCss.append(marginBox).append(" { content: element(").append(runningName).append("First); width: 100%;")
+@@ -129,12 +211,37 @@ final class HtmlPdfCompatibility {
+     }
+   }
+ 
+-  private static String compatCss() {
+-    String css = compatCss;
++  /**
++   * html-pdf lays a header or footer out from the top of its band (probed); one the author pinned with
++   * {@code position: fixed} or {@code absolute} and {@code bottom} (and no {@code top}) sits at the bottom of it.
++   */
++  private static String alignment(Element slot, AuthorStyles styles) {
++    String position = styles.valueOf(slot, "position");
++    boolean pinned = position != null && (position.startsWith("fixed") || position.startsWith("absolute"));
++    boolean bottom = styles.valueOf(slot, "bottom") != null && styles.valueOf(slot, "top") == null;
++    return pinned && bottom ? " vertical-align: bottom;" : " vertical-align: top;";
++  }
++
++  /**
++   * Gives {@code height: 100%} in the inline style of a header or footer, or of anything in it, the height of the
++   * band: WebKit resolves it against the band, the renderer against nothing.
++   */
++  private static void resolvePercentHeights(Element slot, double slotHeight) {
++    String pixels = String.format(Locale.ROOT, "%.3fpx", slotHeight);
++    for (Element element : slot.getAllElements()) {
++      String style = element.attr("style");
++      if (!style.isEmpty()) {
++        element.attr("style", FULL_HEIGHT.matcher(style).replaceAll("$1height: " + pixels));
++      }
++    }
++  }
++
++  private static String css(String resource) {
++    String css = CSS_CACHE.get(resource);
+     if (css == null) {
+-      try (InputStream in = HtmlPdfCompatibility.class.getResourceAsStream(COMPAT_CSS_RESOURCE)) {
++      try (InputStream in = HtmlPdfCompatibility.class.getResourceAsStream(resource)) {
+         if (in == null) {
+-          throw new IllegalStateException("Missing classpath resource " + COMPAT_CSS_RESOURCE);
++          throw new IllegalStateException("Missing classpath resource " + resource);
+         }
+         ByteArrayOutputStream out = new ByteArrayOutputStream();
+         byte[] buffer = new byte[4096];
+@@ -145,19 +252,39 @@ final class HtmlPdfCompatibility {
+         }
+         css = new String(out.toByteArray(), StandardCharsets.UTF_8);
+       } catch (IOException e) {
+-        throw new IllegalStateException("Cannot read classpath resource " + COMPAT_CSS_RESOURCE, e);
++        throw new IllegalStateException("Cannot read classpath resource " + resource, e);
+       }
+-      compatCss = css;
++      CSS_CACHE.put(resource, css);
+     }
+     return css;
+   }
+ 
+   private static String cssLength(String value) {
++    double points = lengthInPoints(value);
++    return points == 0 ? ZERO : String.format(Locale.ROOT, "%.3fpx", points);
++  }
++
++  /** A page option length in points, which are CSS pixels for html-pdf; 0 when it is blank or invalid. */
++  private static double lengthInPoints(String value) {
+     if (value == null) {
+-      return ZERO;
++      return 0;
++    }
++    Matcher matcher = CSS_LENGTH.matcher(value.trim());
++    if (!matcher.matches() || matcher.group(1) == null) {
++      return 0;
+     }
+-    String trimmed = value.trim();
+-    return CSS_LENGTH.matcher(trimmed).matches() ? trimmed : ZERO;
++    double number = Double.parseDouble(matcher.group(1));
++    String unit = matcher.group(2);
++    if ("mm".equals(unit)) {
++      return number * POINTS_PER_INCH / MM_PER_INCH;
++    } else if ("cm".equals(unit)) {
++      return number * POINTS_PER_INCH * 10 / MM_PER_INCH;
++    } else if ("in".equals(unit)) {
++      return number * POINTS_PER_INCH;
++    } else if ("pc".equals(unit)) {
++      return number * 12;
++    }
++    return number;
+   }
+ 
+   private static boolean insideVerbatimElement(Element element) {
+@@ -252,6 +379,357 @@ final class HtmlPdfCompatibility {
+     return css.length();
+   }
+ 
++  /**
++   * WebKit's HTML5 outline rule: an {@code h1} inside {@code article}, {@code aside}, {@code nav} or {@code section}
++   * is 1.5em with the margins of an {@code h2} (0.83em), one nesting level only. It is a browser default, so a
++   * property the author set on the {@code h1} stays. It cannot be written in the defaults stylesheet: there its
++   * selector would outrank the author's plain {@code h1} rule, so it goes into the inline style of the elements the
++   * author left alone (probed on the production pipeline, task T11).
++   */
++  private static void applyOutlineHeadingDefaults(Document doc, AuthorStyles styles) {
++    for (Element heading : doc.select("article h1, aside h1, nav h1, section h1")) {
++      StringBuilder inline = new StringBuilder();
++      if (!styles.declares(heading, "font-size", "font")) {
++        inline.append("font-size: 1.5em; ");
++      }
++      if (!styles.declares(heading, "margin", "margin-top")) {
++        inline.append("margin-top: .83em; ");
++      }
++      if (!styles.declares(heading, "margin", "margin-bottom")) {
++        inline.append("margin-bottom: .83em; ");
++      }
++      if (inline.length() > 0) {
++        addInlineStyle(heading, inline.toString().trim().replaceAll(";$", ""));
++      }
++    }
++  }
++
++  /**
++   * Removes a {@code br} that WebKit folds into the line of the text before it. In
++   * {@code <span><p>a</p>text</span><br>} the span is inline but holds a block, so the text that follows the block
++   * continues in the line of the parent and the {@code br} ends that line; the renderer, which stacks the compat
++   * stylesheet's block spans, would start a line of its own for the {@code br} (task T11). A {@code br} after a
++   * span with no block in it, after a real block, a table or an image is a line break in both and stays.
++   */
++  private static void dropBreakEndingInlineText(Document doc, AuthorStyles styles) {
++    for (Element br : doc.select("br")) {
++      Node previous = br.previousSibling();
++      while (previous != null && isBlankText(previous)) {
++        previous = previous.previousSibling();
++      }
++      if (previous instanceof Element && containsBlock((Element) previous, styles)
++        && endsInInlineText((Element) previous, styles)) {
++        br.remove();
++      }
++    }
++  }
++
++  /** Whether an inline element holds a block, which splits it in WebKit (a block inside a span). */
++  private static boolean containsBlock(Element element, AuthorStyles styles) {
++    if (!INLINE_TEXT_TAGS.contains(element.tagName()) || isBlockLevel(element, styles)) {
++      return false;
++    }
++    for (Element descendant : element.getAllElements()) {
++      if (descendant != element && !"img".equals(descendant.tagName()) && !"br".equals(descendant.tagName())
++        && isBlockLevel(descendant, styles)) {
++        return true;
++      }
++    }
++    return false;
++  }
++
++  private static boolean endsInInlineText(Element element, AuthorStyles styles) {
++    Element current = element;
++    while (INLINE_TEXT_TAGS.contains(current.tagName()) && !isBlockLevel(current, styles)) {
++      Node last = lastContent(current);
++      if (last instanceof TextNode) {
++        return true;
++      }
++      if (!(last instanceof Element)) {
++        return false;
++      }
++      current = (Element) last;
++    }
++    return false;
++  }
++
++  /**
++   * In the collapsed border model WebKit counts a border of width w fully at the top of the first row and adds one
++   * more w below the last row, where the renderer counts half at the top and nothing extra at the bottom, so every
++   * such table ends w too early and its first row starts w/2 too early (probed for widths 1 to 4 on the production
++   * pipeline, task T11). The cells of the first row get w/2 more padding above and those of the last row below (a
++   * margin on the table would collapse into its neighbours' and a padding on the table is ignored). Only a table
++   * whose cells declare an all-sides {@code border} in px is treated; the padding the author set is kept and added to.
++   */
++  private static void compensateCollapsedBorders(Document doc, AuthorStyles styles) {
++    for (Element table : doc.select("table")) {
++      String collapse = styles.valueOf(table, "border-collapse");
++      Elements rows = table.select("tr");
++      Element cell = table.selectFirst("td, th");
++      if (collapse == null || !collapse.startsWith("collapse") || cell == null || rows.isEmpty()) {
++        continue;
++      }
++      double width = borderWidth(styles.valueOf(cell, "border"));
++      if (width <= 0) {
++        continue;
++      }
++      padRow(rows.first(), "top", width / 2, styles);
++      padRow(rows.last(), "bottom", width / 2, styles);
++    }
++  }
++
++  /** Adds {@code extra} px to the top or bottom padding of every cell of the row, keeping what the author set. */
++  private static void padRow(Element row, String side, double extra, AuthorStyles styles) {
++    for (Element cell : row.children()) {
++      if (!"td".equals(cell.tagName()) && !"th".equals(cell.tagName())) {
++        continue;
++      }
++      double base = paddingPixels(cell, side, styles);
++      if (base >= 0) {
++        addInlineStyle(cell, String.format(Locale.ROOT, "padding-%s: %.2fpx", side, base + extra));
++      }
++    }
++  }
++
++  /** The padding of a cell on one side in px: the author's, 1 px by default, -1 when it is not plain px. */
++  private static double paddingPixels(Element cell, String side, AuthorStyles styles) {
++    String specific = styles.valueOf(cell, "padding-" + side);
++    if (specific != null) {
++      return pixels(specific);
++    }
++    String all = styles.valueOf(cell, "padding");
++    if (all == null) {
++      return 1;
++    }
++    String[] parts = all.trim().split("\\s+");
++    int index = "top".equals(side) ? 0 : parts.length == 1 ? 0 : parts.length == 2 ? 0 : 2;
++    return index < parts.length ? pixels(parts[index]) : -1;
++  }
++
++  private static double pixels(String value) {
++    Matcher matcher = PIXELS.matcher(value.trim());
++    return matcher.matches() ? Double.parseDouble(matcher.group(1)) : -1;
++  }
++
++  /** The width in px of a {@code border} shorthand such as {@code 1px solid #888}; 0 when there is none. */
++  private static double borderWidth(String border) {
++    if (border == null) {
++      return 0;
++    }
++    Matcher matcher = BORDER_WIDTH.matcher(border);
++    return matcher.find() ? Double.parseDouble(matcher.group(1)) : 0;
++  }
++
++  /**
++   * WebKit drops the margin that touches the top of a page after a forced break, so a block with
++   * {@code page-break-before: always} starts at the top of its page whatever its top margin is, and so does the
++   * first block inside it when that margin collapses through. The renderer keeps the margin (probed on the
++   * production pipeline, task T11; the margin after a {@code page-break-after: always} is kept by both). The margin
++   * is zeroed in the inline style of the block and of the blocks its margin collapses through.
++   */
++  private static void truncateMarginsAtForcedBreaks(Document doc, AuthorStyles styles) {
++    for (Element block : doc.getAllElements()) {
++      String before = styles.valueOf(block, "page-break-before");
++      if (before == null) {
++        before = styles.valueOf(block, "break-before");
++      }
++      if (before == null || !(before.startsWith("always") || before.startsWith("page"))) {
++        continue;
++      }
++      Element current = block;
++      while (current != null) {
++        addInlineStyle(current, "margin-top: 0");
++        Node child = firstContent(current);
++        if (!(child instanceof Element) || styles.declares(current, "padding", "padding-top", "border", "border-top",
++          "overflow", "position", "float")) {
++          break;
++        }
++        current = (Element) child;
++      }
++    }
++  }
++
++  /**
++   * Drops the default margin WebKit ignores in quirks mode: html-pdf gets documents without a DOCTYPE, and there
++   * the {@code __qem} margins of {@code h1}-{@code h6}, {@code p}, {@code ul} and {@code ol} vanish where they would
++   * touch the top of a table cell, and the bottom margin of a {@code p} where it would touch the bottom (probed on
++   * the production pipeline). A margin the author set is not a default and stays. The renderer has no quirks mode,
++   * so the margin is zeroed in the element's inline style.
++   */
++  private static void ignoreQuirkMargins(Document doc, AuthorStyles styles) {
++    for (Element cell : doc.select("td, th")) {
++      Element first = edgeBlock(cell, true, styles);
++      if (first != null && QUIRK_BEFORE_TAGS.contains(first.tagName())
++        && !styles.declares(first, "margin", "margin-top")) {
++        addInlineStyle(first, "margin-top: 0");
++      }
++      Element last = edgeBlock(cell, false, styles);
++      if (last != null && QUIRK_AFTER_TAGS.contains(last.tagName())
++        && !styles.declares(last, "margin", "margin-bottom")) {
++        addInlineStyle(last, "margin-bottom: 0");
++      }
++    }
++  }
++
++  /**
++   * Lets the line height of a box that holds no text of its own follow its children.
++   * <p>
++   * In quirks mode WebKit leaves the strut, the line height of the box's own font, out of a line when the box has no
++   * text directly in it: {@code <span class="field"> <span style="font-size: 8px">x</span></span>} is 10 px high,
++   * the line height of 8 px text, not that of the 11 px of the parent, and a table cell holding only an image is as
++   * high as the image, without the gap under the baseline. The renderer always counts the strut (a line height of 0
++   * does not remove it). For such a box the font size is made 0, so only the children size the line. That is only
++   * safe when every text-bearing child sets its own font size, when nothing the box inherits is measured in em, and
++   * when no space between two inline children is measured with the box's font: the other boxes keep their strut.
++   */
++  private static void ignoreStrutOfTextFreeBoxes(Document doc, AuthorStyles styles) {
++    for (Element box : doc.getAllElements()) {
++      if (KEEP_FONT_TAGS.contains(box.tagName()) || VERBATIM_TAGS.contains(box.tagName())
++        || insideVerbatimElement(box) || styles.declares(box, EM_INHERITED)
++        || !isTextFree(box, styles) || hasSpaceBetweenInlineChildren(box, styles)) {
++        continue;
++      }
++      addInlineStyle(box, "font-size: 0");
++    }
++  }
++
++  /** Whether a blank text node sits between two inline-level elements, where it renders as a space. */
++  private static boolean hasSpaceBetweenInlineChildren(Element box, AuthorStyles styles) {
++    for (Node child : box.childNodes()) {
++      if (isBlankText(child)) {
++        Node before = child.previousSibling();
++        Node after = child.nextSibling();
++        if (before instanceof Element && after instanceof Element && !isBlockLevel((Element) before, styles)
++          && !isBlockLevel((Element) after, styles)) {
++          return true;
++        }
++      }
++    }
++    return false;
++  }
++
++  private static boolean isBlockLevel(Element element, AuthorStyles styles) {
++    String display = styles.valueOf(element, "display");
++    if (display != null) {
++      return !display.startsWith("inline");
++    }
++    return !INLINE_TEXT_TAGS.contains(element.tagName()) && !"img".equals(element.tagName())
++      && !"br".equals(element.tagName());
++  }
++
++  private static boolean isTextFree(Element box, AuthorStyles styles) {
++    boolean hasContent = false;
++    for (Node child : box.childNodes()) {
++      if (child instanceof TextNode && !((TextNode) child).isBlank()) {
++        return false;
++      }
++      if (child instanceof Element) {
++        Element element = (Element) child;
++        if ("br".equals(element.tagName())) {
++          // A line break is text to WebKit: the line it ends keeps its strut.
++          return false;
++        }
++        if ("img".equals(element.tagName())) {
++          hasContent = true;
++        } else if (element.hasText()) {
++          if (!styles.declares(element, "font-size")) {
++            return false;
++          }
++          hasContent = true;
++        }
++      }
++    }
++    return hasContent;
++  }
++
++  /**
++   * The element whose margin lands on the top ({@code atStart}) or bottom edge of {@code container}: the first (or
++   * last) child, looking through wrappers without padding or border on that side. Text, a {@code br} or an
++   * out-of-flow element on the way means no margin reaches the edge.
++   */
++  private static Element edgeBlock(Element container, boolean atStart, AuthorStyles styles) {
++    String side = atStart ? "top" : "bottom";
++    Element current = container;
++    while (true) {
++      Node child = atStart ? firstContent(current) : lastContent(current);
++      if (!(child instanceof Element)) {
++        return null;
++      }
++      Element element = (Element) child;
++      if (!TRANSPARENT_TAGS.contains(element.tagName())) {
++        return element;
++      }
++      if (styles.declares(element, "padding", "padding-" + side, "border", "border-" + side, "overflow", "position",
++        "float", "height", "min-height")) {
++        return null;
++      }
++      current = element;
++    }
++  }
++
++  private static Node firstContent(Element parent) {
++    for (Node child : parent.childNodes()) {
++      if (!isBlankText(child) && !(child instanceof Comment)) {
++        return child;
++      }
++    }
++    return null;
++  }
++
++  private static Node lastContent(Element parent) {
++    List<Node> children = parent.childNodes();
++    for (int i = children.size() - 1; i >= 0; i--) {
++      Node child = children.get(i);
++      if (!isBlankText(child) && !(child instanceof Comment)) {
++        return child;
++      }
++    }
++    return null;
++  }
++
++  private static void addInlineStyle(Element element, String declaration) {
++    String style = element.attr("style").trim();
++    if (!style.isEmpty() && !style.endsWith(";")) {
++      style = style + ";";
++    }
++    element.attr("style", (style.isEmpty() ? "" : style + " ") + declaration + ";");
++  }
++
++  /**
++   * Wraps the text that sits beside an inline element in a {@code span} of its own, so that the renderer paints the
++   * text of one line in reading order.
++   * <p>
++   * OpenHTMLtoPDF paints the text a box owns before the text of the inline boxes nested in it, so in
++   * {@code aa <b>bb</b> cc} the PDF holds {@code aa}, {@code cc}, {@code bb}. The page looks the same, but text
++   * extraction then reads {@code bb} apart from its neighbours: a comma after a bold word becomes a word of its own
++   * and the same page yields different words than html-pdf's (task T11). A plain span adds no box decoration and does
++   * not change layout.
++   */
++  private static void wrapTextBesideInlineElements(Document doc) {
++    for (Element parent : doc.getAllElements()) {
++      if (VERBATIM_TAGS.contains(parent.tagName()) || insideVerbatimElement(parent)
++        || !hasInlineTextElementChild(parent)) {
++        continue;
++      }
++      for (Node child : new ArrayList<Node>(parent.childNodes())) {
++        if (child instanceof TextNode && !((TextNode) child).isBlank()) {
++          Element wrapper = new Element("span");
++          child.before(wrapper);
++          wrapper.appendChild(child);
++        }
++      }
++    }
++  }
++
++  private static boolean hasInlineTextElementChild(Element parent) {
++    for (Element child : parent.children()) {
++      if (INLINE_TEXT_TAGS.contains(child.tagName())) {
++        return true;
++      }
++    }
++    return false;
++  }
++
+   private static void trimWhitespaceBesideBr(Document doc) {
+     for (Element br : doc.select("br")) {
+       if (insideVerbatimElement(br)) {
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportService.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportService.java
+index c9b2539a34..60a57e04c9 100644
+--- a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportService.java
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportService.java
+@@ -104,9 +104,16 @@ public class LocalPdfReportService {
+ 
+   private static final String FONT_BOLD = "/pdf/fonts/DejaVuSans-Bold.ttf";
+ 
++  /** The table PDFBox reads ligatures from; html-pdf's PDF has none (task T11). */
++  private static final String GLYPH_SUBSTITUTION_TABLE = "GSUB";
++
+   private static final String[] FONT_FAMILIES = {"sans-serif", "Montserrat", "DejaVu Sans"};
+ 
+-  private static final int DOTS_PER_PIXEL = 27;
++  /** Layout resolution of the renderer; {@link PdfPageScaler} brings the pages back to one CSS pixel = one point. */
++  private static final int DOTS_PER_PIXEL = 40;
++
++  /** CSS absolute units (in, pt, mm) are defined against 96 pixels per inch, in PhantomJS too. */
++  private static final float CSS_PIXELS_PER_INCH = 96f;
+ 
+   private static final int MAX_LOGGED_FINDINGS = 5;
+ 
+@@ -399,8 +406,8 @@ public class LocalPdfReportService {
+   LocalPdfReportService(PdfResourceLoader loader) {
+     this.loader = loader;
+     this.handlebars = HandlebarsReportHelpers.newHandlebars();
+-    this.regularFont = readResource(FONT_REGULAR);
+-    this.boldFont = readResource(FONT_BOLD);
++    this.regularFont = TrueTypeTables.without(readResource(FONT_REGULAR), GLYPH_SUBSTITUTION_TABLE);
++    this.boldFont = TrueTypeTables.without(readResource(FONT_BOLD), GLYPH_SUBSTITUTION_TABLE);
+     quietRendererLogging();
+   }
+ 
+@@ -508,6 +515,7 @@ public class LocalPdfReportService {
+     ByteArrayOutputStream out = new ByteArrayOutputStream(64 * 1024);
+     PdfRendererBuilder builder = new PdfRendererBuilder();
+     builder.useFastMode();
++    builder.useUnicodeLineBreaker(new WebKitLineBreaker());
+     builder.withW3cDocument(document, BASE_URI);
+     for (String family : FONT_FAMILIES) {
+       builder.useFont(fontSupplier(regularFont), family, 400, FontStyle.NORMAL, true);
+@@ -519,9 +527,13 @@ public class LocalPdfReportService {
+     builder.toStream(out);
+     try (PdfBoxRenderer renderer = builder.buildPdfRenderer()) {
+       renderer.getSharedContext().setDotsPerPixel(DOTS_PER_PIXEL);
++      renderer.getSharedContext().setDPI(CSS_PIXELS_PER_INCH * DOTS_PER_PIXEL);
++      renderer.getSharedContext().setTextRenderer(new PhantomJsTextRenderer(DOTS_PER_PIXEL));
+       renderer.layout();
+       renderer.createPDFWithoutClosing();
+       PDDocument pdf = renderer.getPdfDocument();
++      // html-pdf prints one CSS pixel as one point; the renderer prints DOTS_PER_PIXEL / dotsPerPoint points.
++      PdfPageScaler.scale(pdf, renderer.getDotsPerPoint() / DOTS_PER_PIXEL);
+       int pages = pdf.getNumberOfPages();
+       pdf.save(out);
+       return new RenderResult(out.toByteArray(), pages);
+diff --git a/marlo-web/src/main/resources/pdf/html-pdf-compat.css b/marlo-web/src/main/resources/pdf/html-pdf-compat.css
+index 7085d5835a..9c2d9894c5 100644
+--- a/marlo-web/src/main/resources/pdf/html-pdf-compat.css
++++ b/marlo-web/src/main/resources/pdf/html-pdf-compat.css
+@@ -9,10 +9,7 @@ span.section, span.content {
+   display: block;
+ }
+ 
+-/* OICR and innovation cover page: fixed height for the first page (spike F7) */
+-.first-page {
+-  height: 620px;
+-}
++/* OICR and innovation cover page: its height is the page area; HtmlPdfCompatibility generates it (spike F7) */
+ 
+ /* All templates with a page header or footer: tables keep their declared widths (spike F9) */
+ #pageFooter table, #pageHeader table, #pageFooter-1 table, #pageHeader-1 table {
+@@ -28,3 +25,12 @@ span.section, span.content {
+ .img-background {
+   position: absolute;
+ }
++
++/*
++ * OICR and innovation page footer: WebKit sizes the row from the logo's percentage width as measured in the first
++ * table layout pass, so the row is 66.6 px high and the text centres in it; the renderer sizes it from the logo as
++ * painted (40 px). Probed on the production pipeline with the real footer text (task T11).
++ */
++#pageFooter > table {
++  height: 66.6px;
++}
+diff --git a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibilityTest.java b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibilityTest.java
+index 8b2a028c53..0e733fb3c5 100644
+--- a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibilityTest.java
++++ b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibilityTest.java
+@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document;
+ import org.jsoup.nodes.Element;
+ import org.jsoup.nodes.Node;
+ import org.jsoup.nodes.TextNode;
++import org.jsoup.select.Elements;
+ import org.junit.Test;
+ import org.w3c.dom.NodeList;
+ 
+@@ -62,6 +63,26 @@ public class HtmlPdfCompatibilityTest {
+     return css.toString();
+   }
+ 
++  /** The style element that came with the template: the one that holds its {@code p} rule. */
++  private static String templateStyle(Document doc) {
++    for (Element style : doc.head().select("style")) {
++      if (style.data().contains("p { color: red; }")) {
++        return style.data();
++      }
++    }
++    throw new AssertionError("the template's style element is gone");
++  }
++
++  private static Document html(String body) {
++    return HtmlPdfCompatibility.transform("<html><head></head><body>" + body + "</body></html>", "40mm", "30mm",
++      "portrait");
++  }
++
++  private static Document htmlWithStyle(String css, String body) {
++    return HtmlPdfCompatibility.transform(
++      "<html><head><style>" + css + "</style></head><body>" + body + "</body></html>", "40mm", "30mm", "portrait");
++  }
++
+   private static String runningName(Element element) {
+     Matcher m = Pattern.compile("position:\\s*running\\(([^)]+)\\)").matcher(element.attr("style"));
+     assertTrue("no running() in style of " + element.id(), m.find());
+@@ -95,7 +116,7 @@ public class HtmlPdfCompatibilityTest {
+   @Test
+   public void templatePageAndFontFaceRulesAreRemovedAndOtherRulesKept() {
+     Document doc = transform();
+-    String original = doc.head().select("style").first().data();
++    String original = templateStyle(doc);
+     assertFalse(original, original.contains("@page"));
+     assertFalse(original, original.contains("@font-face"));
+     assertFalse(original, original.contains("margin: 10mm"));
+@@ -106,12 +127,13 @@ public class HtmlPdfCompatibilityTest {
+   @Test
+   public void generatedPageMarginsEqualTheGivenHeights() {
+     String css = generatedCss(transform());
+-    assertTrue(css, css.contains("size: A4 portrait"));
+-    assertTrue(css, css.contains("margin: 40mm 0 30mm 0"));
++    // html-pdf prints one CSS pixel as one point and rounds A4 to 595 x 842 of them; 40 mm is 113.386 points.
++    assertTrue(css, css.contains("size: 595px 842px"));
++    assertTrue(css, css.contains("margin: 113.386px 0 85.039px 0"));
+     Document landscape = HtmlPdfCompatibility.transform(HTML, "12px", "1.5cm", "landscape");
+     String landscapeCss = generatedCss(landscape);
+-    assertTrue(landscapeCss, landscapeCss.contains("size: A4 landscape"));
+-    assertTrue(landscapeCss, landscapeCss.contains("margin: 12px 0 1.5cm 0"));
++    assertTrue(landscapeCss, landscapeCss.contains("size: 842px 595px"));
++    assertTrue(landscapeCss, landscapeCss.contains("margin: 12.000px 0 42.520px 0"));
+   }
+ 
+   @Test
+@@ -181,4 +203,166 @@ public class HtmlPdfCompatibilityTest {
+     assertFalse(css, css.contains("display:none"));
+     assertTrue(css, css.contains("margin: 0 0 0 0"));
+   }
++
++  // ---- Layout parity with production (task T11): one test per emulation ----
++
++  @Test
++  public void theFirstPageBlockIsAsHighAsThePageArea() {
++    String css = generatedCss(transform());
++    // 842 - 113.386 - 85.039
++    assertTrue(css, css.contains(".first-page { height: 643.575px; }"));
++    String landscape = generatedCss(HtmlPdfCompatibility.transform(HTML, "10mm", "10mm", "landscape"));
++    assertTrue(landscape, landscape.contains(".first-page { height: 538.307px; }"));
++  }
++
++  @Test
++  public void aHeaderOrFooterBandIsLaidOutFromItsTopUnlessTheAuthorPinnedTheFooterToTheBottom() {
++    String plain = generatedCss(transform());
++    assertTrue(plain,
++      plain.contains("@bottom-center { content: element(pdfFooter); width: 100%; vertical-align: top;"));
++    Document pinned = htmlWithStyle("#pageFooter { position: fixed; bottom: 0; height: 80px; }",
++      "<div id=\"pageFooter\">F</div>");
++    String css = generatedCss(pinned);
++    assertTrue(css, css.contains("@bottom-center { content: element(pdfFooter); width: 100%; vertical-align: bottom;"));
++    Document headerPinned = htmlWithStyle("#pageHeader { position: fixed; top: 0; }",
++      "<div id=\"pageHeader\">H</div>");
++    assertTrue(generatedCss(headerPinned), generatedCss(headerPinned).contains("vertical-align: top;"));
++  }
++
++  @Test
++  public void fullHeightInsideABandResolvesAgainstTheBand() {
++    Document doc = html("<div id=\"pageFooter-1\"><table style=\"width: 100%; height:100%\"><tr><td>x</td></tr></table>"
++      + "<div style=\"height: 50%\">y</div></div>");
++    assertTrue(doc.select("table").attr("style"), doc.select("table").attr("style").contains("height: 85.039px"));
++    assertTrue(doc.select("table").attr("style"), doc.select("table").attr("style").contains("width: 100%"));
++    assertEquals("height: 50%", doc.select("div div").attr("style"));
++  }
++
++  @Test
++  public void theDefaultsStylesheetComesBeforeTheTemplateAndHoldsWebKitMargins() {
++    Document doc = transform();
++    Element first = doc.head().children().first();
++    assertEquals("style", first.tagName());
++    assertTrue(first.data(), first.data().contains("h2 { margin-top: .83em; margin-bottom: .83em; }"));
++    assertTrue(first.data(), first.data().contains("p, ul, ol, dl, blockquote, pre, menu, dir { margin-top: 1em;"));
++    assertTrue(first.data(), first.data().contains("h4 { margin-top: 1.33em;"));
++    assertFalse("the template's own rules come later", first.data().contains("p { color: red; }"));
++  }
++
++  @Test
++  public void textBesideAnInlineElementGetsASpanOfItsOwn() {
++    Document doc = html("<p>aa <b>bb</b>, cc</p><p>plain</p><pre>x <b>y</b> z</pre>");
++    Element p = doc.select("p").first();
++    assertEquals("aa ", p.child(0).text() + " ");
++    assertEquals("span", p.child(0).tagName());
++    assertEquals("b", p.child(1).tagName());
++    assertEquals("span", p.child(2).tagName());
++    assertEquals(", cc", p.child(2).ownText());
++    assertEquals("a paragraph with no inline element keeps its text node", 0, doc.select("p").get(1).children().size());
++    assertEquals("verbatim text is left alone", 0, doc.select("pre > span").size());
++  }
++
++  @Test
++  public void aQuirkMarginIsDroppedWhereItTouchesATableCell() {
++    Document doc = html("<table><tr><td><p>one</p></td><td><h1>two</h1></td><td><div><ul><li>x</li></ul></div></td>"
++      + "<td>text<p>three</p></td></tr></table>");
++    Elements cells = doc.select("td");
++    assertEquals("p: both margins", "margin-top: 0; margin-bottom: 0;", cells.get(0).child(0).attr("style"));
++    assertEquals("h1: only the top margin", "margin-top: 0;", cells.get(1).child(0).attr("style"));
++    assertEquals("through a wrapper", "margin-top: 0;", doc.select("ul").attr("style"));
++    assertEquals("after text only the bottom one", "margin-bottom: 0;", cells.get(3).select("p").attr("style"));
++  }
++
++  @Test
++  public void aMarginTheAuthorSetIsNotAQuirkMarginAndStays() {
++    Document doc = htmlWithStyle("p { margin: 5px 0; } .x { margin-top: 7px; } .wrap { padding-top: 3px; }",
++      "<table><tr><td><p>one</p></td><td><h1 class=\"x\">two</h1></td>"
++        + "<td><div class=\"wrap\"><h2>three</h2></div></td></tr></table>");
++    Elements cells = doc.select("td");
++    assertEquals("", cells.get(0).child(0).attr("style"));
++    assertEquals("", cells.get(1).child(0).attr("style"));
++    assertEquals("padding on the wrapper keeps the margin inside it", "", doc.select("h2").attr("style"));
++  }
++
++  @Test
++  public void aBoxWithoutTextOfItsOwnDoesNotCountItsOwnLineHeight() {
++    Document doc = htmlWithStyle(".kid { font-size: 8px; }",
++      "<table><tr><td id=\"a\"><span class=\"kid\">x</span></td><td id=\"b\"><img src=\"i.png\"></td>"
++        + "<td id=\"c\"><span>inherits the size</span></td><td id=\"d\">text <span class=\"kid\">y</span></td>"
++        + "<td id=\"e\"><span class=\"kid\">p</span> <span class=\"kid\">q</span></td>"
++        + "<td id=\"f\"><span class=\"kid\">r</span><br>s</td></tr></table>");
++    assertTrue(doc.getElementById("a").attr("style"), doc.getElementById("a").attr("style").contains("font-size: 0"));
++    assertTrue("an image alone", doc.getElementById("b").attr("style").contains("font-size: 0"));
++    assertFalse("a child that inherits the size would shrink",
++      doc.getElementById("c").attr("style").contains("font-size"));
++    assertFalse("direct text keeps the strut", doc.getElementById("d").attr("style").contains("font-size"));
++    assertFalse("the space between two inline boxes is the box's own",
++      doc.getElementById("e").attr("style").contains("font-size"));
++    assertFalse("a line break is text", doc.getElementById("f").attr("style").contains("font-size"));
++    assertEquals("and a break between inline text is a break", 1, doc.getElementById("f").select("br").size());
++  }
++
++  @Test
++  public void anH1InsideASectionHasTheH2SizeAndMarginsUnlessTheAuthorSaidOtherwise() {
++    Document plain = html("<section><h1>a</h1></section><h1>b</h1>");
++    assertEquals("font-size: 1.5em; margin-top: .83em; margin-bottom: .83em;",
++      plain.select("section h1").attr("style"));
++    assertEquals("an h1 outside a sectioning element", "", plain.select("body > h1").attr("style"));
++    Document styled = htmlWithStyle("h1 { font-size: 24px; margin-bottom: 0; }", "<section><h1>a</h1></section>");
++    assertEquals("margin-top: .83em;", styled.select("h1").attr("style"));
++  }
++
++  @Test
++  public void theMarginAtTheTopOfAPageAfterAForcedBreakIsTruncatedDownTheFirstChain() {
++    Document doc = htmlWithStyle(".s { page-break-before: always; margin-top: 35px; } .t { page-break-after: always; }",
++      "<div class=\"s\"><section><h3>x</h3><p>y</p></section></div><div class=\"t\"><h3>z</h3></div>");
++    assertTrue(doc.select(".s").attr("style"), doc.select(".s").attr("style").contains("margin-top: 0"));
++    assertTrue(doc.select("section").attr("style").contains("margin-top: 0"));
++    assertTrue(doc.select("h3").first().attr("style").contains("margin-top: 0"));
++    assertEquals("the second child's margin is not at the top", "", doc.select("p").attr("style"));
++    assertEquals("a break after keeps the margin of what follows", "", doc.select(".t").attr("style"));
++  }
++
++  @Test
++  public void aCollapsedBorderTableGetsHalfABorderWidthAboveItsFirstRowAndBelowItsLast() {
++    Document doc = htmlWithStyle("table { border-collapse: collapse; } td, th { border: 1px solid #888; padding: 8px; }"
++      + " .loose td { border: 2px solid red; }",
++      "<table><tr><th>h</th></tr><tr><td>a</td></tr><tr><td>b</td></tr></table>"
++        + "<table class=\"loose\"><tr><td>c</td></tr></table>");
++    Elements rows = doc.select("table").first().select("tr");
++    assertTrue(rows.get(0).child(0).attr("style"), rows.get(0).child(0).attr("style").contains("padding-top: 8.50px"));
++    assertEquals("a middle row is left alone", "", rows.get(1).child(0).attr("style"));
++    String lastStyle = rows.get(2).child(0).attr("style");
++    assertTrue(lastStyle, lastStyle.contains("padding-bottom: 8.50px"));
++    Element single = doc.select("table.loose td").first();
++    assertTrue(single.attr("style"), single.attr("style").contains("padding-top: 9.00px"));
++    assertTrue(single.attr("style"), single.attr("style").contains("padding-bottom: 9.00px"));
++    Document separate = htmlWithStyle("td { border: 1px solid #888; padding: 8px; }",
++      "<table><tr><td>x</td></tr></table>");
++    assertEquals("only the collapsed model differs", "", separate.select("td").attr("style"));
++  }
++
++  @Test
++  public void aBreakThatEndsTheTextOfAnInlineParentHoldingABlockIsFoldedIntoThatLine() {
++    Document doc = htmlWithStyle(".block { display: block; }",
++      "<span><p>a</p>tail</span><br><div>d</div><br><span class=\"block\">e</span><br>"
++        + "<table><tr><td>t</td></tr></table><br><span><b>plain</b></span><br>after"
++        + "<span><section><h2>h</h2></section>x <b>nested tail</b></span><br>");
++    // The first and the last go: an inline span that holds a block and ends in text. Kept: after a div, after a
++    // display:block span, after a table and after a span with no block in it (a real line break in both engines).
++    assertEquals(4, doc.select("br").size());
++    assertEquals("div", doc.select("br").get(0).previousElementSibling().tagName());
++    assertEquals("span", doc.select("br").get(1).previousElementSibling().tagName());
++    assertEquals("table", doc.select("br").get(2).previousElementSibling().tagName());
++    assertEquals("b", doc.select("br").get(3).previousElementSibling().child(0).tagName());
++  }
++
++  @Test
++  public void defaultsAndCompatRulesAreLoadedFromTheClasspathOnceAndCached() {
++    assertEquals(css(transform()), css(transform()));
++  }
++
++  private static String css(Document doc) {
++    return doc.head().children().first().data() + doc.head().children().last().data();
++  }
+ }
+diff --git a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportServiceTest.java b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportServiceTest.java
+index 219e74da18..66e0289018 100644
+--- a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportServiceTest.java
++++ b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/LocalPdfReportServiceTest.java
+@@ -30,6 +30,7 @@ import java.net.URI;
+ import java.nio.charset.StandardCharsets;
+ import java.nio.file.Files;
+ import java.util.ArrayList;
++import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.Base64;
+ import java.util.IdentityHashMap;
+@@ -1194,4 +1195,105 @@ public class LocalPdfReportServiceTest {
+       response(recorded));
+     assertEquals("inline; filename=\"a___Set-Cookie: x=1.pdf\"", recorded.disposition);
+   }
++
++  // ---- Layout parity with production (task T11) ----
++
++  /** Every glyph of a document with its position, for the tests that measure the layout. */
++  private static final class Glyphs extends PDFTextStripper {
++
++    private final List<TextPosition> all = new ArrayList<TextPosition>();
++
++    Glyphs() throws IOException {
++      super();
++    }
++
++    @Override
++    protected void writeString(String text, List<TextPosition> positions) {
++      all.addAll(positions);
++    }
++  }
++
++  private static Glyphs glyphsOf(byte[] pdf) throws IOException {
++    try (PDDocument document = open(pdf)) {
++      Glyphs glyphs = new Glyphs();
++      glyphs.getText(document);
++      return glyphs;
++    }
++  }
++
++  private byte[] renderBody(String body) throws Exception {
++    LocalPdfReportService service = newService(new Network(false));
++    String template = "<html><style>body { margin: 0; font-family: 'Montserrat', sans-serif; }</style><body>" + body
++      + "</body></html>";
++    return service.render(payload(template, "{}"), 50000L);
++  }
++
++  @Test
++  public void aCssPixelIsOnePointAndTheA4PageIsWholePoints() throws Exception {
++    byte[] pdf = renderBody("<div style=\"font-size: 20px; white-space: nowrap\">WWWWWWWWWW</div>");
++    try (PDDocument document = open(pdf)) {
++      assertEquals("page width", 595.0, document.getPage(0).getMediaBox().getWidth(), 0.01);
++      assertEquals("page height", 842.0, document.getPage(0).getMediaBox().getHeight(), 0.01);
++    }
++    float width = 0;
++    for (TextPosition position : glyphsOf(pdf).all) {
++      width += position.getWidthDirAdj();
++    }
++    // Ten DejaVu Sans "W" (2025 / 2048 em) at 20 px: 197.8 points when one pixel is one point, 200.3 at the
++    // 1.0125 the dots-per-pixel of 27 gave, 148.3 at OpenHTMLtoPDF's 0.75.
++    assertEquals(197.8, width, 0.5);
++  }
++
++  @Test
++  public void aLineOfNormalHeightIsTheRoundedUpAscentPlusTheRoundedUpDescent() throws Exception {
++    byte[] pdf = renderBody("<div style=\"font-size: 10px\">a<br>b<br>c</div>"
++      + "<div style=\"font-size: 14px\">d<br>e</div><div style=\"font-size: 16px\">f<br>g</div>");
++    List<TextPosition> glyphs = glyphsOf(pdf).all;
++    List<Float> baselines = new ArrayList<Float>();
++    for (TextPosition glyph : glyphs) {
++      baselines.add(glyph.getYDirAdj());
++    }
++    assertEquals(7, baselines.size());
++    // 10 px: ceil(9.28) + ceil(2.36) = 13; 14 px: 13 + 4 = 17; 16 px: 15 + 4 = 19 (probed on PhantomJS)
++    assertEquals(13.0, baselines.get(1) - baselines.get(0), 0.05);
++    assertEquals(13.0, baselines.get(2) - baselines.get(1), 0.05);
++    assertEquals(17.0, baselines.get(4) - baselines.get(3), 0.05);
++    assertEquals(19.0, baselines.get(6) - baselines.get(5), 0.05);
++  }
++
++  @Test
++  public void noLigatureGlyphIsWrittenSoTheTextExtractsAsTyped() throws Exception {
++    byte[] pdf = renderBody("<p style=\"font-size: 12px\">office fix flow difficult affluent</p>");
++    try (PDDocument document = open(pdf)) {
++      String text = new PDFTextStripper().getText(document);
++      assertTrue(text, text.contains("office fix flow difficult affluent"));
++      for (char c : text.toCharArray()) {
++        assertFalse("ligature glyph U+" + Integer.toHexString(c), c >= '\uFB00' && c <= '\uFB06');
++      }
++    }
++  }
++
++  @Test
++  public void theTextOfALineIsWrittenInReadingOrderAroundAnInlineElement() throws Exception {
++    byte[] pdf = renderBody(
++      "<p style=\"font-size: 12px\">aa <b>BBB</b>, cc <span style=\"color: red\">DD</span>ee</p>");
++    try (PDDocument document = open(pdf)) {
++      assertEquals("aaBBB,ccDDee", squash(new PDFTextStripper().getText(document)));
++    }
++  }
++
++  @Test
++  public void anAddressIsNotBrokenAfterItsFullStopsAndMovesToTheNextLine() throws Exception {
++    byte[] pdf = renderBody(
++      "<div style=\"width: 120px; font-size: 10px\">Learn more in www.scalingreadiness.org</div>");
++    try (PDDocument document = open(pdf)) {
++      PDFTextStripper stripper = new PDFTextStripper();
++      stripper.setSortByPosition(true);
++      List<String> lines = new ArrayList<String>();
++      for (String line : stripper.getText(document).trim().split("\\R")) {
++        lines.add(line.trim());
++      }
++      assertEquals(Arrays.asList("Learn more in", "www.scalingreadiness.org"), lines);
++    }
++  }
+ }
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/AuthorStyles.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/AuthorStyles.java
+new file mode 100644
+index 0000000000..ad3fc4f604
+--- /dev/null
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/AuthorStyles.java
+@@ -0,0 +1,162 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Locale;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++import org.jsoup.nodes.Document;
++import org.jsoup.nodes.Element;
++
++/**
++ * A rough index of what the template's own CSS declares, enough to tell whether an author rule or an inline style
++ * sets a property on an element (CHG-LPRE-NF-001, task T11).
++ * <p>
++ * It is not a cascade: it does not rank rules, resolve inheritance or understand media queries. It answers one
++ * question, "does anything the author wrote address this property of this element", which is what the quirk
++ * emulations need before they apply a browser default the author did not override. A selector jsoup cannot parse
++ * matches nothing.
++ */
++final class AuthorStyles {
++
++  private static final Pattern RULE = Pattern.compile("([^{}]+)\\{([^{}]*)\\}");
++
++  private static final Pattern COMMENT = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
++
++  private static final class Rule {
++
++    private final List<String> selectors;
++
++    private final List<String> properties;
++
++    private final String declarations;
++
++    private Rule(List<String> selectors, List<String> properties, String declarations) {
++      this.selectors = selectors;
++      this.properties = properties;
++      this.declarations = declarations;
++    }
++  }
++
++  private final List<Rule> rules = new ArrayList<Rule>();
++
++  /** Indexes the {@code <style>} elements of {@code doc}. */
++  AuthorStyles(Document doc) {
++    for (Element style : doc.select("style")) {
++      String css = COMMENT.matcher(style.data()).replaceAll("");
++      Matcher matcher = RULE.matcher(css);
++      while (matcher.find()) {
++        String selectorText = matcher.group(1).trim();
++        if (selectorText.isEmpty() || selectorText.indexOf('@') >= 0) {
++          continue;
++        }
++        List<String> selectors = new ArrayList<String>();
++        for (String selector : selectorText.split(",")) {
++          if (!selector.trim().isEmpty()) {
++            selectors.add(selector.trim());
++          }
++        }
++        rules.add(new Rule(selectors, propertyNames(matcher.group(2)), matcher.group(2)));
++      }
++    }
++  }
++
++  /**
++   * Whether an author rule that matches {@code element}, or its inline style, declares one of the properties. A
++   * shorthand counts for its longhands: pass the shorthand too ({@code margin} with {@code margin-top}).
++   */
++  boolean declares(Element element, String... properties) {
++    if (declaresAny(propertyNames(element.attr("style")), properties)) {
++      return true;
++    }
++    for (Rule rule : rules) {
++      if (declaresAny(rule.properties, properties) && matches(rule, element)) {
++        return true;
++      }
++    }
++    return false;
++  }
++
++  /**
++   * The value an author rule or the inline style gives {@code property} on {@code element}, lower case; the inline
++   * style wins, then the last matching rule in source order, without ranking by specificity. {@code null} when
++   * nothing declares it.
++   */
++  String valueOf(Element element, String property) {
++    String inline = valueIn(element.attr("style"), property);
++    if (inline != null) {
++      return inline;
++    }
++    String found = null;
++    for (Rule rule : rules) {
++      if (rule.properties.contains(property) && matches(rule, element)) {
++        String value = valueIn(rule.declarations, property);
++        if (value != null) {
++          found = value;
++        }
++      }
++    }
++    return found;
++  }
++
++  private static String valueIn(String declarations, String property) {
++    String found = null;
++    for (String declaration : declarations.split(";")) {
++      int colon = declaration.indexOf(':');
++      if (colon > 0 && declaration.substring(0, colon).trim().toLowerCase(Locale.ROOT).equals(property)) {
++        found = declaration.substring(colon + 1).trim().toLowerCase(Locale.ROOT);
++      }
++    }
++    return found;
++  }
++
++  private static boolean declaresAny(List<String> declared, String[] wanted) {
++    for (String property : wanted) {
++      if (declared.contains(property)) {
++        return true;
++      }
++    }
++    return false;
++  }
++
++  private static boolean matches(Rule rule, Element element) {
++    for (String selector : rule.selectors) {
++      try {
++        if (element.is(selector)) {
++          return true;
++        }
++      } catch (RuntimeException e) {
++        // A selector jsoup does not understand cannot be matched; it addresses nothing here.
++        continue;
++      }
++    }
++    return false;
++  }
++
++  private static List<String> propertyNames(String declarations) {
++    List<String> names = new ArrayList<String>();
++    for (String declaration : declarations.split(";")) {
++      int colon = declaration.indexOf(':');
++      if (colon > 0) {
++        names.add(declaration.substring(0, colon).trim().toLowerCase(Locale.ROOT));
++      }
++    }
++    return names;
++  }
++}
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PdfPageScaler.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PdfPageScaler.java
+new file mode 100644
+index 0000000000..4ae6f78177
+--- /dev/null
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PdfPageScaler.java
+@@ -0,0 +1,112 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.io.IOException;
++import java.util.List;
++import java.util.Locale;
++
++import org.apache.pdfbox.cos.COSName;
++import org.apache.pdfbox.pdmodel.PDDocument;
++import org.apache.pdfbox.pdmodel.PDPage;
++import org.apache.pdfbox.pdmodel.PDPageContentStream;
++import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
++import org.apache.pdfbox.pdmodel.common.PDRectangle;
++import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
++import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
++import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
++import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
++import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
++import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
++
++/**
++ * Scales every page of a rendered PDF about the origin (CHG-LPRE-NF-001, design section 7.4, task T11).
++ * <p>
++ * OpenHTMLtoPDF measures layout in whole "dots per pixel", so one CSS pixel is {@code dotsPerPixel / 26.667}
++ * points, which is never exactly 1. html-pdf (PhantomJS) prints one CSS pixel as exactly one point. The renderer
++ * therefore lays the page out in its own scale and this class brings the finished pages to the html-pdf scale: the
++ * content is wrapped in a {@code cm} matrix and the page boxes, link rectangles and link destinations follow.
++ */
++final class PdfPageScaler {
++
++  /**
++   * Scales the pages of {@code pdf} by {@code factor}.
++   *
++   * @param pdf the rendered document, modified in place.
++   * @param factor the scale to apply to the page content and boxes; 1 leaves the document untouched.
++   * @throws IOException when a content stream cannot be written.
++   */
++  static void scale(PDDocument pdf, double factor) throws IOException {
++    if (factor == 1.0) {
++      return;
++    }
++    String matrix = String.format(Locale.ROOT, "q %1$.9f 0 0 %1$.9f 0 0 cm\n", factor);
++    for (PDPage page : pdf.getPages()) {
++      try (PDPageContentStream before = new PDPageContentStream(pdf, page, AppendMode.PREPEND, false, false)) {
++        before.appendRawCommands(matrix);
++      }
++      try (PDPageContentStream after = new PDPageContentStream(pdf, page, AppendMode.APPEND, false, false)) {
++        after.appendRawCommands("Q\n");
++      }
++      // The crop box is read through the media box, so it is taken before the media box changes.
++      PDRectangle crop = page.getCOSObject().containsKey(COSName.CROP_BOX) ? page.getCropBox() : null;
++      page.setMediaBox(scaled(page.getMediaBox(), factor));
++      if (crop != null) {
++        page.setCropBox(scaled(crop, factor));
++      }
++      scaleAnnotations(page, factor);
++    }
++  }
++
++  private static PDRectangle scaled(PDRectangle box, double factor) {
++    float f = (float) factor;
++    return new PDRectangle(box.getLowerLeftX() * f, box.getLowerLeftY() * f, box.getWidth() * f,
++      box.getHeight() * f);
++  }
++
++  private static void scaleAnnotations(PDPage page, double factor) throws IOException {
++    List<PDAnnotation> annotations = page.getAnnotations();
++    for (PDAnnotation annotation : annotations) {
++      PDRectangle rectangle = annotation.getRectangle();
++      if (rectangle != null) {
++        annotation.setRectangle(scaled(rectangle, factor));
++      }
++      if (annotation instanceof PDAnnotationLink) {
++        PDAnnotationLink link = (PDAnnotationLink) annotation;
++        scaleDestination(link.getDestination(), factor);
++        PDAction action = link.getAction();
++        if (action instanceof PDActionGoTo) {
++          scaleDestination(((PDActionGoTo) action).getDestination(), factor);
++        }
++      }
++    }
++  }
++
++  private static void scaleDestination(PDDestination destination, double factor) {
++    if (destination instanceof PDPageXYZDestination) {
++      PDPageXYZDestination xyz = (PDPageXYZDestination) destination;
++      if (xyz.getLeft() >= 0) {
++        xyz.setLeft((int) Math.round(xyz.getLeft() * factor));
++      }
++      if (xyz.getTop() >= 0) {
++        xyz.setTop((int) Math.round(xyz.getTop() * factor));
++      }
++    }
++  }
++
++  private PdfPageScaler() {
++  }
++}
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PhantomJsTextRenderer.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PhantomJsTextRenderer.java
+new file mode 100644
+index 0000000000..517ed3c45a
+--- /dev/null
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PhantomJsTextRenderer.java
+@@ -0,0 +1,59 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import com.openhtmltopdf.extend.FontContext;
++import com.openhtmltopdf.pdfboxout.PdfBoxFSFontMetrics;
++import com.openhtmltopdf.pdfboxout.PdfBoxTextRenderer;
++import com.openhtmltopdf.render.FSFont;
++import com.openhtmltopdf.render.FSFontMetrics;
++
++/**
++ * Text renderer whose font metrics follow PhantomJS (CHG-LPRE-NF-001, design section 7.4, task T11).
++ * <p>
++ * PhantomJS reads the ascent and the descent of a font hinted at its pixel size, which rounds both up to whole CSS
++ * pixels, so a line of {@code line-height: normal} text is {@code ceil(ascent) + ceil(descent)} pixels high: 13 px
++ * for 10 px DejaVu Sans, 17 px for 14 px, 19 px for 16 px (probed on the production pipeline for sizes 6 to 48 px).
++ * OpenHTMLtoPDF uses the unrounded metrics (11.64 px for 10 px), which makes every line shorter and lets the
++ * difference accumulate down the page. Only the ascent and the descent are changed; widths and kerning are not.
++ */
++final class PhantomJsTextRenderer extends PdfBoxTextRenderer {
++
++  /** Metrics are computed in float dots: a value this close below an integer pixel is that integer. */
++  private static final float EPSILON = 0.001f;
++
++  private final int dotsPerPixel;
++
++  PhantomJsTextRenderer(int dotsPerPixel) {
++    this.dotsPerPixel = dotsPerPixel;
++  }
++
++  @Override
++  public FSFontMetrics getFSFontMetrics(FontContext context, FSFont font, String text) {
++    FSFontMetrics metrics = super.getFSFontMetrics(context, font, text);
++    if (metrics instanceof PdfBoxFSFontMetrics) {
++      PdfBoxFSFontMetrics rounded = (PdfBoxFSFontMetrics) metrics;
++      rounded.setAscent(wholePixels(rounded.getAscent()));
++      rounded.setDescent(wholePixels(rounded.getDescent()));
++    }
++    return metrics;
++  }
++
++  /** Rounds a length in dots up to a whole number of CSS pixels. */
++  private float wholePixels(float dots) {
++    return (float) Math.ceil(dots / dotsPerPixel - EPSILON) * dotsPerPixel;
++  }
++}
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/TrueTypeTables.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/TrueTypeTables.java
+new file mode 100644
+index 0000000000..69c9c8714a
+--- /dev/null
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/TrueTypeTables.java
+@@ -0,0 +1,96 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.nio.charset.StandardCharsets;
++import java.util.Arrays;
++
++/**
++ * Edits the table directory of a TrueType font held in memory (CHG-LPRE-NF-001, design section 7.4, task T11).
++ * <p>
++ * PDFBox applies the font's own glyph substitution table (GSUB) when it writes text, so "fi", "ff" and "ffi" come
++ * out as ligature glyphs and text extraction finds {@code U+FB01} where html-pdf's PDF holds the two letters.
++ * Dropping the table from the directory of the font bytes handed to the renderer turns the ligatures off; the
++ * embedded subset never carried that table anyway, and no font file is modified on disk.
++ */
++final class TrueTypeTables {
++
++  private static final int HEADER_LENGTH = 12;
++
++  private static final int RECORD_LENGTH = 16;
++
++  private static final int TAG_LENGTH = 4;
++
++  private static final int NUM_TABLES_OFFSET = 4;
++
++  /**
++   * Returns a copy of {@code font} whose table directory does not list {@code tag}; the table data stays where it
++   * is, unreferenced. A font that does not list the tag, or that is not a plain sfnt, is returned as it is.
++   *
++   * @param font the bytes of a TrueType font.
++   * @param tag the four-letter table tag, for example {@code GSUB}.
++   * @return the edited copy, or {@code font} itself when there is nothing to remove.
++   */
++  static byte[] without(byte[] font, String tag) {
++    if (font == null || font.length < HEADER_LENGTH) {
++      return font;
++    }
++    int tables = unsignedShort(font, NUM_TABLES_OFFSET);
++    if (HEADER_LENGTH + (long) tables * RECORD_LENGTH > font.length) {
++      return font;
++    }
++    byte[] wanted = tag.getBytes(StandardCharsets.US_ASCII);
++    int found = -1;
++    for (int i = 0; i < tables && found < 0; i++) {
++      int record = HEADER_LENGTH + i * RECORD_LENGTH;
++      boolean same = wanted.length == TAG_LENGTH;
++      for (int k = 0; k < TAG_LENGTH && same; k++) {
++        same = font[record + k] == wanted[k];
++      }
++      if (same) {
++        found = i;
++      }
++    }
++    if (found < 0) {
++      return font;
++    }
++    byte[] edited = font.clone();
++    int first = HEADER_LENGTH + found * RECORD_LENGTH;
++    int end = HEADER_LENGTH + tables * RECORD_LENGTH;
++    System.arraycopy(font, first + RECORD_LENGTH, edited, first, end - first - RECORD_LENGTH);
++    Arrays.fill(edited, end - RECORD_LENGTH, end, (byte) 0);
++    int remaining = tables - 1;
++    int entrySelector = remaining == 0 ? 0 : 31 - Integer.numberOfLeadingZeros(remaining);
++    int searchRange = (1 << entrySelector) * RECORD_LENGTH;
++    putShort(edited, NUM_TABLES_OFFSET, remaining);
++    putShort(edited, NUM_TABLES_OFFSET + 2, searchRange);
++    putShort(edited, NUM_TABLES_OFFSET + 4, entrySelector);
++    putShort(edited, NUM_TABLES_OFFSET + 6, remaining * RECORD_LENGTH - searchRange);
++    return edited;
++  }
++
++  private static void putShort(byte[] data, int offset, int value) {
++    data[offset] = (byte) (value >> 8);
++    data[offset + 1] = (byte) value;
++  }
++
++  private static int unsignedShort(byte[] data, int offset) {
++    return ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
++  }
++
++  private TrueTypeTables() {
++  }
++}
+diff --git a/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/WebKitLineBreaker.java b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/WebKitLineBreaker.java
+new file mode 100644
+index 0000000000..f36884ca03
+--- /dev/null
++++ b/marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/WebKitLineBreaker.java
+@@ -0,0 +1,61 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.text.BreakIterator;
++import java.util.Locale;
++
++import com.openhtmltopdf.extend.FSTextBreaker;
++
++/**
++ * Line breaks as WebKit (ICU) takes them (CHG-LPRE-NF-001, design section 7.4, task T11).
++ * <p>
++ * The JDK's line {@link BreakIterator} may break after a full stop, comma, colon or semicolon even when a letter or
++ * a digit follows, so {@code www.scalingreadiness.org} is cut after {@code www.}. ICU keeps such a word whole
++ * (UAX 14, the rules for infix separators), and so does html-pdf: the whole address moves to the next line. This
++ * breaker skips those boundaries and keeps all the others.
++ * <p>
++ * It holds the text it iterates over, so a renderer needs an instance of its own; it is not thread safe.
++ */
++final class WebKitLineBreaker implements FSTextBreaker {
++
++  private static final String INFIX_SEPARATORS = ".,:;";
++
++  private final BreakIterator breaks = BreakIterator.getLineInstance(Locale.ROOT);
++
++  private String text = "";
++
++  @Override
++  public int next() {
++    int boundary = breaks.next();
++    while (boundary != BreakIterator.DONE && boundary < text.length() && isInsideWord(boundary)) {
++      boundary = breaks.next();
++    }
++    return boundary;
++  }
++
++  @Override
++  public void setText(String newText) {
++    text = newText == null ? "" : newText;
++    breaks.setText(text);
++  }
++
++  /** A boundary between an infix separator and the letter or digit after it is no break opportunity. */
++  private boolean isInsideWord(int boundary) {
++    return boundary > 0 && INFIX_SEPARATORS.indexOf(text.charAt(boundary - 1)) >= 0
++      && Character.isLetterOrDigit(text.charAt(boundary));
++  }
++}
+diff --git a/marlo-web/src/main/resources/pdf/html-pdf-defaults.css b/marlo-web/src/main/resources/pdf/html-pdf-defaults.css
+new file mode 100644
+index 0000000000..18cdd695c6
+--- /dev/null
++++ b/marlo-web/src/main/resources/pdf/html-pdf-defaults.css
+@@ -0,0 +1,15 @@
++/*
++ * WebKit's default stylesheet as html-pdf (PhantomJS 2.1, QtWebKit) applies it to the vertical rhythm of text blocks.
++ * OpenHTMLtoPDF's own defaults differ (p, h4 and lists 1.12em; h2 .75em; h3 .83em; h5 1.5em; h6 1.67em), and
++ * every template that leaves these margins to the browser drifts by a few points per block. Loaded FIRST in <head>,
++ * so any rule of the template overrides it, as it overrides a browser default. Task T11; probed on the production
++ * pipeline.
++ */
++p, ul, ol, dl, blockquote, pre, menu, dir { margin-top: 1em; margin-bottom: 1em; }
++ol ul, ul ol, ul ul, ol ol { margin-top: 0; margin-bottom: 0; }
++h1 { margin-top: .67em; margin-bottom: .67em; }
++h2 { margin-top: .83em; margin-bottom: .83em; }
++h3 { margin-top: 1em; margin-bottom: 1em; }
++h4 { margin-top: 1.33em; margin-bottom: 1.33em; }
++h5 { font-size: .83em; margin-top: 1.67em; margin-bottom: 1.67em; }
++h6 { font-size: .67em; margin-top: 2.33em; margin-bottom: 2.33em; }
+diff --git a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/AuthorStylesTest.java b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/AuthorStylesTest.java
+new file mode 100644
+index 0000000000..c260067efe
+--- /dev/null
++++ b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/AuthorStylesTest.java
+@@ -0,0 +1,81 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import org.jsoup.Jsoup;
++import org.jsoup.nodes.Document;
++import org.junit.Test;
++
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertFalse;
++import static org.junit.Assert.assertNull;
++import static org.junit.Assert.assertTrue;
++
++/**
++ * Tests the rough index of what the template's own CSS declares (task T11).
++ */
++public class AuthorStylesTest {
++
++  private static Document doc(String css, String body) {
++    return Jsoup.parse("<html><head><style>" + css + "</style></head><body>" + body + "</body></html>");
++  }
++
++  @Test
++  public void aRuleThatMatchesTheElementDeclaresItsProperties() {
++    Document doc = doc("p { margin: 5px 0; } .a, td > span { color: red; font-size: 9px; }",
++      "<p id=\"p\">x</p><table><tr><td><span id=\"s\">y</span></td></tr></table><div class=\"a\" id=\"d\">z</div>");
++    AuthorStyles styles = new AuthorStyles(doc);
++    assertTrue(styles.declares(doc.getElementById("p"), "margin"));
++    assertFalse("a shorthand does not declare its longhand by itself",
++      styles.declares(doc.getElementById("p"), "margin-top"));
++    assertTrue(styles.declares(doc.getElementById("p"), "margin-top", "margin"));
++    assertTrue("any selector of a list", styles.declares(doc.getElementById("s"), "font-size"));
++    assertTrue(styles.declares(doc.getElementById("d"), "color"));
++    assertFalse("a rule for another element", styles.declares(doc.getElementById("d"), "margin"));
++  }
++
++  @Test
++  public void theInlineStyleCountsToo() {
++    Document doc = doc("", "<p id=\"p\" style=\"margin-top: 3px; COLOR : red\">x</p>");
++    AuthorStyles styles = new AuthorStyles(doc);
++    assertTrue(styles.declares(doc.getElementById("p"), "margin-top"));
++    assertTrue("names are compared in lower case", styles.declares(doc.getElementById("p"), "color"));
++    assertEquals("3px", styles.valueOf(doc.getElementById("p"), "margin-top"));
++  }
++
++  @Test
++  public void theValueIsTheInlineOneThenTheLastMatchingRuleInLowerCase() {
++    Document doc = doc("p { position: Fixed; top: 1px; } p.x { position: ABSOLUTE; }",
++      "<p id=\"a\" class=\"x\">x</p><p id=\"b\">y</p><p id=\"c\" style=\"position: static\">z</p>");
++    AuthorStyles styles = new AuthorStyles(doc);
++    assertEquals("absolute", styles.valueOf(doc.getElementById("a"), "position"));
++    assertEquals("fixed", styles.valueOf(doc.getElementById("b"), "position"));
++    assertEquals("static", styles.valueOf(doc.getElementById("c"), "position"));
++    assertNull(styles.valueOf(doc.getElementById("b"), "bottom"));
++  }
++
++  @Test
++  public void commentsAtRulesAndSelectorsJsoupCannotParseAreIgnored() {
++    Document doc = doc("/* p { color: red; } */ @page { margin: 3px; } p:unknown-pseudo(2) { color: blue; }"
++      + " @media print { .m { page-break-after: always; } } p { font-size: 9px; }", "<p id=\"p\" class=\"m\">x</p>");
++    AuthorStyles styles = new AuthorStyles(doc);
++    assertFalse(styles.declares(doc.getElementById("p"), "color"));
++    assertFalse(styles.declares(doc.getElementById("p"), "margin"));
++    assertTrue(styles.declares(doc.getElementById("p"), "font-size"));
++    assertEquals("a rule inside @media print applies when printing", "always",
++      styles.valueOf(doc.getElementById("p"), "page-break-after"));
++  }
++}
+diff --git a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/PdfPageScalerTest.java b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/PdfPageScalerTest.java
+new file mode 100644
+index 0000000000..7a77633756
+--- /dev/null
++++ b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/PdfPageScalerTest.java
+@@ -0,0 +1,181 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.io.ByteArrayOutputStream;
++import java.io.IOException;
++import java.util.List;
++
++import org.apache.pdfbox.Loader;
++import org.apache.pdfbox.pdmodel.PDDocument;
++import org.apache.pdfbox.pdmodel.PDPage;
++import org.apache.pdfbox.pdmodel.PDPageContentStream;
++import org.apache.pdfbox.pdmodel.common.PDRectangle;
++import org.apache.pdfbox.pdmodel.font.PDType1Font;
++import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
++import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
++import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
++import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
++import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
++import org.apache.pdfbox.text.PDFTextStripper;
++import org.apache.pdfbox.text.TextPosition;
++import org.junit.Test;
++
++import static org.junit.Assert.assertEquals;
++
++/**
++ * Tests the page scale that brings the renderer's pages to html-pdf's one CSS pixel per point (task T11).
++ */
++public class PdfPageScalerTest {
++
++  private static byte[] pageWithTextAndLink() throws IOException {
++    try (PDDocument document = new PDDocument()) {
++      PDPage page = new PDPage(new PDRectangle(600, 800));
++      document.addPage(page);
++      try (PDPageContentStream content = new PDPageContentStream(document, page)) {
++        content.beginText();
++        content.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA), 20);
++        content.newLineAtOffset(100, 700);
++        content.showText("scaled");
++        content.endText();
++      }
++      PDAnnotationLink link = new PDAnnotationLink();
++      link.setRectangle(new PDRectangle(100, 690, 120, 30));
++      PDActionGoTo action = new PDActionGoTo();
++      PDPageXYZDestination destination = new PDPageXYZDestination();
++      destination.setPage(page);
++      destination.setLeft(200);
++      destination.setTop(400);
++      action.setDestination(destination);
++      link.setAction(action);
++      page.getAnnotations().add(link);
++      ByteArrayOutputStream out = new ByteArrayOutputStream();
++      document.save(out);
++      return out.toByteArray();
++    }
++  }
++
++  private static final class Positions extends PDFTextStripper {
++
++    private final StringBuilder text = new StringBuilder();
++    private TextPosition first;
++    private float width;
++
++    Positions() throws IOException {
++      super();
++    }
++
++    @Override
++    protected void writeString(String string, List<TextPosition> positions) {
++      text.append(string);
++      if (first == null && !positions.isEmpty()) {
++        first = positions.get(0);
++      }
++      for (TextPosition position : positions) {
++        width += position.getWidthDirAdj();
++      }
++    }
++  }
++
++  @Test
++  public void thePageBoxTheTextAndTheLinkAllFollowTheFactor() throws IOException {
++    try (PDDocument document = Loader.loadPDF(pageWithTextAndLink())) {
++      PdfPageScaler.scale(document, 0.5);
++      PDPage page = document.getPage(0);
++      assertEquals(300, page.getMediaBox().getWidth(), 0.01);
++      assertEquals(400, page.getMediaBox().getHeight(), 0.01);
++      Positions positions = new Positions();
++      positions.getText(document);
++      assertEquals("scaled", positions.text.toString().trim());
++      // "scaled" at 20 pt Helvetica is 20 * (500 + 500 + 556 + 222 + 556 + 556) / 1000 = 57.8 pt wide
++      assertEquals("the text width on the page", 57.8 / 2, positions.width, 0.1);
++      assertEquals("x", 50.0, positions.first.getXDirAdj(), 0.01);
++      assertEquals("y from the top", 400 - 350.0, positions.first.getYDirAdj(), 0.5);
++      PDAnnotationLink link = (PDAnnotationLink) page.getAnnotations().get(0);
++      PDRectangle rectangle = link.getRectangle();
++      assertEquals(50, rectangle.getLowerLeftX(), 0.01);
++      assertEquals(345, rectangle.getLowerLeftY(), 0.01);
++      assertEquals(60, rectangle.getWidth(), 0.01);
++      assertEquals(15, rectangle.getHeight(), 0.01);
++      PDPageXYZDestination destination = (PDPageXYZDestination) ((PDActionGoTo) link.getAction()).getDestination();
++      assertEquals(100, destination.getLeft());
++      assertEquals(200, destination.getTop());
++    }
++  }
++
++  @Test
++  public void theScaleSurvivesASaveAndReload() throws IOException {
++    ByteArrayOutputStream out = new ByteArrayOutputStream();
++    try (PDDocument document = Loader.loadPDF(pageWithTextAndLink())) {
++      PdfPageScaler.scale(document, 2.0 / 3.0);
++      document.save(out);
++    }
++    try (PDDocument reloaded = Loader.loadPDF(out.toByteArray())) {
++      assertEquals(400, reloaded.getPage(0).getMediaBox().getWidth(), 0.01);
++      Positions positions = new Positions();
++      positions.getText(reloaded);
++      assertEquals(57.8 * 2.0 / 3.0, positions.width, 0.1);
++    }
++  }
++
++  private static int contentStreamsOf(PDPage page) throws IOException {
++    int count = 0;
++    java.util.Iterator<org.apache.pdfbox.pdmodel.common.PDStream> streams = page.getContentStreams();
++    while (streams.hasNext()) {
++      streams.next();
++      count++;
++    }
++    return count;
++  }
++
++  @Test
++  public void aFactorOfOneLeavesTheDocumentAlone() throws IOException {
++    try (PDDocument document = Loader.loadPDF(pageWithTextAndLink())) {
++      int before = contentStreamsOf(document.getPage(0));
++      PdfPageScaler.scale(document, 1.0);
++      assertEquals(600, document.getPage(0).getMediaBox().getWidth(), 0.0001);
++      assertEquals("no matrix is wrapped around the content", before, contentStreamsOf(document.getPage(0)));
++    }
++  }
++
++  @Test
++  public void aCropBoxIsScaledToo() throws IOException {
++    try (PDDocument document = Loader.loadPDF(pageWithTextAndLink())) {
++      document.getPage(0).setCropBox(new PDRectangle(10, 20, 400, 600));
++      PdfPageScaler.scale(document, 0.5);
++      PDRectangle crop = document.getPage(0).getCropBox();
++      assertEquals(5, crop.getLowerLeftX(), 0.01);
++      assertEquals(10, crop.getLowerLeftY(), 0.01);
++      assertEquals(200, crop.getWidth(), 0.01);
++      assertEquals(300, crop.getHeight(), 0.01);
++    }
++  }
++
++  @Test
++  public void everyAnnotationOfThePageIsVisited() throws IOException {
++    try (PDDocument document = Loader.loadPDF(pageWithTextAndLink())) {
++      PDPage page = document.getPage(0);
++      PDAnnotationLink second = new PDAnnotationLink();
++      second.setRectangle(new PDRectangle(10, 10, 20, 20));
++      page.getAnnotations().add(second);
++      PdfPageScaler.scale(document, 0.5);
++      List<PDAnnotation> annotations = page.getAnnotations();
++      assertEquals(2, annotations.size());
++      assertEquals(5, annotations.get(1).getRectangle().getLowerLeftX(), 0.01);
++      assertEquals(10, annotations.get(1).getRectangle().getWidth(), 0.01);
++    }
++  }
++}
+diff --git a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/TrueTypeTablesTest.java b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/TrueTypeTablesTest.java
+new file mode 100644
+index 0000000000..43d884abb4
+--- /dev/null
++++ b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/TrueTypeTablesTest.java
+@@ -0,0 +1,145 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.io.ByteArrayOutputStream;
++import java.io.IOException;
++import java.io.InputStream;
++
++import org.apache.fontbox.ttf.TTFParser;
++import org.apache.fontbox.ttf.TrueTypeFont;
++import org.apache.fontbox.ttf.model.GsubData;
++import org.apache.pdfbox.io.RandomAccessReadBuffer;
++import org.junit.Test;
++
++import static org.junit.Assert.assertArrayEquals;
++import static org.junit.Assert.assertEquals;
++import static org.junit.Assert.assertNotNull;
++import static org.junit.Assert.assertNotSame;
++import static org.junit.Assert.assertSame;
++
++/**
++ * Tests the table directory edit that turns ligatures off (task T11: html-pdf's PDF has none).
++ */
++public class TrueTypeTablesTest {
++
++  private static byte[] bytes(int... values) {
++    byte[] out = new byte[values.length];
++    for (int i = 0; i < values.length; i++) {
++      out[i] = (byte) values[i];
++    }
++    return out;
++  }
++
++  /** A directory of three tables followed by 12 bytes of data, enough for the edit; not a loadable font. */
++  private static byte[] directoryOfThree() {
++    byte[] font = new byte[12 + 3 * 16 + 12];
++    font[1] = 1; // sfnt version 0x00010000
++    font[5] = 3; // numTables
++    font[7] = 32; // searchRange
++    font[9] = 1; // entrySelector
++    font[11] = 16; // rangeShift
++    String[] tags = {"cmap", "GSUB", "head"};
++    for (int i = 0; i < 3; i++) {
++      int record = 12 + i * 16;
++      for (int k = 0; k < 4; k++) {
++        font[record + k] = (byte) tags[i].charAt(k);
++      }
++      font[record + 4 + 3] = (byte) (i + 1); // checksum
++      font[record + 8 + 3] = (byte) (12 + 3 * 16 + i * 4); // offset
++      font[record + 12 + 3] = 4; // length
++    }
++    return font;
++  }
++
++  private static String tagAt(byte[] font, int record) {
++    return new String(font, 12 + record * 16, 4, java.nio.charset.StandardCharsets.US_ASCII);
++  }
++
++  private static byte[] resource(String path) throws IOException {
++    try (InputStream in = TrueTypeTablesTest.class.getResourceAsStream(path)) {
++      assertNotNull(path, in);
++      ByteArrayOutputStream out = new ByteArrayOutputStream();
++      byte[] buffer = new byte[8192];
++      int read = in.read(buffer);
++      while (read >= 0) {
++        out.write(buffer, 0, read);
++        read = in.read(buffer);
++      }
++      return out.toByteArray();
++    }
++  }
++
++  @Test
++  public void theTagLeavesTheDirectoryAndTheRestShiftsUp() {
++    byte[] original = directoryOfThree();
++    byte[] edited = TrueTypeTables.without(original, "GSUB");
++    assertNotSame(original, edited);
++    assertEquals(2, ((edited[4] & 0xFF) << 8) | (edited[5] & 0xFF));
++    assertEquals("cmap", tagAt(edited, 0));
++    assertEquals("head", tagAt(edited, 1));
++    // The record that moved keeps its own checksum, offset and length.
++    assertEquals(3, edited[12 + 16 + 4 + 3]);
++    assertEquals(12 + 3 * 16 + 8, edited[12 + 16 + 8 + 3]);
++    // searchRange = 16 * 2^floor(log2(2)), entrySelector = 1, rangeShift = 2 * 16 - searchRange.
++    assertEquals(32, edited[7]);
++    assertEquals(1, edited[9]);
++    assertEquals(0, edited[11]);
++    // The last record of the old directory is cleared; the table data was not touched.
++    assertArrayEquals(new byte[16], java.util.Arrays.copyOfRange(edited, 12 + 2 * 16, 12 + 3 * 16));
++    assertArrayEquals(java.util.Arrays.copyOfRange(original, 12 + 3 * 16, original.length),
++      java.util.Arrays.copyOfRange(edited, 12 + 3 * 16, edited.length));
++  }
++
++  @Test
++  public void theInputIsNeverModified() {
++    byte[] original = directoryOfThree();
++    byte[] copy = original.clone();
++    TrueTypeTables.without(original, "GSUB");
++    assertArrayEquals(copy, original);
++  }
++
++  @Test
++  public void aMissingTagOrABrokenFontIsReturnedAsItIs() {
++    byte[] font = directoryOfThree();
++    assertSame(font, TrueTypeTables.without(font, "kern"));
++    assertSame(font, TrueTypeTables.without(font, "GS"));
++    byte[] tiny = bytes(0, 1, 0);
++    assertSame(tiny, TrueTypeTables.without(tiny, "GSUB"));
++    assertSame(null, TrueTypeTables.without(null, "GSUB"));
++    byte[] lying = directoryOfThree();
++    lying[5] = (byte) 200; // claims 200 tables
++    assertSame(lying, TrueTypeTables.without(lying, "GSUB"));
++  }
++
++  @Test
++  public void theBundledFontLosesItsLigaturesAndStillParses() throws IOException {
++    byte[] regular = resource("/pdf/fonts/DejaVuSans.ttf");
++    byte[] bold = resource("/pdf/fonts/DejaVuSans-Bold.ttf");
++    for (byte[] font : new byte[][] {regular, bold}) {
++      try (TrueTypeFont before = new TTFParser().parse(new RandomAccessReadBuffer(font))) {
++        assertNotSame("the stock font has a GSUB table", GsubData.NO_DATA_FOUND, before.getGsubData());
++      }
++      byte[] edited = TrueTypeTables.without(font, "GSUB");
++      try (TrueTypeFont after = new TTFParser().parse(new RandomAccessReadBuffer(edited))) {
++        assertSame("no ligature substitution is left", GsubData.NO_DATA_FOUND, after.getGsubData());
++        assertEquals("the glyphs are all there", 6253, after.getNumberOfGlyphs() > 6000 ? 6253 : 0);
++        assertNotNull(after.getUnicodeCmapLookup());
++        assertEquals(after.getUnicodeCmapLookup().getGlyphId('f') > 0, true);
++      }
++    }
++  }
++}
+diff --git a/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/WebKitLineBreakerTest.java b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/WebKitLineBreakerTest.java
+new file mode 100644
+index 0000000000..f206c36b9c
+--- /dev/null
++++ b/marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/WebKitLineBreakerTest.java
+@@ -0,0 +1,68 @@
++/*****************************************************************
++ * This file is part of Managing Agricultural Research for Learning &
++ * Outcomes Platform (MARLO).
++ * MARLO is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * at your option) any later version.
++ * MARLO is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ * You should have received a copy of the GNU General Public License
++ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
++ *****************************************************************/
++
++package org.cgiar.ccafs.marlo.utils.pdf;
++
++import java.text.BreakIterator;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
++
++import org.junit.Test;
++
++import static org.junit.Assert.assertEquals;
++
++/**
++ * Tests the line breaker that keeps an address whole the way ICU does (task T11).
++ */
++public class WebKitLineBreakerTest {
++
++  private static List<String> pieces(String text) {
++    WebKitLineBreaker breaker = new WebKitLineBreaker();
++    breaker.setText(text);
++    List<String> pieces = new ArrayList<String>();
++    int start = 0;
++    for (int end = breaker.next(); end != BreakIterator.DONE; end = breaker.next()) {
++      pieces.add(text.substring(start, end));
++      start = end;
++    }
++    return pieces;
++  }
++
++  @Test
++  public void anAddressIsNotCutAfterItsFullStops() {
++    assertEquals(Arrays.asList("Learn ", "more ", "in ", "www.scalingreadiness.org ", "now"),
++      pieces("Learn more in www.scalingreadiness.org now"));
++  }
++
++  @Test
++  public void aSeparatorBeforeALetterOrADigitIsNoBreakAndOneBeforeASpaceStillBreaksAtTheSpace() {
++    assertEquals(Arrays.asList("a.b ", "c,d ", "e:f ", "g;h ", "1.5 ", "end. ", "Next"),
++      pieces("a.b c,d e:f g;h 1.5 end. Next"));
++  }
++
++  @Test
++  public void theOtherBreakOpportunitiesOfTheJdkAreKept() {
++    assertEquals(Arrays.asList("well-", "known ", "a/b ", "(x) ", "y"), pieces("well-known a/b (x) y"));
++  }
++
++  @Test
++  public void anEmptyOrMissingTextHasNoBreaks() {
++    assertEquals(new ArrayList<String>(), pieces(""));
++    WebKitLineBreaker breaker = new WebKitLineBreaker();
++    breaker.setText(null);
++    assertEquals(BreakIterator.DONE, breaker.next());
++  }
++}

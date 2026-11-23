@@ -179,6 +179,12 @@ makes OpenHTMLtoPDF's CSS 2.1 + paged-media subset the closest match to what use
 infrastructure change. The spike settles it with evidence: if the OICR render is not acceptable after reasonable
 template adjustment, fall back to Option B and treat the Chromium install as an infrastructure change.
 
+> **Superseded 2026-11-23 (Pivot 2, owner-approved):** after measured parity became the acceptance criterion, the
+> engine is **PhantomJS 2.1.1 run by MARLO as a local process** with html-pdf's page script — the production engine
+> itself, so the output is identical (PARITY on six cases, including real data). This is an infrastructure change
+> (OQ-4). See requirements Decision Log, design §18 and ADR-CHG-LPRE-6. Headless Chromium remains rejected: it is
+> not the production engine.
+
 Delivery order inside the spec: engine + OICR behind the specificity → Innovation → Cluster + submission email →
 retirement after production validation. `/akili-specify` decides whether the retirement phase stays a task group
 or becomes a follow-up spec.

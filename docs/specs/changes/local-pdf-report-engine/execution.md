@@ -411,3 +411,253 @@
   - ADVISORY: two DEBUG lines are written on a cut.
 - **spawns:** reviewer 7 calls, 86,345 tokens
 - **Final status:** PASS on attempt 2 · **Gate:** owner-approved remediation · **Running totals:** tasks 9/9 (T08 deferred) · review rounds 24
+
+## CHG-LPRE-T11 — Layout parity with production (NF-001 as amended)
+
+- **Owner decision 2026-11-23:**
+  - NF-001 was **not accepted** ("los reportes deben verse igual que en produccion").
+  - T11 is approved together with a raised budget ("sí, haz el commit de T10 y sigue con T11"). The criterion is the one the Leader proposed: same pages, same words per page, ±3 pt, same text. Pixel identity is out of reach.
+  - Review rounds stand at 24 before T11.
+- **Measurement harness (Leader-owned oracle):** `spike/parity/`.
+  - `prod-render.js` runs the production pipeline in Docker `node:23` linux/amd64: Handlebars.js plus the 17 helpers extracted from `pdf.module.ts` at `6f16514`, and pdf-creator-node / html-pdf / PhantomJS with the payload's own options. The `pdf.generate` message is the PhantomJS path; Gotenberg serves only `pdf.generateUrl`.
+  - `LocalRender.java` uses the built `LocalPdfReportService.render`.
+  - `compare.py` matches words by `pdftotext -bbox`.
+  - `run.sh` orchestrates the steps above.
+- **Baseline measurement (HEAD `81d00e8df6`, three fixtures): NO PARITY ×3.**
+
+  | Fixture | Pages prod / local | Pages with the same words | Words moved > 3 pt | Ligature words |
+  |---|---|---|---|---|
+  | OICR | 5 / 5 | 1 of 5 | 511 | 7 |
+  | Innovation | 6 / 6 | 1 of 6 | 438 | 7 |
+  | Cluster (project) | 7 / 7 | 6 of 7 | 138 | 0 |
+
+- **Root causes visible in the measurement:**
+  1. **Horizontal advance:** dx grows along a line (+3.3, +5.0, +6.8 … pt), about +1–2 % wider word advance.
+  2. **Vertical drift in OICR and innovation:** dy goes −0.9 → −9 → −46 → −73 pt down the document, which moves the page breaks.
+  3. **Cluster pages 2+:** the body sits +35.8 pt lower.
+  4. **Cluster cover:** the badges wrap onto two rows.
+  5. **Ligature glyphs:** `ﬁ` and `ﬃ` appear in local renders only.
+- **Implementer attempt 1 (`akili-implementer`, sonnet): PARTIAL.** It added these emulations:
+  - 1 px = 1 pt: layout at 40 dots/px on a 595×842 px page, then `PdfPageScaler` scales by 2/3.
+  - WebKit line-box rounding: `PhantomJsTextRenderer`.
+  - WebKit UA margins: `html-pdf-defaults.css`.
+  - Quirks-mode margins, the strut of text-free boxes, collapsed-border compensation, folding of a `br` into the text line, margin truncation at forced breaks, and outline heading defaults.
+  - GSUB stripped, so there are no ligatures: `TrueTypeTables`.
+  - A WebKit line breaker and reading-order spans.
+  - Two values were fitted to measurement: the 66.6 px footer row and the 0.5 px table padding.
+  - Full suite: 1,430 tests, green. The falsifier per emulation was not run.
+- **Spawns:** implementer 254 calls, 615,634 tokens, about 62 min, ended complete (PARTIAL).
+- **Leader independent parity re-run, fixtures:** OICR **PARITY**, project **PARITY**, innovation NO PARITY. On innovation, pages 2–6 differ: `page-break-inside: avoid` behaves differently in PhantomJS (about 62 pt) and WebKit floors percentage column widths.
+- **Real-data capture:** a temporary dump line in `renderToResponse` was used and removed afterwards. The file is byte-identical to before and was recompiled from clean. The app ran against the throwaway `lpre_live_tmp` with the flag on for AICCRA, and `marlo-dev.properties` was restored. Payloads were kept in the scratchpad only, never committed.
+- **Real-data parity (OICR 3508, Innovation 1558, Cluster 102076), measured against the pre-T11 engine built in a temporary worktree of `81d00e8df6`:**
+
+  | Report | Engine | Pages prod / local | Pages at parity | Pages with the same words | Words moved > 3 pt |
+  |---|---|---|---|---|---|
+  | OICR | pre-T11 | 5 / 5 | 0 | 1 | 490 / 558 |
+  | OICR | T11 | 5 / 5 | 1 | 2 | 422 / 553 |
+  | Innovation | pre-T11 | 6 / 6 | 0 | 1 | 829 / 924 |
+  | Innovation | T11 | 6 / 6 | 1 | 2 | 326 / 918 |
+  | Cluster | pre-T11 | 481 / 482 | 0 | 2 | 11,857 / 77,226 |
+  | Cluster | T11 | 481 / **478** | 1 | 1 | 14,211 / 76,745 |
+
+- **Reading:**
+  - On real data, T11 improves OICR and innovation and makes the cluster worse: 3 pages short against 1 page extra before T11.
+  - The fixture-fitted emulations do not generalize. New divergences appear with every data set, for example a systematic +3.5 pt indent on some blocks, hyphen line-breaks (`crop-livestock`), letter-spaced labels extracting as `ST AR T`, and PhantomJS's own `p rivate)` split.
+  - Emulating WebKit's layout inside OpenHTMLtoPDF has no visible end point.
+- **Stop: Pivot (owner decision).** "No mandate widens pre-approval: an owner brief that says "never stop" or "treat every gate as approved" pre-approves routine gates only. The exceptions in `/akili-propose` Step 1 *Approval Mode* (HALT, Pivot, budget tripwire, `FATAL_FAIL`, `PRODUCT_BUG`, destructive actions) still stop, and the stop message quotes this sentence."
+  - Options put to the owner:
+    - (A) keep emulating;
+    - (B) render with PhantomJS itself, run by MARLO as a local process, for identical output;
+    - (D) accept visual equivalence without identical page breaks.
+  - T11 code is held **uncommitted** pending that decision. The T11 Reviewer (read-only) is running in parallel.
+- **Reviewer attempt 1 (opus, read-only): FAIL.**
+  - **BLOCKER:** `ignoreStrutOfTextFreeBoxes` sets `font-size: 0` on a box whose text children only *declare* a font size. With unescaped rich text, a relative child size (`90%`, `0.9em`) resolves to 0 and the text vanishes. A `<p><span style="font-size:11pt">` loses its `1em` margins.
+  - **MAJOR:** the contract is incomplete: innovation is NO PARITY and the per-emulation falsifier was not run. Real data has since been run by the Leader (above).
+  - **MAJOR:** `AuthorStyles` re-parses selectors per element, so the cost on large documents could grow faster than the document. Leader measurement: the real 478-page cluster rendered in 4,772 ms with T11 vs 5,266 ms pre-T11, so the risk is not observed on this payload.
+  - **MAJOR:** quadratic regexes on `<style>` text that can arrive through rich text.
+  - **MAJOR:** design §7.3 / §7.4 now contradict the code (27 dots/px, footer alignment, undocumented emulations).
+  - **ADVISORY:** gate quirks emulations on `doc.quirksMode()`; nested tables in `compensateCollapsedBorders`; span wrappers change selector matching; `PdfPageScaler` leaves outlines, QuadPoints, widgets and Fit* destinations unscaled, and landscape is untested; a bidi-reorderer guard; the fitted 66.6 px footer; three weak tests.
+  - **Confirmed clean:** GPL headers, package-private `final` classes, no template edits, no network or file access outside the loader, per-render renderer state, and a bounds-checked font-table parser.
+- **spawns:** reviewer 33 calls, 147,218 tokens, ended complete
+- **State:** T11 FAIL at attempt 1, uncommitted, held for the owner's Pivot decision (A / B / D above). Review rounds 25.
+
+## Option B feasibility proof — 2026-11-23 (owner: "sí, sigue con B y haz primero la prueba de paridad")
+
+- **Prototype:** throwaway, in the scratchpad.
+  - Step 1: `JavaHtml.java` renders the payload to HTML with the existing Java `HandlebarsReportHelpers`.
+  - Step 2: `phantom-html.js` passes that HTML to `html-pdf` (PhantomJS 2.1.1) with the payload's own options, in Docker `node:23` linux/amd64. This is exactly what `pdf-creator-node` does after its Handlebars step.
+  - Measurement: the same `spike/parity/compare.py`, against the production PDFs.
+- **Result: PARITY 6 / 6.**
+
+  | Case | Pages prod / B | Result |
+  |---|---|---|
+  | OICR fixture | 5 / 5 | PARITY |
+  | Innovation fixture | 6 / 6 | PARITY |
+  | Project fixture | 7 / 7 | PARITY |
+  | OICR 3508 (real) | 5 / 5 | PARITY |
+  | Innovation 1558 (real) | 6 / 6 | PARITY |
+  | Cluster 102076 (real) | 481 / 481 | PARITY |
+
+- **Handlebars.java vs Handlebars.js HTML:**
+  - All 6 cases are identical after whitespace normalization.
+  - The only difference is whitespace-only lines: Handlebars.js strips "standalone" block-tag lines and Handlebars.java keeps them. This is invisible except inside `white-space: pre`, and is to be closed in the implementation, e.g. with standalone-line stripping.
+- **Finding (WRONG — corrected in T12):** ~~`pdf-creator-node` registers an 18th helper, `ifCond`, besides the 17 of `pdf.module.ts`.~~ `pdf.module.ts:128` already registers `ifCond` with the same body; `pdf-creator-node` only re-registers it. The 17 helpers are complete; Java already had it (879 vector rows).
+  - No current template uses it.
+  - Handlebars.java fails at compile time on an unknown helper, so option B must register it too.
+  - Earlier documents say "17 helpers": that is correct for `pdf.module.ts` but incomplete for the production pipeline.
+- **Conclusion:** option B reproduces production output on fixtures and on real data, including the 481-page cluster that options A and D could not match.
+
+## Pivot Record 2: rendering engine — 2026-11-23
+
+- **Blocker:** measured parity (NF-001 as amended) is not reachable by emulating PhantomJS in OpenHTMLtoPDF on real data (T11; the 481-page cluster went 482 → 478 pages).
+- **Owner decision:** option B — "sí, sigue con B y haz primero la prueba de paridad" (proof: PARITY 6/6, above), then "sí, sigue con las tres":
+  - (1) T11 code discarded, diff kept at `spike/t11-discarded-emulations.diff`;
+  - (2) infrastructure questions recorded as OQ-4 and the code proceeds behind the specificity;
+  - (3) spec updated, then implement.
+- **Spec changes:**
+  - requirements: FN-003, FN-004, NF-002, NF-004 and NF-006 amended; NF-007, SEC-003, SEC-004 and OQ-4 added; out-of-scope note; Decision Log entry;
+  - design §18 plus ADR-CHG-LPRE-6, with §7.3, §7.4 and ADR-2 marked superseded;
+  - proposal note;
+  - tasks: T11 superseded; T12–T15 added.
+- **Budget:** 25 review rounds used. Estimated remaining: T12 1–2, T13 2–3, T14 1, T15 Leader-run → about 31. Covered by the owner's approval of option B.
+- **Gate:** `owner-approved` (Pivot).
+
+## CHG-LPRE-T12 — Handlebars HTML byte-identical to production
+
+- **Implementer attempt 1 (`akili-implementer`, sonnet): DONE.**
+  - **`ifCond` correction:** `ifCond` is already one of the 17 helpers (`pdf.module.ts:128`, the same body that `pdf-creator-node` re-registers), so no helper was added. The "18th helper" claim was corrected across the spec.
+  - **New `StandaloneLines`:** a port of Handlebars.js 4.7.8 `WhitespaceControl`, applied to the template source before compiling, through a `Handlebars` subclass in `newHandlebars()`. `prettyPrint(true)` was rejected because it got 15 vector rows wrong.
+  - **Vectors:** 2,414 → 2,707 rows, with 48 standalone and multi-line templates.
+  - **New test resources:** `expected-html/*.html`, generated by `spike/helper-vectors-generator/generate-expected-html.js` (command recorded), and a new test, `fixtureHtmlIsByteIdenticalToHandlebarsJs`.
+  - **Red runs:**
+    - Plain compile: `oicr differs from Handlebars.js at char 30372 (lengths expected 52760, actual 54925)`.
+    - With `prettyPrint`: 15 of 2,707 rows wrong.
+    - First `StandaloneLines` version: 5 rows wrong, plus `project differs … at char 8630`.
+  - **Green:** targeted tests 48/48. Checkstyle 0 → 0; hygiene ok.
+- **Leader evidence re-run:**
+  - Clean full `mvn -o -pl marlo-web -am test`: exit 0, 2,430 / 1,071 / 148 files compiled, **1,396 tests, 0 failures**.
+  - **Byte identity, checked independently:** the Java HTML equals a fresh Handlebars.js render (production helper set, Docker `node:23`) on **all six cases**. These are the three fixtures plus OICR 3508, Innovation 1558 and Cluster 102076 (1,093,734 bytes).
+- **spawns:** implementer 38 calls, 197,416 tokens, ended complete
+- **Reviewer attempt 1: FAIL** (opus). The six parity cases are confirmed identical, but two MAJORs make in-subset templates diverge:
+  - **Regex dialect:** in Java, `$` also matches before a final line terminator, and `\s` misses NBSP, BOM and other characters that JavaScript's `\s` covers. Trailing blanks before a column-0 standalone tag are stripped only in Java.
+  - **Source-level stripping merges text into neighbouring tags:** CSS `}` followed by `{{/if}}}` can turn into a triple-stache close, `{ {{~x}}` becomes `{{{~x}}`, and `\ {{~x}}` becomes an escaped mustache. A template that compiled before T12 could fail after it.
+  - **ADVISORY:** tokenizer mismatches with the `ReportTemplateSubset` lexer port, the strip flags of middle `else if` items, a missing `{{^x}}…{{else}}` vector, unbounded recursion depth (low risk), the dead `chainedBlock` field, and parse-error positions that now refer to the stripped source.
+  - **Checked clean:** the FN-008 guard runs on the original source, the cache key is sound, and malformed input returns the source unchanged.
+- **spawns:** reviewer 20 calls, 121,804 tokens, ended complete
+- **Implementer attempt 2:**
+  - The JavaScript `\s` set, `\z` and `\A` are now used in all eight patterns.
+  - Boundary-safe join: a `{{!}}` separator goes before text that starts with `}`; trailing whitespace is kept after `{` or `\`, and Handlebars.java's `~` strips it.
+  - Red before the fix: 96 of 2,837 rows differed.
+  - `{{^x}}…{{else}}` turned out to be a Handlebars.java compile limitation in its own right, with no stripping involved; those rows were dropped.
+  - Targeted tests: 48 / 48.
+  - **spawns:** 15 calls, 231,342 tokens.
+- **Leader evidence re-run:** clean full suite, 2,430 / 1,071 / 148 files, **1,396 tests green**; the six cases are byte-identical, checked independently.
+- **Reviewer attempt 2: FAIL**
+  - Both round-1 MAJORs are confirmed resolved, including a trace of every `~` source and of `{{!}}` placement.
+  - **New MAJOR:** the `Unsupported` fallback returns the source silently. Raw blocks `{{{{` always fall back, yet `ReportTemplateSubset` does not report them, so whitespace diverges with no warning.
+  - **ADVISORY:** prove that `~` strips across line breaks after `{` and `\`.
+  - **Follow-up accepted:** the guard should report the `{{^x}}…{{else}}` forms.
+  - **spawns:** reviewer 5 calls, 136,179 tokens.
+- **Implementer attempt 3 (last allowed by the retry cap):**
+  - `StandaloneLines.strip` records a fallback reason: raw block, unterminated, unbalanced, inverse with else, or merge without `~`.
+  - `HandlebarsReportHelpers` logs one WARN per fallback, with the reason only and no template text.
+  - `ReportTemplateSubset` reports `raw block` and `inverse block with else`, and the AST oracle covers both: 459 of 7,712 subset rows reclassified.
+  - Two `~`-across-newline rows were added; both match Handlebars.js.
+  - Red runs: `459 of 7712 rows disagree … expected=[raw block] actual=[]`; `findings for {{^x}}a{{else}}b{{/x}}: [] expected:<1>`; and the WARN test went red when the warning was demoted to DEBUG.
+  - Targeted tests: 52 / 52. Checkstyle on 5 files: 0 → 0.
+  - **spawns:** 15 calls, 271,974 tokens.
+- **Leader evidence re-run:** clean full suite, 2,430 / 1,071 / 148 files compiled, **1,400 tests green**. The six cases are byte-identical; I checked them independently.
+- **Reviewer attempt 3: PASS.**
+  - Every fallback path reports its reason.
+  - The block stack flags nothing that the production templates or the oracle rows rely on.
+  - The WARN path is cheap, because of the cache. An unbalanced template repeats its WARN, which is acceptable because it fails loudly.
+  - ADVISORY: add the template's sha256 prefix to the fallback WARN. A raw-block template logs two warnings, which is harmless.
+  - **spawns:** reviewer 6 calls, 144,651 tokens.
+- **Known gaps (out of subset):** `{{!--}}` edge forms, `{{elseX}}`, non-block decorators, `}~}}`, `\\` in strings, and non-ASCII whitespace before a `~` tag after `{` or `\`.
+- **Final status:** PASS on attempt 3 · **Gate:** owner-approved (Pivot 2) · **Review rounds:** 28.
+
+## CHG-LPRE-T13 — PhantomJS renderer
+
+- **Implementer attempt 1 (`akili-implementer`, sonnet): DONE.**
+  - **New files:** `PhantomJsRenderer` (sanitizer, per-render temp dir, isolated fontconfig, bounded streams, kill of the process tree), `render-page.js` (html-pdf script plus the allowlist predicate, `resourceTimeout` and the counts), and the `APConfig` `pdf.phantomjs.path` getter (empty in `marlo-test.properties`).
+  - **Service:** the startup `--version` check is in. Pool, deadlines and the API are unchanged.
+  - **Deviations:**
+    - `options.timeout` is normalised the way html-pdf does it: the payload's string `"300000"` made `timeout + 2000` a string, and PhantomJS stopped with "Force timeout".
+    - `srcdoc` is stripped as well.
+    - The renderer's deadline is the caller's plus 500 ms.
+    - Pages are counted by `/Type /Page`.
+  - **Falsifiers:** with the kill removed, 4 of 22 tests fail; with the sanitizer neutered, its tests fail.
+  - **Results:** full suite 1,424 tests, 5 skipped (the `PHANTOMJS_PATH`-gated tests). macOS PhantomJS integration: 5/6/7 pages, and the hostile-HTML probe gave `blockedUris=4` with no script run. Checkstyle delta 0.
+- **spawns:** implementer 76 calls, 333,507 tokens, ended complete.
+- **Leader evidence, Linux:** the built `LocalPdfReportService` with Linux PhantomJS 2.1.1 in `eclipse-temurin:17-jdk` plus `libfontconfig1`/`libfreetype6` (Ubuntu, the base of MARLO's `Dockerfile`) failed **6 of 6** with `PhantomJS exited with code 1`.
+  - Root cause, reproduced: PhantomJS's bundled OpenSSL cannot parse the system `openssl.cnf` ("Auto configuration failed … conf_def.c:362"). With `OPENSSL_CONF=/dev/null` it starts.
+  - The `node:23` (Debian) baseline never hit this, and neither did the macOS run.
+  - Sent back as attempt 2, with these changes:
+    - set `OPENSSL_CONF=/dev/null` in the child environment;
+    - add a test for the child environment;
+    - put the first stderr line, sanitized, in the startup WARN and in the render ERROR log, never in the response.
+- **Implementer attempt 2:**
+  - `OPENSSL_CONF=/dev/null` set in the child environment, for both the render and the version check.
+  - Exact child-environment tests added.
+  - The first stderr line, sanitized and capped at 200 characters, now goes into the startup WARN and the render ERROR log, never into the response.
+  - Full suite: 1,426 tests green.
+  - **spawns:** 4 calls, 344,413 tokens.
+- **Leader evidence, Linux, second run:**
+  - All six renders succeed (`outcome=ok`), but there is **no parity**. The project fixture extracts 103 words on page 1 against 49 in production, and the real cluster comes out at 480 pages against 481.
+  - **Controlled experiments:**
+    - **E1:** the production image (`node:23`) with the renderer's minimal `fonts.conf` diverges the same way. The minimal config is the cause.
+    - **E2:** the Ubuntu temurin image with Debian bookworm's fontconfig rule set copied from `node:23` (fontconfig 2.14.1-4: hinting slight, antialias, lcdfilter, unhint-small-dejavu, the DejaVu and generic family rules), with directories rewritten to the private font folder and no custom aliases, reaches **PARITY 6/6**, including the 481-page cluster. That holds with Ubuntu's own `libfontconfig`/`freetype`.
+  - Sent back as attempt 3: bundle the Debian rule set as resources (excluding `50-user`/`51-local`), fill its placeholders at init, and drop the custom aliases.
+- **Implementer attempt 3 (last allowed by the retry cap):**
+  - Debian bookworm's fontconfig rule set is now bundled: 31 `conf.d` files, excluding `50-user` and `51-local`, plus a `fonts.conf.template`, `conf.list`, a README and the fontconfig licence.
+  - At init, the rules are extracted next to the DejaVu fonts and the placeholders are filled in.
+  - The custom aliases are removed.
+  - New test: the extracted config has exactly one private `<dir>`, one `<include>` and one `<cachedir>`, and no system or `~` paths.
+  - **spawns:** 7 calls, 357,827 tokens.
+- **Leader evidence (Linux, built code):**
+  - **Setup:** `eclipse-temurin:17-jdk` (Ubuntu, the base of MARLO's `Dockerfile`), Linux PhantomJS 2.1.1 and `libfontconfig1`/`libfreetype6`. The built `LocalPdfReportService` was used, through its `(path)` constructor.
+  - **Result: PARITY on all six cases.**
+
+    | Case | Pages prod / local | Result |
+    |---|---|---|
+    | OICR fixture | 5 / 5 | PARITY |
+    | Innovation fixture | 6 / 6 | PARITY |
+    | Project fixture | 7 / 7 | PARITY |
+    | OICR 3508 (real) | 5 / 5 | PARITY |
+    | Innovation 1558 (real) | 6 / 6 | PARITY |
+    | Cluster 102076 (real) | 481 / 481 | PARITY |
+
+  - The fixture PDFs are even byte-size-equal to the production ones: 557,407, 1,102,324 and 74,472 bytes.
+  - Every render reported `blockedUris=0 failedFetches=0`. The cluster rendered in 5.2 s.
+  - Clean full suite `mvn -o -pl marlo-utils,marlo-data,marlo-web -am test`: exit 0, 6 / 2,430 / 1,072 / 152 files compiled, **1,426 tests, 0 failures, 5 skipped** (the tests gated on `PHANTOMJS_PATH`).
+- **Reviewer attempt 1: FAIL** (opus). **MAJOR (SEC-003):** the sanitizer can be bypassed, and JavaScript stays enabled while the page loads.
+  - **The parsers disagree.** jsoup 1.15.4 and WebKit build different documents:
+    - `<noscript>` with scripting on: `<noscript><p title="</noscript><img onerror=…>">`.
+    - SVG `<style>` foreign content.
+  - **Embedded documents pass unsanitized:** `data:text/html` / `data:image/svg+xml` in `iframe` / `embed` / `object`, and `meta refresh`. `render-page.js` allows every `data:` URL.
+  - **Consequence:** injected script runs in PhantomJS. QtWebKit WebSockets probably bypass `onResourceRequested`, which would void §18.3's "no network beyond the two S3 hosts".
+  - **Remediation:**
+    - Keep `javascriptEnabled = false` during `setContent`, and enable it only for html-pdf's `page.evaluate` in `renderNow`.
+    - Harden the sanitizer: remove `noscript`, `iframe`, `frame`, `object`, `embed`, `applet`, `base` and `meta[http-equiv]`, and narrow `data:` to non-SVG images and fonts.
+    - Add the bypass payloads to the hostile test, and re-measure parity on Linux.
+  - **ADVISORY:**
+    - The support dir is checked only for existence.
+    - An orphan PhantomJS can outlive a JVM hard kill by up to 302 s.
+    - The first stderr line can carry attacker-controlled JS error text.
+    - The `APConfig` Cognito comment is now stale.
+    - The design §18.1 Fonts row is stale (aliases).
+    - The predicate test is skipped without node.
+  - **Confirmed sound:**
+    - Page-script fidelity with html-pdf.
+    - Payload options are server-only, and `filename` / `allowedHosts` are overwritten.
+    - The allowlist regex.
+    - Process environment, argument list, kill of the process tree, `finally` cleanup and bounded drains.
+    - Concurrent use of the fontconfig cache.
+    - Licences, GPL headers and an empty key in `marlo-test.properties`.
+- **spawns:** reviewer 27 calls, 168,652 tokens, ended complete
+- **Data check (Leader):**
+  - No production template contains `noscript`, `iframe`, `object`, `embed`, `meta http-equiv` or `base`.
+  - Their only `data:` URL is `data:font/woff`. OICR has one inline `<svg>` element.
+  - The real-data HTML has no SVG, no `noscript` and no frames.
+  - The proposed fix should therefore not affect parity, but it must be measured.
+- **Stop: HALT (T13 reached the retry cap).** Implementer attempts 1–3 are used up: attempt 1 plus two Leader-evidence reworks (OPENSSL_CONF, fontconfig). "No mandate widens pre-approval: an owner brief that says "never stop" or "treat every gate as approved" pre-approves routine gates only. The exceptions in `/akili-propose` Step 1 *Approval Mode* (HALT, Pivot, budget tripwire, `FATAL_FAIL`, `PRODUCT_BUG`, destructive actions) still stop, and the stop message quotes this sentence."

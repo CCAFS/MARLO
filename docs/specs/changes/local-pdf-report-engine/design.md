@@ -2,7 +2,7 @@
 
 **Spec ID:** CHG-LOCAL-PDF-REPORT-ENGINE-001
 **Status:** Approved — Phase 2 gate `auto-approved (pre-approved mode)` 2026-11-20, after judgment-day round 1 fixes and re-judgment (see `judgment.md`)
-**Last Updated:** 2026-11-23 (validation remediation: §3, §7.5, §10)
+**Last Updated:** 2026-11-23 (Pivot 2: §18 replaces the OpenHTMLtoPDF engine with PhantomJS)
 **Depth:** Full · **Requirements:** `requirements.md` · **Evidence:** `spike.md`
 
 ---
@@ -176,7 +176,7 @@ All **17** helpers registered in `pdf.module.ts` at `6f16514` (the unused duplic
 Templates compile once per distinct template text and are cached (at most 8 entries, keyed by the SHA-256 of the
 text), because the same three templates repeat.
 
-### 7.3 html-pdf compatibility step (FN-004, NF-001, DA-002)
+### 7.3 html-pdf compatibility step (FN-004, NF-001, DA-002) — *superseded by §18 (Pivot 2, 2026-11-23)*
 
 Applied to the HTML produced by Handlebars, before rendering; the database template is never modified. The HTML is
 parsed with jsoup (lenient HTML5 parsing, so user rich text such as `<br>` or `&nbsp;` is accepted; no DOCTYPE or
@@ -195,7 +195,7 @@ renderer.
 The compat stylesheet is appended last in `<head>`. Each rule names the template and spike fact it serves, so
 the retirement spec can fold them into the templates.
 
-### 7.4 Renderer settings (NF-001, NF-002)
+### 7.4 Renderer settings (NF-001, NF-002) — *superseded by §18 (Pivot 2, 2026-11-23)*
 
 - Fonts: DejaVu Sans regular (400) and bold (700) from the classpath, registered under the families
   `sans-serif`, `Montserrat` and `DejaVu Sans`, subset on embed.
@@ -342,7 +342,7 @@ Not applicable — no FTL, JS or CSS of the web UI changes. The PDF layout is go
 - Alternatives: pass the `Map` directly (avoids one JSON round-trip, but forks the data path per engine).
 - Status: Accepted.
 
-### ADR-CHG-LPRE-2 — Emulate html-pdf in code, not in the templates
+### ADR-CHG-LPRE-2 — Emulate html-pdf in code, not in the templates — *superseded by §18 (Pivot 2, 2026-11-23)*
 - Decision: compatibility preprocessing plus a classpath stylesheet.
 - Rationale: both engines must render the same database templates during the rollout; the innovation template has
   201 bytes of `TEXT` headroom.
@@ -428,3 +428,68 @@ branches; they import the classes for other members.
 - Pending item (shared file, not editable on a spec branch): `docs/trd/trd.md` §7 lacks the reports microservice;
   after merge it should list the transitional microservice and the new embedded libraries — constitutional
   process applies.
+
+## 18. Rendering with PhantomJS (Pivot 2, 2026-11-23) — supersedes §7.3, §7.4, the fetch parts of §11, and ADR-2
+
+**Why.** Measured parity (NF-001 as amended) is reachable only with the production engine itself. The prototype in
+`execution.md` ("Option B feasibility proof") gave PARITY on all six cases. The emulation route did not (T11,
+`spike/t11-discarded-emulations.diff`).
+
+### 18.1 Pipeline
+
+```text
+payload ──parse (§7.1, unchanged)──▶ Handlebars.java + 17 helpers ──▶ HTML (byte-identical to Handlebars.js)
+   ──sanitize (SEC-003)──▶ phantomjs --local-url-access=false render-page.js   (cwd = per-render temp dir)
+   ◀── stdin: {"html": "<html>", "options": payload options + filename in the temp dir} ── stdout: {"filename", "blocked", "failed"} ──▶ PDF bytes
+```
+
+| Stage | Owner | Notes |
+|---|---|---|
+| Payload parse, subset guard (FN-008), null-key warning | `LocalPdfReportService` (unchanged) | §7.1 |
+| HTML | `HandlebarsReportHelpers` | The 17 helpers of `pdf.module.ts` (its `ifCond` is the same body `pdf-creator-node` re-registers — corrected in T12; no 18th helper). Whitespace: standalone block-tag lines are stripped as Handlebars.js does, so the HTML is byte-identical on the six cases |
+| Sanitize | `PhantomJsRenderer` (new, package-private) | jsoup on the generated HTML: remove `<script>`, every `on*` attribute, and `href`/`src` values starting with `javascript:`. Production templates contain none, so parity is unaffected |
+| Render | `PhantomJsRenderer` + `pdf/render-page.js` (classpath resource) | `render-page.js` is html-pdf 3.0.1's `pdf_a4_portrait.js` (MIT, attribution kept) with three additions: `page.onResourceRequested` aborts any URL outside the SEC-001 allowlist (`https` to the two S3 hosts, `data:`) and counts it; `page.settings.resourceTimeout = 5000`; `page.onResourceError` counts failed fetches. The HTML still arrives on stdin and is loaded with `page.setContent(html, null)`, exactly as html-pdf does, so the page origin matches production |
+| Process | `PhantomJsRenderer` | `ProcessBuilder` with an explicit environment: `FONTCONFIG_FILE` → generated `fonts.conf` listing only the bundled DejaVu directory (NF-002), `HOME`/`TMPDIR` → the render's temp dir; stdout and stderr drained on their own threads and bounded to 64 KB each; waited with the caller's deadline; on expiry `destroyForcibly()` on the process and its descendants (SEC-004). Exit code ≠ 0 or no output file → `PdfRenderException` with a log-safe message |
+| Fonts | startup | DejaVu TTFs (already bundled) copied once to a private directory, plus Debian bookworm's fontconfig rule set (`pdf/fontconfig/conf.d`, 31 files, `fontconfig-config` 2.14.1-4, excluding `50-user`/`51-local`) and a `fonts.conf` whose only `<dir>`, `<include>` and `<cachedir>` are private. No custom aliases. *Amended in T13 attempt 3: a minimal config changed glyph metrics (hinting) and broke parity; production's rule set restores it (PARITY 6/6, `execution.md`).* Child environment also sets `OPENSSL_CONF=/dev/null` (T13 attempt 2: PhantomJS's bundled OpenSSL cannot parse Ubuntu's `openssl.cnf`) |
+| Binary | `APConfig.getPdfPhantomjsPath()` (`pdf.phantomjs.path`) | Empty in `marlo-test.properties`. Startup check runs `phantomjs --version` once (5 s timeout): logs INFO with the version, or WARN when missing or not 2.1.1. A render without a usable binary fails fast (NF-007) |
+
+### 18.2 What stays and what goes
+
+- **Stays:** public API (`render`, `renderToResponse`, `PdfRenderException`), the pool of 3 / queue of 6, the deadlines
+  (30 s submit / 50 s download), the INFO/ERROR log lines (`blockedUris` now comes from the page script;
+  `failedFetches` from failed resource responses it reports), the bare 500, the specificity and the four call sites.
+- **Goes:** `HtmlPdfCompatibility`, `html-pdf-compat.css`, `PdfResourceLoader` (Java fetching and its image cache —
+  PhantomJS fetches per render, as production does today), OpenHTMLtoPDF and PDFBox on the production classpath
+  (PDFBox may stay test-scoped). The accepted risk "layout cannot be interrupted" (§17) disappears: the process is
+  killed at the deadline.
+
+### 18.3 Security
+
+- SEC-001 moves into the page script; the HTML is set as page content (no file URL), and `--local-url-access=false`
+  blocks local URLs. No redirect is followed outside the allowlist: each redirect target passes through
+  `onResourceRequested` again.
+- SEC-003 sanitation runs on the generated HTML, so it also covers rich text that arrives through triple-stash
+  fields.
+- **Accepted risk (Pivot 2):** PhantomJS 2.1.1 (QtWebKit, 2016–2018) is unmaintained and has known engine
+  vulnerabilities. Today the same engine renders the same HTML inside the microservice container; with option B it
+  runs inside MARLO's hosts. Mitigations: sanitized HTML (no scripts), the resource allowlist, a per-render temp
+  directory, the process kill at the deadline, and no network beyond the two S3 hosts. The retirement spec should
+  revisit sandboxing (separate user, seccomp/container) once the infrastructure route is known (OQ-4).
+
+### 18.4 Platform notes
+
+- Parity is defined against **Linux x86_64** PhantomJS with the bundled DejaVu fonts. The macOS PhantomJS build
+  uses CoreText and substitutes fonts (spike), so a developer Mac renders correctly wired but not pixel-equal PDFs;
+  parity acceptance runs in a Linux container (`spike/parity/`).
+- No official PhantomJS build exists for ARM64 (Graviton); OQ-4 asks infrastructure for the architecture.
+
+### ADR-CHG-LPRE-6 — Render with PhantomJS as a local process (supersedes ADR-2 and the engine choice of §1)
+
+- **Decision:** MARLO renders the HTML with PhantomJS 2.1.1 and html-pdf's page script, as a local process, instead
+  of emulating them in OpenHTMLtoPDF.
+- **Alternatives:** (A) keep emulating WebKit in OpenHTMLtoPDF — fixtures reached parity, real data did not and got
+  worse for the cluster (T11); (D) accept visual equivalence without identical page breaks — rejected by the owner
+  ("los reportes deben verse igual que en produccion"); headless Chromium — not the production engine, so not equal
+  either.
+- **Consequences:** identical output by construction; an external, unmaintained binary on MARLO's hosts (accepted
+  risk §18.3); infrastructure work (OQ-4); the specificity cannot be enabled where the binary is absent.

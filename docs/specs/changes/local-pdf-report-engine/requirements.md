@@ -47,12 +47,15 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
   identical input.
 - **CHG-LPRE-FN-003** — The local engine MUST provide every Handlebars helper that `reports-microservice`
   registers (`pdf.module.ts`), with the same results for the same inputs, for templates within the supported
-  template subset (`design.md` §7.1). *Amended 2026-11-23 (Pivot, owner-approved).*
+  template subset (`design.md` §7.1). *Amended 2026-11-23 (Pivot, owner-approved).* *Pivot 2:* the production
+  pipeline's `pdf-creator-node` re-registers `ifCond` with the same body as `pdf.module.ts` (*corrected in T12: not an
+  18th helper — the 17 already include it*), and the HTML the local engine produces MUST be byte-identical to Handlebars.js output for the six parity cases (NF-001).
 - **CHG-LPRE-FN-008** — The system MUST detect constructs outside the supported template subset: a test MUST fail
   when a production template uses one, and a render MUST log a warning naming them. *Added 2026-11-23 (Pivot).*
 - **CHG-LPRE-FN-004** — The local engine MUST reproduce html-pdf's page model: A4 portrait, header and footer
   heights taken from `options.header.height` / `options.footer.height`, `#pageHeader` / `#pageFooter` repeated on
-  every page, and `#pageHeader-1` / `#pageFooter-1` (or `-first`) replacing them on page 1.
+  every page, and `#pageHeader-1` / `#pageFooter-1` (or `-first`) replacing them on page 1. *Pivot 2 (2026-11-23, owner-approved option B — design §18).* Met by running
+  html-pdf's own PhantomJS page script, not by emulation.
 - **CHG-LPRE-FN-005** — When the engine-selection specificity is on for the user's Global Unit, downloading an OICR,
   Innovation or Cluster summary MUST return the locally rendered PDF in the same response, with the same content
   type and file name as today.
@@ -65,15 +68,28 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 
 - **CHG-LPRE-NF-001** — Each of the three templates rendered from the reference data MUST have the same page
   count as the production PhantomJS render, and a reviewer MUST accept the side-by-side comparison (`spike.md`).
+  *Amended 2026-11-23 (owner: "los reportes deben verse igual que en produccion"):* the local render MUST match the
+  production render, measured by `spike/parity/compare.py` against the production pipeline in Docker
+  (`spike/parity/prod-render.js`): (1) same page count; (2) the same words on every page, so page breaks fall in
+  the same place; (3) every word within ±3 pt of its production position; (4) the same extracted text — no
+  ligature glyphs production does not emit. Generation timestamps are ignored. It applies to the three reference
+  fixtures **and** to real-data renders of the same three reports. Pixel identity is not required: the engines
+  differ.
 - **CHG-LPRE-NF-002** — Text MUST render in DejaVu Sans regular/bold (the production font), with the
-  characters the font covers rendered rather than replaced.
+  characters the font covers rendered rather than replaced. *Pivot 2 (2026-11-23, owner-approved option B — design §18).* PhantomJS MUST see only the bundled DejaVu fonts
+  (an isolated fontconfig), whatever fonts the host has installed.
 - **CHG-LPRE-NF-003** — Concurrent local renders MUST be capped; a request that cannot start a render within a
   bounded wait MUST fail rather than queue indefinitely.
-- **CHG-LPRE-NF-004** — Every remote fetch made during a render MUST have connect and read timeouts.
+- **CHG-LPRE-NF-004** — Every remote fetch made during a render MUST have connect and read timeouts. *Pivot 2 (2026-11-23, owner-approved option B — design §18).* PhantomJS's
+  per-resource timeout (5 s) and the render's process deadline bound every fetch.
 - **CHG-LPRE-NF-005** — The submission path MUST keep the time bound set by `bugfix/submit-unsubmit-email-defects`:
   the submit is never blocked indefinitely by PDF generation.
 - **CHG-LPRE-NF-006** — New dependencies MUST NOT change the versions of libraries MARLO already resolves
-  (SLF4J API, Commons Logging, ASM) and MUST NOT downgrade any dependency (Hard rule 11).
+  (SLF4J API, Commons Logging, ASM) and MUST NOT downgrade any dependency (Hard rule 11). *Pivot 2 (2026-11-23, owner-approved option B — design §18).* OpenHTMLtoPDF and
+  PDFBox leave the production classpath (PDFBox may stay test-scoped for PDF assertions).
+- **CHG-LPRE-NF-007** — The PhantomJS binary path MUST come from configuration (`pdf.phantomjs.path`, empty in
+  the tracked template). Its availability and version (2.1.1) MUST be checked once at startup and logged; when it is
+  missing, a flag-on render MUST fail fast with the generic 500 (SEC-002), never hang and never fall back silently. *Pivot 2 (2026-11-23, owner-approved option B — design §18).*
 
 ### Data
 
@@ -92,6 +108,11 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
   reaches the template through triple-stash fields, so any URL in it is untrusted.
 - **CHG-LPRE-SEC-002** — A render failure MUST NOT expose template source, stack traces or internal URLs to the
   user.
+- **CHG-LPRE-SEC-003** — Before PhantomJS loads the HTML, `<script>` elements, `on*` event attributes and
+  `javascript:` URLs MUST be removed from it (the production templates contain none; user rich text could). PhantomJS
+  MUST run with local URL access off, and its page script MUST abort every request outside SEC-001's allowlist. *Pivot 2 (2026-11-23, owner-approved option B — design §18).*
+- **CHG-LPRE-SEC-004** — Each render MUST run in its own temporary directory, removed afterwards, and the
+  PhantomJS process MUST be killed when the render's deadline expires. *Pivot 2 (2026-11-23, owner-approved option B — design §18).*
 
 ### Operations
 
@@ -106,6 +127,9 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 - The AI summary Lambda (`summary.microservice.url`); the Pentaho, iText and POI reports.
 - Redesigning the PDFs; changing the data the summary actions build.
 - Editing `docs/trd/trd.md` (constitutional document) — recorded as a pending item.
+- Installing PhantomJS 2.1.1 and `fontconfig`/`freetype` on the deployed environments, or adding them to the
+  `Dockerfile`: governed infrastructure work (`docs/infrastructure.md`), handed to the infrastructure team with the
+  questions in OQ-4. Until then the specificity stays `'false'` everywhere. *Pivot 2 (2026-11-23, owner-approved option B — design §18).*
 
 ## 5. Personas Affected
 
@@ -157,6 +181,8 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 - **AC-FN-007** — Given the flag is off, when any of the paths runs, then the microservice methods are called as
   before and the local engine is not.
 - **AC-NF-001** — Rendering the three templates with the reference data yields 5 / 6 / 7 pages respectively.
+  *Amended 2026-11-23:* and `spike/parity/run.sh` reports `PARITY` for each of the three fixtures and for the
+  real-data payloads captured from the local AICCRA copy (OICR 3508, Innovation 1558, Cluster 102076).
 - **AC-NF-003** — Given the concurrency cap is reached, when a further render waits past the bound, then it fails
   with a logged error and no PDF.
 - **AC-SEC-001** — Given rich text containing `<img src="file:///etc/passwd">`, `http://169.254.169.254/` or an
@@ -206,6 +232,7 @@ available as the fallback.
 | OQ-1 | Jira ticket and parent epic for this work | No — traceability only |
 | OQ-2 | Who owns the CLARISA MIS connection and the Amazon MQ queue, and who tells them at retirement | No — retirement spec |
 | OQ-3 | Keep or delete PDFs already in bucket `microservice-reports` | No — retirement spec |
+| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and `fontconfig`/`freetype`; who owns it | No for the code — yes for enabling the specificity anywhere |
 
 ## 9. Decision Log
 
@@ -241,3 +268,18 @@ available as the fallback.
 - 2026-11-23 — **No reason text on the failure 500 (validation F1).** The fixed English sentence is removed rather
   than i18n-keyed: the response is Tomcat's error page, which MARLO does not localize, and the null-service branch
   already answers a bare 500 (Hard rule 8, UI-001). Implemented in T10.
+- 2026-11-23 — **Layout parity raised from "same page count + reviewer acceptance" to measured parity (owner).**
+  The owner did not accept the layout differences of T07 ("los reportes deben verse igual que en produccion")
+  and approved T11 with the criterion proposed by the Leader (same pages, same words per page, ±3 pt, same text)
+  and a raised budget. Pixel identity is explicitly out of reach (different layout engines); the measurement
+  replaces the eyeball review. First measurement: 0 of 3 fixtures at parity (`execution.md` T11).
+- 2026-11-23 — **Pivot 2 (owner-approved option B): render with PhantomJS itself, run by MARLO as a local
+  process.** Reason: T11 showed that emulating PhantomJS's WebKit layout inside OpenHTMLtoPDF matches the fixtures
+  but not real data (the 481-page cluster came out 478 pages, worse than before T11), and each data set revealed new
+  divergences. A throwaway prototype — Java Handlebars HTML handed to html-pdf/PhantomJS 2.1.1 — reached **PARITY on
+  all six cases**, including the 481-page cluster (`execution.md` "Option B feasibility proof"). Consequences: the
+  OpenHTMLtoPDF engine, the html-pdf compatibility step and the Java resource loader are retired; MARLO depends on an
+  unmaintained external binary (PhantomJS 2.1.1, last release 2018) that the infrastructure team must install (OQ-4);
+  the principle "no infrastructure change" (proposal, design ADR-2) is withdrawn. T11's emulation code was discarded
+  unmerged (`spike/t11-discarded-emulations.diff`). Owner words: "sí, sigue con B y haz primero la prueba de paridad",
+  then "sí, sigue con las tres".

@@ -343,3 +343,64 @@ compare with the flag off.
 - **Review:** `full`.
 - **Skills:** `error-handling-patterns`, `tdd`, `marlo-verify`.
 - **Done when:** tests green; the validation re-check clears F1, W1 and W5.
+
+### CHG-LPRE-T11 — Layout parity with production (NF-001 as amended)
+- **Status:** [-] superseded by Pivot 2 (2026-11-23) — emulation code discarded unmerged (`spike/t11-discarded-emulations.diff`); NF-001 is now delivered by T12–T15
+- **Origin:** owner did not accept NF-001 (2026-11-23, "los reportes deben verse igual que en produccion"); T11 approved with the measured criterion ("sí, haz el commit de T10 y sigue con T11").
+- **Depends on:** T03, T04, T10
+- **Module:** marlo-web
+- **Requirements:** NF-001 (amended), NF-002, DA-002 · **Design:** §7.3, §7.4
+- **Files touched:** `utils/pdf/HtmlPdfCompatibility.java`, `src/main/resources/pdf/html-pdf-compat.css`, `utils/pdf/LocalPdfReportService.java` (renderer settings only), their tests; `spike/parity/*` (measurement harness, Leader-owned oracle — the Implementer does not edit `compare.py`).
+- **Scope:** make `spike/parity/run.sh` report `PARITY` for the three fixtures, then for the real-data payloads. Root causes measured at the start (`execution.md` T11): horizontal drift growing along a line (≈ +1–2 % word advance: the 27 dots-per-pixel residual and/or kerning); vertical drift accumulating down the page in OICR / innovation (line height or block margins), which moves page breaks; project pages 2+ body +35.8 pt (header band height); project cover badges wrap; ligature glyphs (`ﬁ`, `ﬃ`) production does not emit. **Templates stay untouched** (DA-002): fixes go into the compatibility step, the compatibility stylesheet or renderer settings, local engine only.
+- **Tests:** keep the existing suites green; a unit test per emulation added (as T03 did for F4–F9). The parity run itself is the acceptance evidence (Docker, not part of `mvn test`).
+- **Verification:** `spike/parity/run.sh` on the three fixtures → `PARITY` ×3 (Leader re-runs it independently); clean compile; full `-am` suite; Checkstyle delta; hygiene. Real-data payloads: Leader captures and runs them (needs the app and a throwaway database).
+- **Falsifier:** removing each new emulation makes its fixture leave parity.
+- **Review:** `full`.
+- **Skills:** `systematic-debugging`, `marlo-verify`.
+- **Done when:** `PARITY` for the three fixtures and the three real-data payloads, or a measured residual the owner accepts.
+
+---
+
+## Pivot 2 tasks (2026-11-23, option B — design §18, ADR-CHG-LPRE-6)
+
+### CHG-LPRE-T12 — Handlebars HTML byte-identical to production (standalone lines; `ifCond` check)
+- **Status:** [x]
+- **Depends on:** T02
+- **Module:** marlo-web
+- **Requirements:** FN-003 (Pivot 2 amendment) · **Design:** §18.1 (HTML row)
+- **Files touched:** `utils/pdf/HandlebarsReportHelpers.java`, `HandlebarsReportHelpersTest.java`, `src/test/resources/pdf/helper-vectors.json` (regenerated), `spike/helper-vectors-generator/*` (add `ifCond` rows and whitespace rows).
+- **Scope:** *(corrected in T12: `ifCond` is already one of the 17 helpers of `pdf.module.ts`, same body as `pdf-creator-node`'s, already registered and covered by vectors — confirm, do not add)* register `ifCond` with the semantics of `pdf-creator-node/index.js` (operators `==`, `===`, `!=`, `!==`, `<`, `<=`, `>`, `>=`, `&&`, `||`, default → inverse; JS loose/strict semantics as in T02); make standalone block-tag lines strip as Handlebars.js does (Handlebars.java option or equivalent), so the generated HTML is byte-identical to Handlebars.js. Update `ReportTemplateSubset`'s known-helper list if it has one.
+- **Tests:** vectors regenerated with real Handlebars.js (including `ifCond` and multi-line block templates); a test asserting byte-identical HTML for the three fixture templates against Handlebars.js output stored as test resources (generated once by the vector generator, command recorded).
+- **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest='HandlebarsReportHelpersTest,ReportTemplateSubsetTest,LocalPdfReportServiceTest'`; Leader re-checks byte identity on the six parity cases (three are real data, scratchpad only).
+- **Falsifier:** unregister `ifCond` → its vectors fail; disable standalone stripping → the byte-identity test fails.
+- **Review:** `full`. **Skills:** `tdd`, `marlo-verify`.
+
+### CHG-LPRE-T13 — PhantomJS renderer (process, page script, fonts, sanitizer, configuration)
+- **Status:** [ ]
+- **Depends on:** T12
+- **Module:** marlo-utils (config getter), marlo-web
+- **Requirements:** FN-004, NF-002, NF-003, NF-004, NF-005, NF-007, SEC-001, SEC-002, SEC-003, SEC-004, OPS-001 · **Design:** §18
+- **Files touched:** `marlo-utils/.../utils/APConfig.java` (`pdf.phantomjs.path` getter), `marlo-web/src/main/resources/config/marlo-test.properties` (key, empty value), `utils/pdf/PhantomJsRenderer.java` (new, GPL header, package-private), `src/main/resources/pdf/render-page.js` (new; html-pdf 3.0.1 script, MIT attribution), `utils/pdf/LocalPdfReportService.java` (switch the render step; startup check; log fields), tests.
+- **Scope:** design §18.1 exactly: sanitize → spawn PhantomJS with `--local-url-access=false` and an explicit environment (isolated `FONTCONFIG_FILE`, temp `HOME`/`TMPDIR`), stdin JSON `{html, options}` as html-pdf sends it, stdout JSON `{filename, blocked, failed}`, bounded stream draining, deadline → kill process tree, temp dir removed in `finally`; startup `--version` check; missing binary → fast `PdfRenderException` (generic 500). Pool, deadlines, logging, public API unchanged.
+- **Tests:** unit tests with a fake executable (a small shell script written to a temp dir in the test) for: success, exit ≠ 0, no output file, hang past the deadline (process killed, temp dir removed), oversized stdout, missing binary (fast failure + generic 500 via `renderToResponse`); sanitizer tests (`<script>`, `onload=`, `javascript:` removed; normal markup untouched); allowlist tests of `render-page.js`'s URL predicate (extracted as a pure function and exercised via the fake or a JS-free mirror). Integration test that runs only when `PHANTOMJS_PATH` is set (skipped otherwise) rendering the three fixtures.
+- **Verification:** targeted tests; clean compile (`marlo-utils` included); Checkstyle delta; hygiene; Leader runs the integration test in a Linux x86_64 container with PhantomJS 2.1.1.
+- **Falsifier:** remove the kill on deadline → the hang test exceeds its timeout; remove the sanitizer → its tests fail.
+- **Review:** `full`. **Skills:** `error-handling-patterns`, `tdd`, `marlo-verify`.
+
+### CHG-LPRE-T14 — Retire the OpenHTMLtoPDF path
+- **Status:** [ ]
+- **Depends on:** T13
+- **Module:** marlo-parent, marlo-web
+- **Requirements:** NF-006 (Pivot 2) · **Design:** §18.2
+- **Files touched:** `marlo-parent/pom.xml`, `marlo-web/pom.xml` (remove OpenHTMLtoPDF; PDFBox test-scoped if tests need it), delete `HtmlPdfCompatibility.java`, `PdfResourceLoader.java`, `html-pdf-compat.css` and their tests; adapt `LocalPdfReportServiceTest` to the PhantomJS renderer (fake binary).
+- **Scope:** no dead code left; `mvn dependency:tree` before/after recorded (no other version changes); the bundled DejaVu fonts stay (used by fontconfig).
+- **Verification:** clean compile; full `-am` suite; Checkstyle delta; hygiene; dependency tree diff.
+- **Falsifier:** `grep -r openhtmltopdf marlo-web/src/main` → 0.
+- **Review:** `full`. **Skills:** `marlo-verify`.
+
+### CHG-LPRE-T15 — Acceptance: measured parity with the real code, live wiring, documentation
+- **Status:** [ ]
+- **Depends on:** T14
+- **Requirements:** NF-001 (amended), FN-005–FN-007, SEC-001, SEC-003 · **Design:** §18.4, §13
+- **Scope:** (1) Leader runs `LocalPdfReportService` (built code) with PhantomJS 2.1.1 in a Linux x86_64 container on the six cases and `spike/parity/compare.py` → PARITY ×6; (2) live wiring check on the developer Mac (macOS PhantomJS: wiring and log lines only, parity not expected — §18.4); (3) one SSRF probe: rich text with a non-allowlisted image and a `<script>` → blocked count > 0, no fetch, no script effect; (4) update `spike/parity/` (a `LocalRender` that uses the configured binary), `execution.md`, the validation re-run.
+- **Done when:** PARITY ×6 with the built code; live downloads `outcome=ok`; probe blocked.
