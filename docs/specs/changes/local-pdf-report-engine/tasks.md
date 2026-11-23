@@ -376,7 +376,7 @@ compare with the flag off.
 - **Review:** `full`. **Skills:** `tdd`, `marlo-verify`.
 
 ### CHG-LPRE-T13 — PhantomJS renderer (process, page script, fonts, sanitizer, configuration)
-- **Status:** [ ]
+- **Status:** [x]
 - **Depends on:** T12
 - **Module:** marlo-utils (config getter), marlo-web
 - **Requirements:** FN-004, NF-002, NF-003, NF-004, NF-005, NF-007, SEC-001, SEC-002, SEC-003, SEC-004, OPS-001 · **Design:** §18

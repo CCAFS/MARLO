@@ -222,6 +222,10 @@ public class APConfig {
   private String OTP_TRUSTED_PROXIES;
   @Value("${otp.smtp.timeout.ms:}")
   private String OTP_SMTP_TIMEOUT_MS;
+  // CHG-LPRE-NF-007 -- local PDF report engine: path of the PhantomJS 2.1.1 executable. Empty-default form for the
+  // same reason as the fields above: environments without the binary must still start.
+  @Value("${pdf.phantomjs.path:}")
+  private String PDF_PHANTOMJS_PATH;
 
   public APConfig() {
   }
@@ -828,6 +832,15 @@ public class APConfig {
       return "";
     }
     return TURNSTILE_SITE_KEY.trim();
+  }
+
+  /**
+   * Path of the PhantomJS executable the local PDF report engine runs ({@code pdf.phantomjs.path}).
+   *
+   * @return the path, or an empty string when none is configured.
+   */
+  public String getPdfPhantomjsPath() {
+    return PDF_PHANTOMJS_PATH == null ? "" : PDF_PHANTOMJS_PATH.trim();
   }
 
   public String getSummaryMicroserviceURL() {

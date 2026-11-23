@@ -470,6 +470,12 @@ payload ──parse (§7.1, unchanged)──▶ Handlebars.java + 17 helpers ─
   `onResourceRequested` again.
 - SEC-003 sanitation runs on the generated HTML, so it also covers rich text that arrives through triple-stash
   fields.
+- **Measured in T13 (2026-11-23):** JavaScript cannot be disabled for `setContent` in PhantomJS 2.1.1, and QtWebKit
+  WebSockets bypass `onResourceRequested` (a spy server received a WebSocket even with the page-script allowlist).
+  The Java sanitizer (SEC-003: scripts, `on*`, `javascript:`, embedded documents, `noscript`, foreign content, `base`,
+  `meta[http-equiv]`, `data:` narrowed to non-SVG images and fonts) is therefore the barrier against script; with it,
+  11 hostile payloads produced no request and no content change. **Recommended second layer (OQ-4):** restrict network
+  egress of the PhantomJS process to the two S3 hosts (firewall / dedicated user / container network policy).
 - **Accepted risk (Pivot 2):** PhantomJS 2.1.1 (QtWebKit, 2016–2018) is unmaintained and has known engine
   vulnerabilities. Today the same engine renders the same HTML inside the microservice container; with option B it
   runs inside MARLO's hosts. Mitigations: sanitized HTML (no scripts), the resource allowlist, a per-render temp

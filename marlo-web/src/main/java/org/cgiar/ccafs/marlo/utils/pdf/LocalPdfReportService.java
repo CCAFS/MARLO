@@ -15,12 +15,10 @@
 
 package org.cgiar.ccafs.marlo.utils.pdf;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import org.cgiar.ccafs.marlo.utils.APConfig;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -41,9 +39,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,29 +53,22 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.HandlebarsError;
 import com.github.jknack.handlebars.HandlebarsException;
 import com.github.jknack.handlebars.Template;
-import com.openhtmltopdf.extend.FSStream;
-import com.openhtmltopdf.extend.FSStreamFactory;
-import com.openhtmltopdf.extend.FSSupplier;
-import com.openhtmltopdf.outputdevice.helper.BaseRendererBuilder.FontStyle;
-import com.openhtmltopdf.pdfboxout.PdfBoxRenderer;
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
-import com.openhtmltopdf.util.XRLog;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Renders a MARLO report to PDF inside the application, from the same JSON payload the summary actions already send
- * to the reports microservice (CHG-LPRE-FN-001, FN-002, design sections 7.1, 7.4, 7.5 and 10): Handlebars fills the
- * template, {@link HtmlPdfCompatibility} reshapes the HTML the way html-pdf did, and OpenHTMLtoPDF renders it with the
- * bundled DejaVu fonts.
+ * to the reports microservice (CHG-LPRE-FN-001, FN-002, design sections 7.1, 7.5, 10 and 18): Handlebars fills the
+ * template and {@link PhantomJsRenderer} turns the HTML into a PDF with PhantomJS 2.1.1 and html-pdf's page script,
+ * the engine of the microservice, as a local process.
  * <p>
  * It is a container singleton shared by concurrent requests and holds no per-request state. Renders run on a
  * dedicated pool of {@value #POOL_SIZE} daemon threads with a queue of {@value #QUEUE_CAPACITY}; a full queue fails
  * the call at once, and a caller that waits longer than its deadline gets a {@link PdfRenderException} (the task is
- * cancelled and removed from the queue). Both are logged at ERROR, as every failed render is. Layout cannot be
- * interrupted, so a render that finishes after its caller gave up logs a warning with its total time. Every
- * resource the renderer would load goes through {@link PdfResourceLoader}.
+ * cancelled and removed from the queue, and the PhantomJS process is killed). Both are logged at ERROR, as every
+ * failed render is. A render that ends after its caller gave up logs a warning with its total time. The PhantomJS
+ * binary comes from {@code pdf.phantomjs.path}; it is checked once at startup, and a render without a usable binary
+ * fails at once (CHG-LPRE-NF-007).
  * <p>
  * Nothing in a log line or in an error message comes from the template or from the payload data: a failure is
  * reported by exception class (and the line and column of a template error) with the stack trace of the root cause.
@@ -96,17 +88,16 @@ public class LocalPdfReportService {
 
   static final int TEMPLATE_CACHE_SIZE = 8;
 
-  private static final String BASE_URI = "https://localhost/";
-
   private static final String DEFAULT_FILE_NAME = "report.pdf";
 
-  private static final String FONT_REGULAR = "/pdf/fonts/DejaVuSans.ttf";
+  /** The version the production microservice runs, and the only one the output is known to match. */
+  static final String EXPECTED_VERSION = "2.1.1";
 
-  private static final String FONT_BOLD = "/pdf/fonts/DejaVuSans-Bold.ttf";
-
-  private static final String[] FONT_FAMILIES = {"sans-serif", "Montserrat", "DejaVu Sans"};
-
-  private static final int DOTS_PER_PIXEL = 27;
+  /**
+   * The caller's deadline is the authority: it times out, cancels the task and interrupts the thread, which kills
+   * PhantomJS. The renderer's own deadline is later by this margin, so it only acts when that interrupt did not.
+   */
+  private static final long RENDERER_GRACE_MS = 500L;
 
   private static final int MAX_LOGGED_FINDINGS = 5;
 
@@ -117,32 +108,19 @@ public class LocalPdfReportService {
   private static final ObjectMapper PAYLOAD_PARSER =
     new ObjectMapper().enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
 
-  /** Strong references: java.util.logging keeps loggers weakly, and a collected logger forgets its level. */
-  private static final Map<String, java.util.logging.Logger> RENDERER_LOGGERS =
-    new LinkedHashMap<String, java.util.logging.Logger>();
-
-  private static final FSStream NO_RESOURCE = new FSStream() {
-
-    @Override
-    public Reader getReader() {
-      return null;
-    }
-
-    @Override
-    public InputStream getStream() {
-      return null;
-    }
-  };
-
   /** What the caller learns about one render. */
   private static final class RenderResult {
 
+    private final int blocked;
     private final byte[] bytes;
+    private final int failed;
     private final int pages;
 
-    RenderResult(byte[] bytes, int pages) {
+    RenderResult(byte[] bytes, int pages, int blocked, int failed) {
       this.bytes = bytes;
       this.pages = pages;
+      this.blocked = blocked;
+      this.failed = failed;
     }
   }
 
@@ -163,22 +141,16 @@ public class LocalPdfReportService {
 
     private final Map<String, Object> data;
     private final String fileName;
-    private final String footerHeight;
-    private final String headerHeight;
-    private final boolean nonA4Format;
     private final boolean nullKey;
-    private final String orientation;
+    private final Map<String, Object> options;
     private final String templateSource;
 
-    Payload(String templateSource, Map<String, Object> data, String fileName, String headerHeight,
-      String footerHeight, String orientation, boolean nonA4Format, boolean nullKey) {
+    Payload(String templateSource, Map<String, Object> data, String fileName, Map<String, Object> options,
+      boolean nullKey) {
       this.templateSource = templateSource;
       this.data = data;
       this.fileName = fileName;
-      this.headerHeight = headerHeight;
-      this.footerHeight = footerHeight;
-      this.orientation = orientation;
-      this.nonA4Format = nonA4Format;
+      this.options = options;
       this.nullKey = nullKey;
     }
   }
@@ -187,25 +159,27 @@ public class LocalPdfReportService {
   private final class RenderTask implements Callable<RenderResult> {
 
     private final AtomicBoolean abandoned = new AtomicBoolean();
+    private final long deadlineNanos;
     private final String fileName;
     private final Payload payload;
-    private final PdfResourceLoader.Session session;
     private final long submittedNanos = System.nanoTime();
 
-    RenderTask(Payload payload, String fileName, PdfResourceLoader.Session session) {
+    RenderTask(Payload payload, String fileName, long deadlineNanos) {
       this.payload = payload;
       this.fileName = fileName;
-      this.session = session;
+      this.deadlineNanos = deadlineNanos;
     }
 
     @Override
     public RenderResult call() throws Exception {
+      RenderResult result = null;
       try {
-        return renderNow(payload, session);
+        result = renderNow(payload, deadlineNanos);
+        return result;
       } finally {
         if (abandoned.get()) {
           LOG.warn("PDF render finished after its caller gave up, file={}, totalMs={}, blockedUris={}", fileName,
-            elapsedMillis(submittedNanos), session.getBlockedCount());
+            elapsedMillis(submittedNanos), result == null ? 0 : result.blocked);
         }
       }
     }
@@ -220,41 +194,6 @@ public class LocalPdfReportService {
       Thread thread = new Thread(runnable, "pdf-render-" + counter.incrementAndGet());
       thread.setDaemon(true);
       return thread;
-    }
-  }
-
-  /**
-   * Quiets OpenHTMLtoPDF's own logging (design section 7.4): every category it registers is set to SEVERE, denying
-   * by default. Its WARNING messages quote what the template holds: the full URI of a resource that failed to load
-   * (for a {@code data:} image, the image itself, up to 2 MB per use) and the href of a link whose target is missing
-   * or that is not a valid URI, all of it user-supplied text; the css-parse category adds per-render noise nobody
-   * can act on. A failed resource already renders as empty and is counted in the render line. The one INFO line per
-   * render is ours, not theirs.
-   */
-  private static synchronized void quietRendererLogging() {
-    for (String name : XRLog.listRegisteredLoggers()) {
-      XRLog.setLevel(name, Level.SEVERE);
-      if (!RENDERER_LOGGERS.containsKey(name)) {
-        RENDERER_LOGGERS.put(name, java.util.logging.Logger.getLogger(name));
-      }
-    }
-  }
-
-  private static byte[] readResource(String path) {
-    try (InputStream in = LocalPdfReportService.class.getResourceAsStream(path)) {
-      if (in == null) {
-        throw new IllegalStateException("Missing PDF font resource " + path);
-      }
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      byte[] buffer = new byte[8192];
-      int read = in.read(buffer);
-      while (read >= 0) {
-        out.write(buffer, 0, read);
-        read = in.read(buffer);
-      }
-      return out.toByteArray();
-    } catch (IOException e) {
-      throw new IllegalStateException("Cannot read PDF font resource " + path, e);
     }
   }
 
@@ -299,11 +238,6 @@ public class LocalPdfReportService {
   @SuppressWarnings("unchecked")
   private static Map<String, Object> mapOrNull(Object value) {
     return value instanceof Map ? (Map<String, Object>) value : null;
-  }
-
-  private static String nestedString(Map<String, Object> options, String key, String child) {
-    Map<String, Object> nested = options == null ? null : mapOrNull(options.get(key));
-    return nested == null ? null : stringOrNull(nested.get(child));
   }
 
   /**
@@ -361,20 +295,15 @@ public class LocalPdfReportService {
       throw new PdfRenderException("PDF payload data.data is not an object");
     }
     Map<String, Object> options = mapOrNull(envelope.get("options"));
-    String format = options == null ? null : stringOrNull(options.get("format"));
-    boolean nonA4 = format != null && !format.trim().isEmpty() && !"A4".equalsIgnoreCase(format.trim());
     return new Payload(templateSource, data, sanitizeName(stringOrNull(envelope.get("fileName"))),
-      nestedString(options, "header", "height"), nestedString(options, "footer", "height"),
-      options == null ? null : stringOrNull(options.get("orientation")), nonA4, hasNullKey(data));
+      options == null ? new LinkedHashMap<String, Object>() : options, hasNullKey(data));
   }
 
-  private final byte[] boldFont;
+  private APConfig config;
 
   private final Handlebars handlebars;
 
-  private final PdfResourceLoader loader;
-
-  private final byte[] regularFont;
+  private volatile PhantomJsRenderer renderer;
 
   private final Map<String, CompiledTemplate> templates =
     new LinkedHashMap<String, CompiledTemplate>(16, 0.75f, true) {
@@ -390,18 +319,74 @@ public class LocalPdfReportService {
   private final ThreadPoolExecutor executor = new ThreadPoolExecutor(POOL_SIZE, POOL_SIZE, 0L,
     TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(QUEUE_CAPACITY), new DaemonThreads());
 
-  /** The constructor the container uses. */
+  /**
+   * The constructor the container uses. The binary path arrives with {@link #setConfig(APConfig)}, and the startup
+   * check runs once the bean is complete ({@link #checkBinary()}). Until then, and when the path is empty, a render
+   * fails at once.
+   */
   public LocalPdfReportService() {
-    this(new PdfResourceLoader());
+    this.handlebars = HandlebarsReportHelpers.newHandlebars();
+    this.renderer = new PhantomJsRenderer("");
   }
 
-  /** Test seam: the loader decides which resources a render may fetch, and how. */
-  LocalPdfReportService(PdfResourceLoader loader) {
-    this.loader = loader;
-    this.handlebars = HandlebarsReportHelpers.newHandlebars();
-    this.regularFont = readResource(FONT_REGULAR);
-    this.boldFont = readResource(FONT_BOLD);
-    quietRendererLogging();
+  /** Test seam: the binary to run, checked at once as the container does after construction. */
+  LocalPdfReportService(String phantomJsPath) {
+    this(phantomJsPath, HandlebarsReportHelpers.newHandlebars());
+  }
+
+  /** Test seam: as above, with the Handlebars instance that compiles the templates. */
+  LocalPdfReportService(String phantomJsPath, Handlebars handlebars) {
+    this.handlebars = handlebars;
+    this.renderer = new PhantomJsRenderer(phantomJsPath);
+    checkBinary();
+  }
+
+  @Inject
+  public void setConfig(APConfig config) {
+    this.config = config;
+  }
+
+  /**
+   * Startup check, once (CHG-LPRE-NF-007, design section 18.1): INFO with the version when the configured binary
+   * answers {@code --version} and is the one the output is known to match, WARN when the path is empty, missing, not
+   * executable, silent, or another version. It never throws: the service starts either way, and a render without a
+   * usable binary fails at once.
+   */
+  @PostConstruct
+  void initFromConfig() {
+    if (config != null) {
+      PhantomJsRenderer previous = renderer;
+      renderer = new PhantomJsRenderer(config.getPdfPhantomjsPath());
+      previous.close();
+    }
+    checkBinary();
+  }
+
+  void checkBinary() {
+    PhantomJsRenderer current = renderer;
+    if (current.binaryPath().isEmpty()) {
+      LOG.warn("PhantomJS is not configured (pdf.phantomjs.path is empty): local PDF renders will fail");
+      return;
+    }
+    if (!current.isBinaryUsable()) {
+      LOG.warn("PhantomJS binary is missing or not executable, path={}: local PDF renders will fail",
+        current.binaryPath());
+      return;
+    }
+    try {
+      String version = current.queryVersion();
+      if (EXPECTED_VERSION.equals(version)) {
+        LOG.info("PhantomJS available for local PDF renders, version={}, path={}", version, current.binaryPath());
+      } else {
+        LOG.warn("PhantomJS version is {} but the output is only known to match {}, path={}", sanitizeName(version),
+          EXPECTED_VERSION, current.binaryPath());
+      }
+    } catch (PhantomJsRenderer.ProcessFailedException e) {
+      LOG.warn("PhantomJS failed the version check, path={}, exitCode={}, stderr={}", current.binaryPath(),
+        e.exitCode(), e.stderrLine());
+    } catch (PdfRenderException e) {
+      LOG.warn("PhantomJS did not answer the version check, path={}: {}", current.binaryPath(), e.getMessage());
+    }
   }
 
   /**
@@ -463,6 +448,7 @@ public class LocalPdfReportService {
         ((Future<?>) never).cancel(true);
       }
     }
+    renderer.close();
   }
 
   /** Renders waiting in the queue, for the tests. */
@@ -494,71 +480,17 @@ public class LocalPdfReportService {
   }
 
   /** The render itself, on a pool thread. */
-  private RenderResult renderNow(Payload payload, PdfResourceLoader.Session session) throws IOException {
+  private RenderResult renderNow(Payload payload, long deadlineNanos) throws IOException, PdfRenderException {
     CompiledTemplate compiled = compile(payload.templateSource);
     warnAboutLimits(payload, compiled);
     String html = HandlebarsReportHelpers.apply(compiled.template, payload.data);
-    org.w3c.dom.Document document = HtmlPdfCompatibility.toW3cDocument(html, payload.headerHeight,
-      payload.footerHeight, payload.orientation);
-    return renderPdf(document, session);
-  }
-
-  private RenderResult renderPdf(org.w3c.dom.Document document, PdfResourceLoader.Session session)
-    throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream(64 * 1024);
-    PdfRendererBuilder builder = new PdfRendererBuilder();
-    builder.useFastMode();
-    builder.withW3cDocument(document, BASE_URI);
-    for (String family : FONT_FAMILIES) {
-      builder.useFont(fontSupplier(regularFont), family, 400, FontStyle.NORMAL, true);
-      builder.useFont(fontSupplier(boldFont), family, 700, FontStyle.NORMAL, true);
-    }
-    builder.useUriResolver(session.uriResolver());
-    builder.useHttpStreamImplementation(neverNull(session.httpStreamFactory()));
-    builder.useProtocolsStreamImplementation(neverNull(session.refusingStreamFactory()), "file", "jar", "ftp");
-    builder.toStream(out);
-    try (PdfBoxRenderer renderer = builder.buildPdfRenderer()) {
-      renderer.getSharedContext().setDotsPerPixel(DOTS_PER_PIXEL);
-      renderer.layout();
-      renderer.createPDFWithoutClosing();
-      PDDocument pdf = renderer.getPdfDocument();
-      int pages = pdf.getNumberOfPages();
-      pdf.save(out);
-      return new RenderResult(out.toByteArray(), pages);
-    }
-  }
-
-  /**
-   * The renderer dereferences what a stream factory returns without a null check (NaiveUserAgent.openStream), so a
-   * refused or failed resource, which the loader reports as {@code null}, would fail the whole render. An FSStream
-   * without a stream is what the renderer reads as "resource not found": the element renders empty.
-   */
-  private static FSStreamFactory neverNull(final FSStreamFactory inner) {
-    return new FSStreamFactory() {
-
-      @Override
-      public FSStream getUrl(String url) {
-        FSStream stream = inner.getUrl(url);
-        return stream == null ? NO_RESOURCE : stream;
-      }
-    };
-  }
-
-  private static FSSupplier<InputStream> fontSupplier(final byte[] font) {
-    return new FSSupplier<InputStream>() {
-
-      @Override
-      public InputStream supply() {
-        return new ByteArrayInputStream(font);
-      }
-    };
+    PhantomJsRenderer.Output output = renderer.render(html, payload.options,
+      deadlineNanos + TimeUnit.MILLISECONDS.toNanos(RENDERER_GRACE_MS));
+    return new RenderResult(output.pdf, output.pages, output.blocked, output.failed);
   }
 
   /** One WARN per render for what is outside the supported subset (design section 7.1); nothing when clean. */
   private void warnAboutLimits(Payload payload, CompiledTemplate compiled) {
-    if (payload.nonA4Format) {
-      LOG.warn("PDF page format other than A4 requested; rendering A4");
-    }
     if (compiled.unsupported.isEmpty() && !payload.nullKey) {
       return;
     }
@@ -573,14 +505,12 @@ public class LocalPdfReportService {
     String fileName = fileNameOverride == null ? DEFAULT_FILE_NAME : fileNameOverride;
     String outcome = "failed";
     RenderResult result = null;
-    PdfResourceLoader.Session session = null;
     try {
-      session = loader.newSession();
       Payload payload = parse(json);
       if (fileNameOverride == null) {
         fileName = payload.fileName;
       }
-      RenderTask task = new RenderTask(payload, fileName, session);
+      RenderTask task = new RenderTask(payload, fileName, start + TimeUnit.MILLISECONDS.toNanos(deadlineMillis));
       Future<RenderResult> future;
       try {
         future = executor.submit(task);
@@ -610,12 +540,21 @@ public class LocalPdfReportService {
       } catch (CancellationException e) {
         throw new PdfRenderException("PDF render cancelled");
       } catch (ExecutionException e) {
+        if (e.getCause() instanceof PhantomJsRenderer.DeadlineExpiredException) {
+          outcome = "timeout";
+          throw new PdfRenderException("PDF render timed out after " + deadlineMillis + " ms");
+        }
         throw toLogSafe(e.getCause() == null ? e : e.getCause());
       }
       outcome = "ok";
       return result.bytes;
     } catch (PdfRenderException e) {
-      if ("failed".equals(outcome)) {
+      if (e instanceof PhantomJsRenderer.ProcessFailedException) {
+        // Only the exit code: a render's stderr is the page script's and can quote page content. The startup
+        // check, whose stderr is the binary's own, logs its first line.
+        PhantomJsRenderer.ProcessFailedException failed = (PhantomJsRenderer.ProcessFailedException) e;
+        LOG.error("PDF render failed, file={}, phantomExit={}", fileName, failed.exitCode(), e);
+      } else if ("failed".equals(outcome)) {
         LOG.error("PDF render failed, file={}", fileName, e);
       } else {
         // A rejected or timed-out render has no cause to trace, but it is still an error to find in the log.
@@ -630,8 +569,7 @@ public class LocalPdfReportService {
     } finally {
       LOG.info("PDF render file={} outcome={} bytes={} pages={} elapsedMs={} blockedUris={} failedFetches={}",
         fileName, outcome, result == null ? 0 : result.bytes.length, result == null ? 0 : result.pages,
-        elapsedMillis(start), session == null ? 0 : session.getBlockedCount(),
-        session == null ? 0 : session.getFailedFetchCount());
+        elapsedMillis(start), result == null ? 0 : result.blocked, result == null ? 0 : result.failed);
     }
   }
 

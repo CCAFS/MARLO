@@ -232,7 +232,7 @@ available as the fallback.
 | OQ-1 | Jira ticket and parent epic for this work | No — traceability only |
 | OQ-2 | Who owns the CLARISA MIS connection and the Amazon MQ queue, and who tells them at retirement | No — retirement spec |
 | OQ-3 | Keep or delete PDFs already in bucket `microservice-reports` | No — retirement spec |
-| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and `fontconfig`/`freetype`; who owns it | No for the code — yes for enabling the specificity anywhere |
+| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and the `fontconfig`/`freetype` libraries (the font rules ship inside MARLO); who owns it; **whether the PhantomJS process's network egress can be limited to the two S3 hosts** (second layer behind SEC-003, design §18.3) | No for the code — yes for enabling the specificity anywhere |
 
 ## 9. Decision Log
 

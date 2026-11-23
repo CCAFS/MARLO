@@ -661,3 +661,70 @@
   - The real-data HTML has no SVG, no `noscript` and no frames.
   - The proposed fix should therefore not affect parity, but it must be measured.
 - **Stop: HALT (T13 reached the retry cap).** Implementer attempts 1–3 are used up: attempt 1 plus two Leader-evidence reworks (OPENSSL_CONF, fontconfig). "No mandate widens pre-approval: an owner brief that says "never stop" or "treat every gate as approved" pre-approves routine gates only. The exceptions in `/akili-propose` Step 1 *Approval Mode* (HALT, Pivot, budget tripwire, `FATAL_FAIL`, `PRODUCT_BUG`, destructive actions) still stop, and the stop message quotes this sentence."
+- **Owner decision after the HALT (2026-11-23):** "sí, aprueba el intento 4 y haz los dos commits". The spec and T12 commits were made (`d749a1f8c4`, `968bcac54e`).
+- **Implementer attempt 4 (owner-approved):**
+  - **JS off during load is impossible in PhantomJS 2.1.1.**
+    - `page.setContent` ignores `javascriptEnabled` (an inline script and an `onerror` handler still ran).
+    - With JS truly off, `page.evaluate` returns null.
+    - Re-enabling needs a navigation that would destroy the document.
+    - The page script therefore stays html-pdf plus its three additions, with a comment recording this.
+  - **Sanitizer hardened:**
+    - It removes `noscript`, `iframe`, `frame`, `frameset`, `object`, `embed`, `applet`, `base`, `meta[http-equiv]` and also `svg`/`math` (foreign content; no production output contains them).
+    - A raw-text scan catches tags that jsoup folds.
+    - `data` and `poster` are added as URL attributes.
+    - `data:` is narrowed to non-SVG images and fonts, in both the Java sanitizer and the page script.
+  - **New defect found and fixed:** page script errors print to stdout before the JSON, so the JSON is now parsed from the last `{"filename":`.
+  - **Advisories done:**
+    - the support directory is re-validated and rebuilt when needed;
+    - `options.timeout` is now the minimum of the page timeout and the remaining deadline;
+    - the render ERROR log no longer carries stderr (only the startup check does);
+    - the `APConfig` comment is restored.
+  - **Results:** full suite 1,433 tests, 0 failures, 6 skipped (`PHANTOMJS_PATH`). Checkstyle delta 0. Falsifier: with the sanitizer off, the gated hostile tests go red.
+  - **spawns:** 56 calls, 440,038 tokens.
+- **Leader evidence (Linux, built code):**
+  - **Parity:** **PARITY 6/6** again, with byte-size-equal fixture PDFs and the cluster at 481/481.
+  - **Hostile probe with a spy server on a Docker network:**
+    - **Control A**, plain PhantomJS with html-pdf's script and no sanitizer or allowlist (what production runs today): an `<img onerror>` payload reached the spy by **XHR, WebSocket and image**.
+    - **Control B**, MARLO's `render-page.js` allowlist without the Java sanitizer: XHR and image were blocked (`blocked: 2`), but the **WebSocket still reached the spy**. This confirms the reviewer's hypothesis: QtWebKit WebSockets bypass `onResourceRequested`.
+    - **MARLO's service (sanitizer + allowlist)** on 11 payloads (script, onerror, the noscript bypass, SVG style, iframe/embed/object `data:` documents, meta refresh, an obfuscated `javascript:`, body onload with MathML, CSS/link/metadata-IP fetches): **0 spy hits**, no PWNED text, original content intact in all 11. Plain `http` and metadata-IP fetches were blocked (`blockedUris` 1 and 3).
+  - **Consequence for §18.3:** the Java sanitizer is the only barrier against script, and a sanitizer bypass would allow WebSocket exfiltration. A network egress restriction for the PhantomJS process (infrastructure, OQ-4) is the recommended second layer.
+  - **Finding about production today:** the microservice renders unsanitized rich text with JS on, so the same `<img onerror>` exfiltration works there now (Control A).
+- **Reviewer attempt 2: FAIL**, on one gating MAJOR.
+  - **The bypass:** `<noembed>`. jsoup 1.15.4 treats its content as raw text, but WebKit does so only when plugins are enabled, and PhantomJS runs with plugins off. `<noembed><img src=x onerror=…></noembed>` therefore passes the sanitizer untouched.
+  - **Also requested:** remove `noframes` and `template`.
+  - **Advisory:** re-serialize whenever handler-like text is present.
+  - **The rest is confirmed sound:**
+    - raw-text and RCDATA elements;
+    - comment and CDATA states;
+    - `select`/`form` tree moves;
+    - the narrowing of `data:` URLs;
+    - support-directory revalidation;
+    - the timeout cap;
+    - no stderr in the log.
+  - **Stdout spoofing is harmless:** `filename` is never used, and a spoofed line can only fake the counts.
+  - **Residual risk** (an unknown bypass → WebSocket egress) is acceptable as an accepted risk, provided three things hold: the known bypass classes are closed, §18.3 is kept, and the specificity stays `'false'` until OQ-4 is answered.
+  - **spawns:** reviewer 4 calls, 202,859 tokens.
+- **Leader confirmation (Linux, spy server):**
+  - `<noembed><img onerror>` → **PWNED in the PDF and a WebSocket hit on the spy**. The bypass is real.
+  - `<noframes>` → no effect.
+  - `<template>` → no effect.
+- **Stop: T13 exceeded the retry cap (owner approval covered attempt 4 only).** "No mandate widens pre-approval: an owner brief that says "never stop" or "treat every gate as approved" pre-approves routine gates only. The exceptions in `/akili-propose` Step 1 *Approval Mode* (HALT, Pivot, budget tripwire, `FATAL_FAIL`, `PRODUCT_BUG`, destructive actions) still stop, and the stop message quotes this sentence."
+- **Owner approval:** "sí, aprueba el intento 5".
+- **Implementer attempt 5:**
+  - Removed `noembed`, `noframes` and `template`.
+  - Handler-like input (`(?i)[\s/"'<]on[a-z]+\s*=`) always gets jsoup's normalized serialization. The production and real-data HTML have no matches, so the passthrough is kept.
+  - `parseCounts` requires the JSON to end the stream.
+  - Full suite: 1,434 tests, 0 failures, 6 skipped. Checkstyle delta 0.
+  - **spawns:** 8 calls, 452,256 tokens.
+- **Leader evidence (Linux, built code):**
+  - **PARITY 6/6**, with the cluster at 481/481.
+  - Spy probe on **14 payloads**, the earlier 11 plus `noembed`, `noframes` and `template`: **0 spy hits**, no PWNED, original content intact in all 14.
+- **Reviewer attempt 3: PASS** (opus).
+  - **Fix verified:** the three elements are removed, the handler-like trigger forces jsoup's serialization, and the parser rejects trailing tokens.
+  - **Trigger regex has no gap:**
+    - Character references are never decoded in attribute names, so `on&#x65;rror` is not a handler.
+    - Every character that can come right before an attribute name is covered.
+    - Every handler name is plain ASCII letters.
+  - **Residual risk:** an unknown sanitizer bypass could still reach WebSocket egress. It stays accepted under §18.3, conditional on OQ-4 egress control and the specificity staying `'false'` until infrastructure answers.
+  - **spawns:** reviewer 1 call, 206,505 tokens.
+- **Final status:** PASS on attempt 5. Attempts 4–5 were owner-approved after the HALT. **Review rounds:** 32.
