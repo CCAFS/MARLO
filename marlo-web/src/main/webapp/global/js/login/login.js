@@ -124,6 +124,8 @@ function init() {
     if($(this).is(':checked') && !$('.loginForm p.invalidField.termsRequired').hasClass("hidden")) {
       cleanWrongData();
     }
+    // A2-2744: every control the terms gate follows the checkbox at once, both ways
+    refreshTermsGatedButtons();
   });
 
   // Keep the submit button disabled while the email/username field is empty, so step 1 can't be
@@ -238,6 +240,16 @@ function init() {
       // dispatch a click, so raise the validation message here instead of relying on one
       if(currentStep == "email" && $.trim(username.val()) == "") {
         wrongData("emailRequired");
+        return;
+      }
+      // A2-2744: same reason on step 3, where "Log in" stays disabled until the terms are accepted. The empty
+      // password still names itself first, the order the click handler keeps
+      if(currentStep == "password" && !$('input#terms').is(':checked')) {
+        if(inputPassword.val() == "") {
+          wrongData("voidPassword");
+        } else {
+          termsAccepted();
+        }
         return;
       }
 
@@ -547,6 +559,8 @@ function showPasswordStep() {
   // Show terms and conditions checkbox - shared by both branches below. design.md 5.2/5.4: the
   // CGIAR block carries the same terms checkbox as the password step, never a duplicate of it
   showTermsCheckbox();
+  // A2-2744: before any branch below moves the focus, so a control the terms keep disabled is never the target
+  refreshTermsGatedButtons();
 
   // Echo who is logging in: the complete name when the user record has one, and always what was
   // typed in step 1 - between parentheses when it accompanies the name, on its own otherwise
@@ -595,7 +609,7 @@ function showPasswordStep() {
     // CHG-COGNITO-AUTH-001-T12 fix (audit Issue 3): hiding input#login_next above can leave focus
     // on <body> when it held focus, so the Cognito control mirrors the LOCAL arm's own focus call
     // below rather than leaving the user to tab in from the top of the document
-    $("#login-cgiar-button").focus();
+    focusUnlessTermsGated($("#login-cgiar-button"));
   } else if(mode == "COGNITO") {
     // CHG-OTP-LOGIN-001-T21 / UI-006: a CGIAR account on a Cognito unit whose code sign-in is on for this email
     // (otpEnabled) chooses between "Sign in with CGIAR" and "Email me a sign-in code". The choice and the code panel
@@ -662,7 +676,7 @@ function showPasswordStep() {
   }
 
   clearLoginButtonLoading();
-  updateNextButtonState();
+  refreshTermsGatedButtons();
 
   // Show the "go back" link
   $('.login-back-container').removeClass('hidden');
@@ -1204,8 +1218,11 @@ function looksLikeEmail(value) {
 }
 
 // The submit button is shared by the 3 steps: on the email step it stays disabled until something is
-// typed, on the other steps it is always available
+// typed, on the password step until the terms are accepted (A2-2744), on the project step it is always available
 function updateNextButtonState() {
+  // Points at the terms only on the step that shows them, so the email step never announces a hidden checkbox
+  $("input#login_next").attr("aria-describedby", currentStep == "password" ? "login-terms-container" : null);
+
   // A request is still running, or the captcha is on screen and owns the button until it is solved
   if(isSubmitting || captchaPending) {
     return;
@@ -1213,8 +1230,31 @@ function updateNextButtonState() {
 
   if(currentStep == "email") {
     $("input#login_next").attr("disabled", $.trim(username.val()) == "");
+  } else if(currentStep == "password") {
+    $("input#login_next").attr("disabled", !$('input#terms').is(':checked'));
   } else {
     $("input#login_next").attr("disabled", false);
+  }
+}
+
+// A2-2744: "Log in", "Send code" and both "Sign in with CGIAR" controls stay disabled while the terms checkbox is
+// clear. This replaces the click-then-message behaviour BUG-LOGIN-TERMS-001 chose (see its Decision Log); the
+// termsAccepted() guards stay in the handlers as a second line. Each control keeps its own state owner:
+// updateNextButtonState() for "Log in", otpRefreshButtons() for "Send code". The CGIAR controls have no other
+// owner, so they are set here
+function refreshTermsGatedButtons() {
+  updateNextButtonState();
+  otpRefreshButtons();
+  $('#login-cgiar-button, #login-method-cgiar-button').attr("disabled", !$('input#terms').is(':checked'));
+}
+
+// A disabled control cannot take the focus, which would then fall back to <body>. The checkbox that enables it
+// takes it instead
+function focusUnlessTermsGated($control) {
+  if($control.is(':disabled')) {
+    $('input#terms').focus();
+  } else {
+    $control.focus();
   }
 }
 
@@ -1249,7 +1289,7 @@ function otpShowError(key) {
 function otpRefreshButtons() {
   var busy = otpRequestInFlight || otpVerifyInFlight || otpRedirecting;
 
-  $('#login-otp-button').attr("disabled", otpRequestInFlight)
+  $('#login-otp-button').attr("disabled", otpRequestInFlight || !$('input#terms').is(':checked'))
       .text(otpRequestInFlight ? otpCopy("sending") : otpCopy("sendCode"));
   // T17: "Choose another way to sign in" is unavailable while the code request owns the panel
   $('.login-method-back-container .loginBack').attr("disabled", otpRequestInFlight || otpRedirecting);
@@ -1378,7 +1418,7 @@ function showMethodView(view) {
   if(view == "choice") {
     $("#login-method-code-button").focus();
   } else if(view == "code") {
-    $("#login-otp-button").focus();
+    focusUnlessTermsGated($("#login-otp-button"));
   } else {
     $(".loginForm #login-password input").focus();
   }

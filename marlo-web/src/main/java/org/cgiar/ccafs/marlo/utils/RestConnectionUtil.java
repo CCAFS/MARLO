@@ -71,6 +71,12 @@ public class RestConnectionUtil {
       LOG.error("The JSON request to {} could not be executed", linkRequest, e);
     }
 
+    // The request failed before any answer came back (already logged above): fail with that, not with a
+    // NullPointerException on the missing response
+    if (response == null) {
+      throw new IllegalStateException("The request to " + linkRequest + " got no response");
+    }
+
     if (response.getStatusLine().getStatusCode() != 200) {
       throw new RuntimeException("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
     }
@@ -105,6 +111,12 @@ public class RestConnectionUtil {
       LOG.error("The DOI citation request to {} failed with a protocol error", linkRequest, e);
     } catch (Exception e) {
       LOG.error("The DOI citation request to {} could not be executed", linkRequest, e);
+    }
+
+    // The request failed before any answer came back (already logged above): fail with that, not with a
+    // NullPointerException on the missing response
+    if (response == null) {
+      throw new IllegalStateException("The request to " + linkRequest + " got no response");
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {
@@ -147,6 +159,12 @@ public class RestConnectionUtil {
       LOG.error("The XML request to {} failed with a protocol error", linkRequest, e);
     } catch (Exception e) {
       LOG.error("The XML request to {} could not be executed", linkRequest, e);
+    }
+
+    // The request failed before any answer came back (already logged above): fail with that, not with a
+    // NullPointerException on the missing response
+    if (response == null) {
+      throw new IllegalStateException("The request to " + linkRequest + " got no response");
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {

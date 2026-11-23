@@ -114,14 +114,14 @@
             [#-- CHG-OTP-LOGIN-001-T21: the other way of a CGIAR account on a Cognito unit. Same handler as
                  #login-cgiar-button, which stays the single-method control when the code is not offered --]
             <div class="login-button-container hidden" id="login-method-cgiar-container">
-              <button type="button" id="login-method-cgiar-button" class="login-form-button login-form-button-secondary">[@s.text name="login.cgiarSignIn"/]</button>
+              <button type="button" id="login-method-cgiar-button" class="login-form-button login-form-button-secondary" aria-describedby="login-terms-container">[@s.text name="login.cgiarSignIn"/]</button>
             </div>
           </div>
           <div class="login-method-code hidden" id="login-method-code">
             <p class="login-method-info" id="login-method-info"></p>
             [#-- The T14 request button, moved here as the panel's "Send code": same id, same handler --]
             <div class="login-button-container hidden" id="login-otp-request-container">
-              <button type="button" id="login-otp-button" class="login-form-button">[@s.text name="login.otp.method.send"/]</button>
+              <button type="button" id="login-otp-button" class="login-form-button" aria-describedby="login-terms-container">[@s.text name="login.otp.method.send"/]</button>
             </div>
             <div class="login-method-back-container">
               <button type="button" id="login-method-code-back" class="loginBack">[@s.text name="login.otp.method.back"/]</button>
@@ -257,8 +257,10 @@
              left to release it. On COGNITO #login-cgiar-button is type="button" and never submits this
              form, so the attribute could not fire at all. Its message is also browser-supplied, so it
              could never be i18n-keyed. The gate now lives in login.js's termsAccepted(), shared by both
-             branches. Do not put it back --]
-        <div class="terms-container hidden">
+             branches. Do not put it back.
+             A2-2744: login.js now also keeps every control this gate covers disabled while the box is clear;
+             those controls name this container through aria-describedby --]
+        <div class="terms-container hidden" id="login-terms-container">
           <input type="checkbox" name="user.agree" id="terms" class="terms" value="true"> [@s.text name="login.agree"/] <a target="_blank" href="[@s.url namespace="/" action='legalInformation'][/@s.url]#termsConditions">[@s.text name="login.terms"/]</a>
         </div>
 
@@ -279,7 +281,7 @@
                submits #login-step-password's form -- it navigates to cognitoLogin.do instead
                (design.md 5.5). Reuses .login-form-button, styled only as a descendant of
                .login-button-container (customLogin.css), so it must live in this container --]
-          <button type="button" id="login-cgiar-button" class="login-form-button hidden">
+          <button type="button" id="login-cgiar-button" class="login-form-button hidden" aria-describedby="login-terms-container">
             [@s.text name="login.cgiarSignIn"/]
           </button>
         </div>
