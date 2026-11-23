@@ -242,6 +242,7 @@
   [#local isComplete = isCurrent && ((action.hasInnovationMissingFields(innovation.id))!false) /]
   [#local invTitle = (info.title)!"" /]
   [#local url][@s.url namespace="/projects" action="${(crpSession)!}/innovation"][@s.param name='innovationID']${id}[/@s.param][@s.param name='projectID']${(innovation.project.id?c)!''}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+  [#local hasSummaryPhase = (info.phase.id)?? /]
   [#local pdfUrl][@s.url namespace="/summaries" action='${(crpSession)!}/projectInnovationSummary'][@s.param name='innovationID']${id}[/@s.param][@s.param name='phaseID']${(info.phase.id)!''}[/@s.param][/@s.url][/#local]
 
   [#local type = utils.innovationTypeName((info.repIndInnovationType)!{}) /]
@@ -320,9 +321,12 @@
         [/#if]
       </span>
       <span class="dlv-td inv-td--actions" role="cell">
+        [#-- A2-2749: no info in any phase means no summary can be built, so there is no link to offer --]
+        [#if hasSummaryPhase]
         <a class="dlv-iconBtn" href="${pdfUrl}" target="_blank" rel="noopener"
           title="[@s.text name="project.innovationList.redesign.pdf"][@s.param]${id}[/@s.param][/@s.text]"
           aria-label="[@s.text name="project.innovationList.redesign.pdf"][@s.param]${id}[/@s.param][/@s.text]">[@invIcon "pdf" /]</a>
+        [/#if]
         [#if canDelete]
           <button type="button" class="dlv-iconBtn dlv-iconBtn--danger" data-inv-remove aria-expanded="false" aria-controls="inv-confirm-${id}"
             title="[@s.text name="project.innovationList.redesign.remove"][@s.param]${id}[/@s.param][/@s.text]"
