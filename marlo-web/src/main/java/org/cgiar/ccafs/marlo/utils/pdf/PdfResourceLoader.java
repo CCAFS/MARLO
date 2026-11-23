@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.LongSupplier;
 
@@ -79,12 +80,14 @@ class PdfResourceLoader {
   }
 
   /**
-   * The state of one render: its fetch budget and its count of refused resources. Not shared between renders.
+   * The state of one render: its fetch budget, its count of refused resources and its count of allowlisted fetches
+   * that failed. Not shared between renders.
    */
   final class Session {
 
     private final AtomicLong blocked = new AtomicLong();
     private final FetchBudget budget;
+    private final Set<String> failed = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     private Session(FetchBudget budget) {
       this.budget = budget;
@@ -115,6 +118,7 @@ class PdfResourceLoader {
         Long failedAt = failures.get(key);
         if (failedAt != null) {
           if (now - failedAt <= FAILURE_TTL_NANOS) {
+            failed.add(key);
             return null;
           }
           failures.remove(key);
@@ -122,6 +126,7 @@ class PdfResourceLoader {
       }
       if (budget.isExhausted()) {
         LOG.debug("PDF resource skipped, fetch budget spent, host={}", allowed.getHost());
+        failed.add(key);
         return null;
       }
       byte[] body;
@@ -133,6 +138,7 @@ class PdfResourceLoader {
       long finished = nanoClock.getAsLong();
       synchronized (cache) {
         if (body == null) {
+          failed.add(key);
           rememberFailure(key, finished);
         } else {
           store(key, body, finished);
@@ -144,6 +150,16 @@ class PdfResourceLoader {
     /** Number of resources refused during this render, for the render log line. */
     int getBlockedCount() {
       return (int) blocked.get();
+    }
+
+    /**
+     * Number of distinct allowlisted resources whose fetch failed during this render (non-200, redirect, oversize,
+     * I/O error, fetch budget spent, or a failure remembered from a recent render), for the render log line. The
+     * renderer may ask for one resource more than once; it counts once. Refused resources are
+     * counted by {@link #getBlockedCount()} instead.
+     */
+    int getFailedFetchCount() {
+      return failed.size();
     }
 
     /** Hook for {@code useHttpStreamImplementation}: allowlisted fetches only; refused ones yield {@code null}. */

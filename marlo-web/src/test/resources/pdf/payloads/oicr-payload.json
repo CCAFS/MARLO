@@ -1,0 +1,64 @@
+{
+ "pattern": "pdf.generate",
+ "data": {
+  "data": {
+   "id": "4521",
+   "year": "2025",
+   "title": "Climate-smart advisory services adopted by 120,000 smallholder farmers in Ghana and Senegal",
+   "status": "Completed",
+   "type": "Outcome Impact Case Report (OICR)",
+   "outcomeImpactStatement": "<p>Digital climate advisory services reached <b>120,000 farmers</b>, of whom 38% are women, improving planting decisions across two cropping seasons.</p>",
+   "elaborationOutcomeImpactStatement": "<p>The cluster co-designed bulletins with national meteorological agencies. Uptake was measured through phone surveys in 14 districts.</p><ul><li>Bulletins in 6 local languages</li><li>Weekly radio broadcasts</li></ul>",
+   "stageStudy": "Stage 2: Outcome",
+   "geographicScopes": "Multi-national",
+   "regions": "West Africa",
+   "countries": "Ghana; Senegal",
+   "institutions": "[{\"name\": \"Ghana Meteorological Agency\", \"type\": \"Government\", \"headquarter\": \"Ghana\"}, {\"name\": \"ANACIM\", \"type\": \"Government\", \"headquarter\": \"Senegal\"}]",
+   "centers": "[{\"name\": \"Alliance of Bioversity International and CIAT\", \"type\": \"CGIAR Center\", \"headquarter\": \"Italy\"}]",
+   "quantification": "[{\"type\": \"Number of farmers\", \"number\": \"120000\", \"unit\": \"farmers\", \"comments\": \"Phone survey, 2025\"}, {\"type\": \"Share of women\", \"number\": \"38\", \"unit\": \"%\", \"comments\": \"\"}]",
+   "genderRelevance": "1 - Significant",
+   "youthRelevance": "0 - Not targeted",
+   "capacityRelevance": "2 - Principal",
+   "climateRelevance": "2 - Principal",
+   "otherCrossCuttingDimensions": "",
+   "otherCrossCuttingSelection": "No",
+   "studyProjects": "[\"C01 - Climate information services\", \"C03 - Digital advisory\"]",
+   "cgiarInnovation": "<p>Bundled advisory package</p>",
+   "cgiarInnovations": "[{\"code\": \"I-212\", \"title\": \"Seasonal forecast bulletin\", \"link\": \"https://example.org/i212\"}]",
+   "links": "[\"https://example.org/evidence-1\", \"https://example.org/evidence-2\"]",
+   "studiesReference": "[{\"code\": \"S-88\", \"title\": \"Baseline survey\", \"link\": \"https://example.org/s88\"}]",
+   "performanceIndicator": "[\"IPI 1.1 - Farmers using CIS\", \"IPI 2.3 - Women reached\"]",
+   "publications": "[{\"name\": \"A. Mensah\", \"position\": \"Researcher\", \"affiliation\": \"University of Ghana\"}]",
+   "isAllianceContribution": "Yes",
+   "primaryAllianceLever": "{\"name\": \"Lever 2: Climate Action\", \"code\": \"13\", \"strategicOutcome\": [\"Outcome 2.1 - Climate services scaled\", \"Outcome 2.2 - Policies informed\"]}",
+   "relatedLever": "[\"Lever 4: Digital\"]",
+   "primarySDGcontribution": "[\"SDG 13: Climate action\"]",
+   "relatedSDGContribution": "[\"SDG 2: Zero hunger\"]",
+   "hasCgiarContribution": "Yes",
+   "impactArea": "Climate adaptation and mitigation",
+   "impactAreaCode": "5",
+   "reasonNotCgiarContribution": "",
+   "tagAs": "New",
+   "clusterName": "Ghana",
+   "leadPerson": "Jane Doe",
+   "timeCreation": "2026-11-20 10:30"
+  },
+  "options": {
+   "format": "A4",
+   "orientation": "portrait",
+   "border": "0",
+   "zoomFactor": 1,
+   "header": {
+    "height": "40mm"
+   },
+   "footer": {
+    "height": "30mm"
+   },
+   "timeout": "300000"
+  },
+  "templateData": "__TEMPLATE__",
+  "fileName": "oicr-fixture.pdf",
+  "bucketName": "unused",
+  "apiKey": null
+ }
+}

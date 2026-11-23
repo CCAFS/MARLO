@@ -200,7 +200,14 @@ the retirement spec can fold them into the templates.
 - Dots per pixel set to 27 on the renderer's shared context (1 px ≈ 1.0125 pt; spike F2–F3).
 - Fast renderer mode; base URI `https://localhost/` (no relative resources exist in the templates).
 - OpenHTMLtoPDF's own logging (`XRLog`, java.util.logging by default) is set to `WARNING` at bean
-  initialisation, so per-render INFO lines and CSS-parser warnings do not flood `catalina.out`.
+  initialisation, so per-render INFO lines do not flood `catalina.out`; the `css-parse` category is set to
+  `SEVERE`, because the production templates trigger ~15 CSS-parser warnings per render (unsupported `flex-wrap`,
+  `word-break`, 8-digit colours) that carry no actionable information. *Amended 2026-11-23 during T04.* The `load` and
+  `exception` categories are also set to `SEVERE`: at WARNING they quote full resource URIs and `data:` payloads from
+  user rich text (observed in T04 attempt 2), which §10 forbids in the log. *Amended 2026-11-23 during T04 rework.*
+  **Superseded the same day (T04 attempt-2 security review):** every OpenHTMLtoPDF category is set to `SEVERE`
+  (deny by default) — link handling in `general` can also quote user-entered hrefs; render failures still surface
+  through the service's own ERROR line, and fetch failures through the `failedFetches` count on the INFO line (§10).
 
 ### 7.5 Execution model (NF-003 – NF-005)
 
@@ -265,7 +272,8 @@ Not applicable — no FTL, JS or CSS of the web UI changes. The PDF layout is go
 ## 10. Observability (OPS-001)
 
 - One INFO line per render: file name, outcome (`ok` | `failed` | `timeout` | `rejected`), bytes, pages, elapsed
-  ms, and the count of blocked resource URIs.
+  ms, the count of blocked resource URIs, and the count of failed fetches on allowlisted hosts (`failedFetches`,
+  *added 2026-11-23 to match §17's mitigation*).
 - Failure: ERROR with the cause and stack trace, file name included. No template text or payload is logged.
 - Blocked resource: one DEBUG line per URI (host only), so SEC-001 rejections are visible without logging user
   content.
@@ -398,6 +406,10 @@ branches; they import the classes for other members.
   blocked/failed fetch count in the render log line (§10); the retirement spec moves images into MARLO.
 - Risk: OpenHTMLtoPDF 1.1.x releases weekly; a future bump may change layout. Mitigation: page-count tests on the
   three production templates (T03) guard upgrades.
+- Accepted risk (T04 security review, 2026-11-23): an image within the size limits can declare huge pixel
+  dimensions (decompression bomb) and make ImageIO allocate a very large raster inside the MARLO JVM; previously
+  that exposure lived in the microservice container. Mitigation today: rich text is entered by authenticated MARLO
+  users and the pool caps concurrent renders at 3. Follow-up: a header-only dimension check before decoding.
 - Accepted risk: OpenHTMLtoPDF layout cannot be interrupted; a pathological template or payload could hold one of
   the three render threads until restart. Mitigation: the late-finish WARN, the pool cap, and templates being
   super-admin content; a watchdog is left to the retirement spec if production shows the need.

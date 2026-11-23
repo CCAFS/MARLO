@@ -126,18 +126,19 @@
 - **Done when:** both test classes green; every SEC-001 scenario row present.
 
 ### CHG-LPRE-T04 — LocalPdfReportService (payload, renderer, execution model, response)
-- **Status:** [ ]
+- **Status:** [x]
 
 - **Depends on:** T02, T03
 - **Module:** marlo-web
 - **Requirements:** FN-001, FN-002, FN-004, NF-001, NF-002, NF-003, NF-005, SEC-002, OPS-001 · **Design:** §7.1,
   §7.4, §7.5, §10
 - **Files touched:** `utils/pdf/LocalPdfReportService.java`, `utils/pdf/PdfRenderException.java` (new);
+  `utils/pdf/PdfResourceLoader.java` (failed-fetch counter, added during execution 2026-11-23);
   `src/test/java/.../utils/pdf/LocalPdfReportServiceTest.java` (new);
   `src/test/resources/pdf/templates/{oicr,innovation,project}.html`, `src/test/resources/pdf/payloads/*.json` (new).
 - **Scope:** parse the microservice payload; compile (SHA-256-keyed cache of 8) and apply the template; run the
   compatibility step; render with DejaVu fonts under `sans-serif`/`Montserrat`/`DejaVu Sans`, 27 dots per pixel,
-  `XRLog` at WARNING; pool 3 / queue 6, deadlines 30 s and 50 s, cancelled tasks removed from the queue, late
+  every `XRLog` category at SEVERE (design §7.4 as superseded 2026-11-23); pool 3 / queue 6, deadlines 30 s and 50 s, cancelled tasks removed from the queue, late
   completion WARN; `render` and `renderToResponse` with the headers of `downloadPDFByURL`; one INFO line per render,
   ERROR with cause on failure, no template or payload text logged; pool shutdown on destroy. Backend route:
   `error-handling-patterns` · stack: project conventions.
