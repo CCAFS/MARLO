@@ -373,3 +373,12 @@ and `LoginAction` reads neither. The attribute's only live effect today is the `
   `staging` today and will stay live there until the Cognito feature merges.** The evidence that they are
   live on `staging` is in `task.md` §0; it was verified, not assumed, and is kept for whoever decides the
   release order.
+- 2026-11-23 — **Q1 reopened and reversed by A2-2744: the gated controls ARE disabled while the box is clear.**
+  The product owner asked for Alternative B: "Log in", "Send code" and both "Sign in with CGIAR" controls look
+  disabled and cannot be activated until the terms are accepted, and turn disabled again the moment the box is
+  cleared. What changes against the 2026-09-15 rationale: the missing state machinery is now built
+  (`refreshTermsGatedButtons()` in `login.js`, bound to the checkbox's `change`); the explanation that a
+  disabled control cannot give is carried by `aria-describedby="login-terms-container"` on each gated control,
+  by moving the focus to the checkbox when a step would otherwise focus a disabled control, and by the Enter-key
+  relay on the password field, which still shows `termsRequired`. The `termsAccepted()` guards stay in every
+  handler as a second line, and the server-side guards (SEC-001) are unchanged.
