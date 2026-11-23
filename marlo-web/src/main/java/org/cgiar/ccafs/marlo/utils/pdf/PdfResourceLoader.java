@@ -77,6 +77,10 @@ class PdfResourceLoader {
     boolean isExhausted() {
       return remainingNanos.get() <= 0;
     }
+
+    long remainingNanos() {
+      return remainingNanos.get();
+    }
   }
 
   /**
@@ -131,9 +135,14 @@ class PdfResourceLoader {
       }
       byte[] body;
       try {
-        body = download(allowed);
+        body = download(allowed, now + budget.remainingNanos());
       } finally {
         budget.consume(nanoClock.getAsLong() - now);
+      }
+      if (body == BUDGET_CUT) {
+        LOG.debug("PDF resource fetch cut, fetch budget spent, host={}", allowed.getHost());
+        failed.add(key);
+        return null;
       }
       long finished = nanoClock.getAsLong();
       synchronized (cache) {
@@ -277,6 +286,9 @@ class PdfResourceLoader {
   /** Fixed cost charged to the cache bound for every entry, on top of its key and body. */
   static final long CACHE_ENTRY_OVERHEAD_BYTES = 64L;
 
+  /** Result of a download cut by the render's fetch budget: a fact about the render, not the resource. */
+  private static final byte[] BUDGET_CUT = new byte[0];
+
   private static final long CACHE_TTL_NANOS = 3600L * 1000000000L;
 
   private static final long FAILURE_TTL_NANOS = 60L * 1000000000L;
@@ -397,8 +409,16 @@ class PdfResourceLoader {
     return new Session(budget);
   }
 
-  /** One GET, no redirects, bounded body. Returns the body of a 200 response, otherwise {@code null}. */
-  private byte[] download(URI uri) {
+  /**
+   * One GET, no redirects, bounded body. Returns the body of a 200 response, {@code null} on any failure, or
+   * {@link #BUDGET_CUT} when the render's fetch budget ran out ({@code deadlineNanos} is its end). The deadline is
+   * checked right after the status line arrives and between body reads, and the partial body is discarded. The
+   * overrun is therefore bounded by the connect timeout plus the header wait (at most 10 s) when the budget runs out
+   * before the headers arrive, or by one read timeout (5 s) once the body has started. The timeouts are per socket
+   * operation: a slow TLS handshake or slow header bytes are bounded per read only, each read restarting the 5 s
+   * timeout.
+   */
+  private byte[] download(URI uri, long deadlineNanos) {
     HttpURLConnection connection = null;
     try {
       connection = connectionFactory.open(uri);
@@ -410,6 +430,10 @@ class PdfResourceLoader {
       if (status != HttpURLConnection.HTTP_OK) {
         LOG.debug("PDF resource fetch failed, host={}, status={}", uri.getHost(), status);
         return null;
+      }
+      if (nanoClock.getAsLong() - deadlineNanos >= 0) {
+        LOG.debug("PDF resource fetch stopped, fetch budget spent, host={}", uri.getHost());
+        return BUDGET_CUT;
       }
       if (connection.getContentLength() > MAX_BODY_BYTES) {
         LOG.debug("PDF resource over the size limit, host={}", uri.getHost());
@@ -423,6 +447,10 @@ class PdfResourceLoader {
           if (out.size() + read > MAX_BODY_BYTES) {
             LOG.debug("PDF resource over the size limit, host={}", uri.getHost());
             return null;
+          }
+          if (nanoClock.getAsLong() - deadlineNanos >= 0) {
+            LOG.debug("PDF resource fetch stopped, fetch budget spent, host={}", uri.getHost());
+            return BUDGET_CUT;
           }
           out.write(buffer, 0, read);
           read = in.read(buffer);

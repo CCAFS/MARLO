@@ -75,6 +75,7 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -87,7 +88,6 @@ import static org.junit.Assert.fail;
 public class LocalPdfReportServiceTest {
 
   private static final String HOST = "marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com";
-  private static final String GENERIC = LocalPdfReportService.GENERIC_ERROR_MESSAGE;
   private static final String TEMPLATE_MARKER = "SECRET-TEMPLATE-MARKER";
   private static final String PAYLOAD_MARKER = "SECRET-PAYLOAD-MARKER";
   private static final String URI_MARKER = "SECRET-URI-MARKER";
@@ -554,6 +554,12 @@ public class LocalPdfReportServiceTest {
     LocalPdfReportService service = newService(network);
     String[] names = {"oicr", "innovation", "project"};
     int[] pages = {5, 6, 7};
+    // Taken from the fixtures and checked against the extracted text: the report title and two section headings
+    // each. Headings styled text-transform: uppercase in the project template extract as upper case.
+    String[][] expectedText = {
+      {"Climate-smart advisory services", "SECTION 1: At a glance", "SECTION 2: The story and impact"},
+      {"Sample", "SECTION: At a glance", "SECTION: Bundle composition"},
+      {"AICCRA Cluster Summary", "KEY BADGES", "CLUSTER PARTNERS"}};
     Set<String> dejaVu = new TreeSet<String>();
     dejaVu.add("DejaVuSans");
     dejaVu.add("DejaVuSans-Bold");
@@ -570,6 +576,10 @@ public class LocalPdfReportServiceTest {
         assertEquals(names[i] + " page count", pages[i], document.getNumberOfPages());
         assertEquals(names[i] + " fonts (a fallback font would make the page count meaningless)", dejaVu,
           fontsOf(document));
+        String text = new PDFTextStripper().getText(document);
+        for (String expected : expectedText[i]) {
+          assertTrue(names[i] + " text lacks '" + expected + "'", text.contains(expected));
+        }
       }
     }
     List<String> infos = messages(Level.INFO);
@@ -692,7 +702,7 @@ public class LocalPdfReportServiceTest {
     Recorded recorded = new Recorded();
     service.renderToResponse(payload("<html><body><p>ok</p></body></html>", "{}"), "boom.pdf", response(recorded));
     assertEquals(Integer.valueOf(500), recorded.errorStatus);
-    assertEquals(GENERIC, recorded.errorMessage);
+    assertNull("no reason text", recorded.errorMessage);
     assertEquals(0, recorded.body.size());
     List<String> errors = messages(Level.ERROR);
     assertEquals(errors.toString(), 1, errors.size());
@@ -1131,7 +1141,7 @@ public class LocalPdfReportServiceTest {
     assertFalse(rendererLog.describe(), rendererLog.describe().contains(TEMPLATE_MARKER)
       || rendererLog.describe().contains(PAYLOAD_MARKER));
     assertEquals(Integer.valueOf(500), recorded.errorStatus);
-    assertEquals(GENERIC, recorded.errorMessage);
+    assertNull("no reason text", recorded.errorMessage);
     assertEquals(0, recorded.body.size());
     assertEquals(null, recorded.contentType);
     String logged = everythingLogged();
@@ -1149,7 +1159,7 @@ public class LocalPdfReportServiceTest {
     Recorded recorded = new Recorded();
     service.renderToResponse("{\"data\":{\"data\":{}}}", "x.pdf", response(recorded));
     assertEquals(Integer.valueOf(500), recorded.errorStatus);
-    assertEquals(GENERIC, recorded.errorMessage);
+    assertNull("no reason text", recorded.errorMessage);
   }
 
   @Test

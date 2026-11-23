@@ -3,7 +3,7 @@
 **Spec ID:** CHG-LOCAL-PDF-REPORT-ENGINE-001
 **Status:** Ready — Phase 3 gate `auto-approved (pre-approved mode)` 2026-11-20
 **Owner:** Kenji Tanaka (IBD)
-**Last Updated:** 2026-11-20
+**Last Updated:** 2026-11-23 (T09, T10 added; validation remediation W6)
 **Implements design:** docs/specs/changes/local-pdf-report-engine/design.md
 **Branching:** `feature/local-pdf-report-engine` (created `--no-track` from `staging` at `2f67c5d2ab`).
 **Target merge:** staging. **No commit or push without the owner's approval** (standing owner rule).
@@ -64,6 +64,9 @@
 - **Files touched:** `utils/pdf/HandlebarsReportHelpers.java` (new, GPL header);
   `src/test/java/.../utils/pdf/HandlebarsReportHelpersTest.java` (new);
   `src/test/resources/pdf/helper-vectors.json` (new).
+  *Added by the Pivot:* `utils/pdf/ReportTemplateSubset.java` (new, GPL header),
+  `src/test/java/.../utils/pdf/ReportTemplateSubsetTest.java` (new), `src/test/resources/pdf/subset-vectors.json`
+  (new), `src/test/resources/pdf/templates/*.html` (copied production templates, attempt 6; reused by T04).
 - **Scope:** register the 17 helpers of design §7.2 on a `Handlebars` instance configured with the map resolver
   and JavaScript number printing; override built-in `if`/`unless` with Handlebars.js semantics and let a literal
   `null` reach helpers as JS `null` (design §7.1 as amended 2026-11-20 — moved here from T04 during execution).
@@ -130,7 +133,7 @@
 
 - **Depends on:** T02, T03
 - **Module:** marlo-web
-- **Requirements:** FN-001, FN-002, FN-004, NF-001, NF-002, NF-003, NF-005, SEC-002, OPS-001 · **Design:** §7.1,
+- **Requirements:** FN-001, FN-002, FN-004, FN-008 (render-time WARN), NF-001, NF-002, NF-003, NF-005, SEC-002, OPS-001 · **Design:** §7.1,
   §7.4, §7.5, §10
 - **Files touched:** `utils/pdf/LocalPdfReportService.java`, `utils/pdf/PdfRenderException.java` (new);
   `utils/pdf/PdfResourceLoader.java` (failed-fetch counter, added during execution 2026-11-23);
@@ -152,7 +155,8 @@
     within 30 s ± 2 s on the submission entry point, and the queue no longer holds the cancelled task.
   - Saturation (NF-003): with the pool and queue full, the next call fails immediately.
   - Response (SEC-002): a template that fails to compile → `sendError(500, <generic message>)` on a mock response,
-    and the message contains neither template text nor exception text.
+    and the message contains neither template text nor exception text. *Superseded by T10: `sendError(500)` with
+    no reason text.*
 - **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest=LocalPdfReportServiceTest`.
 - **Falsifier:** set dots-per-pixel back to the default (20) → the OICR fixture renders 4 pages and the page-count
   assertion fails (spike: 4 pages at default scale).
@@ -279,6 +283,9 @@ T02 ∥ T03 and T05 ∥ (T01..T04) are parallel-safe; in this single-checkout ru
 | SEC-001 allowlist, BUT must NOT connect | T03 |
 | SEC-002 generic error | T04, T06 |
 | OPS-001 render log line | T04 |
+| FN-008 unsupported constructs: test fails, render WARNs | T02 (guard + production-template test), T04 (render-time WARN) |
+| FN-001/002 title and headings present in the PDF text | T10 |
+| Payload `null` values; unexpected render exceptions | T09 |
 
 Regression (manual, QA): download the three summaries with the flag on for one unit on a test environment and
 compare with the flag off.
@@ -297,7 +304,7 @@ compare with the flag off.
 
 ## 8. Definition of Done
 
-- T01–T07 done with evidence in `execution.md`; T08 handed to the follow-up spec.
+- T01–T07, T09 and T10 done with evidence in `execution.md`; T08 handed to the follow-up spec.
 - Gates green; visual parity accepted in `/akili-validate`.
 - Owner reviews and decides commit, push and merge.
 
@@ -318,3 +325,21 @@ compare with the flag off.
 - **Review:** `full`.
 - **Skills:** `error-handling-patterns`, `tdd`, `marlo-verify`.
 - **Done when:** tests green; live re-test renders the three PDFs with `outcome=ok`.
+
+### CHG-LPRE-T10 — Validation remediation: response text, content assertion, in-flight fetch bound
+- **Status:** [x]
+- **Origin:** `validation-report.md` (2026-11-23) findings F1, W1, W5; owner-approved 2026-11-23 ("sí, arregla todo").
+- **Depends on:** T03, T04, T09
+- **Module:** marlo-web
+- **Requirements:** UI-001, SEC-002, FN-001, FN-002, NF-004 · **Design:** §7.5, §11
+- **Files touched:** `utils/pdf/LocalPdfReportService.java`, `utils/pdf/PdfResourceLoader.java`, `LocalPdfReportServiceTest.java`, `PdfResourceLoaderTest.java`.
+- **Scope:**
+  1. **F1:** a failed download answers `sendError(500)` with **no reason text**, as the call sites' null-service branch already does. Remove `GENERIC_ERROR_MESSAGE` (no other user). Hard rule 8 / UI-001: no new user-facing string.
+  2. **W1:** `productionTemplatesRender…` also asserts, with PDFBox `PDFTextStripper`, that each production render's text contains its report title and at least two section headings taken from the fixture (AC-FN-001/002).
+  3. **W5:** the body read loop in `PdfResourceLoader.download` stops once the render's fetch budget is spent, checked between reads, so a slow-trickling allowlisted server can overrun the budget by at most one connect + one read timeout (≤ 10 s, the design §7.5 claim). *Amended at attempt 2 (Reviewer finding): the budget is also checked right after the status line; the bound is connect + header wait (≤ 10 s) or one read timeout once the body started (design §7.5); a budget cut stays in the render (session `failed` set) and is never remembered or cached for other renders.* The partial body is discarded and counted as a failed fetch.
+- **Tests:** SEC-002 tests assert status 500 and no reason text (no message leak, no fixed sentence). A loader test with a fake connection whose stream returns one byte per read on a fake clock that advances past the budget → `null`, failed fetch counted, loop ends.
+- **Falsifier:** restore the unbounded loop → the trickle test never ends or returns a body; restore the message → the SEC-002 test fails.
+- **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest='LocalPdfReportServiceTest,PdfResourceLoaderTest,LocalPdfEngineDispatchTest'`; clean compile; Checkstyle delta; hygiene.
+- **Review:** `full`.
+- **Skills:** `error-handling-patterns`, `tdd`, `marlo-verify`.
+- **Done when:** tests green; the validation re-check clears F1, W1 and W5.

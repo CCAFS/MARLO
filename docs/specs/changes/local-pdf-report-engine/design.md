@@ -2,7 +2,7 @@
 
 **Spec ID:** CHG-LOCAL-PDF-REPORT-ENGINE-001
 **Status:** Approved — Phase 2 gate `auto-approved (pre-approved mode)` 2026-11-20, after judgment-day round 1 fixes and re-judgment (see `judgment.md`)
-**Last Updated:** 2026-11-20
+**Last Updated:** 2026-11-23 (validation remediation: §3, §7.5, §10)
 **Depth:** Full · **Requirements:** `requirements.md` · **Evidence:** `spike.md`
 
 ---
@@ -54,6 +54,7 @@ flowchart LR
 | `marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/HtmlPdfCompatibility.java` | **New** — HTML preprocessing (§7.3) |
 | `marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PdfResourceLoader.java` | **New** — URI allowlist, timeouts, in-memory cache (§11) |
 | `marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/PdfRenderException.java` | **New** — checked failure carrying a log-safe message |
+| `marlo-web/src/main/java/org/cgiar/ccafs/marlo/utils/pdf/ReportTemplateSubset.java` | **New** (added by the T02 Pivot, §7.1) — port of the Handlebars.js lexer that lists template constructs outside the supported subset (FN-008) |
 | `marlo-web/src/main/resources/pdf/html-pdf-compat.css` | **New** — the F7–F9 overrides from `spike.md` |
 | `marlo-web/src/main/resources/pdf/fonts/DejaVuSans.ttf`, `DejaVuSans-Bold.ttf`, `LICENSE-DejaVu.txt` | **New** — DejaVu 2.37 (the version in `node:23`, spike F1), Bitstream Vera licence text |
 | `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/summaries/BaseStudySummaryData.java` | Call site — OICR (reached from `StudySummaryAction` only) |
@@ -61,7 +62,8 @@ flowchart LR
 | `marlo-web/src/main/java/org/cgiar/ccafs/marlo/action/summaries/ReportingSummaryAction.java` | Call sites — Cluster download and `generatePdfBytes` |
 | `marlo-data/.../config/APConstants.java`, `marlo-web/.../config/APConstants.java` | Constant `LOCAL_PDF_REPORT_ENGINE_ACTIVE` |
 | `marlo-web/src/main/resources/database/migrations/V2_6_0_<YYYYMMDD>_<HHMM>__AddLocalPdfReportEngineSpecificity.sql` | **New** — §5 |
-| `marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/*Test.java`, `marlo-web/src/test/resources/pdf/` | **New** — tests and fixtures (production templates + reference payloads) |
+| `marlo-web/src/test/java/org/cgiar/ccafs/marlo/utils/pdf/*Test.java`, `marlo-web/src/test/resources/pdf/` | **New** — tests and fixtures (production templates, reference payloads, `helper-vectors.json`, `subset-vectors.json` from the T02 Pivot, reference images) |
+| `marlo-web/src/test/java/org/cgiar/ccafs/marlo/action/summaries/LocalPdfEngineDispatchTest.java` | **New** (T06) — call-site dispatch with the flag on, off and absent |
 
 Not touched: `MicroserviceReportAction`, `struts-report.xml`, `report_configurations`, `APConfig`, the
 `microservice.*` keys, the FTL views.
@@ -221,13 +223,19 @@ the retirement spec can fold them into the templates.
 - Each render is bounded from inside, because layout cannot be interrupted: all remote fetches of one render share
   a **20 s total fetch budget**; once spent, further resources resolve to nothing. The budget bounds fetch time only;
   layout took ~1 s for these templates in the spike (F13).
-- A render that finishes after its caller's deadline logs a WARN with its total time. A fetch already in flight can
-  overrun the budget by its own timeouts (≤ 10 s). **Layout itself is not bounded**: a layout that never ends would
+- A render that finishes after its caller's deadline logs a WARN with its total time. A fetch already in flight is
+  checked against the budget right after the status line arrives and between body reads, and a partial body is
+  discarded (T10, validation W5). The overrun is therefore at most the connect timeout plus the header wait
+  (≤ 10 s) when the budget runs out during connect or header wait, or one read timeout (5 s) once the body has
+  started. Timeouts are per socket operation: a slow TLS handshake or slow header bytes are bounded per read only,
+  each read restarting the 5 s timeout — accepted, since the allowlist is two S3 hosts. A budget cut is a fact
+  about the render, not the resource: it counts in the render's `failedFetches` but is never remembered as a
+  failure nor cached for other renders. **Layout itself is not bounded**: a layout that never ends would
   hold its thread; this is an accepted risk (§17), capped by the pool size.
 - Two entry points: `render(payload, deadline)` returns bytes; `renderToResponse(payload, fileName, response)`
   writes `application/pdf`, `Content-Disposition: inline; filename="<fileName>"` — the headers
-  `downloadPDFByURL` sets today. A render failure calls `sendError(500)` with a fixed generic message when the
-  response is not committed. A failure while writing (client abort, I/O error) is not turned into `sendError`: a
+  `downloadPDFByURL` sets today. A render failure calls `sendError(500)` with no reason text when the
+  response is not committed (T10: no new user-facing string, Hard rule 8 / UI-001). A failure while writing (client abort, I/O error) is not turned into `sendError`: a
   client abort is logged at DEBUG, as the summary actions already do, and other I/O errors propagate to the caller.
 - The pool is shut down on bean destruction.
 - The bean holds no per-request state (it is a singleton shared by concurrent downloads — the same constraint
@@ -274,7 +282,11 @@ Not applicable — no FTL, JS or CSS of the web UI changes. The PDF layout is go
 - One INFO line per render: file name, outcome (`ok` | `failed` | `timeout` | `rejected`), bytes, pages, elapsed
   ms, the count of blocked resource URIs, and the count of failed fetches on allowlisted hosts (`failedFetches`,
   *added 2026-11-23 to match §17's mitigation*).
-- Failure: ERROR with the cause and stack trace, file name included. No template text or payload is logged.
+- Failure: ERROR with the cause and stack trace, file name included. No payload is logged.
+  *Amended 2026-11-23 (validation W4):* a `rejected` or `timeout` render logs its ERROR with the log-safe message
+  only — the cause is the pool or the deadline, not a stack worth reading; and the FN-008 WARN quotes the offending
+  template tags (at most 5, each cut to 60 characters) so the unsupported construct can be found. Template tags
+  are developer-authored, not user content.
 - Blocked resource: one DEBUG line per URI (host only), so SEC-001 rejections are visible without logging user
   content.
 

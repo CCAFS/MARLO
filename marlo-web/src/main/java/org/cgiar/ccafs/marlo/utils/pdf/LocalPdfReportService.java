@@ -90,9 +90,6 @@ public class LocalPdfReportService {
   /** Total time a caller waits on a download, below the common 60 s proxy idle timeout. */
   public static final long DOWNLOAD_DEADLINE_MS = 50000L;
 
-  /** The only text the user sees when a render fails. */
-  public static final String GENERIC_ERROR_MESSAGE = "The PDF report could not be generated.";
-
   static final int POOL_SIZE = 3;
 
   static final int QUEUE_CAPACITY = 6;
@@ -423,8 +420,8 @@ public class LocalPdfReportService {
 
   /**
    * Renders the report and writes it to the response as an inline PDF, with the headers
-   * {@code MicroserviceReportAction.downloadPDFByURL} sets. A render failure answers HTTP 500 with
-   * {@link #GENERIC_ERROR_MESSAGE} when the response is not committed yet; the cause is in the log. A client that
+   * {@code MicroserviceReportAction.downloadPDFByURL} sets. A render failure answers HTTP 500 with no reason text
+   * when the response is not committed yet; the cause is in the log. A client that
    * aborts is logged at DEBUG; any other write failure propagates.
    *
    * @param payload the JSON the summary actions send to the microservice.
@@ -440,7 +437,7 @@ public class LocalPdfReportService {
     } catch (PdfRenderException e) {
       if (!response.isCommitted()) {
         try {
-          response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, GENERIC_ERROR_MESSAGE);
+          response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } catch (IOException io) {
           rethrowUnlessClientAbort(io, name);
         }

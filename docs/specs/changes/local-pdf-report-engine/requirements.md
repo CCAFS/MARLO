@@ -4,7 +4,7 @@
 **Status:** Approved — `auto-approved (pre-approved mode)`, 2026-11-20
 **Owner:** Kenji Tanaka (IBD)
 **Reviewers:** pending owner review (pre-approved run)
-**Last Updated:** 2026-11-20
+**Last Updated:** 2026-11-23 (Decision Log: validation remediation)
 **Related PRD sections:** docs/prd.md — reporting outputs (summaries)
 **Related UX/UI Design sections:** not applicable (no screen changes)
 **Related TRD sections:** docs/trd/trd.md §2 (`action/summaries`), §7 Integration Points, §9 Observability
@@ -225,8 +225,19 @@ available as the fallback.
   production template exercises are accepted and listed in `design.md` §7.1 (execute-time decision under
   pre-approved mode — owner to confirm at review).
 - 2026-11-23 — After the T02 HALT the owner approved a fourth attempt; the parent-context walk and `null` list
-  elements are fixed in code (2,295 vectors). The accepted limits are now four (§7.1), the fourth being block
+  elements are fixed in code (2,295 vectors at the time; *superseded* — 2,414 helper vectors and 7,712 subset vectors after the Pivot, `execution.md` T02). The accepted limits are now four (§7.1), the fourth being block
   parameters, which the production templates do not use.
 - 2026-11-23 — **Pivot (owner-approved):** FN-003 parity is scoped to a supported template subset; constructs
   outside it are detected by a guard (FN-008) instead of being chased one by one. Reason: five review rounds each
   found another Handlebars.java divergence in constructs no production template uses.
+- 2026-11-23 — **Template images stay on S3 for this spec** (validation W8). Renders still fetch images from the two
+  allowlisted S3 buckets (SEC-001); moving them under MARLO belongs to the retirement spec. Proposal success
+  criterion S2 therefore reads, for this spec: *no call to Amazon MQ, to the `microservice-reports` bucket or to
+  CLARISA; image reads from the two allowlisted buckets remain*.
+- 2026-11-23 — **Submission path accepted on unit-test evidence (owner, validation W2).** FN-006 is evidenced by
+  `LocalPdfEngineDispatchTest` (`clusterSubmitWithTheFlagOn…` reaches `generatePdfBytes` with the 30 s deadline);
+  no live submit was run because it changes project state and emails real recipients. Owner words: "acepto la
+  evidencia de tests del submit".
+- 2026-11-23 — **No reason text on the failure 500 (validation F1).** The fixed English sentence is removed rather
+  than i18n-keyed: the response is Tomcat's error page, which MARLO does not localize, and the null-service branch
+  already answers a bare 500 (Hard rule 8, UI-001). Implemented in T10.

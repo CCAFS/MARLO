@@ -49,7 +49,7 @@ public class PdfResourceLoaderTest {
   private static final int MB = 1024 * 1024;
 
   /** A connection that serves a canned response and never touches the network. */
-  private static final class FakeConnection extends HttpURLConnection {
+  private static class FakeConnection extends HttpURLConnection {
 
     private final byte[] body;
     private final int declaredLength;
@@ -280,10 +280,11 @@ public class PdfResourceLoaderTest {
   public void fetchTimeSpentInOneRenderExhaustsItsBudgetButNotAnotherRendersBudget() {
     factory.advanceNanosPerOpen = 21 * SECOND;
     PdfResourceLoader.Session first = loader.newSession();
-    assertNotNull(first.fetch("https://" + HOST + "/one.png"));
+    assertNull("the body arrives after the budget is spent: discarded", first.fetch("https://" + HOST + "/one.png"));
     assertEquals(1, factory.opened.size());
     assertNull(first.fetch("https://" + HOST + "/two.png"));
     assertEquals("budget spent: no second connection", 1, factory.opened.size());
+    factory.advanceNanosPerOpen = 0;
     PdfResourceLoader.Session other = loader.newSession();
     assertNotNull(other.fetch("https://" + HOST + "/three.png"));
     assertEquals(2, factory.opened.size());
@@ -382,5 +383,112 @@ public class PdfResourceLoaderTest {
       }
     });
     assertNull(throwing.newSession().fetch(OK_URL));
+  }
+
+  /** A loader whose connections trickle one byte per read (1 s each) while {@code trickle[0]} is set. */
+  private PdfResourceLoader tricklingLoader(final int[] reads, final boolean[] trickle) {
+    return new PdfResourceLoader(new PdfResourceLoader.ConnectionFactory() {
+
+      @Override
+      public HttpURLConnection open(URI uri) throws IOException {
+        return new FakeConnection(uri, 200, new byte[] {1, 2, 3}, -1) {
+
+          @Override
+          public InputStream getInputStream() {
+            if (!trickle[0]) {
+              return super.getInputStream();
+            }
+            return new InputStream() {
+
+              @Override
+              public int read() {
+                return 1;
+              }
+
+              @Override
+              public int read(byte[] buffer, int offset, int length) {
+                reads[0]++;
+                clock.addAndGet(SECOND);
+                if (reads[0] > 100000) {
+                  return -1;
+                }
+                buffer[offset] = 1;
+                return 1;
+              }
+            };
+          }
+        };
+      }
+    }, new LongSupplier() {
+
+      @Override
+      public long getAsLong() {
+        return clock.get();
+      }
+    });
+  }
+
+  @Test(timeout = 10000)
+  public void aBodyThatTricklesInPastTheFetchBudgetIsDiscardedAndCountedAsAFailedFetch() {
+    int[] reads = {0};
+    PdfResourceLoader trickling = tricklingLoader(reads, new boolean[] {true});
+    PdfResourceLoader.Session session = trickling.newSession();
+    assertNull(session.fetch(OK_URL));
+    assertEquals(1, session.getFailedFetchCount());
+    assertTrue("the read loop stopped when the budget ran out, reads=" + reads[0], reads[0] <= 21);
+    assertEquals("the partial body is not cached", 0, trickling.accountedCacheBytes());
+  }
+
+  @Test(timeout = 10000)
+  public void aBudgetCutIsNotRememberedAsAFailureOfTheResourceForOtherRenders() {
+    boolean[] trickle = {true};
+    PdfResourceLoader trickling = tricklingLoader(new int[] {0}, trickle);
+    PdfResourceLoader.Session cut = trickling.newSession();
+    assertNull(cut.fetch(OK_URL));
+    assertEquals(1, cut.getFailedFetchCount());
+    trickle[0] = false;
+    PdfResourceLoader.Session other = trickling.newSession();
+    assertArrayEquals("a render cut by its budget says nothing about the resource", new byte[] {1, 2, 3},
+      other.fetch(OK_URL));
+    assertEquals(0, other.getFailedFetchCount());
+  }
+
+  @Test(timeout = 10000)
+  public void aBudgetSpentWhileWaitingForTheHeadersNeverStartsTheBodyRead() {
+    final boolean[] bodyRequested = {false};
+    PdfResourceLoader slowHeaders = new PdfResourceLoader(new PdfResourceLoader.ConnectionFactory() {
+
+      @Override
+      public HttpURLConnection open(URI uri) throws IOException {
+        return new FakeConnection(uri, 200, new byte[] {1, 2, 3}, -1) {
+
+          @Override
+          public int getResponseCode() {
+            clock.addAndGet(21 * SECOND);
+            return 200;
+          }
+
+          @Override
+          public InputStream getInputStream() {
+            bodyRequested[0] = true;
+            return super.getInputStream();
+          }
+        };
+      }
+    }, new LongSupplier() {
+
+      @Override
+      public long getAsLong() {
+        return clock.get();
+      }
+    });
+    PdfResourceLoader.Session session = slowHeaders.newSession();
+    assertNull(session.fetch(OK_URL));
+    assertFalse("the body read was not started", bodyRequested[0]);
+    assertEquals(1, session.getFailedFetchCount());
+    PdfResourceLoader.Session other = slowHeaders.newSession();
+    assertNull(other.fetch(OK_URL));
+    assertEquals("a cut is not remembered: the second render connected again", 1,
+      other.getFailedFetchCount());
   }
 }
