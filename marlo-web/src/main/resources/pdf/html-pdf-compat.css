@@ -1,0 +1,30 @@
+/*
+ * Transitional compatibility layer applied only by the local PDF report engine.
+ * Fold these rules into the templates when the reports microservice is retired
+ * (spec changes/retire-reports-microservice).
+ */
+
+/* OICR and innovation templates: span-based section blocks must stack (spike F5) */
+span.section, span.content {
+  display: block;
+}
+
+/* OICR and innovation cover page: fixed height for the first page (spike F7) */
+.first-page {
+  height: 620px;
+}
+
+/* All templates with a page header or footer: tables keep their declared widths (spike F9) */
+#pageFooter table, #pageHeader table, #pageFooter-1 table, #pageHeader-1 table {
+  table-layout: fixed;
+}
+
+/* Project template: header text and badges must not wrap (spike F8) */
+#pageHeader span, .badge {
+  white-space: nowrap;
+}
+
+/* OICR and innovation header and footer images: background images are positioned absolutely (spike F4) */
+.img-background {
+  position: absolute;
+}
