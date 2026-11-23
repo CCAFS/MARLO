@@ -25,7 +25,14 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url(../../global/images/login/login-texture.jpg);
+  /* A2-2746: shown at 16% opacity through mix-blend-mode: luminosity, which keeps only the brightness, so a grayscale
+     1000px copy looks the same as the 251 KB colour original. AVIF where supported; browsers without image-set()
+     type() keep the JPEG line */
+  background-image: url(../../global/images/login/login-texture-gray.jpg);
+  background-image: image-set(
+    url(../../global/images/login/login-texture-gray.avif) type("image/avif"),
+    url(../../global/images/login/login-texture-gray.jpg) type("image/jpeg")
+  );
   background-size: cover;
   background-position: center;
   mix-blend-mode: luminosity;
@@ -38,6 +45,13 @@
   min-height: 100vh;
   position: relative;
   overflow: hidden;
+}
+
+/* A2-2746: the photo now sits inside a <picture>, an inline box by default; without this its height: 100% has
+   nothing to resolve against and the photo stops filling the panel */
+.login-right picture {
+  display: block;
+  height: 100%;
 }
 
 .login-right-photo {
