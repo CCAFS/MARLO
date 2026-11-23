@@ -56,7 +56,7 @@
 - **Done when:** both trees quoted in `execution.md`; compile gate green; licence file present.
 
 ### CHG-LPRE-T02 — Handlebars helpers with JavaScript semantics
-- **Status:** [~]
+- **Status:** [x]
 
 - **Depends on:** T01
 - **Module:** marlo-web
@@ -66,7 +66,10 @@
   `src/test/resources/pdf/helper-vectors.json` (new).
 - **Scope:** register the 17 helpers of design §7.2 on a `Handlebars` instance configured with the map resolver
   and JavaScript number printing; override built-in `if`/`unless` with Handlebars.js semantics and let a literal
-  `null` reach helpers as JS `null` (design §7.1 as amended 2026-11-20 — moved here from T04 during execution). Backend route: `test-first` (tdd) · stack: project conventions.
+  `null` reach helpers as JS `null` (design §7.1 as amended 2026-11-20 — moved here from T04 during execution).
+  *Pivot 2026-11-23:* also add `ReportTemplateSubset` (lists unsupported constructs, design §7.1) with a test over
+  the three production templates (copied to `src/test/resources/pdf/templates/`), fix `../` under a `null` item,
+  and resolve `@odd`/`@even` as `undefined`. Requirements: FN-003, FN-008. Backend route: `test-first` (tdd) · stack: project conventions.
 - **Tests:** table-driven test over `helper-vectors.json`: each row is a template snippet, a context and the
   **expected output produced by Handlebars.js 4.7.8 with the helpers copied from `pdf.module.ts`** (generated once
   with Node from the cloned microservice; the generator command is recorded in the test resource header). Rows

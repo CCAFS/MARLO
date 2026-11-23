@@ -460,4 +460,180 @@ add('[{{#each xs}}{{#if @index includeZero=true}}T{{else}}F{{/if}}{{/each}}]', {
 add('[{{#if a b}}T{{else}}F{{/if}}]', { a: 1, b: 1 });
 add('[{{#unless a b}}T{{else}}F{{/unless}}]', { a: 1, b: 1 });
 add('[{{#if a}}T{{else}}F{{/if}}]', { a: [] });
+// Scope: a name missing from the current item is undefined (no parent-context walk); null list elements are JS null.
+// (attempt 4; design.md section 7.1 amended 2026-11-23)
+add('{{#each items}}[{{typeof name}}][{{name}}]{{/each}}', { name: 'root', items: [{}] });
+add('{{#each xs}}[{{typeof this}}][{{json this}}]{{/each}}', { xs: [null] });
+add('{{#with o}}[{{name}}]{{/with}}', { name: 'root', o: {} });
+add('{{#each items}}[{{name}}]{{/each}}', { name: 'root', items: [{}, { name: 'own' }, { name: null }, {}] });
+add('{{#each items}}[{{typeof name}}]{{/each}}', { name: 'root', items: [{}, { name: 'own' }, { name: null }] });
+add('{{#each items}}[{{#if name}}T{{else}}F{{/if}}]{{/each}}', { name: 'root', items: [{}, { name: 'own' }] });
+add('{{#each items}}[{{name.first}}]{{/each}}', { name: { first: 'root' }, items: [{}] });
+add('{{#each items}}[{{a.b}}]{{/each}}', { a: { b: 'root' }, items: [{ a: {} }, {}] });
+add('{{#each items}}[{{a.b}}]{{/each}}', { a: { b: 'root' }, items: [{ a: { b: 'own' } }] });
+add('{{#each a}}{{#each b}}[{{n}}]{{/each}}{{/each}}', { n: 'root', a: [{ n: 'outer', b: [{}, { n: 'inner' }] }] });
+add('{{#each a}}{{#each b}}[{{typeof n}}]{{/each}}{{/each}}', { n: 'root', a: [{ n: 'outer', b: [{}] }] });
+add('{{#each a}}{{#each b}}[{{n}}]{{/each}}{{/each}}', { n: 'root', a: [{ b: [{}] }] });
+add('{{#with o}}{{#with p}}[{{n}}]{{/with}}{{/with}}', { n: 'root', o: { n: 'mid', p: {} } });
+add('{{#with o}}{{#each p}}[{{n}}]{{/each}}{{/with}}', { n: 'root', o: { n: 'mid', p: [{}] } });
+add('{{#each items}}{{#with sub}}[{{n}}]{{/with}}{{/each}}', { n: 'root', items: [{ n: 'item', sub: {} }] });
+add('{{#each o}}[{{name}}]{{/each}}', { name: 'root', o: { a: {}, b: { name: 'x' } } });
+add('{{#each items}}{{#ifCond 1 "===" 1}}[{{name}}]{{/ifCond}}{{/each}}', { name: 'root', items: [{}, { name: 'i' }] });
+add('{{#each items}}{{#ifEquals 1 1}}[{{name}}]{{/ifEquals}}{{/each}}', { name: 'root', items: [{}, { name: 'i' }] });
+add('{{#each items}}{{#ifNotEquals 1 2}}[{{name}}]{{/ifNotEquals}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#ifAnd 1 1}}[{{name}}]{{/ifAnd}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#ifOr 1 0}}[{{name}}]{{/ifOr}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#stringContentCompare "a" "A"}}[{{name}}]{{/stringContentCompare}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#safeEmpty}}{{name}}{{/safeEmpty}}{{/each}}', { name: 'root', items: [{}, { name: 'i' }] });
+add('{{#each items}}{{#percentage}}{{pct}}{{/percentage}}{{/each}}', { pct: 0.5, items: [{}, { pct: 0.25 }] });
+add('{{#each items}}{{#if x}}[{{name}}]{{/if}}{{/each}}', { name: 'root', items: [{ x: 1 }, { x: 1, name: 'i' }] });
+add('{{#each items}}{{#unless x}}[{{name}}]{{/unless}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#if x}}{{else}}[{{name}}]{{/if}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{mathOperator n "+" 1}}{{/each}}', { n: 5, items: [{}, { n: 1 }] });
+add('{{#each items}}[{{safeString name}}]{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}[{{#ifCond name "===" "root"}}R{{else}}O{{/ifCond}}]{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}[{{conditionalAttribiute name "root" "a" "Y" "N"}}]{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}[{{yesNoHelper name}}]{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}[{{inList name "a,b"}}]{{/each}}', { name: 'a', items: [{ name: 'a' }] });
+add('{{#each items}}[{{or name flag}}]{{/each}}', { name: 'root', flag: 1, items: [{}, { flag: 0 }] });
+add('{{#each items}}[{{json name}}]{{/each}}', { name: 'root', items: [{}] });
+// parents stay reachable through ../ and @root, and the item itself through this / ./
+add('{{#each items}}[{{../name}}]{{/each}}', { name: 'root', items: [{}, { name: 'own' }] });
+add('{{#each items}}[{{@root.name}}]{{/each}}', { name: 'root', items: [{}, { name: 'own' }] });
+add('{{#each items}}[{{@root.name}}][{{name}}]{{/each}}', { name: 'root', items: [{ name: 'own' }] });
+add('{{#each items}}[{{this.name}}][{{./name}}]{{/each}}', { name: 'root', items: [{}, { name: 'own' }] });
+add('{{#with o}}[{{../name}}]{{/with}}', { name: 'root', o: {} });
+add('{{#with o}}[{{@root.name}}][{{this.name}}]{{/with}}', { name: 'root', o: { name: 'in' } });
+add('{{#each a}}{{#each b}}[{{../n}}][{{../../n}}][{{@root.n}}]{{/each}}{{/each}}', { n: 'root', a: [{ n: 'outer', b: [{}] }] });
+add('{{#each a}}{{#with b}}[{{../n}}][{{../../n}}]{{/with}}{{/each}}', { n: 'root', a: [{ n: 'outer', b: {} }] });
+add('{{#each items}}{{#if x}}[{{../name}}]{{/if}}{{/each}}', { name: 'root', items: [{ x: 1 }] });
+add('{{#each items}}{{#ifCond 1 "===" 1}}[{{../name}}]{{/ifCond}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#safeEmpty}}{{../name}}{{/safeEmpty}}{{/each}}', { name: 'root', items: [{}] });
+add('{{#each items}}{{#with sub}}[{{../name}}]{{/with}}{{/each}}', { name: 'root', items: [{ name: 'item', sub: {} }] });
+add('{{#each items}}[{{@index}}/{{@first}}/{{@last}}][{{name}}]{{/each}}', { name: 'root', items: [{}, { name: 'b' }, {}] });
+add('{{#each o}}[{{@key}}][{{@index}}][{{name}}]{{/each}}', { name: 'root', o: { a: {}, b: { name: 'b' } } });
+add('{{#each items}}{{#each sub}}[{{@index}}][{{@../index}}][{{@root.name}}]{{/each}}{{/each}}', { name: 'root', items: [{ sub: [1, 2] }, { sub: [3] }] });
+// Data variables (@index, @key, @first, @last) stay visible in nested scopes (attempt 5; design.md section 7.1)
+add('{{#each xs}}{{#with o}}[{{@index}}][{{@first}}][{{@last}}]{{/with}}{{/each}}', { xs: [{ o: {} }, { o: { a: 1 } }, { o: {} }] });
+add('{{#each m}}{{#with this}}[{{@key}}]{{/with}}{{/each}}', { m: { a: { x: 1 }, b: { y: 2 } } });
+add('{{#each m}}{{#with this}}[{{@key}}][{{@index}}][{{@first}}][{{@last}}]{{/with}}{{/each}}', { m: { a: { x: 1 }, b: { y: 2 } } });
+add('{{#each xs}}{{#ifEquals this null}}[{{@index}}]{{/ifEquals}}{{/each}}', { xs: [null] });
+add('{{#each xs}}{{#ifEquals this null}}[{{@index}}]{{/ifEquals}}{{/each}}', { xs: [1, null, 2, null] });
+add('{{#each xs}}{{#ifEquals this null}}[{{@first}}][{{@last}}]{{/ifEquals}}{{/each}}', { xs: [null, 1, null] });
+add('{{#each m}}{{#ifEquals this null}}[{{@key}}]{{/ifEquals}}{{/each}}', { m: { a: null, b: 1 } });
+add('{{#each xs}}{{#if this}}[{{@index}}]{{else}}<{{@index}}>{{/if}}{{/each}}', { xs: [null, 1, 0, 'a'] });
+add('{{#each xs}}{{#unless this}}[{{@index}}]{{else}}<{{@index}}>{{/unless}}{{/each}}', { xs: [null, 1, 0, 'a'] });
+add('{{#each xs}}{{#if x}}[{{@index}}][{{@first}}][{{@last}}]{{/if}}{{/each}}', { xs: [{ x: 1 }, {}, { x: 1 }] });
+add('{{#each xs}}{{#unless x}}[{{@index}}][{{@first}}][{{@last}}]{{/unless}}{{/each}}', { xs: [{ x: 1 }, {}, { x: 1 }] });
+add('{{#each xs}}{{#safeEmpty}}[{{@index}}]{{/safeEmpty}}{{/each}}', { xs: [1, 2] });
+add('{{#each xs}}{{#safeEmpty}}{{@index}}{{@last}}{{/safeEmpty}}{{/each}}', { xs: [{}, {}] });
+add('{{#each xs}}{{#ifOr x y}}[{{@index}}][{{@last}}]{{/ifOr}}{{/each}}', { xs: [{ x: 1 }, {}, { y: 1 }] });
+add('{{#each xs}}{{#ifAnd x y}}[{{@index}}]{{else}}<{{@index}}>{{/ifAnd}}{{/each}}', { xs: [{ x: 1, y: 1 }, { x: 1 }] });
+add('{{#each xs}}{{#ifCond @index "===" 1}}[one]{{else}}[{{@index}}]{{/ifCond}}{{/each}}', { xs: ['a', 'b', 'c'] });
+add('{{#each xs}}{{#ifEquals @index 0}}[first]{{/ifEquals}}{{#ifNotEquals @index 0}}[{{@index}}]{{/ifNotEquals}}{{/each}}', { xs: ['a', 'b', 'c'] });
+add('{{#each xs}}{{#if @last}}[last]{{else}}[{{@index}}]{{/if}}{{/each}}', { xs: ['a', 'b', 'c'] });
+add('{{#each xs}}{{#unless @last}}[{{@index}}]{{/unless}}{{/each}}', { xs: ['a', 'b', 'c'] });
+add('{{#each xs}}{{#if @first}}[first]{{/if}}{{/each}}', { xs: ['a', 'b'] });
+add('{{#each xs}}{{#each ys}}[{{@index}}][{{@../index}}]{{/each}}|{{/each}}', { xs: [{ ys: ['a', 'b'] }, { ys: ['c'] }] });
+add('{{#each xs}}{{#each ys}}[{{@first}}][{{@last}}][{{@../first}}][{{@../last}}]{{/each}}|{{/each}}', { xs: [{ ys: ['a', 'b'] }, { ys: ['c'] }] });
+add('{{#each o}}{{#each this}}[{{@key}}][{{@../key}}]{{/each}}{{/each}}', { o: { a: { x: 1, y: 2 }, b: { z: 3 } } });
+add('{{#each xs}}{{#each ys}}[{{@index}}]{{/each}}[{{@index}}]{{/each}}', { xs: [{ ys: [1, 2] }, { ys: [] }, { ys: [3] }] });
+add('{{#each xs}}{{#each ys}}{{#with this}}[{{@index}}][{{@../index}}]{{/with}}{{/each}}{{/each}}', { xs: [{ ys: [{ a: 1 }, { b: 2 }] }, { ys: [{ c: 3 }] }] });
+add('{{#each xs}}{{#each ys}}{{#with this}}[{{@index}}][{{@first}}][{{@last}}]{{/with}}{{/each}}{{/each}}', { xs: [{ ys: [{ a: 1 }, { b: 2 }] }, { ys: [{ c: 3 }] }] });
+add('{{#each xs}}{{#with o}}{{#with p}}[{{@index}}][{{@last}}]{{/with}}{{/with}}{{/each}}', { xs: [{ o: { p: {} } }, { o: { p: { q: 1 } } }] });
+add('{{#each xs}}{{#each ys}}{{#if @last}}[{{@../index}}]{{/if}}{{/each}}{{/each}}', { xs: [{ ys: [1, 2] }, { ys: [3] }] });
+add('{{#each xs}}{{#each ys}}{{#ifOr @first @last}}[{{@index}}]{{/ifOr}}{{/each}}{{/each}}', { xs: [{ ys: [1, 2, 3] }] });
+add('{{#each xs}}{{#with o}}{{#if @first}}[first]{{else}}[{{@index}}]{{/if}}{{/with}}{{/each}}', { xs: [{ o: {} }, { o: {} }] });
+add('{{#each xs}}{{#with o}}{{@root.n}}[{{@index}}]{{/with}}{{/each}}', { n: 'root', xs: [{ o: {} }] });
+add('{{#each xs}}{{#ifEquals this null}}{{#with this}}[{{@index}}]{{/with}}{{else}}<{{@index}}>{{/ifEquals}}{{/each}}', { xs: [null, 1] });
+add('{{#each xs}}{{#with o}}[{{@missing}}][{{typeof @missing}}]{{/with}}{{/each}}', { xs: [{ o: {} }] });
+add('{{#each xs}}{{#with o}}[{{@index}}]{{/with}}{{/each}}[{{@index}}]', { xs: [{ o: {} }] });
+// A block helper's body renders in the current item (`this`), whatever its first argument is (attempt 5: a missing or
+// null first argument must not turn the body's context into an empty object)
+add('{{#if r}}R{{else}}[{{d}}]{{/if}}', { d: 7 });
+add('{{#unless r}}[{{d}}]{{/unless}}', { d: 7 });
+add('{{#if r}}R{{else}}{{#if d}}D[{{d}}]{{/if}}{{/if}}', { d: 7 });
+add('{{#if r}}R{{else}}[{{d}}]{{/if}}', { r: null, d: 7 });
+add('{{#if r}}R{{else}}[{{d}}]{{/if}}', { r: 0, d: 7 });
+add('{{#unless r}}[{{d}}]{{/unless}}', { r: null, d: 7 });
+add('{{#ifEquals r 1}}x{{else}}[{{d}}]{{/ifEquals}}', { d: 7 });
+add('{{#ifNotEquals r null}}x{{else}}[{{d}}]{{/ifNotEquals}}', { d: 7 });
+add('{{#ifEquals r null}}[{{d}}]{{/ifEquals}}', { d: 7 });
+add('{{#ifCond r "===" 1}}x{{else}}[{{d}}]{{/ifCond}}', { d: 7 });
+add('{{#ifCond r "==" null}}[{{d}}]{{/ifCond}}', { d: 7 });
+add('{{#ifOr this.a this.b}}x{{else}}[{{d}}]{{/ifOr}}', { d: 7 });
+add('{{#ifOr this.a this.b}}[{{this.c}}]{{/ifOr}}', { b: true, c: 3 });
+add('{{#ifOr this.a this.b}}[{{#if this.b}}B{{/if}}[{{c}}]]{{/ifOr}}', { b: true, c: 3 });
+add('{{#ifAnd r d}}x{{else}}[{{d}}]{{/ifAnd}}', { d: 7 });
+add('{{#stringContentCompare "a" "b"}}x{{else}}[{{d}}]{{/stringContentCompare}}', { d: 7 });
+add('{{#each xs}}{{#if r}}R{{else}}[{{d}}]{{/if}}{{/each}}', { xs: [{ d: 7 }, { r: 1, d: 8 }, { r: null, d: 9 }] });
+add('{{#each xs}}{{#unless r}}[{{d}}]{{/unless}}{{/each}}', { xs: [{ d: 7 }, { r: 1, d: 8 }] });
+add('{{#each xs}}{{#if r}}R{{else}}{{#if d}}D[{{d}}]{{/if}}{{/if}}{{/each}}', { xs: [{ r: 'x' }, { d: 7 }, {}] });
+add('{{#each xs}}{{#ifOr this.a this.b}}[{{#if this.b}}B{{/if}}{{#if this.c}}C{{/if}}]{{/ifOr}}{{/each}}', { xs: [{ b: true, c: true }, { a: 1 }, { c: true }] });
+add('{{#each xs}}{{#ifEquals r null}}[{{d}}][{{@index}}]{{/ifEquals}}{{/each}}', { xs: [{ d: 7 }, { r: 1, d: 8 }] });
+add('{{#each xs}}{{#ifCond r "===" 1}}x{{else}}[{{d}}][{{@index}}]{{/ifCond}}{{/each}}', { xs: [{ d: 7 }, { r: 1, d: 8 }] });
+add('{{#with o}}{{#if r}}R{{else}}[{{d}}]{{/if}}{{/with}}', { o: { d: 7 } });
+// Not covered (Handlebars.java limit, design.md 7.1): a plain name missing from the item inside a block-parameter block
+// ({{#each x as |i|}}, {{#with x as |p|}}) still reads the enclosing scope; Context$BlockParam is package-private.
+add('{{#each items as |it i|}}[{{i}}][{{it.name}}]{{/each}}', { items: [{ name: 'a' }, { name: 'b' }] });
+add('{{#each a as |x|}}{{#each b as |y|}}[{{x.n}}][{{y.n}}]{{/each}}{{/each}}', { a: [{ n: 1, b: [{ n: 2 }] }] });
+add('{{#with o as |p|}}[{{p.name}}][{{name}}]{{/with}}', { name: 'root', o: { name: 'in' } });
+add('{{#each items as |name|}}[{{name}}]{{/each}}', { items: [{ name: 'item' }] });
+add('{{name}}', { name: 'root' });
+add('{{#with o}}{{name}}{{else}}EMPTY{{/with}}', { name: 'root', o: {} });
+add('{{#each items}}{{name}}{{else}}EMPTY{{/each}}', { name: 'root', items: [] });
+// null elements of lists and maps are JavaScript null
+const nullTemplates = [
+  '[{{typeof this}}]', '[{{json this}}]', '[{{this}}]', '[{{#ifCond this "===" null}}T{{else}}F{{/ifCond}}]',
+  '[{{#ifCond this "==" null}}T{{else}}F{{/ifCond}}]', '[{{#ifCond this "!==" null}}T{{else}}F{{/ifCond}}]',
+  '[{{#ifEquals this null}}T{{else}}F{{/ifEquals}}]', '[{{#ifEquals this ""}}T{{else}}F{{/ifEquals}}]',
+  '[{{#ifEquals this 0}}T{{else}}F{{/ifEquals}}]', '[{{#ifNotEquals this null}}T{{else}}F{{/ifNotEquals}}]',
+  '[{{or this 0}}]', '[{{or this null}}]', '[{{#if this}}T{{else}}F{{/if}}]', '[{{#unless this}}T{{else}}F{{/unless}}]',
+  '[{{safeString this}}]', '[{{conditionalAttribiute this null "a" "Y" "N"}}]',
+  '[{{conditionalAttribiute this "" "a" "Y" "N"}}]', '[{{yesNoHelper this}}]', '[{{yesNoHelper this "dflt"}}]',
+  '[{{#ifAnd this 1}}T{{else}}F{{/ifAnd}}]', '[{{#ifOr this 0}}T{{else}}F{{/ifOr}}]',
+  '[{{mathOperator this "+" 1}}]', '[{{#safeEmpty}}{{this}}{{/safeEmpty}}]', '[{{name}}]',
+];
+[{ xs: [null] }, { xs: [1, null] }, { xs: [null, null, 'a'] }, { xs: [[null]] }, { xs: [{ a: null }, null] }].forEach((data) => {
+  nullTemplates.forEach((t) => add('{{#each xs}}' + t + '{{/each}}', data));
+});
+nullTemplates.forEach((t) => add('{{#each o}}' + t + '{{/each}}', { o: { a: null } }));
+nullTemplates.forEach((t) => add('{{#each o.a}}' + t + '{{/each}}', { o: { a: [null] } }));
+nullTemplates.forEach((t) => add('{{#each a}}' + t + '{{/each}}', { a: [null] }));
+nullTemplates.forEach((t) => add('{{#each (parseJSON s)}}' + t + '{{/each}}', { s: '[null]' }));
+nullTemplates.forEach((t) => add('{{#each (parseJSON s)}}' + t + '{{/each}}', { s: '[1,null]' }));
+nullTemplates.forEach((t) => add('{{#each (parseJSON s)}}' + t + '{{/each}}', { s: '{"a":null}' }));
+nullTemplates.forEach((t) => add('{{#each (parseJSON s)}}' + t + '{{/each}}', { s: '{"a":[null]}' }));
+nullTemplates.forEach((t) => add('{{#with (parseJSON s)}}{{#each a}}' + t + '{{/each}}{{/with}}', { s: '{"a":[null]}' }));
+nullTemplates.forEach((t) => add('{{#with (parseJSON s)}}' + t + '{{/with}}', { s: 'null' }));
+add('{{typeof xs.[0]}}', { xs: [null] });
+add('{{json xs}}', { xs: [null] });
+add('{{json xs}}', { xs: [1, null, [null], { a: null }] });
+add('{{json (parseJSON s)}}', { s: '[null]' });
+add('{{json (parseJSON s)}}', { s: '{"a":null}' });
+add('{{json (parseJSON s)}}', { s: '{"a":[null,{"b":null}]}' });
+add('{{typeof (parseJSON s)}}', { s: '[null]' });
+add('{{typeof (parseJSON s)}}', { s: '{"a":null}' });
+add('{{#with (parseJSON s)}}{{typeof a}}{{/with}}', { s: '{"a":null}' });
+add('{{#with (parseJSON s)}}{{#ifCond a "===" null}}T{{else}}F{{/ifCond}}{{/with}}', { s: '{"a":null}' });
+add('{{#with (parseJSON s)}}{{#ifCond b "===" null}}T{{else}}F{{/ifCond}}{{/with}}', { s: '{"a":null}' });
+add('{{#ifCond xs.[0] "===" null}}T{{else}}F{{/ifCond}}', { xs: [null] });
+add('{{#ifEquals xs.[0] null}}T{{else}}F{{/ifEquals}}', { xs: [null] });
+add('{{x}}', { x: [null] });
+add('{{x}}', { x: [null, [null], 1] });
+add('{{typeof a.b.[0]}}', { a: { b: [null] } });
+add('{{#ifCond xs.[1] "===" null}}T{{else}}F{{/ifCond}}', { xs: [null] });
+// Supported-subset fixes (Pivot 2026-11-23): ../ under a null item, @odd/@even are undefined, @key in nested each
+add('{{#each xs}}{{#ifEquals this null}}[{{../n}}]{{/ifEquals}}{{/each}}', { n: 'r', xs: [null] });
+add('{{#each xs}}{{#safeEmpty}}{{../n}}{{/safeEmpty}}{{/each}}', { n: 'r', xs: [null] });
+add('{{#each xs}}{{#ifEquals this null}}[{{../n}}][{{@index}}][{{@first}}][{{@last}}]{{/ifEquals}}{{/each}}', { n: 'r', xs: [1, null, 2] });
+add('{{#each xs}}{{#ifEquals this null}}[{{../n}}][{{x}}][{{@root.n}}]{{/ifEquals}}{{/each}}', { n: 'r', x: 'top', xs: [null] });
+add('{{#each xs}}{{#if this}}[{{../n}}]{{else}}[{{../n}}]{{/if}}{{/each}}', { n: 'r', xs: [null, 1] });
+add('{{#each a}}{{#each b}}{{#ifEquals this null}}[{{../n}}][{{../../n}}]{{/ifEquals}}{{/each}}{{/each}}', { n: 'r', a: [{ n: 'o', b: [null] }] });
+add('{{#each xs}}[{{@odd}}][{{@even}}]{{/each}}', { xs: [1, 2] });
+add('{{#each xs}}{{#if @odd}}O{{else}}E{{/if}}{{/each}}', { xs: [1, 2, 3] });
+add('{{#each m}}[{{@odd}}][{{@even}}]{{/each}}', { m: { a: 1, b: 2 } });
+add('{{#each xs}}{{#with this}}[{{@odd}}][{{@even}}]{{/with}}{{/each}}', { xs: [{ a: 1 }, { a: 2 }] });
+add('{{#each m}}{{#each list}}[{{@key}}]{{/each}}{{/each}}', { m: { a: { list: ['x', 'y'] }, b: { list: ['z'] } } });
+add('{{#each m}}{{#each list}}[{{@key}}][{{@../key}}]{{/each}}|{{/each}}', { m: { a: { list: ['x', 'y'] }, b: { list: ['z'] } } });
 module.exports = R;

@@ -46,7 +46,10 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
   microservice (`data.data`, `data.options`, `data.templateData`, `data.fileName`), so both engines receive
   identical input.
 - **CHG-LPRE-FN-003** — The local engine MUST provide every Handlebars helper that `reports-microservice`
-  registers (`pdf.module.ts`), with the same results for the same inputs.
+  registers (`pdf.module.ts`), with the same results for the same inputs, for templates within the supported
+  template subset (`design.md` §7.1). *Amended 2026-11-23 (Pivot, owner-approved).*
+- **CHG-LPRE-FN-008** — The system MUST detect constructs outside the supported template subset: a test MUST fail
+  when a production template uses one, and a render MUST log a warning naming them. *Added 2026-11-23 (Pivot).*
 - **CHG-LPRE-FN-004** — The local engine MUST reproduce html-pdf's page model: A4 portrait, header and footer
   heights taken from `options.header.height` / `options.footer.height`, `#pageHeader` / `#pageFooter` repeated on
   every page, and `#pageHeader-1` / `#pageFooter-1` (or `-first`) replacing them on page 1.
@@ -218,6 +221,12 @@ available as the fallback.
   cannot include.
 - 2026-11-20 — Column widening to `MEDIUMTEXT` deferred — no template changes in this spec, so the 201-byte
   headroom is not consumed (proposal R2).
-- 2026-11-20 — FN-003 parity is proven by 1,853 Handlebars.js-generated vectors; three Handlebars.java edge cases
-  that no production template exercises are accepted and listed in `design.md` §7.1 (execute-time decision under
+- 2026-11-20 — FN-003 parity is proven by Handlebars.js-generated vectors; Handlebars.java edge cases that no
+  production template exercises are accepted and listed in `design.md` §7.1 (execute-time decision under
   pre-approved mode — owner to confirm at review).
+- 2026-11-23 — After the T02 HALT the owner approved a fourth attempt; the parent-context walk and `null` list
+  elements are fixed in code (2,295 vectors). The accepted limits are now four (§7.1), the fourth being block
+  parameters, which the production templates do not use.
+- 2026-11-23 — **Pivot (owner-approved):** FN-003 parity is scoped to a supported template subset; constructs
+  outside it are detected by a guard (FN-008) instead of being chased one by one. Reason: five review rounds each
+  found another Handlebars.java divergence in constructs no production template uses.

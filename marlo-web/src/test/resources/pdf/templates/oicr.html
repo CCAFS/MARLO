@@ -1,0 +1,964 @@
+<html>
+<style>
+
+    @page:first {
+    background: url('https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/cover-PDF.png') no-repeat center center;
+    background-size: cover;
+    margin: 0; /* Remove default margin */
+    }
+
+    @font-face {
+        font-family: 'Montserrat';
+        src: url('data:font/woff2;base64,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' format("woff2"));
+        font-weight: normal;
+        font-style: normal;
+    }
+
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11px;
+        color: #333;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 14px;
+        color: #333;
+        font-weight: bold;
+    }
+    
+    #pageHeader{
+        margin: 0;
+        width: 100%;
+        background-color: transparent;
+        position: running(pageHeader);
+    }
+
+    #pageHeader-1{
+        margin: 0;
+        width: 100%;
+        background-color: transparent;
+        position: running(pageHeader-1);
+    }
+
+    #pageContent{
+        overflow: visible;
+    }
+
+    #pageFooter{
+        margin: 0;
+        width: 100%;
+        background-color: transparent;
+        position: running(pageFooter);
+        bottom: 0;
+    }
+
+    .page {
+        display: block;
+        padding-top: 2px;
+        padding-right: 5rem;
+        padding-left: 5rem;
+    }
+
+    .full-page-height {
+        height: 976px;
+    }
+
+    .first-page {
+        height: 100%;
+        text-align: center;
+        position: relative;
+        background-image: url('https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/cover-PDF.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin-top: -10mm; /* Compensate for header margin */
+        padding-top: 10mm; /* Add padding to maintain content position */
+        display: flex;
+        flex-wrap: wrap;
+        align-content: space-between;
+
+    }
+
+    .header {
+        width: 100%;
+        margin-bottom: 10px;
+        border-collapse: collapse;
+    }
+
+    .header td {
+        padding: 10px;
+        vertical-align: middle;
+    }
+
+    .header h3 {
+        margin: 0;
+        text-align: left;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .header-logo {
+        text-align: right;
+    }
+
+    .header-logo img {
+        max-width: 75%;
+        height: auto;
+    }
+
+    /* Add page-specific styles */
+    .page-container {
+        position: relative;
+        min-height: 100
+        padding-bottom: 10mm; /* Footer height */
+    }
+
+    .img-background {
+        position: fixed;
+        bottom: 0px;
+        left: 0;
+        z-index: -1;
+        overflow: visible;
+    }
+
+    .img-background-top {
+        top: 0;
+        botttom: auto;
+    }
+
+    span.section {}
+
+    span.section>.mainTitle{
+        font-size: 14px;
+        font-weight: bold;
+        color: #F39619;
+    }
+
+    span.section>.title {
+        font-size: 14px;
+        font-weight: bold;
+        color: #0C9999;
+    }
+
+    span.section>.subtitle{
+        font-size: 11px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    span.field{ 
+        display: block; 
+        margin-bottom: 3px;
+        font-weight: lighter; 
+        font-size: 11px;
+    }
+
+    span.name {
+        font-weight: bold;
+    }
+
+    span.subtitle {
+        display: block;
+        font-size: 8px;
+    }
+
+    table {
+        font-size: 9px;
+        overflow: hidden;
+    }
+
+    .table{ 
+        width: 100%; 
+        border-collapse: collapse; 
+    } 
+    .table td,.table th { 
+        border: 1px solid #a8d08d; 
+        padding: 8px; 
+        vertical-align: top; 
+    } 
+    .table tr:nth-child(even){
+        background-color: #e2efd9;
+    } 
+    .table th{ 
+        text-align: center; 
+        padding: 8px; 
+        background-color: #7ab800; 
+        color: white; 
+    } 
+
+    .table_transparent{ 
+        width: 100%; 
+        border-collapse: collapse; 
+        border: none; 
+    }
+
+    .table_blue{ 
+        width: 100%; 
+        border-collapse: collapse; 
+        border: 1px solid #57A7B5;
+    } 
+    .table_blue td, .table_blue th { 
+        padding: 8px; 
+        vertical-align: top; 
+        border: none;
+    } 
+    
+    .table_blue tr:nth-child(odd){
+        background-color: #CEE6EA; 
+    } 
+    .table_blue th{ 
+        text-align: center; 
+        padding: 8px; 
+        background-color:#57A7B5; 
+        color: white; 
+    }
+
+    .opacity-50 {
+        fill-opacity: 0.5;
+    }
+
+    @media print {
+        .first-page {
+            page-break-after: always;
+        }
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Generated Report</title>
+</head>
+
+<body>
+    <div id="pageHeader">
+    </div>
+
+    <div id="pageContent">
+        
+        <span class="page full-page-height first-page">
+            <table style="height: 100%; width: 100%;">
+                <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <h1>{{#safeEmpty}}{{title}}{{/safeEmpty}}</h1>
+                    </td>
+                </tr>
+            </table>
+        </span>
+
+        {{!--
+        /**
+         * Template for displaying a PDF report section containing:
+         * 
+         * SECTION 1: At a glance
+         * - Short outcome/impact statement
+         * - Geographic location showing:
+         *   - Map image for Africa
+         *   - Scope, countries and regions
+         * - General Information displaying:
+         *   - OICR code with icon
+         *   - Status with icon
+         *   - Tag with icon  
+         *   - Report year with icon
+         *   - Cluster lead with icon
+         *   - Lead contact person with icon
+         *   - Level of maturity with icon
+         * - Other contributing clusters list
+         * - Key contributors table showing:
+         *   - CG Centers/Managing partners
+         *   - External partners
+         *   Each with columns for name, type and headquarter location
+         *
+         * Uses safeEmpty helper for nullable fields
+         * Uses table layouts and custom styling classes
+         * Includes linked icons from S3 bucket
+         */
+        --}}
+        <span class="page">
+
+            <span class="section">
+                <h1 class="mainTitle">SECTION 1: At a glance</h1>
+                <h2 class="title">Short outcome/impact statement</h2>
+                <span class="content">
+                    <span class="field">
+                        {{#safeEmpty}}{{{outcomeImpactStatement}}}{{/safeEmpty}}
+                    </span>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">Geographic location</h2>
+                <span class="content">
+                    <table class="table_transparent">
+                        <tr>
+                            <td width="20%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/Africa.png" width="73.92px" height="78.72px" />
+                            </td>
+                            <td width="80%">
+                                <span class="field">
+                                    <span class="name ">Scope: </span> {{#safeEmpty}}{{geographicScopes}}{{/safeEmpty}}
+                                </span>
+                                <span class="field">
+                                    <span class="name">Country(ies): </span> {{#safeEmpty}}{{countries}}{{/safeEmpty}}
+                                </span>
+                                <span class="field">
+                                    <span class="name">Region(s): </span> {{#safeEmpty}}{{regions}}{{/safeEmpty}}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">General Information</h2>
+                <span class="content">
+                    <table class="table_transparent">
+                        <tr>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/code.png" width="48px" />
+                            </td>
+                            <td width="15%">
+                                <span class="field">
+                                    <span class="name subtitle" style=" color: #8CBF30;">OICR code </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{id}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/status.png" width="48px" />
+                            </td>
+                            <td width="15%">
+                                <span class="field">
+                                    <span class="name subtitle" style="color: #0C9999;">Status </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{status}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/tag_as.png" width="48px" />
+                            </td>
+                            <td width="15%">
+                                <span class="field">
+                                    <span class="name subtitle" style="color: #34752D;">Tag as </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{tagAs}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/year.png" width="48px" />
+                            </td>
+                            <td width="15%">
+                                <span class="field">
+                                    <span class="name subtitle" style="display: block; color: #F4971A;">Report year </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{year}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="table_transparent">
+                        <tr>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/cluster_lead.png" width="48px" />
+                            </td>
+                            <td width="17.5%">
+                                <span class="field">
+                                    <span class="name subtitle" >Cluster lead </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{clusterName}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/lead_person.png" width="48px" />
+                            </td>
+                            <td width="17.5%">
+                                <span class="field">
+                                    <span class="name subtitle" >Lead contact person </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{leadPerson}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                            <td width="10%">
+                                <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/level_maturity.png" width="48px" />
+                            </td>
+                            <td width="17.5%">
+                                <span class="field">
+                                    <span class="name subtitle" >Level of maturity </span>
+                                    <span style="font-size: 8px;">{{#safeEmpty}}{{stageStudy}}{{/safeEmpty}}</span>
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>    
+                </span>
+
+                <br>
+
+                <h2 class="title">Other Clusters contributing</h2>
+                <span class="content">
+                    {{#if studyProjects}}
+                    <ul>
+                        {{#each (parseJSON studyProjects)}}
+                        <li>{{this}}</li>
+                        {{else}}
+                        Not provided
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    Not provided
+                    {{/if}}
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">Key contributors</h2>
+                <span class="content">
+                    <table class="table">
+                        <tr>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Headquarter</th>
+                        </tr>
+                        {{#if (or centers institutions)}}
+                            {{#each (parseJSON centers)}}
+                            <tr>
+                                <td>CG Centers/Managing partners</td>
+                                <td>{{this.name}}</td>
+                                <td>{{this.type}}</td>
+                                <td>{{this.headquarter}}</td>
+                            </tr>
+                            {{/each}}
+                            {{#each (parseJSON institutions)}}
+                            <tr>
+                                <td>External partners</td>
+                                <td>{{this.name}}</td>
+                                <td>{{this.type}}</td>
+                                <td>{{this.headquarter}}</td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="4" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                        {{/if}}
+                    </table>
+                    <p style="font-size: 10px;">Note: These are the partners who have significantly contributed to the reported outcome or impact.</p>
+                </span>
+            </span>
+
+        </span>
+
+        
+        {{!--
+        This template represents Section 2 of a report document that displays story and impact information.
+        It contains the following sections:
+
+        1. Elaboration of outcome/impact statement
+            - Displays the main elaboration text using safeEmpty helper
+
+        2. CGIAR innovation(s) and findings section
+            - Shows innovations that resulted in the outcome/impact
+            - Uses safeEmpty helper to safely display content
+
+        3. Innovations table
+            - Displays a list of CGIAR innovations in tabular format
+            - Each row contains:
+              * Innovation code
+              * Title
+              * PDF link
+            - Iterates through cgiarInnovations array using #each helper
+            - Uses safeEmpty helper for each field
+
+        4. Performance indicators
+            - Shows a bulleted list of performance indicators
+            - Iterates through performanceIndicator array using #each helper
+
+        Note: safeEmpty helper is used throughout to handle empty/null values gracefully
+        --}}
+        <span class="page">
+
+            <span class="section">
+                <h1 class="mainTitle">SECTION 2: The story and impact
+                <h2 class="title">Elaboration of outcome/impact statement</h2>
+                <span class="content">
+                    <span class="field">
+                        {{#safeEmpty}}{{{elaborationOutcomeImpactStatement}}}{{/safeEmpty}}
+                    </span>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">CGIAR innovation(s) or findings that have resulted in this outcome or impact:</h2>
+                <span class="content">
+                    <span class="field">
+                        {{#safeEmpty}}{{{cgiarInnovation}}}{{/safeEmpty}}
+                    </span>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">Innovations:</h2>
+                <span class="content">
+                    <table class="table">
+                        <tr>
+                            <th>Code</th>
+                            <th>Title</th>
+                            <th>PDF</th>
+                        </tr>
+                        {{#if cgiarInnovations}}
+                            {{#each (parseJSON cgiarInnovations)}}
+                            <tr>
+                                <td width="33%">{{#safeEmpty}}{{this.code}}{{/safeEmpty}}</td>
+                                <td width="33%">{{#safeEmpty}}{{this.title}}{{/safeEmpty}}</td>
+                                <td width="33%" style="word-break: break-all;">Coming Soon</td>
+                                {{!-- <td><a href="{{#safeEmpty}}{{this.link}}{{/safeEmpty}}" target="_blank">Link to pdf</a></td> --}}
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-style: italic;"><i>Not provided</i></td>
+                            </tr>
+                        {{/if}}
+                    </table>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">Link to performance indicators</h2>
+                <span class="content">
+                    {{#if performanceIndicator}}
+                    <ul>
+                        {{#each (parseJSON performanceIndicator)}}
+                        <li>{{this}}</li>
+                        {{else}}
+                        Not provided
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    Not provided
+                    {{/if}}
+                </span>
+            </span>
+        </span>
+
+
+        {{!--
+        This template renders Section 3 of a document focusing on Evidence and Communications.
+        It contains three main subsections:
+
+        1. Evidence and reference
+        - Displays a table with studies/references including code, title and PDF links
+        - Uses studiesReference array to populate data
+        - Each cell is wrapped in safeEmpty helper for null/empty handling
+
+        2. Quantification
+        - Shows quantitative data in tabular format
+        - Columns: Type, Number, Unit, Comments
+        - Populated from quantification array
+        - Uses safeEmpty helper for data safety
+
+        3. Communications
+        - Lists communication materials as clickable links
+        - Displays acknowledgments in a table format
+        - Acknowledgments include Name, Position, and Affiliation
+        - Uses publications array for acknowledgments data
+
+        - Uses safeEmpty helper for handling empty values
+
+        Note: All tables use "table_blue" class for styling
+        --}}
+        <span class="page">
+
+            <span class="section">
+                <h1 class="mainTitle">SECTION 3: Evidence and communications</h1>
+                <h2 class="title">Evidence and reference</h2>
+                <span class="content">
+                    <table class="table_blue" style="table-layout: fixed;">
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="60%">Title</th>
+                            <th width="35%">PDF</th>
+                        </tr>
+                        {{#if studiesReference}}
+                            {{#each (parseJSON studiesReference)}}
+                            <tr>
+                                <td>{{#safeEmpty}}{{this.code}}{{/safeEmpty}}</td>
+                                <td style="word-break: break-all;">{{#safeEmpty}}{{this.title}}{{/safeEmpty}}</td>
+                                <td style="word-break: break-all;"><a href="{{#safeEmpty}}{{this.link}}{{/safeEmpty}}" target="_blank">{{#safeEmpty}}{{this.link}}{{/safeEmpty}}</a></td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                        {{/if}}
+                    </table>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">Quantification</h2>
+                <span class="content">
+                    <table class="table_blue">
+                        <tr>
+                            <th>Type</th>
+                            <th>Number</th>
+                            <th>Unit</th>
+                            <th>Comments</th>
+                        </tr>
+                        {{#if quantification}}
+                            {{#each (parseJSON quantification)}}
+                            <tr>
+                                <td>{{#safeEmpty}}{{this.type}}{{/safeEmpty}}</td>
+                                <td>{{#safeEmpty}}{{this.number}}{{/safeEmpty}}</td>
+                                <td>{{#safeEmpty}}{{this.unit}}{{/safeEmpty}}</td>
+                                <td style="word-break: break-all;">{{#safeEmpty}}{{this.comments}}{{/safeEmpty}}</td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="4" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="4" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                        {{/if}}
+                    </table>
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">Communications</h2>
+                <h2 class="subtitle">Communications materials relating to this outcome: </h2>
+                <span class="content">
+                    {{#if links}}
+                        <ul>
+                            {{#each (parseJSON links)}}
+                            <li><a href="{{this}}" target="_blank">{{this}}</a></li>
+                            {{else}}
+                            <li>Not provided</li>
+                            {{/each}}
+                        </ul>
+                    {{else}}
+                    Not provided
+                    {{/if}}
+                </span>
+                <h2 class="subtitle">Acknowledgments:</h2>
+                <span class="content">
+                    <table class="table_blue">
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Affiliation</th>
+                        </tr>
+                        {{#if publications}}
+                            {{#each (parseJSON publications)}}
+                            <tr>
+                                <td>{{#safeEmpty}}{{this.name}}{{/safeEmpty}}</td>
+                                <td>{{#safeEmpty}}{{this.position}}{{/safeEmpty}}</td>
+                                <td>{{#safeEmpty}}{{this.affiliation}}{{/safeEmpty}}</td>
+                            </tr>
+                            {{else}}
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                            {{/each}}
+                        {{else}}
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-style: italic;">Not provided</td>
+                            </tr>
+                        {{/if}}
+                    </table>
+                </span>
+            </span>
+
+            <br>
+
+        </span>
+
+
+        {{!--
+            Section 4: Alignment with other initiatives template
+            This template renders the alignment section of the report which includes:
+
+            CROSS-CUTTING MARKERS:
+            - Table displaying DAC markers with icons for:
+                * Nutrition
+                * Gender
+                * Poverty
+                * Climate
+                * Environment
+            - Shows corresponding tag values below each icon
+            - Includes legend explaining the 0-2 scoring system
+
+            OTHER CROSS-CUTTING DIMENSIONS:
+            - Conditionally shows list of other dimensions if otherCrossCuttingDimensions='yes'
+            - Shows "Not provided" otherwise
+
+            ALLIANCE ALIGNMENT:
+            - Displays primary alliance lever with:
+                * Name
+                * Strategic outcomes as nested list
+            - Shows related levers
+            - SDG contribution section with:
+                * SDG icon (if primaryAllianceLever exists)
+                * Lists of primary and related SDG contributions
+
+            ONE CGIAR ALIGNMENT:
+            - Shows impact area icon based on impactAreaCode
+            - Displays impact area description
+
+        --}}
+        <span class="page">
+
+            <span class="section">
+                <h1 class="mainTitle">SECTION 4: Alignment with other initiatives</h1>
+                <h2 class="title">Cross-cutting markers</h2>
+                <span class="content">
+                    <table class="table_transparent">
+                        <tr>
+                            <td style="text-align: center;" width="25%">
+                                <img
+                                width='65px'
+                                height='65px'
+                                src='https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/Gender-score.png'
+                                alt='Gender Score'
+                                />
+                            </td>
+                            <td style="text-align: center;" width="25%">
+                                <img
+                                width='65px'
+                                height='65px'
+                                src='https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/Youth-score.png'
+                                alt='Youth Score'
+                                />
+                            </td>
+                            <td style="text-align: center;" width="25%">
+                                <img
+                                width='65px'
+                                height='65px'
+                                src='https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/CapDev-score.png'
+                                alt='CapDev Score'
+                                />
+                            </td>
+                            <td style="text-align: center;" width="25%">
+                                <img
+                                width='65px'
+                                height='65px'
+                                src='https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/Climate-score.png'
+                                alt='Climate Score'
+                                />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='text-align: center;' width="25%"><b>{{#safeEmpty
+                                }}{{genderRelevance}}{{/safeEmpty}}</b></td>
+                            <td style='text-align: center;' width="25%"><b>{{#safeEmpty
+                                }}{{youthRelevance}}{{/safeEmpty}}</b></td>
+                            <td style='text-align: center;' width="25%"><b>{{#safeEmpty
+                                }}{{capacityRelevance}}{{/safeEmpty}}</b></td>
+                            <td style='text-align: center;' width="25%"><b>{{#safeEmpty
+                                }}{{climateRelevance}}{{/safeEmpty}}</b></td>
+                        </tr>
+                    </table>
+
+                    <p style='font-size: 7px; margin-top: 16px;'>
+                        0 = Not targeted: The result did not target any of the Impact Area objectives.
+                        <br />
+                        1 = Significant: The result has made a significant contribution to any of the Impact
+                        Area objectives, even though the objective(s) is not the principal focus of the
+                        result.
+                        <br />
+                        2 = Principal: The result is principally about meeting any of the Impact Area
+                        objectives, and this is fundamental in its design and expected results. The result
+                        would not have been undertaken without this objective.
+                    </p>
+                </span>
+
+                <br>
+
+                <h2 class="subtitle">Other cross-cutting dimensions</h2>
+                <span class="content">
+                    <p><b>{{otherCrossCuttingSelection}}</b></p>
+                    {{#ifEquals otherCrossCuttingSelection 'Yes'}}
+                    <p>{{otherCrossCuttingDimensions}}</p>
+                    {{else}}
+                    Not provided, Other cross-cutting dimensions
+                    {{/ifEquals}}
+                </span>
+            </span>
+
+            <br>
+
+            <span class="section">
+                {{#ifEquals isAllianceContribution 'Yes'}}
+                    <h2 class="title">Alliance alignment</h2>
+                    <h2 class="subtitle">Link to levers and strategic lever outcomes: </h2>
+                    <span class="content">
+                        {{#if primaryAllianceLever}}
+                            {{#with (parseJSON primaryAllianceLever)}}
+                            <ul>
+                                <li><b>Primary - </b>{{this.name}}
+                                    {{#if this.strategicOutcome}}
+                                        <ul>
+                                            <li><b>Strategic Lever Outcomes:</b></li>
+                                            {{#each this.strategicOutcome}}
+                                            <li>{{this}}</li>
+                                            {{/each}}
+                                        </ul>
+
+                                    {{else}}
+                                        Not provided
+                                    {{/if}}
+                                </li>
+                            {{/with}}
+                                {{#if relatedLever}}
+                                    {{#each (parseJSON relatedLever)}}
+                                    <li>{{this}}</li>
+                                    {{else}}
+                                    Not provided
+                                    {{/each}}
+                                {{/if}}
+                            </ul>
+                        {{else}}
+                            Not provided
+                        {{/if}}
+                    </span>
+                    <h2 class="subtitle">Contribution to SDG:</h2>
+                    <span class="content">
+                        <table class="table_transparent">
+                            <tr>
+                                <!-- Add condition to show sdg image if not, not show td tag -->
+                                {{#if primaryAllianceLever}}
+                                    {{#with (parseJSON primaryAllianceLever)}}
+                                        <td width="15%">
+                                            <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/sdg/E-WEB-Goal-{{this.code}}.png" width="71.04px" />
+                                        </td>
+                                    {{/with}}
+                                {{else}}
+                                    <td width="0%"></td>
+                                {{/if}}
+                                <td width="85%">
+                                    {{#if (or primarySDGcontribution relatedSDGContribution)}}                                     
+                                        <ul>
+                                            {{#each (parseJSON primarySDGcontribution)}}
+                                            <li>{{this}}</li>
+                                            {{/each}}
+                                            {{#each (parseJSON relatedSDGContribution)}}
+                                            <li>{{this}}</li>
+                                            {{/each}}
+                                        </ul>
+                                    {{else}}
+                                        Not provided
+                                    {{/if}}
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                {{else}}
+                {{/ifEquals}}
+            </span>
+
+            <br>
+
+            <span class="section">
+                <h2 class="title">One CGIAR alignment</h2>
+                {{#ifEquals hasCgiarContribution 'Yes'}}
+                    <h2 class="subtitle">Link to Impact Areas and Global Targets: </h2>
+
+                    <span class="content">
+                        <table class="table_transparent">
+                            <tr>
+                                <td width="15%">
+                                    <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/impact-areas/ICONS+CGIAR-{{impactAreaCode}}.png" width="71.04px" />
+                                </td>
+                                <td width="85%">
+                                    <span class="field">
+                                        {{#safeEmpty}}{{impactArea}}{{/safeEmpty}}
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                {{else}}
+                    <h4>No, this outcome doesn't impact a contribution of the CGIAR in influencing or modifying policies</h4>
+                    <span class="name">Provide reason:</span>
+                    <span class="content">
+                        {{#safeEmpty}}{{reasonNotCgiarContribution}}{{/safeEmpty}}
+                    </span>
+                {{/ifEquals}}
+            </span>
+
+            <br>
+
+        </span>
+    </div>
+
+    <div id="pageFooter">
+        <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/footer_W.png" class="img-background opacity-50 " />
+        <table class="table_transparent opacity-50">
+            <tr>
+                <td width="68%" style="text-align: left; vertical-align: middle; padding-left: 5rem; ">
+                    <span style="color: #3333334f; font-weight: 300; font-size: 9px; display: block;">This report was generated on {{timeCreation}} CET. Please note that the contents of this report may change in the future as it is dependent on the data entered into the MARLO AICCRA System</span>
+                </td>
+                <td width="32%" style="text-align: right; vertical-align: middle; padding-right: 5rem; ">
+                    <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/AICCRA-logo.png" alt="Logo AICCRA" width="95%" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="pageHeader-1">
+        <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/header-OICR.png" class="img-background img-background-top opacity-50" width="100%" />
+
+    {{!--         <svg xmlns="http://www.w3.org/2000/svg" width="378" height="80" viewBox="0 0 378 80" fill="none" style="position: absolute; top: 0; left: 0; z-index: -1;">
+                <path d="M0.19165 0.26123L378 0C346.22 49.9966 331.524 74 299.597 79.8767H0.19165V0.26123Z" fill="#15999A"/>
+            </svg>
+
+            <table class="header" style="height: 100%;">
+                <tr>
+                    <td width="50%" style="padding-left: 4rem; text-align: left; vertical-align: top; padding-top: 32px;">
+                        <h3 style="color: white; width: 80%">{{#safeEmpty}}{{type}}{{/safeEmpty}}</h3>
+                    </td>
+                    <td width="50%" style="padding-right: 5rem; text-align: right; vertical-align: middle; padding-top: 8px;" class="header-logo">
+                        <img src="https://marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com/AICCRA-logo.png" alt="AICCRA Logo" width="50%" />
+                    </td>
+                </tr>
+            </table> --}}
+    </div>
+    <div id="pageFooter-1">
+        <table style="height:100%; width:100%;" class="opacity-50">
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="padding-left: 5rem; padding-right: 5rem; text-align:left; color: #333; font-weight: 300; font-size: 11px; display: block;">This report was generated on {{timeCreation}} CET. Please note that the contents of this report may change in the future as it is dependent on the data entered into the MARLO AICCRA System</span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+</html>

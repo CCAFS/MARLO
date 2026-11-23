@@ -126,21 +126,30 @@ stacks and `stream` results.
 - Deliberate deviation: a blank `templateData` is rejected; the microservice rejects only a non-string and would
   render an empty PDF.
 - Template context: the parsed `data.data` map, resolved with Handlebars' map resolver only (no JavaBean or method
-  resolution). JavaScript `null` (key present) and `undefined` (key missing) stay distinguishable to the helpers.
-- Built-in block helpers `if` and `unless` follow **Handlebars.js 4.7.8**: the condition is false when it is JS-falsy
-  (`null`, missing, `false`, `0`, `NaN`, `""`) **or an empty array**; a fraction such as `0.5` and an empty map are
-  true. Handlebars.java's own versions treat `0.5` as empty. *Amended 2026-11-20 during T02 (wording corrected after
-  the T02 review: empty arrays are false for `if`, unlike the `or` helper); implemented in T02 (rework attempt 2),
-  next to the other engine configuration in `HandlebarsReportHelpers`.*
-- A literal `null` written in a template (`{{typeof null}}`) reaches helpers as JavaScript `null`, as in
-  Handlebars.js. *Amended 2026-11-20 during T02 review.*
-  Three residual Handlebars.java limits are accepted (template-authoring cases, absent from the three production
-  templates and payloads — `grep -oE '\{\{[^}]*\bnull\b[^}]*\}\}'` over the three templates returns 0): a data key
-  literally named `null` shadows the literal; a **missing path segment named `null`** (`x.null`, `this.null`,
-  `../null`) reads as JavaScript `null` instead of `undefined`, because the value resolver cannot tell a path head
-  from a later segment; and `{{#if}}` / `{{#unless}}` with no argument is not rejected (Handlebars.js throws).
-  *Recorded 2026-11-20 during T02 attempts 2–3.* Numbers are printed the JavaScript way: a whole-valued number prints without a decimal part
-  (`1`, not `1.0`), `NaN` and `Infinity` as in JavaScript.
+  resolution). JavaScript `null` (key present) and `undefined` (key missing) stay distinguishable to the helpers;
+  `null` elements of lists (payload or `parseJSON`) are JavaScript `null`. Numbers print the JavaScript way
+  (`1`, not `1.0`; `NaN`, `Infinity`).
+- Built-in `if` / `unless` follow Handlebars.js 4.7.8: false when JS-falsy (`null`, missing, `false`, `0`, `NaN`,
+  `""`) or an empty array; `0.5` and an empty map are true. A literal `null` in a template reaches helpers as JS
+  `null`.
+- Scoping follows Handlebars.js (no compat mode): a plain name missing from the current item is `undefined` — no
+  walk to parent contexts; parents are reached through `../` or `@root`; data variables (`@index`, `@key`,
+  `@first`, `@last`) stay visible in nested scopes.
+- **Supported template subset** (*Pivot 2026-11-23, owner-approved — replaces the earlier "complete list of
+  residual limits"*). Parity with Handlebars.js is guaranteed for the 17 helpers and for the constructs the
+  production templates use, proven by the Handlebars.js-generated vectors and by identical rendering of the three
+  production templates. These constructs are **outside the subset** — they behave differently or are unverified in
+  Handlebars.java and no production template uses them: `../` paths, block parameters (`as |x|`), partials
+  (`{{>`, `{{#*inline`), `@odd` / `@even`, a path segment named `null` (`x.null`, or a data key named `null`), and
+  `{{#if}}` / `{{#unless}}` without an argument. A **subset guard** (`ReportTemplateSubset`, a port of the
+  Handlebars.js 4.7.8 lexer rules and states plus a grammar-faithful mustache reader) lists the unsupported
+  constructs a template contains; its verdicts are proven equal to a classifier over the real `Handlebars.parse()`
+  AST on generated vectors (`subset-vectors.json`, generator `spike/helper-vectors-generator/subset-generate.js`); a unit test runs it over the three production templates (must be
+  empty), and the render service logs a WARN naming them at render time (T04), so a template edited through the
+  super-admin screen cannot drift outside the subset silently. A data key named `null` cannot be seen in the
+  template; the render service also checks the payload for it and names it in the same WARN (T04). *Amended
+  2026-11-23 after the T02 attempt-6 review.* The two cheap divergences found in T02 attempt 5
+  are fixed anyway: `../` under a `null` item, and `@odd` / `@even` (resolved as `undefined`, as in Handlebars.js).
 
 ### 7.2 Helpers (FN-003)
 
