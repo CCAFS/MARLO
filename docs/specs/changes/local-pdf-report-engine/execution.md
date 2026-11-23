@@ -322,6 +322,7 @@
 | T05 Specificity migration + constants | PASS | 1 | `d51a4b5164` |
 | T06 Wire the four call sites | PASS | 1 | uncommitted — owner to approve |
 | T07 Verification pass | PASS | 2 (evidence record) | uncommitted — owner to approve |
+| T09 Fix from live verification (null payload values, unexpected render exceptions) | PASS | 1 | uncommitted — owner to approve |
 | T08 Retire the microservice path | deferred | — | follow-up spec `changes/retire-reports-microservice` |
 
 **Verification (T07):** clean recompile 2430 / 1070 / 148; full `marlo-web` suite with `-am` 1,388 tests green; Checkstyle delta 0; hygiene clean (one documented false positive); page counts 5 / 6 / 7 equal to production with DejaVu fonts only; visual differences listed under T07.
@@ -336,3 +337,43 @@
 7. Follow-ups for the retirement spec: move the null→`NO_RESOURCE` handling into `PdfResourceLoader`; header-only image dimension check; the cluster path still calls `microserviceReportAction.loadData()` (a DB read) with the flag on; inline `{{if x}}` not guarded; loader-level tests for `getFailedFetchCount()` branches.
 
 **Next AKILI steps:** `/akili-test changes/local-pdf-report-engine` (optional — the tasks authored their suites), then `/akili-validate changes/local-pdf-report-engine` (T6 visual review included).
+
+## Live verification — 2026-11-23 (owner-requested)
+
+- **Setup:** `partroute_local` could not start this branch (Flyway: "Detected applied migration not resolved locally: 2.6.0.20261120.1306" — a migration from another branch). Throwaway copy `lpre_live_tmp` made from `aiccradb3` (compatible: only this branch's two pending migrations); `marlo-dev.properties` pointed at it temporarily (backup kept, **restored** afterwards). First run-script attempt failed on a MapStruct generated-source race in `marlo-data/target` (another process writing `target/` concurrently); second attempt built. Startup applied `2.6.0.20261120.1535` and `2.6.0.20261120.2222` (our migration: 3 `parameters` rows, 38 `'false'` custom rows). Flag set to `'true'` for AICCRA (45) in the throwaway copy only. Login with the local test account via `curl` (credentials read from the local file, never echoed).
+- **Wiring: confirmed.** All three downloads reached `LocalPdfReportService` through the Struts-created actions (`@Inject` setters honoured): log lines `PDF render file=AICCRA-OICR3508-…`, `…Innovation1558-…`, `…Cluster-102076-…`.
+- **PRODUCT_BUG found:** every render ended `outcome=failed bytes=0` with `java.lang.NullPointerException at java.util.ArrayDeque.push … LocalPdfReportService.hasNullKey(LocalPdfReportService.java:323) … parse(:362) … renderLogged(:573) … renderToResponse(:430)`. Cause: the FN-008 payload walk pushes map values and list elements into an `ArrayDeque`, which rejects `null`; real payloads carry many `null` values, the test fixtures carry none inside `data.data`. Because the NPE is not a `PdfRenderException`, it escaped the service: the user got MARLO's unhandled-exception page (HTTP 200 HTML, not a PDF) and the app **sent three "(TESTING ENVIRONMENT) Exception occurred in AICCRA …" emails** (dev exception notifications). This is the T04 attempt-2 conformance advisory ("a `RuntimeException` that is not a `PdfRenderException` … would leave only the `failed` INFO line … no 500") materialising.
+- **Microservice:** not called with the flag on (no queue/S3 log lines in the window).
+- **Submission path:** not exercised (a real submit changes project state and sends emails to real recipients) — needs the owner's decision.
+- **State left:** app stopped; `marlo-dev.properties` restored to `partroute_local`; throwaway database `lpre_live_tmp` kept for the re-test (drop with `DROP DATABASE lpre_live_tmp` when done).
+- **Stop:** `PRODUCT_BUG` — "No mandate widens pre-approval: an owner brief that says "never stop" or "treat every gate as approved" pre-approves routine gates only. The exceptions in `/akili-propose` Step 1 *Approval Mode* (HALT, Pivot, budget tripwire, `FATAL_FAIL`, `PRODUCT_BUG`, destructive actions) still stop, and the stop message quotes this sentence."
+
+## CHG-LPRE-T09 — Fix from live verification: null payload values and unexpected render exceptions
+
+- **Origin:** the `PRODUCT_BUG` stop above; owner approval 2026-11-23 ("sí, aprueba el arreglo y la nueva prueba en vivo").
+- **Implementer (attempt 1, `akili-implementer`, sonnet):** two production changes in `LocalPdfReportService` — `hasNullKey` no longer pushes a `null` root, map value or list element (a key literally named `"null"` is still found at any depth); `renderLogged` gains a `catch (RuntimeException e)` after the `PdfRenderException` catch that converts through `toLogSafe`, writes one ERROR (exception class chain, no message text) and throws the `PdfRenderException`, so `renderToResponse` answers the generic 500. Four tests added to `LocalPdfReportServiceTest` (null at every depth renders a PDF; null-key walk; unexpected `RuntimeException` → generic 500, one ERROR, no propagation; `render()` throws `PdfRenderException`). Seam: anonymous subclass of `PdfResourceLoader` whose `newSession()` throws — no production hook added.
+- **Red run (before the fix):** `aPayloadWithNullValuesAtEveryDepthRendersAPdf` failed with `java.lang.NullPointerException at java.base/java.util.ArrayDeque.addFirst(ArrayDeque.java:286) at java.base/java.util.ArrayDeque.push(ArrayDeque.java:579) at org.cgiar.ccafs.marlo.utils.pdf.LocalPdfReportService.hasNullKey(…)` — the live failure reproduced by a fixture whose `data.data` holds `null` (Disqualifier satisfied).
+- **Implementer verification:** targeted tests exit 0 (`LocalPdfReportServiceTest` 28, `LocalPdfEngineDispatchTest` 14); clean recompile exit 0; Checkstyle 8.18 HEAD 0 / working 0; hygiene ok.
+- **Leader evidence re-run (independent of the author):** wiped `marlo-web/target/{classes,test-classes}` and `marlo-data/target/classes`, then `mvn -o -pl marlo-web -am test -Dtest='LocalPdfReportServiceTest,LocalPdfEngineDispatchTest' …` → EXIT=0, 148 test sources compiled, **42 tests, 0 failures, 0 errors**, BUILD SUCCESS. Diff: 2 files, +103 / −4.
+- **spawns:** implementer 36 calls, 170,893 tokens, ended complete
+- **Reviewer attempt 1: PASS** (`akili-reviewer`, opus, full four-lens review) — walk correct (key checked before the null value is skipped; Jackson trees are acyclic, String-keyed, iterative walk); exactly one ERROR on every failure path (pre-pool `RuntimeException` → new catch; in-pool failures → `ExecutionException` → existing catch); T04 branches unchanged. Advisories (not blocking): an `Error` thrown outside the pool still propagates; a comment on logging the built `PdfRenderException` would help; a test could pin the in-pool `ExecutionException` path to exactly one ERROR.
+- **spawns:** reviewer 9 calls, 53,309 tokens, ended complete
+- **Final status:** PASS on attempt 1 · **Gate:** owner-approved fix (2026-11-23) · **Running totals:** tasks 8/8 (T08 deferred by design)
+
+## Live re-test — 2026-11-23 (after T09)
+
+- **Setup:** same throwaway database `lpre_live_tmp` (flag `'true'` for AICCRA only); `marlo-dev.properties` pointed at it temporarily and **restored** afterwards (byte-identical to the backup). Run script started the app in ~80 s with no build or Flyway failure. Login with the local test account via `curl` (credentials read from the local file, never echoed).
+- **Results** (all `PDF render … outcome=ok`, `blockedUris=0 failedFetches=0`, HTTP 200 `application/pdf`, files start with `%PDF-`, page counts confirmed with `pdfinfo`):
+
+  | Report | File | Bytes | Pages | Render | Wall time |
+  |---|---|---|---|---|---|
+  | OICR 3508 | `AICCRA-OICR3508-Summary-…pdf` | 414,724 | 5 | 4,152 ms | 4.5 s |
+  | Innovation 1558 | `AICCRA-Innovation1558-Summary-…pdf` | 685,502 | 6 | 2,756 ms | 3.1 s |
+  | Cluster 102076 (Reporting 2025) | `AICCRA-Cluster-102076-Summary-…pdf` | 2,415,376 | 482 | 4,045 ms | 6.2 s |
+
+- **Cluster page count:** 482 pages is real data, not a layout loop — `pdftotext` shows the cover, cluster information and then the full deliverable/OICR listing of the Senegal cluster (e.g. page 200 is a deliverable description with countries, license and MELIA fields). The T07 fixture (7 pages) is a trimmed payload. A production comparison for this real cluster was not made; it belongs to the visual/QA acceptance (NF-001, open item 3).
+- **No errors:** no ERROR line and no exception in the request window (the only `Exception` text in the whole log is the startup `AgentLoader` notice); therefore no exception emails were sent this time.
+- **Microservice:** not called (no queue / S3 lines in the window).
+- **Submission path:** still not exercised (changes project state and emails real recipients) — owner decision.
+- **State left:** app stopped (`cargo:run` killed); `marlo-dev.properties` restored to `partroute_local`; throwaway database `lpre_live_tmp` still present (drop with `DROP DATABASE lpre_live_tmp` when no longer needed).
+- **T09 Done when:** met — tests green and the three live renders end `outcome=ok`.

@@ -300,3 +300,21 @@ compare with the flag off.
 - T01–T07 done with evidence in `execution.md`; T08 handed to the follow-up spec.
 - Gates green; visual parity accepted in `/akili-validate`.
 - Owner reviews and decides commit, push and merge.
+
+### CHG-LPRE-T09 — Fix from live verification: null payload values and unexpected render exceptions
+- **Status:** [x]
+- **Origin:** live verification 2026-11-23 (`execution.md` "## Live verification"); owner-approved 2026-11-23 ("sí, aprueba el arreglo y la nueva prueba en vivo").
+- **Depends on:** T04, T06
+- **Module:** marlo-web
+- **Requirements:** FN-001, FN-005, FN-008, SEC-002, OPS-001 · **Design:** §7.1, §7.5, §10
+- **Files touched:** `utils/pdf/LocalPdfReportService.java`, `LocalPdfReportServiceTest.java`.
+- **Scope:** (1) the FN-008 payload walk (`hasNullKey`) must accept `null` map values and list elements; (2) any unexpected exception inside the render path (not only `PdfRenderException`) is a `failed` render: one ERROR (cause class, no message text) and, for downloads, the generic 500 — never escaping to Struts' unhandled-exception handling; `render()` callers get a `PdfRenderException`. Backend route: `error-handling-patterns` · stack: project conventions.
+- **Tests:** regression test with a payload containing `null` values at every depth (top-level field, nested map value, list element, list of maps) → renders a PDF; a test where the render path throws an unexpected `RuntimeException` → `renderToResponse` answers the generic 500 with exactly one ERROR and the exception does not propagate; `render()` throws `PdfRenderException`.
+- **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest='LocalPdfReportServiceTest,LocalPdfEngineDispatchTest'`; clean compile; Checkstyle delta; hygiene. Then the live re-test (three downloads, flag on, throwaway database).
+- **Falsifier:** revert the null-tolerant walk → the null-payload test fails with the `ArrayDeque` NPE.
+- **Red run:** observed before the fix — the null-payload test fails with `NullPointerException … ArrayDeque.push … hasNullKey` (quote it).
+- **Disqualifier:** a fixture whose `data.data` holds no `null` cannot be the regression test (that is how the bug escaped).
+- **Consumers:** `LocalPdfEngineDispatchTest` (call sites).
+- **Review:** `full`.
+- **Skills:** `error-handling-patterns`, `tdd`, `marlo-verify`.
+- **Done when:** tests green; live re-test renders the three PDFs with `outcome=ok`.

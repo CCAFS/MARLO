@@ -309,10 +309,15 @@ public class LocalPdfReportService {
     return nested == null ? null : stringOrNull(nested.get(child));
   }
 
-  /** True when a JSON object at any depth of the value has a key that is literally {@code null}. */
+  /**
+   * True when a JSON object at any depth of the value has a key that is literally {@code null}. A JSON {@code null}
+   * value or list element is ordinary data (unset report fields serialize that way) and is skipped.
+   */
   static boolean hasNullKey(Object root) {
     Deque<Object> pending = new ArrayDeque<Object>();
-    pending.push(root);
+    if (root != null) {
+      pending.push(root);
+    }
     while (!pending.isEmpty()) {
       Object current = pending.pop();
       if (current instanceof Map) {
@@ -320,11 +325,15 @@ public class LocalPdfReportService {
           if ("null".equals(entry.getKey())) {
             return true;
           }
-          pending.push(entry.getValue());
+          if (entry.getValue() != null) {
+            pending.push(entry.getValue());
+          }
         }
       } else if (current instanceof Iterable) {
         for (Object element : (Iterable<?>) current) {
-          pending.push(element);
+          if (element != null) {
+            pending.push(element);
+          }
         }
       }
     }
@@ -616,6 +625,11 @@ public class LocalPdfReportService {
         LOG.error("PDF render {}, file={}: {}", outcome, fileName, e.getMessage());
       }
       throw e;
+    } catch (RuntimeException e) {
+      // Anything unexpected on the render path (parse, compile, layout) is a failed render, never an unhandled one.
+      PdfRenderException renderException = toLogSafe(e);
+      LOG.error("PDF render failed, file={}", fileName, renderException);
+      throw renderException;
     } finally {
       LOG.info("PDF render file={} outcome={} bytes={} pages={} elapsedMs={} blockedUris={} failedFetches={}",
         fileName, outcome, result == null ? 0 : result.bytes.length, result == null ? 0 : result.pages,

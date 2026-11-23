@@ -634,6 +634,91 @@ public class LocalPdfReportServiceTest {
     }
   }
 
+  /** Null at every depth of data.data: the shape of a real report, where unset fields serialize as JSON null. */
+  private static final String NULLS_EVERYWHERE = "{\"topLevel\":null,\"name\":\"Kept\","
+    + "\"nested\":{\"missing\":null,\"inner\":{\"deepMissing\":null,\"text\":\"deep\"}},"
+    + "\"items\":[null,\"first\",null],"
+    + "\"rows\":[{\"label\":\"row-one\",\"gap\":null},{\"label\":null,\"gap\":null}],"
+    + "\"grid\":[[null,\"cell\"],null]}";
+
+  @Test
+  public void aPayloadWithNullValuesAtEveryDepthRendersAPdf() throws Exception {
+    assertTrue("the fixture must hold nulls at every depth",
+      NULLS_EVERYWHERE.contains("\"topLevel\":null") && NULLS_EVERYWHERE.contains("\"missing\":null")
+        && NULLS_EVERYWHERE.contains("[null,") && NULLS_EVERYWHERE.contains("\"gap\":null"));
+    LocalPdfReportService service = newService(new Network(false));
+    String template = "<html><body><p>{{name}}</p><p>{{nested.inner.text}}</p>"
+      + "{{#each rows}}<p>{{label}}</p>{{/each}}{{#each items}}<p>{{this}}</p>{{/each}}</body></html>";
+    try (PDDocument document = open(service.render(payload(template, NULLS_EVERYWHERE), 20000L))) {
+      assertEquals(1, document.getNumberOfPages());
+      String text = squash(new PDFTextStripper().getText(document));
+      assertTrue(text, text.contains("Kept") && text.contains("deep") && text.contains("row-one"));
+    }
+    List<String> infos = messages(Level.INFO);
+    assertEquals(infos.toString(), 1, infos.size());
+    assertTrue(infos.get(0), infos.get(0).contains("outcome=ok"));
+    assertTrue(messages(Level.ERROR).isEmpty());
+  }
+
+  @Test
+  public void theNullKeyWalkToleratesNullsAndStillFlagsAKeyNamedNullAtDepth() throws Exception {
+    assertFalse(LocalPdfReportService.hasNullKey(JSON.readValue(NULLS_EVERYWHERE, Object.class)));
+    assertTrue(LocalPdfReportService.hasNullKey(JSON.readValue(
+      "{\"a\":null,\"b\":[null,{\"c\":[null,[{\"x\":null,\"null\":1}]]}]}", Object.class)));
+    assertTrue(LocalPdfReportService.hasNullKey(JSON.readValue("{\"null\":null}", Object.class)));
+    assertFalse(LocalPdfReportService.hasNullKey(null));
+  }
+
+  // ---- unexpected exceptions -----------------------------------------------------------------------------------
+
+  /** A loader whose session cannot be opened: an unexpected RuntimeException on the render path, before the pool. */
+  private LocalPdfReportService serviceFailingWith(final RuntimeException failure) {
+    LocalPdfReportService service = new LocalPdfReportService(new PdfResourceLoader() {
+
+      @Override
+      PdfResourceLoader.Session newSession() {
+        throw failure;
+      }
+    });
+    services.add(service);
+    return service;
+  }
+
+  @Test
+  public void anUnexpectedRuntimeExceptionIsAFailedRenderThatAnswersTheGeneric500AndDoesNotPropagate()
+    throws Exception {
+    LocalPdfReportService service =
+      serviceFailingWith(new IllegalStateException("boom " + PAYLOAD_MARKER, new NullPointerException("inner")));
+    Recorded recorded = new Recorded();
+    service.renderToResponse(payload("<html><body><p>ok</p></body></html>", "{}"), "boom.pdf", response(recorded));
+    assertEquals(Integer.valueOf(500), recorded.errorStatus);
+    assertEquals(GENERIC, recorded.errorMessage);
+    assertEquals(0, recorded.body.size());
+    List<String> errors = messages(Level.ERROR);
+    assertEquals(errors.toString(), 1, errors.size());
+    assertTrue(errors.get(0), errors.get(0).contains("boom.pdf"));
+    String logged = everythingLogged();
+    assertTrue(logged, logged.contains("java.lang.IllegalStateException"));
+    assertFalse("the exception message must not be logged", logged.contains(PAYLOAD_MARKER));
+    List<String> infos = messages(Level.INFO);
+    assertEquals(infos.toString(), 1, infos.size());
+    assertTrue(infos.get(0), infos.get(0).contains("outcome=failed") && infos.get(0).contains("bytes=0"));
+  }
+
+  @Test
+  public void anUnexpectedRuntimeExceptionMakesRenderThrowAPdfRenderException() throws Exception {
+    LocalPdfReportService service = serviceFailingWith(new IllegalStateException("boom " + PAYLOAD_MARKER));
+    try {
+      service.render(payload("<html><body><p>ok</p></body></html>", "{}"), 20000L);
+      fail("an unexpected exception did not fail the render");
+    } catch (PdfRenderException e) {
+      assertTrue(e.getMessage(), e.getMessage().contains("java.lang.IllegalStateException"));
+      assertFalse(e.getMessage(), e.getMessage().contains(PAYLOAD_MARKER));
+    }
+    assertEquals(1, messages(Level.ERROR).size());
+    assertFalse(everythingLogged().contains(PAYLOAD_MARKER));
+  }
+
   // ---- logging -------------------------------------------------------------------------------------------------
 
   @Test
