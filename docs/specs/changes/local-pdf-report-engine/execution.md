@@ -259,3 +259,80 @@
 - **Remaining:** T06 (four call sites + dispatch tests, ~150 LOC, 1–2 rounds) and T07 (verification, 1 round).
 - **Stop:** budget tripwire — "No mandate widens pre-approval: an owner brief that says "never stop" or "treat every gate as approved" pre-approves routine gates only. The exceptions in `/akili-propose` Step 1 *Approval Mode* (HALT, Pivot, budget tripwire, `FATAL_FAIL`, `PRODUCT_BUG`, destructive actions) still stop, and the stop message quotes this sentence." Owner decision needed.
 - **Owner decision (Kenji Tanaka, 2026-11-23):** "sí, haz el commit y sigue con T06" — budget raised to ~21 review rounds; continue T06 → T07.
+
+### CHG-LPRE-T06 — Wire the four call sites — in review
+
+- **Effort:** high · **Skills:** `error-handling-patterns`, `marlo-verify` · **Requirements:** FN-005, FN-006, FN-007, SEC-002
+- **Files:** `BaseStudySummaryData.java` (+30), `ProjectInnovationSummaryAction.java` (+28), `ReportingSummaryAction.java` (+57/−…; 105 insertions, 10 deletions in total); new `LocalPdfEngineDispatchTest.java` (14 rows). All three actions LF before and after (CR count 0, HEAD also 0).
+- **Behaviour:** `@Inject` setter + field per class; branch on `hasSpecificities(APConstants.LOCAL_PDF_REPORT_ENGINE_ACTIVE)`; flag on → `renderToResponse(json, name, ServletActionContext.getResponse())` (downloads) / `render(json, SUBMIT_DEADLINE_MS)` (submit, 30 s; failure → `submitPdf` null); flag on + null service → ERROR log, `sendError(500)` on downloads, `submitPdf` null, never the microservice; flag off → original call unchanged; `bytesPDF` untouched.
+- **Deviation (Leader-accepted):** the cluster local branch lives in a private helper `renderClusterReportLocally` — inline, `generateAndSendJson` exceeded `MethodLength` (+1 Checkstyle violation); with the helper the delta is 0.
+- **Implementer verification:** 81 tests green (dispatch 14 + all five consumers + service); Checkstyle HEAD=74 / working=74, delta 0; hygiene: no EOL/JFREE/SPANISH findings. Red (setter+field, no branches): 9 of 14 failing, e.g. "oicrDownloadWithTheFlagOnRendersToTheResponseAndSkipsTheMicroservice … one local call expected:<1> but was:<0>"; "clusterSubmitWithTheFlagOnRendersWithTheSubmissionDeadlineAndSkipsTheMicroservice … expected:<[render]> but was:<[]>". Falsifier (invert the Innovation branch): 3/3 Innovation rows failing incl. "…FlagOff… expected:<[queueInnovations]> but was:<[]>", restored.
+- **Disqualifier check:** every row reads the flag through the real `BaseAction.hasSpecificities` from a session map (`"true"`, `"false"`, absent).
+- **Assumptions:** Innovation/OICR rows call `generateAndSendJson` directly with minimal fixtures (existing caught NPEs in data gathering); null-service branches return `ERROR` (callers ignore it); anonymous downloads keep the microservice (flag follows the session).
+- **Evidence re-run (Leader inline):** VERIFIED — clean compile 2430/1070/148, exit 0, 81 tests; line endings unchanged.
+- **spawns:** implementer 52 calls, 210,177 tokens, ended complete
+- **Reviewer: PASS** (`akili-reviewer`, opus) — all four sites match §7.6 (flag on / off / on + null service); submit uses the 30 s entry point and never touches the response; `bytesPDF` unchanged; returning `ERROR` changes nothing in Struts (callers ignore it); setter injection honoured on both paths (P-8 `createBean`, P-10 `StrutsSpringObjectFactory` → `populateBean`; package component-scanned); tests read the flag through the real session and assert the doubles' arguments. ADVISORY: first `@Inject` setters in MARLO actions — exercise the container wiring live in T07 (**forward pointer to T07**); the `ERROR` return is unused (comment it); the null-service 500 lacks the generic message; write `IOException` lands in catches whose log says "JSON"; the cluster path still calls `microserviceReportAction.loadData()` (a DB read of `report_configurations`) with the flag on — record for the retirement spec.
+- **spawns:** reviewer 31 calls, 109,969 tokens, ended complete
+- **Final status:** PASS on attempt 1 · **Gate:** `auto-approved (pre-approved mode)` · **Running totals:** tasks 6/7 · review rounds 19 / 21 · production LOC ≈ 3,435
+
+### CHG-LPRE-T07 — Verification pass — in review
+
+- **Run by:** the Leader (inline verification; no code written), 2026-11-23, on `feature/local-pdf-report-engine` (committed T01–T05 + uncommitted T06).
+- **Gate 1 — clean recompile** (`.claude/skills/marlo-verify/scripts/clean-compile.sh`): exit 0, BUILD SUCCESS, 2430 (marlo-data) / 1070 (marlo-web) / 148 (tests) files.
+- **Gate 2 — Checkstyle 8.18:** all new files under `utils/pdf` (main + test) and `LocalPdfEngineDispatchTest.java`: 0 violations. T06 actions `--baseline`: HEAD=74, working tree=74, delta 0. `APConstants.java` (both) vs base `2f67c5d2ab`: 0 → 0.
+- **Gate 3 — cache-bust:** not applicable (no served CSS/JS changed; `pdf/html-pdf-compat.css` is a classpath resource, not referenced by an FTL).
+- **Gate 4 — hygiene** (`java-hygiene-check.sh`): no EOL / JFREE / SPANISH / NULL-LIST findings. One `FIX LOG-ARGS` at `ReportingSummaryAction.java:11481` is a **false positive**: `LOG.warn("Unable to resolve project template data via reflection", inner)` — `inner` is the caught `Exception` (the heuristic does not recognise the variable name); pre-existing, shifted by T06's added lines. `REVIEW LOG-CONCAT` at BaseStudySummaryData:1559, ProjectInnovationSummaryAction:1686, ReportingSummaryAction:7924: string literals split for the 120-column limit, placeholders already used.
+- **Gate 5 — full test suite with `-am`** (`mvn -o -pl marlo-web -am test`): exit 0, **1,388 tests, 0 failures, 0 errors**.
+- **Gate 6 — i18n:** not applicable (no `.properties` changed).
+- **Visual parity (NF-001, T6 review by the Leader) — corrected after the T07 review:** image
+  `spike/t07-production-vs-local.png`; for each template, production PhantomJS (Linux, spike baseline) on top, local
+  engine below. **Provenance of the local rows:** `marlo-web/target/local-pdf-report/{oicr,innovation,project}.pdf`,
+  written at 10:25 by `LocalPdfReportServiceTest.productionTemplatesRenderWithTheProductionPageCountsAndOnlyTheBundledFonts`
+  (`LocalPdfReportServiceTest.java:552–564`) during the Gate 5 run — i.e. the built `LocalPdfReportService.render(...)`
+  on the production templates (`src/test/resources/pdf/templates/`) and payloads (`src/test/resources/pdf/payloads/`).
+  Page counts match (5 / 6 / 7). Differences, all layout/pagination, no content missing:
+  - **OICR:** "Other cross-cutting dimensions / No" ends local page 4 instead of starting production page 5; production
+    appears to repeat the Evidence-and-reference table header at the top of page 4, local does not (low resolution).
+  - **Innovation:** content reflows from page 3 — "SECTION: knowledge sharing and Scaling potential / Anticipated users /
+    Actors" moves up to local page 3, "Levels by scaling potential / Technical excellence / Demand and Investment" up to
+    local page 5; local page 6 starts mid-block and is about a third full.
+  - **AICCRA Cluster Summary (project template):** pages 2+ body starts ~36 pt lower; the cover's three badges wrap onto
+    two rows.
+  Visual acceptance of these differences is the owner's (NF-001) at the HITL pause / `/akili-validate`.
+- **DA-002 (templates untouched):** `git diff 2f67c5d2ab --name-only -- marlo-web/src/main/resources/database/migrations`
+  → only `V2_6_0_20261120_2222__AddLocalPdfReportEngineSpecificity.sql`; `git diff 2f67c5d2ab -- …/migrations | grep -ci
+  report_configurations` → 0. No migration touches `report_configurations`.
+- **Regression (manual, QA) step of the Testing Plan:** pending — QA activity outside T07 (flag on for one unit on a test
+  environment, compare the three summaries with the flag off).
+- **Not run — live wiring (T06 forward pointer):** a real flag-on download and submit on the running app (first `@Inject` setters in MARLO actions). Needs `scripts/run-marlo-java17.sh` (kills `cargo:run`, wipes `target/`, rewrites `marlo-dev.properties`) and a `custom_parameters` row set to `'true'` in the local database → owner decision (HITL).
+- **Reviewer attempt 1: FAIL** — gates and the LOG-ARGS false positive confirmed; evidence gaps: DA-002 not evidenced; provenance of the local images not stated; visual-parity text overstated parity (OICR/innovation reflows, template name). ADVISORY: pair the live-wiring run with one real-data render per template. All fixes are `execution.md` edits — applied above (attempt 2 = same verification, corrected record).
+- **spawns:** reviewer 12 calls, 58,640 tokens, ended complete
+- **Reviewer attempt 2: PASS** — all three evidence gaps closed, each checked against its source (migrations folder, test lines 98/244–246/276–278/552–564, the image).
+- **spawns:** reviewer 9 calls, 50,644 tokens, ended complete
+- **Final status:** PASS on attempt 2 · **Gate:** `auto-approved (pre-approved mode)` · **Running totals:** tasks 7/7 (T08 deferred by design) · review rounds 21 / 21
+
+## Summary
+
+| Task | Result | Attempts | Commit |
+|---|---|---|---|
+| T01 Dependencies, fonts, compat CSS | PASS | 1 | `8f8bb78cea` |
+| T02 Helpers + template subset guard | PASS | 8 (HALT after 3, owner-approved 4–5, Pivot, 3 post-Pivot) | `c168c70f30` |
+| T03 Compatibility step + resource loader | PASS | 2 | `73681d5bed` |
+| T04 LocalPdfReportService | PASS | 3 (two parallel lenses) | `af0a387e69` |
+| T05 Specificity migration + constants | PASS | 1 | `d51a4b5164` |
+| T06 Wire the four call sites | PASS | 1 | uncommitted — owner to approve |
+| T07 Verification pass | PASS | 2 (evidence record) | uncommitted — owner to approve |
+| T08 Retire the microservice path | deferred | — | follow-up spec `changes/retire-reports-microservice` |
+
+**Verification (T07):** clean recompile 2430 / 1070 / 148; full `marlo-web` suite with `-am` 1,388 tests green; Checkstyle delta 0; hygiene clean (one documented false positive); page counts 5 / 6 / 7 equal to production with DejaVu fonts only; visual differences listed under T07.
+
+**Open items for the owner (HITL):**
+1. Visual acceptance of the layout/pagination differences (NF-001) — `spike/t07-production-vs-local.png`.
+2. Live wiring check on the running app: flag on for one unit in the local database, one download per report and one project submission (first `@Inject` setters in MARLO actions) — needs the run script, which wipes `target/` and rewrites `marlo-dev.properties`.
+3. Manual QA regression on a test environment (Testing Plan).
+4. `GENERIC_ERROR_MESSAGE` kept as a fixed English string (consistent with `downloadPDFByURL`); Hard rule 8 reading to confirm.
+5. Accepted residual risks: decompression-bomb images (§17), layout not interruptible (§17).
+6. Pending items on `staging` (shared files, not editable on the spec branch): TRD §7 integration rows; `.agents/*.md` persona drift reported by `akili doctor --agents`.
+7. Follow-ups for the retirement spec: move the null→`NO_RESOURCE` handling into `PdfResourceLoader`; header-only image dimension check; the cluster path still calls `microserviceReportAction.loadData()` (a DB read) with the flag on; inline `{{if x}}` not guarded; loader-level tests for `getFailedFetchCount()` branches.
+
+**Next AKILI steps:** `/akili-test changes/local-pdf-report-engine` (optional — the tasks authored their suites), then `/akili-validate changes/local-pdf-report-engine` (T6 visual review included).

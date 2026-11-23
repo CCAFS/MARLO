@@ -192,7 +192,7 @@
 - **Done when:** both runs quoted; file name built from the real clock.
 
 ### CHG-LPRE-T06 — Wire the four call sites
-- **Status:** [ ]
+- **Status:** [x]
 
 - **Depends on:** T04, T05
 - **Module:** marlo-web
@@ -226,7 +226,7 @@
   branches.
 
 ### CHG-LPRE-T07 — Verification pass
-- **Status:** [ ]
+- **Status:** [x]
 
 - **Depends on:** T01–T06
 - **Module:** all touched

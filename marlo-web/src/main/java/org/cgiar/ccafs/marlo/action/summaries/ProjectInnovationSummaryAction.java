@@ -89,6 +89,7 @@ import org.cgiar.ccafs.marlo.data.model.ScalingReadiness;
 import org.cgiar.ccafs.marlo.data.model.ValueChain;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
+import org.cgiar.ccafs.marlo.utils.pdf.LocalPdfReportService;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -115,10 +116,12 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
@@ -178,6 +181,7 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
   private final ProjectInnovationCoDeveloperManager projectInnovationCoDeveloperManager;
 
   private final MicroserviceReportAction microserviceReportAction;
+  private LocalPdfReportService localPdfReportService;
   // Parameters
   private long startTime;
   private Long projectInnovationID;
@@ -234,6 +238,14 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
     this.projectInnovationComplementarySolutionFunctionManager = projectInnovationComplementarySolutionFunctionManager;
     this.projectInnovationValueChainManager = projectInnovationValueChainManager;
     this.projectInnovationCoDeveloperManager = projectInnovationCoDeveloperManager;
+  }
+
+  /**
+   * Setter injection: the constructors of this class are pinned by subclasses and tests.
+   */
+  @Inject
+  public void setLocalPdfReportService(LocalPdfReportService localPdfReportService) {
+    this.localPdfReportService = localPdfReportService;
   }
 
 
@@ -1669,8 +1681,20 @@ public class ProjectInnovationSummaryAction extends BaseSummariesAction implemen
       objectMapper = new ObjectMapper();
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
 
-      LOG.info("Sending the innovations report {} to the microservice queue", this.innovationsReportName);
-      this.microserviceReportAction.sendInnovationsQueueMessage(jsonOutput, this.innovationsReportName);
+      if (this.hasSpecificities(APConstants.LOCAL_PDF_REPORT_ENGINE_ACTIVE)) {
+        if (this.localPdfReportService == null) {
+          LOG.error("The local PDF engine is active but its service is not available; the innovations report {} "
+            + "is not generated", this.innovationsReportName);
+          ServletActionContext.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          return ERROR;
+        }
+        LOG.info("Rendering the innovations report {} with the local PDF engine", this.innovationsReportName);
+        this.localPdfReportService.renderToResponse(jsonOutput, this.innovationsReportName,
+          ServletActionContext.getResponse());
+      } else {
+        LOG.info("Sending the innovations report {} to the microservice queue", this.innovationsReportName);
+        this.microserviceReportAction.sendInnovationsQueueMessage(jsonOutput, this.innovationsReportName);
+      }
 
     } catch (final IOException e) {
       LOG.error("Could not generate the innovations JSON to send to the microservice", e);
