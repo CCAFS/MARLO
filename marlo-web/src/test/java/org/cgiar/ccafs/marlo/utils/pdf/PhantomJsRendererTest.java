@@ -756,9 +756,11 @@ public class PhantomJsRendererTest {
   public void bucketImagesAreInlinedAfterTheSanitizerAndOnlyTheirSvgDataUrlsAreTrusted() throws Exception {
     FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
     PhantomJsRenderer renderer = rendererFor(fake);
-    String user = "https://prms-file-storage.s3.amazonaws.com/images/a.png";
+    String readiness = "https://" + PdfImageBundle.PRMS_HOST + "/images/inno-scaling-readiness-3.png";
+    String user = "https://" + PdfImageBundle.PRMS_HOST + "/images/a.png";
     String html = "<html><body><img src=\"https://" + PdfImageBundle.HOST + "/flags/ke.svg\">"
-      + "<img src=\"https://" + PdfImageBundle.HOST + "/Africa.png\"><img src=\"" + user + "\">"
+      + "<img src=\"https://" + PdfImageBundle.HOST + "/Africa.png\"><img src=\"" + readiness + "\">"
+      + "<img src=\"" + user + "\">"
       + "<img src=\"https://" + PdfImageBundle.HOST + "/flags/zz99.svg\" onerror=\"x()\"></body></html>";
     try {
       renderer.render(html, options(), deadlineIn(20000L));
@@ -768,14 +770,15 @@ public class PhantomJsRendererTest {
     JsonNode sent = JSON.readTree(fake.recorded("stdin", fake.started().get(0)));
     String sentHtml = sent.get("html").asText();
     assertFalse("the bucket is never requested", sentHtml.contains(PdfImageBundle.HOST));
+    assertFalse("the second bucket is never requested", sentHtml.contains(PdfImageBundle.PRMS_HOST));
     assertFalse("the sanitizer still ran on the markup", sentHtml.contains("onerror"));
-    assertTrue("user images keep being fetched", sentHtml.contains(user));
     assertTrue(sentHtml.contains("data:image/png;base64,iVBOR"));
     JsonNode trusted = sent.get("options").get("allowedDataUrls");
     assertEquals("only the SVG that was inlined is trusted, not the PNG or the unavailable one", 1, trusted.size());
     assertTrue(trusted.get(0).asText().startsWith("data:image/svg+xml;base64,"));
     assertTrue(sentHtml.contains(trusted.get(0).asText()));
-    assertEquals(Arrays.asList("prms-file-storage.s3.amazonaws.com"), PhantomJsRenderer.ALLOWED_HOSTS);
+    assertTrue("the page script allows no host", PhantomJsRenderer.ALLOWED_HOSTS.isEmpty());
+    assertEquals(0, sent.get("options").get("allowedHosts").size());
   }
 
   @Test
@@ -853,12 +856,44 @@ public class PhantomJsRendererTest {
 
   @Test
   public void theAllowlistPredicateOfThePageScriptMatchesTheSecurityRules() throws Exception {
+    JsonNode results = runPredicate("['" + HOST + "', '" + OTHER_HOST + "']");
+    if (results == null) {
+      return;
+    }
+    for (int i = 0; i < URL_CASES.length; i++) {
+      assertEquals("isAllowedUrl(" + shown(i) + ")", URL_CASES[i][1], results.get(i).asBoolean());
+    }
+  }
+
+  @Test
+  public void withNoAllowedHostEveryHttpUrlIsRefusedAndOnlyTheDataRulesRemain() throws Exception {
+    for (String hosts : new String[] {"[]", "undefined", "null"}) {
+      JsonNode results = runPredicate(hosts);
+      if (results == null) {
+        return;
+      }
+      for (int i = 0; i < URL_CASES.length; i++) {
+        String url = (String) URL_CASES[i][0];
+        boolean data = url.regionMatches(true, 0, "data:", 0, 5);
+        assertEquals("hosts " + hosts + ": isAllowedUrl(" + shown(i) + ")", data && (Boolean) URL_CASES[i][1],
+          results.get(i).asBoolean());
+      }
+    }
+  }
+
+  private static String shown(int row) {
+    String url = (String) URL_CASES[row][0];
+    return url.length() > 80 ? url.substring(0, 80) + "..." : url;
+  }
+
+  /** Runs isAllowedUrl under node over URL_CASES with the given hosts expression; null when node is missing. */
+  private JsonNode runPredicate(String hostsExpression) throws Exception {
     Process probe;
     try {
       probe = new ProcessBuilder("node", "--version").redirectErrorStream(true).start();
     } catch (IOException e) {
       Assume.assumeNoException("node is not installed; the predicate is covered by the integration test", e);
-      return;
+      return null;
     }
     probe.waitFor(10, TimeUnit.SECONDS);
     String script;
@@ -868,9 +903,9 @@ public class PhantomJsRendererTest {
     int begin = script.indexOf("// BEGIN isAllowedUrl");
     int end = script.indexOf("// END isAllowedUrl");
     assertTrue("the markers around isAllowedUrl are missing", begin > 0 && end > begin);
-    Path module = temp.newFile("predicate.js").toPath();
+    Path module = temp.newFile().toPath();
     Files.write(module, (script.substring(begin, end) + "\nvar cases = JSON.parse(require('fs').readFileSync(0, "
-      + "'utf8'));\nvar hosts = ['" + HOST + "', '" + OTHER_HOST + "'];\nvar trusted = {};\ntrusted['" + TRUSTED_SVG
+      + "'utf8'));\nvar hosts = " + hostsExpression + ";\nvar trusted = {};\ntrusted['" + TRUSTED_SVG
       + "'] = true;\nconsole.log(JSON.stringify(cases.map("
       + "function (url) { return isAllowedUrl(url, hosts, trusted); })));\n").getBytes(StandardCharsets.UTF_8));
     List<String> urls = new java.util.ArrayList<String>();
@@ -884,10 +919,6 @@ public class PhantomJsRendererTest {
     assertTrue(node.waitFor(20, TimeUnit.SECONDS));
     JsonNode results = JSON.readTree(out);
     assertEquals(URL_CASES.length, results.size());
-    for (int i = 0; i < URL_CASES.length; i++) {
-      String shown = ((String) URL_CASES[i][0]);
-      shown = shown.length() > 80 ? shown.substring(0, 80) + "..." : shown;
-      assertEquals("isAllowedUrl(" + shown + ")", URL_CASES[i][1], results.get(i).asBoolean());
-    }
+    return results;
   }
 }

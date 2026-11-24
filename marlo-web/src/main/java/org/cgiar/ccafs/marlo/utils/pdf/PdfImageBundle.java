@@ -54,6 +54,9 @@ import org.slf4j.LoggerFactory;
  * the image fails to decode as it did, and nothing is requested. The page script no longer allows the bucket host,
  * so a URL this class did not recognise is refused too.
  * <p>
+ * The scaling-readiness diagrams of the {@code prms-file-storage.s3.amazonaws.com} bucket are bundled the same way
+ * (CHG-LPRE-T18), under the manifest prefix {@link #PRMS_PREFIX}; no host is left on the page script's allowlist.
+ * <p>
  * The data URIs are encoded on first use and kept; the cache can never hold more than the manifest's objects, about
  * 4.8 MB of text. Bytes that do not match their manifest hash are never used. The instance is thread-safe.
  */
@@ -82,9 +85,18 @@ final class PdfImageBundle {
 
   static final String HOST = "marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com";
 
+  /** The second bucket (CHG-LPRE-T18): the scaling-readiness diagrams. Its objects sit under {@link #PRMS_PREFIX}. */
+  static final String PRMS_HOST = "prms-file-storage.s3.amazonaws.com";
+
+  /** The manifest and resource prefix of the second bucket, which keeps its keys apart from the first bucket's. */
+  static final String PRMS_PREFIX = "prms-file-storage/";
+
   static final String RESOURCE_DIR = "/pdf/images/";
 
   static final String MANIFEST = RESOURCE_DIR + "manifest.tsv";
+
+  /** Lead-in of the name logged for a refused cross-bucket key; it exists only for the WARN line, never a manifest key. */
+  private static final String REFUSED = "(second bucket prefix on the first bucket) ";
 
   /** What replaces a bucket URL that names no bundled object: a PNG that cannot be decoded. */
   static final String UNAVAILABLE = "data:image/png;base64,";
@@ -96,8 +108,12 @@ final class PdfImageBundle {
   /** Ends a URL early at an HTML-escaped quote, which a re-serialized attribute can put around it. */
   private static final String PATH = "(?:(?!&(?:quot|apos|#0*3[49]|#x0*2[27]);)[^\"'()\\s<>\\\\,])*";
 
-  /** The bucket host (any case, optional :443), then the path, query and fragment up to a delimiter of the markup. */
-  private static final String BUCKET = "https://" + Pattern.quote(HOST) + "(?::443)?(?![A-Za-z0-9.:@-])(" + PATH + ")";
+  /**
+   * A bucket host (any case, optional :443) as group 1, then the path, query and fragment up to a delimiter of the
+   * markup as group 2.
+   */
+  private static final String BUCKET = "https://(" + Pattern.quote(HOST) + "|" + Pattern.quote(PRMS_HOST)
+    + ")(?::443)?(?![A-Za-z0-9.:@-])(" + PATH + ")";
 
   private static final Pattern BUCKET_URL = Pattern.compile(BUCKET, Pattern.CASE_INSENSITIVE);
 
@@ -173,15 +189,15 @@ final class PdfImageBundle {
     int last = 0;
     while (scan.find()) {
       if (scan.group(1) != null) {
-        out.append(html, last, scan.start(2)).append(rewrite(scan.group(2), CSS_URL, 2, run));
+        out.append(html, last, scan.start(2)).append(rewrite(scan.group(2), CSS_URL, run));
         last = scan.end(2);
         continue;
       }
       int group = scan.group(6) != null ? 6 : scan.group(7) != null ? 7 : 8;
       String value = scan.group(group);
       boolean css = "style".equalsIgnoreCase(scan.group(4));
-      out.append(html, last, scan.start(group)).append(css ? rewrite(value, CSS_URL, 2, run)
-        : rewrite(value, BUCKET_URL, 1, run));
+      out.append(html, last, scan.start(group)).append(css ? rewrite(value, CSS_URL, run)
+        : rewrite(value, BUCKET_URL, run));
       last = scan.end(group);
     }
     if (run.replaced == 0) {
@@ -199,8 +215,8 @@ final class PdfImageBundle {
     private int replaced;
   }
 
-  /** Replaces the bucket URLs of one attribute value or CSS text; {@code pathGroup} holds the path. */
-  private String rewrite(String text, Pattern pattern, int pathGroup, Run run) {
+  /** Replaces the bucket URLs of one attribute value or CSS text; the host and path are the last two groups. */
+  private String rewrite(String text, Pattern pattern, Run run) {
     Matcher matcher = pattern.matcher(text);
     if (!matcher.find()) {
       return text;
@@ -209,10 +225,11 @@ final class PdfImageBundle {
     int last = 0;
     do {
       out.append(text, last, matcher.start());
-      if (pathGroup == 2) {
+      if (pattern == CSS_URL) {
         out.append(matcher.group(1));
       }
-      String key = keyOf(matcher.group(pathGroup));
+      int hostGroup = pattern == CSS_URL ? 2 : 1;
+      String key = keyOf(matcher.group(hostGroup), matcher.group(hostGroup + 1));
       String dataUri = key == null ? null : dataUri(key);
       if (dataUri == null) {
         reportUnknown(key, run);
@@ -240,6 +257,22 @@ final class PdfImageBundle {
     } else {
       LOG.debug("Report image is not bundled with MARLO and is left blank: {}", loggable(key));
     }
+  }
+
+  /**
+   * The manifest key a URL of a bucket host names: the object key ({@code +} and %XX decoded as S3 does), prefixed
+   * with {@link #PRMS_PREFIX} for the second bucket; null when it names none. A first-bucket key that starts with that
+   * prefix is refused, so it can never reach the second bucket's files.
+   */
+  static String keyOf(String host, String pathAndQuery) {
+    String key = keyOf(pathAndQuery);
+    if (key == null) {
+      return null;
+    }
+    if (PRMS_HOST.equalsIgnoreCase(host)) {
+      return PRMS_PREFIX + key;
+    }
+    return key.startsWith(PRMS_PREFIX) ? REFUSED + key : key;
   }
 
   /** The object key a URL path names ({@code +} and %XX decoded as S3 does), or null when it names none. */

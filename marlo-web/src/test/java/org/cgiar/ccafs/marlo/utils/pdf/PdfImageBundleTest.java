@@ -56,6 +56,7 @@ import static org.junit.Assert.assertTrue;
 public class PdfImageBundleTest {
 
   private static final String BASE = "https://" + PdfImageBundle.HOST + "/";
+  private static final String PRMS_BASE = "https://" + PdfImageBundle.PRMS_HOST + "/";
   private static final String BUNDLE_DIR = "src/main/resources/pdf/images";
   private static final String[] TEMPLATES = {"oicr", "innovation", "project"};
 
@@ -133,7 +134,8 @@ public class PdfImageBundleTest {
       byte[] bytes = bundled(fields[0]);
       assertEquals(fields[0], Integer.parseInt(fields[1]), bytes.length);
       assertEquals(fields[0], fields[2], sha256(bytes));
-      assertTrue(fields[3], fields[3].startsWith(BASE));
+      assertTrue(fields[3], fields[0].startsWith(PdfImageBundle.PRMS_PREFIX) ? fields[3].equals(PRMS_BASE
+        + fields[0].substring(PdfImageBundle.PRMS_PREFIX.length())) : fields[3].startsWith(BASE));
       assertNotNull("a bundled object needs a media type: " + fields[0], PdfImageBundle.mimeType(fields[0]));
       assertTrue("duplicate manifest path " + fields[0], listed.add(fields[0]));
     }
@@ -149,26 +151,29 @@ public class PdfImageBundleTest {
   @Test
   public void everyBucketUrlTheTemplatesHoldIsBundledAndTheGeneratedOnesCoverTheirWholeRange() throws Exception {
     Set<String> bundledKeys = PdfImageBundle.shared().paths();
-    Pattern url = Pattern.compile(Pattern.quote(BASE) + "([^\"'()\\s<>\\\\]+)");
+    Pattern url = Pattern.compile("(" + Pattern.quote(BASE) + "|" + Pattern.quote(PRMS_BASE)
+      + ")([^\"'()\\s<>\\\\]+)");
     Set<String> generated = new HashSet<String>();
     int statics = 0;
     for (String name : TEMPLATES) {
       Matcher matcher = url.matcher(template(name));
       while (matcher.find()) {
-        String path = matcher.group(1);
+        String path = matcher.group(2);
+        String host = matcher.group(1).equals(BASE) ? PdfImageBundle.HOST : PdfImageBundle.PRMS_HOST;
         if (path.contains("{{")) {
-          generated.add(path.substring(0, path.indexOf("{{")));
+          generated.add(host.equals(PdfImageBundle.HOST) ? path.substring(0, path.indexOf("{{"))
+            : "prms:" + path.substring(0, path.indexOf("{{")));
         } else {
           statics++;
-          String key = PdfImageBundle.keyOf("/" + path);
+          String key = PdfImageBundle.keyOf(host, "/" + path);
           assertTrue(name + " references a bucket object that is not bundled: " + key, bundledKeys.contains(key));
         }
       }
     }
     assertTrue(statics > 20);
     // The names built from data: flags by ISO code, SDG icons by goal number, impact-area icons by area id.
-    assertEquals(new HashSet<String>(Arrays.asList("flags/", "sdg/E-WEB-Goal-", "impact-areas/ICONS+CGIAR-")),
-      generated);
+    assertEquals(new HashSet<String>(Arrays.asList("flags/", "sdg/E-WEB-Goal-", "impact-areas/ICONS+CGIAR-",
+      "prms:images/inno-scaling-readiness-")), generated);
     for (String code : ISO_CODES) {
       assertTrue("flag " + code, bundledKeys.contains("flags/" + code + ".svg"));
     }
@@ -178,6 +183,74 @@ public class PdfImageBundleTest {
     for (int area = 1; area <= 5; area++) {
       assertTrue("impact area " + area, bundledKeys.contains("impact-areas/ICONS CGIAR-" + area + ".png"));
     }
+  }
+
+  @Test
+  public void theScalingReadinessImagesCoverLevelsZeroToNineAndNotProvided() {
+    Set<String> keys = PdfImageBundle.shared().paths();
+    for (int level = 0; level <= 9; level++) {
+      assertTrue("level " + level, keys.contains(PdfImageBundle.PRMS_PREFIX + "images/inno-scaling-readiness-"
+        + level + ".png"));
+    }
+    assertTrue(keys.contains(PdfImageBundle.PRMS_PREFIX + "images/inno-scaling-readiness-not-provided.png"));
+  }
+
+  /**
+   * Only {@code innovation.html} builds the image URL {@code inno-scaling-readiness-{{readinessScale}}.png}, from
+   * {@code ProjectInnovationSummaryAction}: the level digit 0..9 (a null value takes the not-provided branch).
+   * {@code ReportingSummaryAction}'s value (a name such as "0 - Idea", or an id) is shown as text in project.html and
+   * builds no URL. The extra values here (10, 11, names, junk) only prove that anything else renders blank.
+   */
+  @Test
+  public void everyReachableReadinessScaleValueIsBundledOrHandledAsUnknown() {
+    PdfImageBundle bundle = new PdfImageBundle();
+    String[] values = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "-1", "0 - Idea",
+      "9 - Proven Innovation", "", "x"};
+    for (String value : values) {
+      String url = PRMS_BASE + "images/inno-scaling-readiness-" + value + ".png";
+      String out = bundle.inline("<img src=\"" + url + "\">").html();
+      assertFalse(value, out.contains(PdfImageBundle.PRMS_HOST));
+      boolean bundled = value.matches("[0-9]");
+      boolean blank = Pattern.compile(Pattern.quote(PdfImageBundle.UNAVAILABLE) + "(?![A-Za-z0-9+/])").matcher(out)
+        .find();
+      assertEquals(value, bundled, !blank);
+    }
+  }
+
+  @Test
+  public void secondBucketUrlsAreInlinedInEveryPlaceAndKeepTheirKeysApartFromTheFirstBucket() throws Exception {
+    PdfImageBundle bundle = new PdfImageBundle();
+    String png = PRMS_BASE + "images/inno-scaling-readiness-not-provided.png";
+    String page = "<img src=\"" + png + "\"><img SRC='HTTPS://" + PdfImageBundle.PRMS_HOST.toUpperCase()
+      + ":443/images/inno-scaling-readiness-4.png'>"
+      + "<div style=\"background: url('" + PRMS_BASE + "images/inno-scaling-readiness-0.png')\"></div>"
+      + "<style>.a { background: url(" + PRMS_BASE + "images/inno-scaling-readiness-9.png) }</style>"
+      + "<p>see " + png + "</p><a href=\"" + png + "\">x</a>";
+    String out = bundle.inline(page).html();
+    assertEquals(4, out.split("data:image/png;base64,", -1).length - 1);
+    assertTrue(out, out.contains("<p>see " + png + "</p><a href=\"" + png + "\">x</a>"));
+    String first = out.substring(out.indexOf("base64,") + 7, out.indexOf("\"", out.indexOf("base64,")));
+    assertTrue(Arrays.equals(bundled(PdfImageBundle.PRMS_PREFIX + "images/inno-scaling-readiness-not-provided.png"),
+      Base64.getDecoder().decode(first)));
+    assertTrue(warnings().toString(), warnings().isEmpty());
+    // The second bucket's key space is not reachable through the first bucket, nor by an encoded slash or "..".
+    Pattern blankPng = Pattern.compile(Pattern.quote(PdfImageBundle.UNAVAILABLE) + "(?![A-Za-z0-9+/])");
+    String[] refused = {BASE + PdfImageBundle.PRMS_PREFIX + "images/inno-scaling-readiness-3.png",
+      BASE + "prms-file-storage%2Fimages/inno-scaling-readiness-3.png",
+      PRMS_BASE + "prms-file-storage/../flags/ke.svg", PRMS_BASE + "../flags/ke.svg"};
+    for (String url : refused) {
+      String result = bundle.inline("<img src=\"" + url + "\">").html();
+      assertEquals(url, "<img src=\"" + PdfImageBundle.UNAVAILABLE + "\">", result);
+      assertTrue(url, blankPng.matcher(result).find());
+    }
+    int warnedBefore = warnings().size();
+    // And an unknown object of the second bucket is blank, warned once by name, never requested.
+    String unknown = "<img src=\"" + PRMS_BASE + "images/user-upload.png\"><img src=\"" + PRMS_BASE
+      + "images/user-upload.png\">";
+    String blank = bundle.inline(unknown).html();
+    assertFalse(blank, blank.contains(PdfImageBundle.PRMS_HOST));
+    assertEquals(2, blank.split(Pattern.quote(PdfImageBundle.UNAVAILABLE), -1).length - 1);
+    assertEquals(warnings().toString(), 1, warnings().size() - warnedBefore);
   }
 
   @Test
@@ -261,7 +334,8 @@ public class PdfImageBundleTest {
   public void everyBundledObjectInlinesToADataUrlOfItsOwnBytesAndRastersPassTheNarrowedRule() throws Exception {
     PdfImageBundle bundle = PdfImageBundle.shared();
     for (String key : bundle.paths()) {
-      String url = BASE + key.replace(" ", "+");
+      String url = key.startsWith(PdfImageBundle.PRMS_PREFIX)
+        ? PRMS_BASE + key.substring(PdfImageBundle.PRMS_PREFIX.length()) : BASE + key.replace(" ", "+");
       PdfImageBundle.Inlined inlined = bundle.inline("<img src=\"" + url + "\">");
       String dataUri = inlined.html().substring("<img src=\"".length(), inlined.html().length() - 2);
       assertTrue(key, Arrays.equals(bundled(key), decodeDataUri(dataUri)));
@@ -328,20 +402,26 @@ public class PdfImageBundleTest {
   @Test
   public void aPageWithNoBucketUrlComesBackAsTheSameInstance() {
     PdfImageBundle bundle = PdfImageBundle.shared();
-    String html = "<html><img src=\"https://prms-file-storage.s3.amazonaws.com/images/a.png\"></html>";
+    String html = "<html><img src=\"https://uploads.example.org/images/a.png\"></html>";
     assertSame(html, bundle.inline(html).html());
     assertSame("", bundle.inline("").html());
     assertEquals(null, bundle.inline(null).html());
   }
 
   @Test
-  public void userImagesAndLookAlikeHostsAreNotTouched() {
-    String user = "<img src=\"https://prms-file-storage.s3.amazonaws.com/images/inno-scaling-readiness-3.png\">";
-    String lookAlike = "<img src=\"" + BASE.replace(".com/", ".com.evil.example/") + "Africa.png\">"
+  public void lookAlikeHostsAndOtherHostsAreNotTouched() {
+    String lookAlike = "<img src=\"" + PRMS_BASE.replace(".com/", ".com.evil.example/")
+      + "images/inno-scaling-readiness-3.png\">"
+      + "<img src=\"https://" + PdfImageBundle.PRMS_HOST + "@evil.example/images/inno-scaling-readiness-3.png\">"
+      + "<img src=\"https://" + PdfImageBundle.PRMS_HOST + ":8443/images/inno-scaling-readiness-3.png\">"
+      + "<img src=\"https://evil." + PdfImageBundle.PRMS_HOST + "/images/inno-scaling-readiness-3.png\">"
+      + "<img src=\"http://" + PdfImageBundle.PRMS_HOST + "/images/inno-scaling-readiness-3.png\">"
+      + "<img src=\"https://uploads.example.org/images/inno-scaling-readiness-3.png\">"
+      + "<img src=\"" + BASE.replace(".com/", ".com.evil.example/") + "Africa.png\">"
       + "<img src=\"https://" + PdfImageBundle.HOST + "@evil.example/Africa.png\">"
       + "<img src=\"https://" + PdfImageBundle.HOST + ":8443/Africa.png\">"
       + "<img src=\"https://evil." + PdfImageBundle.HOST + "/Africa.png\">";
-    String page = user + lookAlike;
+    String page = lookAlike;
     assertSame(page, PdfImageBundle.shared().inline(page).html());
   }
 
@@ -413,13 +493,17 @@ public class PdfImageBundleTest {
       assertSame(name + ": the sanitizer leaves the fixture alone", expected, PhantomJsRenderer.sanitize(expected));
       PdfImageBundle.Inlined inlined = bundle.inline(expected);
       assertFalse(name, inlined.html().contains(PdfImageBundle.HOST));
+      assertFalse(name, inlined.html().contains(PdfImageBundle.PRMS_HOST));
       assertFalse(name + ": a fixture image is not bundled",
         Pattern.compile(Pattern.quote(PdfImageBundle.UNAVAILABLE) + "(?![A-Za-z0-9+/])").matcher(inlined.html())
           .find());
       String restored = inlined.html();
-      Matcher bucket = Pattern.compile(Pattern.quote(BASE) + "[^\"'()\\s<>\\\\]+").matcher(expected);
+      Matcher bucket = Pattern.compile("(" + Pattern.quote(BASE) + "|" + Pattern.quote(PRMS_BASE)
+        + ")[^\"'()\\s<>\\\\]+").matcher(expected);
       while (bucket.find()) {
-        String key = PdfImageBundle.keyOf(bucket.group().substring(BASE.length() - 1));
+        String base = bucket.group(1);
+        String key = PdfImageBundle.keyOf(base.equals(BASE) ? PdfImageBundle.HOST : PdfImageBundle.PRMS_HOST,
+          bucket.group().substring(base.length() - 1));
         String mime = PdfImageBundle.mimeType(key);
         String dataUri = "data:" + mime + ";base64," + Base64.getEncoder().encodeToString(bundled(key));
         restored = restored.replaceFirst(Pattern.quote(dataUri), Matcher.quoteReplacement(bucket.group()));

@@ -884,3 +884,64 @@
   - Known, accepted: a literal `src="<bucket URL>"` typed as raw text through a triple-stash field is still inlined.
   - **spawns:** reviewer 11 calls, 133,940 tokens.
 - **Final status:** PASS · **Review rounds:** 38. Commit is pending the owner's confirmation that CGIAR/AICCRA brand images may go into the (public) repository.
+
+## CHG-LPRE-T15 — Acceptance (2026-11-24)
+
+- **(1) Measured parity with the built code.** Done repeatedly in T13, T16 and T17 in Linux x86_64 containers. The final state is commit `0f54c9556b` with no configuration, running in MARLO's unmodified `tomcat:9.0-jdk17-temurin` image with the template-image bucket blackholed:
+  - **PARITY on all six cases.**
+  - **Pixel diff of 0.000 %** on pages 1–2 of every case, plus a missing-flag probe and a font probe.
+  - The cluster PDF is byte-size-identical to production.
+- **(2) Live wiring check on the developer Mac** (owner: "ya hice push, sigue con t15"). The app ran against the throwaway `lpre_live_tmp` with the flag on for AICCRA, and `pdf.phantomjs.path` pointed at the macOS PhantomJS 2.1.1 binary in the gitignored `marlo-dev.properties`; that file has since been restored byte-identical.
+  - Startup logged: INFO "PhantomJS available for local PDF renders, version=2.1.1, path=…".
+  - Three downloads, each HTTP 200 `application/pdf` with `outcome=ok`, `blockedUris=0`, `failedFetches=0`:
+
+    | Report | Pages | Size |
+    |---|---|---|
+    | OICR 3508 | 4 | 242 KB |
+    | Innovation 1558 | 6 | 1.0 MB |
+    | Cluster 102076 | 444 | 19.8 MB |
+
+  - Zero ERROR lines, no microservice or RabbitMQ activity.
+  - **Not parity:** on macOS, PhantomJS uses CoreText fonts (Helvetica/Arial), as design §18.4 predicts. That is why the page counts differ from Linux; parity is defined and measured on Linux.
+- **(3) SSRF and script probes.** Done in T13 attempts 4–5 with a spy server: 14 payloads, 0 hits. In T17 the allowlist narrowed to `prms-file-storage`.
+- **(4) Harness.** `spike/parity/LocalRender.java` uses the no-arg service. On Linux that now means the embedded binary, so the harness needs no configuration; nothing changed.
+- **Submission path:** accepted on unit-test evidence (requirements Decision Log, W2).
+- **Final status:** PASS. **Next:** `/akili-validate` re-run.
+
+## CHG-LPRE-T18 — Scaling-readiness images shipped inside MARLO
+
+- **Owner:** "la carpeta prms-file-storage es publica?" (yes: objects anonymously readable, not listable), then "sí, sigue con T18".
+- **Implementer attempt 1:**
+  - **Bundle:** 11 PNGs under `pdf/images/prms-file-storage/images/` (levels 0–9 plus `not-provided`), added to the manifest and README.
+  - **`PdfImageBundle`:** now handles the second bucket. First-bucket paths cannot alias second-bucket files.
+  - **Allowlist:** `ALLOWED_HOSTS` is now **empty**. `render-page.js` refuses every http(s) URL and needed no change.
+  - **Tests:** the gated test no longer pre-inlines anything.
+  - **Reachable `readinessScale` values:**
+    - the innovation action sends 0–9, all bundled;
+    - the cluster action sends a name or an id 1–10. Names and id 10 match no object; they render blank here and were 403 in production too, and the tests assert this.
+  - **Results:** suite 1,457 tests, 7 skipped; Checkstyle ok.
+  - **spawns:** 30 calls, 149,819 tokens.
+- **Leader evidence:** container **`--network none`**, unmodified Tomcat image, no configuration, across 8 cases (the six plus the missing-flag and font probes):
+  - every render `outcome=ok`, `blockedUris=0`, `failedFetches=0`;
+  - **PARITY** on all 8;
+  - **0.000 % pixel diff** on pages 1–6 of every case, including the innovation scaling-readiness page.
+  - **A render now makes no external network request at all.**
+- **Reviewer: PASS** (opus).
+  - **Confirmed:** second-bucket matching is as strict as the first; aliasing across buckets is impossible (decode before prefix check, exact manifest keys); `isAllowedUrl` refuses everything for `[]`, `undefined` and `null`; tests are meaningful.
+  - **Correction to the Implementer's analysis:** `ReportingSummaryAction`'s `readinessScale` is shown as text in `project.html`, not used in an image URL. Only the innovation template builds the URL, with values 0–9, or `not-provided` when the value is null.
+  - **Stale spec text** about `prms-file-storage` as an allowlisted host or as user images: fixed by the Leader in design §18.1 (Inline images and Render rows), §18.3, the P-7 note, requirements OQ-4 and the 11-24 item (4), and proposal S2.
+  - **Advisories sent as a small follow-up:**
+    - one test assertion could never fail; tighten it and add encoded-slash and `..` cases;
+    - name the refusal-key constant;
+    - fix the README and javadoc wording;
+    - delete the now-unused test images.
+  - **spawns:** reviewer 23 calls, 100,483 tokens.
+- **Follow-up done:**
+  - The cross-bucket assertions are tightened, with `%2F` and `..` cases added.
+  - The `REFUSED` constant is named.
+  - README and javadoc wording are corrected.
+  - The unused `src/test/resources/pdf/images/` is deleted.
+  - Targeted tests: 83 green. Full suite: 1,457 tests, 0 failures, 7 skipped.
+  - Checkstyle ok; hygiene clean.
+  - **spawns:** 6 calls, 162,322 tokens.
+- **Final status:** PASS · **Review rounds:** 40.

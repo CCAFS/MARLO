@@ -232,7 +232,7 @@ available as the fallback.
 | OQ-1 | Jira ticket and parent epic for this work | No — traceability only |
 | OQ-2 | Who owns the CLARISA MIS connection and the Amazon MQ queue, and who tells them at retirement | No — retirement spec |
 | OQ-3 | Keep or delete PDFs already in bucket `microservice-reports` | No — retirement spec |
-| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and the `fontconfig`/`freetype` libraries (the font rules ship inside MARLO); who owns it; **whether the PhantomJS process's network egress can be limited to the two S3 hosts** (second layer behind SEC-003, design §18.3); awareness that the shipped PhantomJS 2.1.1 bundles outdated QtWebKit/OpenSSL (accepted with Pivot 2); whether `java.io.tmpdir` is mounted `noexec` on the servers (the shipped binary is extracted there) | No for the code — yes for enabling the specificity anywhere |
+| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and the `fontconfig`/`freetype` libraries (the font rules ship inside MARLO); who owns it; **whether the PhantomJS process's network egress can be blocked entirely** (since T18 a render makes no request) (second layer behind SEC-003, design §18.3); awareness that the shipped PhantomJS 2.1.1 bundles outdated QtWebKit/OpenSSL (accepted with Pivot 2); whether `java.io.tmpdir` is mounted `noexec` on the servers (the shipped binary is extracted there) | No for the code — yes for enabling the specificity anywhere |
 
 ## 9. Decision Log
 
@@ -290,6 +290,10 @@ available as the fallback.
   override); (2) the templates' static images (bucket `marlo-pdf-resources-dev`) ship as MARLO resources and are
   inlined, so renders no longer read that bucket; (3) **no Dockerfile or server change**: measured — MARLO's
   unmodified base image `tomcat:9.0-jdk17-temurin` (Ubuntu 26.04) already has every library PhantomJS needs and gives
-  PARITY 6/6; (4) user-uploaded images in `prms-file-storage` keep being read as today (the only external read, the
-  one that preserves parity) — **pending owner confirmation**. OQ-4 shrinks to: confirm production runs that image
+  PARITY 6/6; (4) ~~user-uploaded images in `prms-file-storage` keep being read~~ — *superseded by the 2026-11-24 Correction below: they are template images, bundled in T18; no external read remains*. OQ-4 shrinks to: confirm production runs that image
   (or an OS with `libfontconfig`/`libfreetype`) on Linux x86_64, and egress limits.
+- 2026-11-24 — **Correction: `prms-file-storage` holds template images, not user uploads.** The innovation template's
+  scaling-readiness chart references `https://prms-file-storage.s3.amazonaws.com/images/inno-scaling-readiness-{{readinessScale}}.png`
+  (levels 0–9; 10 and 11 return 403 in production too) and `…-not-provided.png`: 11 fixed images. They are bundled like
+  the `marlo-pdf-resources-dev` ones (T18), so a render makes **no external network request at all**; the page-script
+  allowlist becomes empty. Owner direction: "todo desde MARLO"; prompted by "la carpeta prms-file-storage".

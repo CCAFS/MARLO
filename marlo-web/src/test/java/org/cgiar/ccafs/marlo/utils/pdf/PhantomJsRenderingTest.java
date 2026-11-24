@@ -19,29 +19,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Template;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -71,9 +62,8 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * Page counts, fonts and footer bands are the production ones only for the Linux x86_64 build with the bundled DejaVu
  * fonts (design section 18.4); on another platform the test asserts that the pages render and prints what it saw.
- * The template images of the marlo-pdf-resources-dev bucket go through the production {@link PdfImageBundle} (inlined,
- * SVG flags trusted); the user images of the other allowlisted host are replaced here by the captured copies in
- * src/test/resources/pdf/images as {@code data:} URIs, so the test does not need the network.
+ * Every template image goes through the production {@link PdfImageBundle} (inlined, SVG flags trusted) and the page
+ * script allows no host at all (T18), so the test needs no network and does no inlining of its own.
  */
 public class PhantomJsRenderingTest {
 
@@ -82,15 +72,11 @@ public class PhantomJsRenderingTest {
     + "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==";
   private static final ObjectMapper JSON = new ObjectMapper();
   private static final File OUT_DIR = new File("target/local-pdf-report-phantomjs");
-  private static final Pattern REMOTE_IMAGE = Pattern.compile(
-    "https://(prms-file-storage\\.s3\\.amazonaws\\.com)"
-      + "(/[^\"'\\s)<>\\\\]+)");
 
   private ListAppender<ILoggingEvent> appender;
   private ch.qos.logback.classic.Logger serviceLogger;
   private Level previousLevel;
   private LocalPdfReportService service;
-  private final List<String> missingImages = new ArrayList<String>();
 
   private static boolean isLinux() {
     return System.getProperty("os.name", "").toLowerCase().contains("linux");
@@ -107,33 +93,7 @@ public class PhantomJsRenderingTest {
     appender = new ListAppender<ILoggingEvent>();
     appender.start();
     serviceLogger.addAppender(appender);
-    final Handlebars real = HandlebarsReportHelpers.newHandlebars();
-    service = new LocalPdfReportService(path.trim(), new Handlebars() {
-
-      @Override
-      public Template compileInline(String input) throws IOException {
-        return inliningImages(real.compileInline(input));
-      }
-    });
-  }
-
-  /** A template whose output has its allowlisted https images replaced by the captured copies, as data: URIs. */
-  private Template inliningImages(final Template template) {
-    return (Template) Proxy.newProxyInstance(PhantomJsRenderingTest.class.getClassLoader(),
-      new Class<?>[] {Template.class}, new InvocationHandler() {
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-          Object result;
-          try {
-            result = method.invoke(template, args);
-          } catch (InvocationTargetException e) {
-            throw e.getCause();
-          }
-          return result instanceof String && "apply".equals(method.getName())
-            ? withInlineImages((String) result, missingImages) : result;
-        }
-      });
+    service = new LocalPdfReportService(path.trim());
   }
 
   @After
@@ -150,31 +110,6 @@ public class PhantomJsRenderingTest {
       assertNotNull("missing test resource " + path, in);
       return new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
-  }
-
-  /** Replaces every user-image https URL of the HTML by its captured copy as a data: URI. */
-  private static String withInlineImages(String html, List<String> missing) throws IOException {
-    Matcher matcher = REMOTE_IMAGE.matcher(html);
-    StringBuffer out = new StringBuffer();
-    while (matcher.find()) {
-      String resourcePath = "/pdf/images/" + matcher.group(1) + matcher.group(2).replaceAll("\\?.*$", "");
-      byte[] bytes;
-      try (InputStream in = PhantomJsRenderingTest.class.getResourceAsStream(resourcePath)) {
-        if (in == null) {
-          missing.add(resourcePath);
-          matcher.appendReplacement(out, Matcher.quoteReplacement(matcher.group()));
-          continue;
-        }
-        bytes = in.readAllBytes();
-      }
-      String lower = resourcePath.toLowerCase();
-      String type = lower.endsWith(".svg") ? "image/svg+xml" : lower.endsWith(".jpg") || lower.endsWith(".jpeg")
-        ? "image/jpeg" : "image/png";
-      matcher.appendReplacement(out,
-        Matcher.quoteReplacement("data:" + type + ";base64," + Base64.getEncoder().encodeToString(bytes)));
-    }
-    matcher.appendTail(out);
-    return out.toString();
   }
 
   private static String fixturePayload(String name) throws IOException {
@@ -337,8 +272,6 @@ public class PhantomJsRenderingTest {
         }
       }
     }
-    assertTrue("images the fixtures need but src/test/resources/pdf/images lacks: " + missingImages,
-      missingImages.isEmpty());
     List<String> infos = infoLines();
     assertEquals(infos.toString(), 3, infos.size());
     for (String line : infos) {

@@ -214,7 +214,7 @@ or becomes a follow-up spec.
 | # | Criterion |
 |---|---|
 | S1 | Each of the three reports renders locally from the production template and sample data, and a reviewer accepts it side by side with the current PDF |
-| S2 | With the specificity on, downloading a summary and submitting a project produce the PDF with no call to Amazon MQ, S3 or CLARISA. *Restated 2026-11-23 (requirements Decision Log, validation W8): template images are still read from the two allowlisted S3 buckets until the retirement spec* |
+| S2 | With the specificity on, downloading a summary and submitting a project produce the PDF with no call to Amazon MQ, S3 or CLARISA. *Restated 2026-11-23 (requirements Decision Log, validation W8): template images are still read from the two allowlisted S3 buckets until the retirement spec* | *Superseded 2026-11-24 (T17/T18): all template images ship inside MARLO and a render makes no external request, so S2 holds in full.*
 | S3 | A broken template or data error produces a logged cause and an explicit user error within the configured time bound |
 | S4 | After retirement, `grep` finds no `com.rabbitmq`, `org.springframework.amqp` or `microservice.` reference in the three modules, and the compile and Checkstyle gates pass |
 | S5 | `docs/trd/trd.md` §7 reflects the final state |

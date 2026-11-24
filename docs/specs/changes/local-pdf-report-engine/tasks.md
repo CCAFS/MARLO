@@ -399,7 +399,7 @@ compare with the flag off.
 - **Review:** `full`. **Skills:** `marlo-verify`.
 
 ### CHG-LPRE-T15 — Acceptance: measured parity with the real code, live wiring, documentation
-- **Status:** [ ]
+- **Status:** [x]
 - **Depends on:** T14
 - **Requirements:** NF-001 (amended), FN-005–FN-007, SEC-001, SEC-003 · **Design:** §18.4, §13
 - **Scope:** (1) Leader runs `LocalPdfReportService` (built code) with PhantomJS 2.1.1 in a Linux x86_64 container on the six cases and `spike/parity/compare.py` → PARITY ×6; (2) live wiring check on the developer Mac (macOS PhantomJS: wiring and log lines only, parity not expected — §18.4); (3) one SSRF probe: rich text with a non-allowlisted image and a `<script>` → blocked count > 0, no fetch, no script effect; (4) update `spike/parity/` (a `LocalRender` that uses the configured binary), `execution.md`, the validation re-run.
@@ -420,3 +420,10 @@ compare with the flag off.
 - **Scope:** enumerate every `marlo-pdf-resources-dev` object the three templates and the summary actions reference (static names plus generated ones: SDG icons, country flags, DAC markers, innovation icons…); store them under `src/main/resources/pdf/images/` with a manifest (source URL, SHA-256); before PhantomJS, replace each such URL in the HTML with a `data:` URI of the bundled bytes (identical bytes → parity); an unknown object of that bucket is logged (WARN, name only) and replaced by an empty PNG `data:` URI — it renders as a broken image like production's 403, without any request and without counting as a SEC-001 rejection (*amended at T17 review*). Also bundle DejaVu Serif, Serif-Bold, SansMono and SansMono-Bold (*added at T17 review: production falls back to Serif/Mono where no `font-family` applies*). The page-script allowlist keeps only `prms-file-storage` (user images, pending owner decision).
 - **Tests:** manifest completeness against the references found; URL rewriting; byte identity; parity re-measured on the six cases.
 - **Done when:** PARITY 6/6 with the bucket unreachable (Docker network without that host) except user images.
+
+### CHG-LPRE-T18 — Scaling-readiness images shipped inside MARLO (no external request left)
+- **Status:** [x]
+- **Depends on:** T17
+- **Requirements:** Decision Log "Correction: prms-file-storage holds template images" · **Design:** §18.1 (Inline images), §18.3
+- **Scope:** bundle the 11 objects `prms-file-storage.s3.amazonaws.com/images/inno-scaling-readiness-{0..9,not-provided}.png` with the same manifest/integrity/inlining mechanism as T17 (second bucket in `PdfImageBundle`); unknown names of that bucket → empty PNG like T17; remove the last host from the page-script allowlist (empty: only bundled `data:` URIs and the trusted inlined SVGs load); update tests that assumed an allowlisted host.
+- **Done when:** with **all** network blackholed except nothing (e.g. `--network none`), the six cases give PARITY and 0.000 % pixel diff (Leader).

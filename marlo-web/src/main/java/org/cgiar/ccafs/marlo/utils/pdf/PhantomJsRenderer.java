@@ -198,11 +198,11 @@ final class PhantomJsRenderer {
   }
 
   /**
-   * Hosts a page may load resources from over https (CHG-LPRE-SEC-001, P-7); the page script enforces it. Only the
-   * user-uploaded images remain: the template images ship inside MARLO and are inlined (T17, {@link PdfImageBundle}).
+   * Hosts a page may load resources from over https (CHG-LPRE-SEC-001, P-7); the page script enforces it. None: every
+   * image of the templates ships inside MARLO and is inlined as a {@code data:} URI ({@link PdfImageBundle}, T17 and
+   * T18), so the page script refuses every http(s) URL.
    */
-  static final List<String> ALLOWED_HOSTS =
-    Collections.unmodifiableList(Arrays.asList("prms-file-storage.s3.amazonaws.com"));
+  static final List<String> ALLOWED_HOSTS = Collections.emptyList();
 
   static final int STREAM_CAP = 64 * 1024;
 
