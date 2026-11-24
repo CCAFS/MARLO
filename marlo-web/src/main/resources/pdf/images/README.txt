@@ -18,14 +18,15 @@ Retrieved
 
 Second bucket: prms-file-storage (CHG-LPRE-T18)
   The innovation template also shows the scaling-readiness diagram from https://prms-file-storage.s3.amazonaws.com/
-  (the PRMS file bucket, which also holds user uploads; those stay remote and are not bundled). The 11 template objects
+  (the PRMS file bucket, which also holds user uploads; those are not bundled). The 11 template objects
   images/inno-scaling-readiness-{0..9,not-provided}.png were downloaded the same way on 2026-11-24 and are stored under
   prms-file-storage/images/ (the manifest key is prms-file-storage/<bucket key>). Levels 10 and 11 answer 403, as the
   bucket is not listable. Only innovation.html builds the URL from data
   (inno-scaling-readiness-{{readinessScale}}.png, ProjectInnovationSummaryAction: level 0..9; a null value takes the
   not-provided image). ReportingSummaryAction's readinessScale is shown as text in project.html and builds no URL.
-  Anything not bundled renders blank, as the 403 did. Ownership: PRMS / CGIAR assets, the same owner-confirmed policy as above: the owner must confirm them
-  before this directory is pushed.
+  Every URL of either bucket that is not bundled (including PRMS user uploads) renders blank, as the 403 did, and
+  the page script allows no host at all, so nothing is requested.
+  Ownership: PRMS / CGIAR assets, the same owner-confirmed policy as above.
 
 Objects that do not exist (HTTP 403 from the bucket, so production shows a broken image for them)
   The iso_alpha_2 column of loc_elements also holds non-country codes (regions and sites). The bucket has no flag for:
@@ -101,7 +102,10 @@ Ownership and licences
     innovation and impact-area icons, score icons): CGIAR / AICCRA / MARLO assets, the same files MARLO has been
     serving to its own reports. The impact-area icons are the CGIAR impact area icons.
   No licence file ships inside the bucket; these notes record what could be established from the files and the
-  repository. The owner of the CGIAR/AICCRA brand assets should confirm them before this directory is pushed.
+  repository.
+
+Owner confirmation
+  The owner confirmed on 2026-11-24 ("sí, súbelas y haz el commit") that these images may be in the repository.
 
 Adding or changing an image
   Put the file under its bucket key path, add its row to manifest.tsv (size and SHA-256 of the file as stored), and

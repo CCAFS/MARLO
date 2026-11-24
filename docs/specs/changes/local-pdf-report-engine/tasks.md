@@ -3,7 +3,7 @@
 **Spec ID:** CHG-LOCAL-PDF-REPORT-ENGINE-001
 **Status:** Ready — Phase 3 gate `auto-approved (pre-approved mode)` 2026-11-20
 **Owner:** Kenji Tanaka (IBD)
-**Last Updated:** 2026-11-23 (T09, T10 added; validation remediation W6)
+**Last Updated:** 2026-11-24 (Pivot 2 tasks T12–T18; validation remediation W9/W10)
 **Implements design:** docs/specs/changes/local-pdf-report-engine/design.md
 **Branching:** `feature/local-pdf-report-engine` (created `--no-track` from `staging` at `2f67c5d2ab`).
 **Target merge:** staging. **No commit or push without the owner's approval** (standing owner rule).
@@ -286,6 +286,15 @@ T02 ∥ T03 and T05 ∥ (T01..T04) are parallel-safe; in this single-checkout ru
 | FN-008 unsupported constructs: test fails, render WARNs | T02 (guard + production-template test), T04 (render-time WARN) |
 | FN-001/002 title and headings present in the PDF text | T10 |
 | Payload `null` values; unexpected render exceptions | T09 |
+| *Pivot 2 rows (2026-11-24, supersede the T03/T04 rows for FN-004, NF-001, NF-002, NF-004, SEC-001):* | |
+| FN-003 byte-identical HTML | T12 |
+| FN-004 / NF-001 measured parity on fixtures and real data | T13, T15, T16–T18 (Leader parity runs; gated `PhantomJsRenderingTest` on Linux) |
+| NF-002 DejaVu fonts, isolated fontconfig | T13, T17 |
+| NF-004 resource and process deadlines | T13 |
+| NF-006 OpenHTMLtoPDF retired | T14 |
+| NF-007 shipped binary, override, startup check | T13, T16 |
+| SEC-001 allowlist (empty since T18) | T13, T17, T18 |
+| SEC-003 sanitizer; SEC-004 temp dir + kill | T13 |
 
 Regression (manual, QA): download the three summaries with the flag on for one unit on a test environment and
 compare with the flag off.
@@ -295,7 +304,7 @@ compare with the flag off.
 - Migration deploy: ships with the WAR; inserts disabled rows only.
 - Specificity rollout: set the unit's `custom_parameters` row to `'true'` (example in the migration header);
   users pick it up at next login or unit switch.
-- No environment variable or properties change.
+- No server or Dockerfile change. One optional property, `pdf.phantomjs.path` (empty by default = the PhantomJS shipped with MARLO on Linux x86_64; set it only to override, e.g. on a developer Mac).
 
 ## 7. Rollback Plan
 
@@ -304,8 +313,8 @@ compare with the flag off.
 
 ## 8. Definition of Done
 
-- T01–T07, T09 and T10 done with evidence in `execution.md`; T08 handed to the follow-up spec.
-- Gates green; visual parity accepted in `/akili-validate`.
+- T01–T07, T09, T10 and T12–T18 done with evidence in `execution.md`; T08 handed to the follow-up spec; T11 superseded.
+- Gates green; measured parity (NF-001) on Linux; `/akili-validate` without FAIL.
 - Owner reviews and decides commit, push and merge.
 
 ### CHG-LPRE-T09 — Fix from live verification: null payload values and unexpected render exceptions
@@ -368,7 +377,7 @@ compare with the flag off.
 - **Depends on:** T02
 - **Module:** marlo-web
 - **Requirements:** FN-003 (Pivot 2 amendment) · **Design:** §18.1 (HTML row)
-- **Files touched:** `utils/pdf/HandlebarsReportHelpers.java`, `HandlebarsReportHelpersTest.java`, `src/test/resources/pdf/helper-vectors.json` (regenerated), `spike/helper-vectors-generator/*` (add `ifCond` rows and whitespace rows).
+- **Files touched:** `utils/pdf/HandlebarsReportHelpers.java`, `utils/pdf/StandaloneLines.java` (new), `utils/pdf/ReportTemplateSubset.java`, `HandlebarsReportHelpersTest.java`, `ReportTemplateSubsetTest.java`, `src/test/resources/pdf/helper-vectors.json` and `subset-vectors.json` (regenerated), `src/test/resources/pdf/expected-html/*` (new), `spike/helper-vectors-generator/*` (incl. `generate-expected-html.js`).
 - **Scope:** *(corrected in T12: `ifCond` is already one of the 17 helpers of `pdf.module.ts`, same body as `pdf-creator-node`'s, already registered and covered by vectors — confirm, do not add)* register `ifCond` with the semantics of `pdf-creator-node/index.js` (operators `==`, `===`, `!=`, `!==`, `<`, `<=`, `>`, `>=`, `&&`, `||`, default → inverse; JS loose/strict semantics as in T02); make standalone block-tag lines strip as Handlebars.js does (Handlebars.java option or equivalent), so the generated HTML is byte-identical to Handlebars.js. Update `ReportTemplateSubset`'s known-helper list if it has one.
 - **Tests:** vectors regenerated with real Handlebars.js (including `ifCond` and multi-line block templates); a test asserting byte-identical HTML for the three fixture templates against Handlebars.js output stored as test resources (generated once by the vector generator, command recorded).
 - **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest='HandlebarsReportHelpersTest,ReportTemplateSubsetTest,LocalPdfReportServiceTest'`; Leader re-checks byte identity on the six parity cases (three are real data, scratchpad only).
@@ -380,7 +389,7 @@ compare with the flag off.
 - **Depends on:** T12
 - **Module:** marlo-utils (config getter), marlo-web
 - **Requirements:** FN-004, NF-002, NF-003, NF-004, NF-005, NF-007, SEC-001, SEC-002, SEC-003, SEC-004, OPS-001 · **Design:** §18
-- **Files touched:** `marlo-utils/.../utils/APConfig.java` (`pdf.phantomjs.path` getter), `marlo-web/src/main/resources/config/marlo-test.properties` (key, empty value), `utils/pdf/PhantomJsRenderer.java` (new, GPL header, package-private), `src/main/resources/pdf/render-page.js` (new; html-pdf 3.0.1 script, MIT attribution), `utils/pdf/LocalPdfReportService.java` (switch the render step; startup check; log fields), tests.
+- **Files touched:** `marlo-utils/.../utils/APConfig.java` (`pdf.phantomjs.path` getter), `marlo-web/src/main/resources/config/marlo-test.properties` (key, empty value), `utils/pdf/PhantomJsRenderer.java` (new, GPL header, package-private), `src/main/resources/pdf/render-page.js` (new; html-pdf 3.0.1 script, MIT attribution), `src/main/resources/pdf/fontconfig/` (Debian rule set, template, list, README, licence), `utils/pdf/LocalPdfReportService.java` (switch the render step; startup check; log fields), tests `PhantomJsRendererTest`, `PhantomJsRenderingTest`, `FakePhantomJs`, `PdfResponses`, `src/test/resources/pdf/fake-phantomjs.sh` (new), `LocalPdfReportServiceTest` (rewritten).
 - **Scope:** design §18.1 exactly: sanitize → spawn PhantomJS with `--local-url-access=false` and an explicit environment (isolated `FONTCONFIG_FILE`, temp `HOME`/`TMPDIR`), stdin JSON `{html, options}` as html-pdf sends it, stdout JSON `{filename, blocked, failed}`, bounded stream draining, deadline → kill process tree, temp dir removed in `finally`; startup `--version` check; missing binary → fast `PdfRenderException` (generic 500). Pool, deadlines, logging, public API unchanged.
 - **Tests:** unit tests with a fake executable (a small shell script written to a temp dir in the test) for: success, exit ≠ 0, no output file, hang past the deadline (process killed, temp dir removed), oversized stdout, missing binary (fast failure + generic 500 via `renderToResponse`); sanitizer tests (`<script>`, `onload=`, `javascript:` removed; normal markup untouched); allowlist tests of `render-page.js`'s URL predicate (extracted as a pure function and exercised via the fake or a JS-free mirror). Integration test that runs only when `PHANTOMJS_PATH` is set (skipped otherwise) rendering the three fixtures.
 - **Verification:** targeted tests; clean compile (`marlo-utils` included); Checkstyle delta; hygiene; Leader runs the integration test in a Linux x86_64 container with PhantomJS 2.1.1.
@@ -407,14 +416,16 @@ compare with the flag off.
 
 ### CHG-LPRE-T16 — PhantomJS shipped inside MARLO
 - **Status:** [x]
+- **Files touched:** `utils/pdf/EmbeddedPhantomJs.java` (new), `PhantomJsRenderer.java`, `LocalPdfReportService.java`, `src/main/resources/pdf/phantomjs/` (gz, `.sha256`, `LICENSE.BSD`, `third-party.txt`, `LGPL-2.1.txt`, `SOURCE.txt`, `PROVENANCE.txt`), `EmbeddedPhantomJsTest.java` (new), `PhantomJsRendererTest.java`, `LocalPdfReportServiceTest.java`.
 - **Depends on:** T13, T14
 - **Requirements:** NF-007 (amended 2026-11-24), Decision Log "Everything from MARLO" · **Design:** §18.1 (Binary row)
-- **Scope:** commit `phantomjs-2.1.1-linux-x86_64` compressed under `marlo-web/src/main/resources/pdf/phantomjs/` (with its BSD licence and third-party notices); at bean init on Linux x86_64 extract the executable once to the private support directory, verify its SHA-256 against a constant, `chmod 700`; `pdf.phantomjs.path` non-empty overrides it (developer Mac, other platforms); unsupported platform and no override → the existing NF-007 startup WARN and fast failure.
+- **Scope:** commit `phantomjs-2.1.1-linux-x86_64` compressed under `marlo-web/src/main/resources/pdf/phantomjs/` (with its BSD licence and third-party notices); at bean init on Linux x86_64 extract the executable once to the private support directory, verify its SHA-256 against the checksum shipped next to it (*a resource, not a Java constant: `CognitoCredentialLiteralScanTest` flags 64-hex literals*), `chmod 700`; `pdf.phantomjs.path` non-empty overrides it (developer Mac, other platforms); unsupported platform and no override → the existing NF-007 startup WARN and fast failure.
 - **Tests:** extraction + checksum + permissions; override precedence; unsupported-platform path; the gated integration test runs with the embedded binary in the Linux container.
 - **Done when:** a MARLO build with no configuration renders with PhantomJS in `tomcat:9.0-jdk17-temurin` → PARITY 6/6 (Leader).
 
 ### CHG-LPRE-T17 — Template images shipped inside MARLO
 - **Status:** [x]
+- **Files touched:** `utils/pdf/PdfImageBundle.java` (new), `PhantomJsRenderer.java`, `render-page.js`, `src/main/resources/pdf/images/` (298 files, `manifest.tsv`, `README.txt`), `src/main/resources/pdf/fonts/DejaVuSerif*.ttf`, `DejaVuSansMono*.ttf`, `PdfImageBundleTest.java` (new), `test-image-manifest-bad-hash.tsv` (new), `PhantomJsRendererTest.java`, `LocalPdfReportServiceTest.java`, `PhantomJsRenderingTest.java`.
 - **Depends on:** T16
 - **Requirements:** Decision Log "Everything from MARLO", SEC-001 · **Design:** §18.1
 - **Scope:** enumerate every `marlo-pdf-resources-dev` object the three templates and the summary actions reference (static names plus generated ones: SDG icons, country flags, DAC markers, innovation icons…); store them under `src/main/resources/pdf/images/` with a manifest (source URL, SHA-256); before PhantomJS, replace each such URL in the HTML with a `data:` URI of the bundled bytes (identical bytes → parity); an unknown object of that bucket is logged (WARN, name only) and replaced by an empty PNG `data:` URI — it renders as a broken image like production's 403, without any request and without counting as a SEC-001 rejection (*amended at T17 review*). Also bundle DejaVu Serif, Serif-Bold, SansMono and SansMono-Bold (*added at T17 review: production falls back to Serif/Mono where no `font-family` applies*). The page-script allowlist keeps only `prms-file-storage` (user images, pending owner decision).
@@ -423,6 +434,7 @@ compare with the flag off.
 
 ### CHG-LPRE-T18 — Scaling-readiness images shipped inside MARLO (no external request left)
 - **Status:** [x]
+- **Files touched:** `PdfImageBundle.java`, `PhantomJsRenderer.java` (`ALLOWED_HOSTS` empty), `src/main/resources/pdf/images/prms-file-storage/images/` (11 files), `manifest.tsv`, `README.txt`, `PdfImageBundleTest.java`, `PhantomJsRendererTest.java`, `PhantomJsRenderingTest.java`; deleted `src/test/resources/pdf/images/`.
 - **Depends on:** T17
 - **Requirements:** Decision Log "Correction: prms-file-storage holds template images" · **Design:** §18.1 (Inline images), §18.3
 - **Scope:** bundle the 11 objects `prms-file-storage.s3.amazonaws.com/images/inno-scaling-readiness-{0..9,not-provided}.png` with the same manifest/integrity/inlining mechanism as T17 (second bucket in `PdfImageBundle`); unknown names of that bucket → empty PNG like T17; remove the last host from the page-script allowlist (empty: only bundled `data:` URIs and the trusted inlined SVGs load); update tests that assumed an allowlisted host.

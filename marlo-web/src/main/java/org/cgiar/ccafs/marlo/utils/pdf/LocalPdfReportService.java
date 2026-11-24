@@ -67,8 +67,9 @@ import org.slf4j.LoggerFactory;
  * the call at once, and a caller that waits longer than its deadline gets a {@link PdfRenderException} (the task is
  * cancelled and removed from the queue, and the PhantomJS process is killed). Both are logged at ERROR, as every
  * failed render is. A render that ends after its caller gave up logs a warning with its total time. The PhantomJS
- * binary comes from {@code pdf.phantomjs.path}; it is checked once at startup, and a render without a usable binary
- * fails at once (CHG-LPRE-NF-007).
+ * binary is the one shipped with MARLO (Linux x86_64) unless {@code pdf.phantomjs.path} names another one (a developer
+ * Mac, other platforms); it is checked once at startup, and a render without a usable binary fails at once
+ * (CHG-LPRE-NF-007).
  * <p>
  * Nothing in a log line or in an error message comes from the template or from the payload data: a failure is
  * reported by exception class (and the line and column of a template error) with the stack trace of the root cause.
@@ -322,9 +323,9 @@ public class LocalPdfReportService {
     TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(QUEUE_CAPACITY), new DaemonThreads());
 
   /**
-   * The constructor the container uses. The binary path arrives with {@link #setConfig(APConfig)}, and the startup
-   * check runs once the bean is complete ({@link #checkBinary()}). Until then, and when the path is empty, a render
-   * fails at once.
+   * The constructor the container uses. The optional override path arrives with {@link #setConfig(APConfig)}, and
+   * the startup check runs once the bean is complete ({@link #checkBinary()}). An empty path means the PhantomJS
+   * shipped with MARLO (Linux x86_64); on another platform with no path, a render fails at once.
    */
   public LocalPdfReportService() {
     this(EmbeddedPhantomJs.system());

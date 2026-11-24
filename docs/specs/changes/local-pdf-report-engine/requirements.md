@@ -40,8 +40,10 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 
 ### Functional
 
-- **CHG-LPRE-FN-001** — The system MUST render the OICR, Innovation and Cluster summary PDFs in-process from the
-  template stored in `report_configurations` and the data map each summary action builds today.
+- **CHG-LPRE-FN-001** — The system MUST render the OICR, Innovation and Cluster summary PDFs inside MARLO from the
+  template stored in `report_configurations` and the data map each summary action builds today. *Amended 2026-11-24
+  (validation W1): "inside MARLO" means in the MARLO JVM plus a local PhantomJS child process that MARLO ships and
+  starts itself (design §18) — no external service.*
 - **CHG-LPRE-FN-002** — The local engine MUST accept the same payload the summary actions send to the
   microservice (`data.data`, `data.options`, `data.templateData`, `data.fileName`), so both engines receive
   identical input.
@@ -117,7 +119,9 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 ### Operations
 
 - **CHG-LPRE-OPS-001** — Each local render MUST log one line with report file name, outcome, page count or byte
-  size, and elapsed time; a failure MUST log the cause with its stack trace.
+  size, and elapsed time; a failure MUST log the cause with its stack trace. *Amended 2026-11-24 (validation W2):
+  a `rejected` (pool full) or `timeout` render logs its ERROR with the log-safe message only — the cause is the pool
+  or the deadline, not a stack worth reading (design §10).*
 
 ## 4. Out-of-Scope
 
@@ -127,9 +131,11 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 - The AI summary Lambda (`summary.microservice.url`); the Pentaho, iText and POI reports.
 - Redesigning the PDFs; changing the data the summary actions build.
 - Editing `docs/trd/trd.md` (constitutional document) — recorded as a pending item.
-- Installing PhantomJS 2.1.1 and `fontconfig`/`freetype` on the deployed environments, or adding them to the
-  `Dockerfile`: governed infrastructure work (`docs/infrastructure.md`), handed to the infrastructure team with the
-  questions in OQ-4. Until then the specificity stays `'false'` everywhere. *Pivot 2 (2026-11-23, owner-approved option B — design §18).*
+- ~~Installing PhantomJS 2.1.1 and `fontconfig`/`freetype` on the deployed environments~~ — *superseded 2026-11-24
+  (validation W3): PhantomJS ships inside MARLO (T16) and MARLO's unmodified base image already has the libraries;
+  no Dockerfile or server change is needed. What remains for infrastructure is OQ-4 (confirm Linux x86_64 with
+  `libfontconfig`/`libfreetype`, an exec-allowed temp dir, egress blocking); the specificity is enabled per unit by
+  the owner after that confirmation.*
 
 ## 5. Personas Affected
 
@@ -198,7 +204,7 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 | Java that does not compile (dependency API mismatch, wrong types) | Compile gate (clean `test-compile`, `marlo-verify`) |
 | Dependency drift: SLF4J 2 / ASM 7 / Commons Logging 1.4 replacing MARLO's versions | `mvn dependency:tree` on `marlo-web` compared before/after (T01) |
 | Helper semantics differ from Handlebars.js | Unit tests with JS-derived expected values (T02) |
-| Layout or pagination regression versus production | Page-count test on the three templates (automated) **plus** a visual side-by-side review — no automated check can judge "looks the same"; substitute: T6 visual review of the comparison images during `/akili-validate`, then the owner at the HITL pause |
+| Layout or pagination regression versus production | *Amended 2026-11-24 (validation W5):* measured parity with `spike/parity/compare.py` + pixel diff on fixtures and real data (Leader, Linux, `--network none`), plus the gated `PhantomJsRenderingTest` (page counts, text, footer band, hostile and bypass payloads, shipped binary) — green on Linux at the final code (OK, 7 tests) |
 | Header/footer misplaced (in the flow, wrong page) | Text-position test on rendered pages (T03) |
 | Remote fetch outside the allowlist (SSRF) | Unit test with a recording stream factory: zero requests to disallowed URIs (T03) |
 | Wrong engine chosen / microservice still called with flag on | Unit tests on the dispatch in each caller with test doubles that record calls (T05) |
@@ -252,7 +258,7 @@ available as the fallback.
   production template exercises are accepted and listed in `design.md` §7.1 (execute-time decision under
   pre-approved mode — owner to confirm at review).
 - 2026-11-23 — After the T02 HALT the owner approved a fourth attempt; the parent-context walk and `null` list
-  elements are fixed in code (2,295 vectors at the time; *superseded* — 2,414 helper vectors and 7,712 subset vectors after the Pivot, `execution.md` T02). The accepted limits are now four (§7.1), the fourth being block
+  elements are fixed in code (2,295 vectors at the time; *superseded* — 2,414 helper vectors and 7,712 subset vectors after the Pivot, `execution.md` T02; **2,817** helper vectors after T12). The accepted limits are now four (§7.1), the fourth being block
   parameters, which the production templates do not use.
 - 2026-11-23 — **Pivot (owner-approved):** FN-003 parity is scoped to a supported template subset; constructs
   outside it are detected by a guard (FN-008) instead of being chased one by one. Reason: five review rounds each
@@ -297,3 +303,6 @@ available as the fallback.
   (levels 0–9; 10 and 11 return 403 in production too) and `…-not-provided.png`: 11 fixed images. They are bundled like
   the `marlo-pdf-resources-dev` ones (T18), so a render makes **no external network request at all**; the page-script
   allowlist becomes empty. Owner direction: "todo desde MARLO"; prompted by "la carpeta prms-file-storage".
+- 2026-11-24 — **Owner confirmed the bundled images may be in the repository** (validation W7): "sí, súbelas y haz el
+  commit" — CGIAR/AICCRA template images (T17, `0f54c9556b`) and the PRMS scaling-readiness images (T18), in the
+  public `CCAFS/MARLO` repository.

@@ -95,7 +95,10 @@ final class PdfImageBundle {
 
   static final String MANIFEST = RESOURCE_DIR + "manifest.tsv";
 
-  /** Lead-in of the name logged for a refused cross-bucket key; it exists only for the WARN line, never a manifest key. */
+  /**
+   * Lead-in of the name logged for a refused cross-bucket key; it exists only for the WARN line, never a manifest
+   * key.
+   */
   private static final String REFUSED = "(second bucket prefix on the first bucket) ";
 
   /** What replaces a bucket URL that names no bundled object: a PNG that cannot be decoded. */

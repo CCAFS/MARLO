@@ -47,7 +47,9 @@ import org.apache.pdfbox.text.TextPosition;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,11 @@ public class PhantomJsRenderingTest {
   private static final ObjectMapper JSON = new ObjectMapper();
   private static final File OUT_DIR = new File("target/local-pdf-report-phantomjs");
 
+  private static final String SHIPPED_TEST = "theShippedPhantomJsRendersTheProjectReportWithNoConfiguredPath";
+
+  @Rule
+  public TestName testName = new TestName();
+
   private ListAppender<ILoggingEvent> appender;
   private ch.qos.logback.classic.Logger serviceLogger;
   private Level previousLevel;
@@ -82,18 +89,34 @@ public class PhantomJsRenderingTest {
     return System.getProperty("os.name", "").toLowerCase().contains("linux");
   }
 
+  private static boolean isLinuxX64() {
+    String arch = System.getProperty("os.arch", "");
+    return isLinux() && (arch.equals("amd64") || arch.equals("x86_64"));
+  }
+
   @Before
   public void setUp() {
+    boolean shipped = SHIPPED_TEST.equals(testName.getMethodName());
     String path = System.getenv("PHANTOMJS_PATH");
-    Assume.assumeTrue("PHANTOMJS_PATH is not set: the real PhantomJS tests are skipped",
-      path != null && !path.trim().isEmpty());
+    if (shipped) {
+      Assume.assumeTrue("the shipped PhantomJS runs on Linux x86_64 only", isLinuxX64());
+    } else {
+      Assume.assumeTrue("PHANTOMJS_PATH is not set: the real PhantomJS tests are skipped",
+        path != null && !path.trim().isEmpty());
+    }
     serviceLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(LocalPdfReportService.class);
     previousLevel = serviceLogger.getLevel();
     serviceLogger.setLevel(Level.DEBUG);
     appender = new ListAppender<ILoggingEvent>();
     appender.start();
     serviceLogger.addAppender(appender);
-    service = new LocalPdfReportService(path.trim());
+    if (shipped) {
+      // The production way: the container constructor with an empty pdf.phantomjs.path, then the startup check.
+      service = new LocalPdfReportService();
+      service.initFromConfig();
+    } else {
+      service = new LocalPdfReportService(path.trim());
+    }
   }
 
   @After
@@ -222,6 +245,14 @@ public class PhantomJsRenderingTest {
     return stripper;
   }
 
+  /**
+   * The text of the document with every run of whitespace, tabs included, as one space: PDFBox separates the words of
+   * a PhantomJS (Qt) PDF with tab characters on Linux and with spaces on macOS.
+   */
+  private static String textOf(PDDocument document) throws IOException {
+    return new PDFTextStripper().getText(document).replaceAll("\\s+", " ").trim();
+  }
+
   private static String squash(String text) {
     return text.replaceAll("\\s", "");
   }
@@ -261,7 +292,7 @@ public class PhantomJsRenderingTest {
           assertTrue(names[i] + " page count " + document.getNumberOfPages(),
             document.getNumberOfPages() >= 3 && document.getNumberOfPages() <= 12);
         }
-        String text = new PDFTextStripper().getText(document);
+        String text = textOf(document);
         if (isLinux()) {
           for (String expected : expectedText[i]) {
             assertTrue(names[i] + " text lacks '" + expected + "'", text.contains(expected));
@@ -278,6 +309,17 @@ public class PhantomJsRenderingTest {
       assertTrue(line,
         line.contains("outcome=ok") && line.contains("blockedUris=0") && line.contains("failedFetches=0"));
     }
+  }
+
+  @Test
+  public void theShippedPhantomJsRendersTheProjectReportWithNoConfiguredPath() throws Exception {
+    byte[] pdf = service.render(fixturePayload("project"), LocalPdfReportService.DOWNLOAD_DEADLINE_MS);
+    try (PDDocument document = open(pdf)) {
+      assertEquals("project page count", 7, document.getNumberOfPages());
+    }
+    List<String> infos = infoLines();
+    assertEquals(infos.toString(), 1, infos.size());
+    assertTrue(infos.get(0), infos.get(0).contains("outcome=ok"));
   }
 
   @Test
@@ -314,7 +356,7 @@ public class PhantomJsRenderingTest {
       + "<img src=\"" + PNG_1X1 + "\""
       + " width=\"40\" height=\"40\"></body></html>";
     try (PDDocument document = open(service.render(payload(template), 30000L))) {
-      String text = new PDFTextStripper().getText(document);
+      String text = textOf(document);
       assertTrue(text, text.contains("kept text"));
       for (String effect : new String[] {"SCRIPT-RAN", "HANDLER-RAN", "LINK-RAN"}) {
         assertFalse(effect + " ran: " + text, text.contains(effect));
@@ -362,7 +404,7 @@ public class PhantomJsRenderingTest {
         throw new AssertionError("payload " + i + " failed the render: " + e.getMessage(), e);
       }
       try (PDDocument document = open(pdf)) {
-        String text = new PDFTextStripper().getText(document);
+        String text = textOf(document);
         assertFalse("payload " + i + " changed the page: " + text, text.contains("PWNED"));
         // What follows a payload may go with it (jsoup nests it inside the noscript it removes), what came before
         // must stay.
@@ -381,7 +423,7 @@ public class PhantomJsRenderingTest {
       + "\"data\":{\"name\":\"World\"}}}";
     try (PDDocument document = open(service.render(minimal, 30000L))) {
       assertEquals(1, document.getNumberOfPages());
-      assertTrue(new PDFTextStripper().getText(document).replaceAll("\\s", "").contains("HelloWorld"));
+      assertTrue(textOf(document).replaceAll("\\s", "").contains("HelloWorld"));
     }
   }
 

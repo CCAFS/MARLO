@@ -7,7 +7,7 @@
 | Spec | `changes/local-pdf-report-engine` (CHG-LOCAL-PDF-REPORT-ENGINE-001) |
 | Approval Mode | `pre-approved (Kenji Tanaka, 2026-11-20)` |
 | Branch | `feature/local-pdf-report-engine` from `staging` at `2f67c5d2ab` |
-| Commit policy | **No commits** — owner rule (ask before committing / pushing). Each closed task is staged with `git add` as a checkpoint; the next task's diff is `git diff` against the index |
+| Commit policy | Owner rule: ask before every commit and every push. *Updated 2026-11-24 (validation W11):* every task was committed on owner approval (Summary table); the owner pushes |
 | Time cap | Owner instruction: stop before 10.5 h of work → hard stop 07:00 on 2026-11-21 |
 | Leader | `opus` (session) · Implementer wrapper `akili-implementer` (`sonnet`) · Reviewer wrapper `akili-reviewer` (`opus`) |
 | Persona drift | `akili doctor --agents` (akili-specs v2.45.0): all four `.agents/*.md` personas `UNMARKED` (MARLO-customised, no section markers). `--fix` not run: it would rewrite constitutional files on a spec branch. Pending item for the owner |
@@ -323,19 +323,27 @@
 | T06 Wire the four call sites | PASS | 1 | `62f0d3a5db` |
 | T07 Verification pass | PASS | 2 (evidence record) | `62f0d3a5db` |
 | T09 Fix from live verification (null payload values, unexpected render exceptions) | PASS | 1 | `acea7ad51a` |
-| T10 Validation remediation (F1, W1, W5) | PASS | 2 | uncommitted — owner to approve |
+| T10 Validation remediation (F1, W1, W5) | PASS | 2 | `81d00e8df6` |
+| T11 Layout parity by emulation | superseded (Pivot 2) | 1 + measurement | discarded; `spike/t11-discarded-emulations.diff` in `d749a1f8c4` |
+| T12 Byte-identical Handlebars HTML | PASS | 3 | `968bcac54e` |
+| T13 PhantomJS renderer | PASS | 5 (HALT after 3, owner-approved 4–5) | `bae07e6e2e` |
+| T14 Retire OpenHTMLtoPDF | PASS | 1 (resumed) | `508de2a06f` |
+| T15 Acceptance (parity, Mac wiring, probes) | PASS | — | `8e73305d81` |
+| T16 PhantomJS shipped inside MARLO | PASS | 4 | `7cfea79d88` |
+| T17 Template images + fonts inside MARLO | PASS | 3 | `0f54c9556b` |
+| T18 Scaling-readiness images; empty allowlist | PASS | 1 + follow-up | `8e73305d81` |
 | T08 Retire the microservice path | deferred | — | follow-up spec `changes/retire-reports-microservice` |
 
 **Verification (T07):** clean recompile 2430 / 1070 / 148; full `marlo-web` suite with `-am` 1,388 tests green; Checkstyle delta 0; hygiene clean (one documented false positive); page counts 5 / 6 / 7 equal to production with DejaVu fonts only; visual differences listed under T07.
 
 **Open items for the owner (HITL):**
-1. Visual acceptance of the layout/pagination differences (NF-001) — `spike/t07-production-vs-local.png`.
+1. ~~Visual acceptance of the layout/pagination differences (NF-001)~~ — *superseded: NF-001 is measured parity, met (T15/T18).* Original: — `spike/t07-production-vs-local.png`.
 2. ~~Live wiring check on the running app~~ — done 2026-11-23 (downloads, see the live re-test); submission accepted on unit-test evidence (requirements Decision Log). Original text: flag on for one unit in the local database, one download per report and one project submission (first `@Inject` setters in MARLO actions) — needs the run script, which wipes `target/` and rewrites `marlo-dev.properties`.
 3. Manual QA regression on a test environment (Testing Plan).
 4. ~~`GENERIC_ERROR_MESSAGE`~~ — removed in T10 (bare 500). Original text: `GENERIC_ERROR_MESSAGE` kept as a fixed English string (consistent with `downloadPDFByURL`); Hard rule 8 reading to confirm.
-5. Accepted residual risks: decompression-bomb images (§17), layout not interruptible (§17).
+5. ~~Accepted residual risks: decompression-bomb images (§17), layout not interruptible (§17).~~ — *moot since Pivot 2: no image decoding in the JVM, and the PhantomJS process is killed at the deadline.*
 6. Pending items on `staging` (shared files, not editable on the spec branch): TRD §7 integration rows; `.agents/*.md` persona drift reported by `akili doctor --agents`.
-7. Follow-ups for the retirement spec: move the null→`NO_RESOURCE` handling into `PdfResourceLoader`; header-only image dimension check; the cluster path still calls `microserviceReportAction.loadData()` (a DB read) with the flag on; inline `{{if x}}` not guarded; loader-level tests for `getFailedFetchCount()` branches.
+7. ~~Follow-ups for the retirement spec:~~ *moot items (`PdfResourceLoader` retired in T14); `loadData()` still reading the DB with the flag on stays a follow-up.* Original: move the null→`NO_RESOURCE` handling into `PdfResourceLoader`; header-only image dimension check; the cluster path still calls `microserviceReportAction.loadData()` (a DB read) with the flag on; inline `{{if x}}` not guarded; loader-level tests for `getFailedFetchCount()` branches.
 
 **Next AKILI steps:** `/akili-test changes/local-pdf-report-engine` (optional — the tasks authored their suites), then `/akili-validate changes/local-pdf-report-engine` (T6 visual review included).
 
@@ -945,3 +953,35 @@
   - Checkstyle ok; hygiene clean.
   - **spawns:** 6 calls, 162,322 tokens.
 - **Final status:** PASS · **Review rounds:** 40.
+
+## Validation remediation — 2026-11-24 (owner: "sí, arregla todo")
+
+- **Final figures** (validation W11):
+  - helper vectors **2,817** rows, subset vectors 7,712;
+  - 309 bundled images (298 + 11);
+  - 6 fonts;
+  - 31 fontconfig rules;
+  - full suite at `8e73305d81`: 1,457 tests, 7 skipped.
+- **Budget note** (validation W12):
+  - Review rounds reached **40**, against the Pivot-2 estimate of about 31.
+  - The overrun is T13's security rework (attempts 4–5, owner-approved after the HALT), plus T16, T17 and T18. The owner added T16–T18 on 2026-11-24 ("todo desde MARLO"; "sí, sigue con T16 / T17 / T18").
+  - Every round beyond the estimate falls under those explicit approvals; no unapproved round ran.
+- **Doc fixes by the Leader:**
+  - W1 FN-001 "inside MARLO"; W2 OPS-001 amended; W3 out-of-scope superseded;
+  - W4 design §7.5 and §10 markers;
+  - W7 owner image confirmation in the Decision Log;
+  - W9 tasks §5, §6, §8, header and T16;
+  - W10 file lists for T12, T13 and T16–T18;
+  - W11 Summary table and Document Control;
+  - W12 this note.
+- **Gated test on Linux (validation W5/W6):**
+  - Setup: `PhantomJsRenderingTest`, run with JUnitCore in `tomcat:9.0-jdk17-temurin`, `--network none`, with `PHANTOMJS_PATH` set to the Linux binary.
+  - First run: **3 failures**. PDFBox separates words with tabs in Qt PDFs, so the phrase assertions did not match. This was a test defect, not a product one: the PDFs are pixel-identical to production.
+  - The extracted text is now normalized, with no assertion changed.
+  - Re-run: **OK (7 tests)**. That includes the new shipped-binary test, which extracted `/tmp/marlo-pdf-support-…/phantomjs` and rendered 7 pages.
+  - Full suite on the Mac: **1,458 tests, 0 failures, 8 skipped**. The skipped tests are the Linux-only or `PHANTOMJS_PATH`-gated ones.
+  - Checkstyle on all 25 changed Java files shows only pre-existing violations (actions 74, APConfig 9), plus the spike harness's `System.out`, which is advisory.
+- **Independent re-check (opus, read-only):** 0 FAIL. W4, W5 and W11 were partly open on wording; the Leader fixed them:
+  - the design §18.2 clause and its date;
+  - the requirements defect-class row;
+  - the stale open items 1, 5 and 7.

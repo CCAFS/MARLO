@@ -2,7 +2,7 @@
 
 **Spec ID:** CHG-LOCAL-PDF-REPORT-ENGINE-001
 **Status:** Approved — Phase 2 gate `auto-approved (pre-approved mode)` 2026-11-20, after judgment-day round 1 fixes and re-judgment (see `judgment.md`)
-**Last Updated:** 2026-11-23 (Pivot 2: §18 replaces the OpenHTMLtoPDF engine with PhantomJS)
+**Last Updated:** 2026-11-24 (Pivot 2 §18; T16–T18; validation remediation)
 **Depth:** Full · **Requirements:** `requirements.md` · **Evidence:** `spike.md`
 
 ---
@@ -215,7 +215,7 @@ the retirement spec can fold them into the templates.
   (deny by default) — link handling in `general` can also quote user-entered hrefs; render failures still surface
   through the service's own ERROR line, and fetch failures through the `failedFetches` count on the INFO line (§10).
 
-### 7.5 Execution model (NF-003 – NF-005)
+### 7.5 Execution model (NF-003 – NF-005) — *pool, queue, deadlines and entry points still live; the fetch-budget, in-flight-fetch and "layout is not bounded" bullets are superseded by §18 (PhantomJS fetches nothing since T18; the process is killed at the deadline)*
 
 - A dedicated pool of **3** daemon threads named `pdf-render-n` with a bounded queue of **6**; a full queue fails
   fast with `PdfRenderException`.
@@ -281,7 +281,7 @@ Not applicable — no FTL, JS or CSS of the web UI changes. The PDF layout is go
   and `PdfRenderException`; the other classes are package-private.
 - The payload contract of §7.1 is the shared contract with the microservice; this spec does not change it.
 
-## 10. Observability (OPS-001)
+## 10. Observability (OPS-001) — *amended 2026-11-24 (validation W4): `blockedUris` / `failedFetches` are the counts reported by the page script (§18.1); with the empty allowlist every remote URL counts as blocked; there is no per-URI DEBUG line any more. Template/payload logging rules unchanged*
 
 - One INFO line per render: file name, outcome (`ok` | `failed` | `timeout` | `rejected`), bytes, pages, elapsed
   ms, the count of blocked resource URIs, and the count of failed fetches on allowlisted hosts (`failedFetches`,
@@ -466,7 +466,7 @@ payload ──parse (§7.1, unchanged)──▶ Handlebars.java + 17 helpers ─
   (30 s submit / 50 s download), the INFO/ERROR log lines (`blockedUris` now comes from the page script;
   `failedFetches` from failed resource responses it reports), the bare 500, the specificity and the four call sites.
 - **Goes:** `HtmlPdfCompatibility`, `html-pdf-compat.css`, `PdfResourceLoader` (Java fetching and its image cache —
-  PhantomJS fetches per render, as production does today), OpenHTMLtoPDF and PDFBox on the production classpath
+  superseded by T17/T18: all template images are bundled and PhantomJS fetches nothing), OpenHTMLtoPDF and PDFBox on the production classpath
   (PDFBox may stay test-scoped). The accepted risk "layout cannot be interrupted" (§17) disappears: the process is
   killed at the deadline.
 
