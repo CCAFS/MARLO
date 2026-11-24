@@ -33,7 +33,7 @@
 ## 3. Task List
 
 ### CHG-PPE-T01 — Ship the macOS and Windows builds
-- **Status:** [ ] · **Size:** S · **Depends on:** none · **Module:** marlo-web (resources, tests)
+- **Status:** [x] · **Size:** S · **Depends on:** none · **Module:** marlo-web (resources, tests)
 - **Requirements:** FN-001 (the builds exist), SEC-001 (the checksums), OPS-001, NF-004 · **Design:** DD-7, §2, Spike S-4/S-5
 - **Files touched:** `resources/pdf/phantomjs/phantomjs-2.1.1-macosx.gz`, `.sha256`,
   `phantomjs-2.1.1-windows.exe.gz`, `.sha256`, `PROVENANCE-macosx.txt`, `PROVENANCE-windows.txt`,
