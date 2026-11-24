@@ -28,6 +28,10 @@
 		<property name="active" type="java.lang.Boolean" access="field" insert="false" update="false">
 			<column name="is_active" />
 		</property>
+		<!-- Insert only: MARLO writes who created the institution, the CLARISA synchronization owns later changes -->
+		<property name="createdBy" type="java.lang.Long" update="false">
+			<column name="created_by" />
+		</property>
 		<property name="programId" type="java.lang.Long">
 			<column name="program_id" />
 		</property>

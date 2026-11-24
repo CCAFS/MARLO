@@ -107,7 +107,11 @@ public class PartnerRequestManagerImpl implements PartnerRequestManager {
 
   @Override
   @Transactional
-  public PartnerRequestOutcome acceptPartnerRequest(long requestId) {
+  public PartnerRequestOutcome acceptPartnerRequest(long requestId, User approver) {
+    if (approver == null || approver.getId() == null) {
+      // institutions.created_by is NOT NULL: without an approver the insert below would fail half way through.
+      throw new IllegalArgumentException("Partner request " + requestId + " cannot be accepted without an approver.");
+    }
     PartnerRequest copy = this.partnerRequestDAO.findForUpdate(requestId);
     PartnerRequestOutcome refusal = this.refusePartner(requestId, copy);
     if (refusal != null) {
@@ -124,6 +128,7 @@ public class PartnerRequestManagerImpl implements PartnerRequestManager {
     institution.setWebsiteLink(copy.getWebPage());
     institution.setInstitutionType(copy.getInstitutionType());
     institution.setAdded(new Date());
+    institution.setCreatedBy(approver.getId());
     this.institutionDAO.save(institution);
 
     InstitutionLocation headquarters = new InstitutionLocation();
