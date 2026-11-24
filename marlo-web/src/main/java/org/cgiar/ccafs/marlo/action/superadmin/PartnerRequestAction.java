@@ -540,7 +540,10 @@ public class PartnerRequestAction extends BaseAction {
       }
       // One recipient per mailbox, with the name to greet; the full list of countries goes to each of them.
       Map<String, String> recipients = new LinkedHashMap<>();
+      // An accept that found the country already in the institution closes the request without adding it, so the
+      // accepted email names those countries apart from the ones this decision added.
       Set<String> countries = new LinkedHashSet<>();
+      Set<String> existingCountries = new LinkedHashSet<>();
       Institution institution = null;
       for (PartnerRequestOutcome result : group) {
         PartnerRequest request = result.getRequest();
@@ -550,7 +553,11 @@ public class PartnerRequestAction extends BaseAction {
         // If the request comes from CLARISA, include external mail
         addRecipient(recipients, request.getExternalUserMail(), request.getExternalUserName());
         if (request.getLocElement() != null && request.getLocElement().getName() != null) {
-          countries.add(request.getLocElement().getName());
+          if (accepted && result.getStatus() == Status.SKIPPED_EXISTING) {
+            existingCountries.add(request.getLocElement().getName());
+          } else {
+            countries.add(request.getLocElement().getName());
+          }
         }
         if (institution == null) {
           institution = result.getInstitution() != null ? result.getInstitution() : request.getInstitution();
@@ -558,11 +565,12 @@ public class PartnerRequestAction extends BaseAction {
       }
       String institutionName = institution == null ? "" : institution.getComposedName();
       String countryList = String.join(", ", countries);
+      String existingList = String.join(", ", existingCountries);
       for (Map.Entry<String, String> recipient : recipients.entrySet()) {
         Email email;
         if (accepted) {
           email = PartnerRequestEmails.officeAccepted(unit, this.getBaseUrlCdn(), recipient.getValue(),
-            institutionName, countryList);
+            institutionName, countryList, existingList);
         } else {
           email = PartnerRequestEmails.officeRejected(unit, this.getBaseUrlCdn(), recipient.getValue(),
             institutionName, countryList, this.justification);

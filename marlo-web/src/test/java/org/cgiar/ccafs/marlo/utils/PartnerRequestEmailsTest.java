@@ -44,6 +44,11 @@ public class PartnerRequestEmailsTest {
   private static final String BYE = "Thank you!</p><p style=\"margin:0;\">Kind regards,<br>MARLO Team</p>";
   private static final String HOSTILE = "O'Brien <b>";
   private static final String HOSTILE_ESCAPED = "O'Brien &lt;b&gt;";
+  private static final String BOX = "margin:0 0 16px 0;padding:12px 16px;border-left:3px solid %s;"
+    + "background-color:#FFFFFF;word-break:break-word;overflow-wrap:anywhere;";
+  private static final String REASON_BOX = "<blockquote style=\"" + String.format(BOX, "#0B7AA3") + "\">";
+  private static final String ADDED_BOX = "<p style=\"" + String.format(BOX, "#0B7AA3") + "\">";
+  private static final String EXISTING_BOX = "<p style=\"" + String.format(BOX, "#D9D9D9") + "\">";
 
   private static GlobalUnit unit(String acronym, String customFile, String emailSwitch) {
     GlobalUnit unit = new GlobalUnit();
@@ -76,7 +81,7 @@ public class PartnerRequestEmailsTest {
       "KE, PE", "P1 - Soil"));
     emails.put("partnerAccepted", PartnerRequestEmails.partnerAccepted(unit, CDN, "Ana", HOSTILE, "Acme"));
     emails.put("partnerRejected", PartnerRequestEmails.partnerRejected(unit, CDN, "Ana", "Acme", HOSTILE));
-    emails.put("officeAccepted", PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Kenya, Peru"));
+    emails.put("officeAccepted", PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Kenya, Peru", ""));
     emails.put("officeRejected", PartnerRequestEmails.officeRejected(unit, CDN, "Ana", "Acme", "Kenya", HOSTILE));
     return emails;
   }
@@ -101,9 +106,9 @@ public class PartnerRequestEmailsTest {
   public void testBodyArgumentsAreEscapedAndSubjectsCarryNoJustification() {
     Map<String, Email> emails = sixEmails(unit("U", null, null));
     assertTrue(emails.get("partnerRejected").getBody(), emails.get("partnerRejected").getBody()
-      .contains("<em>" + HOSTILE_ESCAPED + "</em>"));
+      .contains(REASON_BOX + HOSTILE_ESCAPED + "</blockquote>"));
     assertTrue(emails.get("officeRejected").getBody(), emails.get("officeRejected").getBody()
-      .contains("<em>" + HOSTILE_ESCAPED + "</em>"));
+      .contains(REASON_BOX + HOSTILE_ESCAPED + "</blockquote>"));
     assertTrue(emails.get("newPartner").getBody().contains("Institution: " + HOSTILE_ESCAPED));
     assertTrue(emails.get("newPartner").getBody().contains("review?a=1&amp;b=2"));
     for (Map.Entry<String, Email> entry : emails.entrySet()) {
@@ -113,6 +118,59 @@ public class PartnerRequestEmailsTest {
       .contains("O'Brien"));
     assertFalse(emails.get("officeRejected").getSubject(), emails.get("officeRejected").getSubject()
       .contains("O'Brien"));
+  }
+
+  @Test
+  public void testRejectReasonKeepsItsLineBreaksEscapedAndOutOfItalics() {
+    GlobalUnit unit = unit("U", null, null);
+    String typed = "  Duplicate of <Acme>.\r\n\r\nUse the existing record.\nOr ask support.\rThanks  ";
+    String expected = "Duplicate of &lt;Acme&gt;.<br><br>Use the existing record.<br>Or ask support.<br>Thanks";
+    Email partner = PartnerRequestEmails.partnerRejected(unit, CDN, "Ana", "Acme", typed);
+    Email office = PartnerRequestEmails.officeRejected(unit, CDN, "Ana", "Acme", "Kenya", typed);
+    for (Email email : new Email[] {partner, office}) {
+      String body = email.getBody();
+      assertTrue(body, body.contains("<p style=\"margin:0 0 8px 0;\">The reason given was:</p>" + REASON_BOX
+        + expected + "</blockquote>"));
+      assertFalse(body, body.contains("<em>"));
+      assertFalse("the typed markup is not rendered", body.contains("<Acme>"));
+    }
+    assertTrue(partner.getBody(), partner.getBody().contains("the institution <b>Acme</b>.</p>"));
+    assertTrue(office.getBody(), office.getBody().contains("country office(s) of <b>Acme</b>:</p>" + EXISTING_BOX
+      + "Kenya</p>"));
+    assertEquals("", PartnerRequestEmails.escapeMultiline(null));
+  }
+
+  @Test
+  public void testOfficeAcceptedNamesTheAddedAndTheAlreadyRegisteredCountriesApart() {
+    GlobalUnit unit = unit("U", null, null);
+    Email onlyAdded = PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Ethiopia", "");
+    assertEquals("[MARLO] Country office(s) verification - Approved Acme", onlyAdded.getSubject());
+    assertTrue(onlyAdded.getBody(), onlyAdded.getBody().contains(ADDED_BOX + "Ethiopia</p>"));
+    assertFalse(onlyAdded.getBody(), onlyAdded.getBody().contains("already registered"));
+
+    Email mixed = PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Ethiopia", "Kenya, <Peru>");
+    assertEquals("[MARLO] Country office(s) verification - Approved Acme", mixed.getSubject());
+    assertTrue(mixed.getBody(), mixed.getBody().contains("We have added the following country office(s) of <b>Acme</b>"
+      + " to MARLO, as you requested:</p>" + ADDED_BOX + "Ethiopia</p><p style=\"margin:0 0 8px 0;\">These country "
+      + "office(s) were already registered in MARLO, so no change was needed:</p>" + EXISTING_BOX
+      + "Kenya, &lt;Peru&gt;</p>"));
+
+    Email none = PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "", "Kenya");
+    assertEquals("[MARLO] Country office(s) verification - Already registered Acme", none.getSubject());
+    assertTrue(none.getBody(), none.getBody().contains("The country office(s) you requested for <b>Acme</b> were "
+      + "already registered in MARLO, so no change was needed:</p>" + EXISTING_BOX + "Kenya</p>"));
+    assertFalse(none.getBody(), none.getBody().contains("We have added"));
+    assertTrue(none.getBody(), none.getBody().contains(BYE));
+  }
+
+  @Test
+  public void testAlreadyRegisteredSubjectKeepsThePrefixOfEachUnitFile() {
+    String[][] units = {{"aicrra", "[AICCRA]"}, {"aiccra3", "[AICCRA]"}, {"pabra", "[PABRA]"}, {"alliance", "[MARLO]"},
+      {"reap", "[MARLO]"}, {"test", "[MARLO]"}, {"global", "[MARLO]"}};
+    for (String[] pair : units) {
+      Email email = PartnerRequestEmails.officeAccepted(unit("U", pair[0], null), CDN, "Ana", "Acme", null, "Kenya");
+      assertEquals(pair[0], pair[1] + " Country office(s) verification - Already registered Acme", email.getSubject());
+    }
   }
 
   @Test
