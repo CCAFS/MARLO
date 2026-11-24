@@ -283,3 +283,13 @@ available as the fallback.
   the principle "no infrastructure change" (proposal, design ADR-2) is withdrawn. T11's emulation code was discarded
   unmerged (`spike/t11-discarded-emulations.diff`). Owner words: "sí, sigue con B y haz primero la prueba de paridad",
   then "sí, sigue con las tres".
+- 2026-11-24 — **Everything from MARLO (owner):** "este desarrollo no debe depender de servicios externos sino que
+  debe generarse totalmente desde MARLO", then "se requiere lo que no toque modificar nada mas sino que se pueda hacer
+  todo desde MARLO como desarrollo", then "si" to the plan. Decisions: (1) the Linux PhantomJS 2.1.1 binary ships
+  **inside MARLO** (compressed in the repository, extracted at startup; `pdf.phantomjs.path` becomes an optional
+  override); (2) the templates' static images (bucket `marlo-pdf-resources-dev`) ship as MARLO resources and are
+  inlined, so renders no longer read that bucket; (3) **no Dockerfile or server change**: measured — MARLO's
+  unmodified base image `tomcat:9.0-jdk17-temurin` (Ubuntu 26.04) already has every library PhantomJS needs and gives
+  PARITY 6/6; (4) user-uploaded images in `prms-file-storage` keep being read as today (the only external read, the
+  one that preserves parity) — **pending owner confirmation**. OQ-4 shrinks to: confirm production runs that image
+  (or an OS with `libfontconfig`/`libfreetype`) on Linux x86_64, and egress limits.

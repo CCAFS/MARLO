@@ -65,7 +65,8 @@
 		<commons-validator>1.4.0</commons-validator>
 		<jsoup.version>1.15.4</jsoup.version>
 		<handlebars.version>4.5.8</handlebars.version>
-		<openhtmltopdf.version>1.1.108</openhtmltopdf.version>
+		<!-- PDFBox is used only by the PhantomJS rendering tests (page count and text extraction): test scope. -->
+		<pdfbox.version>3.0.8</pdfbox.version>
 		<geoip2.version>2.12.0</geoip2.version>
 		<spring-amqp.version>3.1.8</spring-amqp.version>
 		<amqp-client.version>5.21.0</amqp-client.version>
@@ -671,11 +672,12 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- OpenHTMLtoPDF (PDFBox renderer) for the local PDF report engine @ https://github.com/danfickle/openhtmltopdf -->
+			<!-- PDFBox: test scope only, for the PhantomJS rendering tests -->
 			<dependency>
-				<groupId>io.github.openhtmltopdf</groupId>
-				<artifactId>openhtmltopdf-pdfbox</artifactId>
-				<version>${openhtmltopdf.version}</version>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>${pdfbox.version}</version>
+				<scope>test</scope>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>

@@ -7,7 +7,11 @@
 
 ---
 
-## 1. Executive Summary
+> **Live design: §18 (PhantomJS, Pivot 2).** Sections 1–17 record the original OpenHTMLtoPDF design and its execution
+> history; where they disagree with §18, §18 wins. Unchanged and still live: §5 (specificity), §7.1 (payload, helpers,
+> subset guard), §7.5 (pool and deadlines), §7.6 (call sites), §10 (log line).
+
+## 1. Executive Summary — *partly superseded by §18 (Pivot 2): OpenHTMLtoPDF, `HtmlPdfCompatibility`, `PdfResourceLoader` and `html-pdf-compat.css` are retired (T14); read §18 for the live design*
 
 A stateless Spring bean, `LocalPdfReportService`, takes the **same JSON payload** the summary actions already
 build for the microservice and returns PDF bytes: Handlebars.java fills the template, an html-pdf compatibility
@@ -16,7 +20,7 @@ checks the specificity `local_pdf_report_engine_active` and calls either the loc
 microservice method. Nothing else changes: templates, data maps, Struts mappings and the microservice code stay as
 they are, so switching the flag off is a complete rollback.
 
-## 2. Architecture Overview
+## 2. Architecture Overview — *partly superseded by §18 (Pivot 2): OpenHTMLtoPDF, `HtmlPdfCompatibility`, `PdfResourceLoader` and `html-pdf-compat.css` are retired (T14); read §18 for the live design*
 
 ```mermaid
 flowchart LR
@@ -43,7 +47,7 @@ flowchart LR
 | SEC-001, SEC-002 | §11 |
 | OPS-001 | §10 |
 
-## 3. Extended Directory Structure
+## 3. Extended Directory Structure — *partly superseded by §18 (Pivot 2): OpenHTMLtoPDF, `HtmlPdfCompatibility`, `PdfResourceLoader` and `html-pdf-compat.css` are retired (T14); read §18 for the live design*
 
 | Path | Change |
 |---|---|
@@ -68,7 +72,7 @@ flowchart LR
 Not touched: `MicroserviceReportAction`, `struts-report.xml`, `report_configurations`, `APConfig`, the
 `microservice.*` keys, the FTL views.
 
-## 4. Dependencies (NF-006)
+## 4. Dependencies (NF-006) — *partly superseded by §18 (Pivot 2): OpenHTMLtoPDF, `HtmlPdfCompatibility`, `PdfResourceLoader` and `html-pdf-compat.css` are retired (T14); read §18 for the live design*
 
 | Artifact | Version | Exclusions | Why |
 |---|---|---|---|
@@ -290,7 +294,7 @@ Not applicable — no FTL, JS or CSS of the web UI changes. The PDF layout is go
 - Blocked resource: one DEBUG line per URI (host only), so SEC-001 rejections are visible without logging user
   content.
 
-## 11. Security Considerations (SEC-001, SEC-002)
+## 11. Security Considerations (SEC-001, SEC-002) — *partly superseded by §18 (Pivot 2): OpenHTMLtoPDF, `HtmlPdfCompatibility`, `PdfResourceLoader` and `html-pdf-compat.css` are retired (T14); read §18 for the live design*
 
 - **Resource allowlist — one decision point.** Every resource the renderer would load (images, `<link>`
   stylesheets, CSS `@import` and `url()`, fonts) passes through `PdfResourceLoader`, wired into all of the
@@ -410,7 +414,7 @@ branches; they import the classes for other members.
 | LOC | ~1,300 production + ~800 test |
 | Review rounds | 11 |
 
-## 17. Open Risks
+## 17. Open Risks — *partly superseded by §18 (Pivot 2): OpenHTMLtoPDF, `HtmlPdfCompatibility`, `PdfResourceLoader` and `html-pdf-compat.css` are retired (T14); read §18 for the live design*
 
 - Risk: production data paginates differently from the reference payloads. Mitigation: per-unit rollout with the
   microservice as fallback (§13).

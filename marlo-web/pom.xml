@@ -342,8 +342,9 @@
 			<artifactId>handlebars</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.github.openhtmltopdf</groupId>
-			<artifactId>openhtmltopdf-pdfbox</artifactId>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.maxmind.geoip2</groupId>

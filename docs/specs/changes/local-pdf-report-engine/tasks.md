@@ -388,7 +388,7 @@ compare with the flag off.
 - **Review:** `full`. **Skills:** `error-handling-patterns`, `tdd`, `marlo-verify`.
 
 ### CHG-LPRE-T14 — Retire the OpenHTMLtoPDF path
-- **Status:** [ ]
+- **Status:** [x]
 - **Depends on:** T13
 - **Module:** marlo-parent, marlo-web
 - **Requirements:** NF-006 (Pivot 2) · **Design:** §18.2
@@ -404,3 +404,19 @@ compare with the flag off.
 - **Requirements:** NF-001 (amended), FN-005–FN-007, SEC-001, SEC-003 · **Design:** §18.4, §13
 - **Scope:** (1) Leader runs `LocalPdfReportService` (built code) with PhantomJS 2.1.1 in a Linux x86_64 container on the six cases and `spike/parity/compare.py` → PARITY ×6; (2) live wiring check on the developer Mac (macOS PhantomJS: wiring and log lines only, parity not expected — §18.4); (3) one SSRF probe: rich text with a non-allowlisted image and a `<script>` → blocked count > 0, no fetch, no script effect; (4) update `spike/parity/` (a `LocalRender` that uses the configured binary), `execution.md`, the validation re-run.
 - **Done when:** PARITY ×6 with the built code; live downloads `outcome=ok`; probe blocked.
+
+### CHG-LPRE-T16 — PhantomJS shipped inside MARLO
+- **Status:** [ ]
+- **Depends on:** T13, T14
+- **Requirements:** NF-007 (amended 2026-11-24), Decision Log "Everything from MARLO" · **Design:** §18.1 (Binary row)
+- **Scope:** commit `phantomjs-2.1.1-linux-x86_64` compressed under `marlo-web/src/main/resources/pdf/phantomjs/` (with its BSD licence and third-party notices); at bean init on Linux x86_64 extract the executable once to the private support directory, verify its SHA-256 against a constant, `chmod 700`; `pdf.phantomjs.path` non-empty overrides it (developer Mac, other platforms); unsupported platform and no override → the existing NF-007 startup WARN and fast failure.
+- **Tests:** extraction + checksum + permissions; override precedence; unsupported-platform path; the gated integration test runs with the embedded binary in the Linux container.
+- **Done when:** a MARLO build with no configuration renders with PhantomJS in `tomcat:9.0-jdk17-temurin` → PARITY 6/6 (Leader).
+
+### CHG-LPRE-T17 — Template images shipped inside MARLO
+- **Status:** [ ]
+- **Depends on:** T16
+- **Requirements:** Decision Log "Everything from MARLO", SEC-001 · **Design:** §18.1
+- **Scope:** enumerate every `marlo-pdf-resources-dev` object the three templates and the summary actions reference (static names plus generated ones: SDG icons, country flags, DAC markers, innovation icons…); store them under `src/main/resources/pdf/images/` with a manifest (source URL, SHA-256); before PhantomJS, replace each such URL in the HTML with a `data:` URI of the bundled bytes (identical bytes → parity); an unknown object of that bucket is logged (WARN, name only) and left as is. The page-script allowlist keeps only `prms-file-storage` (user images, pending owner decision).
+- **Tests:** manifest completeness against the references found; URL rewriting; byte identity; parity re-measured on the six cases.
+- **Done when:** PARITY 6/6 with the bucket unreachable (Docker network without that host) except user images.

@@ -728,3 +728,29 @@
   - **Residual risk:** an unknown sanitizer bypass could still reach WebSocket egress. It stays accepted under §18.3, conditional on OQ-4 egress control and the specificity staying `'false'` until infrastructure answers.
   - **spawns:** reviewer 1 call, 206,505 tokens.
 - **Final status:** PASS on attempt 5. Attempts 4–5 were owner-approved after the HALT. **Review rounds:** 32.
+
+## Paused — 2026-11-23 (owner: "paremos aqui")
+
+- **T14** was interrupted mid-implementation.
+  - The working tree holds its **unverified partial changes**: `marlo-parent/pom.xml` and `marlo-web/pom.xml` are edited, and these five are deleted (staged): `HtmlPdfCompatibility`, `PdfResourceLoader`, `html-pdf-compat.css` and their two tests.
+  - They have not been compiled or tested.
+  - On resume, re-dispatch T14 on top of them, or discard them with `git restore --staged --worktree` on those paths.
+- **Remaining:** T14 (retire OpenHTMLtoPDF), T15 (acceptance and the live wiring check on the Mac), then re-run `/akili-validate`.
+- **Left in place:** throwaway database `lpre_live_tmp` (drop it once there are no more live tests). The app is stopped. `marlo-dev.properties` is restored to `partroute_local`.
+- **Branch:** HEAD `bae07e6e2e` (T13). Nothing has been pushed since `62f0d3a5db`.
+
+## CHG-LPRE-T14 — Retire the OpenHTMLtoPDF path (resumed 2026-11-24)
+
+- **Implementer:** the interrupted edits were verified with no further changes needed.
+  - OpenHTMLtoPDF was removed from both poms. PDFBox 3.0.8, the same version that was previously pulled in transitively, is now test-scoped and managed in the parent pom.
+  - Five files were deleted: `HtmlPdfCompatibility`, `PdfResourceLoader`, `html-pdf-compat.css` and their two tests.
+  - The dependency tree diff covers only the openhtmltopdf branch: `openhtmltopdf-core`, `xmpbox` and `graphics2d` are gone, and `pdfbox`, `pdfbox-io` and `fontbox` moved from compile to test scope.
+  - Clean full `-am` suite: exit 0; 6 / 2,430 / 1,070 / 150 files compiled; **1,402 tests, 0 failures, 6 skipped**. That is 1,434 minus the 32 tests in the deleted suites.
+  - **spawns:** 20 calls, 109,096 tokens.
+- **Reviewer: PASS** (opus).
+  - No references remain outside `docs/`.
+  - No other version changed.
+  - The deleted coverage is either obsolete (the emulation) or now lives in `render-page.js` and its tests (the allowlist).
+  - ADVISORY: earlier `design.md` sections still described the retired engine. The Leader added a "live design is §18" banner and superseded markers on §1–§4, §11 and §17.
+  - **spawns:** reviewer 15 calls, 53,898 tokens.
+- **Final status:** PASS · **Review rounds:** 33.
