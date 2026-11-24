@@ -59,6 +59,7 @@ public class PartnerRequestManagerGuardTest {
   private static final long ORIGINAL_ID = 10L;
   private static final long OFFICE_INSTITUTION_ID = 500L;
   private static final long OTHER_INSTITUTION_ID = 501L;
+  private static final User APPROVER = user(88L);
 
   private Map<Long, PartnerRequest> table;
   private List<Long> locks;
@@ -219,7 +220,7 @@ public class PartnerRequestManagerGuardTest {
 
   @Test
   public void acceptBuildsTheInstitutionFromTheCopyAndClosesBothRows() {
-    PartnerRequestOutcome outcome = this.manager.acceptPartnerRequest(COPY_ID);
+    PartnerRequestOutcome outcome = this.manager.acceptPartnerRequest(COPY_ID, APPROVER);
 
     assertEquals(Status.DONE, outcome.getStatus());
     assertEquals(1, this.savedInstitutions.size());
@@ -229,6 +230,7 @@ public class PartnerRequestManagerGuardTest {
     assertEquals("http://edited.example", created.getWebsiteLink());
     assertSame(this.university, created.getInstitutionType());
     assertNotNull(created.getAdded());
+    assertEquals("the approver is recorded as the creator", Long.valueOf(88L), created.getCreatedBy());
     assertSame(created, outcome.getInstitution());
 
     assertEquals(1, this.savedLocations.size());
@@ -254,12 +256,12 @@ public class PartnerRequestManagerGuardTest {
     this.completeCopy(33L).setActive(false);
     PartnerRequest office = officeRequest(34L, this.officeInstitution, this.kenya);
 
-    assertEquals(Status.NOT_FOUND, this.manager.acceptPartnerRequest(99L).getStatus());
-    assertEquals(Status.WRONG_KIND, this.manager.acceptPartnerRequest(ORIGINAL_ID).getStatus());
-    assertEquals(Status.WRONG_KIND, this.manager.acceptPartnerRequest(34L).getStatus());
-    assertEquals(Status.ALREADY_HANDLED, this.manager.acceptPartnerRequest(31L).getStatus());
-    assertEquals(Status.ALREADY_HANDLED, this.manager.acceptPartnerRequest(32L).getStatus());
-    assertEquals(Status.ALREADY_HANDLED, this.manager.acceptPartnerRequest(33L).getStatus());
+    assertEquals(Status.NOT_FOUND, this.manager.acceptPartnerRequest(99L, APPROVER).getStatus());
+    assertEquals(Status.WRONG_KIND, this.manager.acceptPartnerRequest(ORIGINAL_ID, APPROVER).getStatus());
+    assertEquals(Status.WRONG_KIND, this.manager.acceptPartnerRequest(34L, APPROVER).getStatus());
+    assertEquals(Status.ALREADY_HANDLED, this.manager.acceptPartnerRequest(31L, APPROVER).getStatus());
+    assertEquals(Status.ALREADY_HANDLED, this.manager.acceptPartnerRequest(32L, APPROVER).getStatus());
+    assertEquals(Status.ALREADY_HANDLED, this.manager.acceptPartnerRequest(33L, APPROVER).getStatus());
 
     assertNothingWritten();
     assertTrue("the original row was changed", this.original.isActive());
@@ -270,8 +272,8 @@ public class PartnerRequestManagerGuardTest {
 
   @Test
   public void acceptTwiceCreatesOneInstitution() {
-    PartnerRequestOutcome first = this.manager.acceptPartnerRequest(COPY_ID);
-    PartnerRequestOutcome replay = this.manager.acceptPartnerRequest(COPY_ID);
+    PartnerRequestOutcome first = this.manager.acceptPartnerRequest(COPY_ID, APPROVER);
+    PartnerRequestOutcome replay = this.manager.acceptPartnerRequest(COPY_ID, APPROVER);
 
     assertEquals(Status.DONE, first.getStatus());
     assertEquals(Status.ALREADY_HANDLED, replay.getStatus());
@@ -283,12 +285,28 @@ public class PartnerRequestManagerGuardTest {
   public void acceptWithoutATypeFailsBeforeWritingAnything() {
     this.copy.setInstitutionType(null);
     try {
-      this.manager.acceptPartnerRequest(COPY_ID);
+      this.manager.acceptPartnerRequest(COPY_ID, APPROVER);
       fail("an IllegalStateException was expected");
     } catch (IllegalStateException expected) {
       assertNothingWritten();
       assertTrue(this.copy.isActive());
       assertNull(this.copy.getAcepted());
+    }
+  }
+
+  @Test
+  public void acceptWithoutAnApproverFailsBeforeWritingAnything() {
+    // institutions.created_by is NOT NULL: an accept that cannot name its creator must not start writing
+    for (User approver : Arrays.asList(null, new User())) {
+      try {
+        this.manager.acceptPartnerRequest(COPY_ID, approver);
+        fail("an IllegalArgumentException was expected");
+      } catch (IllegalArgumentException expected) {
+        assertNothingWritten();
+        assertTrue("no lock is taken", this.locks.isEmpty());
+        assertTrue(this.copy.isActive());
+        assertNull(this.copy.getAcepted());
+      }
     }
   }
 

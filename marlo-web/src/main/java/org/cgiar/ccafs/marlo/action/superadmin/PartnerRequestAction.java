@@ -175,7 +175,7 @@ public class PartnerRequestAction extends BaseAction {
     }
     PartnerRequestOutcome result;
     try {
-      result = this.partnerRequestManager.acceptPartnerRequest(this.requestID);
+      result = this.partnerRequestManager.acceptPartnerRequest(this.requestID, this.getCurrentUser());
       if (result == null || result.getStatus() == null) {
         throw new IllegalStateException("The manager returned no outcome");
       }

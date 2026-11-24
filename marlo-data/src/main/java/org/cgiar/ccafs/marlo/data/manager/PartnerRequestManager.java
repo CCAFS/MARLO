@@ -45,9 +45,10 @@ public interface PartnerRequestManager {
    * the request is missing, is not a copy, or is no longer pending.
    * 
    * @param requestId the id of the copy.
+   * @param approver the superadmin accepting the request; recorded as the creator of the institution.
    * @return the outcome, carrying the copy and the new institution when DONE.
    */
-  public PartnerRequestOutcome acceptPartnerRequest(long requestId);
+  public PartnerRequestOutcome acceptPartnerRequest(long requestId, User approver);
 
   /**
    * Saves a new partner request: the original and its editable copy, in one transaction.
