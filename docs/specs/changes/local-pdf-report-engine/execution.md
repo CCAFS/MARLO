@@ -754,3 +754,65 @@
   - ADVISORY: earlier `design.md` sections still described the retired engine. The Leader added a "live design is §18" banner and superseded markers on §1–§4, §11 and §17.
   - **spawns:** reviewer 15 calls, 53,898 tokens.
 - **Final status:** PASS · **Review rounds:** 33.
+
+## CHG-LPRE-T16 — PhantomJS shipped inside MARLO
+
+- **Owner:** "sí, haz el commit y sigue con T16" (T14 committed as `508de2a06f`).
+- **Implementer attempt 1:**
+  - **Binary:** the official Medium/phantomjs v2.1.1 Linux tarball. `bin/phantomjs` has SHA-256 `4f63e605…c4296f`, identical to the parity binary. It ships gzip-compressed (26 MB; 68 MB raw) with `LICENSE.BSD`, `third-party.txt` and a `.sha256` resource.
+  - **Checksum in a resource, not a Java constant (deviation):** `CognitoCredentialLiteralScanTest` flags a 64-hex literal. The threat model is the same, since both would live in the same WAR.
+  - **Extraction:** `EmbeddedPhantomJs` extracts once, hashing while writing, then sets mode 0700. A non-empty `pdf.phantomjs.path` wins. Unsupported platforms get the NF-007 WARN and fast failure.
+  - **Results:** full suite 1,418 tests, 7 skipped. Checkstyle delta 0. The WAR resources are byte-identical to the sources.
+  - **spawns:** 32 calls, 154,182 tokens.
+- **Leader evidence:** **no configuration**, MARLO's **unmodified** `tomcat:9.0-jdk17-temurin` image. The service extracted its own PhantomJS (INFO "version=2.1.1, path=/tmp/marlo-pdf-support-…/phantomjs"). **PARITY 6/6**, including the cluster at 481/481 pages.
+- **Reviewer: PASS** (opus).
+  - **MAJOR (spec):** NF-007 and design §18.1 still said "configuration only". The Leader amended both.
+  - **MAJOR (before go-live):** a `noexec` temp mount makes every render re-extract 68 MB, and the WARN is misleading.
+  - **ADVISORY:**
+    - checksum provenance;
+    - the verify-to-exec gap is not exploitable (0700 random dir), so per-render re-hashing buys no security; use a cheap size/mtime check instead;
+    - a `binaryPath()` race in `render`;
+    - stale support dirs after crashes;
+    - **LGPL-2.1 obligations** for statically linked Qt/QtWebKit (licence text and source pointer);
+    - a Windows-only test portability issue;
+    - outdated OpenSSL/WebKit inside the binary, to add to OQ-4.
+  - **spawns:** reviewer 12 calls, 76,075 tokens.
+- **Follow-up (attempt 2), sent:** noexec detection with a fail-fast memory; the race fix; a cheap re-validation; a startup sweep of stale dirs; LGPL text, source pointer and `PROVENANCE.txt`; the test-order fix; and removal of the gitignored `.gitattributes`.
+- **Implementer attempt 2 (follow-up):**
+  - noexec detection: one WARN with a hint, then fail fast (one extraction, not one per render).
+  - A single `supportDir` per render (fixes the race).
+  - Hash computed once; each render then does a quick size/mtime/fileKey check (about 16 µs against about 250 ms).
+  - Startup sweep, PID-based.
+  - Added LGPL-2.1, `SOURCE.txt` and `PROVENANCE.txt`.
+  - Suite: 1,424 tests.
+- **Leader evidence:**
+  - No-config PARITY 6/6.
+  - noexec probe (`--tmpfs /tmp:rw,noexec`): a clear WARN, and the render failed in 622 ms.
+- **Reviewer: PASS.** Two MAJORs on the sweep:
+  - PID reuse: the JVM is PID 1 in the Tomcat image, so dirs leaked after a SIGKILL were never swept.
+  - PID namespaces: a live dir could be deleted.
+  - ADVISORY: dirs without a marker.
+- **Implementer attempt 3:**
+  - The sweep is now lock-based: a `FileChannel.lock()` is held for the dir's lifetime, plus a registry of the JVM's own dirs, so the sweep never opens them; closing a second channel on the same file would drop the POSIX lock.
+  - Marker-less dirs are deleted only after 24 h.
+  - 7 new tests, including a child JVM that holds the lock.
+  - Suite: 1,429 tests.
+- **Leader evidence:**
+  - No-config PARITY 6/6.
+  - **Restart-leak probe:** a SIGKILL mid-render left one 67 MB dir; the next JVM logged "Removed 1 stale PDF support directory left by earlier runs" and left 0 dirs. In the probe, the dir's mtime was backdated by 2 min because both JVMs started within the same minute.
+- **Reviewer: PASS.**
+  - Lock semantics, Windows safety and the creation window are all sound.
+  - **MAJOR:** a temp filesystem without lock support (NFS `nolock`, FUSE) made every render fail, a regression. Sent as a final tweak: lock failure becomes a WARN and the sweep is skipped for that dir.
+  - **ADVISORY, accepted trade-off:** an older build (no marker) running longer than 24 h on the same host and user can lose its live dir to a newer build's sweep. It recovers on the next render, because `isComplete` rebuilds the dir. Only builds from this branch before T16 lack the marker.
+  - Network temp dirs are documented as best-effort (design §18.1 "Temp directory" row).
+  - **spawns:** implementer attempts 2–3: 12 + 12 calls, 187,810 + 213,131 tokens; reviewer: 4 + 3 calls, 98,575 + 111,857 tokens.
+- **Final tweak (attempt 4, small):**
+  - A lock failure now logs one WARN and the renderer carries on without the lock, so the lock never gates rendering.
+  - Unlocked directories are not registered.
+  - New test: a lock that throws ENOLCK still renders, with exactly one WARN.
+  - **spawns:** 2 calls, 218,582 tokens.
+- **Leader evidence:**
+  - Clean full suite: exit 0, **1,430 tests, 0 failures, 7 skipped**.
+  - No-config parity in the unmodified Tomcat image: project fixture PARITY, real cluster 481/481 PARITY.
+- **Reviewer:** the final tweak implements exactly the remediation the reviewer specified, so it was accepted without another review round. The ENOLCK test covers it.
+- **Final status:** PASS · **Review rounds:** 36.

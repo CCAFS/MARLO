@@ -361,7 +361,8 @@ public class PhantomJsRendererTest {
     String[] paths = {null, "", "   ", temp.getRoot().toPath().resolve("does-not-exist").toString(),
       notExecutable.toString(), temp.getRoot().toString()};
     for (String path : paths) {
-      PhantomJsRenderer renderer = new PhantomJsRenderer(path);
+      PhantomJsRenderer renderer =
+        new PhantomJsRenderer(path, new EmbeddedPhantomJs("Mac OS X", "aarch64", "none", null));
       assertFalse(String.valueOf(path), renderer.isBinaryUsable());
       long start = System.nanoTime();
       try {

@@ -19,9 +19,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -32,6 +39,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -197,6 +206,18 @@ final class PhantomJsRenderer {
   static final int MAX_STDERR_LINE = 200;
 
   static final long VERSION_TIMEOUT_MS = 5000L;
+
+  static final String SUPPORT_PREFIX = "marlo-pdf-support-";
+
+  static final String OWNER_FILE = "owner.pid";
+
+  static final long MARKERLESS_MAX_AGE_HOURS = 24L;
+
+  /** Support directories whose lock this JVM holds (real paths); the sweep never opens their lock files. */
+  private static final Set<Path> HELD_HERE = ConcurrentHashMap.newKeySet();
+
+  static final String NOT_EXECUTABLE_MESSAGE = "The PhantomJS shipped with MARLO cannot be executed from the temp "
+    + "directory (mounted noexec?): set pdf.phantomjs.path or -Djava.io.tmpdir";
 
   private static final int DEFAULT_PAGE_TIMEOUT_MS = 30000;
 
@@ -419,27 +440,82 @@ final class PhantomJsRenderer {
 
   private final String binary;
 
+  private final EmbeddedPhantomJs embedded;
+
+  /** Set when the shipped build could not be executed from the temp directory: later calls fail without extracting. */
+  private boolean embeddedBlocked;
+
+  private FileChannel ownerChannel;
+
+  private Path ownerKey;
+
+  private EmbeddedPhantomJs.Fingerprint fingerprint;
+
   private Path support;
 
   /**
-   * @param binaryPath the PhantomJS executable ({@code pdf.phantomjs.path}); blank when none is configured.
+   * @param binaryPath the PhantomJS executable ({@code pdf.phantomjs.path}); blank when none is configured, in
+   *        which case the build shipped inside MARLO is used on Linux x86_64.
    */
   PhantomJsRenderer(String binaryPath) {
+    this(binaryPath, EmbeddedPhantomJs.system());
+  }
+
+  /** Test seam: as above, with the shipped build (and the platform it is judged against) supplied. */
+  PhantomJsRenderer(String binaryPath, EmbeddedPhantomJs embedded) {
     this.binary = binaryPath == null ? "" : binaryPath.trim();
+    this.embedded = embedded;
   }
 
-  /** The configured path, for log lines. */
-  String binaryPath() {
-    return binary;
+  /** True when no path is configured and the shipped build applies to this platform (CHG-LPRE-T16). */
+  boolean usesEmbeddedBinary() {
+    return binary.isEmpty() && embedded.isSupportedPlatform();
   }
 
-  /** True when the configured path names an executable file; a render without one fails at once. */
+  /** The platform the shipped build is judged against, for log lines. */
+  String platform() {
+    return embedded.platform();
+  }
+
+  /**
+   * The path of the executable in use, for log lines: the configured one, else the extracted shipped build once it
+   * exists, else empty (no path configured and none to extract on this platform, or not extracted yet).
+   */
+  synchronized String binaryPath() {
+    if (!binary.isEmpty()) {
+      return binary;
+    }
+    return support != null && usesEmbeddedBinary() ? support.resolve(EmbeddedPhantomJs.FILE_NAME).toString() : "";
+  }
+
+  /**
+   * Makes the executable ready: extracts and verifies the shipped build when it is the one in use. A configured
+   * path needs no preparation.
+   *
+   * @throws PdfRenderException when the shipped build cannot be extracted or is not the expected one.
+   */
+  void prepare() throws PdfRenderException {
+    if (usesEmbeddedBinary()) {
+      supportDirectory();
+    }
+  }
+
+  /** True when the executable in use is an executable file; a render without one fails at once. */
   boolean isBinaryUsable() {
-    if (binary.isEmpty()) {
+    return isUsable(binaryPath());
+  }
+
+  private static boolean isUsable(String path) {
+    if (path.isEmpty()) {
       return false;
     }
-    Path path = Path.of(binary);
-    return Files.isRegularFile(path) && Files.isExecutable(path);
+    Path file = Path.of(path);
+    return Files.isRegularFile(file) && Files.isExecutable(file);
+  }
+
+  /** The executable for a render whose support directory is {@code dir}: the configured one, else the shipped. */
+  private String executableIn(Path dir) {
+    return binary.isEmpty() ? dir.resolve(EmbeddedPhantomJs.FILE_NAME).toString() : binary;
   }
 
   /**
@@ -450,14 +526,20 @@ final class PhantomJsRenderer {
    *         {@value #VERSION_TIMEOUT_MS} ms, or it exits with an error.
    */
   String queryVersion() throws PdfRenderException {
-    if (!isBinaryUsable()) {
+    String executable;
+    if (usesEmbeddedBinary()) {
+      executable = executableIn(supportDirectory());
+    } else {
+      executable = binary;
+    }
+    if (!isUsable(executable)) {
       throw new PdfRenderException("PhantomJS binary is not available");
     }
     Path home = null;
     try {
       home = Files.createTempDirectory("marlo-pdf-version-");
       Map<String, String> environment = baseEnvironment(home);
-      Finished finished = run(Arrays.asList(binary, "--version"), home, environment, new byte[0],
+      Finished finished = run(Arrays.asList(executable, "--version"), home, environment, new byte[0],
         System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(VERSION_TIMEOUT_MS));
       if (finished.exitCode != 0) {
         throw new ProcessFailedException("PhantomJS --version exited with code " + finished.exitCode,
@@ -485,10 +567,15 @@ final class PhantomJsRenderer {
    *         ({@link DeadlineExpiredException}). The message never holds HTML or PhantomJS output.
    */
   Output render(String html, Map<String, Object> options, long deadlineNanos) throws PdfRenderException {
-    if (!isBinaryUsable()) {
+    if (binary.isEmpty() ? !usesEmbeddedBinary() : !isBinaryUsable()) {
       throw new PdfRenderException("PhantomJS binary is not available");
     }
     Path supportDir = supportDirectory();
+    // Both the command and FONTCONFIG_FILE come from this one directory, even if another thread rebuilds it later.
+    String executable = executableIn(supportDir);
+    if (!isUsable(executable)) {
+      throw new PdfRenderException("PhantomJS binary is not available");
+    }
     String clean = sanitize(html);
     Path renderDir = null;
     try {
@@ -509,7 +596,7 @@ final class PhantomJsRenderer {
 
       Map<String, String> environment = baseEnvironment(renderDir);
       environment.put("FONTCONFIG_FILE", supportDir.resolve("fonts.conf").toString());
-      List<String> command = Arrays.asList(binary, "--local-url-access=false",
+      List<String> command = Arrays.asList(executable, "--local-url-access=false",
         supportDir.resolve("render-page.js").toString());
       Finished finished = run(command, renderDir, environment, stdin, deadlineNanos);
       if (finished.exitCode != 0) {
@@ -527,10 +614,160 @@ final class PhantomJsRenderer {
     }
   }
 
+  /**
+   * Removes support directories that earlier JVMs left in the temp directory (a killed process never runs
+   * {@link #close}); the service calls it once at start-up. See {@link #sweepStaleSupportDirectories}.
+   */
+  static int sweepStaleSupportDirectories() {
+    return sweepStaleSupportDirectories(Path.of(System.getProperty("java.io.tmpdir")),
+      java.lang.management.ManagementFactory.getRuntimeMXBean().getStartTime(), System.getProperty("user.name", ""));
+  }
+
+  /**
+   * Deletes the {@code marlo-pdf-support-*} directories of {@code tmp} that are real directories (never links) owned
+   * by {@code userName} and that no live instance holds.
+   * <p>
+   * Every renderer keeps an exclusive lock on the {@value #OWNER_FILE} file of its directory for as long as the
+   * directory exists, and the operating system drops it when the process dies, however it dies. So a directory is
+   * removed only when its lock can be taken here: that is true across restarts that reuse the same process id (a
+   * container's JVM is always PID 1), and a directory of another process, container or process-id namespace sharing
+   * the temp directory is never taken, which a process-id check could not promise. A directory this JVM holds is
+   * skipped without opening its file (closing a second channel on a file can release the first one's lock on some
+   * systems). The directory must also be older than {@code beforeMillis} (this JVM's start). A directory with no lock
+   * file (an older build) is removed only when it is more than {@value #MARKERLESS_MAX_AGE_HOURS} hours old, because
+   * nothing says whether its instance is alive.
+   *
+   * @return how many were removed.
+   */
+  static int sweepStaleSupportDirectories(Path tmp, long beforeMillis, String userName) {
+    int removed = 0;
+    long markerlessBefore = Math.min(beforeMillis,
+      System.currentTimeMillis() - TimeUnit.HOURS.toMillis(MARKERLESS_MAX_AGE_HOURS));
+    try (DirectoryStream<Path> candidates = Files.newDirectoryStream(tmp, SUPPORT_PREFIX + "*")) {
+      for (Path candidate : candidates) {
+        if (sweepIfStale(candidate, beforeMillis, markerlessBefore, userName)) {
+          removed++;
+        }
+      }
+    } catch (IOException | RuntimeException e) {
+      LOG.debug("Stale PDF support directories could not be listed, cause={}", e.getClass().getSimpleName());
+    }
+    if (removed > 0) {
+      LOG.info("Removed {} stale PDF support director{} left by earlier runs", removed, removed == 1 ? "y" : "ies");
+    }
+    return removed;
+  }
+
+  private static boolean sweepIfStale(Path dir, long beforeMillis, long markerlessBefore, String userName) {
+    try {
+      if (!Files.isDirectory(dir, LinkOption.NOFOLLOW_LINKS)
+        || !userName.equals(Files.getOwner(dir, LinkOption.NOFOLLOW_LINKS).getName())) {
+        return false;
+      }
+      long modified = Files.getLastModifiedTime(dir, LinkOption.NOFOLLOW_LINKS).toMillis();
+      Path marker = dir.resolve(OWNER_FILE);
+      if (!Files.isRegularFile(marker, LinkOption.NOFOLLOW_LINKS)) {
+        if (modified >= markerlessBefore) {
+          return false;
+        }
+      } else {
+        if (modified >= beforeMillis || HELD_HERE.contains(dir.toRealPath())) {
+          return false;
+        }
+        // Taken, then released before the delete (Windows cannot remove an open file); only a dead instance's passes.
+        try (FileChannel channel = FileChannel.open(marker, StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS)) {
+          FileLock lock = channel.tryLock();
+          if (lock == null) {
+            return false;
+          }
+          lock.release();
+        } catch (OverlappingFileLockException e) {
+          return false;
+        }
+      }
+      deleteTree(dir);
+      return !Files.exists(dir, LinkOption.NOFOLLOW_LINKS);
+    } catch (IOException | RuntimeException e) {
+      // Unreadable or locked in a way that cannot be told: not provably stale, so it stays.
+      return false;
+    }
+  }
+
   /** Removes the private fonts and script directory. The service calls it on shutdown. */
   synchronized void close() {
+    discardSupport();
+  }
+
+  /** Releases this instance's lock on its support directory, then removes the directory. */
+  private void discardSupport() {
+    releaseOwner();
     deleteTree(support);
     support = null;
+  }
+
+  private void releaseOwner() {
+    if (ownerKey != null) {
+      HELD_HERE.remove(ownerKey);
+      ownerKey = null;
+    }
+    if (ownerChannel != null) {
+      try {
+        ownerChannel.close();
+      } catch (IOException e) {
+        LOG.debug("PDF support lock could not be closed, cause={}", e.getClass().getSimpleName());
+      }
+      ownerChannel = null;
+    }
+  }
+
+  /** Creates the lock file of a support directory and locks it; a seam so that tests can make the lock fail. */
+  interface OwnerLocker {
+
+    /** @return the open channel holding an exclusive lock on {@code file}, which is created. */
+    FileChannel lock(Path file) throws IOException;
+  }
+
+  private static final OwnerLocker FILE_LOCKER = new OwnerLocker() {
+
+    @Override
+    public FileChannel lock(Path file) throws IOException {
+      FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+      try {
+        channel.write(ByteBuffer.wrap(Long.toString(ProcessHandle.current().pid()).getBytes(StandardCharsets.UTF_8)));
+        channel.lock();
+        return channel;
+      } catch (IOException | RuntimeException e) {
+        channel.close();
+        throw e;
+      }
+    }
+  };
+
+  private OwnerLocker ownerLocker = FILE_LOCKER;
+
+  /** Test seam: replaces the way the lock file is created and locked. */
+  void setOwnerLocker(OwnerLocker locker) {
+    this.ownerLocker = locker;
+  }
+
+  /**
+   * Creates the lock file of a new support directory, writes the process id into it for whoever looks (the lock, not
+   * the id, is what the sweep trusts) and takes an exclusive lock that lasts until {@link #releaseOwner}. The lock is
+   * housekeeping and never gates a render: where the temp file system refuses locks (NFS without lockd, some FUSE
+   * mounts) one WARN is logged and the directory is used unlocked. The directory is then not registered as held
+   * here, which is harmless: the sweep's own {@code tryLock} on that file system fails too, and a failed lock leaves
+   * the directory in place.
+   */
+  private void holdOwnerLock(Path dir) {
+    try {
+      ownerChannel = ownerLocker.lock(dir.resolve(OWNER_FILE));
+      ownerKey = dir.toRealPath();
+      HELD_HERE.add(ownerKey);
+    } catch (IOException | RuntimeException e) {
+      releaseOwner();
+      LOG.warn("PDF support directory {} could not be locked ({}); stale-directory cleanup cannot protect this "
+        + "directory", dir, e.getClass().getSimpleName());
+    }
   }
 
   /**
@@ -617,16 +854,23 @@ final class PhantomJsRenderer {
     return environment;
   }
 
-  /** The directory with the DejaVu fonts, the generated fonts.conf and the page script; made once. */
+  /**
+   * The directory with the DejaVu fonts, the generated fonts.conf, the page script and, when the shipped build is in
+   * use, the extracted executable; made once.
+   */
   private synchronized Path supportDirectory() throws PdfRenderException {
-    if (support != null && isComplete(support)) {
+    if (embeddedBlocked) {
+      throw new PdfRenderException(NOT_EXECUTABLE_MESSAGE);
+    }
+    if (support != null && isComplete(support) && isExecutableIntact(support)) {
       return support;
     }
-    deleteTree(support);
-    support = null;
+    discardSupport();
     Path dir = null;
     try {
-      dir = Files.createTempDirectory("marlo-pdf-support-");
+      dir = Files.createTempDirectory(SUPPORT_PREFIX);
+      // Locked for as long as the directory exists, so that another instance's start-up sweep leaves it alone.
+      holdOwnerLock(dir);
       Path fonts = Files.createDirectory(dir.resolve("fonts"));
       Files.write(fonts.resolve("DejaVuSans.ttf"), readResource(FONT_REGULAR));
       Files.write(fonts.resolve("DejaVuSans-Bold.ttf"), readResource(FONT_BOLD));
@@ -635,12 +879,55 @@ final class PhantomJsRenderer {
       Path rules = Files.createDirectory(dir.resolve("conf.d"));
       extractRules(rules);
       Files.write(dir.resolve("fonts.conf"), fontsConf(fonts, rules, cache).getBytes(StandardCharsets.UTF_8));
+      if (usesEmbeddedBinary()) {
+        try {
+          fingerprint = embedded.fingerprint(embedded.extractTo(dir));
+        } catch (EmbeddedPhantomJs.NotExecutableException e) {
+          embeddedBlocked = true;
+          LOG.warn("The PhantomJS shipped with MARLO cannot be executed from the temp directory {} (temp dir mounted "
+            + "noexec?): set pdf.phantomjs.path or -Djava.io.tmpdir; local PDF renders will fail",
+            dir.getParent());
+          throw new PdfRenderException(NOT_EXECUTABLE_MESSAGE);
+        } catch (IOException e) {
+          throw new PdfRenderException("The PhantomJS shipped with MARLO could not be extracted or is not the expected "
+            + "build (" + e.getClass().getSimpleName() + ")");
+        }
+      }
       support = dir;
       return dir;
+    } catch (PdfRenderException e) {
+      releaseOwner();
+      deleteTree(dir);
+      throw e;
     } catch (IOException e) {
+      releaseOwner();
       deleteTree(dir);
       throw new PdfRenderException("PhantomJS support files could not be prepared (" + e.getClass().getSimpleName()
         + ")");
+    }
+  }
+
+  /**
+   * True when the shipped executable is not in use, or is still there and executable. The common case costs three
+   * attribute reads (size, modification time, file key against those recorded at extraction); only a file that no
+   * longer matches is hashed again, and one that still has the expected bytes is accepted with a new record.
+   */
+  private boolean isExecutableIntact(Path dir) {
+    if (!usesEmbeddedBinary()) {
+      return true;
+    }
+    Path file = dir.resolve(EmbeddedPhantomJs.FILE_NAME);
+    if (embedded.isUnchanged(file, fingerprint)) {
+      return true;
+    }
+    if (!embedded.isIntact(file)) {
+      return false;
+    }
+    try {
+      fingerprint = embedded.fingerprint(file);
+      return true;
+    } catch (IOException e) {
+      return false;
     }
   }
 

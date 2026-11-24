@@ -87,12 +87,12 @@ abandoned. Evidence: `proposal.md` → *Problem / Current Behavior*.
 - **CHG-LPRE-NF-006** — New dependencies MUST NOT change the versions of libraries MARLO already resolves
   (SLF4J API, Commons Logging, ASM) and MUST NOT downgrade any dependency (Hard rule 11). *Pivot 2 (2026-11-23, owner-approved option B — design §18).* OpenHTMLtoPDF and
   PDFBox leave the production classpath (PDFBox may stay test-scoped for PDF assertions).
-- **CHG-LPRE-NF-007** — The PhantomJS binary path MUST come from configuration (`pdf.phantomjs.path`, empty in
-  the tracked template). Its availability and version (2.1.1) MUST be checked once at startup and logged; when it is
-  missing, a flag-on render MUST fail fast with the generic 500 (SEC-002), never hang and never fall back silently. *Pivot 2 (2026-11-23, owner-approved option B — design §18).*
-
-### Data
-
+- **CHG-LPRE-NF-007** — *Amended 2026-11-24 (Everything from MARLO):* on Linux x86_64 MARLO MUST use the PhantomJS 2.1.1
+  binary it ships (extracted at startup, SHA-256 verified, mode 0700); a non-empty `pdf.phantomjs.path` MUST override it
+  (developer machines, other platforms) and is never silently replaced by the shipped build. The chosen binary's
+  availability and version MUST be checked once at startup and logged; when no usable binary exists, a flag-on render
+  MUST fail fast with the generic 500 (SEC-002), never hang and never fall back silently. *Pivot 2 (2026-11-23,
+  owner-approved option B — design §18).*
 - **CHG-LPRE-DA-001** — The engine-selection flag MUST be a specificity in `parameters` (default `false`) with the
   constant in both `APConstants` files, shipped as an idempotent Flyway migration (Hard rules 4, 5).
 - **CHG-LPRE-DA-002** — The templates in `report_configurations` MUST NOT change in this spec.
@@ -232,7 +232,7 @@ available as the fallback.
 | OQ-1 | Jira ticket and parent epic for this work | No — traceability only |
 | OQ-2 | Who owns the CLARISA MIS connection and the Amazon MQ queue, and who tells them at retirement | No — retirement spec |
 | OQ-3 | Keep or delete PDFs already in bucket `microservice-reports` | No — retirement spec |
-| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and the `fontconfig`/`freetype` libraries (the font rules ship inside MARLO); who owns it; **whether the PhantomJS process's network egress can be limited to the two S3 hosts** (second layer behind SEC-003, design §18.3) | No for the code — yes for enabling the specificity anywhere |
+| OQ-4 | Infrastructure (Pivot 2): CPU architecture of every Tomcat instance (PhantomJS 2.1.1 ships for Linux x86_64 only); deployment route (EC2 directly or the `Dockerfile`); where to install the binary and the `fontconfig`/`freetype` libraries (the font rules ship inside MARLO); who owns it; **whether the PhantomJS process's network egress can be limited to the two S3 hosts** (second layer behind SEC-003, design §18.3); awareness that the shipped PhantomJS 2.1.1 bundles outdated QtWebKit/OpenSSL (accepted with Pivot 2); whether `java.io.tmpdir` is mounted `noexec` on the servers (the shipped binary is extracted there) | No for the code — yes for enabling the specificity anywhere |
 
 ## 9. Decision Log
 

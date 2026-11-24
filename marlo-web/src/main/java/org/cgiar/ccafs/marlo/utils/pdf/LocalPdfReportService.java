@@ -305,6 +305,8 @@ public class LocalPdfReportService {
 
   private volatile PhantomJsRenderer renderer;
 
+  private final EmbeddedPhantomJs embedded;
+
   private final Map<String, CompiledTemplate> templates =
     new LinkedHashMap<String, CompiledTemplate>(16, 0.75f, true) {
 
@@ -325,8 +327,14 @@ public class LocalPdfReportService {
    * fails at once.
    */
   public LocalPdfReportService() {
+    this(EmbeddedPhantomJs.system());
+  }
+
+  /** Test seam: the container's constructor with the shipped PhantomJS (and its platform) supplied. */
+  LocalPdfReportService(EmbeddedPhantomJs embedded) {
     this.handlebars = HandlebarsReportHelpers.newHandlebars();
-    this.renderer = new PhantomJsRenderer("");
+    this.embedded = embedded;
+    this.renderer = new PhantomJsRenderer("", embedded);
   }
 
   /** Test seam: the binary to run, checked at once as the container does after construction. */
@@ -336,8 +344,14 @@ public class LocalPdfReportService {
 
   /** Test seam: as above, with the Handlebars instance that compiles the templates. */
   LocalPdfReportService(String phantomJsPath, Handlebars handlebars) {
+    this(phantomJsPath, handlebars, EmbeddedPhantomJs.system());
+  }
+
+  /** Test seam: as above, with the shipped PhantomJS (and its platform) supplied. */
+  LocalPdfReportService(String phantomJsPath, Handlebars handlebars, EmbeddedPhantomJs embedded) {
     this.handlebars = handlebars;
-    this.renderer = new PhantomJsRenderer(phantomJsPath);
+    this.embedded = embedded;
+    this.renderer = new PhantomJsRenderer(phantomJsPath, embedded);
     checkBinary();
   }
 
@@ -356,16 +370,30 @@ public class LocalPdfReportService {
   void initFromConfig() {
     if (config != null) {
       PhantomJsRenderer previous = renderer;
-      renderer = new PhantomJsRenderer(config.getPdfPhantomjsPath());
+      renderer = new PhantomJsRenderer(config.getPdfPhantomjsPath(), embedded);
       previous.close();
     }
     checkBinary();
   }
 
   void checkBinary() {
+    PhantomJsRenderer.sweepStaleSupportDirectories();
     PhantomJsRenderer current = renderer;
-    if (current.binaryPath().isEmpty()) {
-      LOG.warn("PhantomJS is not configured (pdf.phantomjs.path is empty): local PDF renders will fail");
+    if (current.usesEmbeddedBinary()) {
+      try {
+        current.prepare();
+      } catch (PdfRenderException e) {
+        if (PhantomJsRenderer.NOT_EXECUTABLE_MESSAGE.equals(e.getMessage())) {
+          // The renderer has already logged the temp directory and the hint.
+          return;
+        }
+        LOG.warn("The PhantomJS shipped with MARLO could not be prepared: {}: local PDF renders will fail",
+          e.getMessage());
+        return;
+      }
+    } else if (current.binaryPath().isEmpty()) {
+      LOG.warn("PhantomJS is not configured (pdf.phantomjs.path is empty) and none ships for {}: local PDF renders "
+        + "will fail", current.platform());
       return;
     }
     if (!current.isBinaryUsable()) {

@@ -406,7 +406,7 @@ compare with the flag off.
 - **Done when:** PARITY ×6 with the built code; live downloads `outcome=ok`; probe blocked.
 
 ### CHG-LPRE-T16 — PhantomJS shipped inside MARLO
-- **Status:** [ ]
+- **Status:** [x]
 - **Depends on:** T13, T14
 - **Requirements:** NF-007 (amended 2026-11-24), Decision Log "Everything from MARLO" · **Design:** §18.1 (Binary row)
 - **Scope:** commit `phantomjs-2.1.1-linux-x86_64` compressed under `marlo-web/src/main/resources/pdf/phantomjs/` (with its BSD licence and third-party notices); at bean init on Linux x86_64 extract the executable once to the private support directory, verify its SHA-256 against a constant, `chmod 700`; `pdf.phantomjs.path` non-empty overrides it (developer Mac, other platforms); unsupported platform and no override → the existing NF-007 startup WARN and fast failure.

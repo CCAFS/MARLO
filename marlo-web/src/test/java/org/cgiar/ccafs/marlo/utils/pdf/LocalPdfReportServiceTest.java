@@ -626,7 +626,8 @@ public class LocalPdfReportServiceTest {
     path.set(config, "  " + fake.path() + "  ");
     assertEquals(fake.path(), config.getPdfPhantomjsPath());
 
-    LocalPdfReportService service = new LocalPdfReportService();
+    LocalPdfReportService service =
+      new LocalPdfReportService(new EmbeddedPhantomJs("Mac OS X", "aarch64", "none", null));
     services.add(service);
     appender.list.clear();
     try {

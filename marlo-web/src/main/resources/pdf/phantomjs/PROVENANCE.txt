@@ -1,0 +1,19 @@
+Provenance of phantomjs-2.1.1-linux-x86_64.gz
+=============================================
+
+Upstream release:
+  https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-linux-x86_64.tar.bz2
+  (the download source of the phantomjs-prebuilt npm package)
+
+SHA-256 of the upstream tarball (23415665 bytes):
+  86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f
+
+SHA-256 of bin/phantomjs extracted from it (67932064 bytes); this is the value in
+phantomjs-2.1.1-linux-x86_64.sha256, which the application checks after extraction:
+  4f63e6055c323b8657f0a546d4dd36afda5cd4e961c375f31b48d506a7c4296f
+
+What was stored: bin/phantomjs, compressed with gzip (gzip -9n), unmodified otherwise,
+plus LICENSE.BSD and third-party.txt from the same tarball. The licences and the source
+of the statically linked LGPL components are in LGPL-2.1.txt and SOURCE.txt.
+
+Retrieved 2026-11-24. To check: gunzip -c phantomjs-2.1.1-linux-x86_64.gz | sha256sum

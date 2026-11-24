@@ -1,0 +1,26 @@
+Corresponding source of the bundled PhantomJS 2.1.1 (linux-x86_64)
+===================================================================
+
+The executable phantomjs-2.1.1-linux-x86_64.gz statically links Qt, QtWebKit
+and QCommandLine, which are licensed under the GNU Lesser General Public
+License, version 2.1 (LGPL-2.1.txt in this directory). The BSD licence of
+PhantomJS itself is in LICENSE.BSD and the third-party list is in
+third-party.txt.
+
+The source it was built from is public:
+
+  PhantomJS          https://github.com/ariya/phantomjs  (tag 2.1.1)
+  Qt (qtbase)        https://github.com/Vitallium/qtbase.git
+                     commit b5cc0083a5766e773885e8dd624c51a967c17de0
+                     (the submodule src/qt/qtbase pinned by the PhantomJS tag 2.1.1,
+                     branch "phantomjs")
+  QtWebKit           https://github.com/Vitallium/qtwebkit.git
+                     commit e7b74331d695bfa8b77e39cdc50fc2d84a49a22a
+                     (the submodule src/qt/qtwebkit pinned by the PhantomJS tag 2.1.1,
+                     branch "phantomjs")
+  QCommandLine       bundled in the PhantomJS tag 2.1.1 source tree
+                     (src/qcommandline)
+
+The commit ids were read from the tag with the GitHub contents API
+(repos/ariya/phantomjs/contents/src/qt/<submodule>?ref=2.1.1) on 2026-11-24.
+The binary is the unmodified official release build; MARLO does not change it.
