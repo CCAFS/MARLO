@@ -409,7 +409,7 @@ public class PhantomJsRendererTest {
       notExecutable.toString(), temp.getRoot().toString()};
     for (String path : paths) {
       PhantomJsRenderer renderer =
-        new PhantomJsRenderer(path, new EmbeddedPhantomJs("Mac OS X", "aarch64", "none", null));
+        new PhantomJsRenderer(path, new EmbeddedPhantomJs("FreeBSD", "amd64", "none", null));
       assertFalse(String.valueOf(path), renderer.isBinaryUsable());
       long start = System.nanoTime();
       try {

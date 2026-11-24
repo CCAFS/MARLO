@@ -30,17 +30,20 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.zip.GZIPInputStream;
 
 /**
  * The PhantomJS 2.1.1 executable that ships inside MARLO (CHG-LPRE-T16, NF-007, design section 18.1): the official
- * {@code phantomjs-2.1.1-linux-x86_64} build, gzip-compressed under {@code pdf/phantomjs/} with its BSD licence and
- * third-party notices. It is used only on Linux x86_64 and only when {@code pdf.phantomjs.path} is empty.
+ * build for the platform, gzip-compressed under {@code pdf/phantomjs/} with its BSD licence and third-party notices.
+ * {@link PhantomJsBuild} chooses it by operating system and architecture; it is used only when
+ * {@code pdf.phantomjs.path} is empty and the platform has a build.
  * <p>
  * {@link #extractTo} writes it once into a private directory, hashes the bytes as they are written, refuses to keep a
- * file whose SHA-256 is not the checksum resource, and sets the permissions to 0700. {@link #isIntact} repeats the
+ * file whose SHA-256 is not the checksum resource, and sets the permissions to 0700 where the file store has POSIX
+ * permissions (Windows has none to set). {@link #isIntact} repeats the
  * hash on an already extracted file. Nothing about the platform or the resource is read from configuration.
  */
 final class EmbeddedPhantomJs {
@@ -80,39 +83,37 @@ final class EmbeddedPhantomJs {
     InputStream open() throws IOException;
   }
 
-  static final String RESOURCE = "/pdf/phantomjs/phantomjs-2.1.1-linux-x86_64.gz";
-
-  /**
-   * SHA-256 of the official linux-x86_64 {@code bin/phantomjs} (the binary every parity run used), in sha256sum
-   * format. It lives in a resource, not in Java source, so that the credential-literal scan does not read a
-   * 64-character hex string as a secret.
-   */
-  static final String CHECKSUM_RESOURCE = "/pdf/phantomjs/phantomjs-2.1.1-linux-x86_64.sha256";
-
-  /** The file name of the executable inside the support directory. */
-  static final String FILE_NAME = "phantomjs";
-
   private static final Set<PosixFilePermission> OWNER_ONLY = PosixFilePermissions.fromString("rwx------");
 
   /** The shipped binary on the platform this JVM runs on. */
   static EmbeddedPhantomJs system() {
+    final Optional<PhantomJsBuild> build =
+      PhantomJsBuild.forPlatform(System.getProperty("os.name", ""), System.getProperty("os.arch", ""));
     return new EmbeddedPhantomJs(System.getProperty("os.name", ""), System.getProperty("os.arch", ""),
-      readExpectedSha256(), new Source() {
+      build.isPresent() ? readExpectedSha256(build.get()) : "", new Source() {
 
         @Override
         public InputStream open() throws IOException {
-          InputStream in = EmbeddedPhantomJs.class.getResourceAsStream(RESOURCE);
+          String resource = build.isPresent() ? build.get().resource() : "(none for this platform)";
+          InputStream in = build.isPresent() ? EmbeddedPhantomJs.class.getResourceAsStream(resource) : null;
           if (in == null) {
-            throw new IOException("Missing PDF resource " + RESOURCE);
+            throw new IOException("Missing PDF resource " + resource);
           }
           return in;
         }
       });
   }
 
-  /** The expected checksum; empty when its resource is unreadable, which no file can match (fail safe). */
+  /** The expected checksum of this JVM's build; empty when none ships or its resource is unreadable. */
   static String readExpectedSha256() {
-    try (InputStream in = EmbeddedPhantomJs.class.getResourceAsStream(CHECKSUM_RESOURCE)) {
+    Optional<PhantomJsBuild> build =
+      PhantomJsBuild.forPlatform(System.getProperty("os.name", ""), System.getProperty("os.arch", ""));
+    return build.isPresent() ? readExpectedSha256(build.get()) : "";
+  }
+
+  /** The expected checksum; empty when its resource is unreadable, which no file can match (fail safe). */
+  static String readExpectedSha256(PhantomJsBuild build) {
+    try (InputStream in = EmbeddedPhantomJs.class.getResourceAsStream(build.checksumResource())) {
       if (in == null) {
         return "";
       }
@@ -124,10 +125,13 @@ final class EmbeddedPhantomJs {
     }
   }
 
+  /** The build for this platform; null when none ships. */
+  private final PhantomJsBuild build;
   private final Predicate<Path> executableProbe;
   private final String expectedSha256;
   private final String osArch;
   private final String osName;
+  private final Predicate<Path> posixStore;
   private final Source source;
 
   EmbeddedPhantomJs(String osName, String osArch, String expectedSha256, Source source) {
@@ -143,18 +147,47 @@ final class EmbeddedPhantomJs {
   /** Test seam: {@code executableProbe} answers whether a file can be executed (Files.isExecutable in production). */
   EmbeddedPhantomJs(String osName, String osArch, String expectedSha256, Source source,
     Predicate<Path> executableProbe) {
+    this(osName, osArch, expectedSha256, source, executableProbe, new Predicate<Path>() {
+
+      @Override
+      public boolean test(Path file) {
+        try {
+          return Files.getFileStore(file).supportsFileAttributeView("posix");
+        } catch (IOException e) {
+          return false;
+        }
+      }
+    });
+  }
+
+  /**
+   * Test seam: {@code posixStore} answers whether the file store of an extracted file has the POSIX permission view
+   * (its file store supports "posix" in production); the owner-only permissions are set only when it does.
+   */
+  EmbeddedPhantomJs(String osName, String osArch, String expectedSha256, Source source,
+    Predicate<Path> executableProbe, Predicate<Path> posixStore) {
+    this.posixStore = posixStore;
     this.executableProbe = executableProbe;
     this.osName = osName == null ? "" : osName;
     this.osArch = osArch == null ? "" : osArch;
     this.expectedSha256 = expectedSha256;
     this.source = source;
+    this.build = PhantomJsBuild.forPlatform(this.osName, this.osArch).orElse(null);
   }
 
-  /** True on Linux x86_64 (os.arch amd64 or x86_64), the one platform the shipped build runs on. */
+  /** The build shipped for this platform, or none. */
+  Optional<PhantomJsBuild> build() {
+    return Optional.ofNullable(build);
+  }
+
+  /** The file name of the executable once extracted; {@code phantomjs} when no build ships for the platform. */
+  String fileName() {
+    return build == null ? "phantomjs" : build.fileName();
+  }
+
+  /** True when a build ships for this platform (see {@link PhantomJsBuild#forPlatform}). */
   boolean isSupportedPlatform() {
-    String name = osName.toLowerCase(Locale.ROOT);
-    String arch = osArch.toLowerCase(Locale.ROOT);
-    return name.startsWith("linux") && ("amd64".equals(arch) || "x86_64".equals(arch));
+    return build != null;
   }
 
   /** The platform, for log lines. */
@@ -163,15 +196,16 @@ final class EmbeddedPhantomJs {
   }
 
   /**
-   * Decompresses the executable into {@code directory} as {@value #FILE_NAME}, verifying its SHA-256 while writing.
+   * Decompresses the executable into {@code directory} under the build's file name, verifying its SHA-256 while
+   * writing.
    * On a mismatch the file is deleted and nothing is left behind.
    *
-   * @return the extracted executable, permissions 0700.
+   * @return the extracted executable, permissions 0700 where the file store has POSIX permissions.
    * @throws NotExecutableException when the file, once written, cannot be executed from {@code directory}.
    * @throws IOException when the resource is missing or unreadable, or the bytes are not the expected build.
    */
   Path extractTo(Path directory) throws IOException {
-    Path target = directory.resolve(FILE_NAME);
+    Path target = directory.resolve(fileName());
     MessageDigest digest = newDigest();
     boolean kept = false;
     try (InputStream in = new GZIPInputStream(source.open(), 64 * 1024);
@@ -192,7 +226,9 @@ final class EmbeddedPhantomJs {
     if (!kept) {
       throw new IOException("Embedded PhantomJS does not match the expected SHA-256");
     }
-    Files.setPosixFilePermissions(target, OWNER_ONLY);
+    if (posixStore.test(target)) {
+      Files.setPosixFilePermissions(target, OWNER_ONLY);
+    }
     if (!executableProbe.test(target)) {
       Files.deleteIfExists(target);
       throw new NotExecutableException("The extracted PhantomJS cannot be executed from its directory");

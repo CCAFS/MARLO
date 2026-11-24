@@ -77,3 +77,68 @@ Implementer therefore has no checkpoint bound; a long attempt reports only at co
 - Decision (owner, 2026-11-24, after the PASS): `PROVENANCE-windows.txt` reworded from "It runs on 64-bit Windows" to
   "expected to run on 64-bit Windows (WoW64); not yet run (design.md 17, OQ-2)" — a T01 file, wording only, so the
   advisory's unverified claim is not shipped. `SOURCE.txt` left as is (not a T01 file).
+
+### CHG-PPE-T02 — One platform table chooses the shipped build
+
+| Field | Value |
+|---|---|
+| Final status | **PASS** (attempt 2) |
+| Date | 2026-11-24 |
+| Requirements covered | FN-001, FN-004 (file name, permissions), FN-006, FN-007 · DD-1, DD-5 |
+| Skills / effort | `tdd`, `marlo-verify` (task's `marlo-commit` dropped: the Leader commits) · effort `medium`, bumped to `high` for attempt 2 |
+| spawns | Implementer 35 calls, 179,567 tokens, ended complete (attempt 1); Implementer resumed by message for attempt 2, 5 calls, 185,483 tokens (cumulative context), ended complete; Reviewer 19 calls, 93,968 tokens, ended complete |
+
+**Attempt 1 — implicit FAIL (evidence re-run MISMATCH)**
+- Files changed: new `utils/pdf/PhantomJsBuild.java`, `PhantomJsBuildTest.java`; modified `EmbeddedPhantomJs.java`,
+  `PhantomJsRenderer.java`, `LocalPdfReportService.java`, `EmbeddedPhantomJsTest.java`,
+  `LocalPdfReportServiceTest.java`, `PhantomJsRendererTest.java`, `marlo-utils/.../APConfig.java`.
+- Implementer verification: the 4 named classes 77/0; pdf package 155 run, 0 failures, 7 skipped; clean recompile
+  2430/1073/154; Checkstyle delta 0; "Hygiene check: no FIX lines".
+- Falsifiers executed: (1) `Mac OS X`/`aarch64` → none: `macOsOnIntelOrAppleSiliconGetsTheMacBuild fails with
+  java.lang.AssertionError: Mac OS X/aarch64 has a build` (Tests run: 7, Failures: 1, Errors: 1); (2) `Linux`/`aarch64`
+  → x86_64 build: `linuxOnArmGetsNoBuild fails with java.lang.AssertionError: Linux/aarch64 has no build`
+  (Tests run: 7, Failures: 1). Restored → 7/7.
+- **Evidence re-run (Leader-inline): MISMATCH.** `java-hygiene-check.sh` exit 1:
+  `=== marlo-utils/src/main/java/org/cgiar/ccafs/marlo/utils/APConfig.java` /
+  `FIX    EOL        line endings changed CRLF -> LF; restore CRLF (real edits: 2 lines)`; `git diff --stat`
+  2087 lines on `APConfig.java` vs 3 with `--ignore-cr-at-eol`; CRLF lines HEAD 1043 → 0. The other checks matched:
+  clean recompile 2430/1073/154, named classes 77/0 three times in a row with 0 forked-VM crashes, full suite
+  `mvn -o -pl marlo-utils,marlo-data,marlo-web -am test` → `Tests run: 1471, Failures: 0, Errors: 0, Skipped: 7`.
+- Reviewer: not run (MISMATCH is an implicit FAIL).
+
+**Attempt 2 — PASS**
+- Delivery: rework sent by `SendMessage` to the attempt-1 Implementer (its context survived; effort `high`), with the
+  MISMATCH evidence verbatim and the attempt history ("attempt 1 rewrote APConfig.java with LF — do not repeat").
+- Files changed: `APConfig.java` restored from HEAD, Javadoc line re-applied with a CRLF-preserving edit.
+- **Evidence re-run (Leader-inline): VERIFIED.** `APConfig.java` diff 3 lines (2 insertions, 1 deletion), same with
+  `--ignore-cr-at-eol`; `java-hygiene-check.sh` exit 0, no FIX (two REVIEW `LOG-NULL` at
+  `LocalPdfReportService` L408); `clean-compile.sh marlo-utils,marlo-data,marlo-web` BUILD SUCCESS 2430/1073/154;
+  `checkstyle.sh --baseline` over the 9 Java files `HEAD=9 working tree=9 delta=0`; the 4 named classes 77/0.
+- Reviewer verdict: **PASS** — the table returns a build for exactly the DD-1 rows, OS and arch checked together;
+  Linux keeps the CHG-LPRE resource paths; POSIX permissions only when the store supports `posix`; override priority
+  unchanged; FN-007 WARN names the platform and the render answers the generic 500; the matrix asserts every field;
+  the L408 `LOG-NULL` claim verified in the source (both values non-null by construction).
+- **Not Done / Assumptions (Implementer, verbatim):** "PhantomJsBuild red run: I wrote the class before its test, so
+  there is no clean red for it. The baseline reds you listed for EmbeddedPhantomJs were not re-run. The two falsifiers
+  show the matrix test discriminates." / "Flaky surefire VM crash: … went away once I ran Maven one command at a time."
+  / "Windows arch matching: Windows x86 (32-bit) is accepted only on Windows." / "FontMode and EnvironmentStyle are
+  carried by the table but nothing reads them yet (T03 to T05)." — assumptions only, no owed item, no blocker.
+- Issues encountered: the forked-VM crash and a `struts-report.xml` copy failure in attempt 1 coincided with
+  overlapping Maven runs inside the Implementer; three sequential Leader runs showed no crash.
+
+**ADVISORY (4R, recorded only — never a task):**
+1. Reliability: no test asserts `build=` in the startup line (`EmbeddedPhantomJsTest.java:747`, `:794`).
+2. Spec gap → presented as an amendment at the gate: OPS-002 and the "Supported platform" scenario require the
+   startup line to name the platform; no task owns that clause.
+3. Spec wording → presented as an amendment at the gate: FN-007 says "any 32-bit OS" has no build, DD-1 maps
+   Windows `x86` to the build.
+4. Readability (KZ-…-auth-flow-2): the Windows-seam test counts `posixStore` calls but does not assert the path it
+   received.
+5. Resilience: that test calls `Files.getPosixFilePermissions` itself (diff line 370), which throws on a real
+   Windows host — relevant to T06's Windows run.
+6. Coverage location: `LocalPdfEngineDispatchTest` was not extended; covered by the service-level test plus the
+   existing flag-on dispatch tests.
+
+**Budget running totals (design §18):** tasks 2/6 · Java LOC 83 + 182 changed (+256 new) ≈ 520/~650 (main and tests;
+APConfig counted as 3) · review rounds 3/9 (T01 1, T02 2: one MISMATCH, one PASS) · WAR growth 35.2 MB / cap 60 MB.
+**Note:** LOC is already at 80 % of the budget after 2 of 6 tasks.

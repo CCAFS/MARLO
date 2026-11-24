@@ -462,7 +462,7 @@ final class PhantomJsRenderer {
 
   /**
    * @param binaryPath the PhantomJS executable ({@code pdf.phantomjs.path}); blank when none is configured, in
-   *        which case the build shipped inside MARLO is used on Linux x86_64.
+   *        which case the build shipped inside MARLO for this platform is used.
    */
   PhantomJsRenderer(String binaryPath) {
     this(binaryPath, EmbeddedPhantomJs.system());
@@ -484,6 +484,11 @@ final class PhantomJsRenderer {
     return embedded.platform();
   }
 
+  /** Short name of the shipped build in use, for log lines; empty when a configured path or no build applies. */
+  String buildName() {
+    return usesEmbeddedBinary() ? embedded.build().map(PhantomJsBuild::id).orElse("") : "";
+  }
+
   /**
    * The path of the executable in use, for log lines: the configured one, else the extracted shipped build once it
    * exists, else empty (no path configured and none to extract on this platform, or not extracted yet).
@@ -492,7 +497,7 @@ final class PhantomJsRenderer {
     if (!binary.isEmpty()) {
       return binary;
     }
-    return support != null && usesEmbeddedBinary() ? support.resolve(EmbeddedPhantomJs.FILE_NAME).toString() : "";
+    return support != null && usesEmbeddedBinary() ? support.resolve(embedded.fileName()).toString() : "";
   }
 
   /**
@@ -522,7 +527,7 @@ final class PhantomJsRenderer {
 
   /** The executable for a render whose support directory is {@code dir}: the configured one, else the shipped. */
   private String executableIn(Path dir) {
-    return binary.isEmpty() ? dir.resolve(EmbeddedPhantomJs.FILE_NAME).toString() : binary;
+    return binary.isEmpty() ? dir.resolve(embedded.fileName()).toString() : binary;
   }
 
   /**
@@ -928,7 +933,7 @@ final class PhantomJsRenderer {
     if (!usesEmbeddedBinary()) {
       return true;
     }
-    Path file = dir.resolve(EmbeddedPhantomJs.FILE_NAME);
+    Path file = dir.resolve(embedded.fileName());
     if (embedded.isUnchanged(file, fingerprint)) {
       return true;
     }

@@ -577,7 +577,11 @@ public class LocalPdfReportServiceTest {
       temp.newFile("plain-file").getPath()};
     for (String path : unusable) {
       appender.list.clear();
-      services.add(new LocalPdfReportService(path));
+      // A blank path means "the shipped build", which exists on this machine: judge it on a platform with none.
+      services.add(path.trim().isEmpty()
+        ? new LocalPdfReportService(path, HandlebarsReportHelpers.newHandlebars(),
+          new EmbeddedPhantomJs("FreeBSD", "amd64", "none", null))
+        : new LocalPdfReportService(path));
       assertEquals(path, 1, messages(Level.WARN).size());
       assertTrue(path, messages(Level.INFO).isEmpty());
     }
@@ -622,6 +626,23 @@ public class LocalPdfReportServiceTest {
   }
 
   @Test
+  public void anUnsupportedPlatformLogsOneWarnNamingItAndAFlagOnRenderAnswersTheGeneric500() throws Exception {
+    appender.list.clear();
+    LocalPdfReportService service = new LocalPdfReportService("", HandlebarsReportHelpers.newHandlebars(),
+      new EmbeddedPhantomJs("FreeBSD", "amd64", "none", null));
+    services.add(service);
+    List<String> warns = messages(Level.WARN);
+    assertEquals(warns.toString(), 1, warns.size());
+    assertTrue(warns.get(0), warns.get(0).contains("FreeBSD/amd64"));
+    assertTrue(messages(Level.INFO).isEmpty());
+    PdfResponses.Recorded recorded = new PdfResponses.Recorded();
+    service.renderToResponse(anyPayload(), "unsupported.pdf", PdfResponses.response(recorded));
+    assertEquals(Integer.valueOf(500), recorded.errorStatus);
+    assertNull("no reason text", recorded.errorMessage);
+    assertEquals(0, recorded.body.size());
+  }
+
+  @Test
   public void theContainerPathReadsTheBinaryFromTheConfiguration() throws Exception {
     FakePhantomJs fake = fake("ok");
     APConfig config = new APConfig();
@@ -631,7 +652,7 @@ public class LocalPdfReportServiceTest {
     assertEquals(fake.path(), config.getPdfPhantomjsPath());
 
     LocalPdfReportService service =
-      new LocalPdfReportService(new EmbeddedPhantomJs("Mac OS X", "aarch64", "none", null));
+      new LocalPdfReportService(new EmbeddedPhantomJs("FreeBSD", "amd64", "none", null));
     services.add(service);
     appender.list.clear();
     try {

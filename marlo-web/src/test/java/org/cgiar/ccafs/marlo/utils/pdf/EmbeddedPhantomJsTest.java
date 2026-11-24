@@ -183,13 +183,18 @@ public class EmbeddedPhantomJsTest {
     EmbeddedPhantomJs real = EmbeddedPhantomJs.system();
     Path dir = temp.newFolder().toPath();
     Path file = real.extractTo(dir);
-    assertEquals(67932064L, Files.size(file));
+    String build = real.build().map(PhantomJsBuild::id).orElse("none");
+    long size = "linux-x86_64".equals(build) ? 67932064L
+      : "macosx".equals(build) ? 45020592L : "windows".equals(build) ? 18587648L : -1L;
+    assertEquals(build, size, Files.size(file));
     String expected = EmbeddedPhantomJs.readExpectedSha256();
     assertEquals(64, expected.length());
     assertEquals(expected, sha256(Files.readAllBytes(file)));
     assertTrue(real.isIntact(file));
-    Assume.assumeTrue("the shipped build runs on Linux x86_64 only", real.isSupportedPlatform());
-    assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(file)));
+    Assume.assumeTrue("a build ships for this platform", real.isSupportedPlatform());
+    if (Files.getFileStore(file).supportsFileAttributeView("posix")) {
+      assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(file)));
+    }
     PhantomJsRenderer renderer = new PhantomJsRenderer("", real);
     try {
       assertEquals("2.1.1", renderer.queryVersion());
@@ -201,15 +206,77 @@ public class EmbeddedPhantomJsTest {
   // ---- which platforms use it -----------------------------------------------------------------------------------
 
   @Test
-  public void onlyLinuxOnAmd64OrX86UsesTheShippedBuild() throws Exception {
+  public void everyPlatformWithABuildUsesTheShippedBuildAndNothingElseDoes() throws Exception {
     String sha = sha256(FAKE);
     assertTrue(embedded("Linux", "amd64", FAKE, sha).isSupportedPlatform());
     assertTrue(embedded("Linux", "x86_64", FAKE, sha).isSupportedPlatform());
+    assertTrue(embedded("Mac OS X", "aarch64", FAKE, sha).isSupportedPlatform());
+    assertTrue(embedded("Mac OS X", "x86_64", FAKE, sha).isSupportedPlatform());
+    assertTrue(embedded("Windows 11", "amd64", FAKE, sha).isSupportedPlatform());
+    assertTrue(embedded("Windows 10", "x86", FAKE, sha).isSupportedPlatform());
     assertFalse(embedded("Linux", "aarch64", FAKE, sha).isSupportedPlatform());
-    assertFalse(embedded("Mac OS X", "aarch64", FAKE, sha).isSupportedPlatform());
-    assertFalse(embedded("Mac OS X", "x86_64", FAKE, sha).isSupportedPlatform());
-    assertFalse(embedded("Windows 11", "amd64", FAKE, sha).isSupportedPlatform());
+    assertFalse(embedded("Windows 11", "aarch64", FAKE, sha).isSupportedPlatform());
+    assertFalse(embedded("FreeBSD", "amd64", FAKE, sha).isSupportedPlatform());
     assertFalse(embedded(null, null, FAKE, sha).isSupportedPlatform());
+  }
+
+  @Test
+  public void theExecutableNameComesFromTheBuild() throws Exception {
+    String sha = sha256(FAKE);
+    assertEquals("phantomjs", embedded("Linux", "amd64", FAKE, sha).fileName());
+    assertEquals("phantomjs", embedded("Mac OS X", "aarch64", FAKE, sha).fileName());
+    assertEquals("phantomjs.exe", embedded("Windows 11", "amd64", FAKE, sha).fileName());
+  }
+
+  @Test
+  public void aWindowsExtractionWritesTheExeNeverCallsThePosixViewAndStillVerifiesTheChecksum() throws Exception {
+    final java.util.concurrent.atomic.AtomicInteger posixAsked = new java.util.concurrent.atomic.AtomicInteger();
+    final byte[] compressed = gzip(FAKE);
+    EmbeddedPhantomJs windows = new EmbeddedPhantomJs("Windows 11", "amd64", sha256(FAKE),
+      new EmbeddedPhantomJs.Source() {
+
+        @Override
+        public InputStream open() {
+          return new ByteArrayInputStream(compressed);
+        }
+      }, new java.util.function.Predicate<Path>() {
+
+        @Override
+        public boolean test(Path file) {
+          return true;
+        }
+      }, new java.util.function.Predicate<Path>() {
+
+        @Override
+        public boolean test(Path file) {
+          posixAsked.incrementAndGet();
+          return false;
+        }
+      });
+    Path dir = temp.newFolder().toPath();
+    Path file = windows.extractTo(dir);
+    assertEquals(dir.resolve("phantomjs.exe"), file);
+    assertTrue(Files.isRegularFile(file));
+    assertEquals("the file store was asked once", 1, posixAsked.get());
+    assertFalse("the owner-only permissions were not applied",
+      "rwx------".equals(PosixFilePermissions.toString(Files.getPosixFilePermissions(file))));
+    assertTrue(windows.isIntact(file));
+
+    EmbeddedPhantomJs tampered = new EmbeddedPhantomJs("Windows 11", "amd64",
+      sha256("other".getBytes(StandardCharsets.UTF_8)), new EmbeddedPhantomJs.Source() {
+
+        @Override
+        public InputStream open() {
+          return new ByteArrayInputStream(compressed);
+        }
+      });
+    Path other = temp.newFolder().toPath();
+    try {
+      tampered.extractTo(other);
+      fail("kept a file with the wrong SHA-256");
+    } catch (IOException e) {
+      assertFalse(Files.exists(other.resolve("phantomjs.exe")));
+    }
   }
 
   // ---- the renderer ---------------------------------------------------------------------------------------------
@@ -623,7 +690,7 @@ public class EmbeddedPhantomJsTest {
 
   @Test
   public void anUnsupportedPlatformWithNoPathFailsAtOnceWithoutExtracting() throws Exception {
-    EmbeddedPhantomJs embedded = embedded("Mac OS X", "aarch64", FAKE, sha256(FAKE));
+    EmbeddedPhantomJs embedded = embedded("FreeBSD", "amd64", FAKE, sha256(FAKE));
     PhantomJsRenderer renderer = new PhantomJsRenderer("", embedded);
     assertFalse(renderer.usesEmbeddedBinary());
     assertFalse(renderer.isBinaryUsable());
@@ -694,14 +761,14 @@ public class EmbeddedPhantomJsTest {
 
   @Test
   public void startupOnAnUnsupportedPlatformWarnsAndRendersFail() throws Exception {
-    EmbeddedPhantomJs embedded = embedded("Mac OS X", "aarch64", FAKE, sha256(FAKE));
+    EmbeddedPhantomJs embedded = embedded("FreeBSD", "amd64", FAKE, sha256(FAKE));
     LocalPdfReportService service =
       new LocalPdfReportService("", HandlebarsReportHelpers.newHandlebars(), embedded);
     try {
       List<String> warns = messages(Level.WARN);
       assertEquals(warns.toString(), 1, warns.size());
       assertTrue(warns.get(0), warns.get(0).contains("pdf.phantomjs.path is empty"));
-      assertTrue(warns.get(0), warns.get(0).contains("Mac OS X/aarch64"));
+      assertTrue(warns.get(0), warns.get(0).contains("FreeBSD/amd64"));
       assertEquals(0, opened.get());
     } finally {
       service.shutdown();

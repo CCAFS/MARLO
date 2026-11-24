@@ -59,7 +59,7 @@
   `execution.md`, and both provenance files name the URL and both checksums.
 
 ### CHG-PPE-T02 — One platform table chooses the shipped build
-- **Status:** [ ] · **Size:** M · **Depends on:** T01 · **Module:** marlo-web
+- **Status:** [x] · **Size:** M · **Depends on:** T01 · **Module:** marlo-web
 - **Requirements:** FN-001 (all scenarios of "Shipped build per platform"), FN-004 (executable name, permissions:
   "BUT it must NOT call any POSIX-only file API on Windows"), FN-006 ("Override set"), FN-007 ("Platform with no
   build": generic 500, no microservice, no hang) · **Design:** DD-1, DD-5, P-1, P-2, P-14, P-15

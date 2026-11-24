@@ -835,7 +835,8 @@ public class APConfig {
   }
 
   /**
-   * Path of the PhantomJS executable the local PDF report engine runs ({@code pdf.phantomjs.path}).
+   * Optional override: path of the PhantomJS executable the local PDF report engine runs
+   * ({@code pdf.phantomjs.path}). When empty, the build MARLO ships for the platform (Linux, macOS or Windows) is used.
    *
    * @return the path, or an empty string when none is configured.
    */
