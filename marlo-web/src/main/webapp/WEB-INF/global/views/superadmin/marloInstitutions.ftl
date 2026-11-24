@@ -60,7 +60,8 @@
           data-text-filtered-partners="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.summary.partners' /]"
           data-text-filtered-offices="[@institutionRequest.attrText key='marloRequestInstitution.ui.filter.summary.offices' /]">
 
-          <header class="prq-head">
+          [#-- A div, not a <header>: marlo-redesign.css gives every <header> the brand header's bottom border --]
+          <div class="prq-head">
             <div class="prq-head__main">
               <h1 class="prq-head__title">[@s.text name="marloRequestInstitution.ui.title" /]</h1>
               <p class="prq-head__summary" id="prqSummary" aria-live="polite">
@@ -76,7 +77,7 @@
             <button type="button" class="prq-btn prq-btn--ghost" data-prq-open="allInstitutions" aria-haspopup="dialog">
               [@s.text name="marloRequestInstitution.ui.action.allInstitutions" /]
             </button>
-          </header>
+          </div>
 
           [#-- Search and kind filter: client-side only, applied by marloInstitutions.js to the cards below --]
           <div class="prq-toolbar" data-prq-toolbar>
