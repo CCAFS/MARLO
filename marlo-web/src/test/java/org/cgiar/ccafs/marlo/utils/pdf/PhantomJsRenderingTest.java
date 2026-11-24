@@ -71,7 +71,8 @@ import static org.junit.Assert.assertTrue;
  * <p>
  * Page counts, fonts and footer bands are the production ones only for the Linux x86_64 build with the bundled DejaVu
  * fonts (design section 18.4); on another platform the test asserts that the pages render and prints what it saw.
- * The images the templates load from the allowlisted S3 hosts are replaced by the captured copies in
+ * The template images of the marlo-pdf-resources-dev bucket go through the production {@link PdfImageBundle} (inlined,
+ * SVG flags trusted); the user images of the other allowlisted host are replaced here by the captured copies in
  * src/test/resources/pdf/images as {@code data:} URIs, so the test does not need the network.
  */
 public class PhantomJsRenderingTest {
@@ -82,7 +83,7 @@ public class PhantomJsRenderingTest {
   private static final ObjectMapper JSON = new ObjectMapper();
   private static final File OUT_DIR = new File("target/local-pdf-report-phantomjs");
   private static final Pattern REMOTE_IMAGE = Pattern.compile(
-    "https://(marlo-pdf-resources-dev\\.s3\\.us-east-1\\.amazonaws\\.com|prms-file-storage\\.s3\\.amazonaws\\.com)"
+    "https://(prms-file-storage\\.s3\\.amazonaws\\.com)"
       + "(/[^\"'\\s)<>\\\\]+)");
 
   private ListAppender<ILoggingEvent> appender;
@@ -151,7 +152,7 @@ public class PhantomJsRenderingTest {
     }
   }
 
-  /** Replaces every allowlisted https image of the HTML by its captured copy as a data: URI. */
+  /** Replaces every user-image https URL of the HTML by its captured copy as a data: URI. */
   private static String withInlineImages(String html, List<String> missing) throws IOException {
     Matcher matcher = REMOTE_IMAGE.matcher(html);
     StringBuffer out = new StringBuffer();

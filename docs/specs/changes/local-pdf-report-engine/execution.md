@@ -816,3 +816,71 @@
   - No-config parity in the unmodified Tomcat image: project fixture PARITY, real cluster 481/481 PARITY.
 - **Reviewer:** the final tweak implements exactly the remediation the reviewer specified, so it was accepted without another review round. The ENOLCK test covers it.
 - **Final status:** PASS · **Review rounds:** 36.
+
+## CHG-LPRE-T17 — Template images shipped inside MARLO
+
+- **Owner:** "sí, haz el commit y sigue con T17" (T16 committed `7cfea79d88`).
+- **Implementer attempt 1:**
+  - **Bundle:** 298 objects (48 PNG, 250 SVG flags), 3.4 MiB, under `pdf/images/`, with a `manifest.tsv` (path, size, SHA-256, source) and a README covering licences: flags are flag-icons (MIT), SDG icons follow the UN guidelines, and the CGIAR/AICCRA assets still need owner confirmation.
+  - **How the set was built:** from template names, SDG 1–17, impact areas 1–5, and flags for every ISO alpha-2 code plus the `loc_elements` codes. It was cross-checked against the real-data HTML.
+  - **Missing upstream:** 37 names return 403 in production too (impact areas 6–8 and non-country codes).
+  - **Inlining:** done after the sanitizer as a direct string replace. SVG `data:` URLs are allowed only when they match exactly a URL the renderer itself inlined (`allowedDataUrls`); the general `data:` rule is unchanged.
+  - **Unknown bucket names:** one WARN, then replaced by an empty PNG `data:` URI. Unrecognised bucket URLs are aborted. The allowlist now holds only `prms-file-storage`.
+  - **Results:** suite 1,446 tests, 7 skipped; Checkstyle delta 0.
+  - **spawns:** 62 calls, 192,032 tokens.
+- **Leader evidence:**
+  - With the bucket host made **unreachable** (`--add-host` to a blackhole IP) in the unmodified Tomcat image, with no configuration: **PARITY 6/6**, `blockedUris=0`, `failedFetches=0`.
+  - **Pixel comparison** at 40 dpi, production against local, on OICR p1–p2, innovation p1–p2, cluster p1/p3/p200 and the innovation fixture p3: **0.000 % of pixels differ** on every page checked.
+  - The cluster PDF is **byte-size-identical** to production: 21,024,560 B.
+- **Reviewer attempt 1: FAIL (docs only).** The spec text contradicted the code:
+  - the T17 scope said unknown bucket objects are "left as is", but the code replaces them with an empty PNG;
+  - design §18 still listed the two S3 hosts, had no inlining stage, and did not record the trusted-SVG exception.
+
+  The Leader amended `tasks.md` and design §18 (new Inline images row, the trusted-SVG exception, `prms-file-storage`-only allowlist).
+  - **Code checks that passed:**
+    - SVG allowlist provenance: only filled from bundle bytes; user-supplied SVG `data:` URLs are still removed.
+    - The 250 SVGs were grepped: they contain only `#fragment` refs.
+    - No path traversal: manifest keys only.
+    - Host regex.
+    - S3 key decoding.
+    - Integrity handling.
+    - Performance bounds.
+  - **Advisories sent as attempt 2:**
+    - MIT notice text for flag-icons; the repository is public, so the brand assets need owner confirmation;
+    - restrict inlining to image attributes and CSS `url()` (not text or `href`);
+    - WARN once per process;
+    - the gated test should exercise the production path.
+  - **spawns:** reviewer 26 calls, 96,007 tokens.
+- **Implementer attempt 2 (advisories):**
+  - Added the full MIT notice for flag-icons.
+  - README wording on the public repo: brand assets need owner confirmation.
+  - Inlining is restricted to image attributes and CSS `url()`; text and `href` are untouched, and `&quot;`-wrapped URLs are handled.
+  - WARN once per process (capped at 1,000 names); no duplicate WARN after an ERROR.
+  - The gated test now exercises the production path.
+  - Suite: 1,451 tests.
+  - **spawns:** 69 calls, 210,387 tokens.
+- **Leader evidence, missing-flag probe:**
+  - A template with `flags/ke`, `flags/ke01` (403 upstream) and an invented name. Production and MARLO show the same broken-image icon.
+  - 0.128 % of pixels still differed. The cause was the **text font**: production fell back to DejaVu **Serif** for text with no `font-family`, while MARLO only had Sans.
+- **Implementer attempt 3:**
+  - Bundled `DejaVuSerif`, `DejaVuSerif-Bold`, `DejaVuSansMono` and `DejaVuSansMono-Bold`, copied from `node:23` `fonts-dejavu-core` 2.37. All six hashes match.
+  - The completeness check now covers all six fonts.
+  - Suite: 1,453 tests.
+  - **spawns:** 75 calls, 222,725 tokens.
+- **Leader evidence (bucket blackholed, no config, unmodified Tomcat image):**
+  - PARITY on all six cases, plus the missing-flag probe and a font probe (default serif, `<pre>`, `<code>`, monospace, bold serif).
+  - **Pixel diff 0.000 %** on every page checked: pages 1–2 of each case, and the probes.
+  - The font probe PDF embeds `DejaVuSerif`, `DejaVuSansMono` and `DejaVuSerif-Bold`, as production does.
+- **Reviewer re-check: PASS.**
+  - The spec and code now match.
+  - Scoped inlining is correct, including the lookbehind, the srcset/escaped-quote terminators and linear patterns.
+  - Security is unchanged and the logging cap holds.
+  - The gated test now exercises the production path.
+  - Licences and fonts are covered.
+  - **Advisories fixed by the Leader:**
+    - fonts recorded in the T17 scope, the design Fonts row and a `judgment.md` note superseding B:J-10c;
+    - the Inline images row narrowed to attributes and CSS;
+    - README logging wording.
+  - Known, accepted: a literal `src="<bucket URL>"` typed as raw text through a triple-stash field is still inlined.
+  - **spawns:** reviewer 11 calls, 133,940 tokens.
+- **Final status:** PASS · **Review rounds:** 38. Commit is pending the owner's confirmation that CGIAR/AICCRA brand images may go into the (public) repository.

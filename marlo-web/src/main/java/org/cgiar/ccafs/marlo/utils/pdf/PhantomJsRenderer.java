@@ -197,9 +197,12 @@ final class PhantomJsRenderer {
     }
   }
 
-  /** Hosts a page may load resources from over https (CHG-LPRE-SEC-001, P-7); the page script enforces it. */
-  static final List<String> ALLOWED_HOSTS = Collections.unmodifiableList(Arrays
-    .asList("marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com", "prms-file-storage.s3.amazonaws.com"));
+  /**
+   * Hosts a page may load resources from over https (CHG-LPRE-SEC-001, P-7); the page script enforces it. Only the
+   * user-uploaded images remain: the template images ship inside MARLO and are inlined (T17, {@link PdfImageBundle}).
+   */
+  static final List<String> ALLOWED_HOSTS =
+    Collections.unmodifiableList(Arrays.asList("prms-file-storage.s3.amazonaws.com"));
 
   static final int STREAM_CAP = 64 * 1024;
 
@@ -225,9 +228,11 @@ final class PhantomJsRenderer {
 
   private static final long REAP_WAIT_MS = 2000L;
 
-  private static final String FONT_REGULAR = "/pdf/fonts/DejaVuSans.ttf";
+  /** The fonts of production's {@code fonts-dejavu-core} 2.37: Debian's rules map serif and monospace to these. */
+  static final List<String> FONT_FILES = Collections.unmodifiableList(Arrays.asList("DejaVuSans.ttf",
+    "DejaVuSans-Bold.ttf", "DejaVuSerif.ttf", "DejaVuSerif-Bold.ttf", "DejaVuSansMono.ttf", "DejaVuSansMono-Bold.ttf"));
 
-  private static final String FONT_BOLD = "/pdf/fonts/DejaVuSans-Bold.ttf";
+  private static final String FONT_DIR = "/pdf/fonts/";
 
   private static final String SCRIPT = "/pdf/render-page.js";
 
@@ -442,6 +447,8 @@ final class PhantomJsRenderer {
 
   private final EmbeddedPhantomJs embedded;
 
+  private final PdfImageBundle images = PdfImageBundle.shared();
+
   /** Set when the shipped build could not be executed from the temp directory: later calls fail without extracting. */
   private boolean embeddedBlocked;
 
@@ -576,7 +583,10 @@ final class PhantomJsRenderer {
     if (!isUsable(executable)) {
       throw new PdfRenderException("PhantomJS binary is not available");
     }
-    String clean = sanitize(html);
+    // Inlining follows the sanitizer on purpose: it is a deliberate transform of trusted, bundled bytes, done by string
+    // replacement so the sanitizer's same-instance passthrough (and with it byte identity) is not disturbed.
+    PdfImageBundle.Inlined inlined = images.inline(sanitize(html));
+    String clean = inlined.html();
     Path renderDir = null;
     try {
       renderDir = Files.createTempDirectory("marlo-pdf-render-");
@@ -589,6 +599,7 @@ final class PhantomJsRenderer {
       sent.put("timeout", pageTimeout(sent.get("timeout"), TimeUnit.NANOSECONDS.toMillis(deadlineNanos
         - System.nanoTime())));
       sent.put("allowedHosts", ALLOWED_HOSTS);
+      sent.put("allowedDataUrls", new ArrayList<String>(inlined.svgDataUrls()));
       Map<String, Object> config = new LinkedHashMap<String, Object>();
       config.put("html", clean);
       config.put("options", sent);
@@ -872,8 +883,9 @@ final class PhantomJsRenderer {
       // Locked for as long as the directory exists, so that another instance's start-up sweep leaves it alone.
       holdOwnerLock(dir);
       Path fonts = Files.createDirectory(dir.resolve("fonts"));
-      Files.write(fonts.resolve("DejaVuSans.ttf"), readResource(FONT_REGULAR));
-      Files.write(fonts.resolve("DejaVuSans-Bold.ttf"), readResource(FONT_BOLD));
+      for (String font : FONT_FILES) {
+        Files.write(fonts.resolve(font), readResource(FONT_DIR + font));
+      }
       Path cache = Files.createDirectory(dir.resolve("cache"));
       Files.write(dir.resolve("render-page.js"), readResource(SCRIPT));
       Path rules = Files.createDirectory(dir.resolve("conf.d"));
@@ -933,10 +945,13 @@ final class PhantomJsRenderer {
 
   /** True while the key files of the support directory are all there (a temp-directory cleaner may take them). */
   private static boolean isComplete(Path dir) {
-    return Files.isRegularFile(dir.resolve("fonts/DejaVuSans.ttf"))
-      && Files.isRegularFile(dir.resolve("fonts/DejaVuSans-Bold.ttf")) && Files.isRegularFile(dir.resolve("fonts.conf"))
-      && Files.isRegularFile(dir.resolve("render-page.js")) && Files.isDirectory(dir.resolve("conf.d"))
-      && Files.isDirectory(dir.resolve("cache"));
+    for (String font : FONT_FILES) {
+      if (!Files.isRegularFile(dir.resolve("fonts").resolve(font))) {
+        return false;
+      }
+    }
+    return Files.isRegularFile(dir.resolve("fonts.conf")) && Files.isRegularFile(dir.resolve("render-page.js"))
+      && Files.isDirectory(dir.resolve("conf.d")) && Files.isDirectory(dir.resolve("cache"));
   }
 
   /**

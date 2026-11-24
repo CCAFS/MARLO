@@ -55,3 +55,5 @@ in this session does not exist, so T02/T03 settle it at runtime.
 Counts: confirmed severe 2 (J-1, N-1), suspect-verified severe 2 (A:J-2, B:J-2), INFO 2, fix rounds 2/2.
 
 JUDGMENT: APPROVED ✅
+
+> *2026-11-24 note (T17):* B:J-10c's "Serif / monospace families … not changed" is superseded — PhantomJS (Pivot 2) falls back to DejaVu Serif/Mono like production, so those fonts are now bundled (`execution.md` T17).

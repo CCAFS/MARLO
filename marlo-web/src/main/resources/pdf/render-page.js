@@ -63,14 +63,18 @@ phantom.onError = function (msg, trace) {
 
 // MARLO: request allowlist (CHG-LPRE-SEC-001). Allowed: data: URIs up to 2 MB that carry an image (not SVG, which
 // can hold script) or a font, and https with no user info, on the default port (or an explicit 443), to exactly one
-// of the allowed hosts (compared lowercased). Everything else is refused. The function is pure: the unit tests run
-// it under node.
+// of the allowed hosts (compared lowercased). Everything else is refused. The one exception to the SVG rule: a data:
+// URL that MARLO itself placed in the page (the bundled country flags, T17) and listed in allowedDataUrls, compared
+// whole. The function is pure: the unit tests run it under node.
 // BEGIN isAllowedUrl
-function isAllowedUrl (url, allowedHosts) {
+function isAllowedUrl (url, allowedHosts, trustedData) {
   if (typeof url !== 'string') return false
   if (/^data:/i.test(url)) {
-    return url.length <= 2097152 &&
-      /^data:(image\/(?!svg\+xml)[a-z0-9.+-]+|font\/[a-z0-9.+-]+|application\/(x-)?font-[a-z0-9.+-]+)[;,]/i.test(url)
+    if (url.length > 2097152) return false
+    if (/^data:(image\/(?!svg\+xml)[a-z0-9.+-]+|font\/[a-z0-9.+-]+|application\/(x-)?font-[a-z0-9.+-]+)[;,]/i.test(url)) {
+      return true
+    }
+    return !!trustedData && Object.prototype.hasOwnProperty.call(trustedData, url)
   }
   if (url.length > 2048) return false
   var match = /^https:\/\/([A-Za-z0-9.-]+)(?::443)?(?:[\/?#]|$)/i.exec(url)
@@ -99,8 +103,13 @@ var failedIds = {}
 
 page.settings.resourceTimeout = 5000
 
+var trustedData = {}
+;(options.allowedDataUrls || []).forEach(function (url) {
+  trustedData[url] = true
+})
+
 page.onResourceRequested = function (requestData, networkRequest) {
-  if (!isAllowedUrl(requestData.url, options.allowedHosts)) {
+  if (!isAllowedUrl(requestData.url, options.allowedHosts, trustedData)) {
     blockedIds[requestData.id] = true
     blocked++
     networkRequest.abort()

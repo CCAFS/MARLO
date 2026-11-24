@@ -189,8 +189,12 @@ public class LocalPdfReportServiceTest {
     for (int i = 0; i < names.length; i++) {
       byte[] pdf = service.render(fixturePayload(names[i]), LocalPdfReportService.DOWNLOAD_DEADLINE_MS);
       assertTrue(new String(pdf, StandardCharsets.ISO_8859_1).startsWith("%PDF"));
+      String expected = resource("/pdf/expected-html/" + names[i] + ".html");
+      String sent = lastHtml(fake);
       assertEquals(names[i] + ": the HTML PhantomJS gets must be byte-identical to Handlebars.js's (and the "
-        + "sanitizer must leave it alone)", resource("/pdf/expected-html/" + names[i] + ".html"), lastHtml(fake));
+        + "sanitizer must leave it alone), except that the bucket images are inlined (T17)",
+        PdfImageBundle.shared().inline(expected).html(), sent);
+      assertFalse(names[i] + ": no render may read the template image bucket", sent.contains(PdfImageBundle.HOST));
       JsonNode options = sentTo(fake, fake.started().get(i)).get("options");
       assertEquals("the payload's own options reach html-pdf's script", "A4", options.get("format").asText());
     }
@@ -234,7 +238,7 @@ public class LocalPdfReportServiceTest {
     assertTrue(service.render(minimal, 20000L).length > 0);
     assertTrue(lastHtml(fake), lastHtml(fake).contains("<p>Hello World</p>"));
     JsonNode options = sentTo(fake, fake.started().get(0)).get("options");
-    assertEquals(options.toString(), 3, options.size());
+    assertEquals(options.toString(), 4, options.size());
     assertTrue(options.has("filename") && options.has("allowedHosts") && options.get("timeout").asInt() > 1
       && options.get("timeout").asInt() <= 20500);
   }

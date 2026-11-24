@@ -160,9 +160,11 @@ public class PhantomJsRendererTest {
       String confPath = env.substring(env.indexOf("FONTCONFIG_FILE=") + "FONTCONFIG_FILE=".length());
       support = Path.of(confPath.substring(0, confPath.indexOf('\n'))).getParent();
       fonts = support.resolve("fonts");
-      assertTrue(Files.isRegularFile(fonts.resolve("DejaVuSans.ttf")));
-      assertTrue(Files.isRegularFile(fonts.resolve("DejaVuSans-Bold.ttf")));
-      assertEquals(2, fonts.toFile().list().length);
+      java.util.Set<String> extracted = new java.util.TreeSet<String>(Arrays.asList(fonts.toFile().list()));
+      assertEquals("the six fonts of fonts-dejavu-core: Sans, Serif and Mono, regular and bold",
+        new java.util.TreeSet<String>(Arrays.asList("DejaVuSans.ttf", "DejaVuSans-Bold.ttf", "DejaVuSerif.ttf",
+          "DejaVuSerif-Bold.ttf", "DejaVuSansMono.ttf", "DejaVuSansMono-Bold.ttf")), extracted);
+      assertEquals(extracted, new java.util.TreeSet<String>(PhantomJsRenderer.FONT_FILES));
 
       // The rule files are the bundled set, extracted whole, and none adds a font or cache directory.
       Path rules = support.resolve("conf.d");
@@ -269,6 +271,51 @@ public class PhantomJsRendererTest {
       assertTrue(Files.isRegularFile(support.resolve("fonts/DejaVuSans-Bold.ttf")));
     } finally {
       renderer.close();
+    }
+  }
+
+  @Test
+  public void aSupportDirectoryMissingAnyOneOfTheSixFontsIsRebuilt() throws Exception {
+    FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
+    PhantomJsRenderer renderer = rendererFor(fake);
+    try {
+      int render = 0;
+      for (String font : PhantomJsRenderer.FONT_FILES) {
+        renderer.render("<p>x</p>", options(), deadlineIn(20000L));
+        String env = fake.recorded("env", fake.started().get(render++));
+        String confPath = env.substring(env.indexOf("FONTCONFIG_FILE=") + "FONTCONFIG_FILE=".length());
+        Path support = Path.of(confPath.substring(0, confPath.indexOf('\n'))).getParent();
+        Files.delete(support.resolve("fonts").resolve(font));
+        renderer.render("<p>y</p>", options(), deadlineIn(20000L));
+        String again = fake.recorded("env", fake.started().get(render++));
+        String conf2 = again.substring(again.indexOf("FONTCONFIG_FILE=") + "FONTCONFIG_FILE=".length());
+        Path rebuilt = Path.of(conf2.substring(0, conf2.indexOf('\n'))).getParent();
+        assertTrue(font + " must be back", Files.isRegularFile(rebuilt.resolve("fonts").resolve(font)));
+      }
+    } finally {
+      renderer.close();
+    }
+  }
+
+  @Test
+  public void theBundledFontsAreTheBytesOfDebiansFontsDejavuCore237() throws Exception {
+    String[][] expected = {
+      {"DejaVuSans.ttf", "abdc775b21b1bc470d50c97e790d276f2054b7504e56e5bd3e64f48d68582322"},
+      {"DejaVuSans-Bold.ttf", "0d977336a6d5fba34eab8e3199eb218327161b5143749f802982c2bc34df0c96"},
+      {"DejaVuSerif.ttf", "13e61509f5c81d7c3132810f4f903e3523df89c802bf6e0674621e8f659cdfe1"},
+      {"DejaVuSerif-Bold.ttf", "e2fd85eba2de65ac270d1cdb1685e252eb827f600850cf62af2d20c41b22e945"},
+      {"DejaVuSansMono.ttf", "0f5db4f1749979d961019838b160bec74abdf7f9eca69553fe1aa856bbff49a4"},
+      {"DejaVuSansMono-Bold.ttf", "2964f6dac8e6e9d71613928340f17bf868e9ea51692cca333c79e74962f02233"}};
+    for (String[] font : expected) {
+      byte[] bytes;
+      try (InputStream in = PhantomJsRenderer.class.getResourceAsStream("/pdf/fonts/" + font[0])) {
+        bytes = in.readAllBytes();
+      }
+      StringBuilder hex = new StringBuilder();
+      for (byte b : java.security.MessageDigest.getInstance("SHA-256").digest(bytes)) {
+        hex.append(String.format("%02x", b));
+      }
+      assertEquals(font[0], font[1], hex.toString());
     }
   }
 
@@ -670,7 +717,7 @@ public class PhantomJsRendererTest {
   public void theJavaDataRuleMatchesThePageScriptRule() throws Exception {
     for (Object[] row : URL_CASES) {
       String url = (String) row[0];
-      if (url.toLowerCase().startsWith("data:") && url.length() < 1000) {
+      if (url.toLowerCase().startsWith("data:") && url.length() < 1000 && !url.equals(TRUSTED_SVG)) {
         assertEquals("isAllowedDataUrl(" + url + ")", row[1], PhantomJsRenderer.isAllowedDataUrl(url));
       }
     }
@@ -703,10 +750,56 @@ public class PhantomJsRendererTest {
     assertEquals(0, PhantomJsRenderer.countPages(new byte[0]));
   }
 
+  // ---- template images shipped inside MARLO (CHG-LPRE-T17) -------------------------------------------------------
+
+  @Test
+  public void bucketImagesAreInlinedAfterTheSanitizerAndOnlyTheirSvgDataUrlsAreTrusted() throws Exception {
+    FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
+    PhantomJsRenderer renderer = rendererFor(fake);
+    String user = "https://prms-file-storage.s3.amazonaws.com/images/a.png";
+    String html = "<html><body><img src=\"https://" + PdfImageBundle.HOST + "/flags/ke.svg\">"
+      + "<img src=\"https://" + PdfImageBundle.HOST + "/Africa.png\"><img src=\"" + user + "\">"
+      + "<img src=\"https://" + PdfImageBundle.HOST + "/flags/zz99.svg\" onerror=\"x()\"></body></html>";
+    try {
+      renderer.render(html, options(), deadlineIn(20000L));
+    } finally {
+      renderer.close();
+    }
+    JsonNode sent = JSON.readTree(fake.recorded("stdin", fake.started().get(0)));
+    String sentHtml = sent.get("html").asText();
+    assertFalse("the bucket is never requested", sentHtml.contains(PdfImageBundle.HOST));
+    assertFalse("the sanitizer still ran on the markup", sentHtml.contains("onerror"));
+    assertTrue("user images keep being fetched", sentHtml.contains(user));
+    assertTrue(sentHtml.contains("data:image/png;base64,iVBOR"));
+    JsonNode trusted = sent.get("options").get("allowedDataUrls");
+    assertEquals("only the SVG that was inlined is trusted, not the PNG or the unavailable one", 1, trusted.size());
+    assertTrue(trusted.get(0).asText().startsWith("data:image/svg+xml;base64,"));
+    assertTrue(sentHtml.contains(trusted.get(0).asText()));
+    assertEquals(Arrays.asList("prms-file-storage.s3.amazonaws.com"), PhantomJsRenderer.ALLOWED_HOSTS);
+  }
+
+  @Test
+  public void aPageWithoutBucketUrlsReachesPhantomJsUnchangedWithNoTrustedDataUrls() throws Exception {
+    FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
+    PhantomJsRenderer renderer = rendererFor(fake);
+    String html = "<html><body><p>plain</p></body></html>";
+    try {
+      renderer.render(html, options(), deadlineIn(20000L));
+    } finally {
+      renderer.close();
+    }
+    JsonNode sent = JSON.readTree(fake.recorded("stdin", fake.started().get(0)));
+    assertEquals(html, sent.get("html").asText());
+    assertEquals(0, sent.get("options").get("allowedDataUrls").size());
+  }
+
   // ---- the page script's allowlist (CHG-LPRE-SEC-001) ----------------------------------------------------------
 
   private static final String HOST = "marlo-pdf-resources-dev.s3.us-east-1.amazonaws.com";
   private static final String OTHER_HOST = "prms-file-storage.s3.amazonaws.com";
+  /** An SVG data URL the renderer placed in the page (T17): the one SVG the page script lets through. */
+  private static final String TRUSTED_SVG =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciLz4=";
 
   /** Each row: the URL and whether the page script must let it through, from the SEC-001 text. */
   private static final Object[][] URL_CASES = {
@@ -723,6 +816,10 @@ public class PhantomJsRendererTest {
     {"data:application/font-woff;base64,d09G", true},
     {"data:application/x-font-ttf;base64,AAEA", true},
     {"data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=", false},
+    {TRUSTED_SVG, true},
+    {TRUSTED_SVG + "A", false},
+    {TRUSTED_SVG.toUpperCase(), false},
+    {"data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoMSk+", false},
     {"DATA:IMAGE/SVG+XML,<svg onload=alert(1)>", false},
     {"data:text/html,<script>alert(1)</script>", false},
     {"data:text/html;base64,PHNjcmlwdD4=", false},
@@ -773,8 +870,9 @@ public class PhantomJsRendererTest {
     assertTrue("the markers around isAllowedUrl are missing", begin > 0 && end > begin);
     Path module = temp.newFile("predicate.js").toPath();
     Files.write(module, (script.substring(begin, end) + "\nvar cases = JSON.parse(require('fs').readFileSync(0, "
-      + "'utf8'));\nvar hosts = ['" + HOST + "', '" + OTHER_HOST + "'];\nconsole.log(JSON.stringify(cases.map("
-      + "function (url) { return isAllowedUrl(url, hosts); })));\n").getBytes(StandardCharsets.UTF_8));
+      + "'utf8'));\nvar hosts = ['" + HOST + "', '" + OTHER_HOST + "'];\nvar trusted = {};\ntrusted['" + TRUSTED_SVG
+      + "'] = true;\nconsole.log(JSON.stringify(cases.map("
+      + "function (url) { return isAllowedUrl(url, hosts, trusted); })));\n").getBytes(StandardCharsets.UTF_8));
     List<String> urls = new java.util.ArrayList<String>();
     for (Object[] row : URL_CASES) {
       urls.add((String) row[0]);

@@ -414,9 +414,9 @@ compare with the flag off.
 - **Done when:** a MARLO build with no configuration renders with PhantomJS in `tomcat:9.0-jdk17-temurin` → PARITY 6/6 (Leader).
 
 ### CHG-LPRE-T17 — Template images shipped inside MARLO
-- **Status:** [ ]
+- **Status:** [x]
 - **Depends on:** T16
 - **Requirements:** Decision Log "Everything from MARLO", SEC-001 · **Design:** §18.1
-- **Scope:** enumerate every `marlo-pdf-resources-dev` object the three templates and the summary actions reference (static names plus generated ones: SDG icons, country flags, DAC markers, innovation icons…); store them under `src/main/resources/pdf/images/` with a manifest (source URL, SHA-256); before PhantomJS, replace each such URL in the HTML with a `data:` URI of the bundled bytes (identical bytes → parity); an unknown object of that bucket is logged (WARN, name only) and left as is. The page-script allowlist keeps only `prms-file-storage` (user images, pending owner decision).
+- **Scope:** enumerate every `marlo-pdf-resources-dev` object the three templates and the summary actions reference (static names plus generated ones: SDG icons, country flags, DAC markers, innovation icons…); store them under `src/main/resources/pdf/images/` with a manifest (source URL, SHA-256); before PhantomJS, replace each such URL in the HTML with a `data:` URI of the bundled bytes (identical bytes → parity); an unknown object of that bucket is logged (WARN, name only) and replaced by an empty PNG `data:` URI — it renders as a broken image like production's 403, without any request and without counting as a SEC-001 rejection (*amended at T17 review*). Also bundle DejaVu Serif, Serif-Bold, SansMono and SansMono-Bold (*added at T17 review: production falls back to Serif/Mono where no `font-family` applies*). The page-script allowlist keeps only `prms-file-storage` (user images, pending owner decision).
 - **Tests:** manifest completeness against the references found; URL rewriting; byte identity; parity re-measured on the six cases.
 - **Done when:** PARITY 6/6 with the bucket unreachable (Docker network without that host) except user images.
