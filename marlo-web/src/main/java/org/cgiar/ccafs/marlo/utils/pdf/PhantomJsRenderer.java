@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -447,6 +448,9 @@ final class PhantomJsRenderer {
 
   private final EmbeddedPhantomJs embedded;
 
+  /** Reads one variable of this JVM's own environment (System.getenv in production); only ever read, never changed. */
+  private final Function<String, String> hostEnvironment;
+
   private final PdfImageBundle images = PdfImageBundle.shared();
 
   /** Set when the shipped build could not be executed from the temp directory: later calls fail without extracting. */
@@ -470,8 +474,20 @@ final class PhantomJsRenderer {
 
   /** Test seam: as above, with the shipped build (and the platform it is judged against) supplied. */
   PhantomJsRenderer(String binaryPath, EmbeddedPhantomJs embedded) {
+    this(binaryPath, embedded, new Function<String, String>() {
+
+      @Override
+      public String apply(String name) {
+        return System.getenv(name);
+      }
+    });
+  }
+
+  /** Test seam: as above, with the JVM's own environment supplied (only SystemRoot is read, on Windows). */
+  PhantomJsRenderer(String binaryPath, EmbeddedPhantomJs embedded, Function<String, String> hostEnvironment) {
     this.binary = binaryPath == null ? "" : binaryPath.trim();
     this.embedded = embedded;
+    this.hostEnvironment = hostEnvironment;
   }
 
   /** True when no path is configured and the shipped build applies to this platform (CHG-LPRE-T16). */
@@ -611,7 +627,9 @@ final class PhantomJsRenderer {
       byte[] stdin = appendNewline(JSON.writeValueAsBytes(config));
 
       Map<String, String> environment = baseEnvironment(renderDir);
-      environment.put("FONTCONFIG_FILE", supportDir.resolve("fonts.conf").toString());
+      if (usesFontconfig()) {
+        environment.put("FONTCONFIG_FILE", supportDir.resolve("fonts.conf").toString());
+      }
       List<String> command = Arrays.asList(executable, "--local-url-access=false",
         supportDir.resolve("render-page.js").toString());
       Finished finished = run(command, renderDir, environment, stdin, deadlineNanos);
@@ -656,12 +674,24 @@ final class PhantomJsRenderer {
    * @return how many were removed.
    */
   static int sweepStaleSupportDirectories(Path tmp, long beforeMillis, String userName) {
+    return sweepStaleSupportDirectories(tmp, beforeMillis, userName, hostEnvironmentStyle());
+  }
+
+  /** The environment style of the platform this JVM runs on; POSIX when no build ships for it. */
+  private static PhantomJsBuild.EnvironmentStyle hostEnvironmentStyle() {
+    return PhantomJsBuild.forPlatform(System.getProperty("os.name", ""), System.getProperty("os.arch", ""))
+      .map(PhantomJsBuild::environmentStyle).orElse(PhantomJsBuild.EnvironmentStyle.POSIX);
+  }
+
+  /** Test seam: as above, with the platform's environment style supplied (it decides how owners are compared). */
+  static int sweepStaleSupportDirectories(Path tmp, long beforeMillis, String userName,
+    PhantomJsBuild.EnvironmentStyle style) {
     int removed = 0;
     long markerlessBefore = Math.min(beforeMillis,
       System.currentTimeMillis() - TimeUnit.HOURS.toMillis(MARKERLESS_MAX_AGE_HOURS));
     try (DirectoryStream<Path> candidates = Files.newDirectoryStream(tmp, SUPPORT_PREFIX + "*")) {
       for (Path candidate : candidates) {
-        if (sweepIfStale(candidate, beforeMillis, markerlessBefore, userName)) {
+        if (sweepIfStale(candidate, beforeMillis, markerlessBefore, userName, style)) {
           removed++;
         }
       }
@@ -674,10 +704,34 @@ final class PhantomJsRenderer {
     return removed;
   }
 
-  private static boolean sweepIfStale(Path dir, long beforeMillis, long markerlessBefore, String userName) {
+  /**
+   * Whether the owner of a directory is the user this JVM runs as. On Windows a leading {@code DOMAIN\} or
+   * {@code MACHINE\} is dropped from both names first (the owner is reported with it, {@code user.name} normally
+   * without); on every other platform the two are compared exactly as they are.
+   */
+  static boolean isSameOwner(String owner, String userName, PhantomJsBuild.EnvironmentStyle style) {
+    if (style == PhantomJsBuild.EnvironmentStyle.WINDOWS) {
+      return ownerName(owner).equals(ownerName(userName));
+    }
+    return userName.equals(owner);
+  }
+
+  /**
+   * The owner's name without the {@code DOMAIN\} or {@code MACHINE\} prefix Windows puts on it, so that it compares
+   * with {@code user.name}; a name without a prefix comes back as it is.
+   */
+  static String ownerName(String owner) {
+    if (owner == null) {
+      return "";
+    }
+    return owner.substring(owner.lastIndexOf('\\') + 1);
+  }
+
+  private static boolean sweepIfStale(Path dir, long beforeMillis, long markerlessBefore, String userName,
+    PhantomJsBuild.EnvironmentStyle style) {
     try {
       if (!Files.isDirectory(dir, LinkOption.NOFOLLOW_LINKS)
-        || !userName.equals(Files.getOwner(dir, LinkOption.NOFOLLOW_LINKS).getName())) {
+        || !isSameOwner(Files.getOwner(dir, LinkOption.NOFOLLOW_LINKS).getName(), userName, style)) {
         return false;
       }
       long modified = Files.getLastModifiedTime(dir, LinkOption.NOFOLLOW_LINKS).toMillis();
@@ -859,8 +913,40 @@ final class PhantomJsRenderer {
     return new int[] {Math.max(0, root.path("blocked").asInt(0)), Math.max(0, root.path("failed").asInt(0))};
   }
 
-  private Map<String, String> baseEnvironment(Path home) {
+  /** The Windows fallback when this JVM's environment has no SystemRoot (it always has one on a real Windows). */
+  static final String DEFAULT_SYSTEM_ROOT = "C:\\Windows";
+
+  /**
+   * The environment style follows the platform MARLO runs on, whether or not a path is configured; a platform with
+   * no shipped build keeps the POSIX environment of CHG-LPRE.
+   */
+  private boolean isWindowsStyle() {
+    return embedded.build().map(b -> b.environmentStyle() == PhantomJsBuild.EnvironmentStyle.WINDOWS).orElse(false);
+  }
+
+  /** True on Linux and on a platform with no shipped build: the isolated fontconfig applies (macOS and Windows: no). */
+  private boolean usesFontconfig() {
+    return embedded.build().map(b -> b.fontMode() == PhantomJsBuild.FontMode.LINUX_FONTCONFIG).orElse(true);
+  }
+
+  /** The environment of every child process, in the style of the platform this JVM runs on. */
+  Map<String, String> baseEnvironment(Path home) {
     Map<String, String> environment = new LinkedHashMap<String, String>();
+    if (isWindowsStyle()) {
+      String systemRoot = hostEnvironment.apply("SystemRoot");
+      if (systemRoot == null || systemRoot.trim().isEmpty()) {
+        systemRoot = DEFAULT_SYSTEM_ROOT;
+      }
+      // The Windows loader needs SystemRoot; PATH is the system directory only; NUL is OpenSSL's empty configuration.
+      environment.put("SystemRoot", systemRoot);
+      environment.put("PATH", systemRoot + "\\System32");
+      environment.put("OPENSSL_CONF", "NUL");
+      environment.put("USERPROFILE", home.toString());
+      environment.put("TEMP", home.toString());
+      environment.put("TMP", home.toString());
+      environment.put("LANG", "C.UTF-8");
+      return environment;
+    }
     environment.put("PATH", "/usr/bin:/bin");
     // PhantomJS's bundled OpenSSL cannot parse the openssl.cnf of current Linux distributions and exits at start-up.
     environment.put("OPENSSL_CONF", "/dev/null");

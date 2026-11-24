@@ -99,7 +99,7 @@
   Linux x86_64 row still yields the CHG-LPRE resource byte for byte, and Checkstyle delta is 0.
 
 ### CHG-PPE-T03 — Child-process environment per platform, Windows sweep
-- **Status:** [ ] · **Size:** S · **Depends on:** T02 · **Module:** marlo-web
+- **Status:** [x] · **Size:** S · **Depends on:** T02 · **Module:** marlo-web
 - **Requirements:** FN-004 (Windows: "a later startup sweeps stale support directories as on Linux"), SEC-002
   (protections unchanged on every platform), FN-003 ("MUST NOT change the environment of any other process") ·
   **Design:** DD-4, DD-6, P-9, P-13, P-16, P-17
@@ -135,7 +135,7 @@
 - **Requirements:** FN-002 (all three scenarios of "Minimal Linux": no font libraries; host libraries present
   "BUT it must NOT behave differently from CHG-LPRE"; old glibc), FN-003 ("AND IT MUST NOT change the library path
   of the JVM or of any process other than the PhantomJS it starts"), FN-007 (old-glibc case), SEC-001
-  ("Tampered file" scenario, libraries), OPS-002 (library mode in the startup line) · **Design:** DD-2, §11, §13,
+  ("Tampered file" scenario, libraries), OPS-002 (library mode and platform — `os.name`/`os.arch` — in the startup line; platform added by the 2026-11-24 amendment) · **Design:** DD-2, §11, §13,
   P-3, P-4, P-5, P-13
 - **Files touched:** `resources/pdf/phantomjs/linux-libs/` (7 `*.so*.gz` from Debian 12 per spike S-2,
   `SHA256SUMS`, `PROVENANCE.txt` with package names and versions, the Debian `copyright` files);
@@ -269,7 +269,7 @@ Not applicable — no UI.
 | Scenario / clause | Task |
 |---|---|
 | Supported platform, no configuration — THEN shipped build, 200 | T02 (selection), T06 (runs) |
-| — AND startup log names platform, build, version | T02 (build), T04 (library mode) |
+| — AND startup log names platform, build, version | T02 (build), T04 (library mode, platform) |
 | — BUT must NOT read any property or variable to find the binary | T02 |
 | — AND IT MUST pick the build from OS and arch together | T02 (matrix) |
 | Override set | T02 |

@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,7 +55,27 @@ public class PhantomJsRendererTest {
   public TemporaryFolder temp = new TemporaryFolder();
 
   private PhantomJsRenderer rendererFor(FakePhantomJs fake) {
-    return new PhantomJsRenderer(fake.path());
+    // Pinned to Linux, whatever host runs the tests: the environment follows the host platform (CHG-PPE-T03).
+    return new PhantomJsRenderer(fake.path(), embeddedFor("Linux", "amd64"));
+  }
+
+  private static EmbeddedPhantomJs embeddedFor(String osName, String osArch) {
+    return new EmbeddedPhantomJs(osName, osArch, "none", null);
+  }
+
+  private static Function<String, String> hostEnvironment(final String systemRoot) {
+    return new Function<String, String>() {
+
+      @Override
+      public String apply(String name) {
+        return "SystemRoot".equals(name) ? systemRoot : null;
+      }
+    };
+  }
+
+  private Map<String, String> environmentOf(String osName, String osArch, String systemRoot) {
+    Path home = Path.of("render-home");
+    return new PhantomJsRenderer("", embeddedFor(osName, osArch), hostEnvironment(systemRoot)).baseEnvironment(home);
   }
 
   private static long deadlineIn(long millis) {
@@ -920,5 +941,128 @@ public class PhantomJsRendererTest {
     JsonNode results = JSON.readTree(out);
     assertEquals(URL_CASES.length, results.size());
     return results;
+  }
+
+  @Test
+  public void theLinuxEnvironmentIsTodaysKeysAndValues() {
+    Map<String, String> env = environmentOf("Linux", "amd64", null);
+    Map<String, String> expected = new LinkedHashMap<String, String>();
+    expected.put("PATH", "/usr/bin:/bin");
+    expected.put("OPENSSL_CONF", "/dev/null");
+    expected.put("HOME", "render-home");
+    expected.put("TMPDIR", "render-home");
+    expected.put("LANG", "C.UTF-8");
+    assertEquals(expected, env);
+  }
+
+  @Test
+  public void theMacosEnvironmentIsTheLinuxOneAndRenderingAddsNoFontconfigFile() throws Exception {
+    assertEquals(environmentOf("Linux", "amd64", null), environmentOf("Mac OS X", "aarch64", null));
+    assertEquals(environmentOf("Linux", "amd64", null), environmentOf("Mac OS X", "x86_64", null));
+    FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
+    PhantomJsRenderer renderer = new PhantomJsRenderer(fake.path(), embeddedFor("Mac OS X", "aarch64"));
+    try {
+      renderer.render("<html><body>x</body></html>", options(), deadlineIn(20000L));
+      String env = fake.recorded("env", fake.started().get(0));
+      assertFalse(env, env.contains("FONTCONFIG_FILE"));
+      assertTrue(env, env.contains("OPENSSL_CONF=/dev/null"));
+    } finally {
+      renderer.close();
+    }
+  }
+
+  @Test
+  public void theWindowsEnvironmentHasTheWindowsKeysAndValuesAndNothingPosix() {
+    Map<String, String> env = environmentOf("Windows 11", "amd64", "D:\\WinRoot");
+    Map<String, String> expected = new LinkedHashMap<String, String>();
+    expected.put("SystemRoot", "D:\\WinRoot");
+    expected.put("PATH", "D:\\WinRoot\\System32");
+    expected.put("OPENSSL_CONF", "NUL");
+    expected.put("USERPROFILE", "render-home");
+    expected.put("TEMP", "render-home");
+    expected.put("TMP", "render-home");
+    expected.put("LANG", "C.UTF-8");
+    assertEquals(expected, env);
+    assertFalse(env.containsKey("FONTCONFIG_FILE"));
+    assertFalse(env.containsKey("HOME"));
+    assertFalse(env.containsKey("TMPDIR"));
+    for (String value : env.values()) {
+      assertFalse(value, value.contains("/dev/null") || value.contains("/usr/bin"));
+    }
+  }
+
+  @Test
+  public void windowsFallsBackToCWindowsWhenTheJvmHasNoSystemRoot() {
+    for (String missing : new String[] {null, "", "  "}) {
+      Map<String, String> env = environmentOf("Windows 10", "x86", missing);
+      assertEquals("C:\\Windows", env.get("SystemRoot"));
+      assertEquals("C:\\Windows\\System32", env.get("PATH"));
+    }
+  }
+
+  @Test
+  public void aConfiguredPathDoesNotChangeTheEnvironmentStyleAndAnUnknownPlatformKeepsTheLinuxOne() {
+    PhantomJsRenderer configured =
+      new PhantomJsRenderer("C:\\tools\\phantomjs.exe", embeddedFor("Windows 11", "amd64"), hostEnvironment("C:\\W"));
+    assertEquals("NUL", configured.baseEnvironment(Path.of("h")).get("OPENSSL_CONF"));
+    assertEquals(environmentOf("Linux", "amd64", null), environmentOf("FreeBSD", "amd64", null));
+  }
+
+  @Test
+  public void theOwnerNameLosesItsDomainOrMachinePrefix() {
+    assertEquals("kenji", PhantomJsRenderer.ownerName("kenji"));
+    assertEquals("kenji", PhantomJsRenderer.ownerName("CGIAR\\kenji"));
+    assertEquals("kenji", PhantomJsRenderer.ownerName("MACHINE-01\\kenji"));
+    assertEquals("other", PhantomJsRenderer.ownerName("CGIAR\\other"));
+    assertEquals("", PhantomJsRenderer.ownerName(null));
+    assertFalse("kenji".equals(PhantomJsRenderer.ownerName("CGIAR\\other")));
+  }
+
+  @Test
+  public void onWindowsTheDomainPrefixIsIgnoredOnBothSidesOfTheOwnerComparison() {
+    PhantomJsBuild.EnvironmentStyle windows = PhantomJsBuild.EnvironmentStyle.WINDOWS;
+    assertTrue(PhantomJsRenderer.isSameOwner("DOMAIN\\kenji", "kenji", windows));
+    assertTrue(PhantomJsRenderer.isSameOwner("kenji", "kenji", windows));
+    assertTrue(PhantomJsRenderer.isSameOwner("DOMAIN\\kenji", "DOMAIN\\kenji", windows));
+    assertFalse(PhantomJsRenderer.isSameOwner("DOMAIN\\other", "kenji", windows));
+  }
+
+  @Test
+  public void onPosixTheOwnerIsComparedExactlyAsItIsReported() {
+    PhantomJsBuild.EnvironmentStyle posix = PhantomJsBuild.EnvironmentStyle.POSIX;
+    assertTrue("winbind: both names carry the domain", PhantomJsRenderer.isSameOwner("DOMAIN\\kenji", "DOMAIN\\kenji",
+      posix));
+    assertTrue(PhantomJsRenderer.isSameOwner("kenji", "kenji", posix));
+    assertFalse(PhantomJsRenderer.isSameOwner("DOMAIN\\kenji", "kenji", posix));
+    assertFalse("another domain's kenji is not this user", PhantomJsRenderer.isSameOwner("OTHERDOMAIN\\kenji",
+      "kenji", posix));
+  }
+
+  @Test
+  public void theArgumentsAreTheSameOnLinuxAndMacos() throws Exception {
+    String[] platforms = {"Linux", "Mac OS X"};
+    String first = null;
+    for (String platform : platforms) {
+      FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
+      PhantomJsRenderer renderer =
+        new PhantomJsRenderer(fake.path(), embeddedFor(platform, "x86_64"));
+      try {
+        renderer.render("<html><body>x</body></html>", options(), deadlineIn(20000L));
+        String[] args = fake.recorded("args", fake.started().get(0)).trim().split(" ");
+        assertEquals(2, args.length);
+        assertEquals("--local-url-access=false", args[0]);
+        assertTrue(args[1], args[1].endsWith("render-page.js"));
+        String stdin = fake.recorded("stdin", fake.started().get(0));
+        assertTrue(stdin.contains("\"allowedHosts\""));
+        String shape = args[0] + "|" + JSON.readTree(stdin).path("options").path("allowedHosts");
+        if (first == null) {
+          first = shape;
+        } else {
+          assertEquals(first, shape);
+        }
+      } finally {
+        renderer.close();
+      }
+    }
   }
 }

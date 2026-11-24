@@ -142,3 +142,79 @@ Implementer therefore has no checkpoint bound; a long attempt reports only at co
 **Budget running totals (design §18):** tasks 2/6 · Java LOC 83 + 182 changed (+256 new) ≈ 520/~650 (main and tests;
 APConfig counted as 3) · review rounds 3/9 (T01 1, T02 2: one MISMATCH, one PASS) · WAR growth 35.2 MB / cap 60 MB.
 **Note:** LOC is already at 80 % of the budget after 2 of 6 tasks.
+- Decision (owner, 2026-11-24, at the T02 gate): T02 committed as `4cae4e4f6d`; the two spec-tension amendments
+  approved and applied — FN-007 "32-bit Linux or macOS" (`requirements.md` §3 and §6), OPS-002 platform clause
+  assigned to T04 (`tasks.md` T04 requirements line and coverage table; `design.md` §11 example). Recorded in the
+  `requirements.md` Decision Log with its closure sweep. Carried as named conformance checks into the T03 and T04
+  Reviewer briefs.
+
+### CHG-PPE-T03 — Child-process environment per platform, Windows sweep
+
+| Field | Value |
+|---|---|
+| Final status | **PASS** (attempt 2) |
+| Date | 2026-11-24 |
+| Requirements covered | FN-003, FN-004 (Windows environment, sweep), SEC-002 · DD-4, DD-6 |
+| Skills / effort | `marlo-verify` (task's `marlo-commit` dropped: the Leader commits) · effort `medium`, `high` for attempt 2 |
+| spawns | Implementer 21 calls, 127,700 tokens, ended complete (attempt 1); same Implementer resumed by message, 4 calls, 134,375 tokens cumulative, ended complete (attempt 2); Reviewer 17 calls, 71,612 tokens, ended complete (attempt 1); Reviewer 5 calls, 53,192 tokens, ended complete (attempt 2) |
+
+**Decision (Leader, recorded before the spawn):** the environment style and the `FONTCONFIG_FILE` rule follow the host
+platform (`PhantomJsBuild.forPlatform(os.name, os.arch)`), whether or not `pdf.phantomjs.path` is set; a host with no
+build keeps today's POSIX environment with `FONTCONFIG_FILE`. Reason: an override on Windows with the POSIX
+environment (`PATH=/usr/bin:/bin`, `OPENSSL_CONF=/dev/null`) could not work; DD-4 is silent on overrides.
+
+**Attempt 1 — Reviewer PASS, reopened by the owner**
+- Files changed: `utils/pdf/PhantomJsRenderer.java`, `PhantomJsRendererTest.java`.
+- Implementer verification: `PhantomJsRendererTest` 43/0; pdf package 162 run, 0 failures, 7 skipped; clean recompile
+  2430/1073/154; Checkstyle delta 0; hygiene ok. SystemRoot fallback `C:\Windows` for null/empty/blank.
+- Falsifier executed (WINDOWS given the POSIX style) → 3 of 43 failed: `expected:<[NUL]> but was:<[/dev/null]>`;
+  `theWindowsEnvironmentHasTheWindowsKeysAndValuesAndNothingPosix: expected:<{SystemRoot=D:\WinRoot,
+  PATH=D:\WinRoot\System32, OPENSSL_CONF=NUL, ...}> but was:<{PATH=/usr/bin:/bin, OPENSSL_CONF=/dev/null,
+  HOME=render-home, TMPDIR=render-home, LANG=C.UTF-8}>`; `windowsFallsBackToCWindowsWhenTheJvmHasNoSystemRoot:
+  expected:<C:\Windows> but was:<null>`. Restored.
+- Evidence re-run (Leader-inline): **VERIFIED** — `--stat` equals `--ignore-cr-at-eol`; hygiene exit 0, no FIX or
+  REVIEW; clean recompile 2430/1073/154; Checkstyle `HEAD=0 working tree=0 delta=0`; pdf package 162/0/7.
+- Reviewer: **PASS**, with a reliability/risk advisory: the owner prefix was stripped on every OS and on the owner
+  side only, while DD-6 says "on Windows" (a domain-joined Linux `DOMAIN\user` would stop matching; `OTHERDOMAIN\kenji`
+  would match `kenji`).
+- **Owner decision (2026-11-24, "opción b, ajústalo"):** correct it within T03 to follow DD-6 literally — counted as
+  attempt 2 (rework; Reviewer required, override e).
+
+**Attempt 2 — PASS**
+- Delivery: rework sent by `SendMessage` to the attempt-1 Implementer (effort `high`), with the Reviewer finding
+  verbatim and the attempt history ("attempt 1 stripped only the owner side, on every OS").
+- Files changed: the same two. New `isSameOwner(owner, userName, style)`: WINDOWS →
+  `ownerName(owner).equals(ownerName(userName))`; anything else → `userName.equals(owner)` (HEAD behavior). A
+  4-argument `sweepStaleSupportDirectories` overload takes the style; the 3-argument signature is unchanged.
+  `theArgumentsAreTheSameOnEveryPlatformStyle` renamed `theArgumentsAreTheSameOnLinuxAndMacos`.
+- Falsifier executed (condition changed to `if (style != null)`, so POSIX strips too) → 45 run, 1 failure:
+  `onPosixTheOwnerIsComparedExactlyAsItIsReported(...PhantomJsRendererTest) <<< FAILURE! java.lang.AssertionError`
+  (the `assertFalse(isSameOwner("DOMAIN\\kenji", "kenji", POSIX))` assertion). Restored.
+- Evidence re-run (Leader-inline): **VERIFIED** — `--stat` equals `--ignore-cr-at-eol` (2 files, +236 −6); hygiene
+  exit 0, no FIX or REVIEW; `clean-compile.sh` BUILD SUCCESS; Checkstyle `HEAD=0 working tree=0 delta=0`; pdf
+  package `Tests run: 164, Failures: 0, Errors: 0, Skipped: 7`.
+- Reviewer: **PASS** — POSIX comparison identical to HEAD (same arguments, same order); the sweep and the child
+  environment pick the same style on the same host; every owner-requested case tested; attempt-1 parts undisturbed.
+- **Not Done / Assumptions (Implementer, verbatim):** "No test drives `sweepIfStale` with a real directory owner of
+  the form `DOMAIN\user`, because this file system cannot report one. `isSameOwner` is tested directly instead." /
+  "The Windows argument sameness stays a recorded gap until T06" / "P-16 and P-17 stay UNVERIFIED until the Windows
+  run." — assumptions and recorded gaps, no owed item, no blocker.
+
+**Recorded gap (Reviewer, attempt 1):** the "arguments, allowlist and `--local-url-access=false` identical for all
+three styles" test runs Linux and macOS only; the fake PhantomJS is a `/bin/sh` script and cannot run with the Windows
+`PATH`. The property holds in the code (nothing that builds the arguments depends on the style); Windows sameness
+rests on reading the code until T06.
+
+**ADVISORY (4R, recorded only — never a task):**
+- Risk: on Windows `OTHERDOMAIN\kenji` matches `user.name=kenji` (DD-6 as written); matters only with a temp
+  directory shared between accounts — note for the T06 Windows run.
+- Reliability: the WINDOWS branch uses `equals`; a case difference makes the sweep skip (safe direction) — check with
+  P-17 in T06.
+- Readability: no test calls the 4-argument `sweepStaleSupportDirectories` overload.
+- Risk (attempt 1): `SystemRoot` goes into `PATH` unchecked; its source is the JVM's own environment.
+
+**Budget running totals (design §18) — TRIPWIRE:** tasks 3/6 · **Java LOC 757 added (T01 83 + T02 438 + T03 236),
+against a budget of about 650** — main code 303 of the estimated ~250, tests 454 of the estimated ~400 · review rounds
+5/9 (T01 1, T02 2, T03 2) · WAR growth 35.2 MB / cap 60 MB. **Budget exceeded at T03: run stopped and escalated to the
+owner before T04.** Cause: T02 and T03 needed more seams and more matrix rows than estimated, and T03's DD-6
+correction added a second round.

@@ -100,8 +100,8 @@ None added. Nothing is downloaded at runtime (NF-003): every byte comes from the
 
 ## 11. Observability
 
-The startup line (OPS-002) gains the build and the library mode, for example
-`PhantomJS available for local PDF renders, version=2.1.1, build=linux-x86_64, libraries=bundled, path=…`. The
+The startup line (OPS-002) gains the platform, the build and the library mode, for example
+`PhantomJS available for local PDF renders, version=2.1.1, platform=Linux/amd64, build=linux-x86_64, libraries=bundled, path=…`. The
 per-render INFO line is unchanged. Two new WARN lines:
 - `PhantomJS does not start with the host libraries; using the libraries shipped with MARLO` (INFO, once)
 - `PhantomJS does not start with the host libraries nor the shipped ones (glibc older than 2.36?): local PDF

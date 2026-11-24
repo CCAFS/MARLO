@@ -70,8 +70,8 @@ instalar nada externo"*.
   keeps reaching DejaVu through fontconfig as today.*
 - **CHG-PPE-FN-006** — A non-empty `pdf.phantomjs.path` MUST still override the shipped build on every platform, as
   in CHG-LPRE NF-007. The override MUST remain optional, and no supported platform MAY need it.
-- **CHG-PPE-FN-007** — On a platform with no shipped build (for example Linux ARM64, Windows ARM64 or any 32-bit
-  OS), or on a Linux x86_64 host where neither the host's libraries nor the shipped ones let PhantomJS start (no
+- **CHG-PPE-FN-007** — On a platform with no shipped build (for example Linux ARM64, Windows ARM64, or a 32-bit
+  Linux or macOS), or on a Linux x86_64 host where neither the host's libraries nor the shipped ones let PhantomJS start (no
   font libraries and glibc older than 2.36), with the flag on and no override, a render MUST fail fast with the generic 500 (CHG-LPRE SEC-002). Startup
   MUST log one line that names the platform. The render MUST NOT hang and MUST NOT fall back silently to the
   microservice.
@@ -148,7 +148,7 @@ instalar nada externo"*.
 - THEN that executable is used and the shipped build is not extracted
 
 #### Scenario: Platform with no build
-- GIVEN Linux ARM64 (or Windows ARM64, or a 32-bit OS), no override, flag on
+- GIVEN Linux ARM64 (or Windows ARM64, or a 32-bit Linux or macOS), no override, flag on
 - WHEN a summary PDF is downloaded
 - THEN the answer is the generic 500 within the deadline
 - AND startup logged one line naming the platform as unsupported
@@ -292,3 +292,12 @@ covered by unit tests only and is recorded as **not verified at runtime**.
   inline `!important` font. Closure sweep: `design.md` §13 SEC-003 bullet and DD-3 checked — neither claimed
   "any font"; the scenario "Template or payload declares its own font" is about the production templates and stays
   true.
+- 2026-11-24 — Execute-time amendments after T02 (owner-approved: "aprueba las enmiendas"), from the T02 Reviewer's
+  spec-tension advisories: (1) FN-007 and its scenario: "any 32-bit OS" → "a 32-bit Linux or macOS", matching DD-1,
+  which maps Windows `x86` to the shipped 32-bit build; (2) OPS-002's "name the platform" clause, owned by no task,
+  is assigned to T04 (which already edits the startup line); `design.md` §11 example gains `platform=…`. Closure
+  sweep, forward: `grep -nE '32-bit|OPS-002|names the platform|startup line|build='` over this folder — the FN-007
+  bullet and its scenario line, T04's requirements line, the coverage row and the §11 example were the hits that
+  carried the superseded value; all amended. `tasks.md` T01 (Windows build "32-bit, UPX-compressed PE") and DD-1
+  are consistent and unchanged. Backward: T02 is closed and its code already follows DD-1; no other document cites
+  these clauses.
