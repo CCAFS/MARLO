@@ -461,11 +461,37 @@ public class PartnerRequestReviewGuardTest {
       assertEquals(APPROVER, sent.cc);
       assertEquals(NOTIFY, sent.bcc);
       assertEquals("[MARLO] Country office(s) verification - Approved ACR - Acme Institute", sent.subject);
-      assertTrue(sent.body, sent.body.contains("Kenya, Ghana"));
+      assertFalse("Ghana was already there, so it is not announced as added", sent.body.contains("Kenya, Ghana"));
+      assertTrue(sent.body, sent.body.contains("as you requested:</p><p style=\"margin:0 0 16px 0;padding:12px 16px;"
+        + "border-left:3px solid #0B7AA3;background-color:#FFFFFF;word-break:break-word;overflow-wrap:anywhere;\">"
+        + "Kenya</p>"));
+      assertTrue(sent.body, sent.body.contains("already registered in MARLO, so no change was needed:</p><p style=\""
+        + "margin:0 0 16px 0;padding:12px 16px;border-left:3px solid #D9D9D9;background-color:#FFFFFF;"
+        + "word-break:break-word;overflow-wrap:anywhere;\">Ghana</p>"));
       assertFalse("the refused request's country is not announced", sent.body.contains("Peru"));
     }
     assertTrue(first.body, first.body.contains("Dear Ana,"));
     assertTrue(second.body, second.body.contains("Dear Bruno,"));
+  }
+
+  @Test
+  public void testAcceptOfficesThatAddsNothingSaysAlreadyRegisteredInsteadOfApproved() {
+    PartnerRequest skipped = request(32L, this.unit, user(12L, "Bruno", "bruno@unit.test"), "Ghana", "x");
+    this.manager.answers.put("acceptOfficeRequests",
+      args -> Arrays.asList(new PartnerRequestOutcome(32L, Status.SKIPPED_EXISTING, skipped, this.institution)));
+    DrivenAction action = this.action("POST");
+    action.setCountryOfficePOJO(officeSelection(this.institution, "32"));
+
+    assertEquals("success", action.addCountryOffices());
+
+    assertEquals("skippedExisting", action.getOutcome());
+    assertEquals(1, this.mail.sent.size());
+    Sent sent = this.mail.sent.get(0);
+    assertEquals("bruno@unit.test", sent.to);
+    assertEquals("[MARLO] Country office(s) verification - Already registered ACR - Acme Institute", sent.subject);
+    assertTrue(sent.body, sent.body.contains("were already registered in MARLO, so no change was needed:"));
+    assertTrue(sent.body, sent.body.contains(">Ghana</p>"));
+    assertFalse("nothing was added, so the email must not say it was", sent.body.contains("We have added"));
   }
 
   @Test

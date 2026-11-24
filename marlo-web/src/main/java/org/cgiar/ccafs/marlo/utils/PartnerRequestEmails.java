@@ -71,9 +71,19 @@ public final class PartnerRequestEmails {
    */
   private static Email build(TextProvider texts, String assetsUrl, String subjectKey, String[] subjectArgs,
     String dearName, String bodyKey, String... bodyArgs) {
+    return compose(texts, assetsUrl, subjectKey, subjectArgs, dearName,
+      texts.getText(bodyKey, escapeAll(bodyArgs)));
+  }
+
+  /**
+   * Wraps a body that is already built, with its arguments already escaped, between the greeting and the sign-off,
+   * inside the shell.
+   */
+  private static Email compose(TextProvider texts, String assetsUrl, String subjectKey, String[] subjectArgs,
+    String dearName, String content) {
     StringBuilder body = new StringBuilder();
     body.append(texts.getText("email.role.dear", new String[] {escape(dearName)}));
-    body.append(texts.getText(bodyKey, escapeAll(bodyArgs)));
+    body.append(content);
     body.append(texts.getText("email.role.bye"));
     String subject = texts.getText(subjectKey, plainAll(subjectArgs));
     return new Email(subject, EmailLayout.wrap(texts, assetsUrl, body.toString()));
@@ -81,6 +91,14 @@ public final class PartnerRequestEmails {
 
   private static String escape(String value) {
     return value == null ? "" : StringEscapeUtils.escapeHtml4(value);
+  }
+
+  /**
+   * A text typed in a textarea, escaped, with its line breaks kept as {@code <br>}: an email client collapses a bare
+   * line break, so a justification written in paragraphs would otherwise arrive as one block.
+   */
+  static String escapeMultiline(String value) {
+    return value == null ? "" : escape(value.trim()).replaceAll("\\r\\n|\\r|\\n", "<br>");
   }
 
   private static String[] escapeAll(String[] values) {
@@ -125,21 +143,41 @@ public final class PartnerRequestEmails {
       orDefault(acronym, notProvided), type, country, orDefault(website, notProvided), source, reviewUrl);
   }
 
-  /** The answer to the requester of an accepted country office. */
+  /**
+   * The answer to the requester of accepted country offices. An accept closes a request whose country the
+   * institution already had without adding it, so the email names the added countries and the ones that were
+   * already registered apart; when nothing was added it says so in its subject and body instead of "Approved".
+   *
+   * @param addedCountries the countries added by this decision, comma separated; empty when none was added.
+   * @param existingCountries the requested countries the institution already had; empty when there were none.
+   */
   public static Email officeAccepted(GlobalUnit unit, String assetsUrl, String dearName, String institution,
-    String countries) {
+    String addedCountries, String existingCountries) {
     TextProvider texts = unitTexts(unit);
-    return build(texts, assetsUrl, "marloRequestInstitution.office.accept.email.subject",
-      new String[] {institution}, dearName, "marloRequestInstitution.mail.officeAccepted", institution, countries);
+    boolean anyAdded = addedCountries != null && !addedCountries.trim().isEmpty();
+    boolean anyExisting = existingCountries != null && !existingCountries.trim().isEmpty();
+    if (!anyAdded && anyExisting) {
+      return build(texts, assetsUrl, "marloRequestInstitution.office.existing.email.subject",
+        new String[] {institution}, dearName, "marloRequestInstitution.mail.officeAlreadyRegistered", institution,
+        existingCountries);
+    }
+    String content = texts.getText("marloRequestInstitution.mail.officeAccepted",
+      new String[] {escape(institution), escape(addedCountries)});
+    if (anyExisting) {
+      content += texts.getText("marloRequestInstitution.mail.officeAcceptedExisting",
+        new String[] {escape(existingCountries)});
+    }
+    return compose(texts, assetsUrl, "marloRequestInstitution.office.accept.email.subject",
+      new String[] {institution}, dearName, content);
   }
 
   /** The answer to the requester of a rejected country office. */
   public static Email officeRejected(GlobalUnit unit, String assetsUrl, String dearName, String institution,
     String countries, String justification) {
     TextProvider texts = unitTexts(unit);
-    return build(texts, assetsUrl, "marloRequestInstitution.office.reject.email.subject",
-      new String[] {institution}, dearName, "marloRequestInstitution.mail.officeRejected", institution, countries,
-      justification);
+    return compose(texts, assetsUrl, "marloRequestInstitution.office.reject.email.subject",
+      new String[] {institution}, dearName, texts.getText("marloRequestInstitution.mail.officeRejected",
+        new String[] {escape(institution), escape(countries), escapeMultiline(justification)}));
   }
 
   /** The answer to the requester of an accepted partner. */
@@ -154,8 +192,9 @@ public final class PartnerRequestEmails {
   public static Email partnerRejected(GlobalUnit unit, String assetsUrl, String dearName, String partnerName,
     String justification) {
     TextProvider texts = unitTexts(unit);
-    return build(texts, assetsUrl, "marloRequestInstitution.reject.email.subject", new String[] {partnerName},
-      dearName, "marloRequestInstitution.mail.rejected", partnerName, justification);
+    return compose(texts, assetsUrl, "marloRequestInstitution.reject.email.subject", new String[] {partnerName},
+      dearName, texts.getText("marloRequestInstitution.mail.rejected",
+        new String[] {escape(partnerName), escapeMultiline(justification)}));
   }
 
   /**
