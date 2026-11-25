@@ -2,9 +2,11 @@
 
 > **Overall: PASS.** All 1,511 tests in the `marlo-web` suite pass with `-am` (0 failures, 6 skipped). That
 > includes 9 new tests that close the five clauses validation found untested. Each new test was shown to fail on its
-> own assertion before it passed. No `PRODUCT_BUG`. Integration and end-to-end evidence comes from the T06 runs and the
-> validation remediation, and is cited here rather than repeated: Linux containers, 8/8 parity cases, and a live
-> macOS download. The one gap is Windows at runtime, which the owner accepted on 2026-11-25.
+> own assertion before it passed. No `PRODUCT_BUG`. Two browser E2E journeys were added at the owner's request
+> (2026-11-25): the local app on macOS and the MARLO Docker image (Linux amd64, Tomcat 9). In both, 3 of 3 reports
+> were downloaded by UI clicks: `200 application/pdf`, DejaVu only, text on every page. Integration evidence comes
+> from the T06 runs and the validation remediation, and is cited: Linux containers and 8/8 parity cases. The one gap
+> is Windows at runtime, which the owner accepted on 2026-11-25.
 
 ## 1. Document Control
 
@@ -26,6 +28,7 @@
 | Inline work | Leader re-ran the tests and Checkstyle to check the Tester's evidence (below) |
 | New tests | 9, in `PhantomJsLibrariesTest` (+5), `EmbeddedPhantomJsTest` (+1), new `PhantomJsResourceAccessTest` (3); test helper `IsolatedPdfClassLoader`; 2 new fake modes in `fake-phantomjs.sh` (5 lines added, none removed) |
 | Production code changed | none (`git diff --quiet -- marlo-web/src/main` → clean) |
+| E2E | 2 browser journeys (macOS app, Docker image Linux amd64): 6/6 downloads `200 application/pdf`, DejaVu only, decoy binary never run (§6) |
 | Results | PDF package `Tests run: 209, Failures: 0, Errors: 0, Skipped: 6`; full suite `Tests run: 1511, Failures: 0, Errors: 0, Skipped: 6` |
 | Red proof | 6 temporary production mutations (M1–M6), applied together and reverted by `git checkout`, turned all 9 new tests red, each on its own assertion: `Tests run: 53, Failures: 10` (the tenth is an existing test M6 also breaks) |
 | Gates | clean compile 2430/1073/157; Checkstyle `--baseline` on the 4 touched test files HEAD=0, working tree=0, delta=0; hygiene 0 FIX |
@@ -77,20 +80,77 @@ Not applicable: the spec changes no UI, FTL, CSS or JS (`render-page.js` untouch
 | Old glibc `amazonlinux:2023` (2.34) | one FN-007 WARN with platform; renders fail in 121–364 ms | T06 (2) |
 | Falsifier: page fonts forced on Linux | 18/18 fixture pages differ; real cases differ; cluster times out | T06 (1), §13 |
 
-## 6. E2E Tests (manual, cited)
+## 6. E2E Tests (browser, 2026-11-25)
 
-| Journey | Result | Source |
-|---|---|---|
-| macOS local app (`run-marlo-java17.sh`), flag on, no override: download OICR / innovation / project summary | 3 × `200 application/pdf`, DejaVu only, 4 / 6 / 169 pages, `blockedUris=0 failedFetches=0` | T06 (3) |
+Owner request: "haz las dos pruebas antes de archivar". One Tester (`akili-tester`, opus) ran the two journeys one
+after the other at HEAD `fbd2a59a86` and changed no code. The Leader re-checked the six PDFs with poppler and checked
+the cleanup.
 
-Automation deferred: the journey needs a logged-in session, the local database and the specificity flag. That matches
-the CHG-LPRE precedent.
+**Shared setup:**
+- Database: local `lpre_live_tmp`, with `local_pdf_report_engine_active=true` for AICCRA (unit 45).
+- `pdf.phantomjs.path` empty.
+- Login through the login page with the local dev credentials, which were never printed.
+- Every download triggered by real clicks in Chrome through Playwright, with a screenshot of each click target.
+
+**Decoy for the "must NOT read any property or environment variable" clause:**
+- Both runs started with `PHANTOMJS_PATH` and `PHANTOMJS_BIN` pointing at a decoy `phantomjs`, and the decoy first
+  on `PATH`.
+- The decoy writes a marker file when it runs. It **never ran**.
+- The property side rests on code reading: only `os.name` and `os.arch` are read.
+
+### Journey A — local app, macOS (Apple Silicon), `run-marlo-java17.sh`
+
+Startup line: `PhantomJS available for local PDF renders, version=2.1.1, platform=Mac OS X/aarch64, build=macosx, libraries=n/a, path=…/phantomjs`
+
+| Report | Triggered by | HTTP / type | Pages | Fonts | Words (all pages) | Render line |
+|---|---|---|---|---|---|---|
+| OICR 3508 | Clusters → C102080 → OICRs → PDF icon | 200 `application/pdf` | 4 | DejaVuSans, DejaVuSans-Bold | 523, 0 empty pages | `outcome=ok pages=4 elapsedMs=6516 blockedUris=0 failedFetches=0` |
+| Innovation 1558 | Clusters → C102084 → Innovations → PDF icon | 200 | 6 | same | 927, 0 empty | `outcome=ok pages=6 elapsedMs=8932 …=0` |
+| Project 102076 | Summaries → "Full cluster report" → Generate | 200 | 169 | same | 25,783, 0 empty | `outcome=ok pages=169 elapsedMs=19932 …=0` |
+
+### Journey B — MARLO Docker image (`Dockerfile`, `--platform linux/amd64`, Tomcat 9, glibc 2.43)
+
+Built in a temporary worktree (BUILD SUCCESS). The container reached the host MySQL through `host.docker.internal`;
+no Tomcat config was changed.
+
+Startup line: `PhantomJS available for local PDF renders, version=2.1.1, platform=Linux/amd64, build=linux-x86_64, libraries=host, path=/usr/local/tomcat/temp/…/phantomjs`
+
+| Report | HTTP / type | Pages | Fonts | Words (all pages) | Render line |
+|---|---|---|---|---|---|
+| OICR 3508 | 200 `application/pdf` | 5 | DejaVuSans, DejaVuSans-Bold | 563, 0 empty | `outcome=ok pages=5 elapsedMs=4483 blockedUris=0 failedFetches=0` |
+| Innovation 1558 | 200 | 6 | same | 928, 0 empty | `outcome=ok pages=6 elapsedMs=3429 …=0` |
+| Project 102076 | 200 | 173 | same | 25,887, 0 empty | `outcome=ok pages=173 elapsedMs=8092 …=0` |
+
+**Reading the results:**
+- **Page counts differ between the platforms.** Linux gives 5/6/173 and macOS 4/6/169; NF-002 allows macOS to be
+  close to Linux rather than identical, with Linux the parity reference. No production page count exists for these
+  live records.
+- **The project report has a different URL from T06.** The UI's Generate button calls
+  `reportingSummary.do?phaseID=431&format=PDF&projectID=102076`, while T06 used `cycle=Reporting&year=2026`. It is
+  the same phase.
+- **Logs are clean.** Neither log has a PDF or PhantomJS WARN or ERROR.
+- **Timings in B are not production figures.** They ran under amd64 emulation.
+
+**Incidents, recorded:**
+- **Submit dialog cancelled.** While looking for the report link in A, the Tester clicked "Submit cluster" for
+  C102076 and **cancelled** the confirmation dialog. `lpre_live_tmp.submissions` shows no row written that day (the
+  latest for 102076 is from 2026-01-05).
+- **Local image tag restored.** A DB reachability check pulled an amd64 `mysql:8.4` that replaced the local tag. The
+  tag was put back on the original image (`a81d043930e5`) and the pulled image deleted.
+
+**Cleanup verified by the Leader:**
+- App stopped and port 8080 free.
+- `marlo-dev.properties` SHA-1 `b3801c73…` equals the original.
+- Container and image `marlo:e2e-local` removed, together with the 26 build-cache records that held project content.
+  The image carried a copy of the local credentials file.
+- Worktree removed and the scratch properties file deleted.
+- Main checkout clean at `fbd2a59a86`.
 
 ## 7. Coverage & Traceability
 
 | Requirement | Scenario / clause | Test type | Test or evidence | Result | Notes |
 |---|---|---|---|---|---|
-| FN-001 | Shipped build per platform; OS + arch together; no property read | Unit + integration + E2E | `PhantomJsBuildTest`; `PhantomJsResourceAccessTest` ×2; T06 (1)(3) | PASS | Windows runtime: accepted gap |
+| FN-001 | Shipped build per platform; OS + arch together; no property read | Unit + integration + E2E | `PhantomJsBuildTest`; `PhantomJsResourceAccessTest` ×2; T06 (1)(3); §6 journeys A+B (decoy env and PATH binary never run) | PASS | Windows runtime: accepted gap |
 | FN-002 | Minimal Linux; host libraries kept; probe that cannot be judged | Unit + integration | `PhantomJsLibrariesTest` (incl. 2 new); T06 (2) | PASS | |
 | FN-003 | Library path only in PhantomJS | Unit | `withoutHostLibraries…GivenToPhantomJsOnly` | PASS | |
 | FN-004 | Windows name, permissions; BUT no POSIX API | Unit (seam) | `aWindowsExtraction…NeverCallsThePosixView…`; owner-normaliser tests | PASS (unit) | Lock and sweep on NTFS: accepted gap |
@@ -134,5 +194,5 @@ Notes for maintainers (advisory):
 | Gap | Reason | Recorded |
 |---|---|---|
 | Windows at runtime: the process starting, directory lock and stale-directory sweep on NTFS, page fonts kept as text (P-16, P-17, P-18, OQ-7) | No Windows host; Windows is not a production platform | `requirements.md` §9 Decision Log 2026-11-25 (owner) |
-| E2E download automation | Needs a logged-in session, local DB and specificity flag; manual run recorded | T06 (3) |
+| E2E automation in CI | The browser journeys (§6) need a logged-in session, the local DB and the specificity flag; run manually with Playwright and recorded | §6 |
 | `compare.py` against the production microservice | Its inputs (reports-microservice source) are not in this repo. Parity holds through pixel identity with `e452378187`, where CHG-LPRE measured PARITY | `validation-report.md` §13 |
