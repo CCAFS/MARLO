@@ -176,7 +176,7 @@
   observed; provenance lists all seven libraries with package versions.
 
 ### CHG-PPE-T05 — DejaVu in the page on macOS and Windows
-- **Status:** [ ] · **Size:** S · **Depends on:** T02 · **Module:** marlo-web
+- **Status:** [x] · **Size:** S · **Depends on:** T02 · **Module:** marlo-web
 - **Requirements:** FN-005 ("only DejaVu", "text stays extractable"), NF-002, SEC-003 ("added after the sanitizer",
   "MUST win over every font … without `!important`", "allowlist MUST NOT be widened"); the scenarios "Fonts on macOS
   and Windows" and "Template or payload declares its own font" · **Design:** DD-3, §12, §13, P-6, P-7, P-8, P-10,
@@ -185,15 +185,22 @@
   `DejaVuSans-Bold.ttf`; inserted after `sanitize()` and image inlining for PAGE builds only), `PhantomJsRendererTest.java`,
   `PhantomJsRenderingTest.java` (gated real render on macOS).
 - **Scope:** the block holds two `@font-face` rules (`data:font/truetype`, regular and bold) and one universal
-  `font-family` rule with `!important`; it is inserted before `</head>`, or at the start of the document when there
-  is none. LINUX_FONTCONFIG builds never get it. `render-page.js` is not changed.
+  `font-family` rule with `!important`; it is inserted at the start of the document, after an optional leading
+  `<!DOCTYPE …>` (and leading whitespace), and never at a position found by searching the template's or payload's
+  content. The font family name is unpredictable per JVM (a random suffix chosen once), never a fixed public name.
+  LINUX_FONTCONFIG builds never get it. `render-page.js` is not changed. *Amended 2026-11-25 (T05 Reviewer
+  advisories, owner, `requirements.md` §9): was "inserted before `</head>`, or at the start of the document when
+  there is none".*
   Backend route: `stack other; implement lead existing design support none — project conventions; test-suite lead the spec's scenarios support none — project conventions`
 - **Tests:** unit — a PAGE build's HTML holds the block after the sanitizer (a block-like string placed in the input
   is still handled by the sanitizer as before); a LINUX build's HTML is byte-identical to the CHG-LPRE output; the
   allowlist inputs (`allowedHosts`, `allowedDataUrls`) are identical with and without the block. Gated real render on
   macOS with the shipped build (no override): the three fixtures → `pdffonts` lists only `DejaVuSans` and
   `DejaVuSans-Bold`; page counts 5/6/7; `pdftotext` returns words on every page; the production templates (they
-  declare `Montserrat`) still give DejaVu only.
+  declare `Montserrat`) still give DejaVu only. Regression (amendment 2026-11-25): a head `<style>` whose text holds
+  `</head><img src=x onerror=…>` and a head `<meta content="…</head>…">` → the block sits before them and the HTML
+  passed to PhantomJS holds no `onerror` element the sanitizer did not already leave as text; a payload
+  `@font-face` naming the old fixed family `MarloDejaVu` does not reach the family the universal rule uses.
 - **Verification:** `mvn -q -o -pl marlo-web -am test -Dtest='PhantomJsRendererTest,PhantomJsRenderingTest'` on this
   Mac (the gated test runs because the macOS build now ships); Linux gated run unchanged (T04 verification 3).
 - **Falsifier:** insert the block for LINUX builds too → the Linux byte-identity unit test fails, and the Linux gated

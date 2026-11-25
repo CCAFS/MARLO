@@ -181,6 +181,12 @@ public class LocalPdfReportServiceTest {
 
   // ---- production templates ------------------------------------------------------------------------------------
 
+  /** True when the host this test runs on is one whose shipped build takes its fonts from the page. */
+  private static boolean hostGetsPageFonts() {
+    return PhantomJsBuild.forPlatform(System.getProperty("os.name", ""), System.getProperty("os.arch", ""))
+      .map(b -> b.fontMode() == PhantomJsBuild.FontMode.PAGE).orElse(false);
+  }
+
   @Test
   public void thePhantomJsInputForTheProductionTemplatesIsTheHtmlHandlebarsJsProduces() throws Exception {
     FakePhantomJs fake = fake("ok");
@@ -191,9 +197,12 @@ public class LocalPdfReportServiceTest {
       assertTrue(new String(pdf, StandardCharsets.ISO_8859_1).startsWith("%PDF"));
       String expected = resource("/pdf/expected-html/" + names[i] + ".html");
       String sent = lastHtml(fake);
+      String inlined = PdfImageBundle.shared().inline(expected).html();
+      // On macOS and Windows the DejaVu block is the one other thing added (CHG-PPE-T05); Linux adds nothing.
       assertEquals(names[i] + ": the HTML PhantomJS gets must be byte-identical to Handlebars.js's (and the "
-        + "sanitizer must leave it alone), except that the bucket images are inlined (T17)",
-        PdfImageBundle.shared().inline(expected).html(), sent);
+        + "sanitizer must leave it alone), except that the bucket images are inlined (T17) and, on a page-font "
+        + "platform, the DejaVu block is added", hostGetsPageFonts() ? PhantomJsRenderer.withPageFonts(inlined)
+          : inlined, sent);
       assertFalse(names[i] + ": no render may read the template image bucket", sent.contains(PdfImageBundle.HOST));
       JsonNode options = sentTo(fake, fake.started().get(i)).get("options");
       assertEquals("the payload's own options reach html-pdf's script", "A4", options.get("format").asText());

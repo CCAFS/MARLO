@@ -128,7 +128,9 @@ per-render INFO line is unchanged. Two new WARN lines:
 - **SEC-002:** sanitizer, allowlist, `--local-url-access=false`, render directory and deadline kill are shared code
   paths; no platform branch touches them.
 - **SEC-003:** the page fonts are inserted by string replacement after `sanitize()`, beside the image inlining
-  (`PhantomJsRenderer.java:586-588`). Their `data:font/truetype` URIs already pass `render-page.js:74`, so the
+  (`PhantomJsRenderer.java:586-588`), at the start of the document (after an optional leading DOCTYPE), so no text the
+  sanitizer left inside a `<style>`, comment or attribute can decide where the block lands; their family name is
+  random per JVM, so a payload `@font-face` cannot claim it (amended 2026-11-25). Their `data:font/truetype` URIs already pass `render-page.js:74`, so the
   allowlist is not widened.
 - PhantomJS stays unmaintained (CHG-LPRE design §18.3); this change adds two more copies of the same accepted risk.
 
@@ -146,7 +148,7 @@ per-render INFO line is unchanged. Two new WARN lines:
 |---|---|---|---|
 | DD-1 | **One platform table** (`PhantomJsBuild`) keyed by OS and architecture together. Entries: Linux x86_64 (`amd64`/`x86_64`), macOS (`x86_64` and `aarch64`, Rosetta), Windows (`amd64`/`x86_64`/`x86`; the 32-bit build runs under WOW64). Anything else → no build | FN-001, FN-007 | One `if` per OS spread across classes: the Linux-only assumption is in 3 files today (P-1, P-9, P-14); a table keeps it in one place (KZ-…-directory-abstraction-1) |
 | DD-2 | **Library mode decided at startup**: try `--version` with the host's libraries; only when the failure output contains "error while loading shared libraries" (the loader's prefix for a missing *or* unloadable library; amended 2026-11-25 from "cannot open shared object file"), extract the shipped libraries and retry with `LD_LIBRARY_PATH`. The mode is kept for all renders | FN-002, FN-003, FN-007 | Always use the shipped libraries: breaks hosts with glibc < 2.36 that work today (S-2, `amazonlinux:2023`). Static re-linking: needs a custom PhantomJS build, out of scope |
-| DD-3 | **Linux keeps fontconfig; macOS/Windows get page fonts** (DejaVuSans and DejaVuSans-Bold as `@font-face` data URIs plus a universal `font-family` rule, added after the sanitizer) | FN-005, NF-001, NF-002, SEC-003 | Page fonts everywhere: on Linux text becomes paths (S-3). Shipping fontconfig for macOS: Qt on macOS uses CoreText, not fontconfig |
+| DD-3 | **Linux keeps fontconfig; macOS/Windows get page fonts** (DejaVuSans and DejaVuSans-Bold as `@font-face` data URIs plus a universal `font-family` rule, added after the sanitizer at the start of the document — after an optional leading `<!DOCTYPE …>`, never at a position found in template or payload content — under a family name unpredictable per JVM; amended 2026-11-25) | FN-005, NF-001, NF-002, SEC-003 | Page fonts everywhere: on Linux text becomes paths (S-3). Shipping fontconfig for macOS: Qt on macOS uses CoreText, not fontconfig |
 | DD-4 | **Environment per build style**: POSIX style (PATH `/usr/bin:/bin`, `OPENSSL_CONF=/dev/null`, `HOME`, `TMPDIR`, `LANG`) for Linux and macOS; Windows style (`SystemRoot`, `PATH=%SystemRoot%\System32`, `TEMP`, `TMP`, `USERPROFILE`, `OPENSSL_CONF=NUL`). `FONTCONFIG_FILE` only on Linux | FN-004, SEC-002 | The POSIX environment on Windows: a process started without `SystemRoot` commonly fails to initialise (P-16) |
 | DD-5 | **Executable name and permissions from the build**: `phantomjs` / `phantomjs.exe`; `rwx------` applied only when the file store supports the POSIX view | FN-004 | Try and catch `UnsupportedOperationException`: works, but hides the platform decision in an exception path |
 | DD-6 | **Stale-directory sweep compares the owner without a `DOMAIN\` prefix** on Windows | FN-004 | Skip the sweep on Windows: support directories would pile up in `%TEMP%` |
@@ -205,6 +207,8 @@ set are pinned by tests).
 | Review rounds | 9 (about 1.5 per task: the environment and probe tasks are likely to need a second round) |
 | **Re-baselined 2026-11-24 (owner, budget tripwire at T03, "opción 1")** | LOC about 1,150 (757 after T01–T03; T04 about 250–300, T05 about 100–150); review rounds 11; tasks 6 unchanged; WAR cap 60 MB unchanged |
 | **Re-baselined 2026-11-25 (owner, budget tripwire at T04 resume, "sí, sube el presupuesto y lanza los reviewers")** | LOC about 1,900 (about 1,712 after T01–T04 implementation; T05 about 100–150); review rounds 11 unchanged; tasks 6 unchanged; WAR cap 60 MB unchanged |
+| **Re-baselined 2026-11-25 (owner, T05 amendment, "sí, opción 1, enmienda T05 y lanza el intento")** | review rounds 13 (11 used after T05 attempt 1; 2 for the amended re-run); LOC about 1,950; tasks 6 unchanged; WAR cap 60 MB unchanged |
+| **Re-baselined 2026-11-25 (owner, budget tripwire at T05 close, "sí, haz el commit, sube el presupuesto y sigue con T06")** | LOC about 2,100 (about 2,066 after T01–T05; T06 adds none); review rounds 14 (13 used; 1 for T06's checklist review); tasks 6 unchanged; WAR cap 60 MB unchanged |
 | WAR growth | about 36 MB (macOS 17.1 + Windows 18.1 + libraries 0.9), under the 60 MB cap of NF-004 |
 
 Depth check: Standard matches — six tasks, one module, no data or API change.

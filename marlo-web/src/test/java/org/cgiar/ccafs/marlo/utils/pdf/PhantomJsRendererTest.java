@@ -26,9 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsoup.Jsoup;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
@@ -815,6 +818,206 @@ public class PhantomJsRendererTest {
     JsonNode sent = JSON.readTree(fake.recorded("stdin", fake.started().get(0)));
     assertEquals(html, sent.get("html").asText());
     assertEquals(0, sent.get("options").get("allowedDataUrls").size());
+  }
+
+  // ---- DejaVu in the page on macOS and Windows (CHG-PPE-T05) ----------------------------------------------------
+
+  /**
+   * The page-font platforms the fake can render on. A Windows-style environment has no PATH, so the POSIX shell script
+   * cannot run under it; Windows takes the same branch (PhantomJsBuild.WINDOWS is FontMode.PAGE, asserted in
+   * PhantomJsBuildTest) and its real render is CHG-PPE-T06.
+   */
+  private static final String[][] PAGE_FONT_PLATFORMS = {{"Mac OS X", "aarch64"}, {"Mac OS X", "x86_64"}};
+
+  /** What a fake PhantomJS received on stdin for one render of {@code html} on the given platform. */
+  private JsonNode sentTo(String osName, String osArch, String html) throws Exception {
+    FakePhantomJs fake = new FakePhantomJs(temp.newFolder().toPath(), "ok");
+    PhantomJsRenderer renderer = new PhantomJsRenderer(fake.path(), embeddedFor(osName, osArch));
+    try {
+      renderer.render(html, options(), deadlineIn(20000L));
+    } finally {
+      renderer.close();
+    }
+    return JSON.readTree(fake.recorded("stdin", fake.started().get(0)));
+  }
+
+  private static String base64Of(String resource) throws IOException {
+    try (InputStream in = PhantomJsRendererTest.class.getResourceAsStream(resource)) {
+      assertTrue("missing " + resource, in != null);
+      return java.util.Base64.getEncoder().encodeToString(in.readAllBytes());
+    }
+  }
+
+  private static int count(String text, String part) {
+    int found = 0;
+    for (int at = text.indexOf(part); at >= 0; at = text.indexOf(part, at + part.length())) {
+      found++;
+    }
+    return found;
+  }
+
+  /** The page-font block as it appears in what PhantomJS received: the first style that opens with an @font-face. */
+  private static final Pattern FONT_BLOCK = Pattern.compile(
+    "<style type=\"text/css\">@font-face\\{font-family:'([^']+)';[^<]*</style>");
+
+  /** The family name of the three rules of the block; fails unless there is exactly one block, with equal names. */
+  private static String familyOfTheBlock(String where, String sent) {
+    Matcher block = FONT_BLOCK.matcher(sent);
+    assertTrue(where + ": the page-font block is there", block.find());
+    String family = block.group(1);
+    assertFalse(where + ": and only once", block.find());
+    assertEquals(where + ": two @font-face rules of one family", 2,
+      count(sent, "@font-face{font-family:'" + family + "'"));
+    assertEquals(where + ": one universal rule with !important, of the same family", 1,
+      count(sent, "*{font-family:'" + family + "' !important;}"));
+    assertEquals(where + ": and no other universal rule of the block's shape", 1,
+      count(sent, "' !important;}</style>"));
+    return family;
+  }
+
+  @Test
+  public void pageBuildsGetTheDejaVuBlockAtTheStartAfterTheSanitizerAndLinuxNeverDoes() throws Exception {
+    String blockLike = "<style>@font-face{font-family:'Montserrat';src:url(data:font/woff2;base64,AAAA)}"
+      + "*{font-family:'Evil' !important}</style>";
+    String html = "<html><head><title>t</title>" + blockLike + "</head><body><p onclick=\"x()\">kept</p>"
+      + "<script>document.title='ran'</script></body></html>";
+    String sanitized = PhantomJsRenderer.sanitize(html);
+    assertFalse("the sanitizer still removes the script", sanitized.contains("<script"));
+    assertFalse("the sanitizer still removes the handler", sanitized.contains("onclick"));
+    String regular = "data:font/truetype;base64," + base64Of("/pdf/fonts/DejaVuSans.ttf");
+    String bold = "data:font/truetype;base64," + base64Of("/pdf/fonts/DejaVuSans-Bold.ttf");
+    String family = null;
+    for (String[] platform : PAGE_FONT_PLATFORMS) {
+      String sent = sentTo(platform[0], platform[1], html).get("html").asText();
+      String where = platform[0] + " " + platform[1];
+      assertEquals(where + ": one regular face", 1, count(sent, regular));
+      assertEquals(where + ": one bold face", 1, count(sent, bold));
+      String named = familyOfTheBlock(where, sent);
+      assertTrue(where + ": a name nobody can know ahead of time: " + named, named.matches("[a-z]+[0-9a-f]{32}"));
+      assertFalse(where + ": never the old fixed name", named.contains("MarloDejaVu"));
+      if (family != null) {
+        assertEquals(where + ": one name for the life of the JVM", family, named);
+      }
+      family = named;
+      assertTrue(where + ": the block starts the document", sent.startsWith("<style type=\"text/css\">"));
+      assertTrue(where + ": the sanitizer's output follows it untouched", sent.endsWith("</style>" + sanitized));
+      assertTrue(where + ": the template's own style comes after the block",
+        sent.indexOf(blockLike) > sent.indexOf(regular));
+      assertFalse(where + ": the script stays removed", sent.contains("<script"));
+      assertFalse(where + ": the handler stays removed", sent.contains("onclick"));
+      assertEquals(where + ": the whole page is the block, then the sanitizer's output", sanitized,
+        sent.substring(sent.length() - sanitized.length()));
+    }
+    String linux = sentTo("Linux", "amd64", html).get("html").asText();
+    assertEquals("a Linux build gets the sanitizer's output and nothing else", sanitized, linux);
+    assertFalse(linux.contains(family));
+    assertFalse(linux.contains("data:font/truetype"));
+  }
+
+  @Test
+  public void theBlockGoesAfterALeadingDoctypeAndAtTheStartOtherwiseWhateverTheMarkupHolds() throws Exception {
+    String[] doctypes = {"<!DOCTYPE html>", "<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\">",
+      "\n  <!DocType html>"};
+    for (String doctype : doctypes) {
+      String html = doctype + "<html><head></head><body>x</body></html>";
+      String sanitized = PhantomJsRenderer.sanitize(html);
+      assertSame("this markup needs no sanitizing, so the doctype is exactly the template's", html, sanitized);
+      String sent = sentTo("Mac OS X", "aarch64", html).get("html").asText();
+      assertTrue(sent, sent.startsWith(doctype + "<style type=\"text/css\">@font-face"));
+      assertTrue(sent, sent.endsWith("</style><html><head></head><body>x</body></html>"));
+      familyOfTheBlock(doctype, sent);
+    }
+    String headless = "<p>no head here</p>";
+    String sent = sentTo("Mac OS X", "aarch64", headless).get("html").asText();
+    assertTrue("the block starts the document", sent.startsWith("<style"));
+    assertTrue(sent.endsWith("</style>" + headless));
+    String upper = "<HTML><HEAD></HEAD ><BODY>x</BODY></HTML>";
+    String upperSent = sentTo("Mac OS X", "x86_64", upper).get("html").asText();
+    assertTrue(upperSent, upperSent.startsWith("<style type=\"text/css\">@font-face"));
+    assertTrue(upperSent, upperSent.endsWith("</style><HTML><HEAD></HEAD ><BODY>x</BODY></HTML>"));
+    String late = "<p>x</p><!DOCTYPE html><p>y</p>";
+    String lateSent = sentTo("Mac OS X", "x86_64", late).get("html").asText();
+    assertTrue("a doctype that is not leading is just content: " + lateSent, lateSent.endsWith("</style>" + late));
+  }
+
+  @Test
+  public void aHeadEndTagInsideAHeadStyleOrMetaDoesNotMoveTheBlockIntoItNorLetAnElementOut() throws Exception {
+    String breakout = "</head><img src=x onerror=alert(1)>";
+    String[] pages = {
+      "<!DOCTYPE html><html><head><style>.a{content:'" + breakout + "'}</style></head><body>x</body></html>",
+      "<html><head><style>/* " + breakout + " */</style></head><body>x</body></html>",
+      "<html><head><meta content=\"x" + breakout + "\" name=\"d\"></head><body>x</body></html>",
+      "<html><head><meta content='x" + breakout + "' name=\"d\"><title>t</title></head><body>x</body></html>"};
+    for (String html : pages) {
+      String sanitized = PhantomJsRenderer.sanitize(html);
+      int already = Jsoup.parse(sanitized).select("[onerror]").size();
+      for (String[] platform : PAGE_FONT_PLATFORMS) {
+        String sent = sentTo(platform[0], platform[1], html).get("html").asText();
+        String where = platform[0] + " " + platform[1] + " " + html;
+        Matcher found = FONT_BLOCK.matcher(sent);
+        assertTrue(where, found.find());
+        assertEquals(where + ": the page minus the block is exactly what the sanitizer produced", sanitized,
+          sent.substring(0, found.start()) + sent.substring(found.end()));
+        Matcher doctype = Pattern.compile("\\A\\s*<!doctype[^>]*>", Pattern.CASE_INSENSITIVE).matcher(sanitized);
+        assertEquals(where + ": the block sits at the start, after the doctype if there is one",
+          doctype.find() ? doctype.end() : 0, found.start());
+        assertEquals(where + ": no element with a handler that the sanitizer did not already leave", already,
+          Jsoup.parse(sent).select("[onerror]").size());
+        assertEquals(where + ": and no image the sanitizer did not already leave",
+          Jsoup.parse(sanitized).select("img[src=x]").size(), Jsoup.parse(sent).select("img[src=x]").size());
+        familyOfTheBlock(where, sent);
+      }
+    }
+  }
+
+  @Test
+  public void aPayloadFontFaceNamingTheOldFixedFamilyDoesNotReachTheFamilyOfTheUniversalRule() throws Exception {
+    String evil = "@font-face{font-family:'MarloDejaVu';src:url(data:font/truetype;base64,AAEAAAAAAA==)}";
+    String html = "<html><head></head><body><div><style>" + evil + "</style>payload</div></body></html>";
+    String sanitized = PhantomJsRenderer.sanitize(html);
+    assertTrue("the sanitizer keeps it, which is why the family cannot be a fixed name", sanitized.contains(evil));
+    for (String[] platform : PAGE_FONT_PLATFORMS) {
+      String sent = sentTo(platform[0], platform[1], html).get("html").asText();
+      String where = platform[0] + " " + platform[1];
+      assertTrue(where + ": it reaches PhantomJS as the payload's own text", sent.contains(evil));
+      String family = familyOfTheBlock(where, sent);
+      assertFalse(where + ": the universal rule does not use the payload's family", family.equals("MarloDejaVu"));
+      assertEquals(where + ": the universal rule never names it", 0, count(sent, "*{font-family:'MarloDejaVu'"));
+      assertEquals(where + ": and the payload's rule is the only one that does", 1, count(sent, "'MarloDejaVu'"));
+    }
+  }
+
+  @Test
+  public void aLinuxBuildsHtmlIsByteIdenticalToTheOneWithoutThisChange() throws Exception {
+    String[] pages = {"<html><head><title>t</title></head><body><p>x</p></body></html>", "<p>no head</p>",
+      "<html><head></head><body><img src=\"https://" + PdfImageBundle.HOST + "/Africa.png\"><script>x()</script>"
+        + "</body></html>"};
+    for (String html : pages) {
+      String chgLpre = PdfImageBundle.shared().inline(PhantomJsRenderer.sanitize(html)).html();
+      assertEquals(chgLpre, sentTo("Linux", "amd64", html).get("html").asText());
+    }
+  }
+
+  @Test
+  public void theRequestAllowlistInputsAreTheSameWithAndWithoutThePageFonts() throws Exception {
+    String html = "<html><head></head><body><img src=\"https://" + PdfImageBundle.HOST + "/flags/ke.svg\">"
+      + "<img src=\"https://" + PdfImageBundle.HOST + "/Africa.png\"></body></html>";
+    JsonNode linux = sentTo("Linux", "amd64", html).get("options");
+    assertEquals("an SVG flag was inlined, so something is trusted", 1, linux.get("allowedDataUrls").size());
+    for (String[] platform : PAGE_FONT_PLATFORMS) {
+      JsonNode page = sentTo(platform[0], platform[1], html).get("options");
+      assertEquals(platform[0], linux.get("allowedHosts"), page.get("allowedHosts"));
+      assertEquals(platform[0], 0, page.get("allowedHosts").size());
+      assertEquals(platform[0], linux.get("allowedDataUrls"), page.get("allowedDataUrls"));
+      assertFalse(platform[0] + ": no font is added to the trusted data URLs",
+        page.get("allowedDataUrls").toString().contains("data:font"));
+    }
+  }
+
+  @Test
+  public void aPlatformWithNoShippedBuildGetsNoPageFonts() throws Exception {
+    String html = "<html><head></head><body>x</body></html>";
+    assertEquals(html, sentTo("FreeBSD", "amd64", html).get("html").asText());
   }
 
   // ---- the page script's allowlist (CHG-LPRE-SEC-001) ----------------------------------------------------------

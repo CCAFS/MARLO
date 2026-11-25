@@ -32,8 +32,10 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,6 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -266,6 +269,18 @@ final class PhantomJsRenderer {
     "DejaVuSans-Bold.ttf", "DejaVuSerif.ttf", "DejaVuSerif-Bold.ttf", "DejaVuSansMono.ttf", "DejaVuSansMono-Bold.ttf"));
 
   private static final String FONT_DIR = "/pdf/fonts/";
+
+  /**
+   * A leading document type declaration, after optional whitespace. The page-font block goes right after it, or at the
+   * very start when there is none (CHG-PPE-DD-3): never at a position found by searching the markup.
+   */
+  private static final Pattern LEADING_DOCTYPE = Pattern.compile("\\A\\s*<!DOCTYPE[^>]*>", Pattern.CASE_INSENSITIVE);
+
+  /** Bytes of randomness in the family name of the page-font block (the name has twice as many hex digits). */
+  private static final int PAGE_FONT_FAMILY_BYTES = 16;
+
+  /** The page-font block, built on first use and kept for the life of the JVM (about 2 MB of text). */
+  private static String pageFontBlock;
 
   private static final String SCRIPT = "/pdf/render-page.js";
 
@@ -685,6 +700,15 @@ final class PhantomJsRenderer {
     // replacement so the sanitizer's same-instance passthrough (and with it byte identity) is not disturbed.
     PdfImageBundle.Inlined inlined = images.inline(sanitize(html));
     String clean = inlined.html();
+    try {
+      if (clean != null && usesPageFonts()) {
+        // Same reasoning as the images, and the font data URIs already pass the page script's allowlist: nothing
+        // about the allowlist changes for them (CHG-PPE-SEC-003).
+        clean = withPageFonts(clean);
+      }
+    } catch (IOException e) {
+      throw new PdfRenderException("PhantomJS render could not complete (" + e.getClass().getSimpleName() + ")");
+    }
     Path renderDir = null;
     try {
       renderDir = Files.createTempDirectory("marlo-pdf-render-");
@@ -1009,6 +1033,57 @@ final class PhantomJsRenderer {
    */
   private boolean isWindowsStyle() {
     return embedded.build().map(b -> b.environmentStyle() == PhantomJsBuild.EnvironmentStyle.WINDOWS).orElse(false);
+  }
+
+  /**
+   * The block that puts MARLO's DejaVu Sans, regular and bold, in the page (CHG-PPE-FN-005, DD-3): two
+   * {@code @font-face} rules over {@code data:font/truetype} URIs of the bundled files, and one universal
+   * {@code font-family} rule with {@code !important}, so that DejaVu wins over every font the template declares
+   * without {@code !important}, {@code Montserrat} included. Built once per JVM, under a family name with a random
+   * suffix chosen at that moment, so that no markup can name it ahead of time (CHG-PPE-SEC-003).
+   */
+  static synchronized String pageFontBlock() throws IOException {
+    if (pageFontBlock == null) {
+      String regular = fontDataUri("DejaVuSans.ttf");
+      String bold = fontDataUri("DejaVuSans-Bold.ttf");
+      byte[] random = new byte[PAGE_FONT_FAMILY_BYTES];
+      new SecureRandom().nextBytes(random);
+      StringBuilder family = new StringBuilder("pf");
+      for (byte b : random) {
+        family.append(String.format("%02x", b));
+      }
+      pageFontBlock = "<style type=\"text/css\">"
+        + "@font-face{font-family:'" + family + "';font-style:normal;font-weight:normal;"
+        + "src:url(" + regular + ") format('truetype');}"
+        + "@font-face{font-family:'" + family + "';font-style:normal;font-weight:bold;"
+        + "src:url(" + bold + ") format('truetype');}"
+        + "*{font-family:'" + family + "' !important;}"
+        + "</style>";
+    }
+    return pageFontBlock;
+  }
+
+  private static String fontDataUri(String fileName) throws IOException {
+    return "data:font/truetype;base64,"
+      + Base64.getEncoder().encodeToString(readResource(FONT_DIR + fileName));
+  }
+
+  /**
+   * Places {@link #pageFontBlock} in already sanitized markup: right after a leading {@code <!DOCTYPE ...>} (leading
+   * whitespace allowed), or at the very start of the document when there is none. The position never depends on the
+   * template's or the payload's content past that prefix: a {@code </head>} held in a style or an attribute value
+   * cannot move the block into the middle of it. A trusted insertion after the sanitizer.
+   */
+  static String withPageFonts(String sanitized) throws IOException {
+    String block = pageFontBlock();
+    Matcher doctype = LEADING_DOCTYPE.matcher(sanitized);
+    int at = doctype.find() ? doctype.end() : 0;
+    return sanitized.substring(0, at) + block + sanitized.substring(at);
+  }
+
+  /** True on macOS and Windows: the fonts are declared in the page itself. No build for the platform: no. */
+  private boolean usesPageFonts() {
+    return embedded.build().map(b -> b.fontMode() == PhantomJsBuild.FontMode.PAGE).orElse(false);
   }
 
   /** True on Linux and on a platform with no shipped build: the isolated fontconfig applies (macOS and Windows: no). */

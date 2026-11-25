@@ -312,3 +312,14 @@ covered by unit tests only and is recorded as **not verified at runtime**.
   FN-002 rationale and `proposal.md` P-2 quote the loader's observed output and stay true; `tasks.md` T04 already
   says "error while loading shared libraries". Backward: `tasks.md` T04 Verification (2) cites "the FN-007 WARN",
   which now carries the platform — consistent.
+- 2026-11-25 — T05 amended after both Reviewers PASSed attempt 1 (owner-approved: "sí, opción 1, enmienda T05 y lanza
+  el intento"), from two RISK advisories that showed `tasks.md` T05 Scope in tension with SEC-002 (the sanitizer
+  applies unchanged) and SEC-003 (DejaVu wins over every font declared without `!important`): (1) insertion "before
+  `</head>`" by text search could land inside a head `<style>` or attribute the sanitizer keeps as text and turn it
+  into markup → the block now goes at the start of the document, after an optional leading DOCTYPE; (2) the fixed
+  family `MarloDejaVu` let a payload `@font-face` replace DejaVu → the family name is random per JVM. No requirement's
+  meaning changes; both make the code meet SEC-002/SEC-003 as written. Review budget raised to 13 rounds (`design.md`
+  §18). Closure sweep, forward: `grep -nE '</head>|universal|MarloDejaVu'` over this folder — `tasks.md` T05 Scope and
+  `design.md` DD-3 and §13 carried the superseded insertion point (amended); `design.md` §Spike S-3 records what the
+  spike did and stays true; `proposal.md` §Fonts names no insertion point. Backward: T06 (1) falsifier cites "T05's
+  block also reaches Linux" — unaffected.

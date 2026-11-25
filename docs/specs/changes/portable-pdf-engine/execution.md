@@ -430,3 +430,158 @@ ADVISORY (4R, recorded only — never a task):
 **Budget running totals (design §18, re-baselined 2026-11-25):** tasks 4/6 · Java LOC about 1,717 (T01 83 + T02 438
 + T03 236 + T04 960: main +387/−14, tests 573) against about 1,900 · review rounds 9/11 (T01 1, T02 2, T03 2, T04 4)
 · WAR growth 35.2 + 0.9 MB (`linux-libs/` 940 KB) ≈ 36.1 MB / cap 60 MB. Within budget.
+
+### CHG-PPE-T05 — DejaVu in the page on macOS and Windows
+
+**Attempt 1 (Implementer sonnet, effort `high`, 2026-11-25)** — skills `marlo-verify` (task list); `tdd` not assigned
+(S task, test-suite route).
+- Files changed: `PhantomJsRenderer.java` (+64: `pageFontBlock()` built once — two `@font-face` over
+  `data:font/truetype;base64` regular/bold, family `MarloDejaVu`, plus `*{font-family:'MarloDejaVu' !important;}`;
+  `withPageFonts()` inserts before the first `</head\s*>` any case, else at document start; `render()` applies it only
+  when `usesPageFonts()`); `PhantomJsRendererTest.java` (+115, 5 tests); `PhantomJsRenderingTest.java` (+60/−3:
+  `theShippedMacosPhantomJsEmbedsOnlyDejaVuAndKeepsTheTextExtractable`, shipped test also on macOS);
+  `LocalPdfReportServiceTest.java` (+11/−2, outside the task's file list: consumer
+  `thePhantomJsInputForTheProductionTemplatesIsTheHtmlHandlebarsJsProduces` now expects `withPageFonts(inlined)` on
+  page-font hosts, still exact equality).
+- Falsifiers: (1) block for Linux too → `PhantomJsRendererTest` 50 run, 5 failures (3 new + 2 existing), first
+  `a Linux build gets the sanitizer's output and nothing else expected:<…</style></head>…> but was:<…</style><style
+  type="text/css">@font-face{font-family:'MarloDejaVu';…`; Linux gated run not done (no Docker — T06). (2) universal
+  rule removed → `oicr fonts: only the DejaVu pair MARLO ships expected:<[DejaVuSans, DejaVuSans-Bold]> but
+  was:<[Helvetica, Helvetica-Bold, Helvetica-Light]>` (matches the S-3 red run). Both restored (`cmp`).
+- Implementer verification: clean compile 2430/1073/155; Checkstyle delta 0; hygiene 0 FIX; task command first run
+  `Tests run: 58, Errors: 1` on the pre-existing `anInterruptedThreadKillsTheProcessAndKeepsItsInterruptFlag`
+  (`NumberFormatException: For input string: ""` in `FakePhantomJs.childOf`/`isAlive` — read as a race in the fake
+  reading a pid file before it is written; untouched by T05), then 58/0/0/6 three times; whole PDF suite
+  `Tests run: 198, Failures: 0, Errors: 0, Skipped: 6`. Production templates (local `lpre_live_tmp.report_configurations`,
+  latest row) rendered via a throwaway test: oicr 5 / innovation 6 / project 7 pages, DejaVuSans + DejaVuSans-Bold
+  only, words on every page; no font `!important` in them.
+- Not Done / Assumptions (summary of the Implementer's field — assumptions only, no owed item, no blocker → no
+  continuation): Windows not rendered anywhere (P-18, T06; `PhantomJsBuild.WINDOWS` is `FontMode.PAGE`); a
+  `</head>` inside a head comment or attribute would receive the block (author's own markup, left); family name
+  `MarloDejaVu` is the Implementer's choice; a stale red-run PDF under `target/` was overwritten by the green run.
+- **Evidence re-run (Leader-inline): VERIFIED** — hygiene exit 0; clean compile first attempt failed in
+  `maven-resources-plugin` copying `maps/GeoLite2-City.mmdb` (environmental, no code error; disk 32 % used), retry
+  BUILD SUCCESS 2430/1073/155; Checkstyle `HEAD=0 working tree=0 delta=0` on the 4 files; whole PDF suite
+  `Tests run: 198, Failures: 0, Errors: 0, Skipped: 6`; task command `Tests run: 58, Failures: 0, Errors: 0,
+  Skipped: 6` with `theShippedMacosPhantomJsEmbedsOnlyDejaVuAndKeepsTheTextExtractable` and
+  `theShippedPhantomJsRendersTheProjectReportWithNoConfiguredPath` **ran** (surefire XML); poppler on the gated
+  outputs: oicr 5 pages `DejaVuSans DejaVuSans-Bold` words/page `46 135 144 182 91`; innovation 6 pages same fonts
+  `42 170 119 46 68 97`; project 7 pages same fonts `53 16 19 18 14 14 41`.
+- spawns: Implementer 45 calls, 176,529 tokens, ended partial (Not Done / Assumptions, assumptions only).
+
+**Attempt 1 — Reviewer verdicts (parallel lens mode, SEC-003 surface, 2026-11-25)**
+- **Reviewer A (conformance + reliability/resilience + readability, opus): PASS.** Block shape, build-once, insertion
+  after `sanitize()` and image inlining for PAGE builds only, Linux/no-build byte-identity, `render-page.js` and
+  allowlist untouched, Disqualifier met (PDFBox fonts + poppler), both falsifier reds quoted; no contradiction with
+  amended §11/DD-2. `LocalPdfReportServiceTest` edit judged in scope (forced consumer; T05's Consumers list missed it —
+  spec gap recorded). Flagged the "production templates" evidence as not independent unless a `cmp` is quoted.
+- **Leader check (inline, read-only DB) settling that point:** latest row of `lpre_live_tmp.report_configurations`
+  exported per column and compared with `marlo-web/src/test/resources/pdf/templates/*.html` → oicr 64,621 bytes
+  **identical**, innovation 65,335 **identical**, project 63,121 **identical**. The committed gated macOS test therefore
+  renders the production templates: "the production templates (they declare `Montserrat`) still give DejaVu only" is
+  proven by the test itself.
+- **Reviewer B (security + risk, opus): PASS.** Ordering after the sanitizer, allowlist unchanged (font URIs pass the
+  existing `font/` rule, each ~1.0/0.94 MB base64 against the 2 MB cap, `blockedUris=0`), Linux/FreeBSD unchanged,
+  missing font → `PdfRenderException` with class name only, regex linear, SEC-002 surfaces untouched.
+
+ADVISORY (4R, recorded):
+- **RISK (B, high value — owner decision):** plain-text insertion before the first `</head>` is not parse-aware. A head
+  `<style>` whose text holds `</head><img src=x onerror=…>` survives `sanitize()` (raw text), `HEAD_END` matches inside
+  it, the block's `</style>` closes the outer style early and WebKit parses the `<img onerror>` — script in the render
+  page (JS cannot be disabled in PhantomJS 2.1.1; allowlist and `--local-url-access=false` still bound it). Same via a
+  head `<meta content="…</head>…">`. Unreachable from user data today (all `{{{ }}}` placeholders come after
+  `</head>` in the three templates; `{{ }}` escapes `<`). Suggested: insert at document start, after an optional
+  leading `<!DOCTYPE …>` (`!important` already makes order irrelevant), plus a regression test.
+- **RISK (A):** the family name `MarloDejaVu` is fixed and public; payload rich text through `{{{ }}}` can declare a
+  later `@font-face{font-family:'MarloDejaVu';src:url(data:font/truetype…)}` that the sanitizer keeps and
+  `render-page.js` allows, replacing DejaVu without `!important`. Suggested: a per-JVM unpredictable family name.
+- RELIABILITY/RESILIENCE: a `</head>` in a head comment would comment the block out (silent Helvetica); DOCTYPE with no
+  `</head>` puts the `<style>` before the DOCTYPE (quirks mode); ~2 MB block kept per JVM and HTML copied ~3× per
+  render (note for T06 Windows); IOException branch untested and its message drops the resource name.
+- READABILITY: `SHIPPED_MACOS_TEST` Javadoc says "tests"; `titles[]` duplicates `expectedText[i][0]`.
+- Issues encountered: pre-existing flaky `anInterruptedThreadKillsTheProcessAndKeepsItsInterruptFlag`
+  (`NumberFormatException` in `FakePhantomJs.childOf`, race on the pid file) — not T05's.
+
+**Gate (2026-11-25):** both Reviewers PASS, but the two RISK advisories show a tension between `tasks.md` T05 Scope
+("inserted before `</head>`") and SEC-002/SEC-003 (the sanitizer's guarantee must hold for what reaches PhantomJS;
+only DejaVu). Per Pivot Detection (spec tension), T05 is **not** closed yet: a one-line amendment proposal is put to
+the owner before `[x]`.
+- spawns: Reviewer A 28 calls, 86,904 tokens, ended complete; Reviewer B 22 calls, 82,951 tokens, ended complete.
+  Review rounds 11/11 (T05 2).
+- **Decision (owner, 2026-11-25, at the T05 gate):** asked for a recommendation, then "sí, opción 1, enmienda T05 y
+  lanza el intento". T05 set back to `[~]`; execute-time spec edits (no requirement meaning changed), recorded in
+  `requirements.md` §9 with the closure sweep: `tasks.md` T05 Scope + Tests (insertion at document start after an
+  optional DOCTYPE; family name random per JVM; two regression tests), `design.md` DD-3 and §13 SEC-003 bullet,
+  `design.md` §18 review rounds 13. Pivot-lite (spec tension): attempt counter not consumed — the re-run is recorded
+  as **attempt 1b (post-amendment)**; the attempt-1 brief is superseded by a re-issued brief carrying the amended text.
+
+**Attempt 1b — post-amendment re-run (Implementer sonnet, effort `high`, 2026-11-25)**
+- Files changed: `PhantomJsRenderer.java` (`HEAD_END`, the `</head>` search and the public `PAGE_FONT_FAMILY` removed;
+  `withPageFonts()` inserts after a leading `<!DOCTYPE …>` matched by `LEADING_DOCTYPE` = `\A\s*<!DOCTYPE[^>]*>`
+  (case-insensitive) or at offset 0; `pageFontBlock()` picks the family `pf` + 32 hex from 16 `SecureRandom` bytes once
+  per JVM, used by both `@font-face` rules and the universal rule); `PhantomJsRendererTest.java` (insertion tests
+  replaced; new `theBlockGoesAfterALeadingDoctypeAndAtTheStartOtherwiseWhateverTheMarkupHolds`; regression (a)+(b)
+  `aHeadEndTagInsideAHeadStyleOrMetaDoesNotMoveTheBlockIntoItNorLetAnElementOut` — sent HTML minus the block equals
+  `sanitize()` output, block at offset 0 or after the doctype, `Jsoup.parse` counts of `[onerror]`/`img[src=x]` equal
+  the sanitized ones; regression (c) `aPayloadFontFaceNamingTheOldFixedFamilyDoesNotReachTheFamilyOfTheUniversalRule`).
+  `PhantomJsRenderingTest`/`LocalPdfReportServiceTest` unchanged since attempt 1.
+- Falsifiers (each restored, `cmp`): (1) `</head>` text search put back → 3 failures, incl. regression (a)/(b) "…the
+  block sits at the start, after the doctype if there is one expected:<15> but was:<46>"; (2) fixed `MarloDejaVu` →
+  2 failures, "a name nobody can know ahead of time: MarloDejaVu" and "two @font-face rules of one family
+  expected:<2> but was:<3>"; (3) block for Linux too → 5 failures incl. Linux byte-identity.
+- Implementer verification: clean compile 2430/1073/155; Checkstyle delta 0; hygiene 0 FIX; targeted 60 run / 0 / 6
+  skipped, macOS gated test ran (5/6/7 pages, DejaVu pair); whole PDF suite 200 / 0 / 6; flake did not fire.
+- Not Done / Assumptions (assumptions only, no owed item): family prefix `pf` is the Implementer's choice; Windows not
+  verified at runtime (T06); scratch log written to `/tmp/claude-502/t05.log` outside the repo.
+- **Evidence re-run (Leader-inline): VERIFIED** — hygiene exit 0; clean compile 2430/1073/155 BUILD SUCCESS;
+  Checkstyle `HEAD=0 working tree=0 delta=0`; whole PDF suite `Tests run: 200, Failures: 0, Errors: 0, Skipped: 6`;
+  surefire: `theShippedMacosPhantomJsEmbedsOnlyDejaVuAndKeepsTheTextExtractable` and
+  `theShippedPhantomJsRendersTheProjectReportWithNoConfiguredPath` ran; poppler: oicr 5p, innovation 6p, project 7p,
+  each `DejaVuSans DejaVuSans-Bold` only.
+- spawns: Implementer 23 calls, 129,682 tokens, ended partial (assumptions only).
+
+**Attempt 1b — Reviewer verdicts (parallel lens mode, 2026-11-25)**
+- **Reviewer A (conformance + reliability/resilience + readability, opus): PASS.** Amended Scope/Tests, DD-3 and §13
+  met; insertion after `LEADING_DOCTYPE` or at 0 matches the HTML5 tokenizer's doctype end; `project.html` (doctype)
+  and `oicr`/`innovation` (no doctype) paths both run in the gated render; a `<style>` before `<html>` lands in the
+  implicit head (render confirms 5/6/7, DejaVu only); random family from one builder under `static synchronized`,
+  stable per JVM; regression (a)/(b)/(c) assert on what the fake received against `sanitize()` output; attempt-1
+  properties preserved; no scope beyond the amendment; Decision Log sweep holds. Issues: none.
+- **Reviewer B (security + risk, opus): PASS.** Both attempt-1 advisories closed. Anchored prefix only; a `>` inside a
+  quoted doctype identifier ends the doctype in WebKit and jsoup alike; a non-leading payload doctype is dropped by
+  jsoup; `\x0B` edge harmless; no ReDoS. The block holds no `<` beyond its own tags and always starts at top level.
+  Family: 128-bit `SecureRandom`, never logged nor in exceptions; the PDF exposes font-file names only (per Leader
+  poppler, not re-checked by B); a leaked name would add nothing beyond SEC-003's accepted `!important` gap —
+  informational. SEC-002 surfaces, allowlist and `render-page.js` unchanged; Linux/no-build byte-identical. Issues:
+  none.
+
+ADVISORY (4R, recorded only — never a task):
+- RELIABILITY/RISK (A, B): a BOM (`﻿`, not matched by `\s`) or a comment/PI before `<!DOCTYPE` puts the block at
+  0 and drops a standards-mode page into quirks mode on macOS/Windows; no fixture or production row has one (A: grep
+  0). B: record rather than widen — content-independence is worth more. A: a sentence in DD-3 would prevent reading
+  it as a defect later.
+- READABILITY (A, B): the regression's doctype oracle copies the production pattern; hard-code offsets or expose the
+  pattern package-private.
+- RELIABILITY (B): jsoup stands in for WebKit in the breakout regression; no real PhantomJS run of the breakout pages
+  — accepted gap.
+- Still open from attempt 1: IOException message drops the resource name; ~2 MB block copied ~3× per render (T06).
+
+**Closing record — CHG-PPE-T05: PASS (attempt 1b, post-amendment), 2026-11-25**
+
+| Field | Value |
+|---|---|
+| Final status | **PASS** — Reviewer A PASS + Reviewer B PASS on attempt 1b (attempt 1 also PASS ×2, reopened by owner-approved amendment) |
+| Attempts | 1 consumed (no FAIL); 1b = post-amendment re-run (Pivot-lite, spec tension) |
+| Requirements covered | FN-005, NF-002 (macOS), SEC-002, SEC-003; scenarios "Fonts on macOS and Windows" (macOS), "Template or payload declares its own font" |
+| Decisions made | `LocalPdfReportServiceTest` edited as a forced consumer (Consumers list gap); T05 amendment (insertion at document start after optional DOCTYPE; random family per JVM; review rounds 13) — `requirements.md` §9 |
+| Issues encountered | Pre-existing flaky `anInterruptedThreadKillsTheProcessAndKeepsItsInterruptFlag` (`FakePhantomJs.childOf` race); one environmental `maven-resources-plugin` copy failure (`GeoLite2-City.mmdb`), retry green |
+| Final verification | Leader re-run VERIFIED: clean compile 2430/1073/155, Checkstyle delta 0, hygiene 0 FIX, PDF suite 200/0/6, macOS gated test ran, poppler 5/6/7 pages `DejaVuSans DejaVuSans-Bold` only, words on every page; fixtures byte-identical to production rows. Windows not run (P-18, T06); Linux gated (Docker) run deferred to T06 per tasks.md |
+| continuations | 0 · checkpoints: 0 · runtime events: none |
+| spawns | Implementer 1: 45 calls, 176,529 tokens, ended partial; Reviewer A1 28 calls, 86,904 tokens, complete; Reviewer B1 22 calls, 82,951 tokens, complete; Implementer 1b 23 calls, 129,682 tokens, ended partial; Reviewer A1b 15 calls, 80,188 tokens, complete; Reviewer B1b 18 calls, 76,330 tokens, complete |
+
+**Budget running totals (design §18, re-baselined 2026-11-25 for T05) — TRIPWIRE:** tasks 5/6 · **Java LOC about
+2,066** (T01 83 + T02 438 + T03 236 + T04 960 + T05 349: main +75, tests +274) **against about 1,950** · review rounds
+**13/13** (T05 4) · WAR growth ≈ 36.1 MB / 60 MB. LOC exceeded by about 116 (the regression tests, +88 lines in 1b);
+T06 needs at least 1 more review round (checklist). **Run stopped at the T05 gate and escalated to the owner.**
+- **Decision (owner, 2026-11-25, at the T05 tripwire):** "sí, haz el commit, sube el presupuesto y sigue con T06" —
+  budget re-baselined in `design.md` §18 to about 2,100 Java LOC and 14 review rounds; T05 committed.

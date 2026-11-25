@@ -77,6 +77,9 @@ public class PhantomJsRenderingTest {
 
   private static final String SHIPPED_TEST = "theShippedPhantomJsRendersTheProjectReportWithNoConfiguredPath";
 
+  /** The shipped-build tests of macOS: they never read PHANTOMJS_PATH, the build inside MARLO is the one run. */
+  private static final String SHIPPED_MACOS_TEST = "theShippedMacosPhantomJsEmbedsOnlyDejaVuAndKeepsTheTextExtractable";
+
   @Rule
   public TestName testName = new TestName();
 
@@ -94,12 +97,21 @@ public class PhantomJsRenderingTest {
     return isLinux() && (arch.equals("amd64") || arch.equals("x86_64"));
   }
 
+  private static boolean isMacos() {
+    return System.getProperty("os.name", "").toLowerCase().startsWith("mac");
+  }
+
   @Before
   public void setUp() {
-    boolean shipped = SHIPPED_TEST.equals(testName.getMethodName());
+    String method = testName.getMethodName();
+    boolean shipped = SHIPPED_TEST.equals(method) || SHIPPED_MACOS_TEST.equals(method);
     String path = System.getenv("PHANTOMJS_PATH");
-    if (shipped) {
-      Assume.assumeTrue("the shipped PhantomJS runs on Linux x86_64 only", isLinuxX64());
+    if (SHIPPED_MACOS_TEST.equals(method)) {
+      Assume.assumeTrue("the shipped macOS PhantomJS runs on macOS only (Windows follows in CHG-PPE-T06)",
+        isMacos());
+    } else if (shipped) {
+      // The Linux x86_64 build, and the macOS one now that it ships (CHG-PPE-T05); Windows joins in CHG-PPE-T06.
+      Assume.assumeTrue("the shipped PhantomJS runs on Linux x86_64 and macOS only", isLinuxX64() || isMacos());
     } else {
       Assume.assumeTrue("PHANTOMJS_PATH is not set: the real PhantomJS tests are skipped",
         path != null && !path.trim().isEmpty());
@@ -320,6 +332,51 @@ public class PhantomJsRenderingTest {
     List<String> infos = infoLines();
     assertEquals(infos.toString(), 1, infos.size());
     assertTrue(infos.get(0), infos.get(0).contains("outcome=ok"));
+  }
+
+  /** The words PDFBox reads from one page, whitespace squashed: a page of paths (no text) gives none. */
+  private static String pageText(PDDocument document, int page) throws IOException {
+    PDFTextStripper stripper = new PDFTextStripper();
+    stripper.setStartPage(page);
+    stripper.setEndPage(page);
+    return stripper.getText(document).replaceAll("\\s+", " ").trim();
+  }
+
+  @Test
+  public void theShippedMacosPhantomJsEmbedsOnlyDejaVuAndKeepsTheTextExtractable() throws Exception {
+    String[] names = {"oicr", "innovation", "project"};
+    int[] pages = {5, 6, 7};
+    String[] titles = {"Climate-smart advisory services", "Sample", "AICCRA Cluster Summary"};
+    Set<String> dejaVu = new TreeSet<String>();
+    dejaVu.add("DejaVuSans");
+    dejaVu.add("DejaVuSans-Bold");
+    OUT_DIR.mkdirs();
+    for (int i = 0; i < names.length; i++) {
+      String template = resource("/pdf/templates/" + names[i] + ".html");
+      assertTrue(names[i] + " declares its own Montserrat, which the page fonts must override",
+        template.contains("Montserrat"));
+      byte[] pdf = service.render(fixturePayload(names[i]), LocalPdfReportService.DOWNLOAD_DEADLINE_MS);
+      Files.write(new File(OUT_DIR, names[i] + "-shipped-macos.pdf").toPath(), pdf);
+      try (PDDocument document = open(pdf)) {
+        LOG.info("PhantomJsRenderingTest shipped macOS {}: pages={} fonts={}", names[i], document.getNumberOfPages(),
+          fontsOf(document));
+        assertEquals(names[i] + " fonts: only the DejaVu pair MARLO ships", dejaVu, fontsOf(document));
+        assertEquals(names[i] + " page count", pages[i], document.getNumberOfPages());
+        for (int page = 1; page <= document.getNumberOfPages(); page++) {
+          String text = pageText(document, page);
+          assertTrue(names[i] + " page " + page + " has no extractable words: '" + text + "'",
+            text.matches(".*\\p{L}{3,}.*"));
+        }
+        assertTrue(names[i] + " text lacks its title",
+          squash(textOf(document)).toLowerCase().contains(squash(titles[i]).toLowerCase()));
+      }
+    }
+    List<String> infos = infoLines();
+    assertEquals(infos.toString(), 3, infos.size());
+    for (String line : infos) {
+      assertTrue("the font data URIs pass the unchanged allowlist: " + line,
+        line.contains("outcome=ok") && line.contains("blockedUris=0") && line.contains("failedFetches=0"));
+    }
   }
 
   @Test
