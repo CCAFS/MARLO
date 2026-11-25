@@ -15,7 +15,7 @@
 | Type | Change |
 | Deliverable | software |
 | Approval Mode | gated |
-| Status | Proposed |
+| Status | Approved — owner, 2026-11-24; implemented on `feature/local-pdf-report-engine`, 2026-11-25 |
 | Date | 2026-11-24 |
 | Owner | Kenji Tanaka |
 | Requirement source | Owner request in session, 2026-11-24: *"la idea es que funcione para todos los sistemas operativos sin necesidad de definir rutas ni instalar nada externo"*, then *"vamos con la opción 1"*. No Jira ticket linked yet |

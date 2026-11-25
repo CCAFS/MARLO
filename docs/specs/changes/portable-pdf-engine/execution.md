@@ -702,3 +702,21 @@ Open for `/akili-validate` and the Definition of Done: Windows not verified at r
 `marlo-web` suite with `-am` was not run in this execution (the PDF package suite was, 200/0/6); pending `staging`
 items — merge the v2.45.0 persona sections into `.agents/*.md`, drop the macOS PhantomJS note from
 `docs/infrastructure.md` §6.
+
+## Validation remediation (2026-11-25, `/akili-validate`, owner: "sí, dale con la opción 1")
+
+- First pass: 0 FAIL · 7 WARN (W1–W7) · 26 advisories (`validation-report.md` §2–§12). Full suite with `-am`:
+  `Tests run: 1502, Failures: 0, Errors: 0, Skipped: 6`.
+- Leader (spec text): W1 acceptance, W5, W6 and W7 in `requirements.md` §9 (Decision Log 2026-11-25, with closure
+  sweep), `design.md` §12, §14, DD-4, `tasks.md` header and §6, `proposal.md` status.
+- Implementer (sonnet, effort `medium`; 25 calls, 129,650 tokens, ended complete): A-2 (`Assume` moved first in
+  `EmbeddedPhantomJsTest.theRealResourceExtractsToTheKnownBuild`), W4 (`marlo-test.properties` comment), W2 (5
+  remaining parity cases: 0 differing pages against `e452378187` for OICR 3508, Innovation 1558, Cluster 102076 (481
+  pages), missing-flag and font probes; falsifier red; original CHG-LPRE payloads reused from an earlier scratchpad —
+  no app run, no dump line, no credentials).
+- Evidence re-run (Leader-inline): VERIFIED — `pixcmp-p.sh` base vs final 0/5, 0/6, 0/481, 0/1, 0/1; base vs
+  falsifier: OICR 5/5, innovation 6/6, both probes 1/1 differ; cluster absent (timed out at 50 s); `EmbeddedPhantomJsTest`
+  `Tests run: 30, Failures: 0, Errors: 0, Skipped: 0`.
+- Reviewer (opus, checklist, 5 calls, 41,726 tokens): PASS on W4 + A-2; the Implementer's first-run "killed at the
+  render deadline" in `queryVersion()` is a cold start after a clean build, unrelated → tracked with A-24.
+- Result: `validation-report.md` §13 — **PASS, archive-ready**; W1 accepted, W2–W7 fixed.

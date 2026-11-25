@@ -3,7 +3,7 @@
 **Spec ID:** CHG-PORTABLE-PDF-ENGINE-001
 **Status:** Approved — owner, 2026-11-24 (Phase 1, 2 and 3 gates)
 **Owner:** Kenji Tanaka (IBD)
-**Last Updated:** 2026-11-24
+**Last Updated:** 2026-11-25
 **Implements requirements:** CHG-PPE-FN-001 … FN-007, NF-001 … NF-006, SEC-001 … SEC-003, OPS-001, OPS-002
 **Touches modules:** marlo-web (`utils/pdf`, `resources/pdf/phantomjs`, tests)
 
@@ -111,7 +111,9 @@ per-render INFO line is unchanged. Two new WARN lines:
 
 ## 12. Performance & Scalability
 
-- On Linux with host libraries, nothing changes. The BUNDLED probe adds one extra `--version` run at startup only.
+- On Linux with host libraries, renders are unchanged; startup runs one extra `--version` (the DD-2 library probe)
+  before the version check. The BUNDLED fallback adds one more `--version` run at startup only. *Amended 2026-11-25
+  (validation W7): was "nothing changes".*
 - On macOS/Windows each render's HTML grows by about 2 MB of base64 font data. In the S-3 runs the fixtures took
   1.7–2.0 s with page fonts; the runs without them are not a fair comparison (the first included a cold start), so
   the cost is bounded by the NF-006 deadlines rather than measured. The CSS string is built once per JVM.
@@ -137,7 +139,9 @@ per-render INFO line is unchanged. Two new WARN lines:
 ## 14. Backwards Compatibility & Rollout
 
 - Linux with host libraries (the current Tomcat image): same binary, same environment keys, same fontconfig — the
-  output is byte-identical (verified by the Linux gated test and a byte comparison against the pre-change PDFs).
+  output is pixel-identical (verified by the Linux gated test and a per-page pixel comparison against the pre-change
+  PDFs; the raw PDF bytes differ only in metadata such as the creation date). *Amended 2026-11-25 (validation W7): was
+  "byte-identical … a byte comparison".*
 - The override keeps priority (FN-006).
 - Rollout rides on the CHG-LPRE flag; the same branch reaches `staging` once.
 - Rollback: revert the commits; no data or configuration to undo.
@@ -149,7 +153,7 @@ per-render INFO line is unchanged. Two new WARN lines:
 | DD-1 | **One platform table** (`PhantomJsBuild`) keyed by OS and architecture together. Entries: Linux x86_64 (`amd64`/`x86_64`), macOS (`x86_64` and `aarch64`, Rosetta), Windows (`amd64`/`x86_64`/`x86`; the 32-bit build runs under WOW64). Anything else → no build | FN-001, FN-007 | One `if` per OS spread across classes: the Linux-only assumption is in 3 files today (P-1, P-9, P-14); a table keeps it in one place (KZ-…-directory-abstraction-1) |
 | DD-2 | **Library mode decided at startup**: try `--version` with the host's libraries; only when the failure output contains "error while loading shared libraries" (the loader's prefix for a missing *or* unloadable library; amended 2026-11-25 from "cannot open shared object file"), extract the shipped libraries and retry with `LD_LIBRARY_PATH`. The mode is kept for all renders | FN-002, FN-003, FN-007 | Always use the shipped libraries: breaks hosts with glibc < 2.36 that work today (S-2, `amazonlinux:2023`). Static re-linking: needs a custom PhantomJS build, out of scope |
 | DD-3 | **Linux keeps fontconfig; macOS/Windows get page fonts** (DejaVuSans and DejaVuSans-Bold as `@font-face` data URIs plus a universal `font-family` rule, added after the sanitizer at the start of the document — after an optional leading `<!DOCTYPE …>`, never at a position found in template or payload content — under a family name unpredictable per JVM; amended 2026-11-25) | FN-005, NF-001, NF-002, SEC-003 | Page fonts everywhere: on Linux text becomes paths (S-3). Shipping fontconfig for macOS: Qt on macOS uses CoreText, not fontconfig |
-| DD-4 | **Environment per build style**: POSIX style (PATH `/usr/bin:/bin`, `OPENSSL_CONF=/dev/null`, `HOME`, `TMPDIR`, `LANG`) for Linux and macOS; Windows style (`SystemRoot`, `PATH=%SystemRoot%\System32`, `TEMP`, `TMP`, `USERPROFILE`, `OPENSSL_CONF=NUL`). `FONTCONFIG_FILE` only on Linux | FN-004, SEC-002 | The POSIX environment on Windows: a process started without `SystemRoot` commonly fails to initialise (P-16) |
+| DD-4 | **Environment per build style**: POSIX style (PATH `/usr/bin:/bin`, `OPENSSL_CONF=/dev/null`, `HOME`, `TMPDIR`, `LANG`) for Linux and macOS; Windows style (`SystemRoot`, `PATH=%SystemRoot%\System32`, `TEMP`, `TMP`, `USERPROFILE`, `OPENSSL_CONF=NUL`, `LANG`; `LANG` added 2026-11-25, validation W7, matching `tasks.md` T03 and the code). `FONTCONFIG_FILE` only on Linux | FN-004, SEC-002 | The POSIX environment on Windows: a process started without `SystemRoot` commonly fails to initialise (P-16) |
 | DD-5 | **Executable name and permissions from the build**: `phantomjs` / `phantomjs.exe`; `rwx------` applied only when the file store supports the POSIX view | FN-004 | Try and catch `UnsupportedOperationException`: works, but hides the platform decision in an exception path |
 | DD-6 | **Stale-directory sweep compares the owner without a `DOMAIN\` prefix** on Windows | FN-004 | Skip the sweep on Windows: support directories would pile up in `%TEMP%` |
 | DD-7 | **Binaries stored gzip-compressed, one per platform**, from the same GitHub release as the Linux one, with upstream and stored SHA-256 in `PROVENANCE-*.txt`; licences (`LICENSE.BSD`, `third-party.txt`) shared | OPS-001, NF-004 | A single archive with all builds: forces reading the whole archive on every platform |

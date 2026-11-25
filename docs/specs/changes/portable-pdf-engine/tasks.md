@@ -3,12 +3,13 @@
 **Spec ID:** CHG-PORTABLE-PDF-ENGINE-001
 **Status:** Approved — owner, 2026-11-24 (Phase 1, 2 and 3 gates)
 **Owner:** Kenji Tanaka (IBD)
-**Last Updated:** 2026-11-24
+**Last Updated:** 2026-11-25
 **Implements:** `requirements.md` (CHG-PPE-*) via `design.md` DD-1 … DD-7
 
 > **Answer first:** six tasks, in this order: ship the binaries (T01), choose them per platform (T02), fix the process
 > environment for Windows (T03), add the Linux library fallback (T04), add DejaVu to the page on macOS/Windows (T05),
-> and run the cross-platform verification (T06). About 650 Java lines; one PR.
+> and run the cross-platform verification (T06). Planned at about 650 Java lines; delivered about 2,066 (budget
+> re-baselined to about 2,100, `design.md` §18); one PR.
 
 ---
 
@@ -298,8 +299,9 @@ Not applicable — no UI.
 ## 6. Operational Steps
 
 No migration, specificity, BI/AI coordination or configuration change. Pending item for `staging` (shared file,
-recorded here and applied there, never on this branch): `docs/infrastructure.md` §6 can drop the macOS PhantomJS
-note once this ships.
+recorded here and applied there, never on this branch): none from this spec for `docs/infrastructure.md` — §6 holds
+no PhantomJS note (checked 2026-11-25 on HEAD, `staging`, `origin/staging` and `e452378187`) and PhantomJS needs no
+setup on any OS. *Amended 2026-11-25 (validation W5): was "§6 can drop the macOS PhantomJS note once this ships".*
 
 ## 7. Rollback Plan
 

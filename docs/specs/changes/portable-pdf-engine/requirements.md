@@ -4,7 +4,7 @@
 **Status:** Approved — owner, 2026-11-24 (Phase 1, 2 and 3 gates)
 **Owner:** Kenji Tanaka (IBD)
 **Reviewers:** owner
-**Last Updated:** 2026-11-24
+**Last Updated:** 2026-11-25
 **Related PRD sections:** docs/prd.md — reporting outputs (summaries)
 **Related UX/UI Design sections:** not applicable (no screen changes)
 **Related TRD sections:** docs/trd/trd.md §2 (`action/summaries`), §9 Observability
@@ -323,3 +323,17 @@ covered by unit tests only and is recorded as **not verified at runtime**.
   `design.md` DD-3 and §13 carried the superseded insertion point (amended); `design.md` §Spike S-3 records what the
   spike did and stays true; `proposal.md` §Fonts names no insertion point. Backward: T06 (1) falsifier cites "T05's
   block also reaches Linux" — unaffected.
+- 2026-11-25 — `/akili-validate` remediation (owner: "sí, dale con la opción 1"). (W1) **Windows ships unverified
+  at runtime — accepted by the owner.** Windows is not a production platform (dev, staging and prod run the Linux
+  x86_64 Tomcat image); FN-001, FN-004, FN-005 and NF-002 on Windows rest on unit tests and code reading; P-16, P-17,
+  P-18 and OQ-7 stay open and must be settled by the first real Windows install (for example icipe) before Windows is
+  supported in operations. (W5) `tasks.md` §6: the `docs/infrastructure.md` §6 pending item targeted a note that does
+  not exist — replaced by "none". (W6) `tasks.md` header LOC figure updated to planned ~650 / delivered ~2,066; `Last
+  Updated` bumped on requirements, design and tasks; `proposal.md` status set. (W7) `design.md` §14 "byte-identical …
+  byte comparison" → pixel-identical (raw bytes differ in PDF metadata), §12 "nothing changes" → one extra startup
+  `--version` in HOST mode, DD-4 Windows list gains `LANG`. No requirement's meaning changes. Closure sweep, forward:
+  `grep -nE 'byte-identical|byte comparison|nothing changes|About 650|drop the macOS PhantomJS|Last Updated:\*\* 2026-11-24'`
+  over this folder — the hits outside this entry are `tasks.md` T05 Tests ("a LINUX build's HTML is byte-identical",
+  HTML not PDF — true), `requirements.md` FN-002 scenario context and `execution.md` history (append-only, left as the
+  record), all others amended; `execution.md` Document Control "about 650" is the original budget and is superseded
+  by `design.md` §18. Backward: `validation-report.md` §11 W5–W7 cite these sections and are resolved by this entry.

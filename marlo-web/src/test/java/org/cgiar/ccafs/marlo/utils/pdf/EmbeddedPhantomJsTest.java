@@ -181,6 +181,7 @@ public class EmbeddedPhantomJsTest {
   @Test
   public void theRealResourceExtractsToTheKnownBuild() throws Exception {
     EmbeddedPhantomJs real = EmbeddedPhantomJs.system();
+    Assume.assumeTrue("a build ships for this platform", real.isSupportedPlatform());
     Path dir = temp.newFolder().toPath();
     Path file = real.extractTo(dir);
     String build = real.build().map(PhantomJsBuild::id).orElse("none");
@@ -191,7 +192,6 @@ public class EmbeddedPhantomJsTest {
     assertEquals(64, expected.length());
     assertEquals(expected, sha256(Files.readAllBytes(file)));
     assertTrue(real.isIntact(file));
-    Assume.assumeTrue("a build ships for this platform", real.isSupportedPlatform());
     if (Files.getFileStore(file).supportsFileAttributeView("posix")) {
       assertEquals("rwx------", PosixFilePermissions.toString(Files.getPosixFilePermissions(file)));
     }
