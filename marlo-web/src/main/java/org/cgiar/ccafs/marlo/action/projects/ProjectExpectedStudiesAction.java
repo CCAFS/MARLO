@@ -291,6 +291,8 @@ public class ProjectExpectedStudiesAction extends BaseAction {
   private Project project;
   private long projectID;
   private long expectedID;
+  // A2-2743: missing required fields per form tab (general, alliance, cgiar, comms), for the tab badges
+  private final Map<String, Integer> tabMissingCounts = new HashMap<>();
   private long subIdoPrimaryId;
   private long srfSubIdoPrimary;
   private long milestonePrimaryId;
@@ -665,6 +667,10 @@ public class ProjectExpectedStudiesAction extends BaseAction {
     return this.crps;
   }
 
+
+  public Map<String, Integer> getTabMissingCounts() {
+    return tabMissingCounts;
+  }
 
   public long getExpectedID() {
     return this.expectedID;

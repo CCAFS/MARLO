@@ -1,7 +1,7 @@
 [#ftl]
 [#import "/WEB-INF/global/macros/deliverableMacros.ftl" as deliverableMacros /]
 
-[#macro studyMacro element name index=-1 template=false fromProject=true ]
+[#macro studyMacro element name index=-1 template=false fromProject=true scoreInHeader=false]
   [#local customName = "${name}"/]
   [#local customId = "study-${template?string('template',index)}" /]
   [#local isOutcomeCaseStudy = ((element.projectExpectedStudyInfo.studyType.id == 1)!false)/]
@@ -60,7 +60,8 @@
         
       
       [#-- OICR Score --]
-      [#if (action.canAccessSuperAdmin() || action.isPMU()) && action.hasSpecificities('oicr_score_field_active')]
+      [#-- A2-2743: the redesigned OICR form draws the score in its header (scoreInHeader) --]
+      [#if !scoreInHeader && (action.canAccessSuperAdmin() || action.isPMU()) && action.hasSpecificities('oicr_score_field_active')]
         <div class="form-group row">
           <div class="col-md-2 mb-4">
             [@customForm.input name="${customName}.projectExpectedStudyInfo.score" i18nkey="study.general.score" type="number" helpIcon=false required=false editable=editable isMainTitle=true /]

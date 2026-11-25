@@ -16,6 +16,7 @@
 package org.cgiar.ccafs.marlo.validation.projects;
 
 import org.cgiar.ccafs.marlo.action.BaseAction;
+import org.cgiar.ccafs.marlo.action.projects.ProjectExpectedStudiesAction;
 import org.cgiar.ccafs.marlo.config.APConstants;
 import org.cgiar.ccafs.marlo.data.manager.AllianceLeverManager;
 import org.cgiar.ccafs.marlo.data.manager.AllianceLeversSdgContributionManager;
@@ -192,18 +193,22 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
     int oicrGeneral = action.getMissingFields().length();
     this.validateGeneralInformation(action, project, projectExpectedStudy, saving);
     this.updateGeneralInformationStatus(action, projectExpectedStudy, oicrGeneral, saving);
+    this.recordTabMissingCount(action, "general", oicrGeneral);
 
     int oicrAlliance = action.getMissingFields().length();
     this.validateAllianceAlignment(action, project, projectExpectedStudy, saving);
     this.updateAllianceAlignmentStatus(action, projectExpectedStudy, oicrAlliance, saving);
+    this.recordTabMissingCount(action, "alliance", oicrAlliance);
 
     int oicrOneCgiar = action.getMissingFields().length();
     this.validateOneCgiarAlignment(action, project, projectExpectedStudy, saving);
     this.updateOneCgiarAlignmentStatus(action, projectExpectedStudy, oicrOneCgiar, saving);
+    this.recordTabMissingCount(action, "cgiar", oicrOneCgiar);
 
     int oicrCommunication = action.getMissingFields().length();
     this.validateCommunications(action, project, projectExpectedStudy, saving);
     this.updateCommunicationsStatus(action, projectExpectedStudy, oicrCommunication, saving);
+    this.recordTabMissingCount(action, "comms", oicrCommunication);
     // this.validateAllianceOICRid(action, projectExpectedStudy);
 
 
@@ -405,6 +410,27 @@ public class ProjectExpectedStudiesValidator extends BaseValidator {
       action.getInvalidFields().put("input-expectedStudy.projectExpectedStudyInfo.allianceOicr",
         InvalidFieldsMessages.EMPTYFIELD);
     }
+  }
+
+  /**
+   * A2-2743: number of missing fields a tab added after startIndex, for the tab's badge in the OICR form. Counted on
+   * the same span hasNewMissingFields reads, so a badge and the tab's check mark always agree.
+   *
+   * @param action the action collecting the missing fields
+   * @param tab the tab key read by projectStudy.ftl
+   * @param startIndex length of the missing fields before the tab was validated
+   */
+  private void recordTabMissingCount(BaseAction action, String tab, int startIndex) {
+    if (!(action instanceof ProjectExpectedStudiesAction)) {
+      return;
+    }
+    int count = 0;
+    for (String field : action.getMissingFields().substring(startIndex).split(";")) {
+      if (!field.trim().isEmpty()) {
+        count++;
+      }
+    }
+    ((ProjectExpectedStudiesAction) action).getTabMissingCounts().put(tab, count);
   }
 
   private boolean hasNewMissingFields(BaseAction action, int startIndex) {

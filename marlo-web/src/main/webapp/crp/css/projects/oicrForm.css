@@ -1,0 +1,406 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster OICR form (A2-2743 redesign).
+ *
+ * projectStudy.ftl reuses the deliverable form redesign (deliverableForm.css, .dlf): back
+ * link, notes, tabs, section cards, customForm fields and the save bar. This file only
+ * carries what the OICR form adds, scoped under .ocf: the header card with its meta row,
+ * the inline sharing panel, the tab badges, the read-only note and the issues button of
+ * the save bar. It loads after projectStudies.css and beats it at class weight.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.dlf.ocf [hidden] { display: none !important; }
+
+.dlf .ocf-feedback { justify-content: flex-end; margin: -6px 0 0; }
+
+/* ---------- Header card ---------- */
+
+.dlf .ocf-head { gap: 0; padding: 0; }
+.dlf .ocf-head__top { display: flex; align-items: flex-start; gap: 20px; padding: 18px 20px 16px; }
+.dlf .ocf-head__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.dlf .ocf-head__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.dlf .ocf-head__id { font: 600 12px Figtree, sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--dlf-muted); }
+.dlf .ocf-aid {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 5px;
+  border: 1px solid #E0E5EB;
+  background: #F1F3F6;
+  font: 600 11.5px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .ocf-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--dlf-line);
+  background: #F7F9FB;
+  font: 600 11.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .ocf-status__dot,
+.dlf .ocf-seg__dot { flex: none; display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--dlf-subtle); }
+.dlf .ocf-dot--2 { background: var(--dlf-warn-dot); }
+.dlf .ocf-dot--3 { background: var(--dlf-ok); }
+.dlf .ocf-dot--4 { background: var(--dlf-subtle); }
+.dlf .ocf-dot--5 { background: var(--dlf-danger); }
+.dlf .ocf-head__title { margin: 0; font: 600 21px/1.35 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+.dlf .ocf-head__title.is-empty { color: var(--dlf-subtle); }
+.dlf .ocf-head__owner { font: 400 13px Figtree, sans-serif; color: var(--dlf-muted); }
+
+/* projectStudies.css pins .generalStudyOptions to the corner as a column of small buttons. */
+.dlf .ocf-head__actions.generalStudyOptions {
+  position: static !important;
+  top: auto;
+  right: auto;
+  flex: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+/* projectStudies.css spaces the legacy buttons with margins; the row's gap does it here */
+.dlf .ocf-headBtn { position: static; top: auto; height: 34px; margin: 0 !important; padding: 0 12px; }
+.dlf .ocf-head__actions .feedback-flex-items { display: none; }
+.dlf .ocf-headBtn:hover,
+.dlf .ocf-headBtn:focus,
+.dlf .ocf-headBtn[aria-expanded="true"] { border-color: var(--dlf-brand); color: var(--dlf-brand-dark); }
+.dlf .ocf-headBtn p { margin: 0; }
+.dlf .ocf-headBtn__count {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--dlf-chip);
+  color: var(--dlf-ink-soft);
+  font: 700 11.5px/20px Figtree, sans-serif;
+  text-align: center;
+}
+/* projectStudy.js paints the copied state inline; the design's copied state is the soft green. */
+.dlf .ocf-headBtn.copyButton[style*="background-color"] {
+  border-color: var(--dlf-ok-border) !important;
+  background-color: var(--dlf-ok-bg) !important;
+  color: var(--dlf-ok) !important;
+}
+.dlf .ocf-head__actions .input,
+.dlf .ocf-head__actions .urlInput,
+.dlf .ocf-head__actions .message { display: none !important; }
+
+/* ---------- Sharing panel: the elements list component, drawn as tokens ---------- */
+
+.dlf .ocf-share {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 20px 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #FBFCFD;
+}
+.dlf .ocf-share__text { margin: 0; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink-soft); }
+.dlf .ocf-share .elementsListComponent { margin: 0; padding: 0; border: 0 !important; background: none !important; box-shadow: none; }
+.dlf .ocf-share .elementsListComponent .panel-head { display: none; }
+.dlf .ocf-share .elementsListComponent > .panel-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+}
+.dlf .ocf-share .elementsListComponent > .panel-body > ul.list { display: contents; }
+/* Bootstrap's clearfix pseudo-elements would be empty flex items, adding a gap before the first token */
+.dlf .ocf-share .elementsListComponent > .panel-body::before,
+.dlf .ocf-share .elementsListComponent > .panel-body::after { display: none; content: none; }
+/* One token per cluster: the shipped region token of the deliverable form (deliverableForm.css .regionalBlock) */
+.dlf .ocf-share .elementsListComponent > .panel-body > ul.list > li.relationElement {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 30px;
+  margin: 0 !important;
+  padding: 4px 4px 4px 10px !important;
+  border: 1px solid var(--dlf-line-strong) !important;
+  border-radius: 7px;
+  background: #fff !important;
+  box-shadow: none;
+  font: 500 12.5px/1.35 Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .ocf-share .elementsListComponent li.relationElement > .elementName {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  white-space: normal;
+  text-wrap: pretty;
+}
+.dlf .ocf-share .elementsListComponent li.relationElement > .sortElement { display: none !important; }
+.dlf .ocf-share .elementsListComponent li.relationElement > .removeElement {
+  order: 2;
+  position: static;
+  float: none;
+  flex: none;
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0;
+  padding: 0 !important;
+  border-radius: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%234B5563' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center no-repeat;
+  font-size: 0;
+  cursor: pointer;
+}
+.dlf .ocf-share .elementsListComponent li.relationElement > .removeElement:hover { background-color: var(--dlf-danger-bg); }
+/* The add select sits after the tokens, as a dashed "add" control; select2 writes width:100% */
+.dlf .ocf-share .elementsListComponent > .panel-body > .select2-container { flex: 0 1 260px; width: auto !important; min-width: 200px; height: 30px; margin: 0 !important; vertical-align: middle; }
+.dlf .ocf-share .elementsListComponent .select2-container--default .select2-selection--single {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  min-height: 30px;
+  border: 1px dashed #9CC9DC;
+  border-radius: 7px;
+  background: #F7FBFD;
+}
+.dlf .ocf-share .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__rendered {
+  padding: 0 24px 0 10px;
+  font: 600 12.5px/1.2 Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+}
+.dlf .ocf-share .elementsListComponent .select2-container--default .select2-selection--single .select2-selection__arrow { top: 1px; height: 28px; }
+/* The source select behind select2 must not take a slot (and a gap) in the row */
+.dlf .ocf-share .elementsListComponent > .panel-body > select.setSelect2 { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.dlf .ocf-share .commentNumberContainer { display: none; }
+.dlf .ocf-share .feedback-flex-items:empty { display: none; }
+
+/* ---------- Meta row ---------- */
+
+.dlf .ocf-meta {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  padding: 14px 20px 16px;
+  border-top: 1px solid var(--dlf-line-soft);
+}
+.dlf .ocf-meta__field { position: relative; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.dlf .ocf-meta__field .feedback-flex-items:empty { display: none; }
+.dlf .ocf-meta__field .form-group,
+.dlf .ocf-meta__field .fieldReference,
+.dlf .ocf-meta__field .select,
+.dlf .ocf-meta__field .input { margin: 0; padding: 0; }
+.dlf .ocf-meta__label,
+.dlf .ocf-meta__field label:not(.ocf-seg__opt) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .ocf-meta__label { margin: 0; }
+.dlf .ocf-req,
+.dlf .ocf-meta__field .requiredTag { font: 700 13px Figtree, sans-serif; color: var(--dlf-required); }
+/* The feedback bubble sits on its own label line (oicrForm.js moves it there), not beside the next field */
+.dlf .ocf-meta__field .commentNumberContainer { position: static; display: inline-flex; align-items: center; margin: 0; }
+.dlf .ocf-meta__field .commentNumberContainer .qaComment { position: static; width: 18px; margin: 0; }
+
+.dlf .ocf-meta__field select.ocf-select,
+.dlf .ocf-meta__field input.form-control {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 36px;
+  padding: 0 28px 0 11px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: var(--dlf-radius-sm);
+  background-color: #fff;
+  box-shadow: none;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+}
+.dlf .ocf-meta__field select.ocf-select {
+  min-width: 130px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%234B5563' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 11px center no-repeat;
+  cursor: pointer;
+}
+.dlf .ocf-meta__field input.form-control { padding-right: 11px; }
+.dlf .ocf-meta__field--aid input.form-control { width: 130px; text-transform: uppercase; }
+.dlf .ocf-meta__field--score input.form-control { width: 90px; }
+.dlf .ocf-meta__field select.ocf-select:focus,
+.dlf .ocf-meta__field input.form-control:focus { border-color: var(--dlf-brand); box-shadow: var(--dlf-focus-ring); }
+.dlf .ocf-meta__field--year.is-earlier select.ocf-select { border-color: #E6C98E; background-color: #FFFBF2; }
+
+/* Read-only values (customForm prints a <p>) sit at the field height */
+.dlf .ocf-meta__field .selectList p,
+.dlf .ocf-meta__field .input p { display: flex; align-items: center; height: 36px; margin: 0; font: 500 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+/* Tag as: a locked pill unless a SuperAdmin manages it */
+.dlf .ocf-meta__field--tag.is-locked .selectList p {
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid var(--dlf-line);
+  border-radius: var(--dlf-radius-sm);
+  background: #F7F9FB;
+  font-size: 13px;
+  color: var(--dlf-ink-soft);
+  white-space: nowrap;
+  width: max-content;
+  padding-right: 14px;
+}
+.dlf .ocf-meta__field--tag.is-locked .selectList p::before {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none'%3E%3Crect x='3.2' y='7' width='9.6' height='6.6' rx='1.6' stroke='%236B7280' stroke-width='1.5'/%3E%3Cpath d='M5.6 7V5.2a2.4 2.4 0 0 1 4.8 0V7' stroke='%236B7280' stroke-width='1.5'/%3E%3C/svg%3E") center no-repeat;
+}
+
+/* Status: segmented control over native radios */
+.dlf .ocf-seg { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 9px; background: var(--dlf-chip); }
+.dlf .ocf-seg .ocf-seg__opt {
+  position: relative;
+  display: inline-flex !important;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  margin: 0 !important;
+  padding: 0 11px;
+  border-radius: 6px;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dlf .ocf-seg__input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.dlf .ocf-seg__opt.is-on { background: #fff; font-weight: 600; color: var(--dlf-ink); box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+.dlf .ocf-seg__opt:has(.ocf-seg__input:focus-visible) { box-shadow: var(--dlf-focus-ring); }
+.dlf .ocf-seg__opt.is-locked { cursor: default; }
+.dlf .ocf-seg__opt.is-locked:not(.is-on) { color: var(--dlf-subtle); }
+.dlf .ocf-seg__opt.is-locked:not(.is-on) .ocf-seg__dot { opacity: .45; }
+
+/* "?" and "PMU" sit on the label line (oicrForm.js moves them into the label) */
+.dlf .ocf-help {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--dlf-chip);
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .ocf-help:hover,
+.dlf .ocf-help[aria-expanded="true"] { background: var(--dlf-info-hover); color: var(--dlf-brand-dark); }
+.dlf .ocf-meta__badge { font: 600 10.5px Figtree, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--dlf-muted); }
+
+.dlf .ocf-aidHelp {
+  margin: -4px 20px 16px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #F7F9FB;
+  font: 400 12.5px/1.55 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  text-wrap: pretty;
+}
+.dlf .ocf-yearNote {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 20px 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 9px;
+  background: var(--dlf-warn-bg);
+}
+.dlf .ocf-yearNote__text { flex: 1; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+
+/* ---------- Read-only note ---------- */
+
+.dlf .ocf-readOnly {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px 11px 16px;
+  border: 1px solid #E0E5EB;
+  border-radius: var(--dlf-radius);
+  background: #F7F9FB;
+  color: var(--dlf-ink-soft);
+}
+.dlf .ocf-readOnly__text { flex: 1; font: 500 13.5px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .ocf-readOnly__edit { height: 32px; background: var(--dlf-brand); color: #fff; text-decoration: none; }
+.dlf .ocf-readOnly__edit:hover,
+.dlf .ocf-readOnly__edit:focus { background: var(--dlf-brand-dark); color: #fff; text-decoration: none; }
+
+/* ---------- Tabs: a check or the missing-fields badge ---------- */
+
+/* projectStudies.css gives .studiesTab a top margin; the form's own gap spaces it */
+.dlf .ocf-tabs { margin-top: 0; }
+.dlf .ocf-tabs > .nav-tabs > li > a { gap: 8px; padding: 0 14px !important; }
+.dlf .ocf-tab__label { line-height: 1.3; }
+.dlf .ocf-tab__ok { color: var(--dlf-ok); }
+.dlf .ocf-tab__missing {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--dlf-warn-border);
+  border-radius: 999px;
+  background: var(--dlf-warn-bg);
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-warn);
+}
+.dlf .ocf-tab__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dlf-warn-dot); }
+/* projectStudies.css paints the legacy submitted / toSubmit tab states and widths. */
+.dlf .ocf-tabs > .nav-tabs > li { width: auto !important; }
+.dlf .ocf-tabs > .nav-tabs > li.submitted > a,
+.dlf .ocf-tabs > .nav-tabs > li.toSubmit > a { background-image: none; }
+.dlf .ocf-tabs > .nav-tabs > li.submitted > a::after,
+.dlf .ocf-tabs > .nav-tabs > li.toSubmit > a::after,
+.dlf .ocf-tabs > .nav-tabs > li.submitted::after,
+.dlf .ocf-tabs > .nav-tabs > li.toSubmit::after { display: none; content: none; }
+.dlf .ocf-tabs > .nav-tabs > li.ocf-tabs__note {
+  align-self: center;
+  margin: 0 0 0 auto;
+  padding: 0 4px;
+  font: 400 12.5px Figtree, sans-serif;
+  color: var(--dlf-muted);
+}
+
+/* ---------- Save bar: jump to the first field to fix ---------- */
+
+.dlf .ocf-issues {
+  height: 30px;
+  margin: 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--dlf-warn-bg);
+  font: 600 12.5px Figtree, sans-serif;
+  color: var(--dlf-warn);
+  cursor: pointer;
+}
+.dlf .ocf-issues:hover,
+.dlf .ocf-issues:focus { background: #FBEACB; color: var(--dlf-warn); }
+
+@media (max-width: 767px) {
+  .dlf .ocf-head__top { flex-direction: column; }
+  .dlf .ocf-tabs > .nav-tabs { overflow-x: auto; }
+  .dlf .ocf-tabs > .nav-tabs > li.ocf-tabs__note { display: none; }
+}
