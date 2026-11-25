@@ -57,6 +57,13 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
    */
   private Boolean active = Boolean.TRUE;
 
+  /**
+   * Id of the user who created the institution in MARLO (institutions.created_by, NOT NULL in the real databases and
+   * filled by the CLARISA synchronization for the institutions it creates). Written on insert only, see
+   * Institutions.hbm.xml: without it an insert fails on a MySQL server in strict mode.
+   */
+  private Long createdBy;
+
   private String nameWithCountry;
 
   private Set<CrpPpaPartner> crpPpaPartners = new HashSet<CrpPpaPartner>(0);
@@ -274,6 +281,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
   }
 
 
+  public Long getCreatedBy() {
+    return this.createdBy;
+  }
+
   public Long getProgramId() {
     return this.programId;
   }
@@ -375,6 +386,10 @@ public class Institution extends MarloBaseEntity implements java.io.Serializable
 
   public void setNameWithCountry(String nameWithCountry) {
     this.nameWithCountry = nameWithCountry;
+  }
+
+  public void setCreatedBy(Long createdBy) {
+    this.createdBy = createdBy;
   }
 
   public void setProgramId(Long programId) {

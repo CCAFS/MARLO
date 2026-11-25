@@ -1,0 +1,57 @@
+# T10 live run: partner request page redesign. Copy database aiccradb_partreq_test only, HEAD a523ea9f89 + uncommitted T10 files, built in a throwaway worktree.
+# Email: custom_parameters 2184 (crp_enable_email_notification, unit 45) set to false on the COPY for the run, restored to true afterwards.
+# Counts below are partner_requests / email_logs on the copy.
+
+== A. Submit with nothing filled (click save after the page JS initialised)
+  before 5215 / 18295 -> after 5215 / 18295
+  note: "Please fill-in the required fields and/or correct the indicated values." (warning, role=alert)
+  errors: prqNameError, prqTypeError, prqCountryError -> "Field required." under each field
+  aria-invalid on name, type, country; focus moves to the name field
+
+== B. Name and type filled, country missing
+  before 5215 / 18295 -> after 5215 / 18295
+  errors: prqCountryError only; typed values kept (name, type 42); focus moves to the country list
+
+== C. Valid submit (name, type, country)
+  before 5217 / 18295 -> after 5219 / 18295  (one POST -> two rows)
+  5275  partner_request_id=NULL  is_active=1 global_unit_id=45 request_source=' Cluster: (102076) - ...'
+  5276  partner_request_id=5275  is_active=1 global_unit_id=45 request_source=' Cluster: (102076) - ...'
+  result: redirect .../partnerSave.do?projectID=102076&fundingSourceID=0&expectedID=0&messageSent=true -> success card
+  "Request sent"; buttons "Request another institution" (-> partnerSave.do?projectID=102076) and "Close"
+  double click on the send button: still exactly 2 rows (5289/5290); Enter in a field submits and sends "save" (5291/5292)
+
+== D. Forced save failure
+  fault: temporary BEFORE INSERT trigger t10_fault on partner_requests of the COPY (SIGNAL when partner_name LIKE 'T10 Fail%'),
+         created for this one submit and dropped right after; information_schema.triggers on partner_requests afterwards: 0
+  before 5221 / 18295 -> after 5221 / 18295
+  danger note: "Your request could not be saved. Please try again or contact the MARLO technical team." (marloRequestCreation.saveFailed)
+  typed values kept; application log: ERROR PartnersSaveAction "Could not save the partner request of the Global Unit 45"
+
+== E. Falsifier: name="save" removed from the submit (deployed template of the worktree only)
+  rendered button: <button type="submit" id="AICCRA_partnerSave_0" value="Submit" class="prq-btn prq-btn--primary">
+  valid submit of "T10 Falsifier Org" -> the POST arrived (form shown again, no note), partner_requests 5221 -> 5221, rows named
+  'T10 Falsifier%': 0   (RED)
+  template restored (name="save" count 1), same submit with "T10 Control Org" -> 5221 -> 5223 (GREEN)
+
+== F. Openers (real pages, first a.popup[href*=partnerSave] clicked, popup 620 px wide, no horizontal scroll)
+  project partners  .../clusters/AICCRA/partners.do?projectID=102076&edit=true -> hidden projectID=102076, phaseID=431 -> success, +2 rows,
+                    request_source ' Cluster: (102076) - ...'
+  innovation        .../projects/AICCRA/innovation.do?innovationID=1566 -> link carries context=(AICCRA/innovation: ID-1566);
+                    hidden context kept -> success, +2 rows, request_source '(AICCRA/innovation: ID-1566) Cluster: (102076) - ...'
+  study             .../studies/AICCRA/study.do?expectedID=3521 -> hidden expectedID=3521 -> success, +2 rows, request_source ' Study: (3521) - ...'
+  funding source    the opener link is not rendered for the copy's funding sources (page not editable; also with phases.editable=1);
+                    the page was opened by its URL (partnerSave.do?fundingSourceID=5005): hidden fundingSourceID=5005 -> success, +2 rows,
+                    request_source ' Funding Source: (5005) - ...', "Request another institution" -> partnerSave.do?fundingSourceID=5005
+  not exercised: capdev, POWB, AR (same hidden-id contract; no editable page on the copy)
+
+== G. Width, font, accessibility
+  OLD page: 390 -> scrollWidth 390 / clientWidth 390; Figtree not used (document.fonts.check('600 16px Figtree') = false)
+  NEW page: 390 -> 390 / 390, 1280 -> 1280 / 1280, 600 -> 600 / 600; success card 390 -> 390 / 390; select list open at 390 -> 390 / 390
+            (first measure open at 390 gave 396: the search box of the select list; fixed with overflow: hidden on .select2-search--dropdown)
+  Figtree: document.fonts.check('600 16px Figtree') = true on every new capture
+  contrast: label 14.5, help note 6.7, warning note 5.5, field error 6.1, required mark 5.0, button 5.0, placeholder 4.6 (all >= 4.5)
+  Tab order: name, type, acronym, country, website, send; every stop shows a 2 px brand outline (select lists included after a fix:
+            an outline:none on the focused select box beat the focus-visible rule)
+
+== H. Detector (source scan, impeccable engine 0.1.18): partnersSave.css, partnersSave.ftl, partnersSave.js -> [] (no findings)
+  URL scan at 1280x800 and 390x844: Unevaluated (the page needs a logged-in session; the detector has none)

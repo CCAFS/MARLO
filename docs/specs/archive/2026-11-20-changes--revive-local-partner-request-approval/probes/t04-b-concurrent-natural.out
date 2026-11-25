@@ -1,0 +1,121 @@
+== accept-race  label=T04 probe clean natural 1 gate=False original=5135 copy=5136  db=aiccradb_partreq_test
+  counts before                institutions=10977, institutions_locations=11298, partner_requests=5087, pending_partner_copies=2
+  requests before: req 5135 active=1 acepted=NULL institution=NULL office=0; req 5136 active=1 acepted=NULL institution=NULL office=0
+  request A: start +0.1 ms  end +969.0 ms  (968.9 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  request B: start +0.0 ms  end +861.4 ms  (861.4 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  OVERLAP: each request started before the other ended: True (both started within 0.1 ms of each other)
+  counts after                 institutions=10978, institutions_locations=11299, partner_requests=5087, pending_partner_copies=1
+  requests after: req 5135 active=0 acepted=NULL institution=NULL office=0; req 5136 active=0 acepted=1 institution=11902 office=0
+  institutions named 'T04 probe clean natural 1': 1  [['11902', 'T04 probe clean natural 1', '1']]
+  -- accept-race: connections that ran a FOR UPDATE on the request row(s): 27989,27990
+  17:02:08.213125  thr 27989  SET autocommit=0
+  17:02:08.213216  thr 27990  SET autocommit=0
+  17:02:08.224386  thr 27990  COMMIT
+  17:02:08.224386  thr 27989  COMMIT
+  17:02:08.224678  thr 27990  SET autocommit=1
+  17:02:08.224713  thr 27989  SET autocommit=1
+  17:02:08.253688  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:08.253811  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:08.264427  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:08.264461  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:08.276210  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:08.276210  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:08.988808  thr 27990  SET autocommit=0
+  17:02:08.988869  thr 27989  SET autocommit=0
+  17:02:08.989176  thr 27989  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5136 for update
+  17:02:08.989209  thr 27990  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5136 for update
+  17:02:08.990153  thr 27990  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe clean natural 1', 'T04', 'https://t04.example', NULL, '2026-11-19 17:02:08.989000')
+  17:02:08.992351  thr 27990  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11902, 78, 1, NULL)
+  17:02:09.025911  thr 27990  update partner_requests set loc_element_id=78, modified_by=1082, rejec ... acepted_date=NULL, rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5135
+  17:02:09.028464  thr 27990  update partner_requests set loc_element_id=78, modified_by=1082, rejec ...  17:02:08.993000', rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5136
+  17:02:09.030968  thr 27990  COMMIT
+  17:02:09.031650  thr 27990  SET autocommit=1
+  17:02:09.033845  thr 27990  SET autocommit=0
+  17:02:09.060160  thr 27990  COMMIT
+  17:02:09.060451  thr 27990  SET autocommit=1
+  17:02:09.060567  thr 27989  COMMIT
+  17:02:09.060702  thr 27989  SET autocommit=1
+
+== accept-race  label=T04 probe clean natural 2 gate=False original=5137 copy=5138  db=aiccradb_partreq_test
+  counts before                institutions=10978, institutions_locations=11299, partner_requests=5089, pending_partner_copies=2
+  requests before: req 5137 active=1 acepted=NULL institution=NULL office=0; req 5138 active=1 acepted=NULL institution=NULL office=0
+  request A: start +0.1 ms  end +761.4 ms  (761.3 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  request B: start +0.0 ms  end +756.1 ms  (756.1 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  OVERLAP: each request started before the other ended: True (both started within 0.1 ms of each other)
+  counts after                 institutions=10979, institutions_locations=11300, partner_requests=5089, pending_partner_copies=1
+  requests after: req 5137 active=0 acepted=NULL institution=NULL office=0; req 5138 active=0 acepted=1 institution=11903 office=0
+  institutions named 'T04 probe clean natural 2': 1  [['11903', 'T04 probe clean natural 2', '1']]
+  -- accept-race: connections that ran a FOR UPDATE on the request row(s): 27989,27990
+  17:02:10.193549  thr 27989  SET autocommit=0
+  17:02:10.193663  thr 27990  SET autocommit=0
+  17:02:10.195761  thr 27989  COMMIT
+  17:02:10.195767  thr 27990  COMMIT
+  17:02:10.196050  thr 27989  SET autocommit=1
+  17:02:10.196148  thr 27990  SET autocommit=1
+  17:02:10.208101  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:10.208110  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:10.221826  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:10.221850  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:10.231683  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:10.231711  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:10.847187  thr 27990  SET autocommit=0
+  17:02:10.847187  thr 27989  SET autocommit=0
+  17:02:10.847631  thr 27989  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5138 for update
+  17:02:10.847649  thr 27990  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5138 for update
+  17:02:10.849368  thr 27989  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe clean natural 2', 'T04', 'https://t04.example', NULL, '2026-11-19 17:02:10.848000')
+  17:02:10.852034  thr 27989  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11903, 78, 1, NULL)
+  17:02:10.892402  thr 27989  update partner_requests set loc_element_id=78, modified_by=1082, rejec ... acepted_date=NULL, rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5137
+  17:02:10.894831  thr 27989  update partner_requests set loc_element_id=78, modified_by=1082, rejec ...  17:02:10.855000', rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5138
+  17:02:10.897145  thr 27989  COMMIT
+  17:02:10.898475  thr 27989  SET autocommit=1
+  17:02:10.902188  thr 27989  SET autocommit=0
+  17:02:10.931195  thr 27989  COMMIT
+  17:02:10.931583  thr 27989  SET autocommit=1
+  17:02:10.932946  thr 27990  COMMIT
+  17:02:10.933201  thr 27990  SET autocommit=1
+
+== accept-race  label=T04 probe clean natural 3 gate=False original=5139 copy=5140  db=aiccradb_partreq_test
+  counts before                institutions=10979, institutions_locations=11300, partner_requests=5091, pending_partner_copies=2
+  requests before: req 5139 active=1 acepted=NULL institution=NULL office=0; req 5140 active=1 acepted=NULL institution=NULL office=0
+  request A: start +0.1 ms  end +710.4 ms  (710.3 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  request B: start +0.0 ms  end +722.4 ms  (722.4 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  OVERLAP: each request started before the other ended: True (both started within 0.1 ms of each other)
+  counts after                 institutions=10980, institutions_locations=11301, partner_requests=5091, pending_partner_copies=1
+  requests after: req 5139 active=0 acepted=NULL institution=NULL office=0; req 5140 active=0 acepted=1 institution=11904 office=0
+  institutions named 'T04 probe clean natural 3': 1  [['11904', 'T04 probe clean natural 3', '1']]
+  -- accept-race: connections that ran a FOR UPDATE on the request row(s): 27990,27989
+  17:02:11.948954  thr 27990  SET autocommit=0
+  17:02:11.949068  thr 27989  SET autocommit=0
+  17:02:11.952202  thr 27990  COMMIT
+  17:02:11.952207  thr 27989  COMMIT
+  17:02:11.952476  thr 27990  SET autocommit=1
+  17:02:11.952592  thr 27989  SET autocommit=1
+  17:02:11.964192  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:11.964209  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:11.982459  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:11.982632  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:11.990128  thr 27989  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:11.990149  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:12.526395  thr 27990  SET autocommit=0
+  17:02:12.526395  thr 27989  SET autocommit=0
+  17:02:12.526844  thr 27990  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5140 for update
+  17:02:12.526845  thr 27989  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5140 for update
+  17:02:12.527676  thr 27990  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe clean natural 3', 'T04', 'https://t04.example', NULL, '2026-11-19 17:02:12.527000')
+  17:02:12.528943  thr 27990  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11904, 78, 1, NULL)
+  17:02:12.576242  thr 27990  update partner_requests set loc_element_id=78, modified_by=1082, rejec ... acepted_date=NULL, rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5139
+  17:02:12.577763  thr 27990  update partner_requests set loc_element_id=78, modified_by=1082, rejec ...  17:02:12.530000', rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5140
+  17:02:12.579573  thr 27990  COMMIT
+  17:02:12.582219  thr 27990  SET autocommit=1
+  17:02:12.591995  thr 27990  SET autocommit=0
+  17:02:12.630437  thr 27990  COMMIT
+  17:02:12.630714  thr 27990  SET autocommit=1
+  17:02:12.631423  thr 27989  COMMIT
+  17:02:12.631617  thr 27989  SET autocommit=1
+  17:02:12.663062  thr 27989  SET autocommit=0
+  17:02:12.665666  thr 27989  COMMIT
+  17:02:12.666300  thr 27989  SET autocommit=1
+
+application log, PartnerRequestAction (the losing request of each run):
+  2026-11-19T22:02:09.062Z WARN  [http-nio-8080-exec-3] Partner request 5136 was not accepted: ALREADY_HANDLED
+  2026-11-19T22:02:10.936Z WARN  [http-nio-8080-exec-1] Partner request 5138 was not accepted: ALREADY_HANDLED
+  2026-11-19T22:02:12.641Z WARN  [http-nio-8080-exec-9] Partner request 5140 was not accepted: ALREADY_HANDLED

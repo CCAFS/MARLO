@@ -1,0 +1,262 @@
+/*****************************************************************
+ * This file is part of Managing Agricultural Research for Learning &
+ * Outcomes Platform (MARLO).
+ * MARLO is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+ * MARLO is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with MARLO. If not, see <http://www.gnu.org/licenses/>.
+ *****************************************************************/
+package org.cgiar.ccafs.marlo.utils;
+
+import org.cgiar.ccafs.marlo.config.APConstants;
+import org.cgiar.ccafs.marlo.data.model.CustomParameter;
+import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
+import org.cgiar.ccafs.marlo.data.model.Parameter;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails.Email;
+
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * The six emails of the partner and country-office requests as the builder assembles them (CHG-PARTREQ-001 FN-002,
+ * FN-003, FN-009, FN-010, NF-002). The texts are the real i18n files, read through {@link UnitTextProvider}; the
+ * expected values are literals written from the design, not built with the builder.
+ */
+public class PartnerRequestEmailsTest {
+
+  private static final String CDN = "https://cdn.test";
+  private static final String SHELL_LOGO = CDN + "/global/images/email/marlo-logo.png";
+  private static final String DEAR_SUPPORT = "font-weight:bold;\">Dear MARLO support team,</p>";
+  private static final String DEAR_ANA = "font-weight:bold;\">Dear Ana,</p>";
+  private static final String BYE = "Thank you!</p><p style=\"margin:0;\">Kind regards,<br>MARLO Team</p>";
+  private static final String HOSTILE = "O'Brien <b>";
+  private static final String HOSTILE_ESCAPED = "O'Brien &lt;b&gt;";
+  private static final String BOX = "margin:0 0 16px 0;padding:12px 16px;border-left:3px solid %s;"
+    + "background-color:#FFFFFF;word-break:break-word;overflow-wrap:anywhere;";
+  private static final String REASON_BOX = "<blockquote style=\"" + String.format(BOX, "#0B7AA3") + "\">";
+  private static final String ADDED_BOX = "<p style=\"" + String.format(BOX, "#0B7AA3") + "\">";
+  private static final String EXISTING_BOX = "<p style=\"" + String.format(BOX, "#D9D9D9") + "\">";
+
+  private static GlobalUnit unit(String acronym, String customFile, String emailSwitch) {
+    GlobalUnit unit = new GlobalUnit();
+    unit.setAcronym(acronym);
+    unit.setCustomParameters(new HashSet<CustomParameter>());
+    if (customFile != null) {
+      unit.getCustomParameters().add(parameter(APConstants.CRP_CUSTOM_FILE, customFile));
+    }
+    if (emailSwitch != null) {
+      unit.getCustomParameters().add(parameter(APConstants.CRP_EMAIL_NOTIFICATIONS, emailSwitch));
+    }
+    return unit;
+  }
+
+  private static CustomParameter parameter(String key, String value) {
+    Parameter parameter = new Parameter();
+    parameter.setKey(key);
+    CustomParameter custom = new CustomParameter();
+    custom.setParameter(parameter);
+    custom.setValue(value);
+    return custom;
+  }
+
+  /** The six emails of a unit, labelled, with the hostile text in every argument that reaches a body. */
+  private static Map<String, Email> sixEmails(GlobalUnit unit) {
+    Map<String, Email> emails = new LinkedHashMap<String, Email>();
+    emails.put("newPartner", PartnerRequestEmails.newPartner(unit, CDN, HOSTILE, "req@x.org", HOSTILE, "AC", "NGO",
+      "Kenya", "https://acme.org", "Project P1", "https://marlo.test/review?a=1&b=2"));
+    emails.put("newOffice", PartnerRequestEmails.newOffice(unit, CDN, HOSTILE, "req@x.org", HOSTILE, "Kenya, Peru",
+      "KE, PE", "P1 - Soil"));
+    emails.put("partnerAccepted", PartnerRequestEmails.partnerAccepted(unit, CDN, "Ana", HOSTILE, "Acme"));
+    emails.put("partnerRejected", PartnerRequestEmails.partnerRejected(unit, CDN, "Ana", "Acme", HOSTILE));
+    emails.put("officeAccepted", PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Kenya, Peru", ""));
+    emails.put("officeRejected", PartnerRequestEmails.officeRejected(unit, CDN, "Ana", "Acme", "Kenya", HOSTILE));
+    return emails;
+  }
+
+  @Test
+  public void testEverySixEmailIsInsideTheShellWithTheRoleGreetingAndSignOffAndNoLegacyFooter() {
+    String legacyFooter = UnitTextProvider.forCustomFile(null).getText("email.support.noCrpAdmins");
+    assertTrue("fixture: the legacy footer text must exist", legacyFooter.length() > 20);
+    for (Map.Entry<String, Email> entry : sixEmails(unit("U", "aicrra", null)).entrySet()) {
+      String body = entry.getValue().getBody();
+      String label = entry.getKey();
+      assertTrue(label + " is not inside the shell", body.contains(SHELL_LOGO));
+      boolean alert = label.startsWith("new");
+      assertTrue(label + " greeting", body.contains(alert ? DEAR_SUPPORT : DEAR_ANA));
+      assertTrue(label + " sign-off", body.contains(BYE));
+      assertFalse(label + " legacy footer", body.contains(legacyFooter));
+      assertFalse(label + " legacy sign-off", body.contains("Best regards"));
+    }
+  }
+
+  @Test
+  public void testBodyArgumentsAreEscapedAndSubjectsCarryNoJustification() {
+    Map<String, Email> emails = sixEmails(unit("U", null, null));
+    assertTrue(emails.get("partnerRejected").getBody(), emails.get("partnerRejected").getBody()
+      .contains(REASON_BOX + HOSTILE_ESCAPED + "</blockquote>"));
+    assertTrue(emails.get("officeRejected").getBody(), emails.get("officeRejected").getBody()
+      .contains(REASON_BOX + HOSTILE_ESCAPED + "</blockquote>"));
+    assertTrue(emails.get("newPartner").getBody().contains("Institution: " + HOSTILE_ESCAPED));
+    assertTrue(emails.get("newPartner").getBody().contains("review?a=1&amp;b=2"));
+    for (Map.Entry<String, Email> entry : emails.entrySet()) {
+      assertFalse(entry.getKey() + " body holds the raw text", entry.getValue().getBody().contains(HOSTILE));
+    }
+    assertFalse(emails.get("partnerRejected").getSubject(), emails.get("partnerRejected").getSubject()
+      .contains("O'Brien"));
+    assertFalse(emails.get("officeRejected").getSubject(), emails.get("officeRejected").getSubject()
+      .contains("O'Brien"));
+  }
+
+  @Test
+  public void testRejectReasonKeepsItsLineBreaksEscapedAndOutOfItalics() {
+    GlobalUnit unit = unit("U", null, null);
+    String typed = "  Duplicate of <Acme>.\r\n\r\nUse the existing record.\nOr ask support.\rThanks  ";
+    String expected = "Duplicate of &lt;Acme&gt;.<br><br>Use the existing record.<br>Or ask support.<br>Thanks";
+    Email partner = PartnerRequestEmails.partnerRejected(unit, CDN, "Ana", "Acme", typed);
+    Email office = PartnerRequestEmails.officeRejected(unit, CDN, "Ana", "Acme", "Kenya", typed);
+    for (Email email : new Email[] {partner, office}) {
+      String body = email.getBody();
+      assertTrue(body, body.contains("<p style=\"margin:0 0 8px 0;\">The reason given was:</p>" + REASON_BOX
+        + expected + "</blockquote>"));
+      assertFalse(body, body.contains("<em>"));
+      assertFalse("the typed markup is not rendered", body.contains("<Acme>"));
+    }
+    assertTrue(partner.getBody(), partner.getBody().contains("the institution <b>Acme</b>.</p>"));
+    assertTrue(office.getBody(), office.getBody().contains("country office(s) of <b>Acme</b>:</p>" + EXISTING_BOX
+      + "Kenya</p>"));
+    assertEquals("", PartnerRequestEmails.escapeMultiline(null));
+  }
+
+  @Test
+  public void testOfficeAcceptedNamesTheAddedAndTheAlreadyRegisteredCountriesApart() {
+    GlobalUnit unit = unit("U", null, null);
+    Email onlyAdded = PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Ethiopia", "");
+    assertEquals("[MARLO] Country office(s) verification - Approved Acme", onlyAdded.getSubject());
+    assertTrue(onlyAdded.getBody(), onlyAdded.getBody().contains(ADDED_BOX + "Ethiopia</p>"));
+    assertFalse(onlyAdded.getBody(), onlyAdded.getBody().contains("already registered"));
+
+    Email mixed = PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "Ethiopia", "Kenya, <Peru>");
+    assertEquals("[MARLO] Country office(s) verification - Approved Acme", mixed.getSubject());
+    assertTrue(mixed.getBody(), mixed.getBody().contains("We have added the following country office(s) of <b>Acme</b>"
+      + " to MARLO, as you requested:</p>" + ADDED_BOX + "Ethiopia</p><p style=\"margin:0 0 8px 0;\">These country "
+      + "office(s) were already registered in MARLO, so no change was needed:</p>" + EXISTING_BOX
+      + "Kenya, &lt;Peru&gt;</p>"));
+
+    Email none = PartnerRequestEmails.officeAccepted(unit, CDN, "Ana", "Acme", "", "Kenya");
+    assertEquals("[MARLO] Country office(s) verification - Already registered Acme", none.getSubject());
+    assertTrue(none.getBody(), none.getBody().contains("The country office(s) you requested for <b>Acme</b> were "
+      + "already registered in MARLO, so no change was needed:</p>" + EXISTING_BOX + "Kenya</p>"));
+    assertFalse(none.getBody(), none.getBody().contains("We have added"));
+    assertTrue(none.getBody(), none.getBody().contains(BYE));
+  }
+
+  @Test
+  public void testAlreadyRegisteredSubjectKeepsThePrefixOfEachUnitFile() {
+    String[][] units = {{"aicrra", "[AICCRA]"}, {"aiccra3", "[AICCRA]"}, {"pabra", "[PABRA]"}, {"alliance", "[MARLO]"},
+      {"reap", "[MARLO]"}, {"test", "[MARLO]"}, {"global", "[MARLO]"}};
+    for (String[] pair : units) {
+      Email email = PartnerRequestEmails.officeAccepted(unit("U", pair[0], null), CDN, "Ana", "Acme", null, "Kenya");
+      assertEquals(pair[0], pair[1] + " Country office(s) verification - Already registered Acme", email.getSubject());
+    }
+  }
+
+  @Test
+  public void testSubjectArgumentsAreNotEscaped() {
+    Email email = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "A&B <x>", "AB", "NGO",
+      "Kenya", "https://ab.org", "P1", "https://marlo.test/r");
+    assertEquals("[MARLO - U] Partner verification - A&B <x>", email.getSubject());
+    assertTrue(email.getBody(), email.getBody().contains("Institution: A&amp;B &lt;x&gt;"));
+  }
+
+  @Test
+  public void testNewPartnerAlertShowsNotProvidedForEmptyOptionalFields() {
+    Email empty = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "Acme", "", "NGO",
+      "Kenya", "", "P1", "https://marlo.test/r");
+    assertTrue(empty.getBody(), empty.getBody().contains("<li>Website: Not provided</li>"));
+    assertTrue(empty.getBody(), empty.getBody().contains("<li>Acronym: Not provided</li>"));
+    Email nullWebsite = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "Acme", "AC",
+      "NGO", "Kenya", null, "P1", "https://marlo.test/r");
+    assertTrue(nullWebsite.getBody(), nullWebsite.getBody().contains("<li>Website: Not provided</li>"));
+    Email filled = PartnerRequestEmails.newPartner(unit("U", null, null), CDN, "Ana", "a@x.org", "Acme", "AC", "NGO",
+      "Kenya", "https://a.org", "P1", "https://marlo.test/r");
+    assertTrue(filled.getBody(), filled.getBody().contains("<li>Website: https://a.org</li>"));
+    assertTrue(filled.getBody(), filled.getBody().contains("<li>Acronym: AC</li>"));
+    assertFalse(filled.getBody(), filled.getBody().contains("Not provided"));
+  }
+
+  @Test
+  public void testUnitPrefixIsNotDuplicatedInTheAlertSubjects() {
+    String[][] units = {{"aicrra", "AICCRA"}, {"aiccra3", "AICCRA"}, {"pabra", "PABRA"}, {"global", "CCAFS"}};
+    for (String[] pair : units) {
+      GlobalUnit unit = unit(pair[1], pair[0], null);
+      String duplicated = "[" + pair[1] + " - " + pair[1] + "]";
+      Email partner = PartnerRequestEmails.newPartner(unit, CDN, "R", "r@x.org", "Acme", "AC", "NGO", "Kenya",
+        "https://a.org", "P1", "https://marlo.test/r");
+      Email office = PartnerRequestEmails.newOffice(unit, CDN, "R", "r@x.org", "Acme", "Kenya", "KE", "P1");
+      assertFalse(partner.getSubject(), partner.getSubject().contains(duplicated));
+      assertFalse(office.getSubject(), office.getSubject().contains(duplicated));
+    }
+    Email aiccra = PartnerRequestEmails.newOffice(unit("AICCRA", "aicrra", null), CDN, "R", "r@x.org", "Acme",
+      "Kenya", "KE", "P1");
+    assertEquals("[AICCRA] Add office location (KE) to Acme", aiccra.getSubject());
+  }
+
+  @Test
+  public void testNewOfficeNamesTheRequestingProjectOrClusterFromTheUnitTexts() {
+    String[][] units = {{"CCAFS", null, "project: P77"}, {"PABRA", "pabra", "project: P77"},
+      {"AICCRA", "aicrra", "cluster: C77"}, {"AICCRA", "aiccra3", "cluster: C77"}};
+    for (String[] unit : units) {
+      Email office = PartnerRequestEmails.newOffice(unit(unit[0], unit[1], null), CDN, "R", "r@x.org", "Acme",
+        "Kenya", "KE", "77");
+      assertTrue(unit[1] + ": " + office.getBody(),
+        office.getBody().contains("<li>Requested from " + unit[2] + "</li>"));
+    }
+  }
+
+  @Test
+  public void testSubjectsUseTheReusedKeysWithTheirArguments() {
+    GlobalUnit unit = unit("UNIT-A", "global", null);
+    Map<String, Email> emails = sixEmails(unit);
+    assertEquals("[MARLO - UNIT-A] Partner verification - O'Brien <b>", emails.get("newPartner").getSubject());
+    assertEquals("[MARLO - UNIT-A] Add office location (KE, PE) to O'Brien <b>", emails.get("newOffice").getSubject());
+    assertEquals("[MARLO] Partner verification - Approved Acme", emails.get("partnerAccepted").getSubject());
+    assertEquals("[MARLO] Partner verification - Rejected Acme", emails.get("partnerRejected").getSubject());
+    assertEquals("[MARLO] Country office(s) verification - Approved Acme", emails.get("officeAccepted").getSubject());
+    assertEquals("[MARLO] Country office(s) verification - Rejected Acme", emails.get("officeRejected").getSubject());
+  }
+
+  @Test
+  public void testTextsComeFromTheCustomFileOfTheUnitOfTheEmail() {
+    Email aiccra = PartnerRequestEmails.partnerAccepted(unit("UNIT-A", "aicrra", null), CDN, "Ana", "Acme", "Acme");
+    Email base = PartnerRequestEmails.partnerAccepted(unit("UNIT-B", "global", null), CDN, "Ana", "Acme", "Acme");
+    assertEquals("[AICCRA] Partner verification - Approved Acme", aiccra.getSubject());
+    assertEquals("[MARLO] Partner verification - Approved Acme", base.getSubject());
+    Email aiccraAlert = PartnerRequestEmails.newPartner(unit("UNIT-A", "aicrra", null), CDN, "R", "r@x.org", "Acme",
+      "AC", "NGO", "Kenya", "https://a.org", "P1", "https://marlo.test/r");
+    assertEquals("[AICCRA] Partner verification - Acme", aiccraAlert.getSubject());
+  }
+
+  @Test
+  public void testSwitchIsOffOnlyWhenTheCustomParameterIsNotTrue() {
+    assertFalse(PartnerRequestEmails.isEnabled(unit("U", null, "false")));
+    assertFalse(PartnerRequestEmails.isEnabled(unit("U", null, "FALSE")));
+    assertTrue(PartnerRequestEmails.isEnabled(unit("U", null, "true")));
+    assertTrue(PartnerRequestEmails.isEnabled(unit("U", null, "TRUE")));
+    assertTrue(PartnerRequestEmails.isEnabled(unit("U", null, null)));
+    assertTrue(PartnerRequestEmails.isEnabled(unit("U", "aicrra", "true")));
+    assertFalse(PartnerRequestEmails.isEnabled(null));
+  }
+}

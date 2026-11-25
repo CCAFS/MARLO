@@ -1,0 +1,5 @@
+# T08 - NEW review page, throwaway DB copy, same fixtures as the baseline (2 partner requests, 1 institution with 2 office requests)
+## viewport 390 844
+{"iw":390,"ih":844,"dpr":1,"scrollWidth":390,"clientWidth":390,"bodyScrollWidth":390,"overflow":false,"figtree600":true,"figtree400":true,"cards":2,"offices":1}
+## viewport 1280 800
+{"iw":1280,"ih":800,"dpr":1,"scrollWidth":1280,"clientWidth":1280,"bodyScrollWidth":1280,"overflow":false,"figtree600":true,"figtree400":true,"cards":2,"offices":1}

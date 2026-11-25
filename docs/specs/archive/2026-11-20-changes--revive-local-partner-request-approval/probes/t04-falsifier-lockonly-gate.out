@@ -1,0 +1,56 @@
+== accept-race  label=T04 probe lockonly 2 gate gate=True original=5129 copy=5130  db=aiccradb_partreq_test
+  counts before                institutions=10974, institutions_locations=11295, partner_requests=5081, pending_partner_copies=1
+  requests before: req 5129 active=1 acepted=NULL institution=NULL office=0; req 5130 active=1 acepted=NULL institution=NULL office=0
+  gate: held	5130
+  gate: sessions waiting on the row lock when released: 2 (performance_schema.data_lock_waits)
+  request A: start +0.3 ms  end +1310.5 ms  (1310.2 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  request B: start +0.0 ms  end +1295.9 ms  (1295.9 ms)  HTTP 302  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  OVERLAP: each request started before the other ended: True (both started within 0.3 ms of each other)
+  counts after                 institutions=10976, institutions_locations=11297, partner_requests=5081, pending_partner_copies=0
+  requests after: req 5129 active=0 acepted=NULL institution=NULL office=0; req 5130 active=0 acepted=1 institution=11899 office=0
+  institutions named 'T04 probe lockonly 2 gate': 2  [['11898', 'T04 probe lockonly 2 gate', '1'], ['11899', 'T04 probe lockonly 2 gate', '1']]
+  (statements from mysql.general_log, re-read after the run: python3 -I t04-probe.py sqllog accept-race '2026-11-19 16:53:55' 5130)
+  -- accept-race: connections that ran a FOR UPDATE on the request row(s): 27921,27852,27851
+  16:53:56.355938  thr 27921  BEGIN
+  16:53:56.356221  thr 27921  SELECT 'held', id FROM partner_requests WHERE id=5130 FOR UPDATE
+  16:53:56.361376  thr 27851  SET autocommit=0
+  16:53:56.361875  thr 27852  SET autocommit=0
+  16:53:56.364118  thr 27852  COMMIT
+  16:53:56.364118  thr 27851  COMMIT
+  16:53:56.364341  thr 27851  SET autocommit=1
+  16:53:56.364343  thr 27852  SET autocommit=1
+  16:53:56.388224  thr 27852  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.388225  thr 27851  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.388605  thr 27851  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.388968  thr 27852  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.394379  thr 27851  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.396898  thr 27852  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.402675  thr 27851  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:56.408335  thr 27852  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc_elem2_200_, partnerreq0_.modified_by as modified3_200_, partnerreq0_.rejected_by as rejected4_200_, partnerreq0_.created_by as created_5_200_, partnerreq0_.ins
+  16:53:57.086859  thr 27851  SET autocommit=0
+  16:53:57.086885  thr 27852  SET autocommit=0
+  16:53:57.087272  thr 27852  select id from partner_requests where id =5130 for update
+  16:53:57.087274  thr 27851  select id from partner_requests where id =5130 for update
+  16:53:57.087411  thr 27852  select id from partner_requests where id =5130 for update
+  16:53:57.087448  thr 27851  select id from partner_requests where id =5130 for update
+  16:53:57.121840  thr 27921  COMMIT
+  16:53:57.123105  thr 27851  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe lockonly 2 gate', 'T04', 'https://t04.example', NULL, '2026-11-19 16:53:57.122000')
+  16:53:57.123891  thr 27851  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe lockonly 2 gate', 'T04', 'https://t04.example', NULL, '2026-11-19 16:53:57.122000')
+  16:53:57.172363  thr 27851  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11898, 78, 1, NULL)
+  16:53:57.303075  thr 27851  update partner_requests set loc_element_id=78, modified_by=1082, rejected_by=NULL, institution_type_id=31, partner_name='T04 probe lockonly 2 gate', acronym='T04', web_page='https://t04.example', acepted=NULL, is_active=0, modific
+  16:53:57.305604  thr 27851  update partner_requests set loc_element_id=78, modified_by=1082, rejected_by=NULL, institution_type_id=31, partner_name='T04 probe lockonly 2 gate', acronym='T04', web_page='https://t04.example', acepted=1, is_active=0, modificati
+  16:53:57.310354  thr 27851  COMMIT
+  16:53:57.311336  thr 27851  SET autocommit=1
+  16:53:57.312315  thr 27852  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe lockonly 2 gate', 'T04', 'https://t04.example', NULL, '2026-11-19 16:53:57.311000')
+  16:53:57.312970  thr 27852  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe lockonly 2 gate', 'T04', 'https://t04.example', NULL, '2026-11-19 16:53:57.311000')
+  16:53:57.318285  thr 27852  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11899, 78, 1, NULL)
+  16:53:57.337771  thr 27851  SET autocommit=0
+  16:53:57.394973  thr 27852  update partner_requests set loc_element_id=78, modified_by=1082, rejected_by=NULL, institution_type_id=31, partner_name='T04 probe lockonly 2 gate', acronym='T04', web_page='https://t04.example', acepted=NULL, is_active=0, modific
+  16:53:57.395659  thr 27852  update partner_requests set loc_element_id=78, modified_by=1082, rejected_by=NULL, institution_type_id=31, partner_name='T04 probe lockonly 2 gate', acronym='T04', web_page='https://t04.example', acepted=1, is_active=0, modificati
+  16:53:57.396361  thr 27851  COMMIT
+  16:53:57.396537  thr 27851  SET autocommit=1
+  16:53:57.398363  thr 27852  COMMIT
+  16:53:57.399316  thr 27852  SET autocommit=1
+  16:53:57.406356  thr 27852  SET autocommit=0
+  16:53:57.450565  thr 27852  COMMIT
+  16:53:57.450886  thr 27852  SET autocommit=1

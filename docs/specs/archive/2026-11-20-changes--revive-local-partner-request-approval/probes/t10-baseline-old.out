@@ -1,0 +1,6 @@
+# T10 baseline, old page (HEAD a523ea9f89), copy database
+grep -c "sent succesfully" partnersSave.ftl                                      -> 1
+grep -c 'list-group\|btn-success\|btn-danger\|glyphicon' partnersSave.ftl         -> 3
+old page at 390x844: scrollWidth 390, clientWidth 390 (no horizontal scroll); font Helvetica/Arial, document.fonts.check('600 16px Figtree') = false
+old page at 1280x800: scrollWidth 1280, clientWidth 1280
+screenshots: t10-old-390.png, t10-old-1280.png

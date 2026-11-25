@@ -916,17 +916,31 @@
 
 		<action name="rejectPartnerRequest"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.RejectPartnerRequestAction">
+			<interceptor-ref name="logErrorStatus" />
+			<interceptor-ref name="requireUser" />
+			<interceptor-ref name="validPhase" />
+			<interceptor-ref name="superAdminValidation" />
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="SecurityControl" />
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">success,outcome</param>
 			</result>
 		</action>
 
 		<action name="editPartnerRequest"
 			class="org.cgiar.ccafs.marlo.action.json.superadmin.EditPartnerRequestAction">
+			<interceptor-ref name="logErrorStatus" />
+			<interceptor-ref name="requireUser" />
+			<interceptor-ref name="validPhase" />
+			<interceptor-ref name="superAdminValidation" />
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="SecurityControl" />
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">success,outcome</param>
 			</result>
 		</action>
 
@@ -1326,20 +1340,32 @@
 
 		<action name="acceptOfficesRequest" method="addCountryOffices"
 			class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+			<interceptor-ref name="logErrorStatus" />
+			<interceptor-ref name="requireUser" />
+			<interceptor-ref name="validPhase" />
+			<interceptor-ref name="superAdminValidation" />
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="SecurityControl" />
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
-				<param name="includeProperties">success</param>
+				<param name="includeProperties">success,outcome,outcomes.*</param>
 			</result>
 		</action>
 
 		<action name="rejectOfficesRequest"
 			method="rejectCountryOffices"
 			class="org.cgiar.ccafs.marlo.action.superadmin.PartnerRequestAction">
+			<interceptor-ref name="logErrorStatus" />
+			<interceptor-ref name="requireUser" />
+			<interceptor-ref name="validPhase" />
+			<interceptor-ref name="superAdminValidation" />
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="SecurityControl" />
 			<result type="json">
 				<param name="noCache">true</param>
 				<param name="excludeNullProperties">true</param>
-				<param name="includeProperties">success</param>
+				<param name="includeProperties">success,outcome,outcomes.*</param>
 			</result>
 		</action>
 

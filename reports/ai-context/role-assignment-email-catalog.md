@@ -4,7 +4,8 @@ Operational catalog of every email MARLO sends when a **role is assigned to (or 
 user**. It answers two questions without reading Java: *what does the user actually receive*, and
 *which key must be edited to change it*.
 
-- **Verified:** 2026-09-10 against `staging`; updated 2026-10-01 for A2-2484 (role-email rewrite).
+- **Verified:** 2026-09-10 against `staging`; updated 2026-10-01 for A2-2484 (role-email rewrite); §17 added
+  2026-11-20 for CHG-PARTREQ-001 (the six partner-request emails, which are **not** role emails).
 - **Source of truth for the text:** `marlo-web/src/main/resources/global.properties` (base) and
   `marlo-web/src/main/resources/custom/<crp>.properties` (per-Global-Unit override).
 - **Source of truth for the assembly:** the `notifyRole*` methods listed per section.
@@ -499,3 +500,80 @@ text-only ticket, and still open.
    pass renders literally. Check the call site before adding one.
 4. Non-ASCII characters go in as `\uXXXX` escapes, matching the existing file.
 5. Update this catalog in the same commit.
+
+---
+
+## 17. Partner and country-office request emails
+
+Six emails of the request flow (`changes/revive-local-partner-request-approval`; flow in
+`docs/specs/domain/admin/agent-context.md` § *Partner requests*). They are **not** role emails, but they use the
+same shell and the `email.role.dear` / `email.role.bye` blocks, so they are catalogued here.
+
+**Assembly** — `utils/PartnerRequestEmails` (one static method per email, returns subject + body):
+
+```
+subject = unitTexts.getText(<subject key>, plain args)          // not HTML-escaped: it is a header
+body    = getText("email.role.dear", {dearName}) + getText(<body key>, escaped args) + getText("email.role.bye")
+sent    = EmailLayout.wrap(texts, assetsUrl, body)
+```
+
+- **Texts of the request's own unit.** `PartnerRequestEmails.unitTexts(unit)` reads that unit's `crp_custom_file`
+  (`UnitTextProvider.forCustomFile`); the JSON actions that send these have no i18n interceptor. A unit with no
+  custom file gets the `global.properties` texts. Of the six new `mail.*` bodies only `mail.newOffice` is overridden
+  (`custom/aicrra.properties`, `custom/aiccra3.properties`: `Requested from cluster: C{4}`); the five other bodies are
+  base text for every unit. The subjects are overridden per unit (`[AICCRA] …`, `[PABRA] …`, `[MARLO] …`).
+- **Escaping.** Every body argument goes through `StringEscapeUtils.escapeHtml4`; a null becomes an empty string.
+- **Switch.** Callers check `PartnerRequestEmails.isEnabled(unit)` first (parameter `crp_enable_email_notification`, `APConstants.CRP_EMAIL_NOTIFICATIONS`). The code
+  is `getValue() == null || getValue().equalsIgnoreCase("true")` over the unit's rows of that parameter: no row, a
+  null value or `true` sends; an **empty string or any other value does not**; a missing unit (or one with no
+  parameter list) sends nothing. `SendMailS.send` applies the same rule again to any message that is not addressed only
+  to the notification mailbox, so the answers 3 to 6 are also dropped there (logged at INFO); the alerts 1 and 2, which
+  go only to the mailbox, are never dropped by it, so for them the caller's check is the only switch.
+- **Decision before mail.** The four answers are sent only after the manager call returned (committed); a failure is
+  logged and never reaches the superadmin.
+
+| # | Email | Trigger (sender) | To / CC / BCC |
+|---|---|---|---|
+| 1 | New partner request | `PartnersSaveAction.sendNewPartnerAlert`, after `createPartnerRequest` | to `<notification mailbox>`, no CC, BCC `<notification mailbox>` |
+| 2 | New country-office request | `RequestCountryOfficeAction.sendNewOfficeAlert`, after the rows are saved | same as 1 |
+| 3 | Partner accepted | `PartnerRequestAction.sendPartnerAcceptedEmail`, only when the outcome is `DONE` | to requester (creator, or `externalUserMail` with the creator added to CC), CC approver, BCC `<notification mailbox>` |
+| 4 | Partner rejected | `RejectPartnerRequestAction.sendRejectedNotificationEmail`, `DONE` and the posted `sendNotification` is true | as 3, CC is the rejecting user |
+| 5 | Offices accepted | `PartnerRequestAction.sendOfficeEmails(…, true)`, for `DONE` and `SKIPPED_EXISTING` | one email per mailbox per Global Unit, with the full country list; CC approver, BCC `<notification mailbox>` |
+| 6 | Offices rejected | same, `false`, only when `sendNotification` is true | as 5, with the justification |
+
+Greeting name: for 1 and 2 `marloRequestInstitution.mail.supportName` ("MARLO support team"); for 3 to 6 the
+requester's first name (or `externalUserName`). Emails 3 and 4: a request with no recipient mail logs a warning and sends nothing. Emails 5 and 6: a request with no
+recipient is skipped silently (no log line); if no request of the unit has one, nothing is sent.
+
+### Subjects (plain arguments)
+
+| Email | Key | Args | Base | AICCRA (`aicrra`, `aiccra3`) |
+|---|---|---|---|---|
+| 1 | `marloRequestInstitution.email.subject` | `{0}` unit acronym, `{1}` partner name | `[MARLO - {0}] Partner verification - {1}` | `[AICCRA] Partner verification - {1}` |
+| 2 | `marloRequestInstitution.office.email.subject` | `{0}` unit acronym, `{1}` country ISO codes, `{2}` institution | `[MARLO - {0}] Add office location ({1}) to {2}` | `[AICCRA] Add office location ({1}) to {2}` |
+| 3 | `marloRequestInstitution.accept.email.subject` | `{0}` partner name | `[MARLO] Partner verification - Approved {0}` | `[AICCRA] Partner verification - Approved {0}` |
+| 4 | `marloRequestInstitution.reject.email.subject` | `{0}` partner name | `[MARLO] Partner verification - Rejected {0}` | `[AICCRA] Partner verification - Rejected {0}` |
+| 5 | `marloRequestInstitution.office.accept.email.subject` | `{0}` institution | `[MARLO] Country office(s) verification - Approved {0}` | `[AICCRA] Country office(s) verification - Approved {0}` |
+| 6 | `marloRequestInstitution.office.reject.email.subject` | `{0}` institution | `[MARLO] Country office(s) verification - Rejected {0}` | `[AICCRA] Country office(s) verification - Rejected {0}` |
+
+### Bodies (escaped arguments)
+
+Markup is inline-styled paragraphs and lists; only the wording is shown. Copy the exact value from the key.
+
+| Email | Key | Args | Wording (base) |
+|---|---|---|---|
+| 1 | `marloRequestInstitution.mail.newPartner` | `{0}` requester name, `{1}` requester email, `{2}` institution, `{3}` acronym (else `marloRequestInstitution.mail.notProvided` = "Not provided"), `{4}` type, `{5}` country, `{6}` website (else "Not provided"), `{7}` source, `{8}` review URL (`<base URL>/superadmin/marloInstitutions.do`) | "A new partner has been requested in MARLO and is waiting for your review." + list of the seven fields + "Review the request in Superadmin, Institutions: {8}" |
+| 2 | `marloRequestInstitution.mail.newOffice` | `{0}` requester name, `{1}` requester email, `{2}` institution, `{3}` country names, `{4}` project id | "A new country office has been requested in MARLO and is waiting for your review." + list; last line `Requested from project: P{4}` (AICCRA: `Requested from cluster: C{4}`) |
+| 3 | `marloRequestInstitution.mail.accepted` | `{0}` institution (composed name of the created institution) | "We have added the following institution to MARLO, as you requested:" + `{0}` bold |
+| 4 | `marloRequestInstitution.mail.rejected` | `{0}` partner name, `{1}` justification | "We were unable to approve your request to add the institution {0}. The reason given was:" + quoted `{1}` |
+| 5 | `marloRequestInstitution.mail.officeAccepted` | `{0}` institution, `{1}` countries | "We have added the following country office(s) of {0} to MARLO, as you requested:" + `{1}` |
+| 6 | `marloRequestInstitution.mail.officeRejected` | `{0}` institution, `{1}` countries, `{2}` justification | "We were unable to approve your request to add the following country office(s) of {0}:" + `{1}` + "The reason given was:" + quoted `{2}` |
+
+### Related keys that are not these emails
+
+- `marloRequestInstitution.accept.email` and `.reject.email` (plain-text bodies) are still read, by the REST writer
+  `InstitutionItem` together with the `marloRequestInstitution.clarisa.*` subject keys. `office.accept.email` and
+  `office.reject.email` are loaded in `global.properties` and every custom file but no Java code reads them any more.
+- `marloRequestInstitution.ui.outcome.*` are screen texts, not email texts (see the admin agent context).
+- Changing one of these emails: edit the key above, keep `''` for an apostrophe and no `{` other than the numbered
+  arguments, and update this section in the same commit.

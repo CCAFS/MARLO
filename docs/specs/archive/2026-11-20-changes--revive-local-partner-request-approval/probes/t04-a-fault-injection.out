@@ -1,0 +1,24 @@
+== accept-once  label=T04 probe fault 1  original=5131 copy=5132  db=aiccradb_partreq_test
+  counts before                institutions=10976, institutions_locations=11297, partner_requests=5083, pending_partner_copies=1
+  requests before: req 5131 active=1 acepted=NULL institution=NULL office=0; req 5132 active=1 acepted=NULL institution=NULL office=0
+  counts after                 institutions=10976, institutions_locations=11297, partner_requests=5083, pending_partner_copies=1
+  requests after: req 5131 active=1 acepted=NULL institution=NULL office=0; req 5132 active=1 acepted=NULL institution=NULL office=0
+  request A: HTTP 302 1097.0 ms  Location=/marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  institutions named 'T04 probe fault 1': []
+  (statements from mysql.general_log, re-read after the run: python3 -I t04-probe.py sqllog accept-once '2026-11-19 16:57:24' 5132)
+  -- accept-once: connections that ran a FOR UPDATE on the request row(s): 27949
+  16:57:25.065290  thr 27949  SET autocommit=0
+  16:57:25.069787  thr 27949  COMMIT
+  16:57:25.070052  thr 27949  SET autocommit=1
+  16:57:25.417439  thr 27949  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  16:57:25.420850  thr 27949  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  16:57:25.423808  thr 27949  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  16:57:26.062948  thr 27949  SET autocommit=0
+  16:57:26.064648  thr 27949  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5132 for update
+  16:57:26.073266  thr 27949  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe fault 1', 'T04', 'https://t04.example', NULL, '2026-11-19 16:57:26.065000')
+  16:57:26.079739  thr 27949  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11900, 78, 1, NULL)
+  16:57:26.086448  thr 27949  ROLLBACK
+  16:57:26.088469  thr 27949  SET autocommit=1
+  application log, PartnerRequestAction (addPartner catches the manager exception, records outcome=failed, redirects):
+  2026-11-19T21:57:26.110Z ERROR /marlo-web/superadmin/addPartner.do: Could not accept partner request 5132
+  java.lang.IllegalStateException: T04 fault injection after the institution, location and copy saves

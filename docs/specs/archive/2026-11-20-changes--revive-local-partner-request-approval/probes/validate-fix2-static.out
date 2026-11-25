@@ -1,0 +1,12 @@
+F2 rework (attempt 2), 2026-11-20. Static checks on the working tree:
+node --check allInstitutionsPopup.js: ok
+  === partnersSave.css
+    ok     marlo-web/src/main/webapp/WEB-INF/global/pages/partnersSave.ftl:5 - ?20261120-1
+  === allInstitutionsPopup.js
+    ok     marlo-web/src/main/webapp/WEB-INF/global/macros/allInstitutionsPopup.ftl:29 - ?20261120
+impeccable detect (source) allInstitutionsPopup.js + allInstitutionsPopup.ftl: [], exit=0
+
+Sweep of every script the review page loads (customJS marloInstitutions.js + macro-added allInstitutionsPopup.js; pageLibs are third-party):
+  marloInstitutions.js: string-built HTML none; every requester/institution value goes through .text() / .attr() / createTextNode (lines 177-198, 645, 720-725). Left unchanged.
+  allInstitutionsPopup.js (DataTables render callbacks): UNSAFE at HEAD in 5 places: id, acronym, type (written as HTML by DataTables), name (+ concatenated into the cell), webPage in href and title. Fixed.
+Follow-up outside the review page, NOT touched: marlo-web/src/main/webapp/WEB-INF/swagger/dist/js/request.js:524 (same pattern: websiteLink in href/title via template string).

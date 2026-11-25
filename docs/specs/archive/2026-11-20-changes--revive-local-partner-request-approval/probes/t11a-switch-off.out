@@ -1,0 +1,18 @@
+# Branch code cad7c5d4e4, unit 45 switch (custom_parameters 2184 crp_enable_email_notification) set to false on the COPY, restored to true at the end
+== switch label=T11a switch db=aiccradb_partreq_test
+  switch before: custom_parameters 2184 crp_enable_email_notification=true (unit 45)
+  switch set to: false
+  POST /clusters/AICCRA/partnerSave.do (T11a switch submit) -> HTTP 302 Location=/marlo-web/clusters/AICCRA/partnerSave.do?projectID=102076&fundingSourceID=0&expectedID=0&messageSent=true
+  new row: id=5214 partner_request_id=NULL is_active=1 global_unit_id=45 created_by=2491 id_phase=403 source=' Cluster: (102076) - Senegal: Activities led by ICRISAT'
+  new row: id=5215 partner_request_id=5214 is_active=1 global_unit_id=45 created_by=2491 id_phase=403 source=' Cluster: (102076) - Senegal: Activities led by ICRISAT'
+  GET /requestCountryOffice.do (T11a switch office, institution 11912, SN) -> HTTP 200 {"sucess":{"result":"1"}}
+  new row: id=5216 institution=11912 country=198 is_office=1 is_active=1 global_unit_id=45 created_by=2491 source='Project: (102076) - Senegal: Activities led by ICRISAT'
+  email_logs after: []
+  addPartner                           HTTP 302 -> /marlo-web/superadmin/marloInstitutions.do?edit=true&phaseID=403
+  rejectPartnerRequest(notify=true)    HTTP 200 {"outcome":"done","success":true}
+  acceptOfficesRequest                 HTTP 200 {"outcome":"skippedExisting","outcomes":{"5221":"skippedExisting"},"success":true}
+  rejectOfficesRequest(notify=true)    HTTP 200 {"outcome":"done","outcomes":{"5222":"done"},"success":true}
+  rows:  req 5217 active=0 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a switch accept'; req 5218 active=0 acepted=1 institution=11913 modified=0 justification='NULL' name='T11a switch accept'; req 5219 active=0 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a switch reject'; req 5220 active=0 acepted=0 institution=NULL modified=0 justification='NULL' name='T11a switch reject'; req 5221 active=0 acepted=0 institution=11912 modified=NULL justification='The InstitutionLocation ID:12922 already' name='T11a switch office accept'; req 5222 active=0 acepted=0 institution=11912 modified=NULL justification='NULL' name='T11a switch office reject'
+  email_logs rows created while the switch was off: 0
+  RESULT: NO EMAIL (switch honoured)
+  switch restored: true
