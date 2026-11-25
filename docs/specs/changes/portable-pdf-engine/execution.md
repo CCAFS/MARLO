@@ -585,3 +585,120 @@ ADVISORY (4R, recorded only — never a task):
 T06 needs at least 1 more review round (checklist). **Run stopped at the T05 gate and escalated to the owner.**
 - **Decision (owner, 2026-11-25, at the T05 tripwire):** "sí, haz el commit, sube el presupuesto y sigue con T06" —
   budget re-baselined in `design.md` §18 to about 2,100 Java LOC and 14 review rounds; T05 committed.
+
+### CHG-PPE-T06 — Cross-platform verification and size
+
+**Attempt 1 (Implementer sonnet, effort `medium`, 2026-11-25)** — evidence only; no production or test code changed,
+nothing committed. Sources: final `b537745d0e`, baseline `e452378187` (worktree, classes and WAR built with
+`package`, never `install`; worktree removed and pruned). Harness rebuilt in this session's scratchpad (`t06/`:
+`T06Render.java` builds `LocalPdfReportService()`, `initFromConfig()`, renders the three fixture payloads;
+`run-container.sh`, `pixcmp.sh` = per-page `pdftoppm -r 72 -png` + `shasum`). Leader decision recorded in the brief:
+no Windows host known.
+
+**(1) Linux, `tomcat:9.0-jdk17-temurin`, `--platform linux/amd64 --network none`** — fontlibs `4`, glibc Ubuntu 2.43.
+Startup `PhantomJS available for local PDF renders, version=2.1.1, platform=Linux/amd64, build=linux-x86_64,
+libraries=host, path=…`; renders `outcome=ok` 557,407 / 1,102,324 / 74,472 bytes, 5/6/7 pages (baseline sizes
+identical). Pixel comparison baseline vs final: oicr 0/5, innovation 0/6, project 0/7 differing pages (raw bytes
+differ — PDF metadata; pixels identical). Gated `PhantomJsRenderingTest` via JUnitCore in the image: `OK (8 tests)`
+(shipped project test rendered 7 pages; 7 skip without `PHANTOMJS_PATH`).
+**Falsifier red:** scratch copy of `PhantomJsRenderer.java` with `usesPageFonts()` → `return true`, compiled into a
+scratch class directory ahead of the final classes (main source never edited): `outcome=ok` but 1,284,784 /
+1,719,335 / 279,282 bytes, pixel comparison **5/5, 6/6, 7/7 pages differ**.
+
+**(2) Minimal Linux and old glibc at the final commit** — `debian:bookworm-slim --network none` (JDK copied in):
+fontlibs `0`, glibc 2.36-9+deb12u14; `PhantomJS does not start with the host libraries; using the libraries shipped
+with MARLO`, startup `… libraries=bundled …`; renders `outcome=ok` 5/6/7, same sizes; pixel comparison vs baseline
+0/5, 0/6, 0/7. `amazonlinux:2023` (glibc 2.34, fontlibs 0): one WARN `PhantomJS does not start with the host
+libraries nor the shipped ones (glibc older than 2.36?), platform=Linux/amd64: local PDF renders will fail`; renders
+`outcome=failed` in 364 / 121 / 224 ms, no hang.
+
+**(3) macOS (Mac OS X/aarch64)** — gated: `mvn -o -pl marlo-web -am test -Dtest=PhantomJsRenderingTest`
+(`PHANTOMJS_PATH` unset) → `Tests run: 8, Failures: 0, Errors: 0, Skipped: 6`; shipped macOS test 5/6/7 pages,
+`[DejaVuSans, DejaVuSans-Bold]`. Live app (`./scripts/run-marlo-java17.sh`, flag on, no override): startup
+`PhantomJS available for local PDF renders, version=2.1.1, platform=Mac OS X/aarch64, build=macosx, libraries=n/a,
+path=<tmp>/phantomjs`. Downloads (unit AICCRA): OICR study 3508 → 200 `application/pdf;charset=UTF-8`, 238,065 bytes,
+4 pages, `elapsedMs=6921`; innovation 1558 → 200, 1,007,244 bytes, 6 pages, 1499 ms; project 102076 → 200, 8,439,032
+bytes, 169 pages, 16,823 ms (18.07 s wall); all `outcome=ok blockedUris=0 failedFetches=0`, `pdffonts` DejaVuSans +
+DejaVuSans-Bold only. Notes: the first run-script attempt failed at test-compile (`class file for …BaseAction not
+found`), the identical second attempt built and started (cause not investigated — matches the known dirty-`target/`
+symptom); `marlo-dev.properties` points at `partroute_local`, which has no `local_pdf_report_engine_active` row, so
+`mysql.database=lpre_live_tmp` (flag `true` for unit 45) was set temporarily and **restored** (SHA-1 `b3801c73…`
+equals the saved original); the DB flag was not changed; Flyway "Schema `lpre_live_tmp` is up to date".
+
+**(4) Windows: not verified at runtime.** No host known or reachable; none provisioned. **P-16, P-17, P-18 stay open.**
+
+**(5) WAR size** — baseline `e452378187` 304,474,384 bytes; final `b537745d0e` 340,570,002 bytes; growth 36,095,618
+bytes = **36.1 MB** (34.4 MiB) against the 60 MB cap (NF-004).
+
+**(6) First render** (first `elapsedMs=` per run): Tomcat image 1,964 ms; bookworm-slim (shipped libraries) 1,565 ms;
+macOS gated 6,782 ms; macOS live app (OICR) 6,921 ms — all within 50 s (NF-006). Linux startup under 1.3 s.
+
+- Cleanup: worktree removed; app stopped, no listener on 8080 (an unrelated INVFRIJOL Tomcat 8.5 and a Chrome
+  `CLOSE_WAIT` left untouched); Docker containers removed; `marlo-dev.properties` restored; `target/` rebuilt by the
+  run script.
+- Not Done / Assumptions (assumptions + the Windows gap the task itself provides for; no owed item, no blocker):
+  Windows not run; later runs used `docker cp` after bind-mounts stopped working (earlier runs bind-mounted the same
+  final classes, confirmed by the startup line); every Linux run used `--platform linux/amd64` (local tag is arm64);
+  macOS first render includes PhantomJS extraction and Handlebars warm-up, single sample; the 169-page project report
+  is real data, ~17 s.
+- **Evidence re-run (Leader-inline): VERIFIED** — `pixcmp.sh` re-run on the kept PDFs: base vs final-tomcat 0/5, 0/6,
+  0/7; base vs final-bookworm 0/5, 0/6, 0/7; base vs falsifier 5/5, 6/6, 7/7; startup and render lines re-read from
+  `out/final-tomcat.log`, `out/final-bookworm.log`, `out/final-amazon.log` and `app.log` (as quoted above); live PDFs
+  re-checked with poppler (4/6/169 pages, DejaVuSans + DejaVuSans-Bold only); `marlo-dev.properties` SHA-1 equals the
+  original, `mysql.database=partroute_local`; `git worktree list` shows no T06 worktree; tree clean. Not re-runnable
+  by the Leader: the baseline WAR size (worktree removed) — `marlo-web/target/marlo-web.war` now reads 340,571,031
+  bytes (+1,029 vs the report) because the run script rebuilt it after the measurement; growth stays 36.1 MB.
+- spawns: Implementer 103 calls, ~202,000 tokens, ended partial (Not Done / Assumptions; Windows gap). 103 calls is
+  past the v2.45.0 60-call checkpoint bound the adapted persona lacks (persona drift recorded in Document Control).
+
+**Attempt 1 — Reviewer verdict (`checklist`, single Reviewer, override (c) derived evidence, 2026-11-25)**
+- **Reviewer (opus): PASS.** Every number and quoted line in this entry traced to the `t06/` artifacts (startup lines
+  `out/final-tomcat.log:5`, `out/final-bookworm.log:5-6`, `out/final-amazon.log:5`, `app.log:447`; `OK (8 tests)`
+  `out/gated-tomcat.log:81`; `Tests run: 8 … Skipped: 6` `mac-gated.log:119`; `live/*.hdr` 200 + `application/pdf` with
+  Content-Length equal to the rendered bytes). Baseline is pre-change code: loaded from the separate worktree
+  (`cp-base-run.txt`) and its startup line has the pre-T02 format (no platform/build/libraries). Falsifier real:
+  `fals-src/PhantomJsRenderer.java:1085-1087` forces `usesPageFonts()`; repo source unchanged. Windows fallback as the
+  task provides. Done-when (1)–(6) met. Issues: none.
+- Claims without a backing file (none wrong): per-page pixel counts rest on the Leader's inline `pixcmp.sh` re-run
+  (PDFs kept, repeatable); the two WAR byte figures appear in no artifact; "18.07 s wall" is unlogged (only
+  `elapsedMs=16823`); the Linux "7 skip" is not printed by JUnitCore; the live `pdffonts` result is the Leader's.
+- **Corrections to this entry (Reviewer, recorded here; the lines above stand as written):** for `amazonlinux:2023`
+  "fontlibs 0" is **not probed** — `run-container.sh:12` checks `/usr/lib/x86_64-linux-gnu`, Amazon Linux uses
+  `/usr/lib64` (the minimal-image claim rests on bookworm-slim, a real 0). The live run's Flyway also logged
+  "Successfully repaired metadata table `lpre_live_tmp`.`schema_version`" (`app.log:6270`) — a write to the local
+  `lpre_live_tmp` database, harmless.
+- ADVISORY (recorded only): for `/akili-validate`, the baseline commit hash, pixel counts and WAR sizes exist only as
+  prose — re-measure there if needed; NF-003 ("only the current platform's build extracted") has no T06 artifact
+  listing the support directory (`--network none` proves only no download) and NF-001's "8 parity cases" vs T06's 3
+  fixtures — validate should map both to their owning evidence. RISK: the scratchpad copy of the gitignored
+  `marlo-dev.properties` and `login.out` — **deleted by the Leader on 2026-11-25** after the restore check.
+
+**Closing record — CHG-PPE-T06: PASS (attempt 1), 2026-11-25**
+
+| Field | Value |
+|---|---|
+| Final status | **PASS** — checklist Reviewer |
+| Requirements covered | NF-001 (3 fixtures, pixel-identical), NF-002 (macOS), NF-004 (36.1 MB), NF-006 (≤ 6.9 s), FN-001/OPS-002 (startup line on every run), FN-002/FN-007 re-run at the final commit; P-16…P-18 **open** (Windows not run) |
+| Decisions made | No Windows host (Leader assumption in the brief, owner did not name one); live run against `lpre_live_tmp` via a temporary, restored `marlo-dev.properties` change |
+| Issues encountered | Bind-mounts stopped working mid-run (switched to `docker cp`); first run-script attempt failed at test-compile (dirty `target/` symptom), second attempt green |
+| continuations | 0 · checkpoints: 0 · runtime events: none |
+| spawns | Implementer 103 calls, ~202,900 tokens, ended partial (Windows gap); Reviewer 35 calls, 119,996 tokens, ended complete |
+
+**Budget running totals (design §18, re-baselined 2026-11-25 at T05 close):** tasks 6/6 · Java LOC about 2,066 /
+about 2,100 · review rounds 14/14 · WAR growth 36.1 MB / 60 MB. Within budget.
+
+## Summary — all tasks complete (2026-11-25)
+
+| Task | Result | Commit |
+|---|---|---|
+| T01 Ship the macOS and Windows builds | PASS | `197422769b` |
+| T02 One platform table chooses the build | PASS | `4cae4e4f6d` |
+| T03 Child-process environment per platform | PASS | `6ce75d9411` |
+| T04 Linux library fallback | PASS (attempt 2) | `256753d6d9` |
+| T05 DejaVu in the page on macOS and Windows | PASS (attempt 1b, post-amendment) | `b537745d0e` |
+| T06 Cross-platform verification and size | PASS | (this entry) |
+
+Open for `/akili-validate` and the Definition of Done: Windows not verified at runtime (P-16…P-18 open); the full
+`marlo-web` suite with `-am` was not run in this execution (the PDF package suite was, 200/0/6); pending `staging`
+items — merge the v2.45.0 persona sections into `.agents/*.md`, drop the macOS PhantomJS note from
+`docs/infrastructure.md` §6.

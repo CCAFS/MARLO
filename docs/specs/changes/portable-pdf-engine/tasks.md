@@ -217,7 +217,7 @@
 - **Done when:** unit and macOS gated tests green; falsifier reds observed and quoted; Linux output byte-identical.
 
 ### CHG-PPE-T06 — Cross-platform verification and size
-- **Status:** [ ] · **Size:** S · **Depends on:** T01–T05 · **Module:** spec folder (evidence), no code
+- **Status:** [x] · **Size:** S · **Depends on:** T01–T05 · **Module:** spec folder (evidence), no code
 - **Requirements:** NF-001 ("Linux parity unchanged"), NF-002, NF-003, NF-004, NF-006, FN-001 (startup line on every
   platform run); settles P-16, P-17, P-18 · **Design:** §12, §14, §17, §18
 - **Files touched:** `execution.md` (evidence only).
