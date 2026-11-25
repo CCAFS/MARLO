@@ -334,6 +334,193 @@ public class PhantomJsLibrariesTest {
     }
   }
 
+  // ---- FN-002 / DD-2: a probe that could not be judged ---------------------------------------------------------
+
+  /** The shipped libraries, recording every call as {@code expected} or {@code open <name>}. */
+  private static EmbeddedPhantomJs.Libraries recording(final List<String> calls) {
+    final EmbeddedPhantomJs.Libraries shipped = EmbeddedPhantomJs.shippedLibraries();
+    return new EmbeddedPhantomJs.Libraries() {
+
+      @Override
+      public Map<String, String> expected() throws IOException {
+        calls.add("expected");
+        return shipped.expected();
+      }
+
+      @Override
+      public InputStream open(String name) throws IOException {
+        calls.add("open " + name);
+        return shipped.open(name);
+      }
+    };
+  }
+
+  private boolean debugContains(String text) {
+    for (String line : messages(Level.DEBUG)) {
+      if (line.contains(text)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Test(timeout = 30000L)
+  public void aHostProbeThatTimesOutKeepsTheHostLibrariesForEveryRenderAndNeverOpensTheShippedOnes()
+    throws Exception {
+    FakePhantomJs fake = fake("version-hang");
+    List<String> calls = new ArrayList<String>();
+    PhantomJsRenderer renderer = new PhantomJsRenderer("", embeddedFor(fake, "Linux", "amd64", recording(calls)));
+    try {
+      long start = System.nanoTime();
+      renderer.prepare();
+      long elapsedMs = (System.nanoTime() - start) / 1000000L;
+      assertTrue("bounded by the version timeout, not by the fake's 60 s sleep: " + elapsedMs + " ms",
+        elapsedMs < PhantomJsRenderer.VERSION_TIMEOUT_MS + 5000L);
+      assertTrue(messages(Level.DEBUG).toString(),
+        debugContains("host libraries could not be judged, cause=DeadlineExpiredException"));
+      assertEquals("host", renderer.libraryMode());
+      assertFalse("no libs directory in host mode", Files.exists(libsOf(renderer)));
+      assertEquals("the shipped libraries were never opened", new ArrayList<String>(), calls);
+      assertEquals(Arrays.asList("unset"), versionLibraryPaths(fake));
+
+      fake.mode("ok");
+      renderer.render("<p>x</p>", null, deadlineIn(20000L));
+      String env = fake.recorded("env", fake.started().get(0));
+      assertFalse(env, env.contains("LD_LIBRARY_PATH"));
+      assertEquals("the decision is kept: no second probe", Arrays.asList("unset"), versionLibraryPaths(fake));
+      assertEquals(messages(Level.WARN).toString(), 0, messages(Level.WARN).size());
+    } finally {
+      renderer.close();
+    }
+  }
+
+  @Test(timeout = 30000L)
+  public void aHostProbeThatCannotStartKeepsTheHostLibrariesAndNeverOpensTheShippedOnes() throws Exception {
+    // libs-required: had the probe started, the loader message would have switched to the shipped libraries.
+    FakePhantomJs fake = fake("libs-required");
+    List<String> calls = new ArrayList<String>();
+    final byte[] script = Files.readAllBytes(Path.of(fake.path()));
+    final byte[] compressed = gzip(script);
+    // The file store is reported as non-POSIX, so the extracted copy keeps its 0644 bits and the start is refused.
+    EmbeddedPhantomJs embedded = new EmbeddedPhantomJs("Linux", "amd64", sha256(script),
+      () -> new ByteArrayInputStream(compressed), file -> true, file -> false, recording(calls));
+    PhantomJsRenderer renderer = new PhantomJsRenderer("", embedded);
+    try {
+      renderer.prepare();
+      assertTrue(messages(Level.DEBUG).toString(),
+        debugContains("host libraries could not be judged, cause=PdfRenderException"));
+      assertEquals("host", renderer.libraryMode());
+      assertFalse("no libs directory in host mode", Files.exists(libsOf(renderer)));
+      assertEquals("the shipped libraries were never opened", new ArrayList<String>(), calls);
+      assertFalse("no --version ever ran", Files.exists(
+        Path.of(fake.path()).getParent().resolve("record").resolve("libpath.version")));
+      try {
+        renderer.render("<p>x</p>", null, deadlineIn(5000L));
+        fail("rendered with an executable that cannot start");
+      } catch (PdfRenderException e) {
+        assertEquals("PhantomJS binary is not available", e.getMessage());
+      }
+      assertTrue(fake.started().isEmpty());
+      assertEquals(messages(Level.WARN).toString(), 0, messages(Level.WARN).size());
+    } finally {
+      renderer.close();
+    }
+  }
+
+  private void assertUnavailableAfterTheRetry(PhantomJsRenderer renderer, FakePhantomJs fake, List<String> calls)
+    throws Exception {
+    for (int i = 0; i < 2; i++) {
+      try {
+        renderer.prepare();
+        fail("prepared a build whose retry with the shipped libraries could not be judged");
+      } catch (PdfRenderException e) {
+        assertEquals(PhantomJsRenderer.LIBRARIES_UNAVAILABLE_MESSAGE, e.getMessage());
+      }
+    }
+    try {
+      renderer.render("<p>SECRET-HTML-MARKER</p>", null, deadlineIn(5000L));
+      fail("rendered with a build whose retry could not be judged");
+    } catch (PdfRenderException e) {
+      assertEquals(PhantomJsRenderer.LIBRARIES_UNAVAILABLE_MESSAGE, e.getMessage());
+    }
+    assertEquals("unavailable", renderer.libraryMode());
+    assertTrue("no render was started", fake.started().isEmpty());
+    assertEquals("expected", calls.get(0));
+    TreeSet<String> opened = new TreeSet<String>();
+    for (String call : calls.subList(1, calls.size())) {
+      opened.add(call.replaceFirst("^open ", ""));
+    }
+    assertEquals("each recorded library was opened once to be verified, and nothing else", SHIPPED.size() + 1,
+      calls.size());
+    assertEquals(new TreeSet<String>(SHIPPED.keySet()), opened);
+    assertTrue(messages(Level.DEBUG).toString(),
+      debugContains("PhantomJS --version with the shipped libraries could not run, cause="));
+    List<String> warns = messages(Level.WARN);
+    assertEquals(warns.toString(), 1, warns.size());
+    assertTrue(warns.get(0), warns.get(0).contains("glibc older than 2.36"));
+    assertTrue(warns.get(0), warns.get(0).contains("platform=Linux/amd64"));
+    assertEquals("never logged", levelOf(HOST_MESSAGE));
+  }
+
+  @Test(timeout = 30000L)
+  public void aRetryThatCannotStartMakesTheBuildUnavailableWithOneWarnAndNoRender() throws Exception {
+    FakePhantomJs fake = fake("loader-fail-then-unstartable");
+    List<String> calls = new ArrayList<String>();
+    PhantomJsRenderer renderer = new PhantomJsRenderer("", embeddedFor(fake, "Linux", "amd64", recording(calls)));
+    try {
+      assertUnavailableAfterTheRetry(renderer, fake, calls);
+      assertEquals("the retry was refused before the script ran", Arrays.asList("unset"),
+        versionLibraryPaths(fake));
+    } finally {
+      renderer.close();
+    }
+  }
+
+  @Test(timeout = 30000L)
+  public void aRetryThatHangsIsKilledAtTheVersionTimeoutAndTheBuildIsUnavailable() throws Exception {
+    FakePhantomJs fake = fake("libs-hang");
+    List<String> calls = new ArrayList<String>();
+    PhantomJsRenderer renderer = new PhantomJsRenderer("", embeddedFor(fake, "Linux", "amd64", recording(calls)));
+    try {
+      long start = System.nanoTime();
+      assertUnavailableAfterTheRetry(renderer, fake, calls);
+      long elapsedMs = (System.nanoTime() - start) / 1000000L;
+      assertTrue("bounded by the version timeout, not by the fake's 60 s sleep: " + elapsedMs + " ms",
+        elapsedMs < PhantomJsRenderer.VERSION_TIMEOUT_MS + 5000L);
+      assertTrue(debugContains("shipped libraries could not run, cause=DeadlineExpiredException"));
+      List<String> probes = versionLibraryPaths(fake);
+      assertEquals(probes.toString(), 2, probes.size());
+      assertEquals("unset", probes.get(0));
+      assertTrue(probes.get(1), probes.get(1).endsWith("libs"));
+    } finally {
+      renderer.close();
+    }
+  }
+
+  // ---- NF-003: only the current platform's libraries ------------------------------------------------------------
+
+  @Test
+  public void onMacOsAndWindowsTheShippedLibrariesAreNeverOpenedNorExtracted() throws Exception {
+    String[][] platforms = {{"Mac OS X", "aarch64"}, {"Mac OS X", "x86_64"}, {"Windows 11", "amd64"}};
+    for (String[] platform : platforms) {
+      // libs-required: a probe on this platform would have extracted the libraries.
+      FakePhantomJs fake = fake("libs-required");
+      List<String> calls = new ArrayList<String>();
+      PhantomJsRenderer renderer =
+        new PhantomJsRenderer("", embeddedFor(fake, platform[0], platform[1], recording(calls)));
+      try {
+        renderer.prepare();
+        String label = platform[0] + "/" + platform[1];
+        assertTrue(label, renderer.usesEmbeddedBinary());
+        assertEquals(label, "n/a", renderer.libraryMode());
+        assertEquals(label + ": the shipped libraries were never opened", new ArrayList<String>(), calls);
+        assertFalse(label, Files.exists(libsOf(renderer)));
+      } finally {
+        renderer.close();
+      }
+    }
+  }
+
   // ---- SEC-001: nothing unverified is written or run ------------------------------------------------------------
 
   /** The shipped libraries with one of them replaced by other bytes, as a damaged or swapped WAR entry would be. */

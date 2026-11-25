@@ -760,6 +760,31 @@ public class EmbeddedPhantomJsTest {
   }
 
   @Test
+  public void theStartupLineNamesTheMacOsAndWindowsPlatformTheirBuildAndNoLibraries() throws Exception {
+    Assume.assumeFalse("the fake is a shell script", System.getProperty("os.name", "").startsWith("Windows"));
+    String sha = sha256(FAKE);
+    String[][] rows = {{"Mac OS X", "aarch64", "macosx", "phantomjs"}, {"Mac OS X", "x86_64", "macosx", "phantomjs"},
+      {"Windows 11", "amd64", "windows", "phantomjs.exe"}, {"Windows 10", "x86", "windows", "phantomjs.exe"}};
+    for (String[] row : rows) {
+      appender.list.clear();
+      int openedBefore = opened.get();
+      LocalPdfReportService service =
+        new LocalPdfReportService("", HandlebarsReportHelpers.newHandlebars(), embedded(row[0], row[1], FAKE, sha));
+      try {
+        List<String> infos = messages(Level.INFO);
+        assertEquals(infos.toString(), 1, infos.size());
+        assertTrue(infos.get(0), infos.get(0).startsWith("PhantomJS available for local PDF renders, version=2.1.1, "
+          + "platform=" + row[0] + "/" + row[1] + ", build=" + row[2] + ", libraries=n/a, path="));
+        assertTrue(infos.get(0), infos.get(0).endsWith(java.io.File.separator + row[3]));
+        assertTrue(messages(Level.WARN).toString(), messages(Level.WARN).isEmpty());
+        assertEquals(row[0] + "/" + row[1] + ": its build was extracted once", openedBefore + 1, opened.get());
+      } finally {
+        service.shutdown();
+      }
+    }
+  }
+
+  @Test
   public void startupOnAnUnsupportedPlatformWarnsAndRendersFail() throws Exception {
     EmbeddedPhantomJs embedded = embedded("FreeBSD", "amd64", FAKE, sha256(FAKE));
     LocalPdfReportService service =

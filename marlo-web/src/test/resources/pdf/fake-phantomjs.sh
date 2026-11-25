@@ -32,6 +32,11 @@ if [ "$1" = "--version" ]; then
       exit 3 ;;
     version-hang) sleep 60; exit 0 ;;
     version-other) echo 1.9.8; exit 0 ;;
+    # The retry of the library probe cannot start: the first --version takes its own execute bit away and fails as a
+    # host without the font libraries would, so the second --version is refused by the operating system.
+    loader-fail-then-unstartable) chmod a-x "$0"; loader_error ;;
+    # The retry of the library probe hangs: without LD_LIBRARY_PATH it fails as a host without the font libraries.
+    libs-hang) [ -n "$LD_LIBRARY_PATH" ] || loader_error; sleep 60; exit 0 ;;
     *) echo 2.1.1; exit 0 ;;
   esac
 fi
