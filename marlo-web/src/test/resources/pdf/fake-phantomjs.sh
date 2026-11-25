@@ -5,9 +5,28 @@
 REC='__REC__'
 MODE=$(cat "$REC/mode")
 
+# CHG-PPE-T04: the modes libs-required and loader-fail stand in for a host without the font libraries. libs-required
+# runs only when LD_LIBRARY_PATH names a directory holding all seven shipped libraries; otherwise, like loader-fail
+# always, it prints the dynamic loader's message and exits 127.
+LIBS="libfontconfig.so.1 libfreetype.so.6 libexpat.so.1 libpng16.so.16 libbrotlidec.so.1 libbrotlicommon.so.1 libz.so.1"
+libs_present() {
+  [ -n "$LD_LIBRARY_PATH" ] || return 1
+  for lib in $LIBS; do
+    [ -f "$LD_LIBRARY_PATH/$lib" ] || return 1
+  done
+  return 0
+}
+loader_error() {
+  echo "$0: error while loading shared libraries: libfontconfig.so.1: cannot open shared object file: No such file or directory" >&2
+  exit 127
+}
+
 if [ "$1" = "--version" ]; then
   env | sort > "$REC/env.version"
+  printf '%s\n' "${LD_LIBRARY_PATH-unset}" >> "$REC/libpath.version"
   case "$MODE" in
+    libs-required) libs_present || loader_error; echo 2.1.1; exit 0 ;;
+    loader-fail) loader_error ;;
     version-fail)
       printf 'Auto configuration failed\001 first line\nSECOND-LINE-MARKER\n' >&2
       exit 3 ;;
@@ -24,6 +43,11 @@ echo "$HOME" > "$REC/home.$$"
 pwd > "$REC/pwd.$$"
 if [ -n "$FONTCONFIG_FILE" ]; then cp "$FONTCONFIG_FILE" "$REC/fonts.conf.$$"; fi
 if [ -f "$2" ]; then echo present > "$REC/script-present.$$"; fi
+
+case "$MODE" in
+  libs-required) libs_present || loader_error; MODE=ok ;;
+  loader-fail) loader_error ;;
+esac
 
 if [ "$MODE" = "nostdin" ]; then
   sleep 300 &

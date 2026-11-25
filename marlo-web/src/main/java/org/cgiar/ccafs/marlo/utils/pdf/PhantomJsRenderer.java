@@ -88,6 +88,26 @@ final class PhantomJsRenderer {
     }
   }
 
+  /**
+   * Where the Linux build finds libfontconfig, libfreetype and their dependencies (CHG-PPE-DD-2). Decided once, at
+   * start-up, by running {@code --version}: with the host's libraries first, and with the libraries shipped inside
+   * MARLO only when the dynamic loader reports a missing one. The decision is kept for every render.
+   */
+  private enum LibraryMode {
+
+    /** Not decided yet, or no shipped libraries apply (another platform, or a configured path). */
+    UNDECIDED,
+
+    /** The host's own libraries work: nothing is extracted and no library path is given. */
+    HOST,
+
+    /** The shipped libraries are extracted next to the executable and named in the child's {@code LD_LIBRARY_PATH}. */
+    BUNDLED,
+
+    /** Neither works: every render fails at once. */
+    UNAVAILABLE
+  }
+
   /** The deadline passed and PhantomJS was killed. */
   static final class DeadlineExpiredException extends PdfRenderException {
 
@@ -129,12 +149,17 @@ final class PhantomJsRenderer {
   private static final class Finished {
 
     private final int exitCode;
+
+    /** The process failed and said, on stderr, that the dynamic loader could not load a shared library. */
+    private final boolean loaderFailure;
     private final int stderrBytes;
     private final String stderrLine;
     private final byte[] stdout;
     private final boolean stdoutTruncated;
 
-    Finished(int exitCode, byte[] stdout, boolean stdoutTruncated, int stderrBytes, String stderrLine) {
+    Finished(int exitCode, byte[] stdout, boolean stdoutTruncated, int stderrBytes, String stderrLine,
+      boolean loaderFailure) {
+      this.loaderFailure = loaderFailure;
       this.stderrLine = stderrLine;
       this.exitCode = exitCode;
       this.stdout = stdout;
@@ -222,6 +247,13 @@ final class PhantomJsRenderer {
 
   static final String NOT_EXECUTABLE_MESSAGE = "The PhantomJS shipped with MARLO cannot be executed from the temp "
     + "directory (mounted noexec?): set pdf.phantomjs.path or -Djava.io.tmpdir";
+
+  /** What the dynamic loader prints when a shared library cannot be found or loaded. */
+  static final String LOADER_FAILURE_TEXT = "error while loading shared libraries";
+
+  /** The failure of every render, and of the start-up preparation, once neither library set lets PhantomJS start. */
+  static final String LIBRARIES_UNAVAILABLE_MESSAGE =
+    "PhantomJS does not start with the host libraries nor the shipped ones";
 
   private static final int DEFAULT_PAGE_TIMEOUT_MS = 30000;
 
@@ -462,6 +494,12 @@ final class PhantomJsRenderer {
 
   private EmbeddedPhantomJs.Fingerprint fingerprint;
 
+  /** Where the shipped build gets its shared libraries; decided once, when the first support directory is made. */
+  private volatile LibraryMode libraryMode = LibraryMode.UNDECIDED;
+
+  /** The state of the extracted libraries when they were verified; used only in {@link LibraryMode#BUNDLED}. */
+  private Map<String, EmbeddedPhantomJs.Fingerprint> libraryFingerprints;
+
   private Path support;
 
   /**
@@ -498,6 +536,28 @@ final class PhantomJsRenderer {
   /** The platform the shipped build is judged against, for log lines. */
   String platform() {
     return embedded.platform();
+  }
+
+  /**
+   * Where the shipped build gets its shared libraries, for log lines: {@code host}, {@code bundled}, {@code
+   * unavailable} (neither works) or {@code undecided} on a Linux build; {@code n/a} when no shipped libraries
+   * apply, that is on another platform or with a configured path.
+   */
+  String libraryMode() {
+    if (!usesShippedLibraries()) {
+      return "n/a";
+    }
+    return libraryMode.name().toLowerCase(Locale.ROOT);
+  }
+
+  /** True when the shipped build is in use and has fallback libraries (Linux). */
+  private boolean usesShippedLibraries() {
+    return usesEmbeddedBinary() && embedded.shipsLibraries();
+  }
+
+  /** The directory of the extracted libraries for {@code LD_LIBRARY_PATH}; null unless they are in use. */
+  private Path libraryDirectoryIn(Path dir) {
+    return libraryMode == LibraryMode.BUNDLED ? dir.resolve(EmbeddedPhantomJs.LIBRARIES_DIR) : null;
   }
 
   /** Short name of the shipped build in use, for log lines; empty when a configured path or no build applies. */
@@ -555,20 +615,19 @@ final class PhantomJsRenderer {
    */
   String queryVersion() throws PdfRenderException {
     String executable;
+    Path libraries = null;
     if (usesEmbeddedBinary()) {
-      executable = executableIn(supportDirectory());
+      Path dir = supportDirectory();
+      executable = executableIn(dir);
+      libraries = libraryDirectoryIn(dir);
     } else {
       executable = binary;
     }
     if (!isUsable(executable)) {
       throw new PdfRenderException("PhantomJS binary is not available");
     }
-    Path home = null;
     try {
-      home = Files.createTempDirectory("marlo-pdf-version-");
-      Map<String, String> environment = baseEnvironment(home);
-      Finished finished = run(Arrays.asList(executable, "--version"), home, environment, new byte[0],
-        System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(VERSION_TIMEOUT_MS));
+      Finished finished = runVersion(executable, libraries);
       if (finished.exitCode != 0) {
         throw new ProcessFailedException("PhantomJS --version exited with code " + finished.exitCode,
           finished.exitCode, finished.stderrLine);
@@ -578,6 +637,24 @@ final class PhantomJsRenderer {
       return end < 0 ? text : text.substring(0, end).trim();
     } catch (IOException e) {
       throw new PdfRenderException("PhantomJS --version could not run (" + e.getClass().getSimpleName() + ")");
+    }
+  }
+
+  /**
+   * Runs {@code <executable> --version} in a private directory with the minimal environment, plus
+   * {@code LD_LIBRARY_PATH=<libraries>} when {@code libraries} is not null; the variable exists in this child's
+   * environment only.
+   */
+  private Finished runVersion(String executable, Path libraries) throws PdfRenderException, IOException {
+    Path home = null;
+    try {
+      home = Files.createTempDirectory("marlo-pdf-version-");
+      Map<String, String> environment = baseEnvironment(home);
+      if (libraries != null) {
+        environment.put("LD_LIBRARY_PATH", libraries.toString());
+      }
+      return run(Arrays.asList(executable, "--version"), home, environment, new byte[0],
+        System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(VERSION_TIMEOUT_MS));
     } finally {
       deleteTree(home);
     }
@@ -629,6 +706,11 @@ final class PhantomJsRenderer {
       Map<String, String> environment = baseEnvironment(renderDir);
       if (usesFontconfig()) {
         environment.put("FONTCONFIG_FILE", supportDir.resolve("fonts.conf").toString());
+      }
+      // Only in the environment of this child, and only when the shipped libraries are the ones in use (FN-003).
+      Path libraries = libraryDirectoryIn(supportDir);
+      if (libraries != null) {
+        environment.put("LD_LIBRARY_PATH", libraries.toString());
       }
       List<String> command = Arrays.asList(executable, "--local-url-access=false",
         supportDir.resolve("render-page.js").toString());
@@ -875,6 +957,11 @@ final class PhantomJsRenderer {
     return clean.toString().trim();
   }
 
+  /** True when stderr holds the dynamic loader's message about a shared library; the text itself is not kept. */
+  static boolean isLoaderFailure(byte[] stderr) {
+    return new String(stderr, StandardCharsets.ISO_8859_1).contains(LOADER_FAILURE_TEXT);
+  }
+
   private static byte[] appendNewline(byte[] json) {
     byte[] line = Arrays.copyOf(json, json.length + 1);
     line[json.length] = '\n';
@@ -964,7 +1051,10 @@ final class PhantomJsRenderer {
     if (embeddedBlocked) {
       throw new PdfRenderException(NOT_EXECUTABLE_MESSAGE);
     }
-    if (support != null && isComplete(support) && isExecutableIntact(support)) {
+    if (libraryMode == LibraryMode.UNAVAILABLE) {
+      throw new PdfRenderException(LIBRARIES_UNAVAILABLE_MESSAGE);
+    }
+    if (support != null && isComplete(support) && isExecutableIntact(support) && areLibrariesIntact(support)) {
       return support;
     }
     discardSupport();
@@ -995,6 +1085,9 @@ final class PhantomJsRenderer {
           throw new PdfRenderException("The PhantomJS shipped with MARLO could not be extracted or is not the expected "
             + "build (" + e.getClass().getSimpleName() + ")");
         }
+        if (embedded.shipsLibraries()) {
+          prepareLibraries(dir);
+        }
       }
       support = dir;
       return dir;
@@ -1008,6 +1101,86 @@ final class PhantomJsRenderer {
       throw new PdfRenderException("PhantomJS support files could not be prepared (" + e.getClass().getSimpleName()
         + ")");
     }
+  }
+
+  /**
+   * Makes the libraries of the decided mode ready in {@code dir}. The first time (nothing decided yet) it decides:
+   * <ol>
+   * <li>{@code --version} with the host's libraries. It works, or fails for a reason other than a missing shared
+   * library (or cannot be judged): {@link LibraryMode#HOST}, as CHG-LPRE, and the start-up version check reports
+   * whatever else is wrong.</li>
+   * <li>The loader says a library is missing: the shipped ones are extracted and verified, and {@code --version} runs
+   * again with {@code LD_LIBRARY_PATH} set for that process only. It works: {@link LibraryMode#BUNDLED}, with one
+   * INFO. It does not (glibc older than 2.36, say), or the libraries cannot be extracted or are not the expected
+   * ones: {@link LibraryMode#UNAVAILABLE}, with one WARN, and this and every later call throw.</li>
+   * </ol>
+   * When the directory is made again in {@link LibraryMode#BUNDLED}, the libraries are extracted and verified again.
+   */
+  private void prepareLibraries(Path dir) throws PdfRenderException {
+    if (libraryMode == LibraryMode.HOST) {
+      return;
+    }
+    if (libraryMode == LibraryMode.BUNDLED) {
+      extractLibraries(dir);
+      return;
+    }
+    String executable = executableIn(dir);
+    Finished host;
+    try {
+      host = runVersion(executable, null);
+    } catch (IOException | PdfRenderException e) {
+      LOG.debug("PhantomJS --version with the host libraries could not be judged, cause={}",
+        e.getClass().getSimpleName());
+      libraryMode = LibraryMode.HOST;
+      return;
+    }
+    if (host.exitCode == 0 || !host.loaderFailure) {
+      libraryMode = LibraryMode.HOST;
+      return;
+    }
+    try {
+      extractLibraries(dir);
+    } catch (PdfRenderException e) {
+      libraryMode = LibraryMode.UNAVAILABLE;
+      LOG.warn("{}, platform={}: local PDF renders will fail", e.getMessage(), embedded.platform());
+      throw new PdfRenderException(LIBRARIES_UNAVAILABLE_MESSAGE);
+    }
+    Finished bundled = null;
+    try {
+      bundled = runVersion(executable, dir.resolve(EmbeddedPhantomJs.LIBRARIES_DIR));
+    } catch (IOException | PdfRenderException e) {
+      LOG.debug("PhantomJS --version with the shipped libraries could not run, cause={}",
+        e.getClass().getSimpleName());
+    }
+    if (bundled != null && bundled.exitCode == 0) {
+      libraryMode = LibraryMode.BUNDLED;
+      LOG.info("PhantomJS does not start with the host libraries; using the libraries shipped with MARLO");
+      return;
+    }
+    libraryMode = LibraryMode.UNAVAILABLE;
+    LOG.warn("{} (glibc older than 2.36?), platform={}: local PDF renders will fail", LIBRARIES_UNAVAILABLE_MESSAGE,
+      embedded.platform());
+    throw new PdfRenderException(LIBRARIES_UNAVAILABLE_MESSAGE);
+  }
+
+  /** Extracts the shipped libraries into {@code <dir>/libs}, each checked against its recorded SHA-256 first. */
+  private void extractLibraries(Path dir) throws PdfRenderException {
+    try {
+      Path libraries = Files.createDirectory(dir.resolve(EmbeddedPhantomJs.LIBRARIES_DIR));
+      libraryFingerprints = embedded.extractLibrariesTo(libraries);
+    } catch (IOException e) {
+      throw new PdfRenderException("The libraries shipped with MARLO could not be extracted or are not the expected "
+        + "ones (" + e.getClass().getSimpleName() + ")");
+    }
+  }
+
+  /**
+   * True when the shipped libraries are not in use, or the directory still holds exactly them with their recorded
+   * bytes: the same cheap re-check as the executable's, and the same re-hash of what no longer matches it.
+   */
+  private boolean areLibrariesIntact(Path dir) {
+    return libraryMode != LibraryMode.BUNDLED
+      || embedded.verifyLibraries(dir.resolve(EmbeddedPhantomJs.LIBRARIES_DIR), libraryFingerprints);
   }
 
   /**
@@ -1115,8 +1288,9 @@ final class PhantomJsRenderer {
       }
       out.await();
       err.await();
-      return new Finished(process.exitValue(), out.bytes(), out.length() > STREAM_CAP, (int) err.length(),
-        firstLine(err.bytes()));
+      int exitCode = process.exitValue();
+      return new Finished(exitCode, out.bytes(), out.length() > STREAM_CAP, (int) err.length(),
+        firstLine(err.bytes()), exitCode != 0 && isLoaderFailure(err.bytes()));
     } catch (InterruptedException e) {
       kill(process);
       Thread.currentThread().interrupt();

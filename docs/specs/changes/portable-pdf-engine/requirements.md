@@ -301,3 +301,14 @@ covered by unit tests only and is recorded as **not verified at runtime**.
   carried the superseded value; all amended. `tasks.md` T01 (Windows build "32-bit, UPX-compressed PE") and DD-1
   are consistent and unchanged. Backward: T02 is closed and its code already follows DD-1; no other document cites
   these clauses.
+- 2026-11-25 — Execute-time amendments at T04 attempt 1 (owner-approved: "sí, aplica ambas enmiendas y lanza el
+  intento 2"), from Reviewer A's FAIL and spec-tension advisory: (1) `design.md` §11 — the old-glibc WARN quoted
+  without the platform contradicted FN-007 ("Startup MUST log one line that names the platform"); FN-007 kept as
+  written, §11 now quotes the WARN with `platform=…` and states that every UNAVAILABLE WARN names the platform;
+  (2) DD-2 — the trigger "cannot open shared object file" aligned with `tasks.md` T04 and the code: "error while
+  loading shared libraries", which also covers a host library that is present but cannot be loaded. No requirement's
+  meaning changes. Closure sweep, forward: `grep -nE 'cannot open shared object|error while loading|glibc older'`
+  over this folder — `design.md` §11 and DD-2 were the hits carrying the superseded values (amended); `requirements.md`
+  FN-002 rationale and `proposal.md` P-2 quote the loader's observed output and stay true; `tasks.md` T04 already
+  says "error while loading shared libraries". Backward: `tasks.md` T04 Verification (2) cites "the FN-007 WARN",
+  which now carries the platform — consistent.

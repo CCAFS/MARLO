@@ -104,8 +104,10 @@ The startup line (OPS-002) gains the platform, the build and the library mode, f
 `PhantomJS available for local PDF renders, version=2.1.1, platform=Linux/amd64, build=linux-x86_64, libraries=bundled, path=…`. The
 per-render INFO line is unchanged. Two new WARN lines:
 - `PhantomJS does not start with the host libraries; using the libraries shipped with MARLO` (INFO, once)
-- `PhantomJS does not start with the host libraries nor the shipped ones (glibc older than 2.36?): local PDF
-  renders will fail` (WARN, once)
+- `PhantomJS does not start with the host libraries nor the shipped ones (glibc older than 2.36?), platform=Linux/amd64:
+  local PDF renders will fail` (WARN, once). Every WARN that leaves the library mode UNAVAILABLE (this one, and the
+  one for a shipped library that cannot be extracted or does not match its checksum) names `platform=<os.name>/<os.arch>`,
+  because it is the only startup line in that case (FN-007). *Amended 2026-11-25 (T04 attempt 1, owner).*
 
 ## 12. Performance & Scalability
 
@@ -143,7 +145,7 @@ per-render INFO line is unchanged. Two new WARN lines:
 | # | Decision | Requirements | Rejected alternatives |
 |---|---|---|---|
 | DD-1 | **One platform table** (`PhantomJsBuild`) keyed by OS and architecture together. Entries: Linux x86_64 (`amd64`/`x86_64`), macOS (`x86_64` and `aarch64`, Rosetta), Windows (`amd64`/`x86_64`/`x86`; the 32-bit build runs under WOW64). Anything else → no build | FN-001, FN-007 | One `if` per OS spread across classes: the Linux-only assumption is in 3 files today (P-1, P-9, P-14); a table keeps it in one place (KZ-…-directory-abstraction-1) |
-| DD-2 | **Library mode decided at startup**: try `--version` with the host's libraries; only on a "cannot open shared object file" failure, extract the shipped libraries and retry with `LD_LIBRARY_PATH`. The mode is kept for all renders | FN-002, FN-003, FN-007 | Always use the shipped libraries: breaks hosts with glibc < 2.36 that work today (S-2, `amazonlinux:2023`). Static re-linking: needs a custom PhantomJS build, out of scope |
+| DD-2 | **Library mode decided at startup**: try `--version` with the host's libraries; only when the failure output contains "error while loading shared libraries" (the loader's prefix for a missing *or* unloadable library; amended 2026-11-25 from "cannot open shared object file"), extract the shipped libraries and retry with `LD_LIBRARY_PATH`. The mode is kept for all renders | FN-002, FN-003, FN-007 | Always use the shipped libraries: breaks hosts with glibc < 2.36 that work today (S-2, `amazonlinux:2023`). Static re-linking: needs a custom PhantomJS build, out of scope |
 | DD-3 | **Linux keeps fontconfig; macOS/Windows get page fonts** (DejaVuSans and DejaVuSans-Bold as `@font-face` data URIs plus a universal `font-family` rule, added after the sanitizer) | FN-005, NF-001, NF-002, SEC-003 | Page fonts everywhere: on Linux text becomes paths (S-3). Shipping fontconfig for macOS: Qt on macOS uses CoreText, not fontconfig |
 | DD-4 | **Environment per build style**: POSIX style (PATH `/usr/bin:/bin`, `OPENSSL_CONF=/dev/null`, `HOME`, `TMPDIR`, `LANG`) for Linux and macOS; Windows style (`SystemRoot`, `PATH=%SystemRoot%\System32`, `TEMP`, `TMP`, `USERPROFILE`, `OPENSSL_CONF=NUL`). `FONTCONFIG_FILE` only on Linux | FN-004, SEC-002 | The POSIX environment on Windows: a process started without `SystemRoot` commonly fails to initialise (P-16) |
 | DD-5 | **Executable name and permissions from the build**: `phantomjs` / `phantomjs.exe`; `rwx------` applied only when the file store supports the POSIX view | FN-004 | Try and catch `UnsupportedOperationException`: works, but hides the platform decision in an exception path |
@@ -201,6 +203,8 @@ set are pinned by tests).
 | Tasks | 6 |
 | LOC (Java, main + tests; binaries excluded) | about 650 (main about 250, tests about 400) |
 | Review rounds | 9 (about 1.5 per task: the environment and probe tasks are likely to need a second round) |
+| **Re-baselined 2026-11-24 (owner, budget tripwire at T03, "opción 1")** | LOC about 1,150 (757 after T01–T03; T04 about 250–300, T05 about 100–150); review rounds 11; tasks 6 unchanged; WAR cap 60 MB unchanged |
+| **Re-baselined 2026-11-25 (owner, budget tripwire at T04 resume, "sí, sube el presupuesto y lanza los reviewers")** | LOC about 1,900 (about 1,712 after T01–T04 implementation; T05 about 100–150); review rounds 11 unchanged; tasks 6 unchanged; WAR cap 60 MB unchanged |
 | WAR growth | about 36 MB (macOS 17.1 + Windows 18.1 + libraries 0.9), under the 60 MB cap of NF-004 |
 
 Depth check: Standard matches — six tasks, one module, no data or API change.

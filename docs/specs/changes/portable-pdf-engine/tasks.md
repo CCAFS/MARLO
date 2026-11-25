@@ -131,7 +131,7 @@
 - **Done when:** tests green, the falsifier red observed and quoted, the Linux key/value set unchanged byte for byte.
 
 ### CHG-PPE-T04 — Linux library fallback
-- **Status:** [ ] · **Size:** M · **Depends on:** T02, T03 · **Module:** marlo-web (code, resources, tests)
+- **Status:** [x] · **Size:** M · **Depends on:** T02, T03 · **Module:** marlo-web (code, resources, tests)
 - **Requirements:** FN-002 (all three scenarios of "Minimal Linux": no font libraries; host libraries present
   "BUT it must NOT behave differently from CHG-LPRE"; old glibc), FN-003 ("AND IT MUST NOT change the library path
   of the JVM or of any process other than the PhantomJS it starts"), FN-007 (old-glibc case), SEC-001

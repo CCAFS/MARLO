@@ -384,8 +384,9 @@ public class LocalPdfReportService {
       try {
         current.prepare();
       } catch (PdfRenderException e) {
-        if (PhantomJsRenderer.NOT_EXECUTABLE_MESSAGE.equals(e.getMessage())) {
-          // The renderer has already logged the temp directory and the hint.
+        if (PhantomJsRenderer.NOT_EXECUTABLE_MESSAGE.equals(e.getMessage())
+          || PhantomJsRenderer.LIBRARIES_UNAVAILABLE_MESSAGE.equals(e.getMessage())) {
+          // The renderer has already logged why: the temp directory and the hint, or the libraries and the glibc one.
           return;
         }
         LOG.warn("The PhantomJS shipped with MARLO could not be prepared: {}: local PDF renders will fail",
@@ -405,8 +406,9 @@ public class LocalPdfReportService {
     try {
       String version = current.queryVersion();
       if (EXPECTED_VERSION.equals(version)) {
-        LOG.info("PhantomJS available for local PDF renders, version={}, build={}, path={}", version,
-          current.buildName().isEmpty() ? "configured" : current.buildName(), current.binaryPath());
+        LOG.info("PhantomJS available for local PDF renders, version={}, platform={}, build={}, libraries={}, path={}",
+          version, current.platform(), current.buildName().isEmpty() ? "configured" : current.buildName(),
+          current.libraryMode(), current.binaryPath());
       } else {
         LOG.warn("PhantomJS version is {} but the output is only known to match {}, path={}", sanitizeName(version),
           EXPECTED_VERSION, current.binaryPath());

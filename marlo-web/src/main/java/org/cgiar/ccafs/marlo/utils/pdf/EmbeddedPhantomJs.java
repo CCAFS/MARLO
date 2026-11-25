@@ -15,11 +15,13 @@
 
 package org.cgiar.ccafs.marlo.utils.pdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -28,11 +30,15 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -45,6 +51,12 @@ import java.util.zip.GZIPInputStream;
  * file whose SHA-256 is not the checksum resource, and sets the permissions to 0700 where the file store has POSIX
  * permissions (Windows has none to set). {@link #isIntact} repeats the
  * hash on an already extracted file. Nothing about the platform or the resource is read from configuration.
+ * <p>
+ * On Linux the same class holds the fallback libraries (CHG-PPE-T04, DD-2): seven Debian 12 shared libraries, each
+ * gzip-compressed under {@code pdf/phantomjs/linux-libs/} with its SHA-256 in {@code SHA256SUMS}.
+ * {@link #extractLibrariesTo} checks every one against its checksum before any is written, and
+ * {@link #verifyLibraries} checks a directory of them again before use. They are never loaded into the JVM: the
+ * renderer names their directory in {@code LD_LIBRARY_PATH} for the PhantomJS process only.
  */
 final class EmbeddedPhantomJs {
 
@@ -81,6 +93,67 @@ final class EmbeddedPhantomJs {
   interface Source {
 
     InputStream open() throws IOException;
+  }
+
+  /** The shipped libraries; a seam so that tests can supply altered ones. */
+  interface Libraries {
+
+    /** The file name of each library and the SHA-256 of its uncompressed bytes (lower-case hex), in a fixed order. */
+    Map<String, String> expected() throws IOException;
+
+    /** Opens the gzip-compressed bytes of one library listed by {@link #expected}. */
+    InputStream open(String name) throws IOException;
+  }
+
+  /** The directory, inside the support directory, that holds the extracted libraries. */
+  static final String LIBRARIES_DIR = "libs";
+
+  private static final String LIBRARIES_BASE = "/pdf/phantomjs/linux-libs/";
+
+  /** Far more than any shipped library (the largest is 0.8 MB); a stream that goes on longer is not one of them. */
+  private static final int MAX_LIBRARY_BYTES = 32 * 1024 * 1024;
+
+  private static final Set<PosixFilePermission> OWNER_READ_WRITE = PosixFilePermissions.fromString("rw-------");
+
+  /** The libraries inside MARLO: the names and checksums of {@code SHA256SUMS}, the bytes of {@code <name>.gz}. */
+  static Libraries shippedLibraries() {
+    return new Libraries() {
+
+      @Override
+      public Map<String, String> expected() throws IOException {
+        Map<String, String> sums = new LinkedHashMap<String, String>();
+        try (InputStream in = EmbeddedPhantomJs.class.getResourceAsStream(LIBRARIES_BASE + "SHA256SUMS")) {
+          if (in == null) {
+            throw new IOException("Missing PDF resource " + LIBRARIES_BASE + "SHA256SUMS");
+          }
+          for (String line : new String(in.readAllBytes(), StandardCharsets.UTF_8).split("\\R")) {
+            String text = line.trim();
+            int gap = text.indexOf(' ');
+            if (text.isEmpty() || gap < 0) {
+              continue;
+            }
+            String name = text.substring(gap).trim();
+            if (!name.matches("[A-Za-z0-9][A-Za-z0-9._+-]*")) {
+              throw new IOException("Unusable library name in " + LIBRARIES_BASE + "SHA256SUMS");
+            }
+            sums.put(name, text.substring(0, gap).toLowerCase(Locale.ROOT));
+          }
+        }
+        if (sums.isEmpty()) {
+          throw new IOException("No libraries are recorded in " + LIBRARIES_BASE + "SHA256SUMS");
+        }
+        return sums;
+      }
+
+      @Override
+      public InputStream open(String name) throws IOException {
+        InputStream in = EmbeddedPhantomJs.class.getResourceAsStream(LIBRARIES_BASE + name + ".gz");
+        if (in == null) {
+          throw new IOException("Missing PDF resource " + LIBRARIES_BASE + name + ".gz");
+        }
+        return in;
+      }
+    };
   }
 
   private static final Set<PosixFilePermission> OWNER_ONLY = PosixFilePermissions.fromString("rwx------");
@@ -130,6 +203,7 @@ final class EmbeddedPhantomJs {
   private final Predicate<Path> executableProbe;
   private final String expectedSha256;
   private final String osArch;
+  private final Libraries libraries;
   private final String osName;
   private final Predicate<Path> posixStore;
   private final Source source;
@@ -166,6 +240,13 @@ final class EmbeddedPhantomJs {
    */
   EmbeddedPhantomJs(String osName, String osArch, String expectedSha256, Source source,
     Predicate<Path> executableProbe, Predicate<Path> posixStore) {
+    this(osName, osArch, expectedSha256, source, executableProbe, posixStore, shippedLibraries());
+  }
+
+  /** Test seam: as above, with the shipped libraries supplied. */
+  EmbeddedPhantomJs(String osName, String osArch, String expectedSha256, Source source,
+    Predicate<Path> executableProbe, Predicate<Path> posixStore, Libraries libraries) {
+    this.libraries = libraries;
     this.posixStore = posixStore;
     this.executableProbe = executableProbe;
     this.osName = osName == null ? "" : osName;
@@ -178,6 +259,11 @@ final class EmbeddedPhantomJs {
   /** The build shipped for this platform, or none. */
   Optional<PhantomJsBuild> build() {
     return Optional.ofNullable(build);
+  }
+
+  /** True when the build for this platform has fallback libraries: the Linux one. */
+  boolean shipsLibraries() {
+    return build != null && build.fontMode() == PhantomJsBuild.FontMode.LINUX_FONTCONFIG;
   }
 
   /** The file name of the executable once extracted; {@code phantomjs} when no build ships for the platform. */
@@ -234,6 +320,117 @@ final class EmbeddedPhantomJs {
       throw new NotExecutableException("The extracted PhantomJS cannot be executed from its directory");
     }
     return target;
+  }
+
+  /**
+   * Writes the shipped libraries into {@code directory}, each under its own file name with permissions 0600 where the
+   * file store has POSIX permissions. Every library is decompressed and checked against its recorded SHA-256 in
+   * memory first: one that does not match, or a resource that is missing, fails the whole call before any file is
+   * written, so nothing unverified ever reaches the disk (CHG-PPE-SEC-001).
+   *
+   * @return the state of each written file, to hand to {@link #verifyLibraries} later.
+   * @throws IOException when a resource is missing or unreadable, is not the recorded library, or cannot be written;
+   *         files already written by this call are removed.
+   */
+  Map<String, Fingerprint> extractLibrariesTo(Path directory) throws IOException {
+    Map<String, String> expected = libraries.expected();
+    Map<String, byte[]> verified = new LinkedHashMap<String, byte[]>();
+    for (Map.Entry<String, String> library : expected.entrySet()) {
+      verified.put(library.getKey(), readVerified(library.getKey(), library.getValue()));
+    }
+    Files.createDirectories(directory);
+    Map<String, Fingerprint> written = new LinkedHashMap<String, Fingerprint>();
+    try {
+      for (Map.Entry<String, byte[]> library : verified.entrySet()) {
+        Path target = directory.resolve(library.getKey());
+        Files.write(target, library.getValue(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE);
+        written.put(library.getKey(), new Fingerprint(
+          Files.readAttributes(target, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS)));
+        if (posixStore.test(target)) {
+          Files.setPosixFilePermissions(target, OWNER_READ_WRITE);
+        }
+      }
+    } catch (IOException | RuntimeException e) {
+      for (String name : verified.keySet()) {
+        Files.deleteIfExists(directory.resolve(name));
+      }
+      throw e;
+    }
+    return written;
+  }
+
+  /**
+   * True when {@code directory} holds exactly the shipped libraries and each has the recorded SHA-256. A regular
+   * file whose size, modification time and file key are as {@code recorded} is accepted without reading it; any other
+   * is hashed, and one that still has the right bytes is accepted and recorded again. A missing file, a link, a file
+   * with other bytes, or any file that is not one of the libraries (it could shadow a host library) makes it false.
+   */
+  boolean verifyLibraries(Path directory, Map<String, Fingerprint> recorded) {
+    try {
+      Map<String, String> expected = libraries.expected();
+      try (Stream<Path> children = Files.list(directory)) {
+        Set<String> present = new HashSet<String>();
+        children.forEach(child -> present.add(child.getFileName().toString()));
+        if (!present.equals(expected.keySet())) {
+          return false;
+        }
+      }
+      for (Map.Entry<String, String> library : expected.entrySet()) {
+        Path file = directory.resolve(library.getKey());
+        BasicFileAttributes attributes = Files.readAttributes(file, BasicFileAttributes.class,
+          LinkOption.NOFOLLOW_LINKS);
+        Fingerprint known = recorded == null ? null : recorded.get(library.getKey());
+        if (!attributes.isRegularFile()) {
+          return false;
+        }
+        if (known != null && known.matches(attributes)) {
+          continue;
+        }
+        if (!library.getValue().equals(sha256Of(file))) {
+          return false;
+        }
+        if (recorded != null) {
+          recorded.put(library.getKey(), new Fingerprint(attributes));
+        }
+      }
+      return true;
+    } catch (IOException | RuntimeException e) {
+      return false;
+    }
+  }
+
+  private byte[] readVerified(String name, String expectedHash) throws IOException {
+    MessageDigest digest = newDigest();
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    try (InputStream in = new GZIPInputStream(libraries.open(name), 64 * 1024)) {
+      byte[] buffer = new byte[64 * 1024];
+      int read = in.read(buffer);
+      while (read >= 0) {
+        if (bytes.size() + read > MAX_LIBRARY_BYTES) {
+          throw new IOException("Shipped library " + name + " is larger than expected");
+        }
+        digest.update(buffer, 0, read);
+        bytes.write(buffer, 0, read);
+        read = in.read(buffer);
+      }
+    }
+    if (!hex(digest.digest()).equals(expectedHash)) {
+      throw new IOException("Shipped library " + name + " does not match its recorded SHA-256");
+    }
+    return bytes.toByteArray();
+  }
+
+  private static String sha256Of(Path file) throws IOException {
+    MessageDigest digest = newDigest();
+    try (InputStream in = Files.newInputStream(file, LinkOption.NOFOLLOW_LINKS)) {
+      byte[] buffer = new byte[64 * 1024];
+      int read = in.read(buffer);
+      while (read >= 0) {
+        digest.update(buffer, 0, read);
+        read = in.read(buffer);
+      }
+    }
+    return hex(digest.digest());
   }
 
   /** The state of {@code file} to compare with {@link #isUnchanged} later. */
