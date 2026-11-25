@@ -1,0 +1,213 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * Project / cluster OICRs list (A2-2743 redesign).
+ * projectStudies.ftl reuses the deliverables list (deliverableList.css, .dlv-*);
+ * this file only carries what the OICRs list adds: the toolbar inside the table
+ * card, a column set per tab, the maturity chip, the status dots, the Alliance and
+ * shared tags, the lock, the inline delete confirm, the empty sets and the toast.
+ * Scoped under .ocl.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* ---------- Columns: the feedback column is only on the current set ---------- */
+
+.ocl-table { --dlv-cols: var(--ocl-cols-current); }
+.ocl-table.is-previous { --dlv-cols: var(--ocl-cols-previous); }
+.ocl-table.is-previous .ocl-fb { display: none; }
+
+/* ---------- Toolbar: set tabs, search and add, at the top of the card ---------- */
+
+.ocl-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--dlv-border-soft);
+}
+.ocl .ocl-toolbar .dlv-search { max-width: 340px; }
+.ocl .ocl-add { margin-left: auto; }
+.ocl .ocl-filters { padding: 10px 14px; gap: 6px 12px; }
+
+.ocl-note__more { padding-top: 8px; border-top: 1px solid #DCEEF6; font-size: 13px; }
+/* View more is 26px tall against a 21px text line: pull it back so its label sits on the first line's centre
+   instead of stretching the note and leaving the text above the middle */
+.ocl .dlv-note__more { margin: -2.5px 0; }
+
+/* ---------- Status dots (general_statuses ids) ---------- */
+
+.ocl .ocl-dot--2 { background: var(--dlv-warn-dot); }
+.ocl .ocl-dot--3 { background: var(--dlv-ok); }
+.ocl .ocl-dot--4 { background: var(--dlv-subtle); }
+.ocl .ocl-dot--5 { background: var(--dlv-danger); }
+
+/* ---------- Cells ---------- */
+
+.ocl .ocl-id { color: var(--dlv-primary); text-decoration: none; }
+.ocl .ocl-id:hover,
+.ocl .ocl-id:focus { color: var(--dlv-primary-dark); text-decoration: underline; }
+
+.ocl .dlv-title .dlv-report { vertical-align: 1px; }
+.ocl .dlv-report .dlv-icon { display: inline-block; }
+
+.ocl-aid {
+  display: inline-flex;
+  align-items: center;
+  height: 19px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: #F1F3F6;
+  border: 1px solid #E0E5EB;
+  font: 600 11px Figtree, sans-serif;
+  letter-spacing: .02em;
+  color: var(--dlv-ink-soft);
+  white-space: nowrap;
+}
+.ocl-shared {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 19px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--dlv-info-bg);
+  border: 1px solid var(--dlv-info-border);
+  font: 600 11px Figtree, sans-serif;
+  color: var(--dlv-primary-dark);
+  white-space: nowrap;
+}
+
+.ocl-maturity {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #F1F3F6;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlv-muted);
+  white-space: nowrap;
+}
+.ocl-maturity--1 { background: var(--dlv-chip); color: var(--dlv-ink-soft); }
+.ocl-maturity--2 { background: var(--dlv-info-hover); color: var(--dlv-primary-dark); }
+.ocl-maturity--3 { background: #E3F1E3; color: var(--dlv-ok); }
+
+.ocl-td--owner { font: 500 12.5px/1.35 Figtree, sans-serif; color: var(--dlv-ink-soft); }
+.ocl-td--owner.is-shared { color: var(--dlv-primary-dark); }
+.ocl-td--year { font: 500 13px Figtree, sans-serif; color: var(--dlv-ink); font-variant-numeric: tabular-nums; }
+
+/* ---------- Actions: PDF plus delete or the lock, right-aligned ---------- */
+
+.ocl .ocl-th--actions { justify-content: flex-end; }
+.ocl .ocl-td--actions { display: flex; justify-content: flex-end; gap: 2px; padding: 0; }
+.ocl .ocl-td--actions a.dlv-iconBtn:hover { background: var(--dlv-info-bg); }
+.ocl .ocl-lock,
+.ocl .ocl-lock:hover,
+.ocl .ocl-lock:focus { background: none; color: var(--dlv-subtle); cursor: help; }
+
+/* ---------- Inline delete confirm with justification ---------- */
+
+.ocl-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 12px 12px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--dlv-danger-bg);
+  border: 1px solid var(--dlv-danger-border);
+}
+.ocl-confirm__title { font: 500 13px/1.5 Figtree, sans-serif; color: var(--dlv-ink); text-wrap: pretty; }
+.ocl .ocl-confirm__field { display: flex; flex-direction: column; gap: 5px; margin: 0; font-weight: normal; }
+.ocl-confirm__label { font: 600 12.5px Figtree, sans-serif; color: var(--dlv-ink); }
+.ocl-confirm__optional { font-weight: 400; color: var(--dlv-muted); }
+.ocl .ocl-confirm__textarea {
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1px solid #DCC4BF;
+  border-radius: 7px;
+  background: #fff;
+  font: 400 13px/1.5 Figtree, sans-serif;
+  color: var(--dlv-ink);
+  box-shadow: none;
+}
+.ocl .ocl-confirm__textarea:focus { outline: none; border-color: var(--dlv-primary); box-shadow: var(--dlv-focus-ring); }
+.ocl .ocl-confirm__textarea::placeholder { color: var(--dlv-subtle); }
+.ocl-confirm__actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.ocl-confirm .dlv-btn { height: 30px; padding: 0 12px; font-size: 12.5px; border-radius: 7px; }
+.ocl-confirm .dlv-btn--ghost { color: var(--dlv-ink-soft); }
+
+/* ---------- Empty set ---------- */
+
+.ocl-none {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 26px 24px 22px;
+  text-align: center;
+}
+.ocl-none__title { font: 600 15px Figtree, sans-serif; color: var(--dlv-ink); }
+.ocl-none__text { max-width: 560px; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlv-muted); text-wrap: pretty; }
+
+/* ---------- Still On-going from earlier years ---------- */
+
+.ocl-carry { overflow: hidden; }
+.ocl-carry__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--dlv-border-soft);
+  background: var(--dlv-surface-alt);
+}
+.ocl-carry__title { font: 600 13px Figtree, sans-serif; color: var(--dlv-ink); }
+.ocl-carry__note { font: 400 12.5px Figtree, sans-serif; color: var(--dlv-muted); }
+.ocl-carry__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--dlv-border-row);
+}
+.ocl-carry__row:last-child { border-bottom: 0; }
+.ocl-carry__id { flex: none; width: 44px; font: 600 12.5px Figtree, sans-serif; color: var(--dlv-ink-soft); font-variant-numeric: tabular-nums; }
+.ocl-carry__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ocl .ocl-carry__name { font: 500 13px/1.4 Figtree, sans-serif; color: var(--dlv-ink); text-decoration: none; text-wrap: pretty; }
+.ocl .ocl-carry__name:hover,
+.ocl .ocl-carry__name:focus { color: var(--dlv-primary); text-decoration: underline; }
+.ocl-carry__meta { display: flex; align-items: center; gap: 6px; font: 400 12px Figtree, sans-serif; color: var(--dlv-muted); }
+.ocl-carry__meta .dlv-dot { width: 8px; height: 8px; }
+.ocl .ocl-carry__open { flex: none; height: 30px; padding: 0 10px; font-size: 12.5px; border-radius: 7px; }
+
+/* ---------- Toast after a delete ---------- */
+
+.ocl-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 1050;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 9px;
+  background: #2D3339;
+  box-shadow: 0 6px 18px rgba(31, 42, 55, .2);
+  font: 500 13px Figtree, sans-serif;
+  color: #fff;
+}
+
+/* ---------- Narrow table: labelled cards, as in the deliverables list ---------- */
+
+@container (max-width: 820px) {
+  .ocl .ocl-td--actions { grid-column: 2; grid-row: 1; }
+  .ocl .ocl-td--maturity[data-label] { align-items: center; }
+}
+
+@media (max-width: 767px) {
+  .ocl .ocl-add { margin-left: 0; }
+}

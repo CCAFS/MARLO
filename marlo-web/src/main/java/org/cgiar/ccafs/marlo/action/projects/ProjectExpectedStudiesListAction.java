@@ -182,7 +182,11 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       if (projectStudies != null) {
         // for (ProjectExpectedStudy projectStudy : project.getExpectedStudies()) {
         for (ProjectExpectedStudy projectStudy : projectStudies) {
-          if (projectStudy.getId().longValue() == expectedID) {
+          // A2-2743: only the owner cluster, with edit rights on the OICR, removes it. A cluster it is shared with
+          // sees it in this list too, but removing it there would remove it for the owner and every other cluster.
+          boolean ownedByThisCluster =
+            projectStudy.getProject() != null && project.getId().equals(projectStudy.getProject().getId());
+          if (projectStudy.getId().longValue() == expectedID && ownedByThisCluster && this.isCanEdit()) {
             ProjectExpectedStudy projectExpectedBD =
               projectExpectedStudyManager.getProjectExpectedStudyById(expectedID);
             for (SectionStatus sectionStatus : projectExpectedBD.getSectionStatuses()) {
