@@ -39,9 +39,11 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.data.model.StudyType;
 import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.ExpectedStudyDrafts;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -303,6 +305,34 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
   }
 
 
+  /**
+   * A2-2747: drops the OICRs that "Add an OICR" created but nobody ever saved, so they neither show as "Not defined"
+   * rows nor count. The current user's own drafts are also removed once they are old enough that no open form can
+   * still be using them.
+   *
+   * @param studies the studies loaded for the list
+   * @return the studies without unsaved drafts
+   */
+  private List<ProjectExpectedStudy> withoutUnsavedDrafts(List<ProjectExpectedStudy> studies) {
+    if (studies == null || studies.isEmpty()) {
+      return studies;
+    }
+    Date now = new Date();
+    List<ProjectExpectedStudy> kept = new ArrayList<>();
+    for (ProjectExpectedStudy study : studies) {
+      if (!ExpectedStudyDrafts.isUnsavedDraft(study, this.getActualPhase())) {
+        kept.add(study);
+      } else if (ExpectedStudyDrafts.isRemovableDraft(study, this.getActualPhase(), this.getCurrentUser(), now)) {
+        try {
+          projectExpectedStudyManager.deleteProjectExpectedStudy(study.getId());
+        } catch (Exception e) {
+          logger.error("Could not remove the unsaved OICR draft {}", study.getId(), e);
+        }
+      }
+    }
+    return kept;
+  }
+
   @Override
   public void prepare() throws Exception {
     loggedCrp = (GlobalUnit) this.getSession().get(APConstants.SESSION_CRP);
@@ -325,6 +355,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
         .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
         .collect(Collectors.toList());
+      studies = this.withoutUnsavedDrafts(studies);
       if (studies != null && !studies.isEmpty()) {
         allProjectStudies.addAll(studies);
       }
@@ -374,6 +405,7 @@ public class ProjectExpectedStudiesListAction extends BaseAction {
       nonProjectStudies = new ArrayList<>();
       List<ProjectExpectedStudy> expectedStudies = new ArrayList<>(projectExpectedStudyManager.findAll().stream()
         .filter(s -> s.isActive() && s.getProject() == null).collect(Collectors.toList()));
+      expectedStudies = new ArrayList<>(this.withoutUnsavedDrafts(expectedStudies));
       for (ProjectExpectedStudy projectExpectedStudy : expectedStudies) {
         if (projectExpectedStudy.getProjectExpectedStudyInfo(this.getActualPhase()) != null) {
           nonProjectStudies.add(projectExpectedStudy);

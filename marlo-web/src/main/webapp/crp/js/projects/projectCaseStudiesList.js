@@ -12,7 +12,17 @@ function init() {
 }
 
 function attachEvents() {
-
+  // A2-2747: a second submit reaches the server after the study is gone; send each Remove once
+  $('form#deleteStudy').on('submit', function(e) {
+    var $form = $(this);
+    if($form.data('submitted')) {
+      e.preventDefault();
+      return false;
+    }
+    $form.data('submitted', true);
+    $form.find('button[type="submit"]').prop('disabled', true);
+    return true;
+  });
 }
 
 // Justification popup global vars

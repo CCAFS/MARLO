@@ -97,6 +97,7 @@ import org.cgiar.ccafs.marlo.security.Permission;
 import org.cgiar.ccafs.marlo.security.SessionCounter;
 import org.cgiar.ccafs.marlo.security.UserToken;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.ExpectedStudyDrafts;
 import org.cgiar.ccafs.marlo.utils.HistoryDifference;
 
 import java.io.File;
@@ -5231,8 +5232,10 @@ public class BaseAction extends ActionSupport implements Preparable, SessionAwar
           List<ProjectExpectedStudy> allProjectStudies = new ArrayList<ProjectExpectedStudy>();
 
           // Load Studies
+          // A2-2747: an OICR that "Add" created but nobody saved is not listed, so it does not count either
           List<ProjectExpectedStudy> studies = project.getProjectExpectedStudies().stream()
-            .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null)
+            .filter(c -> c.isActive() && c.getProjectExpectedStudyInfo(this.getActualPhase()) != null
+              && !ExpectedStudyDrafts.isUnsavedDraft(c, this.getActualPhase()))
             .collect(Collectors.toList());
           if (studies != null && studies.size() > 0) {
             allProjectStudies.addAll(studies);

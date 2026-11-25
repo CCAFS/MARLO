@@ -3,7 +3,7 @@
 [#assign currentSectionString = "project-${actionName?replace('/','-')}-${projectID}-phase-${(actualPhase.id)!}" /]
 [#assign pageLibs = [ "datatables.net", "datatables.net-bs" ] /]
 [#assign customJS = [
-  "${baseUrlMedia}/js/projects/projectCaseStudiesList.js",
+  "${baseUrlMedia}/js/projects/projectCaseStudiesList.js?20261123",
   "${baseUrlCdn}/global/js/fieldsValidation.js"] /]
 [#assign customCSS = ["${baseUrlMedia}/css/projects/projectCaseStudies.css?20240314"] /]
 [#assign currentSection = "projects" /]

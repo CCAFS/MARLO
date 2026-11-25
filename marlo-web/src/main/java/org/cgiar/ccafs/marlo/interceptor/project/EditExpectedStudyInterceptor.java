@@ -36,6 +36,8 @@ import javax.inject.Inject;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hermes Jiménez - CIAT/CCAFS
@@ -43,6 +45,7 @@ import org.apache.struts2.dispatcher.Parameter;
 public class EditExpectedStudyInterceptor extends AbstractInterceptor implements Serializable {
 
   private static final long serialVersionUID = 4178469256964398247L;
+  private static final Logger LOG = LoggerFactory.getLogger(EditExpectedStudyInterceptor.class);
 
   private Map<String, Parameter> parameters;
   private Map<String, Object> session;
@@ -71,11 +74,38 @@ public class EditExpectedStudyInterceptor extends AbstractInterceptor implements
     crp = (GlobalUnit) session.get(APConstants.SESSION_CRP);
     crp = crpManager.getGlobalUnitById(crp.getId());
     try {
+      if (this.isRepeatedDelete(invocation)) {
+        // A2-2747: the study is already gone (a second submit of the same Remove). delete() only touches active
+        // studies, so let it run and land on the list instead of answering "Page not found".
+        return invocation.invoke();
+      }
       this.setPermissionParameters(invocation);
       return invocation.invoke();
     } catch (Exception e) {
+      LOG.debug("Expected study request answered as not found", e);
       BaseAction action = (BaseAction) invocation.getAction();
       return action.NOT_FOUND;
+    }
+  }
+
+  /**
+   * @param invocation the current invocation
+   * @return true when this is a delete of a study that is already inactive
+   */
+  private boolean isRepeatedDelete(ActionInvocation invocation) {
+    if (!"delete".equals(invocation.getProxy().getMethod())) {
+      return false;
+    }
+    Parameter expectedParameter = parameters.get(APConstants.EXPECTED_REQUEST_ID);
+    if (expectedParameter == null || !expectedParameter.isDefined()) {
+      return false;
+    }
+    try {
+      ProjectExpectedStudy study =
+        projectExpectedStudyManager.getProjectExpectedStudyById(Long.parseLong(expectedParameter.getValue().trim()));
+      return study != null && !study.isActive();
+    } catch (NumberFormatException e) {
+      return false;
     }
   }
 
