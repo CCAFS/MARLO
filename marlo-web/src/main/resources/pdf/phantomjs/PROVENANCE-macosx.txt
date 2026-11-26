@@ -1,0 +1,22 @@
+Provenance of phantomjs-2.1.1-macosx.gz
+=======================================
+
+Upstream release:
+  https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-macosx.zip
+  (the download source of the phantomjs-prebuilt npm package)
+
+SHA-256 of the upstream zip (17148816 bytes):
+  538cf488219ab27e309eafc629e2bcee9976990fe90b1ec334f541779150f8c1
+
+SHA-256 of bin/phantomjs extracted from it (45020592 bytes); this is the value in
+phantomjs-2.1.1-macosx.sha256, which the application checks after extraction:
+  2b8c719e7db6187514e98e40b62505d42e4a84108c01e800ee8f86eb37f9a053
+
+The binary is a 64-bit x86_64 Mach-O executable (it runs on Apple Silicon through Rosetta 2).
+
+What was stored: bin/phantomjs, compressed with gzip (gzip -9n), unmodified otherwise.
+LICENSE.BSD and third-party.txt in this folder are byte-identical to the ones in this zip
+(and in the Linux tarball and the Windows zip). The licences and the source of the
+statically linked LGPL components are in LGPL-2.1.txt and SOURCE.txt.
+
+Retrieved 2026-11-24. To check: gunzip -c phantomjs-2.1.1-macosx.gz | shasum -a 256

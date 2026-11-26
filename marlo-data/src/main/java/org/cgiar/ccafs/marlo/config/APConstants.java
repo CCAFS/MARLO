@@ -179,6 +179,7 @@ public final class APConstants {
   public static final String NOTIFY_DELIVERABLE_STATUS_CHANGE = "notify_deliverable_status_change";
   public static final String GENERATE_PENTAHO_OICRS_REPORT_ACTIVE = "generate_pentaho_OICRs_report_active";
   public static final String GENERATE_PENTAHO_INNOVATIONS_REPORT_ACTIVE = "generate_pentaho_innovations_report_active";
+  public static final String LOCAL_PDF_REPORT_ENGINE_ACTIVE = "local_pdf_report_engine_active";
   public static final String IMPACT_PATHWAY_CROSS_CUTTING_MARKETS_ACTIVE =
     "impact_pathway_cross_cutting_markets_active";
   public static final String SHOW_CONTRIBUTION_PERFORMANCE_INDICATOR_DEPRECATED_TAB_ACTIVE =

@@ -1,0 +1,27 @@
+{
+ "pattern": "pdf.generate",
+ "data": {
+  "data": {
+   "timeCreation": "2026-11-20 10:30",
+   "title": "Sample",
+   "id": "77"
+  },
+  "options": {
+   "format": "A4",
+   "orientation": "portrait",
+   "border": "0",
+   "zoomFactor": 1,
+   "header": {
+    "height": "40mm"
+   },
+   "footer": {
+    "height": "30mm"
+   },
+   "timeout": "300000"
+  },
+  "templateData": "__TEMPLATE__",
+  "fileName": "project-fixture.pdf",
+  "bucketName": "unused",
+  "apiKey": null
+ }
+}

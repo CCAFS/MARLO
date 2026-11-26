@@ -69,6 +69,8 @@ import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.FileManager;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
+import org.cgiar.ccafs.marlo.utils.pdf.LocalPdfReportService;
+import org.cgiar.ccafs.marlo.utils.pdf.PdfRenderException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -105,6 +107,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletResponse;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;
@@ -214,6 +217,7 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
   private final DeliverableShfrmPriorityActionManager deliverableShfrmPriorityActionManager;
   private final DeliverableShfrmSubActionManager deliverableShfrmSubActionManager;
   private final MicroserviceReportAction microserviceReportAction;
+  private LocalPdfReportService localPdfReportService;
   private final ReportConfigurationManager reportConfigurationManager;
   private final ProjectLocationManager projectLocationManager;
   private String clusterReportTemplateData = null;
@@ -302,6 +306,14 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
     this.projectLocationManager = projectLocationManager;
+  }
+
+  /**
+   * Setter injection: the constructors of this class are pinned by subclasses and tests.
+   */
+  @Inject
+  public void setLocalPdfReportService(LocalPdfReportService localPdfReportService) {
+    this.localPdfReportService = localPdfReportService;
   }
 
   /**
@@ -7880,19 +7892,52 @@ public class ReportingSummaryAction extends BaseSummariesAction implements Summa
     try {
       final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
       
-      LOG.info("Sending the cluster report {} to the microservice", reportName);
-      // Using sendClusterReportQueueMessage for cluster/project summary reports
-      // @akili-spec bugfix/submit-unsubmit-email-defects
-      if (pdfForSubmit) {
-        submitPdf = this.microserviceReportAction.fetchClusterReportBytes(jsonOutput, reportName);
+      if (this.hasSpecificities(APConstants.LOCAL_PDF_REPORT_ENGINE_ACTIVE)) {
+        return this.renderClusterReportLocally(jsonOutput, reportName);
       } else {
-        this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
+        LOG.info("Sending the cluster report {} to the microservice", reportName);
+        // Using sendClusterReportQueueMessage for cluster/project summary reports
+        // @akili-spec bugfix/submit-unsubmit-email-defects
+        if (pdfForSubmit) {
+          submitPdf = this.microserviceReportAction.fetchClusterReportBytes(jsonOutput, reportName);
+        } else {
+          this.microserviceReportAction.sendClusterReportQueueMessage(jsonOutput, reportName);
+        }
       }
       
     } catch (final java.io.IOException e) {
       LOG.error("Could not generate the reporting summary JSON", e);
     }
     
+    return SUCCESS;
+  }
+
+  /**
+   * Renders the cluster report with the local PDF engine: into the response for a download, into {@code submitPdf} for
+   * the submission email. With no service wired it fails (HTTP 500 for a download, null bytes for the submission) and
+   * never publishes to the microservice.
+   *
+   * @return SUCCESS, or ERROR when the service is not available
+   */
+  private String renderClusterReportLocally(String jsonOutput, String reportName) throws java.io.IOException {
+    if (this.localPdfReportService == null) {
+      LOG.error("The local PDF engine is active but its service is not available; the cluster report {} "
+        + "is not generated", reportName);
+      if (!pdfForSubmit) {
+        ServletActionContext.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
+      return ERROR;
+    }
+    LOG.info("Rendering the cluster report {} with the local PDF engine", reportName);
+    if (pdfForSubmit) {
+      try {
+        submitPdf = this.localPdfReportService.render(jsonOutput, LocalPdfReportService.SUBMIT_DEADLINE_MS);
+      } catch (final PdfRenderException e) {
+        LOG.error("Could not render the cluster report {} with the local PDF engine", reportName, e);
+      }
+    } else {
+      this.localPdfReportService.renderToResponse(jsonOutput, reportName, ServletActionContext.getResponse());
+    }
     return SUCCESS;
   }
 

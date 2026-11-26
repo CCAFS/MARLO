@@ -1,0 +1,24 @@
+Provenance of phantomjs-2.1.1-windows.exe.gz
+============================================
+
+Upstream release:
+  https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-windows.zip
+  (the download source of the phantomjs-prebuilt npm package)
+
+SHA-256 of the upstream zip (18193653 bytes):
+  d9fb05623d6b26d3654d008eab3adafd1f6350433dfd16138c46161f42c7dcc8
+
+SHA-256 of bin/phantomjs.exe extracted from it (18587648 bytes); this is the value in
+phantomjs-2.1.1-windows.exe.sha256, which the application checks after extraction:
+  1cf9b2aa732bd0c65a83c55d96ba98c4ed462b93720d7fd8c0bcc53683bfcffb
+
+The binary is a 32-bit (PE32, Intel 80386) console executable, UPX-compressed upstream. It is
+expected to run on 64-bit Windows (WoW64); not yet run (design.md 17, OQ-2). Some antivirus
+products flag UPX-packed executables.
+
+What was stored: bin/phantomjs.exe, compressed with gzip (gzip -9n), unmodified otherwise.
+LICENSE.BSD and third-party.txt in this folder are byte-identical to the ones in this zip
+(and in the Linux tarball and the macOS zip). The licences and the source of the statically
+linked LGPL components are in LGPL-2.1.txt and SOURCE.txt.
+
+Retrieved 2026-11-24. To check: gunzip -c phantomjs-2.1.1-windows.exe.gz | shasum -a 256

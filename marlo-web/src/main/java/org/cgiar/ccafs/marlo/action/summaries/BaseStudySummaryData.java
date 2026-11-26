@@ -60,6 +60,7 @@ import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 import org.cgiar.ccafs.marlo.utils.HTMLParser;
 import org.cgiar.ccafs.marlo.utils.URLShortener;
+import org.cgiar.ccafs.marlo.utils.pdf.LocalPdfReportService;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -84,9 +85,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.apache.struts2.ServletActionContext;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
 import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
 import org.slf4j.Logger;
@@ -236,6 +241,7 @@ public class BaseStudySummaryData extends BaseSummariesAction {
   private String OICRsReportName = null;
   private String bucketName = null;
   private boolean activateShortURL = false;
+  private LocalPdfReportService localPdfReportService;
 
   public BaseStudySummaryData(APConfig config, GlobalUnitManager crpManager, PhaseManager phaseManager,
     ProjectManager projectManager, HTMLParser htmlParser,
@@ -249,6 +255,14 @@ public class BaseStudySummaryData extends BaseSummariesAction {
     this.microserviceReportAction = microserviceReportAction;
     this.reportConfigurationManager = reportConfigurationManager;
     this.locElementManager = locElementManager;
+  }
+
+  /**
+   * Setter injection: the constructors of this class are pinned by subclasses and tests.
+   */
+  @Inject
+  public void setLocalPdfReportService(LocalPdfReportService localPdfReportService) {
+    this.localPdfReportService = localPdfReportService;
   }
 
   /**
@@ -1540,8 +1554,20 @@ public class BaseStudySummaryData extends BaseSummariesAction {
         try {
           objectMapper = new ObjectMapper();
           final String jsonOutput = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonMainRoot);
-          LOG.info("Sending the OICR summary {} to the microservice", this.OICRsReportName);
-          this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
+          if (this.hasSpecificities(APConstants.LOCAL_PDF_REPORT_ENGINE_ACTIVE)) {
+            if (this.localPdfReportService == null) {
+              LOG.error("The local PDF engine is active but its service is not available; the OICR summary {} "
+                + "is not generated", this.OICRsReportName);
+              ServletActionContext.getResponse().sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+              return ERROR;
+            }
+            LOG.info("Rendering the OICR summary {} with the local PDF engine", this.OICRsReportName);
+            this.localPdfReportService.renderToResponse(jsonOutput, this.OICRsReportName,
+              ServletActionContext.getResponse());
+          } else {
+            LOG.info("Sending the OICR summary {} to the microservice", this.OICRsReportName);
+            this.microserviceReportAction.sendOICRsQueueMessage(jsonOutput, this.OICRsReportName);
+          }
 
           return jsonOutput;
         } catch (final IOException e) {

@@ -1,0 +1,90 @@
+Provenance of the shared libraries in this directory (CHG-PPE-T04)
+==================================================================
+
+What they are for: the PhantomJS 2.1.1 build shipped for Linux x86_64 needs libfontconfig, libfreetype and their
+dependencies. They are a fallback: MARLO extracts them, and sets LD_LIBRARY_PATH for the PhantomJS process it starts and
+for no other process, only when PhantomJS does not start with the host's own libraries. They need glibc 2.36 or later
+(the highest GLIBC symbol versions needed: libexpat.so.1 GLIBC_2.36; libfontconfig.so.1 and libfreetype.so.6 GLIBC_2.33).
+libc and libm are never shipped: the host's are used.
+
+Source: Debian 12 (bookworm), architecture amd64, packages installed from deb.debian.org (bookworm, bookworm-security) in
+a debian:bookworm-slim container (/etc/debian_version 12.15) on 2026-11-24, with
+  apt-get install --no-install-recommends libfontconfig1 libfreetype6
+and copied out with cp -L. The libraries, the package versions and the copyright files come from that one install.
+
+Package                 Version                      Libraries shipped
+libfontconfig1          2.14.1-4                     libfontconfig.so.1
+libfreetype6            2.12.1+dfsg-5+deb12u4        libfreetype.so.6
+libexpat1               2.5.0-1+deb12u5              libexpat.so.1
+libpng16-16             1.6.39-2+deb12u6             libpng16.so.16
+libbrotli1              1.0.9-2+deb12u1              libbrotlidec.so.1, libbrotlicommon.so.1
+zlib1g                  1:1.2.13.dfsg-1              libz.so.1
+
+Upstream packages: the six .deb files the libraries come from. For each, the SHA-256 is the value in the Packages
+index of the Debian archive (the index is signed by the archive key, which is how apt trusts it), and it is also the
+SHA-256 of the file served at the URL. These are in the same order as the table above. The pool file name of zlib1g
+carries no epoch ("1:" is not part of it).
+
+  libfontconfig1 2.14.1-4 (385664 bytes)
+    http://deb.debian.org/debian/pool/main/f/fontconfig/libfontconfig1_2.14.1-4_amd64.deb
+    SHA-256 16ee38d374e064f534116dc442b086ef26f9831f1c0af7e5fb4fe4512e700649
+
+  libfreetype6 2.12.1+dfsg-5+deb12u4 (397736 bytes)
+    http://deb.debian.org/debian/pool/main/f/freetype/libfreetype6_2.12.1+dfsg-5+deb12u4_amd64.deb
+    SHA-256 8043e479f73f29992d652e3f9dfe8b17f9780c7ea6330afe379ec5f9f188ac44
+
+  libexpat1 2.5.0-1+deb12u5 (107940 bytes)
+    http://deb.debian.org/debian-security/pool/updates/main/e/expat/libexpat1_2.5.0-1+deb12u5_amd64.deb
+    SHA-256 cae5ded666d8573dd33060bc66fbac21eea8b101a6b56e2af8bd590fcfa65d79
+
+  libpng16-16 1.6.39-2+deb12u6 (277048 bytes)
+    http://deb.debian.org/debian-security/pool/updates/main/libp/libpng1.6/libpng16-16_1.6.39-2+deb12u6_amd64.deb
+    SHA-256 940b91d40d51c825de7f7aa133aecff1ffa25a91f12cb6aa6926c9ad55cd640c
+
+  libbrotli1 1.0.9-2+deb12u1 (274704 bytes)
+    http://deb.debian.org/debian-security/pool/updates/main/b/brotli/libbrotli1_1.0.9-2+deb12u1_amd64.deb
+    SHA-256 e27b3d655fa6fadd7a56f706687e94573c0af68b7d6df394a32a381a3a6c6d8b
+
+  zlib1g 1:1.2.13.dfsg-1 (86684 bytes)
+    http://deb.debian.org/debian/pool/main/z/zlib/zlib1g_1.2.13.dfsg-1_amd64.deb
+    SHA-256 d7dd1d1411fedf27f5e27650a6eff20ef294077b568f4c8c5e51466dc7c08ce4
+
+How the upstream values were confirmed: on 2026-11-25, in a new debian:bookworm-slim container, apt-get update and
+"apt-cache show <package>=<version>" gave the file name and SHA-256 above for all six versions (none had been
+superseded), the six URLs answered 200 when fetched directly, and each downloaded file has the indexed SHA-256.
+Unpacking each .deb (dpkg-deb -x) gives libraries whose SHA-256 equals the one stored here: libfontconfig.so.1,
+libfreetype.so.6, libexpat.so.1, libpng16.so.16, libbrotlicommon.so.1, libbrotlidec.so.1 and libz.so.1 all match the
+list under "SHA-256 of the uncompressed libraries" below.
+
+What was stored: each library unmodified, compressed with gzip -9n, named <soname>.gz. SHA256SUMS holds the SHA-256 of
+each library after decompression, in sha256sum format; the application checks every library against it while writing it
+and again before use. The copyright files of the six packages are copyright.<package>.
+
+To check: gunzip -c <name>.gz | sha256sum   (compare with SHA256SUMS)
+To check a package: sha256sum <file>.deb   (compare with the upstream SHA-256 above)
+
+Retrieved 2026-11-24 (the libraries, with apt-get install); the upstream URLs and SHA-256 values were confirmed
+2026-11-25.
+
+SHA-256 of each stored .gz file (the compressed bytes in this directory; nothing checks these at run time):
+  8db24482660615034e66452752f391467bda0794e58d4124abb682f58a4d8222  libbrotlicommon.so.1.gz
+  bd823cbe16a9d4c1a38768f69253daefb7d5f1fe6d05bfa4c99a973fed10a8bc  libbrotlidec.so.1.gz
+  3d122437b324e648826e1257c30bd5eb6de6c885a011a8a6aa2bfcc2c14458ac  libexpat.so.1.gz
+  d9de433ae5f1f7e21ac53a82bbdd0a35586f3e24d6ec568e8b3c2968af5f54a0  libfontconfig.so.1.gz
+  c240dca8b4f32d9d4aa7a15d801ce26b06a8daa550a83fed60a959c4dc0128ea  libfreetype.so.6.gz
+  9de2577bfbb0775e6cf5fea8b6f61d50fddf21a8de63a5ff91f3060ef638fadd  libpng16.so.16.gz
+  74c5a93039d9053a52024ef618866abc16f6790f9607131ba5b245db6016211d  libz.so.1.gz
+
+SHA-256 of the uncompressed libraries (the content of SHA256SUMS):
+  7a22eb878ad6033f1ee0908faeb5d665aa0809a1da2eb6f49bf37081cfff888a  libbrotlicommon.so.1
+  0ed56000cc214627a4f00af7b7a20c86ffdc9de4d81d56ce12cba637ab9b3ff0  libbrotlidec.so.1
+  b342d94f6a71df596f19b1b0d4d3af9b883f0333027de6c3fc0dbc9ff8c45057  libexpat.so.1
+  eba9fe8895df08cb98d6a294825132a52b65b53f4f1bce26bb3f6ee6ac6b16ec  libfontconfig.so.1
+  5c691e2297772f84647dc07392a1a5d682ff4a190b057df34cd26bd2c4a27179  libfreetype.so.6
+  8a6b5ae14e223d7c01bf09988ea9631c38fd5c898df6d330c343654b76414897  libpng16.so.16
+  7e2a72b4c4b38c61e6962de6e3f4a5e9ae692e732c68deead10a7ce2135a7f68  libz.so.1
+
+Licences: each package's terms are in its copyright file (FreeType Licence for libfreetype, permissive licences for
+fontconfig, expat, libpng, brotli and zlib). The libraries are separate files, loaded by the PhantomJS
+process only, so they can be replaced by the user. The Debian source packages are available from deb.debian.org
+(for example: apt-get source libfreetype6 on Debian 12).

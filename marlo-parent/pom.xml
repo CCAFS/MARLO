@@ -64,6 +64,9 @@
 		<quartz.version>2.3.2</quartz.version>
 		<commons-validator>1.4.0</commons-validator>
 		<jsoup.version>1.15.4</jsoup.version>
+		<handlebars.version>4.5.8</handlebars.version>
+		<!-- PDFBox is used only by the PhantomJS rendering tests (page count and text extraction): test scope. -->
+		<pdfbox.version>3.0.8</pdfbox.version>
 		<geoip2.version>2.12.0</geoip2.version>
 		<spring-amqp.version>3.1.8</spring-amqp.version>
 		<amqp-client.version>5.21.0</amqp-client.version>
@@ -652,6 +655,35 @@
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
 				<version>${jsoup.version}</version>
+			</dependency>
+			<!-- Handlebars template engine for the local PDF report engine @ https://github.com/jknack/handlebars.java -->
+			<dependency>
+				<groupId>com.github.jknack</groupId>
+				<artifactId>handlebars</artifactId>
+				<version>${handlebars.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.openjdk.nashorn</groupId>
+						<artifactId>nashorn-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- PDFBox: test scope only, for the PhantomJS rendering tests -->
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>${pdfbox.version}</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- geoip2 library to know the country trough the remote IP -->
 			<dependency>
