@@ -1,0 +1,69 @@
+{
+ "rows": [
+  {
+   "id": "236",
+   "acronymHTML": "TAAS",
+   "nameCellHTML": "Academy of Agricultural Sciences of the Republic of Tajikistan <br>  <i title=\"TJ\" class=\"flag-icon flag-icon-tj\"></i>",
+   "typeHTML": "University",
+   "anchors": [],
+   "injectedImg": 0,
+   "onAttrs": 0
+  },
+  {
+   "id": "1040",
+   "acronymHTML": "AU",
+   "nameCellHTML": "Aarhus University <br>  <i title=\"DK\" class=\"flag-icon flag-icon-dk\"></i>",
+   "typeHTML": "University",
+   "anchors": [],
+   "injectedImg": 0,
+   "onAttrs": 0
+  },
+  {
+   "id": "1070",
+   "acronymHTML": "&lt;b&gt;ACR&lt;/b&gt;",
+   "nameCellHTML": "Aa FIX3 &lt;img src=x onerror=alert(3)&gt; <br>  <i title=\"NL\" class=\"flag-icon flag-icon-nl\"></i><a href=\"http://www.acaciawater.com/\" target=\"_blank\" rel=\"noopener noreferrer\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"http://www.acaciawater.com/\" style=\"margin: 20px;\">Web page</a>",
+   "typeHTML": "Private company (other than financial)",
+   "anchors": [
+    {
+     "href": "http://www.acaciawater.com/",
+     "attrs": [
+      "href",
+      "target",
+      "rel",
+      "data-toggle",
+      "data-placement",
+      "title",
+      "style"
+     ]
+    }
+   ],
+   "injectedImg": 0,
+   "onAttrs": 0
+  },
+  {
+   "id": "1310",
+   "acronymHTML": "<i><i></i></i>",
+   "nameCellHTML": "1,000 Days <br>  <i title=\"US\" class=\"flag-icon flag-icon-us\"></i><a href=\"https://example.org\" target=\"_blank\" rel=\"noopener noreferrer\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"https://example.org\" style=\"margin: 20px;\">Web page</a>",
+   "typeHTML": "International NGO",
+   "anchors": [
+    {
+     "href": "https://example.org",
+     "attrs": [
+      "href",
+      "target",
+      "rel",
+      "data-toggle",
+      "data-placement",
+      "title",
+      "style"
+     ]
+    }
+   ],
+   "injectedImg": 0,
+   "onAttrs": 0
+  }
+ ],
+ "alertsFired": 0,
+ "totalRows": 100,
+ "nativeDialogs": []
+}

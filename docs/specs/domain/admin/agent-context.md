@@ -6,12 +6,13 @@ Read this before touching the CRP admin **Management** screen (`/admin/{crp}/man
 files after reading it.
 
 **Covers:** the liaison institution model (PMU, components, regions, partners), the `crp_cu` parameter, the
-**Management**, **Regional Mapping** and **PPA Partners** screens as far as they touch it, and **every path that
-creates a `users` row** — see § *User creation*.
+**Management**, **Regional Mapping** and **PPA Partners** screens as far as they touch it, **every path that
+creates a `users` row** — see § *User creation* — and the **partner / country-office request flow and its
+superadmin review screen** (`marloInstitutions`) — see § *Partner requests*.
 
 **Does not cover** — no agent context exists yet for these admin actions, so inspect the source directly:
 `activityManager`, `siteIntegration`, `crpPhases`, `projectPhases`, `allianceLeversManagement`, `locations`,
-`targetUnits`, `marloInstitutions`, `crpDeliverables`, `feedbackManagement`, `homepageBannerManagement`,
+`targetUnits`, `crpDeliverables`, `feedbackManagement`, `homepageBannerManagement`,
 `timelineManagement`, `feedbackRolesPermissionsManagement`, `portfolioManagement`.
 Add a section to this file when you document one of them.
 
@@ -269,3 +270,124 @@ have been CGIAR or local.
   `CrpPpaPartnersAction`, `CrpContactPoint` and `FundingSourceListAction` do guard theirs.
 - `createGlobalUnit()` and `resolvePmuLiaisonInstitution()` are two independent definitions of "a correctly
   configured PMU". They will drift.
+
+## Partner Requests (`marloInstitutions`)
+
+As built by `changes/revive-local-partner-request-approval` (CHG-PARTREQ-001) and
+`changes/partner-request-routing-specificity` (CHG-PARTROUTE-001). A user who cannot find an institution asks for it.
+**Where a partner request goes depends on its Global Unit** — see § *Routing mode*: in MARLO mode (the default) a
+**superadmin** reviews it on `/superadmin/marloInstitutions.do` and approval happens inside MARLO, with no CLARISA call
+on the review path; in CLARISA mode the request is POSTed to CLARISA at submit and never stored. Country-office
+requests are always local. Email texts: `reports/ai-context/role-assignment-email-catalog.md` §17.
+
+### Routing mode (`partner_requests_to_clarisa`)
+
+| Item | Fact |
+|---|---|
+| Key / constant | `partner_requests_to_clarisa`; `APConstants.PARTNER_REQUESTS_TO_CLARISA` in `marlo-data/.../config/APConstants.java:135` and `marlo-web/.../config/APConstants.java:159`. Seed: `V2_6_0_20261120_1306__AddPartnerRequestsToClarisaSpecificity.sql` — one `parameters` row per Global Unit type 1-4 that exists, default `false`, **no** `custom_parameters` row, so deploying changes no unit |
+| MARLO mode (off, default) | partner request stored as original + copy (`createPartnerRequest`, `PartnersSaveAction.java:521`), reviewed by a superadmin; support alert sent |
+| CLARISA mode (on) | `save()` calls `sendToClarisa` (`PartnersSaveAction.java:512-513`, POST via `postToClarisa`, `:582`); nothing is stored. A failed send re-shows the form (`requestFailed`) and **never falls back to MARLO** (design §15 DD-4). The "Request Institutions" menu entry is hidden (design DD-6) |
+| Who flips it | a superadmin, per unit: Superadmin → Parameters → Specificities (FN-008). Only an **active** `custom_parameters` row whose value parses `true` turns it on |
+| No unit | `loggedCrp == null` → nothing stored or sent, form re-shown (`PartnersSaveAction.java:503-509`, FN-010) |
+| Office requests | `RequestCountryOfficeAction` is not touched by the switch: stored locally in both modes (FN-007) |
+
+**Two readers, one lag (design §9, DD-2, DD-3, R-4).** The **submit** reads the unit's *stored* parameters
+(`readClarisaMode()`, `PartnersSaveAction.java:605-617`, called at `:511`; exposed to the page by `isClarisaMode()`,
+`:292`), so a switch applies to the very next submission. The **templates** (`menu-superadmin.ftl` entry,
+`projectPartners.ftl` office link) use `action.hasSpecificities('partner_requests_to_clarisa')`, which reads the
+**session**: they follow a switch only at the next login, unit switch or crp refresh. A stale template only shows or
+hides a link; it cannot send data. The session can also hold another unit's `true` after a unit switch (design P-4),
+which is why the submit does not use it.
+
+**Leftover pending requests (FN-009).** Requests stored while a unit was in MARLO mode stay in `partner_requests`
+after the unit moves to CLARISA mode. The review screen and the decide routes still work for them, but the menu entry
+is hidden while the session unit is in CLARISA mode — reach them by URL, or switch the unit back.
+
+**Open question P-9 (UNVERIFIED).** CLARISA's `misAcronym` is now `loggedCrp.getAcronym()` lower-cased
+(`PartnersSaveAction.java:639`, `buildClarisaPayload` `:556-566`); pre-switch it was the literal `"aiccra"`. Unit 45
+`AICCRA` still sends `aiccra`; unit 47 `AICCRA_III` would send `aiccra_iii`, which CLARISA may not know. Confirm with
+the CLARISA team before switching any non-AICCRA unit on (design §16 P-9, R-5).
+
+### Flow
+
+| Step | Code (read it, do not trust this table blindly) | Writes |
+|---|---|---|
+| Ask for a **partner** (MARLO mode; CLARISA mode sends instead, § *Routing mode*) | `PartnersSaveAction.save()` → `partnerRequestManager.createPartnerRequest(original, copy)`; view `partnersSave.ftl`; route `{crp}/partnerSave` (`projectsStack`) | two `partner_requests` rows: the **original** (never edited) and its editable **copy** (`partnerRequest` parent set) |
+| Ask for **country offices** | `RequestCountryOfficeAction.execute()` → `savePartnerRequest` once per country; route `requestCountryOffice` (struts-json) | one office row per country (`office=true`, no parent) |
+| Support alert | `sendNewPartnerAlert()` / `sendNewOfficeAlert()`, **after** the save, best effort | email to `<notification mailbox>` |
+| Review | `PartnerRequestAction.prepare()` lists active rows: partners = copies (`!office`, parent set), offices grouped by institution | nothing |
+| Decide | `addPartner` (form POST, redirect), `rejectPartnerRequest`, `editPartnerRequest`, `acceptOfficesRequest`, `rejectOfficesRequest` | via `PartnerRequestManager` (below) |
+| Tell the requester | `sendPartnerAcceptedEmail`, `RejectPartnerRequestAction.sendRejectedNotificationEmail`, `sendOfficeEmails` — only after the commit | email to requester, approver in CC, `<notification mailbox>` in BCC |
+
+The unit word in the stored source comes from `marloRequestCreation.source.project`: `Project P{0} - {1}` in
+`global.properties`, `Cluster C{0} - {1}` in `custom/aicrra.properties` and `custom/aiccra3.properties`. The office
+action has no i18n interceptor, so it reads the unit's own file with `PartnerRequestEmails.unitTexts(loggedCrp)`.
+The other source labels (`Capdev`, `Funding Source`, `PowbSynthesis`, `Report Synthesis`) are still hardcoded in
+`PartnersSaveAction`.
+
+### Manager and outcomes
+
+`PartnerRequestManagerImpl` — two kinds of `@Transactional` write. The five **decision** methods (`acceptPartnerRequest`, `rejectPartnerRequest`,
+`editPartnerRequest`, `acceptOfficeRequests`, `rejectOfficeRequests`) call `findForUpdate` first and then apply the
+refusal check below. `createPartnerRequest` and `savePartnerRequest` (the office-request write, called once per
+country by `RequestCountryOfficeAction`) take **no lock and run no guard**; `deletePartnerRequest` is a third
+unguarded write, not used by this flow.
+
+| Method | What it does |
+|---|---|
+| `createPartnerRequest` | saves original + copy in one transaction |
+| `acceptPartnerRequest(id)` | builds the `Institution` **from the copy** (the superadmin may have edited it), its headquarters `InstitutionLocation`, marks copy accepted, closes copy and original. Throws `IllegalStateException` (rolled back) when type or country is missing |
+| `rejectPartnerRequest(id, justification, user)` | `markRejected` on the copy, closes copy and original |
+| `editPartnerRequest(...)` | edits the copy; an empty text field is blanked; type / country change only when given and found |
+| `acceptOfficeRequests(ids, institutionId)` | per id, ascending order: new non-headquarters location, or — when the country is already a location — the request closes `acepted=false` with a justification (`SKIPPED_EXISTING`) |
+| `rejectOfficeRequests(ids, institutionId, justification, user)` | same lock order and refusals |
+
+`PartnerRequestDAO.findForUpdate(id)` (`PartnerRequestMySQLDAO`) does `session.get` then
+`session.refresh(entity, LockMode.PESSIMISTIC_WRITE)`: the lock **and** a re-read, because OpenSessionInView may hold
+a stale copy. Lock-only was proven to create two institutions; with refresh, one institution and one
+`ALREADY_HANDLED` (`changes/revive-local-partner-request-approval/probes/t04-*.out`).
+
+Refusal order, same in the five decision methods (`refusePartner` / `refuseOffice`): missing row → `NOT_FOUND`; wrong kind (not a
+copy, or an office row; an office row of another institution) → `WRONG_KIND`; not pending (`isActive() &&
+getAcepted() == null`) → `ALREADY_HANDLED`. Nothing is written on a refusal. `PartnerRequestOutcome.Status` is
+`DONE`, `ALREADY_HANDLED`, `NOT_FOUND`, `WRONG_KIND`, `SKIPPED_EXISTING`; `isNotifiable()` is true for `DONE` and
+`SKIPPED_EXISTING`.
+
+### Guards and POST-only
+
+| Route | File | Interceptors, in order |
+|---|---|---|
+| `/superadmin/marloInstitutions`, `addPartner` | `struts-superadmin.xml` | `superAdminStack` (`logErrorStatus`, `i18nFile`, `requireUser`, `validPhase`, `superAdminValidation`, …) |
+| `/admin/{crp}/marloInstitutions` | `struts-admin.xml` | `i18nFile`, `requireUser`, `superAdminValidation`, `crpAdminStack`; result `input` redirects to the superadmin route |
+| `rejectPartnerRequest`, `editPartnerRequest`, `acceptOfficesRequest`, `rejectOfficesRequest` | `struts-json.xml` | `logErrorStatus`, `requireUser` (401), `validPhase` (404), `superAdminValidation` (403), `defaultStack`, `SecurityControl` |
+
+`superAdminValidation` = `SuperAdminInterceptor` → `canAccessSuperAdmin()` = `Permission.FULL_PRIVILEGES`: a
+**global** privilege, not per Global Unit. The five decision actions (`addPartner`, `addCountryOffices`, `rejectCountryOffices`, `RejectPartnerRequestAction`,
+`EditPartnerRequestAction`) call `isHttpPost()` first; a GET answers `notAllowed` and writes nothing. The two request
+creators (`PartnersSaveAction`, `RequestCountryOfficeAction`) do not check the method.
+
+### JSON contract and UI
+
+The four JSON routes publish `success` and `outcome` (offices also `outcomes.*`, request id → status) with
+`includeProperties`; **strings only, never entities.** Status strings: `done`, `alreadyHandled`, `notFound`,
+`wrongKind`, `skippedExisting`, `notAllowed`, `failed`. `statusName(Status)` is duplicated in three actions. An office
+batch reports `done` if any id was done, else `skippedExisting`, else the first status.
+`sessionExpired` (HTTP 401) and `notAuthorized` (403) never come from the body: `marloInstitutions.js`
+(`statusOfError`) derives them from the HTTP status. Texts: `marloRequestInstitution.ui.outcome.*`, rendered by
+`marloInstitutions.ftl` as `data-outcome-*` attributes on `#prqPage`.
+
+The screen is the `.prq` block (`global/css/superadmin/marloInstitutions.css`); `prqDialog` in
+`global/js/superadmin/marloInstitutions.js` owns every dialog (role, focus trap, Escape, focus back to the opener).
+Reject / accept-offices post by AJAX and show an inline note; `addPartner` is a full-page POST and redirect, answered
+with an action message. The old CRP-admin view `crp/views/admin/marloInstitutions.ftl` is **no longer rendered**.
+
+### Caveats
+
+- **R-7 — the REST writer is unguarded.** `Institutions` → `InstitutionItem.acceptPartnerRequest` and
+  `CountryOfficeRequestItem` still accept / reject requests with `getPartnerRequestById`: no pending guard, no row
+  lock, no superadmin rule. Do not assume the manager's guarantees hold for a request that went through `/api/*`.
+- The original row is not locked on accept / reject; only the copy is.
+- A batch that repeats a country closes the repeat as `acepted=false` plus a justification (legacy behaviour differed).
+- **P-25.** Accept inserts into `institutions`, whose `created_by` is `NOT NULL` with no default and is not mapped by
+  `Institution`. It works only on a server without strict SQL mode; a strict one fails every accept.
+- The office-accepted email lists a skipped country as added.

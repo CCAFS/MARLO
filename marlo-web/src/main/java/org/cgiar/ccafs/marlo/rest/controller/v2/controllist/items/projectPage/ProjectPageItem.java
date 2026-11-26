@@ -28,6 +28,7 @@ import org.cgiar.ccafs.marlo.data.model.CustomParameter;
 import org.cgiar.ccafs.marlo.data.model.Deliverable;
 import org.cgiar.ccafs.marlo.data.model.DeliverableDissemination;
 import org.cgiar.ccafs.marlo.data.model.DeliverableInfo;
+import org.cgiar.ccafs.marlo.data.model.GeneralStatus;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.InstitutionLocation;
 import org.cgiar.ccafs.marlo.data.model.LocElement;
@@ -106,11 +107,8 @@ public class ProjectPageItem<T> {
     if (globalUnit == null) {
       fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
     } else {
-      Boolean crpProjectPage = globalUnit.getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_PROJECT_PAGE))
-        .allMatch(t -> (t.getValue() == null) ? false : t.getValue().equalsIgnoreCase(STRING_TRUE));
       // is project web page expose enable by CRP parameter
-      if (crpProjectPage) {
+      if (this.isProjectPageEnabled(globalUnit)) {
 
         for (Project project : projectManager.getProjectWebPageList(globalUnit.getId())) {
           project = (project != null) ? this.getProjectInformation(project, globalUnit) : null;
@@ -148,11 +146,7 @@ public class ProjectPageItem<T> {
     if (globalUnit == null) {
       fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "Invalid CGIAR entity acronym"));
     } else {
-      Boolean crpProjectPage = globalUnit.getCustomParameters().stream()
-        .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_PROJECT_PAGE))
-        .allMatch(t -> (t.getValue() == null) ? false : t.getValue().equalsIgnoreCase(STRING_TRUE));
-
-      if (crpProjectPage) {
+      if (this.isProjectPageEnabled(globalUnit)) {
         project = (project != null) ? this.getProjectInformation(project, globalUnit) : null;
       } else {
         fieldErrors.add(new FieldErrorDTO("ProjectPageDTO", "GlobalUnitEntity", "CGIAR entity not autorized"));
@@ -174,9 +168,7 @@ public class ProjectPageItem<T> {
    * @return
    */
   public Project getProjectInformation(Project project, GlobalUnit globalUnit) {
-    CustomParameter param = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_PROJECT_PAGE_YEAR)).findFirst().get();
-    int projectPageYear = param == null ? -1 : Integer.parseInt(param.getValue());
+    int projectPageYear = this.getProjectPageYear(globalUnit);
 
     //
 
@@ -191,7 +183,7 @@ public class ProjectPageItem<T> {
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
           && c.getCrpProgram().getProgramType() == ProgramType.FLAGSHIP_PROGRAM_TYPE.getValue()
-          && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
+          && c.getCrpProgram().getCrp() != null && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
         .collect(Collectors.toList())) {
         programs.add(projectFocuses.getCrpProgram());
       }
@@ -201,7 +193,7 @@ public class ProjectPageItem<T> {
       for (ProjectFocus projectFocuses : project.getProjectFocuses().stream()
         .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId())
           && c.getCrpProgram().getProgramType() == ProgramType.REGIONAL_PROGRAM_TYPE.getValue()
-          && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
+          && c.getCrpProgram().getCrp() != null && c.getCrpProgram().getCrp().getId().equals(globalUnit.getId()))
         .collect(Collectors.toList())) {
         regions.add(projectFocuses.getCrpProgram());
       }
@@ -212,8 +204,9 @@ public class ProjectPageItem<T> {
         .findAll().stream().filter(c -> c.isActive() && c.getPhase() != null
           && c.getPhase().getId().equals(phase.getId()) && c.getProject().getId().longValue() == projectID)
         .collect(Collectors.toList())) {
-        LocElement loc = locElementManager.getLocElementById(projectLocations.getLocElement().getId());
-        if (loc != null) {
+        LocElement loc = projectLocations.getLocElement() != null
+          ? locElementManager.getLocElementById(projectLocations.getLocElement().getId()) : null;
+        if (loc != null && loc.getLocElementType() != null) {
           projectLocations.setLocElement(loc);
           if (loc.getLocElementType().getId().longValue() == 1) {
             projectRegions.add(projectLocations);
@@ -225,7 +218,7 @@ public class ProjectPageItem<T> {
 
       // activities ongoing or complete
       List<Activity> activitiesData = project.getActivities().stream()
-        .filter(a -> a.isActive() && a.getPhase().equals(phase)
+        .filter(a -> a.isActive() && phase.equals(a.getPhase()) && a.getActivityStatus() != null
           && (a.getActivityStatus().longValue() == 3 || a.getActivityStatus().longValue() == 2))
         .collect(Collectors.toList());
 
@@ -245,7 +238,8 @@ public class ProjectPageItem<T> {
       for (Deliverable deliverable : project.getDeliverables().stream().filter(c -> c.isActive())
         .collect(Collectors.toList())) {
         DeliverableInfo deliverableInfo = deliverable.getDeliverableInfo(phase);
-        if (deliverableInfo != null && deliverableInfo.getStatus().longValue() == 3) {
+        if (deliverableInfo != null && deliverableInfo.getStatus() != null
+          && deliverableInfo.getStatus().longValue() == 3) {
           deliverable.setDeliverableInfo(deliverableInfo);
           DeliverableDissemination deliverableDissemination = deliverable.getDissemination(phase);
           // deliverable external link not provided removed when this is null
@@ -291,7 +285,8 @@ public class ProjectPageItem<T> {
       // contributing outcomes
       List<ProjectOutcome> projectOutcomes = new ArrayList<ProjectOutcome>();
       for (ProjectOutcome projectOutcome : project.getProjectOutcomes().stream()
-        .filter(c -> c.isActive() && c.getPhase().getId().equals(phase.getId())).collect(Collectors.toList())) {
+        .filter(c -> c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId()))
+        .collect(Collectors.toList())) {
         List<ProjectMilestone> milestones = new ArrayList<ProjectMilestone>();
         milestones = projectOutcome.getProjectMilestones().stream().filter(c -> c != null && c.isActive())
           .collect(Collectors.toList());
@@ -303,7 +298,7 @@ public class ProjectPageItem<T> {
       // project partners
       List<ProjectPartner> partners = new ArrayList<ProjectPartner>();
       for (ProjectPartner projectPartner : project.getProjectPartners().stream()
-        .filter(c -> c != null && c.isActive() && c.getPhase().getId().equals(phase.getId()))
+        .filter(c -> c != null && c.isActive() && c.getPhase() != null && c.getPhase().getId().equals(phase.getId()))
         .collect(Collectors.toList())) {
         // search partner office location
         List<InstitutionLocation> locations = new ArrayList<InstitutionLocation>();
@@ -349,8 +344,8 @@ public class ProjectPageItem<T> {
         ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
         if (projectExpectedStudyInfo != null && projectExpectedStudyInfo.isActive()) {
           // only view ongoing or completed
-          if (projectExpectedStudyInfo.getStatus().getId().longValue() == 3
-            || projectExpectedStudyInfo.getStatus().getId().longValue() == 2) {
+          GeneralStatus studyStatus = projectExpectedStudyInfo.getStatus();
+          if (studyStatus != null && (studyStatus.getId().longValue() == 3 || studyStatus.getId().longValue() == 2)) {
             if (projectExpectedStudyInfo.getStudyType() != null
               && projectExpectedStudyInfo.getStudyType().getId().longValue() == 1) {
               projectExpectedStudy.setProjectExpectedStudyInfo(projectExpectedStudyInfo);
@@ -387,6 +382,31 @@ public class ProjectPageItem<T> {
 
 
     return project;
+  }
+
+  /**
+   * The year whose Planning phase the project page shows: the value of the Global Unit's project_website_year_value
+   * parameter. A Global Unit without the parameter, or whose value is empty or not a number, has no project page year.
+   * That is a configuration error of the Global Unit, not a client error and not "no data", so it is raised as an
+   * exception that ExceptionTranslator answers 500 and logs once.
+   * 
+   * @param globalUnit the Global Unit that publishes the project page
+   * @return the configured year
+   * @throws IllegalStateException when the Global Unit has no usable project page year
+   */
+  private int getProjectPageYear(GlobalUnit globalUnit) {
+    CustomParameter param = globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter() != null
+        && APConstants.CRP_PROJECT_PAGE_YEAR.equalsIgnoreCase(c.getParameter().getKey()))
+      .findFirst().orElse(null);
+    if (param == null || param.getValue() == null) {
+      throw this.unusableProjectPageYear(globalUnit, null);
+    }
+    try {
+      return Integer.parseInt(param.getValue());
+    } catch (NumberFormatException e) {
+      throw this.unusableProjectPageYear(globalUnit, e);
+    }
   }
 
   private Boolean isA(Deliverable deliverableBD) {
@@ -463,6 +483,19 @@ public class ProjectPageItem<T> {
     return null;
   }
 
+  /**
+   * A Global Unit publishes its project pages unless its crp_project_page parameter says otherwise: without the
+   * parameter the project pages are enabled, and with it every value must be "true".
+   * 
+   * @param globalUnit the Global Unit that is asked for its project pages
+   * @return true when the project pages are enabled
+   */
+  private boolean isProjectPageEnabled(GlobalUnit globalUnit) {
+    return globalUnit.getCustomParameters().stream()
+      .filter(c -> c.getParameter() != null && APConstants.CRP_PROJECT_PAGE.equalsIgnoreCase(c.getParameter().getKey()))
+      .allMatch(t -> t.getValue() != null && t.getValue().equalsIgnoreCase(STRING_TRUE));
+  }
+
   public Boolean isR(Deliverable deliverableBD) {
     try {
 
@@ -476,6 +509,21 @@ public class ProjectPageItem<T> {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  /**
+   * The configuration error of a Global Unit whose project page year is missing or is not a number. The message holds
+   * database values only (the Global Unit acronym and the parameter key), never a value the client sent; the cause
+   * keeps the configured value for the log, which is the only place it reaches.
+   * 
+   * @param globalUnit the Global Unit whose project page year is not usable
+   * @param cause why the configured value could not be read, null when there is no value
+   * @return the exception to throw
+   */
+  private IllegalStateException unusableProjectPageYear(GlobalUnit globalUnit, NumberFormatException cause) {
+    return new IllegalStateException("The Global Unit " + globalUnit.getAcronym()
+      + " has no usable project page year: the custom parameter " + APConstants.CRP_PROJECT_PAGE_YEAR
+      + " is missing or its value is not a number", cause);
   }
 
 }

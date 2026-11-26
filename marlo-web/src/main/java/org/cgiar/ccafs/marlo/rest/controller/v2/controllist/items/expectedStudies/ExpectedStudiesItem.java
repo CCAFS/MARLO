@@ -1265,7 +1265,7 @@ public class ExpectedStudiesItem<T> {
     }
 
     Phase phase = this.phaseManager.findAll().stream()
-      .filter(c -> c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
+      .filter(c -> c.getCrp() != null && c.getCrp().getAcronym().equalsIgnoreCase(CGIARentityAcronym)
         && c.getYear() >= APConstants.CLARISA_AVALIABLE_INFO_YEAR && c.getYear() == repoYear
         && c.getName().equalsIgnoreCase(repoPhase))
       .findFirst().orElse(null);
@@ -1278,22 +1278,26 @@ public class ExpectedStudiesItem<T> {
 
     if (projectExpectedStudy != null && fieldErrors.isEmpty()) {
       ProjectExpectedStudyInfo projectExpectedStudyInfo = projectExpectedStudy.getProjectExpectedStudyInfo(phase);
+      if (projectExpectedStudyInfo == null) {
+        // The study exists, but it has no information in the requested phase
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
       // Flagship
       List<ProjectExpectedStudyFlagship> projectExpectedStudyFlagshipList =
         projectExpectedStudy.getProjectExpectedStudyFlagships().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setFlagships(projectExpectedStudyFlagshipList);
       // SubIDOs
       List<ProjectExpectedStudySubIdo> projectExpectedStudySubIdoList =
         projectExpectedStudy.getProjectExpectedStudySubIdos().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setSubIdos(projectExpectedStudySubIdoList);
       if (projectExpectedStudyInfo.getIsSrfTarget() != null
         && projectExpectedStudyInfo.getIsSrfTarget().equals("targetsOptionYes")) {
         // SrfSlo
         List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
           projectExpectedStudy.getProjectExpectedStudySrfTargets().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+            .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
         projectExpectedStudy.setSrfTargets(projectExpectedStudySrfTargetList);
       } else {
         List<ProjectExpectedStudySrfTarget> projectExpectedStudySrfTargetList =
@@ -1304,57 +1308,59 @@ public class ExpectedStudiesItem<T> {
       // GeographicScope
       List<ProjectExpectedStudyGeographicScope> projectExpectedStudyGeographicScopeList =
         projectExpectedStudy.getProjectExpectedStudyGeographicScopes().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setGeographicScopes(projectExpectedStudyGeographicScopeList);
       // Institutions
       Comparator<ProjectExpectedStudyPartnership> compareByNameInstitution = (ProjectExpectedStudyPartnership o1,
         ProjectExpectedStudyPartnership o2) -> o1.getInstitution().getName().compareTo(o2.getInstitution().getName());
       List<ProjectExpectedStudyPartnership> projectExpectedStudyInstitutionList =
         projectExpectedStudy.getProjectExpectedStudyPartnerships().stream()
-          .filter(
-            c -> c.isActive() && c.getPhase().equals(phase) && c.getProjectExpectedStudyPartnerType().getId().equals(2))
+          .filter(c -> c.isActive() && phase.equals(c.getPhase()) && c.getProjectExpectedStudyPartnerType() != null
+            && c.getProjectExpectedStudyPartnerType().getId().equals(2))
           .collect(Collectors.toList());
       Collections.sort(projectExpectedStudyInstitutionList, compareByNameInstitution);
       projectExpectedStudy.setInstitutions(projectExpectedStudyInstitutionList);
       // CRPs contribution
       List<ProjectExpectedStudyCrp> projectExpectedStudyCrpList = projectExpectedStudy.getProjectExpectedStudyCrps()
-        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+        .stream().filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setCrps(projectExpectedStudyCrpList);
       // Regions
       List<ProjectExpectedStudyRegion> projectExpectedStudyRegionList = projectExpectedStudyRegionManager
-        .findAll().stream().filter(c -> c.isActive()
-          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .findAll().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && phase.equals(c.getPhase()))
         .collect(Collectors.toList());
       projectExpectedStudy.setStudyRegions(projectExpectedStudyRegionList);
       // Countries
       List<ProjectExpectedStudyCountry> projectExpectedStudyCountryList = projectExpectedStudyCountryManager
-        .findAll().stream().filter(c -> c.isActive()
-          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+        .findAll().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && phase.equals(c.getPhase()))
         .collect(Collectors.toList());
       projectExpectedStudy.setCountries(projectExpectedStudyCountryList);
       // Quantification
       List<ProjectExpectedStudyQuantification> projectExpectedStudyQuantificationList =
         projectExpectedStudyQuantificationManager
-          .findAll().stream().filter(c -> c.isActive()
-            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          .findAll().stream().filter(c -> c.isActive() && c.getProjectExpectedStudy() != null
+            && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && phase.equals(c.getPhase()))
           .collect(Collectors.toList());
       projectExpectedStudy.setQuantifications(projectExpectedStudyQuantificationList);
       // Links
       List<ProjectExpectedStudyLink> projectExpectedStudyLinkList = projectExpectedStudy.getProjectExpectedStudyLinks()
-        .stream().filter(c -> c.isActive() && c.getPhase().equals(phase))
-        .sorted(Comparator.comparing(ProjectExpectedStudyLink::getLink)).collect(Collectors.toList());
+        .stream().filter(c -> c.isActive() && phase.equals(c.getPhase()))
+        .sorted(Comparator.comparing(ProjectExpectedStudyLink::getLink,
+          Comparator.nullsLast(Comparator.naturalOrder())))
+        .collect(Collectors.toList());
       projectExpectedStudy.setLinks(projectExpectedStudyLinkList);
 
       // innovations
       List<ProjectExpectedStudyInnovation> projectExpectedStudyInnovationList =
         projectExpectedStudy.getProjectExpectedStudyInnovations().stream()
-          .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+          .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
       projectExpectedStudy.setInnovations(projectExpectedStudyInnovationList);
       if (projectExpectedStudyInfo.getIsContribution() != null && projectExpectedStudyInfo.getIsContribution()) {
         // Policies
         List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList =
           projectExpectedStudy.getProjectExpectedStudyPolicies().stream()
-            .filter(c -> c.isActive() && c.getPhase().equals(phase)).collect(Collectors.toList());
+            .filter(c -> c.isActive() && phase.equals(c.getPhase())).collect(Collectors.toList());
         projectExpectedStudy.setPolicies(projectExpectedStudyPolicyList);
       } else {
         List<ProjectExpectedStudyPolicy> projectExpectedStudyPolicyList = new ArrayList<ProjectExpectedStudyPolicy>();
@@ -1363,7 +1369,7 @@ public class ExpectedStudiesItem<T> {
 
       List<ProjectExpectedStudyMilestone> projectExpectedStudyMilestoneList = projectExpectedStudy
         .getProjectExpectedStudyMilestones().stream().filter(c -> c != null
-          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && c.getPhase().equals(phase))
+          && c.getProjectExpectedStudy().getId().equals(projectExpectedStudy.getId()) && phase.equals(c.getPhase()))
         .collect(Collectors.toList());
       projectExpectedStudy.setMilestones(projectExpectedStudyMilestoneList);
     } else {

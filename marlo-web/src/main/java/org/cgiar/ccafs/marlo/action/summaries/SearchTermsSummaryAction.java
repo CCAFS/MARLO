@@ -57,7 +57,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.pentaho.reporting.engine.classic.core.CompoundDataFactory;
 import org.pentaho.reporting.engine.classic.core.Element;
 import org.pentaho.reporting.engine.classic.core.ItemBand;
@@ -79,9 +78,17 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
   private static Logger LOG = LoggerFactory.getLogger(SearchTermsSummaryAction.class);
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
+
+  // rep_ind_gender_youth_focus_levels ids that state the deliverable does not target the dimension:
+  // 1 = "0 - Not Targeted", 4 = "Too early to tell" / "N/A - Not applicable"
+  private static final Set<Long> NOT_TARGETED_FOCUS_LEVEL_IDS = new HashSet<>(Arrays.asList(1L, 4L));
+
+  // A blank cell must still carry visible content (a non-breaking space), see addRowWithVisibleCells
+  private static final String BLANK_CELL = "<font size=2 face='Segoe UI' color='#000000'>&nbsp;</font>";
+  private static final Pattern HTML_TAG = Pattern.compile("<[^>]*>");
 
   // Variables
   private long startTime;
@@ -191,8 +198,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         if (parameters.isEmpty()) {
           // Empty keys
         } else {
-          // String parametersNotEspecialChar = parameters.replaceAll("[^a-zA-Z0-9]+", "");
-          keys = Arrays.asList(parameters.split(","));
+          // Keys are matched literally later on, so they only need trimming here
+          keys = Arrays.stream(parameters.split(",")).map(String::trim).filter(key -> !key.isEmpty())
+            .collect(Collectors.toList());
         }
       }
       // Set Main_Query
@@ -230,6 +238,37 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     return SUCCESS;
   }
 
+  /**
+   * Adds a row after giving every blank text cell a non-breaking space. Pentaho renders a cell with no visible text
+   * as a box shorter than its neighbours, which splits the row into two Excel rows joined by merged regions; POI then
+   * validates every new merged region against all the previous ones, so generation time grew with the square of the
+   * row count (17393 merged regions and about 70 s for 1746 deliverables).
+   *
+   * @param model the table model receiving the row
+   * @param row the row values, in the model column order
+   */
+  private void addRowWithVisibleCells(TypedTableModel model, Object[] row) {
+    for (int i = 0; i < row.length; i++) {
+      if (model.getColumnClass(i) == String.class
+        && (row[i] == null || HTML_TAG.matcher((String) row[i]).replaceAll("").trim().isEmpty())) {
+        row[i] = BLANK_CELL;
+      }
+    }
+    model.addRow(row);
+  }
+
+  /**
+   * Builds the case-insensitive pattern that finds any of the user keys. Each key is quoted, so a key holding regex
+   * metacharacters such as "(" is searched literally instead of throwing PatternSyntaxException. Lookarounds keep the
+   * whole-word behaviour of \b while also working for keys that start or end with a non-word character.
+   *
+   * @return the pattern; group 1 holds the matched text
+   */
+  private Pattern buildKeysPattern() {
+    String alternatives = keys.stream().map(Pattern::quote).collect(Collectors.joining("|"));
+    return Pattern.compile("(?i)(?<!\\w)(" + alternatives + ")(?!\\w)");
+  }
+
   private void fillSubreport(SubReport subReport, String query) {
     CompoundDataFactory cdf = CompoundDataFactory.normalize(subReport.getDataFactory());
     TableDataFactory sdf = (TableDataFactory) cdf.getDataFactoryForQuery(query);
@@ -258,9 +297,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         String.class, String.class, String.class, Long.class},
       0);
     if (!keys.isEmpty()) {
-      // Pattern case insensitive
-      String patternString = "(?i)\\b(" + StringUtils.join(keys, "|") + ")\\b";
-      Pattern pattern = Pattern.compile(patternString);
+      Pattern pattern = this.buildKeysPattern();
       // date format for star and end dates
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Search projects with activities
@@ -299,10 +336,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                 // add elements to matches
                 matchesTitle.add(matcher.group(1));
               }
-              for (String match : matchesTitle) {
-                actTit = actTit.replaceAll("\\b" + match + "\\b",
-                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-              }
+              actTit = this.highlightMatches(actTit, matchesTitle);
             } else {
               actTit = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
@@ -316,10 +350,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                 // add elements to matches
                 matchesDescription.add(matcher.group(1));
               }
-              for (String match : matchesDescription) {
-                actDesc = actDesc.replaceAll("\\b" + match + "\\b",
-                  "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
-              }
+              actDesc = this.highlightMatches(actDesc, matchesDescription);
             } else {
               actDesc = "<font size=2 face='Segoe UI' color='#000000'></font>";
             }
@@ -372,8 +403,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
                 insLeader += "</font>";
               }
               Long phaseID = this.getSelectedPhase().getId();
-              model.addRow(new Object[] {projectId, projectTitle, actId, actTit, actDesc, startDate, endDate, insLeader,
-                leader, projectU, phaseID});
+              this.addRowWithVisibleCells(model, new Object[] {projectId, projectTitle, actId, actTit, actDesc,
+                startDate, endDate, insLeader, leader, projectU, phaseID});
             }
           }
         }
@@ -445,16 +476,14 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               && d.getDeliverableInfo().isActive() && d.getDeliverableInfo().getPhase().equals(this.getSelectedPhase()))
             .collect(Collectors.toList())) {
             String devTitle = "";
-            // Pattern case insensitive
-            String patternString = "(?i)\\b(" + StringUtils.join(keys, "|") + ")\\b";
-            Pattern pattern = Pattern.compile(patternString);
+            Pattern pattern = this.buildKeysPattern();
             // count occurrences
             countMatches = 0;
 
             devTitle = this.getFieldMatches(deliverable.getDeliverableInfo(this.getSelectedPhase()).getTitle(), pattern,
               "", null, false);
             String gender = "", youth = "", capacityDevelopment = "";
-            // gender, youth, capDev matches
+            // gender, youth, capDev matches: a marker only counts as a match when its level targets the dimension
             DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerGender = deliverableCrossCuttingMarkerManager
               .getDeliverableCrossCuttingMarkerId(deliverable.getId(), 1, this.getSelectedPhase().getId());
             DeliverableCrossCuttingMarker deliverableCrossCuttingMarkerYouth = deliverableCrossCuttingMarkerManager
@@ -464,17 +493,20 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
             if (deliverableCrossCuttingMarkerGender != null
               && deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel() != null) {
-              gender = this.getFieldMatches(true, pattern, this.getText("summaries.gender"),
+              gender = this.getFieldMatches(this.isTargeted(deliverableCrossCuttingMarkerGender), pattern,
+                this.getText("summaries.gender"),
                 deliverableCrossCuttingMarkerGender.getRepIndGenderYouthFocusLevel().getPowbName(), true);
             }
             if (deliverableCrossCuttingMarkerYouth != null
               && deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel() != null) {
-              youth = this.getFieldMatches(true, pattern, this.getText("summaries.youth"),
+              youth = this.getFieldMatches(this.isTargeted(deliverableCrossCuttingMarkerYouth), pattern,
+                this.getText("summaries.youth"),
                 deliverableCrossCuttingMarkerYouth.getRepIndGenderYouthFocusLevel().getPowbName(), true);
             }
             if (deliverableCrossCuttingMarkerCapDev != null
               && deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel() != null) {
-              capacityDevelopment = this.getFieldMatches(true, pattern, this.getText("summaries.capacityDevelopment"),
+              capacityDevelopment = this.getFieldMatches(this.isTargeted(deliverableCrossCuttingMarkerCapDev), pattern,
+                this.getText("summaries.capacityDevelopment"),
                 deliverableCrossCuttingMarkerCapDev.getRepIndGenderYouthFocusLevel().getPowbName(), true);
             }
 
@@ -540,8 +572,8 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
               }
 
               Long phaseID = projectInfo.getPhase().getId();
-              model.addRow(new Object[] {projectId, title, devId, devTitle, devType, devSubType, leadIns, leader,
-                projectUrl, devUrl, phaseID, gender, youth, capacityDevelopment});
+              this.addRowWithVisibleCells(model, new Object[] {projectId, title, devId, devTitle, devType, devSubType,
+                leadIns, leader, projectUrl, devUrl, phaseID, gender, youth, capacityDevelopment});
             }
           }
         }
@@ -598,8 +630,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
   private TypedTableModel getMasterTableModel(String center, String date) {
     // Initialization of Model
     TypedTableModel model = new TypedTableModel(
-      new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl", "phaseID"},
-      new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class, Long.class});
+      new String[] {"center", "date", "keys", "regionalAvailable", "hasW1W2Co", "imageUrl", "phaseID", "baseUrl"},
+      new Class[] {String.class, String.class, String.class, Boolean.class, Boolean.class, String.class, Long.class,
+        String.class});
     String keysString = "";
     int countKeys = 0;
     for (String key : keys) {
@@ -614,8 +647,10 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
     // set CIAT imgage URL from repo
     String imageUrl =
       this.getBaseUrl() + "/images/global/crps/" + this.getLoggedCrp().getAcronym().toLowerCase() + ".png";
-    model.addRow(
-      new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl, this.getSelectedPhase().getId()});
+    // baseUrl feeds the project, activity and deliverable links in the subreports (passed through the "*" mapping),
+    // so each environment links to its own instance instead of production
+    model.addRow(new Object[] {center, date, keysString, hasRegions, hasW1W2Co, imageUrl,
+      this.getSelectedPhase().getId(), this.getBaseUrl()});
     return model;
   }
 
@@ -629,9 +664,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
         Long.class, String.class, String.class, String.class},
       0);
     if (!keys.isEmpty()) {
-      // Pattern case insensitive
-      String patternString = "(?i)\\b(" + StringUtils.join(keys, "|") + ")\\b";
-      Pattern pattern = Pattern.compile(patternString);
+      Pattern pattern = this.buildKeysPattern();
       // date format for star and end dates
       SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM yyyy");
       // Decimal format for budgets
@@ -797,8 +830,9 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
 
             String projectUrl = project.getId().toString();
             Long phaseID = projectInfo.getPhase().getId();
-            model.addRow(new Object[] {projectId, title, summary, startDate, endDate, flagships, regions, insLeader,
-              leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID, gender, youth, capacityDevelopment});
+            this.addRowWithVisibleCells(model, new Object[] {projectId, title, summary, startDate, endDate, flagships,
+              regions, insLeader, leader, w1w2, w3, bilateral, center, projectUrl, w1w2Co, phaseID, gender, youth,
+              capacityDevelopment});
           }
         }
       }
@@ -823,7 +857,7 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       String match : matchesField) {
         if (field) {
           countMatches++;
-          crossCutting = crossCutting.replaceAll("\\b" + scoring + "\\b",
+          crossCutting = crossCutting.replaceAll(Pattern.quote(scoring),
             "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
         }
       }
@@ -847,10 +881,37 @@ public class SearchTermsSummaryAction extends BaseSummariesAction implements Sum
       matchesField.add(matcher.group(1));
       countMatches++;
     }
-    for (String match : matchesField) {
-      field = field.replaceAll("\\b" + match + "\\b", "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
+    return this.highlightMatches(field, matchesField);
+  }
+
+  /**
+   * Wraps every occurrence of the matched texts in the red highlight markup. Each match is quoted, so text holding
+   * regex metacharacters (parentheses, brackets, plus signs) is highlighted literally instead of failing.
+   *
+   * @param text the text to highlight
+   * @param matches the exact texts found by the keys pattern
+   * @return the text with the matches highlighted
+   */
+  private String highlightMatches(String text, Set<String> matches) {
+    String highlighted = text;
+    for (String match : matches) {
+      highlighted = highlighted.replaceAll("(?<!\\w)" + Pattern.quote(match) + "(?!\\w)",
+        "<font size=2 face='Segoe UI' color='#FF0000'><b>$0</b></font>");
     }
-    return field;
+    return highlighted;
+  }
+
+  /**
+   * A cross-cutting marker counts as a match only when its focus level states the deliverable targets the
+   * dimension. "0 - Not Targeted" and "Too early to tell / N/A" are still shown, but they do not match.
+   *
+   * @param marker the deliverable cross-cutting marker, never null at the call sites
+   * @return true when the marker level targets the dimension
+   */
+  private boolean isTargeted(DeliverableCrossCuttingMarker marker) {
+    return marker.getRepIndGenderYouthFocusLevel() != null
+      && marker.getRepIndGenderYouthFocusLevel().getId() != null
+      && !NOT_TARGETED_FOCUS_LEVEL_IDS.contains(marker.getRepIndGenderYouthFocusLevel().getId());
   }
 
 

@@ -5,10 +5,10 @@
 [#assign customJS = [
   "${baseUrlCdn}/global/js/fieldsValidation.js",
   "${baseUrlCdn}/global/js/usersManagement.js?20260925",
-  "${baseUrlMedia}/js/projects/projectPartners.js?20261020-1"
+  "${baseUrlMedia}/js/projects/projectPartners.js?20261120-1"
   ]
 /]
-[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20261104"] /]
+[#assign customCSS = ["${baseUrlMedia}/css/projects/projectPartners.css?20261120"] /]
 [#assign currentSection = "projects" /]
 [#assign currentStage = "partners" /]
 [#assign hideJustification = true /]
@@ -311,38 +311,53 @@
 [#import "/WEB-INF/global/macros/usersPopup.ftl" as usersForm/]
 [@usersForm.searchUsers/]
 
-[#-- Request partners --]
-<div class="modal fade" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+[#-- Request partners: the country office request dialog (Bootstrap modal, drawn with the .ptn-modal styles) --]
+<div class="modal fade ptn-modal" id="requestModal" tabindex="-1" role="dialog" aria-labelledby="requestModal-title" data-ptn-placeholder="[@s.text name="location.select.country" /]">
   <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="loading" style="display:none"></div>
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="exampleModalLabel"></h4>
+    <div class="modal-content ptn-modal__panel">
+      <div class="ptn-modal__head">
+        <div class="ptn-modal__heading">
+          <h2 class="ptn-modal__title" id="requestModal-title">[@s.text name="projectPartners.redesign.requestOffice.title" /]</h2>
+          <p class="ptn-modal__target" data-ptn-request-target></p>
+        </div>
+        <button type="button" class="ptn-modal__x" data-dismiss="modal" aria-label="[@s.text name="projectPartners.redesign.requestOffice.close" /]"></button>
       </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <input type="hidden" name="projectID" value="${(project.id)!}"/>
-            <input type="hidden" class="institution_id" name="institutionID" value="" />
-            [@customForm.select name="countriesID" i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true placeholder="Select a country..." className="countriesRequest"/]
-          </div>
-        </form>
 
-        <div class="messageBlock" style="display:none">
-          <div class="notyMessage">
-            <h1 class="text-center brand-success"><span class="glyphicon glyphicon-ok-sign"></span></h1>
-            <p  class="text-center col-md-12">[@s.text name="projectPartners.redesign.requestOffice.sent" /]</p>
-            <br />
-            [#-- Buttons --]
-            <div class="text-center">
-              <button class="btn btn-danger" type="button" data-dismiss="modal" aria-label="Close">[@s.text name="projectPartners.redesign.requestOffice.close" /]</button>
+      <form class="ptn-modal__form" novalidate>
+        <div class="ptn-modal__body">
+          <input type="hidden" name="projectID" value="${(project.id)!}"/>
+          <input type="hidden" class="institution_id" name="institutionID" value="" />
+          <div class="ptn-field ptn-modal__field" data-ptn-request-field>
+            <label class="ptn-label" id="requestModal-label" for="countriesID">[@s.text name="location.select.country" /]<span class="ptn-req" aria-hidden="true">*</span></label>
+            [@customForm.select name="countriesID" showTitle=false i18nkey="location.select.country" listName="countries" header=true keyFieldName="isoAlpha2" displayFieldName="name" value="id" multiple=true className="countriesRequest"/]
+            <p class="ptn-help" id="requestModal-help">[@s.text name="projectPartners.redesign.requestOffice.help" /]</p>
+            <p class="ptn-error" id="requestModal-error" role="alert" hidden>[@s.text name="projectPartners.redesign.requestOffice.empty" /]</p>
+          </div>
+          <div class="ptn-note ptn-note--danger" role="alert" data-ptn-request-failed hidden>
+            <span class="ptn-note__icon" aria-hidden="true">!</span>
+            <div class="ptn-note__body">
+              <p class="ptn-note__text">[@s.text name="projectPartners.redesign.requestOffice.failed" /]</p>
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="requestButton btn btn-primary"> <span class="glyphicon glyphicon-send"></span> [@s.text name="projectPartners.redesign.requestOffice.request" /]</button>
+        <div class="ptn-modal__foot">
+          <button type="button" class="ptn-btn ptn-btn--ghost" data-dismiss="modal">[@s.text name="projectPartners.redesign.requestOffice.close" /]</button>
+          <button type="submit" class="requestButton ptn-btn ptn-btn--primary">[@s.text name="projectPartners.redesign.requestOffice.request" /]</button>
+        </div>
+      </form>
+
+      <div class="messageBlock" hidden>
+        <div class="ptn-modal__body">
+          <div class="ptn-note ptn-note--ok" role="status">
+            <span class="ptn-note__icon" aria-hidden="true">&#10003;</span>
+            <div class="ptn-note__body">
+              <p class="ptn-note__text">[@s.text name="projectPartners.redesign.requestOffice.sent" /]</p>
+            </div>
+          </div>
+        </div>
+        <div class="ptn-modal__foot">
+          <button type="button" class="ptn-btn ptn-btn--ghost" data-dismiss="modal">[@s.text name="projectPartners.redesign.requestOffice.close" /]</button>
+        </div>
       </div>
     </div>
   </div>
@@ -525,10 +540,10 @@
                 <span data-ptn-country-note></span>
                 [#if editable]
                   [@s.text name="projectPartners.redesign.country.missing" /]
-                  [#if !action.isAiccra()]
-                    <a href="#" data-toggle="modal" data-target="#requestModal">[@s.text name="projectPartners.redesign.country.request" /]</a>
-                  [#else]
+                  [#if action.hasSpecificities('partner_requests_to_clarisa')]
                     [@s.text name="projectPartners.redesign.country.email" /] <a href="mailto:MARLOSupport@cgiar.org">MARLOSupport@cgiar.org</a>.
+                  [#else]
+                    <a href="#" data-toggle="modal" data-target="#requestModal">[@s.text name="projectPartners.redesign.country.request" /]</a>
                   [/#if]
                 [/#if]
               </span>

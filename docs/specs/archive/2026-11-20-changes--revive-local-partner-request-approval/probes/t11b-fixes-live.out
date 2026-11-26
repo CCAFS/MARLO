@@ -1,0 +1,16 @@
+CHG-PARTREQ-001-T11b fixes, live re-check 2026-11-20, HEAD efbf01c7c7 + uncommitted diff, throwaway worktree + copy aiccradb_partreq_test.
+Email safety: marlo.production=false; requester (copy user, renamed "Test Requester") email = the configured notification mailbox; external_user_mail empty.
+(i) Buttons, computed style at 1280x800
+
+partner-card Reject  class prq-btn--danger-outline  color rgb(176,58,24) on rgb(255,255,255) (about 6:1), border rgb(199,64,28) 1px (about 5:1), height 36px
+office-card Reject selected  same classes and colours
+Accept  prq-btn--primary rgb(2,119,162), height 36px (same size as Reject)
+Dialog confirm (reject): button.prq-btn--danger, solid (see t11b-fixes-dialog-reject-*.png)
+(ii) New partner request from an AICCRA project, no website: email_logs 18320, to = notification mailbox, no cc/bcc, succes_email=1
+  subject: [AICCRA] Partner verification - T11b Fix Probe Partner    body: "Acronym: TFP", "Website: Not provided"
+(iii) New office request in AICCRA (institution 1, KE and PE): email_logs 18321, to = notification mailbox, no cc/bcc, succes_email=1
+  subject: [AICCRA] Add office location (KE, PE) to Wageningen University and Research Centre
+(iv) Real 401: session cookie cleared after the reject dialog was filled, confirm clicked
+{"resp":["401 /rejectPartnerRequest.do","204 https://a.clarity.ms/collect"],"note":["prq-note prq-note--info prq-similar sameness | Similar institutions already in MARLO","prq-note prq-note--warning | T11b Fix Probe Partner Your session has expired. Please sign in again and repeat the action."],"hasCard":1}
+Falsifier (b): the 401 mapping returned to 'notAuthorized' in the served JS (restored afterwards):
+{"resp":["401 /rejectPartnerRequest.do","204 https://t.clarity.ms/collect"],"note":["prq-note prq-note--info prq-similar sameness | Similar institutions already in MARLO","prq-note prq-note--warning | T11b Fix Probe Partner You are not allowed to review these requests."],"hasCard":1}

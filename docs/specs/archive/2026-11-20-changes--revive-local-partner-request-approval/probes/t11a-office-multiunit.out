@@ -1,0 +1,12 @@
+# Branch code cad7c5d4e4, FN-008 one office email per requester per Global Unit
+== multiunit label=T11a multiunit db=aiccradb_partreq_test
+  institution 11912, countries free for it: ['7', '8', '9', '10']
+  accept batch: request 5227 (unit 45) + request 5228 (unit 47)
+  -> HTTP 200 {"outcome":"done","outcomes":{"5227":"done","5228":"done"},"success":true}
+  emails sent: 2
+    id=18293 subject=[AICCRA] Country office(s) verification - Approved T11A - T11a ui accept to=<notification mailbox>
+    id=18294 subject=[AICCRA] Country office(s) verification - Approved T11A - T11a ui accept to=<notification mailbox>
+  reject batch 5229 (unit 45) + 5230 (unit 47) -> HTTP 200 {"outcome":"done","outcomes":{"5229":"done","5230":"done"},"success":true}
+  emails sent: 2
+    id=18295 subject=[AICCRA] Country office(s) verification - Rejected T11A - T11a ui accept
+    id=18296 subject=[AICCRA] Country office(s) verification - Rejected T11A - T11a ui accept

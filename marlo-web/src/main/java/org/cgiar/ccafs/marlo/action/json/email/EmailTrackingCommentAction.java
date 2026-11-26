@@ -240,7 +240,7 @@ public class EmailTrackingCommentAction extends BaseAction {
 
     message.append(this.getText("email.tracking.comment.body", values));
     message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.getStarted"));
+    message.append(this.getText("email.getStarted", new String[] {this.getBaseUrl()}));
     message.append(this.getText("email.bye"));
 
     GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(globalUnitProject.getGlobalUnit().getId());

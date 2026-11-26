@@ -38,8 +38,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -56,7 +54,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "Table 1 - Progress towards SRF targets")
 public class ProgressTowards {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ProgressTowards.class);
   @Autowired
   private Environment env;
   private final UserManager userManager;
@@ -80,13 +77,8 @@ public class ProgressTowards {
       required = true) @PathVariable String CGIAREntity,
     @ApiParam(value = "${ProgressTowards.progresstowardsSRF.POST.param.progresstowardsSRF}",
       required = true) @Valid @RequestBody NewSrfProgressTowardsTargetDTO newSrfProgressTowardsTargetDTO) {
-    Long progressTowardsId = null;
-    try {
-      progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO, CGIAREntity,
-        this.getCurrentUser());
-    } catch (Exception e) {
-      LOG.error("Could not create the progress towards target", e);
-    }
+    Long progressTowardsId = this.progressTowardsItem.createProgressTowards(newSrfProgressTowardsTargetDTO,
+      CGIAREntity, this.getCurrentUser());
 
 
     ResponseEntity<Long> response = new ResponseEntity<Long>(progressTowardsId, HttpStatus.OK);

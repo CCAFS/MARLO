@@ -23,6 +23,8 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Inject;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 @Named
@@ -65,6 +67,18 @@ public class PartnerRequestMySQLDAO extends AbstractMarloDAO<PartnerRequest, Lon
     }
     return null;
 
+  }
+
+  @Override
+  public PartnerRequest findForUpdate(long id) {
+    Session session = this.getSessionFactory().getCurrentSession();
+    PartnerRequest partnerRequest = session.get(PartnerRequest.class, id);
+    if (partnerRequest == null) {
+      return null;
+    }
+    // The session may already hold a stale copy (OpenSessionInView): re-read it under the row lock.
+    session.refresh(partnerRequest, LockMode.PESSIMISTIC_WRITE);
+    return partnerRequest;
   }
 
   @Override

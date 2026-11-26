@@ -1,0 +1,9 @@
+# T08 falsifier 1 (static grep): one btn-success left in the macro
+grep -c on macro with btn-success present: 1
+after revert: 0
+
+# T08 falsifier 2 (390 px overflow): .prq-card { min-width: 600px } added to the stylesheet
+{"iw":390,"ih":844,"dpr":1,"scrollWidth":632,"clientWidth":390,"bodyScrollWidth":632,"overflow":true,"figtree600":true,"figtree400":true,"cards":3,"offices":1}
+
+# after revert (390 px; the browser had cached the falsified stylesheet, so the cache was refreshed first)
+{"iw":390,"ih":844,"dpr":1,"scrollWidth":390,"clientWidth":390,"bodyScrollWidth":390,"overflow":false,"figtree600":true,"figtree400":true,"cards":3,"offices":1}

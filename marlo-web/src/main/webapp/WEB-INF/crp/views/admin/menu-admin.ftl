@@ -11,7 +11,6 @@
     { 'slug': 'users',            'name': 'CRPAdmin.menu.users',                  'action': 'crpUsers',           'active': true, 'visible': true },
     [#-- { 'slug': 'deliverables',     'name': 'CRPAdmin.menu.deliverables',           'action': 'crpDeliverables',    'active': true }, --]
     { 'slug': 'targetUnits',      'name': 'CRPAdmin.menu.hrefTargetUnits',        'action': 'targetUnits',        'active': true, 'visible': true },
-    { 'slug': 'institutions',     'name': 'menu.superadmin.institutions',         'action': 'marloInstitutions',  'active': true, 'visible': true },
     { 'slug': 'crpPhases',        'name': 'CRPAdmin.menu.crpPhases',              'action': 'crpPhases',          'active': true, 'visible': true },
     { 'slug': 'homepageBannerManagement', 'name': 'menu.superadmin.homepageBannerManagement', 'action': 'homepageBannerManagement',   'active': true, 'visible': true }
   ]/]
