@@ -1,0 +1,12 @@
+# Branch code cad7c5d4e4, attacker = COPY user 22 (CRP-Admin of AICCRA, no SuperAdmin role anywhere)
+== nonsa label=T11a branch sec22  db=aiccradb_partreq_test  (non-superadmin: COPY user id 22; requests created by COPY user 2491)
+  fingerprint before             partner_requests=5135/27/19025/603/5184, institutions=10983/11907, institutions_locations=11305/12917, email_logs=18276
+  rows before: req 5175 active=1 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a branch sec22 reject'; req 5176 active=1 acepted=NULL institution=NULL modified=0 justification='NULL' name='T11a branch sec22 reject'; req 5177 active=1 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a branch sec22 edit'; req 5178 active=1 acepted=NULL institution=NULL modified=0 jus
+  POST /rejectPartnerRequest.do     -> HTTP 403  Location=  body=
+  POST /editPartnerRequest.do       -> HTTP 403  Location=  body=
+  POST /superadmin/addPartner.do    -> HTTP 200  Location=  body= <!doctype html> <html lang="en"> <head> <meta charset="UTF-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <meta name="viewport" content="width=device-width, initial-scale=1"> <link rel="shortcut icon" href="http://localhost:8080/marlo-web/global/im
+  POST /acceptOfficesRequest.do     -> HTTP 403  Location=  body=
+  POST /rejectOfficesRequest.do     -> HTTP 403  Location=  body=
+  fingerprint after              partner_requests=5135/27/19025/603/5184, institutions=10983/11907, institutions_locations=11305/12917, email_logs=18276
+  rows after:  req 5175 active=1 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a branch sec22 reject'; req 5176 active=1 acepted=NULL institution=NULL modified=0 justification='NULL' name='T11a branch sec22 reject'; req 5177 active=1 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a branch sec22 edit'; req 5178 active=1 acepted=NULL institution=NULL modified=0 jus
+  RESULT: NO ROW CHANGED

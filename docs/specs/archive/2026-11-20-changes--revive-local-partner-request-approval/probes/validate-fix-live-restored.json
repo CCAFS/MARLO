@@ -1,0 +1,26 @@
+[
+ {
+  "name": "FXS - FIX Script Scheme",
+  "linkP": "<p class=\"prq-card__link\">    <span>javascript:alert(1)</span>\n</p>",
+  "anchors": []
+ },
+ {
+  "name": "FXH - FIX Https Scheme",
+  "linkP": "<p class=\"prq-card__link\">    <a href=\"https://example.org\" target=\"_blank\" rel=\"noopener noreferrer\">https://example.org</a>\n</p>",
+  "anchors": [
+   "https://example.org"
+  ]
+ },
+ {
+  "name": "FXM - FIX Mixed Case",
+  "linkP": "<p class=\"prq-card__link\">    <a href=\"HTTPS://Example.org/Path?a=1&amp;b=2\" target=\"_blank\" rel=\"noopener noreferrer\">  HTTPS://Example.org/Path?a=1&amp;b=2</a>\n</p>",
+  "anchors": [
+   "HTTPS://Example.org/Path?a=1&b=2"
+  ]
+ },
+ {
+  "name": "ASMEGO - Asociaci\u00f3n de Mujeres Emprendedoras y Generadoras de Oportunidades",
+  "linkP": "<p class=\"prq-card__link\">    <span>javascript:alert(3)</span>\n</p>",
+  "anchors": []
+ }
+]

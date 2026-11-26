@@ -21,16 +21,22 @@ import org.cgiar.ccafs.marlo.data.manager.GlobalUnitManager;
 import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequestOutcome;
+import org.cgiar.ccafs.marlo.data.model.PartnerRequestOutcome.Status;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails.Email;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RejectPartnerRequestAction:
@@ -49,6 +55,12 @@ public class RejectPartnerRequestAction extends BaseAction {
    */
   private static final long serialVersionUID = 821788435993637711L;
 
+  private static final Logger LOG = LoggerFactory.getLogger(RejectPartnerRequestAction.class);
+
+  /** Status string of a rejection that was refused because the request was not an HTTP POST. */
+  static final String OUTCOME_NOT_ALLOWED = "notAllowed";
+  /** Status string of a rejection that ended in an exception. */
+  static final String OUTCOME_FAILED = "failed";
 
   // Managers
   private final PartnerRequestManager partnerRequestManager;
@@ -60,6 +72,8 @@ public class RejectPartnerRequestAction extends BaseAction {
   private boolean success;
   private final SendMailS sendMail;
   private boolean sendNotification;
+  // Result of the rejection as one status string (design section 4, JSON contract)
+  private String outcome;
 
   @Inject
   public RejectPartnerRequestAction(APConfig config, PartnerRequestManager partnerRequestManager,
@@ -70,36 +84,54 @@ public class RejectPartnerRequestAction extends BaseAction {
     this.globalUnitManager = globalUnitManager;
   }
 
+  /**
+   * Rejects a pending partner request. Only a POST is accepted; the manager records the decision and closes both
+   * rows in one transaction, and the requester is mailed afterwards, only when the superadmin asked for it and the
+   * rejection was applied.
+   */
   @Override
   public String execute() throws Exception {
+    if (!this.isHttpPost()) {
+      LOG.warn("rejectPartnerRequest refused for request {}: not an HTTP POST", this.loggableRequestId());
+      this.success = false;
+      this.outcome = OUTCOME_NOT_ALLOWED;
+      return SUCCESS;
+    }
+    if (OUTCOME_FAILED.equals(this.outcome)) {
+      // prepare() could not read the posted fields and already logged it: nothing is written.
+      this.success = false;
+      return SUCCESS;
+    }
+    PartnerRequestOutcome result;
     try {
-      PartnerRequest partnerRequest = this.partnerRequestManager.getPartnerRequestById(Long.parseLong(this.requestID));
-      partnerRequest.setAcepted(new Boolean(false));
-      partnerRequest.setRejectJustification(this.justification);
-      partnerRequest.setRejectedBy(this.getCurrentUser());
-      partnerRequest.setRejectedDate(new Date());
-      partnerRequest.setActive(false);
-      partnerRequest = this.partnerRequestManager.savePartnerRequest(partnerRequest);
-      // inactive the parent partnerRequest
-      PartnerRequest partnerRequestParent =
-        this.partnerRequestManager.getPartnerRequestById(partnerRequest.getPartnerRequest().getId());
-      partnerRequestParent.setActive(false);
-      this.partnerRequestManager.savePartnerRequest(partnerRequestParent);
-      // Send notification email
-      if (this.sendNotification) {
-        this.sendRejectedNotficationEmail(partnerRequest);
+      result = this.partnerRequestManager.rejectPartnerRequest(Long.parseLong(this.requestID), this.justification,
+        this.getCurrentUser());
+      if (result == null || result.getStatus() == null) {
+        throw new IllegalStateException("The manager returned no outcome");
       }
     } catch (Exception e) {
+      LOG.error("rejectPartnerRequest: could not reject partner request {}", this.loggableRequestId(), e);
       this.success = false;
+      this.outcome = OUTCOME_FAILED;
+      return SUCCESS;
     }
-
+    this.outcome = statusName(result.getStatus());
+    this.success = result.getStatus() == Status.DONE;
+    if (!this.success) {
+      LOG.warn("rejectPartnerRequest: request {} was not rejected: {}", this.loggableRequestId(), result.getStatus());
+    } else if (this.sendNotification) {
+      this.sendRejectedNotificationEmail(result);
+    }
     return SUCCESS;
-
   }
 
   @Override
   public String getJustification() {
     return this.justification;
+  }
+
+  public String getOutcome() {
+    return this.outcome;
   }
 
   public String getRequestID() {
@@ -113,6 +145,7 @@ public class RejectPartnerRequestAction extends BaseAction {
   @Override
   public void prepare() throws Exception {
     this.success = true;
+    this.outcome = null;
     try {
       Map<String, Parameter> parameters = this.getParameters();
       this.justification = StringUtils.trim(parameters.get(APConstants.JUSTIFICATION_REQUEST).getMultipleValues()[0]);
@@ -120,48 +153,72 @@ public class RejectPartnerRequestAction extends BaseAction {
       this.sendNotification = Boolean.valueOf(
         StringUtils.trim(parameters.get(APConstants.PARTNER_REQUEST_SEND_NOTIFICATION).getMultipleValues()[0]));
     } catch (Exception e) {
+      LOG.error("rejectPartnerRequest: could not read the posted fields of request {}", this.loggableRequestId(), e);
       this.success = false;
+      this.outcome = OUTCOME_FAILED;
     }
   }
 
-  private void sendRejectedNotficationEmail(PartnerRequest partnerRequest) {
-    String toEmail = "";
-    // CC Email: User who rejected the request
-    String ccEmail = this.getCurrentUser().getEmail();
-
-    // ToEmail: User who requested the partner or the mail received by CLARISA
-    if (partnerRequest.getExternalUserMail() != null) {
-      toEmail = partnerRequest.getExternalUserMail();
-      ccEmail = ccEmail + ", " + partnerRequest.getCreatedBy().getEmail();
-    } else {
-      toEmail = partnerRequest.getCreatedBy().getEmail();
-    }
-    // BBC: Our gmail notification email.
-    String bbcEmails = this.config.getEmailNotification();
-    // subject
-    String subject =
-      this.getText("marloRequestInstitution.reject.email.subject", new String[] {partnerRequest.getPartnerName()});
-    // Building the email message
-    StringBuilder message = new StringBuilder();
-    String userName = partnerRequest.getExternalUserName() == null ? partnerRequest.getCreatedBy().getFirstName()
-      : partnerRequest.getExternalUserName();
-    message.append(this.getText("email.dear", new String[] {userName}));
-    message.append(this.getText("marloRequestInstitution.reject.email",
-      new String[] {partnerRequest.getPartnerInfo(), this.justification}));
-    message.append(this.getText("email.support.noCrpAdmins"));
-    message.append(this.getText("email.bye"));
-    GlobalUnit globalUnit = globalUnitManager.getGlobalUnitById(partnerRequest.getCrp().getId());
-    if (this.validateEmailNotification(globalUnit)) {
-      this.sendMail.send(toEmail, ccEmail, bbcEmails, subject, message.toString(), null, null, null, true);
-    }
+  /**
+   * The posted request id for a log line: line breaks removed because the value is request input.
+   */
+  private String loggableRequestId() {
+    return this.requestID == null ? null : this.requestID.replaceAll("[\\r\\n]", " ");
   }
 
+  /**
+   * Tells the requester that the partner was rejected, with the justification. Recipients as they have always been:
+   * the requester (or the mail received from CLARISA) with the rejecting user in copy, plus the creator when the
+   * request is external, and our notification mailbox in blind copy. A failure is logged and never reaches the
+   * superadmin: the decision is already committed.
+   */
+  private void sendRejectedNotificationEmail(PartnerRequestOutcome result) {
+    try {
+      PartnerRequest request = result.getRequest();
+      GlobalUnit unit = null;
+      if (request != null && request.getCrp() != null) {
+        // The unit as the database holds it: the builder reads its lazy parameters, which a detached one cannot.
+        unit = this.globalUnitManager.getGlobalUnitById(request.getCrp().getId());
+      }
+      if (!PartnerRequestEmails.isEnabled(unit)) {
+        return;
+      }
+      User creator = request.getCreatedBy();
+      String creatorEmail = creator == null ? null : creator.getEmail();
+      User rejecter = this.getCurrentUser();
+      String ccEmail = rejecter == null ? null : rejecter.getEmail();
+      String toEmail;
+      String dearName;
+      if (StringUtils.isNotBlank(request.getExternalUserMail())) {
+        toEmail = request.getExternalUserMail();
+        if (StringUtils.isNotBlank(creatorEmail)) {
+          ccEmail = StringUtils.isBlank(ccEmail) ? creatorEmail : ccEmail + ", " + creatorEmail;
+        }
+        dearName = StringUtils.isNotBlank(request.getExternalUserName()) ? request.getExternalUserName()
+          : (creator == null ? null : creator.getFirstName());
+      } else {
+        toEmail = creatorEmail;
+        dearName = creator == null ? null : creator.getFirstName();
+      }
+      if (StringUtils.isBlank(toEmail)) {
+        LOG.warn("rejectPartnerRequest: request {} was rejected but has no requester to notify",
+          result.getRequestId());
+        return;
+      }
+      Email email = PartnerRequestEmails.partnerRejected(unit, this.getBaseUrlCdn(), dearName,
+        request.getPartnerName(), this.justification);
+      this.sendMail.send(toEmail, ccEmail, this.config.getEmailNotification(), email.getSubject(), email.getBody(),
+        null, null, null, true);
+    } catch (Exception e) {
+      LOG.error("rejectPartnerRequest: could not send the rejected email of partner request {}",
+        result.getRequestId(), e);
+    }
+  }
 
   @Override
   public void setJustification(String justification) {
     this.justification = justification;
   }
-
 
   public void setRequestID(String requestID) {
     this.requestID = requestID;
@@ -171,10 +228,21 @@ public class RejectPartnerRequestAction extends BaseAction {
     this.success = success;
   }
 
-  private boolean validateEmailNotification(GlobalUnit globalUnit) {
-    Boolean crpNotification = globalUnit.getCustomParameters().stream()
-      .filter(c -> c.getParameter().getKey().equalsIgnoreCase(APConstants.CRP_EMAIL_NOTIFICATIONS))
-      .allMatch(t -> (t.getValue() == null) ? true : t.getValue().equalsIgnoreCase("true"));
-    return crpNotification;
+  /**
+   * The status as the one string the JSON contract uses.
+   */
+  static String statusName(Status status) {
+    switch (status) {
+      case DONE:
+        return "done";
+      case ALREADY_HANDLED:
+        return "alreadyHandled";
+      case NOT_FOUND:
+        return "notFound";
+      case WRONG_KIND:
+        return "wrongKind";
+      default:
+        return OUTCOME_FAILED;
+    }
   }
 }

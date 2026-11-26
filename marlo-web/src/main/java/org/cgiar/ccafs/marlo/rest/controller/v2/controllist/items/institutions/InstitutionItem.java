@@ -136,6 +136,7 @@ public class InstitutionItem<T> {
         institution.setInstitutionType(institutionType);
         LocElement locElement = this.locElementManager.getLocElementById(partnerRequest.getLocElement().getId());
         institution.setAdded(new Date());
+        institution.setCreatedBy(user.getId());
 
         this.institutionManager.saveInstitution(institution);
         // Create institution location

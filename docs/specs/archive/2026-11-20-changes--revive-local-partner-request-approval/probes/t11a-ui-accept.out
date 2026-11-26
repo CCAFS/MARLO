@@ -1,0 +1,16 @@
+# T11a UI: accept from the CURRENT screen (real browser, Playwright), then replayed accept. Branch cad7c5d4e4, COPY DB.
+fixture: original=5197 copy=5198 (created by COPY user 2491, unit 45)
+institutions named before: 0
+  dialog shown: "confirm" dialog with message "Are you sure you want to accept this request?"
+  after accept: "{\"url\":\"/superadmin/marloInstitutions.do?edit=true&phaseID=431\",\"actionMessages\":[\"The request was processed.\",\"The Information was correctly saved. Please keep in mind that the fields highlighted below are missing or incorrect.\"],\"errors\":[]}"
+rows after accept: req 5197 active=0 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a ui accept'; req 5198 active=0 acepted=1 institution=11912 modified=0 justification='NULL' name='T11a ui accept'
+institution_id	name	acronym	type	website_link	locations
+11912	T11a ui accept	T11A	31	https://t11a.example	loc 78 hq=1
+id	acepted	acepted_date	institution_id	is_active
+5197	NULL	NULL	NULL	0
+5198	1	2026-11-19 17:55:34	11912	0
+--- replay of the same accept POST (same session, e.g. back button / double click):
+"{\"status\":200,\"url\":\"/superadmin/marloInstitutions.do?edit=true&phaseID=431\",\"messages\":\"This request was already handled. Nothing was changed.\"}"
+institutions named after replay: 1
+== email_logs since id 18283: 1 row(s)
+  id=18284 2026-11-19 17:55:34 | subject=[AICCRA] Partner verification - Approved T11a ui accept | to=<notification mailbox> | source=/superadmin/addPartner | succes_email=1

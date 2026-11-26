@@ -1,0 +1,9 @@
+# T11a UI: edit from the CURRENT screen (inline form + AJAX POST). Branch cad7c5d4e4, COPY DB. Fixture: original 5205, copy 5206 (type 31 is an old type, so the form starts at type=-1 and the user must pick one)
+"complete cards=12 offices=1"
+### Result
+{"log":[{"m":"POST","url":"/editPartnerRequest.do","body":"requestID=5206&acronym=T11ED&name=T11a+ui+edit+EDITED&type=39&country=FR&webPage=https%3A%2F%2Ft11a-edited.example&modificationJustification=T11a+edit+justification"},{"status":200,"resp":"{\"outcome\":\"failed\",\"success\":false}"}],"url":"/superadmin/marloInstitutions.do"}
+rows after: req 5205 active=1 acepted=NULL institution=NULL modified=NULL justification='NULL' name='T11a ui edit'; req 5206 active=1 acepted=NULL institution=NULL modified=0 justification='NULL' name='T11a ui edit'
+id	partner_name	acronym	web_page	institution_type_id	loc_element_id	is_modified	modification_justification
+5205	T11a ui edit	T11A	https://t11a.example	31	78	NULL	NULL
+5206	T11a ui edit	T11A	https://t11a.example	31	78	0	NULL
+== email_logs since id 18286: 0 row(s)

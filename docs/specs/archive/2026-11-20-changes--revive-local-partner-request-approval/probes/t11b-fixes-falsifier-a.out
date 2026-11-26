@@ -1,0 +1,6 @@
+Falsifier (a): website default removed (orDefault(website, notProvided) -> website), PartnerRequestEmailsTest only; restored afterwards
+Tests run: 8, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.105 sec <<< FAILURE!
+testNewPartnerAlertShowsNotProvidedForEmptyOptionalFields(org.cgiar.ccafs.marlo.utils.PartnerRequestEmailsTest)  Time elapsed: 0.003 sec  <<< FAILURE!
+	at org.cgiar.ccafs.marlo.utils.PartnerRequestEmailsTest.testNewPartnerAlertShowsNotProvidedForEmptyOptionalFields(PartnerRequestEmailsTest.java:130)
+Failed tests:   testNewPartnerAlertShowsNotProvidedForEmptyOptionalFields(org.cgiar.ccafs.marlo.utils.PartnerRequestEmailsTest): <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+Tests run: 8, Failures: 1, Errors: 0, Skipped: 0

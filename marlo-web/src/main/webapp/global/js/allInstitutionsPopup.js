@@ -1,4 +1,15 @@
 var $allInstitutionsTable;
+// Escapes a value for HTML text (DataTables writes every cell as HTML)
+function escapeCell(value) {
+  return $('<div></div>').text(value == null ? '' : value).html();
+}
+
+// A website is linked only when it is an http:// or https:// address; any other scheme (javascript:, data:) is not linked
+function isWebLink(value) {
+  var url = $.trim(String(value == null ? '' : value)).toLowerCase();
+  return url.indexOf('http://') === 0 || url.indexOf('https://') === 0;
+}
+
 $(document).ready(function() {
 
   $allInstitutionsTable = $('#allInstitutionsTable');
@@ -12,38 +23,46 @@ $(document).ready(function() {
       },
       columns: [
           {
-            data: "id"
+            data: "id",
+            render: function(data,type,full,meta) {
+              return type === 'display' ? escapeCell(data) : data;
+            }
           }, {
               data: "acronym",
               render: function(data,type,full,meta) {
-                return data || '<i><i>';
+                if (!data) {
+                  return '<i><i>';
+                }
+                return type === 'display' ? escapeCell(data) : data;
               }
           }, {
               data: "name",
               render: function(data,type,full,meta) {
-                var flags = '';
-                $.each(full.countries.split(','), function(i,flag) {
-                  flags += '<i title="' + flag + '" class="flag-icon flag-icon-' + $.trim(flag.toLowerCase()) + '"></i>';
+                var $cell = $('<div></div>');
+                $cell.append(document.createTextNode(data == null ? '' : data)).append(' <br/>  ');
+                $.each((full.countries || '').split(','), function(i,flag) {
+                  $cell.append($('<i></i>').attr('title', flag).addClass('flag-icon flag-icon-' + $.trim(flag.toLowerCase())));
                 });
-                // console.log(full.webPage);
-                var link = "";
-                if (full.webPage != undefined) {
-                  link = "<a style='margin: 20px;' href='"+full.webPage+"' target='_blank' data-toggle='tooltip' data-placement='top' title='"+full.webPage+"'>Web page</a>";
-                }else{
-                  link = "";
+                if (full.webPage != undefined && isWebLink(full.webPage)) {
+                  $cell.append($('<a></a>').css('margin', '20px')
+                      .attr({
+                        'href': $.trim(full.webPage),
+                        'target': '_blank',
+                        'rel': 'noopener noreferrer',
+                        'data-toggle': 'tooltip',
+                        'data-placement': 'top',
+                        'title': full.webPage
+                      }).text('Web page'));
                 }
-                // if(full.webPage == undefined){
-                //   console.log("Nullooooooooooooooooooooooooooooooooooooooooooo");
-                //   console.log(full.name);
-                // }
-                // console.log(full.webpage);
-                return data + " <br/>  " + flags +link;
+                return $cell.html();
               }
           }, {
-            data: "type"
+            data: "type",
+            render: function(data,type,full,meta) {
+              return type === 'display' ? escapeCell(data) : data;
+            }
           }
       ]
   });
 
 });
-

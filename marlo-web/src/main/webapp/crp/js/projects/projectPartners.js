@@ -252,44 +252,102 @@ function attachEvents() {
   $page.on('click', '.removeLocElement', removeLocElement);
 
   // Request country office
-  $('#requestModal').on(
-      'show.bs.modal',
-      function(event) {
-        $.noty.closeAll();
-        var partner = new PartnerObject($(event.relatedTarget).parents('.projectPartner'));
+  var $requestModal = $('#requestModal');
+  var requestOpener = null;
 
-        var $modal = $(this);
-        // Show Form & button
-        $modal.find('form, .requestButton').show();
-        $modal.find('.messageBlock').hide();
-        $modal.find('input.institution_id').val(partner.institutionId);
-        $modal.find('select.countriesRequest').val(null).trigger('select2:change');
-        $modal.find('select.countriesRequest').trigger('change');
-        $modal.find('.modal-title').html(
-            'Request Country office(s) <br /><small>(' + partner.institutionName + ')</small>');
+  // The field users work with is Select2's inline search box (the native select is hidden), so the
+  // label, help, error and invalid state are put on it. Select2 re-renders it, so this runs after its events.
+  function requestSyncField() {
+    var invalid = !$requestModal.find('#requestModal-error').prop('hidden');
+    $requestModal.find('.select2-search__field').attr({
+        'aria-labelledby': 'requestModal-label',
+        'aria-describedby': invalid ? 'requestModal-help requestModal-error' : 'requestModal-help',
+        'aria-invalid': invalid ? 'true' : 'false'
+    });
+  }
+
+  function requestFocusField() {
+    $requestModal.find('.select2-search__field').first().trigger('focus');
+  }
+
+  function requestShowError(show) {
+    $requestModal.find('[data-ptn-request-field]').toggleClass('is-invalid', show);
+    $requestModal.find('#requestModal-error').prop('hidden', !show);
+    requestSyncField();
+  }
+
+  $requestModal.find('select.countriesRequest').on('select2:select select2:unselect select2:open select2:close',
+      function() {
+        requestSyncField();
+        setTimeout(requestSyncField, 0);
       });
-  $('#requestModal button.requestButton').on('click', function() {
-    var $modal = $(this).parents('.modal');
-    if($modal.find('select.countriesRequest').val() == null) {
-      return
 
+  $requestModal.on('show.bs.modal', function(event) {
+    $.noty.closeAll();
+    requestOpener = event.relatedTarget || null;
+    var partner = new PartnerObject($(requestOpener).parents('.projectPartner'));
+
+    var $modal = $(this);
+    // Back to the form state, with no leftover message
+    $modal.find('form').prop('hidden', false);
+    $modal.find('.messageBlock').prop('hidden', true);
+    $modal.find('[data-ptn-request-failed]').prop('hidden', true);
+    $modal.find('button.requestButton').prop('disabled', false).removeAttr('aria-busy');
+    requestShowError(false);
+    $modal.find('input.institution_id').val(partner.institutionId);
+    $modal.find('select.countriesRequest').val(null).trigger('change');
+    $modal.find('[data-ptn-request-target]').text(partner.institutionName);
+    requestSyncField();
+  });
+  $requestModal.on('shown.bs.modal', function() {
+    // Bootstrap focuses the dialog itself; the field is where the user types
+    requestSyncField();
+    requestFocusField();
+  });
+  $requestModal.on('hidden.bs.modal', function() {
+    // Give focus back to the link that opened the dialog
+    if(requestOpener && $.contains(document.documentElement, requestOpener)) {
+      $(requestOpener).trigger('focus');
+    }
+    requestOpener = null;
+  });
+  $requestModal.on('change', 'select.countriesRequest', function() {
+    if($(this).val() != null && $(this).val().length > 0) {
+      requestShowError(false);
+    }
+  });
+  $requestModal.find('form').on('submit', function(event) {
+    event.preventDefault();
+    var $modal = $requestModal;
+    var $button = $modal.find('button.requestButton');
+    var selected = $modal.find('select.countriesRequest').val();
+    if(selected == null || selected.length === 0) {
+      requestShowError(true);
+      requestFocusField();
+      return;
+    }
+    if($button.prop('disabled')) {
+      return;
     }
 
+    $modal.find('[data-ptn-request-failed]').prop('hidden', true);
+    $button.prop('disabled', true).attr('aria-busy', 'true');
     $.ajax({
         url: baseURL + '/requestCountryOffice.do',
-        data: $('#requestModal form').serialize(),
-        beforeSend: function(data) {
-          $modal.find('.loading').fadeIn();
-        },
+        data: $modal.find('form').serialize(),
         success: function(data) {
-          if(data.sucess.result == "1") {
-            // Hide Form & button
-            $modal.find('form, .requestButton').hide();
-            $modal.find('.messageBlock').show();
+          if(data && data.sucess && data.sucess.result == "1") {
+            $modal.find('form').prop('hidden', true);
+            $modal.find('.messageBlock').prop('hidden', false).find('button').first().trigger('focus');
+          } else {
+            $modal.find('[data-ptn-request-failed]').prop('hidden', false);
           }
         },
+        error: function() {
+          $modal.find('[data-ptn-request-failed]').prop('hidden', false);
+        },
         complete: function() {
-          $modal.find('.loading').fadeOut();
+          $button.prop('disabled', false).removeAttr('aria-busy');
         }
     });
   });
@@ -1553,7 +1611,7 @@ function addSelect2() {
   $("form select.institutionsList").parent().find("span.select2-selection__placeholder").text(placeholderText);
 
   $('select.countriesRequest').select2({
-      placeholder: "Select a country(ies)",
+      placeholder: $('#requestModal').data('ptnPlaceholder') || "Select countries",
       templateResult: formatStateCountries,
       templateSelection: formatStateCountries,
       width: '100%'

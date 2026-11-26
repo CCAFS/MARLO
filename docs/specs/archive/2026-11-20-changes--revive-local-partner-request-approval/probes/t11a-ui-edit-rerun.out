@@ -1,0 +1,36 @@
+# T11a FN-007 re-run: edit from the CURRENT screen in a real browser, after the edit-field bridge (t07b.diff, uncommitted: marloInstitutions.js posts requestID / institutionName / institutionAcronym / institutionWebPage / institutionTypeID / countryID / justification, cache-buster ?20261119b). Code: HEAD 8dd63c27a9 + patch, throwaway worktree, COPY DB. Page JS initialised (jQuery.isReady) before every click. Fixtures are T11a rows created by COPY user 2491 (its email is <notification mailbox>).
+columns: id, name, acronym, web, type, country, is_modified, modification_justification, is_active, acepted
+(country 113 = Kenya, 78 = France; type 39 = NGO International (General), 31 = an old type the form cannot keep)
+setup note: an earlier fixture of the first run (copy 5226, created with no type for OPS-001) made the legacy macro fail with 'partner.institutionType evaluated to null' and cut the page after 15 cards; its type/country were set to 31/78 on the COPY. A request with no type cannot come from the request form.
+
+[1] edit a pending request: original 5239, copy 5240
+before:
+5239	T11a rerun edit	T11A	https://t11a.example	31	78	NULL	NULL	1	NULL
+5240	T11a rerun edit	T11A	https://t11a.example	31	78	0	NULL	1	NULL
+### Result
+{"callsSent":1,"calls":[{"method":"POST","url":"/editPartnerRequest.do","postData":"requestID=5240&institutionName=T11a+rerun+EDITED&institutionAcronym=T11RE&institutionWebPage=https%3A%2F%2Ft11a-rerun-edited.example&institutionTypeID=39&countryID=KE&justification=T11a+rerun+edit+justification","status":200,"response":"{\"outcome\":\"done\",\"success\":true}"}],"noty":[]}
+after:
+5239	T11a rerun edit	T11A	https://t11a.example	31	78	NULL	NULL	1	NULL
+5240	T11a rerun EDITED	T11RE	https://t11a-rerun-edited.example	39	113	1	T11a rerun edit justification	1	NULL
+[2] the page after the reload shows the edited values:
+"{\"title\":\"T11RE - T11a rerun EDITED\",\"info\":\"T11RE - T11a rerun EDITED (https://t11a-rerun-edited.example) Type: NGO International (General) Country: Kenya Requested Source: T11a probe T11a rerun edit CRP: AICCRA Requested By: <requester>\",\"editForm\":{\"name\":\"T11a rerun EDITED\",\"acronym\":\"T11RE\",\"webPage\":\"https://t11a-rerun-edited.example\",\"type\":\"39\",\"country\":\"KE\",\"justification\":\"T11a rerun edit justification\"}}"
+
+[3] edit of an already-handled request: original 5241, copy 5242. The review page is opened first (card on the page, JS initialised); then the request is rejected in another session (done here on the COPY with the SQL a reject writes: both rows inactive, copy acepted=0); then Save is clicked in the stale page
+before the click:
+5241	T11a rerun handled	T11A	https://t11a.example	31	78	NULL	NULL	0	NULL
+5242	T11a rerun handled	T11A	https://t11a.example	31	78	0	NULL	0	0
+### Result
+{"callsSent":1,"calls":[{"method":"POST","url":"/editPartnerRequest.do","postData":"requestID=5242&institutionName=T11a+late+EDIT&institutionAcronym=T11LT&institutionWebPage=https%3A%2F%2Ft11a-late.example&institutionTypeID=39&countryID=KE&justification=T11a+late+edit+justification","status":200,"response":"{\"outcome\":\"alreadyHandled\",\"success\":false}"}],"noty":[]}
+after:
+5241	T11a rerun handled	T11A	https://t11a.example	31	78	NULL	NULL	0	NULL
+5242	T11a rerun handled	T11A	https://t11a.example	31	78	0	NULL	0	0
+
+[4] missing justification: the client-side required check blocks the call. Fixture original 5243, copy 5244; justification left empty
+before:
+5243	T11a rerun blank	T11A	https://t11a.example	31	78	NULL	NULL	1	NULL
+5244	T11a rerun blank	T11A	https://t11a.example	31	78	0	NULL	1	NULL
+### Result
+{"callsSent":0,"calls":[],"noty":["The required(*) fields needs to be filled"]}
+after (unchanged):
+5243	T11a rerun blank	T11A	https://t11a.example	31	78	NULL	NULL	1	NULL
+5244	T11a rerun blank	T11A	https://t11a.example	31	78	0	NULL	1	NULL

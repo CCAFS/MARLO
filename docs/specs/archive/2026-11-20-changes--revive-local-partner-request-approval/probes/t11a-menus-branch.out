@@ -1,0 +1,16 @@
+# Branch code cad7c5d4e4 (admin namespace is /admin)
+== menus label=T11a db=aiccradb_partreq_test
+  [SA, AICCRA] GET /superadmin/marloInstitutions.do (no phaseID, no edit) -> HTTP 200, 206701 bytes, title='AICCRA |  \n\n\n\n\n\n\nMARLO Admin\n\n[Testing Environment]\n\n(AR - 2026)'
+      page lists pending partner requests: True ; has 'Institutions' menu link to marloInstitutions: True
+      menu links to marloInstitutions: ['/marlo-web/superadmin/marloInstitutions.do?edit=true&amp;phaseID=431']
+      menu entry text near it: ['Request Institutions', 'marloInstitutions-phase-431', 'Request Institutions              ', 'All Institutions & location offices\n          ']
+  [SA, AICCRA] GET /superadmin/marloInstitutions.do?phaseID=403 -> HTTP 200
+  [SA, AICCRA] GET /admin/AICCRA/marloInstitutions.do -> HTTP 302 Location=/marlo-web/superadmin/marloInstitutions.do
+  [CRP admin 22, AICCRA] GET /admin/AICCRA/marloInstitutions.do -> HTTP 200 Location= body='AICCRA | Permission denied! [Testing Environment] (AR - 2026) Admin AICCRA Curre'
+  [CRP admin 22, AICCRA] GET /superadmin/marloInstitutions.do -> HTTP 200 Location= body='AICCRA | Permission denied! [Testing Environment] (AR - 2026'
+  [CRP admin 22, AICCRA] GET /admin/AICCRA/management.do -> HTTP 200, CRP-admin menu rendered: True ; link to marloInstitutions: [] ; text 'Institutions' in menu: False
+  [CRP admin 22, AICCRA] GET /admin/AICCRA/ppaPartners.do -> HTTP 200, CRP-admin menu rendered: True ; link to marloInstitutions: [] ; text 'Institutions' in menu: False
+  [CRP admin 22, AICCRA] GET /admin/AICCRA/crpUsers.do -> HTTP 200, CRP-admin menu rendered: True ; link to marloInstitutions: [] ; text 'Institutions' in menu: False
+  [SA, CCAFS] GET /admin/CCAFS/management.do -> HTTP 200, CRP-admin menu rendered: False ; links to marloInstitutions: []
+  [SA, CCAFS] GET /admin/CCAFS/ppaPartners.do -> HTTP 200, CRP-admin menu rendered: True ; links to marloInstitutions: []
+  [SA, CCAFS] GET /admin/CCAFS/marloInstitutions.do -> HTTP 302 Location=/marlo-web/superadmin/marloInstitutions.do

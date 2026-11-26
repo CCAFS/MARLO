@@ -25,7 +25,12 @@ import org.cgiar.ccafs.marlo.data.manager.PartnerRequestManager;
 import org.cgiar.ccafs.marlo.data.manager.ProjectManager;
 import org.cgiar.ccafs.marlo.data.model.GlobalUnit;
 import org.cgiar.ccafs.marlo.data.model.PartnerRequest;
+import org.cgiar.ccafs.marlo.data.model.Project;
+import org.cgiar.ccafs.marlo.data.model.ProjectInfo;
+import org.cgiar.ccafs.marlo.data.model.User;
 import org.cgiar.ccafs.marlo.utils.APConfig;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails;
+import org.cgiar.ccafs.marlo.utils.PartnerRequestEmails.Email;
 import org.cgiar.ccafs.marlo.utils.SendMailS;
 
 import java.util.HashMap;
@@ -95,11 +100,10 @@ public class RequestCountryOfficeAction extends BaseAction {
 
 
       sucess = new HashMap<String, Object>();
-      String subject;
-      StringBuilder message = new StringBuilder();
 
       String countriesName = null;
       String countriesISO2Code = null;
+      String requestSource = this.buildRequestSource(this.projectTitle());
 
       for (String string : countries) {
         if (countriesName == null) {
@@ -112,8 +116,7 @@ public class RequestCountryOfficeAction extends BaseAction {
         // Add Partner Request information.
         PartnerRequest partnerRequest = new PartnerRequest();
         partnerRequest.setInstitution(institutionManager.getInstitutionById(institutionID));
-        partnerRequest.setRequestSource("Project: (" + projectID + ") - "
-          + projectManager.getProjectById(projectID).getProjecInfoPhase(this.getActualPhase()).getTitle());
+        partnerRequest.setRequestSource(requestSource);
         partnerRequest.setLocElement(locElementManager.getLocElementByISOCode((string)));
         partnerRequest.setOffice(true);
         partnerRequest.setCrp(loggedCrp);
@@ -122,37 +125,11 @@ public class RequestCountryOfficeAction extends BaseAction {
       }
       String institutionName = institutionManager.getInstitutionById(institutionID).getName();
 
-      subject = "[MARLO-" + this.getCrpSession().toUpperCase() + "] Add office location (" + countriesISO2Code + ") to "
-        + institutionName;
-      // Message content
-      message.append(this.getCurrentUser().getFirstName() + " " + this.getCurrentUser().getLastName() + " ");
-      message.append("(" + this.getCurrentUser().getEmail() + ") ");
-      message.append("is requesting to add the following office location(s): ");
-
-      message.append("</br></br>");
-      message.append("Project : P");
-      message.append(projectID);
-      message.append("</br></br>");
-      message.append("Partner Name: ");
-      message.append(institutionName);
-
-      message.append("</br></br>");
-      message.append("Countries : ");
-      message.append(countriesName);
-      message.append(".</br>");
-      message.append("</br>");
-
-
-      try {
-        if (this.validateEmailNotification()) {
-          sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), subject, message.toString(),
-            null, null, null, true);
-        }
-      } catch (Exception e) {
-        messageSent = false;
-      }
+      // The requests are saved; the alert is best effort and never fails them
+      this.sendNewOfficeAlert(institutionName, countriesName, countriesISO2Code);
       messageSent = true;
     } catch (Exception e) {
+      LOG.error("Could not save the office location requests of the project {}", projectID, e);
       messageSent = false;
     }
 
@@ -162,10 +139,19 @@ public class RequestCountryOfficeAction extends BaseAction {
       sucess.put("result", "0");
     }
 
-    LOG.info("The user {} send a message requesting add partners to the project {}", this.getCurrentUser().getEmail(),
-      projectID);
+    LOG.info("The user {} requested office locations for the project {}",
+      this.getCurrentUser() == null ? null : this.getCurrentUser().getId(), projectID);
     return SUCCESS;
 
+  }
+
+  /**
+   * The source text stored on each request: the unit's own word and letter for the requesting project ("Project P7 -
+   * Title", "Cluster C7 - Title"). This action runs without an i18n file, so the unit's texts are read directly.
+   */
+  String buildRequestSource(String title) {
+    return PartnerRequestEmails.unitTexts(loggedCrp).getText("marloRequestCreation.source.project",
+      new String[] {String.valueOf(projectID), title == null ? "" : title});
   }
 
   public Map<String, Object> getSucess() {
@@ -192,6 +178,36 @@ public class RequestCountryOfficeAction extends BaseAction {
     }
   }
 
+
+  /** The title of the project in the current phase; empty when the project or its phase info is missing. */
+  private String projectTitle() {
+    Project project = projectManager.getProjectById(projectID);
+    ProjectInfo info = project == null ? null : project.getProjecInfoPhase(this.getActualPhase());
+    return info == null || info.getTitle() == null ? "" : info.getTitle();
+  }
+
+  /**
+   * Tells the support mailbox that country offices were requested. The Global Unit is the one of the session, as the
+   * database holds it, and its switch decides whether anything is sent. A failure is logged and never reaches the
+   * requester: the requests are already saved.
+   */
+  private void sendNewOfficeAlert(String institutionName, String countriesName, String countriesIso) {
+    try {
+      if (!PartnerRequestEmails.isEnabled(loggedCrp)) {
+        return;
+      }
+      User requester = this.getCurrentUser();
+      String requesterName =
+        requester == null ? null : StringUtils.trim(requester.getFirstName() + " " + requester.getLastName());
+      String requesterEmail = requester == null ? null : requester.getEmail();
+      Email email = PartnerRequestEmails.newOffice(loggedCrp, this.getBaseUrlCdn(), requesterName, requesterEmail,
+        institutionName, countriesName, countriesIso, String.valueOf(projectID));
+      sendMail.send(config.getEmailNotification(), null, config.getEmailNotification(), email.getSubject(),
+        email.getBody(), null, null, null, true);
+    } catch (Exception e) {
+      LOG.error("Could not send the new office alert of the project {}", projectID, e);
+    }
+  }
 
   public void setSucess(Map<String, Object> sucess) {
     this.sucess = sucess;

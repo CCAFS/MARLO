@@ -1,0 +1,52 @@
+CHG-PARTREQ-001-T11b live measurements, 2026-11-20, HEAD efbf01c7c7, throwaway copy aiccradb_partreq_test.
+Measured before hiding any overlay (cookie banner and debug panel of the test environment are hidden only for the screenshot).
+Primary action: request page = form.prq-request__form submit; review page = first card Accept button.
+Outcome rules: pass / below fold / covered / not visible (impeccable-bridge first-visit pass). Consent banner: cookieconsent, visible in every capture.
+
+page      viewport  scrollWidth/clientWidth  overflowX  banner            primary action
+request   1280x800  1280/1280                false      visible y=729-800 pass (box 700,509 219x36)
+request   390x844   390/390                  false      visible y=654-844 pass (box 33,622 324x36; centre y=640 < banner 654)
+request   1366x768  1366/1366                false      visible y=697-768 pass
+request   375x667   375/375                  false      visible y=477-667 covered (DIV.cc-compliance): box y=622-658 under the banner
+review    1280x800  1280/1280                false      visible y=729-800 pass (box 1154,697 75x36)
+review    390x844   390/390                  false      visible y=654-844 below fold (y=1576): a card list, the first Accept is far down
+review    1366x768  1366/1366                false      visible y=697-768 covered (A.cc-btn cc-dismiss): box y=697-733 under the banner
+review    375x667   375/375                  false      visible y=477-667 below fold (y=1595)
+review empty states: 1280 and 390, no overflow (shots t11b-empty-*.png)
+
+Legacy markup (UI-001), rendered DOM with cards present: .list-group 0, .btn-success 0, .btn-danger 0 in both pages; glyphicon 1 in each
+document, the Admin cog of the shared site header (outside the two pages' markup); marloInstitutions.js has 0 hits for confirm( / alert( / noty.
+
+<title> (request page, from marloRequestCreation.pageTitle = "Request a new institution"):
+  "AICCRA | Request a new institution [Testing Environment] (AR - 2026)" in the project, AR, POWB and capdev popups.
+
+Request page, submit empty (UI-005): validation is server side. A POST reaches partnerSave.do, the page returns with three
+"Field required." errors under name, type and country, focus on the first invalid field; partner_requests rows before/after: 0 / 0 new.
+
+Opener regression:
+  project partners page (real click)      popup loads, hidden projectID=102076, valid submit stored 5293/5294 (original + copy), alert 18304
+  annual report externalPartnerships (real click, link synthesisID=245)   hidden synthesisID=245, stored 5306/5307, alert 18316
+  POWB plannedCollaborations: the page renders no popup link on the copy (past phase 405; editable=1 on the phase did not change it,
+     restored to 0). The link target was opened directly: /projects/AICCRA/partnerSave.do?powbSynthesisID=268&phaseID=405 -> hidden
+     powbSynthesisID=268, stored 5308/5309 (source "PowbSynthesis: (268) ..."), alert 18317
+  capdev: no capdev table on the copy and no link to click; link target opened directly with capdevID=1 -> hidden capdevID=1, stored
+     5310/5311, alert 18318
+  Each stored pair: original partner_request_id NULL, copy pointing to it, both active.
+
+FN-007 edit through the new UI: POST editPartnerRequest.do requestID=5294&institutionName=...&countryID=GH&justification=...
+  copy 5294 is_modified=1, name and country changed; original 5293 unchanged (name, country 113); the card shows "Edited" and the
+  Name / Country changes only, with the reason. (t11b-review-1280.png)
+FN-004 / FN-005: keyboard accept of 5294 -> institution 11918 and one headquarters location (institutions 10992 -> 10993, institutions_locations
+  11319 -> 11320), copy acepted=1 institution_id=11918, both rows inactive, accepted email 18309. Replayed POST (same requestID) -> note
+  "This request was already handled. Nothing was changed." and no new institution (still 10993).
+FN-006: reject with notify (keyboard) -> 5296 acepted=0, email 18308; reject with notify unchecked (5298) -> acepted=0, no new email_logs row (max id stayed 18319).
+FN-008 accept: batch 5299 (Kenya, already an office) + 5300 (Senegal): {"outcome":"done","outcomes":{"5299":"skippedExisting","5300":"done"}},
+  one new location (Senegal, non-HQ), email 18310 lists "Kenya, Senegal". Institution with no offices (11919): accepting Mali stored location 12936,
+  email 18312; the card gets no "Existing offices" chip without a reload (finding).
+FN-008 reject: requests 5303 + 5304 (unit AICCRA) + 5305 (unit AICCRA_III), notify on: 3 rows closed with the justification, two emails
+  (18314 for AICCRA, 18315 for AICCRA_III), both subjects prefixed [AICCRA].
+Expired session: cookie cleared after the page loaded, Reject confirmed -> the server answers 401 with an empty body; the page shows the warning note
+  "You are not allowed to review these requests." (outcome notAuthorized), card stays, dialog closed, row unchanged (5298 still pending).
+Similar institutions: a pending request named like an existing institution shows the "Similar institutions already in MARLO" note (t11b-similar-card-1280.png).
+
+Emails produced (email_logs, all to the notification mailbox only, cc and bcc empty, succes_email=1): 18304-18319, 16 rows.

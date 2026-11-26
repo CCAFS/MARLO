@@ -154,6 +154,9 @@ public final class APConstants {
   // CHG-OTP-LOGIN-001-T21: per-Global-Unit email domains excluded from that sign-in (comma-separated, empty = none).
   // Value MUST equal parameters.key
   public static final String OTP_EXCLUDED_EMAIL_DOMAINS = "system_otp_excluded_email_domains";
+  // CHG-PARTROUTE-001-T01: per-Global-Unit switch sending partner requests to CLARISA instead of MARLO (boolean,
+  // default false). Value MUST equal parameters.key
+  public static final String PARTNER_REQUESTS_TO_CLARISA = "partner_requests_to_clarisa";
   // CHG-PWD-SWITCH-001-FN-001: per-Global-Unit switch for password sign-in (boolean, default true). Value MUST equal
   // parameters.key
   public static final String PASSWORD_LOGIN_ACTIVE = "system_password_login_active";

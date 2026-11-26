@@ -1,0 +1,32 @@
+== accept-order label=T04 probe order 1 original=5141 copy=5142  db=aiccradb_partreq_test
+  counts before                institutions=10980, institutions_locations=11301, partner_requests=5093, pending_partner_copies=2
+  request A: start +0.0 ms  end +590.6 ms  HTTP 302
+  second connection: 208 polls; last poll with NO institution row: +517.5 ms; first poll WITH the row (institution=1, its location=1, request acepted=1): +523.1 ms
+  counts after                 institutions=10981, institutions_locations=11302, partner_requests=5093, pending_partner_copies=1
+  requests after: req 5141 active=0 acepted=NULL institution=NULL office=0; req 5142 active=0 acepted=1 institution=11905 office=0
+  -- accept-order: connections that ran a FOR UPDATE on the request row(s): 27990
+  17:02:26.973920  thr 27990  SET autocommit=0
+  17:02:26.979535  thr 27990  COMMIT
+  17:02:26.979864  thr 27990  SET autocommit=1
+  17:02:26.999407  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:27.003442  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:27.006706  thr 27990  select partnerreq0_.id as id1_200_, partnerreq0_.loc_element_id as loc ... comments as externa25_200_, partnerreq0_.external_user_name as externa26_200_ from partner_requests partnerreq0_ where is_active=1
+  17:02:27.451036  thr 27990  SET autocommit=0
+  17:02:27.451338  thr 27990  select partnerreq0_.id as id1_200_0_, partnerreq0_.loc_element_id as l ... 0_0_, partnerreq0_.external_user_name as externa26_200_0_ from partner_requests partnerreq0_ where partnerreq0_.id=5142 for update
+  17:02:27.452227  thr 27990  insert into institutions (institution_type_id, name, acronym, website_link, program_id, added) values (31, 'T04 probe order 1', 'T04', 'https://t04.example', NULL, '2026-11-19 17:02:27.451000')
+  17:02:27.453547  thr 27990  insert into institutions_locations (institution_id, loc_element_id, is_headquater, city) values (11905, 78, 1, NULL)
+  17:02:27.481813  thr 27990  update partner_requests set loc_element_id=78, modified_by=1082, rejec ... acepted_date=NULL, rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5141
+  17:02:27.482816  thr 27990  update partner_requests set loc_element_id=78, modified_by=1082, rejec ...  17:02:27.454000', rejected_date=NULL, external_user_mail=NULL, external_user_comments=NULL, external_user_name=NULL where id=5142
+  17:02:27.484446  thr 27990  COMMIT
+  17:02:27.484724  thr 27990  SET autocommit=1
+  17:02:27.486742  thr 27990  SET autocommit=0
+  17:02:27.510835  thr 27990  COMMIT
+  17:02:27.510946  thr 27990  SET autocommit=1
+== email-log label=T04 probe order 1: 1 row(s)
+  email_logs id=18271 date_email=2026-11-19 17:02:28 subject=[AICCRA] Partner verification - Approved T04 probe order 1 to=<notification mailbox> source=/superadmin/addPartner succes_email=1 message built at 17:02:27.541000 (local, from the Message-ID <207945719.8.1795125747541@ABCCO03178L>)
+  general_log 17:02:27.484446 thr 27990  COMMIT
+  general_log 17:02:27.510835 thr 27990  COMMIT
+  application log (UTC; the server clock is UTC-5, so 22:02:27.484Z = 17:02:27.484 local):
+  2026-11-19T22:02:27.542Z INFO  [http-nio-8080-exec-5] SendMailS: 
+  2026-11-19T22:02:28.590Z INFO  [Thread-8] ThreadSendMail: The message '(TESTING ENVIRONMENT) [AICCRA] Partner verification - Approved T04 probe order 1' was sent after 0 failed attempts
+  The row is polled by a second connection (208 polls, about 3 ms apart) and shows institution, headquarters location and accepted=1 together in the first poll that sees the row: there is no poll with a partial state.
