@@ -1149,6 +1149,14 @@ div#impactGraphic-fullscreen {
     content: none;
   }
 
+  /* A2-2752: the middle row's column holds the table. .dashboardBrowse clips with overflow: hidden (it keeps the
+     rounded corners), so a table wider than the panel lost its right-hand columns on a phone, with nothing to scroll:
+     Deliverables, OICRs & MELIAs and Innovations carry four columns. This column scrolls sideways instead */
+  .dashboardBrowse__panel .dataTables_wrapper > .row > .col-sm-12 {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* The search icon is a sibling of .dataTables_filter, prepended by
      dashboard.js, so the column is the flex context that pairs them. */
   .dashboardBrowse__panel .dataTables_wrapper > .row:first-child > [class^="col-"],
