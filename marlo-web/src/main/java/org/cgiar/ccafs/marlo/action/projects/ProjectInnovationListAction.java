@@ -40,6 +40,7 @@ import org.cgiar.ccafs.marlo.data.manager.ReportSynthesisFlagshipProgressInnovat
 import org.cgiar.ccafs.marlo.data.manager.SectionStatusManager;
 import org.cgiar.ccafs.marlo.data.model.FeedbackQAComment;
 import org.cgiar.ccafs.marlo.data.model.FeedbackStatusEnum;
+import org.cgiar.ccafs.marlo.data.model.Phase;
 import org.cgiar.ccafs.marlo.data.model.Project;
 import org.cgiar.ccafs.marlo.data.model.ProjectExpectedStudyInnovation;
 import org.cgiar.ccafs.marlo.data.model.ProjectInnovation;
@@ -62,6 +63,7 @@ import org.cgiar.ccafs.marlo.data.model.SectionStatus;
 import org.cgiar.ccafs.marlo.utils.APConfig;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -511,10 +513,37 @@ public class ProjectInnovationListAction extends BaseAction {
       }
     }
 
+    // After both loops on purpose: the attached info is cached on the innovation, and the classification above must
+    // only ever see the actual phase's info
+    for (ProjectInnovation oldInnovation : projectOldInnovations) {
+      this.attachLatestPastInfo(oldInnovation);
+    }
+
     if (this.hasSpecificities(this.feedbackModule())) {
       this.getCommentStatuses();
     }
 
+  }
+
+  /**
+   * A2-2749: a previous innovation often has no info in the actual phase, so its row showed no title and built the
+   * PDF summary link with an empty phaseID, which answered "not found". This attaches, for display only, the info of
+   * the most recent phase that is not later than the actual one, so the row and its PDF link use that phase. Nothing
+   * is saved. An innovation with no info in any such phase keeps none, and the list hides its PDF link.
+   */
+  private void attachLatestPastInfo(ProjectInnovation innovation) {
+    Phase actualPhase = this.getActualPhase();
+    if (innovation == null || actualPhase == null || actualPhase.getId() == null
+      || innovation.getProjectInnovationInfo(actualPhase) != null || innovation.getProjectInnovationInfos() == null) {
+      return;
+    }
+    innovation.getProjectInnovationInfos().stream()
+      .filter(info -> info != null && info.getPhase() != null && info.getPhase().getId() != null
+        && (info.getPhase().getYear() < actualPhase.getYear() || (info.getPhase().getYear() == actualPhase.getYear()
+          && info.getPhase().getId().longValue() < actualPhase.getId().longValue())))
+      .max(Comparator.comparingInt((ProjectInnovationInfo info) -> info.getPhase().getYear())
+        .thenComparingLong(info -> info.getPhase().getId().longValue()))
+      .ifPresent(innovation::setProjectInnovationInfo);
   }
 
   public void setAllYears(List<Integer> allYears) {
