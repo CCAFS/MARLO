@@ -23,6 +23,26 @@
       <filter-name>shiroFilter</filter-name>
       <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <!-- A2-2751: "no-store" on every dynamic response to a logged user, so Back cannot redisplay a protected page from
+       the browser's cache after logout. Declared here and not in WebAppInitializer: the struts2 filter below answers
+       the .do requests without continuing the chain, and filters added from WebAppInitializer only run after it.
+       It must stay after shiroFilter, which binds the Subject it reads -->
+  <filter>
+    <filter-name>noStoreForLoggedUserFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+        <param-name>targetBeanName</param-name>
+        <param-value>NoStoreForLoggedUserFilter</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+      <filter-name>noStoreForLoggedUserFilter</filter-name>
+      <url-pattern>*.do</url-pattern>
+      <url-pattern>*.json</url-pattern>
+      <url-pattern>/api/*</url-pattern>
+      <url-pattern>/</url-pattern>
+  </filter-mapping>
 
   <filter>
     <filter-name>hibernateSessionFilter</filter-name>
