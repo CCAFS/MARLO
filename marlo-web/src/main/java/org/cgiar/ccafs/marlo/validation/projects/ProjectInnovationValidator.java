@@ -247,7 +247,7 @@ public class ProjectInnovationValidator extends BaseValidator {
     this.updateGeneralInformationStatus(action, projectInnovation, innovationGeneralStart, saving);
     this.recordTabMissingCount(action, "general", innovationGeneralStart);
 
-    // A2-2613: without innovation_alliance_alignment_active (off for every global unit, see its migration) the form
+    // A2-2613: without innovation_alliance_alignment_active (off for AICCRA-FSRP IV only, see its migrations) the form
     // has no Alliance Alignment tab, so its fields are not validated; the stored answers stay untouched.
     if (!action.hasSpecificities(APConstants.INNOVATION_ALLIANCE_ALIGNMENT_ACTIVE)) {
       action.setInnovationAllianceAlignmentComplete(true);

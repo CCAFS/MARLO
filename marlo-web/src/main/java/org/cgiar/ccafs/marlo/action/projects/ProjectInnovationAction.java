@@ -2525,10 +2525,12 @@ public class ProjectInnovationAction extends BaseAction {
       if (this.isCoDevelopersEditable()) {
         this.saveCoDevelopers(innovationDB, phase);
       }
+      // A2-2613: the SDGs and Impact Areas are only posted where the Cross-cutting alignment tab shows. Elsewhere the
+      // form sends none, and saving would delete the stored ones, so they are kept as they are
       if (this.isCrossCuttingAlignmentActive()) {
         this.saveSDGs(innovationDB, phase);
+        this.saveImpactAreas(innovationDB, phase);
       }
-      this.saveImpactAreas(innovationDB, phase);
       // this.saveRegions(innovationDB, phase);
       this.saveReferences(innovationDB, phase);
       // this.saveReferenceUrls(innovationDB, phase);

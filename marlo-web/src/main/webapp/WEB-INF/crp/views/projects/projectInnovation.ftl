@@ -116,7 +116,8 @@
              AICCRA-FSRP IV only, see its migrations). On, the tab shows when an Alliance center is selected, as before. --]
         [#assign withoutAllianceAlignment = !action.hasSpecificities('innovation_alliance_alignment_active') /]
         [#-- A2-2613: the Cross-cutting alignment (One CGIAR Alignment) tab, behind
-             innovation_cross_cutting_alignment_active (on for every global unit); off, its stored data is kept --]
+             innovation_cross_cutting_alignment_active (off for AICCRA-FSRP IV only, see its migrations); off, its stored
+             data is kept --]
         [#assign withCrossCutting = (action.isCrossCuttingAlignmentActive())!true /]
         [#assign isAllianceContribution = false /]
         [#if !withoutAllianceAlignment]
