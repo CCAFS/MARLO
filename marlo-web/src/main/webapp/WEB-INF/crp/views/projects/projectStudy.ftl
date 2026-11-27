@@ -8,19 +8,22 @@
   "${baseUrlCdn}/crp/js/feedback/feedbackAutoImplementation.js?20260929",
   [#-- A2-2743: the shared form redesign script (save bar state) and what the OICR form adds --]
   "${baseUrlMedia}/js/projects/deliverables/deliverableFormRedesign.js?20261105",
-  "${baseUrlMedia}/js/projects/oicrForm.js?20261125-2"
+  "${baseUrlMedia}/js/projects/oicrForm.js?20261127"
   ]
 /]
 [#assign customCSS = [
   "${baseUrlMedia}/css/projects/projectStudies.css?20230106",
   [#-- A2-2743: the deliverable form redesign (.dlf) plus what the OICR form adds (.ocf) --]
   "${baseUrl}/crp/css/projects/deliverableForm.css?20261105-1",
-  "${baseUrlMedia}/css/projects/oicrForm.css?20261125-8"
+  "${baseUrlMedia}/css/projects/oicrForm.css?20261127-2"
   ]
 /]
 
 [#assign currentSection = "projects" /]
 [#assign currentStage = "projectStudies" /]
+[#-- forms.ftl draws the redesigned list empty states ("Not provided" read-only) when this is set, as in the
+     deliverable and innovation forms --]
+[#global deliverableFormRedesign = true /]
 [#-- The cluster is named in the form header instead of the shared top quote --]
 [#assign hideTopQuote = true /]
 [#-- "project" / "cluster" / "team", per global unit --]
@@ -135,7 +138,11 @@
               [#-- Tab content --]
               <div class="tab-content">
                 <div id="study-generalInformation" role="tabpanel" class="tab-pane fade [#if indexTab==1 || indexTab==0]in active[/#if]">
-                  [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0 scoreInHeader=isOicr /]
+                  [#if isOicr]
+                    [@studies.oicrGeneral element=(expectedStudy)!{} name="expectedStudy" /]
+                  [#else]
+                    [@studies.studyMacro element=(expectedStudy)!{} name="expectedStudy" index=0 /]
+                  [/#if]
                 </div>
                 <div id="study-alliance" role="tabpanel" class="tab-pane fade [#if indexTab==2]in active[/#if]">
                   [@studies.studyAlliance element=(expectedStudy)!{} name="expectedStudy" index=0 /]

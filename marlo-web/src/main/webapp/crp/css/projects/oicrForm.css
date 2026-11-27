@@ -399,6 +399,400 @@
 .dlf .ocf-issues:hover,
 .dlf .ocf-issues:focus { background: #FBEACB; color: var(--dlf-warn); }
 
+/* ══════════ General Information ══════════ */
+
+.dlf .ocf-general { margin: 0; }
+/* The design's spacing, card by card (the .dlf-card default is 18px) */
+.dlf .ocf-general #sec-outcome { gap: 16px; }
+.dlf .ocf-general #sec-maturity,
+.dlf .ocf-general #sec-ind,
+.dlf .ocf-general #sec-refs,
+.dlf .ocf-general #sec-quant { gap: 12px; }
+.dlf .ocf-general #sec-contrib,
+.dlf .ocf-general #sec-innov,
+.dlf .ocf-general #sec-cc { gap: 14px; }
+.dlf .ocf-general #sec-elab { gap: 8px; }
+.dlf .ocf-general #sec-occ { gap: 10px; }
+.dlf .ocf-general .dlf-card > .ocf-hint,
+.dlf .ocf-general .dlf-card > .ocf-more { margin: 0; }
+/* A select a redrawn control stands for: it keeps posting and firing change, out of sight */
+.dlf .ocf-hiddenField { display: none !important; }
+
+/* A field's label line: label, "*", "(optional)", the "What to cover" toggle, then the feedback bubble at the end */
+.dlf .ocf-general .ocf-label { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; min-height: 22px; margin: 0 0 6px; }
+.dlf .ocf-general .dlf-card > .ocf-label { margin: 0; }
+.dlf .ocf-general .ocf-label .ocf-label__text,
+.dlf .ocf-general .ocf-label .dlf-card__title label { display: inline; margin: 0; font: 600 13px/1.4 Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .ocf-general .ocf-label .dlf-card__title label { font: inherit; }
+.dlf .ocf-general .ocf-label__req { font: 700 13px Figtree, sans-serif; color: var(--dlf-required); }
+.dlf .ocf-general .ocf-label--heading .ocf-label__req,
+.dlf .ocf-general .ocf-label--heading .requiredTag { margin: 0; font: 700 14px Figtree, sans-serif; color: var(--dlf-required); }
+.dlf .ocf-general .ocf-label__opt { font: 400 13px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .ocf-general .ocf-label__meta { margin-left: auto; font: 500 12.5px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .ocf-general .ocf-label__link { margin-left: auto; font: 600 12.5px Figtree, sans-serif; color: var(--dlf-brand); }
+.dlf .ocf-general .ocf-label > .commentNumberContainer { position: static; flex: none; margin: 0 0 0 auto; }
+.dlf .ocf-general .ocf-label > .ocf-label__meta ~ .commentNumberContainer,
+.dlf .ocf-general .ocf-label > .ocf-label__link ~ .commentNumberContainer { margin-left: 4px; }
+.dlf .ocf-general .ocf-label > .commentNumberContainer .qaComment { position: static; margin: 0; }
+.dlf .ocf-general .ocf-more__toggle {
+  height: 22px;
+  margin: 0;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  font: 600 12px Figtree, sans-serif;
+  color: var(--dlf-brand);
+  cursor: pointer;
+}
+.dlf .ocf-general .ocf-more__toggle:hover,
+.dlf .ocf-general .ocf-more__toggle:focus-visible { background: var(--dlf-info-hover); }
+.dlf .ocf-general .ocf-hint { margin: 0 0 8px; font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-muted); text-wrap: pretty; }
+.dlf .ocf-general .ocf-hint a { color: var(--dlf-brand); }
+.dlf .ocf-general .ocf-hint--after { margin: 8px 0 0; }
+.dlf .ocf-general .ocf-more {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #F7F9FB;
+  font: 400 12.5px/1.6 Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  text-wrap: pretty;
+}
+.dlf .ocf-general .ocf-more[hidden] { display: none; }
+.dlf .ocf-general .ocf-more ul { margin: 0; padding-left: 18px; }
+.dlf .ocf-general .ocf-question { margin: 0; font: 400 13px/1.5 Figtree, sans-serif; color: var(--dlf-ink); text-wrap: pretty; }
+/* The word counter sits 6px under its control, as the design's */
+.dlf .ocf-general .charCount { margin: 6px 0 0 !important; font-size: 12.5px !important; }
+/* Empty customForm wrappers take no room */
+.dlf .ocf-general .feedback-flex-items:empty { display: none; }
+
+/* Level of maturity: one radio card per level */
+.dlf .ocf-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dlf .ocf-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1.5px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+.dlf .ocf-card:hover { border-color: var(--dlf-line-strong); }
+.dlf .ocf-card.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); }
+.dlf .ocf-card:disabled { cursor: default; }
+.dlf .ocf-card:disabled:not(.is-on) { opacity: .7; }
+.dlf .ocf-card__head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.dlf .ocf-card__ring {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dlf .ocf-card.is-on .ocf-card__ring { border-color: var(--dlf-brand); }
+.dlf .ocf-card.is-on .ocf-card__ring::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--dlf-brand); }
+.dlf .ocf-card__label { font: 600 14px Figtree, sans-serif; color: var(--dlf-ink); }
+.dlf .ocf-card__sphere { font: 500 12px Figtree, sans-serif; color: var(--dlf-muted); }
+.dlf .ocf-card__text { font: 400 12.5px/1.5 Figtree, sans-serif; color: var(--dlf-ink-soft); text-wrap: pretty; }
+.dlf .ocf-card__ev { font: 400 12px/1.45 Figtree, sans-serif; color: var(--dlf-muted); text-wrap: pretty; }
+
+/* Geographic scope: one checkbox card per scope (the innovation and deliverable radio cards, with a box) */
+.dlf .ocf-geo { display: flex; flex-direction: column; gap: 18px; }
+.dlf .ocf-geo .row { margin: 0; }
+.dlf .ocf-geo .regionalBlock,
+.dlf .ocf-geo .nationalBlock { margin: 0; }
+/* Regions: the mockup has no empty chip inside the box; the "+ Add region…" prompt is the empty state.
+   Read-only keeps the muted "Not provided" (deliverableForm.css drops the box there). */
+.dlf .ocf-geo .regionalBlock .panel-body > p.emptyText { display: none; }
+.dlf.is-readonly .ocf-geo .regionalBlock .panel-body > p.emptyText:not([hidden]) { display: block; }
+.dlf .ocf-scopes { display: flex; flex-wrap: wrap; gap: 8px; }
+.dlf .ocf-scope {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  margin: 0;
+  padding: 0 14px 0 11px;
+  border: 1px solid var(--dlf-line-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: 500 13.5px Figtree, sans-serif;
+  color: var(--dlf-ink);
+  cursor: pointer;
+}
+.dlf .ocf-scope:hover { border-color: var(--dlf-brand); }
+.dlf .ocf-scope:focus-visible { outline: 0; box-shadow: var(--dlf-focus-ring); }
+.dlf .ocf-scope__box {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--dlf-subtle);
+  border-radius: 4px;
+  background: #fff;
+}
+.dlf .ocf-scope.is-on { border-color: var(--dlf-brand); background: var(--dlf-info-bg); color: var(--dlf-brand-dark); }
+.dlf .ocf-scope.is-on .ocf-scope__box {
+  border-color: var(--dlf-brand);
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.4 8.4 6.6 11.4 12.6 4.6' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+}
+.dlf .ocf-scope:disabled { cursor: default; }
+.dlf .ocf-scope.is-locked { opacity: .5; }
+.dlf .ocf-scope.is-locked:hover { border-color: var(--dlf-line-strong); }
+.dlf.is-readonly .ocf-scope:disabled:hover { border-color: var(--dlf-line-strong); }
+.dlf.is-readonly .ocf-scope.is-on:disabled:hover { border-color: var(--dlf-brand); }
+.dlf .ocf-general .ocf-scopes__note { margin: 8px 0 0; font-size: 12px; font-weight: 500; }
+/* The countries: projectStudies.css draws a 170px box with its own "Select a Country(s)" text and hangs the chosen
+   countries under it, absolutely and wider than it (a horizontal page scroll). deliverableForm.css draws them inside
+   a full-width box instead, as the deliverable and innovation forms do; projectStudy.js's bottom margin goes too. */
+.dlf .ocf-general .nationalBlock .select2-container { width: 100% !important; }
+.dlf .ocf-general .nationalBlock div.selectList span.selection { height: auto; }
+.dlf .ocf-general .nationalBlock div.selectList span.selection span.select2-selection { width: 100% !important; margin-bottom: 0 !important; }
+.dlf .ocf-general .nationalBlock div.selectList span.selection span.select2-selection::before { display: none; content: none; }
+.dlf .ocf-general .nationalBlock div.selectList span.selection span.select2-selection ul { position: static !important; width: auto !important; }
+
+/* Missing fields on the redrawn controls (oicrForm.js copies the hidden field's error) */
+.dlf .ocf-cards.is-missing .ocf-card,
+.dlf .ocf-scopes.is-missing .ocf-scope { border-color: #D48A6A; }
+.dlf .ocf-seg.is-missing { box-shadow: inset 0 0 0 1px #D48A6A; }
+
+/* Key contributors: centers and external partners side by side */
+.dlf .ocf-twoCols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+/* The two columns share their rows (label, hint, list, note) so both lists start, and both notes sit, at the same
+   height whatever each hint's length. The notes take the last row, at the bottom of the section. */
+.dlf .ocf-contrib { grid-template-rows: auto auto 1fr auto; row-gap: 0; }
+.dlf .ocf-contrib > .dlf-field { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; margin: 0; }
+.dlf .ocf-contrib > .dlf-field > .ocf-label { grid-row: 1; }
+.dlf .ocf-contrib > .dlf-field > .ocf-hint:not(.ocf-contrib__note) { grid-row: 2; }
+.dlf .ocf-contrib > .dlf-field > .feedback-flex-items,
+.dlf .ocf-contrib > .dlf-field > .fieldReference { grid-row: 3; align-self: start; min-width: 0; }
+.dlf .ocf-contrib > .dlf-field > .ocf-contrib__note { grid-row: 4; align-self: end; }
+
+/* showTitle=false still prints an empty panel-head (forms.ftl), and deliverableForm.css gives it an 8px margin:
+   drop it so a list sits right under its hint */
+.dlf .ocf-general .elementsListComponent .panel-head:empty { display: none; }
+/* List rows (contributors, innovations, indicators, regions): the design's grey x */
+/* The 26px x is centred on the 20px first line (-3px each side) instead of setting the row's height, so a one-line
+   row reads centred and a wrapped one keeps the x beside its first line. */
+.dlf .ocf-general .panel.tertiary .panel-body > ul.list > li.relationElement > .removeElement { margin: -3px 0; }
+.dlf .ocf-general .elementsListComponent li.relationElement > .removeElement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 3l8 8M11 3l-8 8' stroke='%236B7280' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* Link to Performance Indicators: the component as a tag before the code */
+/* hasMilestones is a fixed hidden "true", with no room or bubble of its own */
+.dlf #sec-ind > .input,
+.dlf #sec-ind > .feedback-flex-items,
+.dlf #sec-ind > .commentNumberContainer { display: none; }
+.dlf .ocf-indicators .panel.tertiary .panel-body > ul.list > li.relationElement { align-items: flex-start; }
+.dlf .ocf-indTag {
+  order: 0;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  height: 20px;
+  margin-top: 1px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--dlf-chip);
+  font: 700 11px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+}
+.dlf .ocf-indTag--pdo { background: #E8F4F9; color: #015C7D; }
+.dlf .ocf-indTag--pd { background: #F4EEF8; color: #6B3E8C; }
+.dlf .ocf-indTag--csa { background: #E3F1E3; color: #2E6B2F; }
+.dlf .ocf-indicators li.relationElement .elementName { font-weight: 400 !important; font-size: 13px !important; line-height: 1.45 !important; }
+.dlf .ocf-indicators li.relationElement .elementName b { font-weight: 700; }
+
+/* Cross-cutting markers: a small segmented control per marker */
+.dlf .ocf-markers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; }
+.dlf .ocf-marker { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.dlf .ocf-general .ocf-marker .ocf-label { margin: 0; }
+.dlf .ocf-seg--sm .ocf-seg__opt {
+  height: 28px !important;
+  padding: 0 10px !important;
+  border: 0;
+  background: none;
+  font-size: 12.5px !important;
+  white-space: nowrap;
+}
+.dlf .ocf-seg--sm .ocf-seg__opt:disabled { cursor: default; }
+.dlf .ocf-seg--sm .ocf-seg__opt:disabled:not(.is-on) { color: var(--dlf-subtle); }
+.dlf .ocf-seg--sm .ocf-seg__opt.is-on { background: #fff; font-weight: 600; color: var(--dlf-ink); box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+
+/* Other cross-cutting dimensions: the Yes / No / N/A radios drawn as a segmented control */
+.dlf .ocf-radioSeg { display: inline-flex; align-items: center; align-self: flex-start; gap: 2px; padding: 3px; border-radius: 9px; background: var(--dlf-chip); }
+.dlf .ocf-radioSeg .radioFlat { position: relative; margin: 0; padding: 0; }
+.dlf .ocf-radioSeg .radioFlat .radio-input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.dlf .ocf-radioSeg .radioFlat .radio-label {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  margin: 0;
+  padding: 0 14px;
+  border-radius: 6px;
+  font: 500 13px Figtree, sans-serif;
+  color: var(--dlf-ink-soft);
+  cursor: pointer;
+}
+.dlf .ocf-radioSeg .radioFlat .radio-label::before,
+.dlf .ocf-radioSeg .radioFlat .radio-label::after { display: none; content: none; }
+.dlf .ocf-radioSeg .radioFlat .radio-input:checked + .radio-label { background: #fff; font-weight: 600; color: var(--dlf-ink); box-shadow: 0 1px 3px rgba(31, 42, 55, .12); }
+.dlf .ocf-radioSeg .radioFlat .radio-input:focus-visible + .radio-label { box-shadow: var(--dlf-focus-ring); }
+.dlf .ocf-radioSeg .radioFlat .radio-input:disabled + .radio-label { cursor: default; }
+.dlf .ocf-radioSeg .commentNumberContainer { display: none; }
+.dlf .ocf-general .otherCrossCuttingOptionsComponent { padding-top: 4px; }
+
+/* Add a row: the design's dashed button (references, quantifications) */
+.dlf .ocf-addRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  margin: 12px 0 0;
+  border: 1.5px dashed #9CC9DC;
+  border-radius: 10px;
+  background: #F7FBFD;
+  font: 600 13px Figtree, sans-serif;
+  color: var(--dlf-brand-dark);
+  cursor: pointer;
+}
+.dlf .ocf-addRow:hover,
+.dlf .ocf-addRow:focus { border-color: var(--dlf-brand); background: var(--dlf-info-hover); color: var(--dlf-brand-dark); }
+
+/* Remove a row: the design's red trash (references, quantifications); list rows keep deliverableForm.css's x */
+.dlf .ocf-general .multiInput.references > .removeElement.removeIcon,
+.dlf .ocf-general .quantification .removeElement.removeIcon {
+  position: static;
+  float: none;
+  flex: none;
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0;
+  padding: 0;
+  border-radius: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 4.4h10M6.4 4.4V3h3.2v1.4M4.4 4.4l.6 8.6h6l.6-8.6' stroke='%23B03028' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;
+  cursor: pointer;
+}
+.dlf .ocf-general .multiInput.references > .removeElement.removeIcon:hover,
+.dlf .ocf-general .quantification .removeElement.removeIcon:hover { background-color: var(--dlf-danger-bg); }
+
+/* References: the legacy free-text field shows only for old records that still have one */
+.dlf .ocf-general .ocf-refs__legacy:not(:has(textarea, p)) { display: none; }
+.dlf .ocf-general .ocf-refs__legacy > .commentNumberContainer { display: none; }
+/* One grid row per reference (#, reference, link, external author, remove) under the column heads */
+.dlf .ocf-refs .referenceList { border: 1px solid var(--dlf-line); border-radius: 10px; background: #fff; overflow: hidden; }
+.dlf .ocf-refs__head,
+.dlf .ocf-refs .multiInput.references { display: grid; grid-template-columns: 26px minmax(0, 1.6fr) minmax(0, 1fr) 92px 28px; gap: 10px; }
+.dlf .ocf-refs__head {
+  align-items: center;
+  height: 34px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--dlf-line);
+  background: #FBFCFD;
+  font: 600 11px Figtree, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--dlf-muted);
+}
+.dlf .ocf-refs__head::before { content: "#"; }
+.dlf .ocf-refs__head > span:nth-child(3) { text-align: center; }
+.dlf .ocf-refs__head .ocf-label__req { letter-spacing: 0; color: var(--dlf-required); }
+.dlf .ocf-refs .multiInput.references {
+  align-items: start;
+  margin: 0;
+  padding: 10px;
+  border: 0;
+  border-bottom: 1px solid #F1F4F7;
+  border-radius: 0;
+  background: #fff;
+}
+.dlf .ocf-refs .multiInput.references:last-child { border-bottom: 0; }
+.dlf .ocf-refs .multiInput.references > .pull-left { float: none; width: auto !important; margin: 0 !important; display: flex; align-items: flex-start; gap: 4px; min-width: 0; }
+.dlf .ocf-refs .multiInput.references > .pull-left:first-of-type { padding-top: 9px; font: 600 13px Figtree, sans-serif; color: var(--dlf-ink-soft); font-variant-numeric: tabular-nums; }
+.dlf .ocf-refs .multiInput.references > .pull-left:first-of-type strong { font-weight: 600; }
+.dlf .ocf-refs .multiInput.references .fieldReference { flex: 1; min-width: 0; margin: 0; }
+.dlf .ocf-refs .multiInput.references .commentNumberContainer { display: none; }
+.dlf .ocf-refs .multiInput.references input.form-control { height: 36px; font-size: 13px; }
+.dlf .ocf-refs .multiInput.references > .pull-left:nth-of-type(4) { justify-content: center; padding-top: 8px; }
+.dlf .ocf-refs .multiInput.references > .removeElement { margin-top: 4px; justify-self: center; }
+.dlf .ocf-refs .multiInput.references > .clearfix { display: none; }
+/* External author: the design's 20px checkbox, a white tick on the brand when checked */
+.dlf .ocf-refs .inputsFlat { position: relative; margin: 0; }
+.dlf .ocf-refs .inputsFlat .checkbox-input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.dlf .ocf-refs .inputsFlat .checkbox-label { display: block; width: 20px; height: 20px; margin: 0; padding: 0; font-size: 0; cursor: pointer; }
+.dlf .ocf-refs .inputsFlat .checkbox-label::after { display: none !important; content: none !important; }
+.dlf .ocf-refs .inputsFlat .checkbox-label::before {
+  content: "" !important;
+  position: static !important;
+  display: block !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin: 0 !important;
+  border: 1.5px solid var(--dlf-line-strong) !important;
+  border-radius: 5px !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+.dlf .ocf-refs .inputsFlat .checkbox-input:checked + .checkbox-label::before {
+  border-color: var(--dlf-brand) !important;
+  background: var(--dlf-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.4 8.4 6.6 11.4 12.6 4.6' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat !important;
+}
+.dlf .ocf-refs .inputsFlat .checkbox-input:focus-visible + .checkbox-label::before { box-shadow: var(--dlf-focus-ring) !important; }
+.dlf.is-readonly .ocf-refs .inputsFlat .checkbox-label { cursor: default; }
+
+/* Quantifications: one card each, its title and trash on the head line */
+.dlf .ocf-general .quantificationsList { display: flex; flex-direction: column; gap: 10px; }
+.dlf .ocf-general .quantificationsList:empty { display: none; }
+.dlf .ocf-general .quantificationsList:empty + .ocf-addRow { margin-top: 0; }
+.dlf .ocf-general .ocf-quant {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--dlf-line);
+  border-radius: 10px;
+  background: #fff;
+}
+.dlf .ocf-quant__head { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.dlf .ocf-quant__title { font: 600 13px Figtree, sans-serif; color: var(--dlf-ink); }
+/* projectStudies.css paints span.index as a grey badge; here it reads as part of the title */
+.dlf .ocf-quant__title .index { display: inline; padding: 0; border-radius: 0; background: none; font: inherit; color: inherit; }
+.dlf .ocf-quant__head .removeElement { margin-left: auto !important; }
+.dlf .ocf-quant__grid { display: grid; grid-template-columns: minmax(0, 1.4fr) 140px minmax(0, 1fr); gap: 12px; }
+.dlf .ocf-quant__field { min-width: 0; }
+.dlf .ocf-general .ocf-quant .ocf-label { min-height: 0; margin-bottom: 5px; }
+.dlf .ocf-general .ocf-quant .ocf-label__text { font-size: 12.5px; }
+.dlf .ocf-general .ocf-quant .ocf-hint { margin: -2px 0 6px; font-size: 12px; }
+.dlf .ocf-general .ocf-quant .ocf-label > .commentNumberContainer { margin-left: auto; }
+.dlf .ocf-general .ocf-quant input.form-control { height: 36px; font-size: 13px; }
+.dlf .ocf-general .ocf-quant textarea.form-control { min-height: 96px; font-size: 13px; }
+
+@media (max-width: 991px) {
+  .dlf .ocf-cards,
+  .dlf .ocf-twoCols,
+  .dlf .ocf-markers,
+  .dlf .ocf-quant__grid { grid-template-columns: minmax(0, 1fr); }
+  /* One column: each field stacks its own label, hint, list and note */
+  .dlf .ocf-contrib { grid-template-rows: none; row-gap: 18px; }
+  .dlf .ocf-contrib > .dlf-field { display: block; grid-row: auto; }
+}
+
 @media (max-width: 767px) {
   .dlf .ocf-head__top { flex-direction: column; }
   .dlf .ocf-tabs > .nav-tabs { overflow-x: auto; }

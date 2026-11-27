@@ -1028,3 +1028,384 @@
   </div>
     
 [/#macro]
+[#-- ════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+     A2-2743: the cluster OICR form's General Information tab, drawn as the design's cards over the deliverable form
+     redesign (.dlf). It is the OICR branch of studyMacro (study type 1) with the same customForm calls, names and
+     classes, because projectStudy.js, fieldsValidation.js, the feedback module and the save read them. studyMacro
+     stays as it was for the other study types and for studies/study.ftl.
+     Three controls are redrawn over hidden fields that keep posting: the level of maturity (radio cards), the
+     geographic scopes (checkbox cards over the list component) and the cross-cutting markers (segmented 0 / 1 / 2 /
+     N/A); oicrForm.js syncs them and fires the events projectStudy.js listens to.
+     ════════════════════════════════════════════════════════════════════════════════════════════════════════════════ --]
+[#-- A2-2743: a field's label line in the redesigned OICR form. The field itself is drawn with showTitle=false, so the
+     label, its "*", the "What to cover" toggle and the feedback bubble live here: `bubble` names the field whose
+     bubble customForm prints after the control, and oicrForm.js moves it onto this line. Hints and toggles are
+     editing help: read-only shows neither. --]
+[#macro ocfLabel label for="" required=false optional=false hint="" hintParam="" moreId="" moreKey="study.redesign.whatToCover" lessKey="study.redesign.whatToCover.hide" bubble="" id="" heading=false]
+  <div class="ocf-label[#if heading] ocf-label--heading[/#if]"[#if bubble?has_content] data-ocf-bubble-for="${bubble}"[/#if]>
+    [#if heading]
+      <h2 class="dlf-card__title"[#if id?has_content] id="${id}"[/#if]>[#if for?has_content]<label for="${for}">[@s.text name=label /]</label>[#else][@s.text name=label /][/#if]</h2>
+    [#else]
+      <label class="ocf-label__text"[#if for?has_content] for="${for}"[/#if][#if id?has_content] id="${id}"[/#if]>[@s.text name=label /]</label>
+    [/#if]
+    [#if required && editable]<span class="ocf-label__req" aria-hidden="true">*</span>[/#if]
+    [#if optional && editable]<span class="ocf-label__opt">[@s.text name="study.redesign.optional" /]</span>[/#if]
+    [#if moreId?has_content && editable]
+      <button type="button" class="ocf-more__toggle" aria-expanded="false" aria-controls="${moreId}" data-ocf-more data-label-more="[@s.text name=moreKey /]" data-label-less="[@s.text name=lessKey /]">[@s.text name=moreKey /]</button>
+    [/#if]
+    [#nested /]
+  </div>
+  [#if hint?has_content && editable]<p class="ocf-hint">[#if hintParam?has_content][@s.text name=hint][@s.param]${hintParam}[/@s.param][/@s.text][#else][@s.text name=hint /][/#if]</p>[/#if]
+[/#macro]
+
+[#-- The "What to cover" text a label's toggle opens --]
+[#macro ocfMore id]
+  [#if editable]<div class="ocf-more" id="${id}" hidden>[#nested /]</div>[/#if]
+[/#macro]
+
+[#-- A2-2743: one quantification as the design's card. Same names, classes (.quantification, span.index,
+     .removeQuantification) and template id as quantificationMacro, which projectStudy.js clones and reindexes. --]
+[#macro oicrQuantification name element index=-1 template=false additionalRequired=false]
+  [#local customName = "${template?string('_TEMPLATE_', '')}${name}[${index}]"]
+  [#local rowRequired = (editable && reportingActive && additionalRequired) /]
+  <div id="quantification-${(template?string('template', ''))}" class="quantification ocf-quant">
+    <input type="hidden" name="${customName}.id" value="${(element.id)!}" />
+    <div class="ocf-quant__head">
+      <span class="ocf-quant__title">[@s.text name="study.redesign.quant.item"][@s.param]<span class="index">${index+1}</span>[/@s.param][/@s.text]</span>
+      [#if editable]<div class="removeIcon removeElement removeQuantification" title="Remove"></div>[/#if]
+    </div>
+    <div class="ocf-quant__grid">
+      <div class="ocf-quant__field">
+        [@ocfLabel label="study.redesign.quant.type" for="${customName}.quantificationType.id" bubble="${customName}.quantificationType.id" /]
+        [@customForm.select name="${customName}.quantificationType.id" value="${(element.quantificationType.id)!-1}" className="setSelect2" showTitle=false listName="quantificationTypes" keyFieldName="id" displayFieldName="name" required=rowRequired editable=editable /]
+      </div>
+      <div class="ocf-quant__field">
+        [@ocfLabel label="study.redesign.quant.number" for="${customName}.number" bubble="${customName}.number" /]
+        [@customForm.input name="${customName}.number" type="number" showTitle=false className="numericInput" required=rowRequired editable=editable /]
+      </div>
+      <div class="ocf-quant__field">
+        [@ocfLabel label="study.redesign.quant.unit" for="${customName}.targetUnit" bubble="${customName}.targetUnit" /]
+        [@customForm.input name="${customName}.targetUnit" showTitle=false placeholder="study.redesign.quant.unit.placeholder" required=rowRequired editable=editable /]
+      </div>
+    </div>
+    <div class="ocf-quant__field">
+      [@ocfLabel label="study.redesign.quant.comments" for="${customName}.comments" hint="study.redesign.quant.comments.hint" bubble="${customName}.comments" /]
+      [@customForm.textArea name="${customName}.comments" showTitle=false required=rowRequired editable=editable /]
+    </div>
+  </div>
+[/#macro]
+
+[#-- A2-2743 redesign: the OICR General Information tab, card by card. Every field keeps the name, class and
+     customForm markup projectStudy.js, the feedback bubbles and the save read; only the presentation is the design's.
+     Labels and hints are the design's (study.redesign.*): the study.generalInformation.* texts stay for the PDF,
+     other units and the legacy form. --]
+[#macro oicrGeneral element name]
+  [#local customName = "${name}"/]
+  [#local isNew = (action.isEvidenceNew(element.id))!false /]
+  [#local info = (element.projectExpectedStudyInfo)! /]
+  [#local isPolicy = ((info.isContribution)!false) ]
+  [#local stageProcessOne = ((info.repIndStageProcess.id == 1))!false ]
+  [#if ((info.status)?has_content) && ((info.status.id)?has_content)]
+    [#local validateIsProgressWithStatus = action.validateIsProgressWithStatus(info.status.id) /]
+  [#else]
+    [#local validateIsProgressWithStatus = true /]
+  [/#if]
+  [#local cardReq = (editable && reportingActive) /]
+  [#local listReq = (!action.isPOWB() && validateIsProgressWithStatus!true) /]
+
+  <span id="parentID" style="display: none;">${expectedID!}</span>
+  <span id="phaseID" style="display: none;">${phaseID!}</span>
+  <span id="userID" style="display: none;">${currentUser.id!}</span>
+  <span id="projectID" style="display: none;">${projectID!}</span>
+  <span id="userCanManageFeedback" style="display: none;">${(action.canManageFeedback(projectID)?c)!}</span>
+  <span id="userCanLeaveComments" style="display: none;">${(action.canLeaveComments(projectID)?c)!}</span>
+  <span id="userCanApproveFeedback" style="display: none;">${(action.canApproveComments(projectID)?c)!"false"}</span>
+  <span id="canTrackComments" style="display: none;">${(action.canTrackComments()?c)!"false"}</span>
+  <span id="isFeedbackActive" style="display: none;">${(action.hasSpecificities('feedback_active')?c)!}</span>
+  <span id="isFeedbackNewCommentFieldActive" style="display: none;">${(action.hasSpecificities('feedback_new_comment_field_active')?c)!"false"}</span>
+  <span id="isSuperAdmin" style="display: none;">${(action.canAccessSuperAdmin()?c)!}</span>
+  <input type="hidden" id="sectionNameToFeedback" value="study" />
+
+  <div id="study-0" class="caseStudy evidenceBlock isNew-${isNew?string} dlf-sections ocf-general">
+
+    [#-- ─── Outcome statement ──────────────────────────────────────────────── --]
+    [#local titleName = "${customName}.projectExpectedStudyInfo.title" /]
+    [#local shortName = "${customName}.projectExpectedStudyInfo.outcomeImpactStatement" /]
+    <section class="dlf-card" id="sec-outcome">
+      <h2 class="dlf-card__title">[@s.text name="study.redesign.section.outcome" /]</h2>
+      [#-- A2-2743 (approved): the counter allows 30 words, as ProjectExpectedStudiesValidator does --]
+      <div class="dlf-field ocf-field">
+        [@ocfLabel label="study.generalInformation.title" for=titleName required=true hint="study.redesign.title.hint" bubble=titleName /]
+        [@customForm.input name=titleName showTitle=false className="limitWords-30" required=true editable=editable /]
+      </div>
+      <div class="dlf-field ocf-field">
+        [@ocfLabel label="study.redesign.short" for=shortName hint="study.redesign.short.hint" moreId="ocf-more-short" bubble=shortName /]
+        [@ocfMore id="ocf-more-short"]<ul><li>[@s.text name="study.redesign.short.more1" /]</li><li>[@s.text name="study.redesign.short.more2" /]</li><li>[@s.text name="study.redesign.short.more3" /]</li></ul>[/@ocfMore]
+        [@customForm.textArea name=shortName showTitle=false className="limitWords-80" required=false editable=editable /]
+      </div>
+    </section>
+
+    [#-- ─── Level of maturity: radio cards over the hidden select ─────────── --]
+    [#local stageId = (info.repIndStageStudy.id?c)!"" /]
+    [#local stageName = "${customName}.projectExpectedStudyInfo.repIndStageStudy.id" /]
+    <section class="dlf-card stageProcessOne" id="sec-maturity">
+      [@ocfLabel label="study.generalInformation.maturityChange" heading=true id="ocf-maturity-label" required=cardReq hint="study.redesign.maturity.hint" bubble=stageName /]
+      <div class="ocf-cards" role="radiogroup" aria-labelledby="ocf-maturity-label" data-ocf-cards-for="${stageName}">
+        [#list (stageStudies)![] as stage]
+          [#local isOn = (stage.id?c == stageId) /]
+          [#local stageKey = "study.redesign.stage.${stage.id?c}" /]
+          [#local sphere][@s.text name="${stageKey}.sphere" /][/#local]
+          [#local hasKeys = (sphere?markup_string != "${stageKey}.sphere") /]
+          <button type="button" class="ocf-card[#if isOn] is-on[/#if]" role="radio" aria-checked="${isOn?c}" data-value="${stage.id?c}"[#if !editable] disabled[/#if]>
+            <span class="ocf-card__head"><span class="ocf-card__ring" aria-hidden="true"></span><span class="ocf-card__label">${(stage.name)!}</span>[#if hasKeys]<span class="ocf-card__sphere">${sphere}</span>[/#if]</span>
+            [#if hasKeys]
+              <span class="ocf-card__text">[@s.text name="${stageKey}.desc" /]</span>
+              <span class="ocf-card__ev">[@s.text name="${stageKey}.evidence" /]</span>
+            [#elseif (stage.description)?has_content]
+              <span class="ocf-card__text">${stage.description}</span>
+            [/#if]
+          </button>
+        [/#list]
+      </div>
+      <div class="ocf-hiddenField">
+        [@customForm.select name=stageName value="${(info.repIndStageStudy.id)!-1}" showTitle=false listName="stageStudies" keyFieldName="id" displayFieldName="composedName" required=false editable=editable /]
+      </div>
+    </section>
+
+    [#-- ─── Geographic scope: checkboxes over the multi-scope list component projectStudy.js drives ─── --]
+    [#-- The innovation and deliverable forms take one scope (radio cards); an OICR takes several, so the same card
+         carries a checkbox. The list component stays, out of sight: it posts the scopes and fires the events that
+         open the regions and countries. --]
+    [#local geographicScopeList = (element.geographicScopes)![] ]
+    [#local isRegional =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeRegional) /]
+    [#local isMultiNational = findElementID(geographicScopeList,  action.reportingIndGeographicScopeMultiNational) /]
+    [#local isNational =      findElementID(geographicScopeList,  action.reportingIndGeographicScopeNational) /]
+    [#local isSubNational =   findElementID(geographicScopeList,  action.reportingIndGeographicScopeSubNational) /]
+    [#local savedScopeIds = geographicScopeList?map(g -> ((g.repIndGeographicScope.id)!0)?c) /]
+    [#local scopesName = "${customName}.geographicScopes" /]
+    [#local scopeCommentsName = "${customName}.projectExpectedStudyInfo.scopeComments" /]
+    <section class="dlf-card geographicScopeBlock" id="dlf-geographicScope">
+      <h2 class="dlf-card__title">[@s.text name="study.redesign.geo.title" /]</h2>
+      <div class="geographicScopeInput ocf-geo">
+        <div class="dlf-field ocf-field">
+          [@ocfLabel label="study.redesign.geo.scope" id="ocf-scope-label" required=(editable && listReq) bubble=scopesName /]
+          <div class="ocf-scopes" role="group" aria-labelledby="ocf-scope-label" data-ocf-scopes>
+            [#list (geographicScopes)![] as scope]
+              [#local isOn = savedScopeIds?seq_contains(scope.id?c) /]
+              [#local scopeKey = "study.redesign.geo.scope.${scope.id?c}" /]
+              [#local scopeLabel][@s.text name=scopeKey /][/#local]
+              <button type="button" class="ocf-scope[#if isOn] is-on[/#if]" aria-pressed="${isOn?c}" data-value="${scope.id?c}"[#if !editable] disabled[/#if]><span class="ocf-scope__box" aria-hidden="true"></span>[#if scopeLabel?markup_string != scopeKey]${scopeLabel}[#else]${scope.name}[/#if]</button>
+            [/#list]
+          </div>
+          [#if editable]<p class="ocf-hint ocf-scopes__note" data-ocf-scope-note data-note="[@s.text name="study.redesign.geo.note" /]" data-note-tbd="[@s.text name="study.redesign.geo.noteTbd" /]">[@s.text name="study.redesign.geo.note" /]</p>[/#if]
+          <div class="ocf-hiddenField">
+            [@customForm.elementsListComponent name=scopesName elementType="repIndGeographicScope" elementList=element.geographicScopes listName="geographicScopes" keyFieldName="id" displayFieldName="name" showTitle=false required=listReq /]
+          </div>
+        </div>
+        <div class="dlf-field ocf-field regionalBlock" data-ocf-placeholder="[@s.text name="study.redesign.geo.regions.add" /]" style="display:${(isRegional)?string('block','none')}">
+          [@ocfLabel label="study.redesign.geo.regions" required=editable bubble="${customName}.studyRegions" /]
+          [@customForm.elementsListComponent name="${customName}.studyRegions" elementType="locElement" elementList=element.studyRegions listName="regions" keyFieldName="id" displayFieldName="composedName" showTitle=false required=false /]
+        </div>
+        <div class="dlf-field ocf-field nationalBlock" style="display:${(isMultiNational || isNational || isSubNational)?string('block','none')}">
+          [@ocfLabel label="study.redesign.geo.countries" for="${customName}.countriesIds" required=(editable && listReq) bubble="${customName}.countriesIds" /]
+          [@customForm.select name="${customName}.countriesIds" label="" showTitle=false listName="countries" keyFieldName="isoAlpha2" displayFieldName="name" value="${customName}.countriesIds" multiple=true required=listReq className="countriesSelect" disabled=!editable/]
+        </div>
+        <div class="dlf-field ocf-field">
+          [@ocfLabel label="study.redesign.geo.comments" for=scopeCommentsName optional=true hint="study.redesign.geo.comments.hint" bubble=scopeCommentsName /]
+          [@customForm.textArea name=scopeCommentsName showTitle=false className="limitWords-30" editable=editable required=false/]
+        </div>
+      </div>
+    </section>
+
+    [#-- ─── Key contributors ──────────────────────────────────────────────── --]
+    <section class="dlf-card keyContributions" id="sec-contrib">
+      <h2 class="dlf-card__title">[@s.text name="study.redesign.contrib.title" /]</h2>
+      <div class="ocf-twoCols ocf-contrib">
+        <div class="dlf-field ocf-field" data-ocf-placeholder="[@s.text name="study.redesign.contrib.centers.add" /]" data-ocf-empty="[@s.text name="study.redesign.contrib.centers.empty" /]">
+          [@ocfLabel label="study.redesign.contrib.centers" required=(editable && !action.isAWPBActive()) hint="study.redesign.contrib.centers.hint" bubble="${customName}.centers" /]
+          [@customForm.elementsListComponent name="${customName}.centers" elementType="institution" elementList=element.centers listName="centers" keyFieldName="id" displayFieldName="composedName" showTitle=false required=listReq /]
+          [#if editable]
+            [#local partnersLink][@s.url namespace="/projects" action='${crpSession}/partners'][@s.param name='projectID']${(projectID)!}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+            <p class="ocf-hint ocf-hint--after ocf-contrib__note">[@s.text name="study.redesign.contrib.footer"][@s.param]<a href="${partnersLink}" target="_blank" rel="noopener">[@s.text name="study.redesign.contrib.footer.link" /]</a>[/@s.param][/@s.text]</p>
+          [/#if]
+        </div>
+        <div class="dlf-field ocf-field stageProcessOne" data-ocf-placeholder="[@s.text name="study.redesign.contrib.partners.add" /]" data-ocf-empty="[@s.text name="study.redesign.contrib.partners.empty" /]">
+          [@ocfLabel label="study.redesign.contrib.partners" optional=true hint="study.redesign.contrib.partners.hint" bubble="${customName}.institutions" /]
+          [@customForm.elementsListComponent name="${customName}.institutions" elementType="institution" elementList=element.institutions listName="institutions" keyFieldName="id" displayFieldName="composedName" showTitle=false required=false /]
+          [#if editable]
+            [#-- A partner missing from the MARLO catalogue is requested here (utils.js opens a.popup in a window) --]
+            [#local requestLink][@s.url namespace="/projects" action='${crpSession}/partnerSave'][@s.param name='expectedID']${(expectedID)!}[/@s.param][/@s.url][/#local]
+            <p id="addPartnerText" class="ocf-hint ocf-hint--after ocf-contrib__note">[@s.text name="study.redesign.contrib.partners.request"][@s.param]<a class="popup" href="${requestLink}">[@s.text name="study.redesign.contrib.partners.request.link" /]</a>[/@s.param][/@s.text]</p>
+          [/#if]
+        </div>
+      </div>
+    </section>
+
+    [#-- ─── CGIAR innovations or findings ─────────────────────────────────── --]
+    [#local innovName = "${customName}.projectExpectedStudyInfo.cgiarInnovation" /]
+    [#local otherInnovName = "${customName}.projectExpectedStudyInfo.otherInnovationsNarrative" /]
+    [#local innovReq = (editable && !(isPolicy && stageProcessOne) && !action.isPOWB() && validateIsProgressWithStatus!true) /]
+    <section class="dlf-card stageProcessOne" id="sec-innov">
+      <h2 class="dlf-card__title">[@s.text name="study.redesign.section.innovations" /]</h2>
+      <div class="dlf-field ocf-field">
+        [@ocfLabel label="study.redesign.innov.narrative" for=innovName required=innovReq hint="study.redesign.innov.narrative.hint" bubble=innovName /]
+        [@customForm.textArea name=innovName showTitle=false required=innovReq editable=editable /]
+      </div>
+      <div class="dlf-field ocf-field" data-ocf-placeholder="[@s.text name="study.redesign.innov.add" /]" data-ocf-empty="[@s.text name="study.redesign.innov.empty" /]">
+        [@ocfLabel label="study.redesign.innov.list" optional=true bubble="${customName}.innovations" /]
+        [@customForm.elementsListComponent name="${customName}.innovations" elementType="projectInnovation" elementList=element.innovations listName="innovationsList" keyFieldName="id" displayFieldName="composedNameAlternative" showTitle=false required=false /]
+      </div>
+      <div class="dlf-field ocf-field">
+        [@ocfLabel label="study.redesign.innov.other" for=otherInnovName optional=true bubble=otherInnovName /]
+        [@customForm.textArea name=otherInnovName showTitle=false className="limitWords-30" required=false editable=editable /]
+      </div>
+    </section>
+
+    [#-- ─── Link to Performance Indicators ────────────────────────────────── --]
+    [#local indLink][@s.url namespace=namespace action="${crpSession}/contributionsCrpList"][@s.param name='projectID']${projectID?c}[/@s.param][#include "/WEB-INF/global/pages/urlGlobalParams.ftl" /][/@s.url][/#local]
+    [#local indLinkHtml]<a href="${indLink}" target="_blank" rel="noopener">[@s.text name="study.redesign.ind.hint.link" /]</a>[/#local]
+    <section class="dlf-card block-studyMilestoneLink" id="sec-ind">
+      [@ocfLabel label="study.redesign.ind.title" heading=true required=(editable && !action.isPOWB() && validateIsProgressWithStatus!true) hint="study.redesign.ind.hint" hintParam=indLinkHtml bubble="${customName}.crpOutcomes" /]
+      [@customForm.input name="${customName}.projectExpectedStudyInfo.hasMilestones" showTitle=false value="true" type="hidden" display=false /]
+      <div class="dlf-field ocf-indicators" data-ocf-placeholder="[@s.text name="study.redesign.ind.add" /]" data-ocf-empty="[@s.text name="study.redesign.ind.empty" /]">
+        [@customForm.elementsListComponent name="${customName}.crpOutcomes" elementType="crpOutcome" elementList=(element.crpOutcomes)![] listName="crpOutcomes" keyFieldName="id" displayFieldName="composedName" showTitle=false required=(!action.isPOWB()) /]
+      </div>
+    </section>
+
+    [#-- ─── Elaboration ───────────────────────────────────────────────────── --]
+    [#local elabName = "${customName}.projectExpectedStudyInfo.elaborationOutcomeImpactStatement" /]
+    <section class="dlf-card stageProcessOne" id="sec-elab">
+      [@ocfLabel label="study.redesign.elab.title" heading=true for=elabName required=(editable && reportingActive) hint="study.redesign.elab.hint" moreId="ocf-more-elab" moreKey="study.redesign.moreGuidance" lessKey="study.redesign.lessGuidance" bubble=elabName /]
+      [@ocfMore id="ocf-more-elab"][@s.text name="study.redesign.elab.more" /][/@ocfMore]
+      <div class="dlf-field">
+        [@customForm.textArea name=elabName showTitle=false className="limitWords-400" required=(editable && reportingActive) editable=editable /]
+      </div>
+    </section>
+
+    [#-- ─── Evidence and references ───────────────────────────────────────── --]
+    [#local refsReq = (!action.isAWPBActive()) /]
+    [#local refsTextName = "${customName}.projectExpectedStudyInfo.referencesText" /]
+    <section class="dlf-card stageProcessOne" id="sec-refs">
+      [@ocfLabel label="study.redesign.refs.title" heading=true required=(editable && refsReq) hint="study.redesign.refs.hint" hintParam="93" bubble=refsTextName]
+        <span class="ocf-label__meta" data-ocf-count="refs" data-one="[@s.text name="study.redesign.refs.count.one" /]" data-many="[@s.text name="study.redesign.refs.count" /]"></span>
+      [/@ocfLabel]
+      <div class="dlf-field ocf-refs__legacy">
+        [@customForm.textAreaReferences name=refsTextName showTitle=false className="" required=refsReq editable=editable oldReference=((info.referencesText)?has_content) /]
+      </div>
+      <div class="referenceBlock ocf-refs">
+        <div class="referenceList">
+          <div class="ocf-refs__head" aria-hidden="true">
+            <span>[@s.text name="study.redesign.refs.reference" /][#if editable && refsReq] <span class="ocf-label__req">*</span>[/#if]</span>
+            <span>[@s.text name="study.redesign.refs.link" /][#if editable && refsReq] <span class="ocf-label__req">*</span>[/#if]</span>
+            <span>[@s.text name="study.redesign.refs.externalAuthor" /]</span>
+          </div>
+          [#list (element.references)![{}] as link]
+            [@customForm.references name="${customName}.references" element=link index=link_index class="references" /]
+          [/#list]
+        </div>
+        [#if editable]
+          <button type="button" class="addButtonReference ocf-addRow">
+            <svg class="dlf-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2.6v8.8M2.6 7h8.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+            [@s.text name="study.redesign.refs.add" /]
+          </button>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@customForm.references name="${customName}.references" element={} index=-1 template=true class="references" /]
+      </div>
+    </section>
+
+    [#-- ─── Quantification ────────────────────────────────────────────────── --]
+    [#local isLeverOfMaturityOnThree = (info.repIndStageStudy.id == 3)!false]
+    <section class="dlf-card stageProcessOne quantificationsBlockContainer" id="sec-quant" data-ocf-quant>
+      <div class="ocf-label ocf-label--heading" data-ocf-bubble-for="expectedStudy.projectExpectedStudyInfo.quantification">
+        <h2 class="dlf-card__title">[@s.text name="study.redesign.quant.title" /]</h2>
+        [#if editable && reportingActive][@customForm.req required=isLeverOfMaturityOnThree /][/#if]
+        <span class="ocf-label__meta" data-ocf-count="quant" data-one="[@s.text name="study.redesign.quant.count.one" /]" data-many="[@s.text name="study.redesign.quant.count" /]"></span>
+        <div class="commentNumberContainer">
+          <div class="numberOfCommentsBubble"><p></p></div>
+          <img src="${baseUrlCdn}/global/images/comment.png" class="qaComment" name="expectedStudy.projectExpectedStudyInfo.quantification" fieldID="" description="">
+        </div>
+      </div>
+      [#if editable]
+        <p class="ocf-hint">[@s.text name="study.redesign.quant.hint" /]
+          <span data-ocf-quant-req[#if !isLeverOfMaturityOnThree] hidden[/#if]>[@s.text name="study.redesign.quant.req" /]</span><span data-ocf-quant-opt[#if isLeverOfMaturityOnThree] hidden[/#if]>[@s.text name="study.redesign.quant.complete" /]</span></p>
+      [/#if]
+      <div class="quantificationsBlock">
+        <div class="quantificationsList">
+          [#list (element.quantifications)![] as item]
+            [@oicrQuantification name="${customName}.quantifications" element=item index=item_index additionalRequired=isLeverOfMaturityOnThree /]
+          [/#list]
+        </div>
+        [#if editable]
+          <button type="button" class="addStudyQualification ocf-addRow">
+            <svg class="dlf-icon" width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 2.6v8.8M2.6 7h8.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+            [@s.text name="study.redesign.quant.add" /]
+          </button>
+        [/#if]
+      </div>
+      [#-- Element item Template --]
+      <div style="display:none">
+        [@oicrQuantification name="${customName}.quantifications" element={} index=-1 template=true additionalRequired=isLeverOfMaturityOnThree /]
+      </div>
+    </section>
+
+    [#-- ─── Cross-cutting markers: segmented 0 / 1 / 2 / N/A over the hidden selects ─── --]
+    [#assign ccGuideSheetURL = "https://cgiar.sharepoint.com/sites/Alliance-SPRM/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FAlliance%2DSPRM%2FShared%20Documents%2F2%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%2F2%2E5%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%20%2D%20Projects%2F2%2E5%2E1%20Outcomes%2F2024%20Outcomes%2F2024%20OICR%20Guidance%20Note%20%28Version%2014%2E08%2E24%29%2Epdf&parent=%2Fsites%2FAlliance%2DSPRM%2FShared%20Documents%2F2%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%2F2%2E5%20Project%20Monitoring%2C%20Evaluation%20and%20Learning%20%2D%20Projects%2F2%2E5%2E1%20Outcomes%2F2024%20Outcomes" /]
+    [#local ccCommentsName = "${customName}.projectExpectedStudyInfo.commentsRelevance" /]
+    <section class="dlf-card" id="sec-cc">
+      [@ocfLabel label="study.redesign.cc.title" heading=true hint="study.redesign.cc.hint" moreId="ocf-more-cc" moreKey="study.redesign.howToScore" lessKey="study.redesign.hideScoring"]
+        <a class="ocf-label__link" href="${ccGuideSheetURL}" target="_blank" rel="noopener">[@s.text name="study.general.guideSheetURL.crossMarkets" /]</a>
+      [/@ocfLabel]
+      [@ocfMore id="ocf-more-cc"][@s.text name="study.redesign.cc.more" /][/@ocfMore]
+      <div class="ocf-markers">
+        [#-- Climate change is not validated (ProjectExpectedStudiesValidator), so it carries no "*" --]
+        [#list [["genderLevel", "study.redesign.cc.gender", true], ["youthLevel", "study.redesign.cc.youth", true], ["capdevLevel", "study.redesign.cc.capdev", true], ["climateChangeLevel", "study.redesign.cc.climate", false]] as marker]
+          [#local fieldName = "${customName}.projectExpectedStudyInfo.${marker[0]}.id" /]
+          [#local currentLevel = ((info[marker[0]].id)?c)!"1" /]
+          <div class="ccRelevanceBlock ocf-marker">
+            [@ocfLabel label=marker[1] id="ocf-marker-${marker[0]}" required=(cardReq && marker[2]) /]
+            <span class="ocf-seg ocf-seg--sm" role="radiogroup" aria-labelledby="ocf-marker-${marker[0]}" data-ocf-seg-for="${fieldName}">
+              [#list (focusLevels)![] as level]
+                [#local levelName = (level.powbName)!(level.name)!"" /]
+                [#local levelKey = "study.redesign.cc.level.${level.id?c}" /]
+                [#local levelLabel][@s.text name=levelKey /][/#local]
+                [#local isOn = (level.id?c == currentLevel) /]
+                <button type="button" class="ocf-seg__opt[#if isOn] is-on[/#if]" role="radio" aria-checked="${isOn?c}" data-value="${level.id?c}"
+                  title="${levelName}[#if (level.definition)?has_content]: ${level.definition}[/#if]"[#if !editable] disabled[/#if]>[#if levelLabel?markup_string != levelKey]${levelLabel}[#else]${levelName}[/#if]</button>
+              [/#list]
+            </span>
+            <div class="ocf-hiddenField">
+              [@customForm.select name=fieldName label="" listName="focusLevels" keyFieldName="id" displayFieldName="powbName" value="${currentLevel}" required=cardReq editable=editable showTitle=false /]
+            </div>
+          </div>
+        [/#list]
+      </div>
+      <div class="dlf-field ocf-field">
+        [@ocfLabel label="study.redesign.cc.comments" for=ccCommentsName optional=true bubble=ccCommentsName /]
+        [@customForm.textArea name=ccCommentsName showTitle=false className="limitWords-30" required=false editable=editable /]
+      </div>
+    </section>
+
+    [#-- ─── Other cross-cutting dimensions ────────────────────────────────── --]
+    [#local otherCrossCuttingSelection = (info.otherCrossCuttingSelection)!"" ]
+    [#local occName = "${customName}.projectExpectedStudyInfo.otherCrossCuttingSelection" /]
+    [#local occTextName = "${customName}.projectExpectedStudyInfo.otherCrossCuttingDimensions" /]
+    <section class="dlf-card stageProcessOne" id="sec-occ">
+      [@ocfLabel label="study.redesign.occ.title" heading=true id="ocf-occ-label" required=(editable && !action.isAWPBActive()) bubble=occName /]
+      <p class="ocf-question">[@s.text name="study.redesign.occ.question" /]</p>
+      <div class="ocf-radioSeg" role="radiogroup" aria-labelledby="ocf-occ-label">
+        [#list ["Yes", "No", "NA"] as option]
+          [@customForm.radioFlat id="option-${option}" name=occName i18nkey="study.generalInformation.otherCrossCutting${option}" value="${option}" checked=(otherCrossCuttingSelection == option) cssClass="radioType-otherCrossCuttingOption" cssClassLabel="font-normal" editable=true disabled=!editable canComment=(option_index == 0) /]
+        [/#list]
+      </div>
+      [#local showOtherCrossCuttingOptionsComponent = (info.otherCrossCuttingSelection == "Yes")!false /]
+      <div class="otherCrossCuttingOptionsComponent dlf-field ocf-field" style="display:${showOtherCrossCuttingOptionsComponent?string('block', 'none')}">
+        [@ocfLabel label="study.redesign.occ.describe" for=occTextName required=true hint="study.redesign.occ.describe.hint" bubble=occTextName /]
+        [@customForm.textArea name=occTextName showTitle=false className="limitWords-200" required=true editable=editable /]
+      </div>
+    </section>
+
+  </div>
+[/#macro]
